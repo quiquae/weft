@@ -51,12 +51,12 @@ export interface Provider {
 }
 
 export class ProviderError extends Error {
-  constructor(
-    message: string,
-    readonly retryable: boolean,
-  ) {
+  readonly retryable: boolean;
+
+  constructor(message: string, retryable: boolean) {
     super(message);
     this.name = 'ProviderError';
+    this.retryable = retryable;
   }
 }
 

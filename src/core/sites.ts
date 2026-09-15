@@ -338,6 +338,40 @@ export function rulesFromPreset(id: string): { taxed: SiteRule[]; gentle: SiteRu
   return preset.escalate ? { taxed: rules, gentle: [] } : { taxed: [], gentle: rules };
 }
 
+/** The host part of a match pattern, with any leading wildcard removed. */
+export function hostOfOrigin(origin: string): string | null {
+  const withoutScheme = origin.replace(/^(?:\*|https?|file|ftp):\/\//, '');
+  const host = withoutScheme.split('/')[0] ?? '';
+  if (!host || host === '*') return null;
+  return normalizeHost(host.replace(/^\*\./, ''));
+}
+
+/**
+ * Does a granted origin cover a host any enabled rule cares about?
+ *
+ * Compared by host rather than by pattern string. `http://localhost/*` and
+ * `*://localhost/*` are different strings for the same site, and an earlier
+ * version of this intersection used string equality — which silently
+ * registered the content script nowhere whenever the granted scheme differed
+ * from the requested one.
+ */
+export function originCoversRules(origin: string, rules: SiteRule[]): boolean {
+  if (origin === '*://*/*' || origin === '<all_urls>') return true;
+  const host = hostOfOrigin(origin);
+  if (!host) return false;
+  for (const rule of rules) {
+    if (!rule.enabled) continue;
+    const parsed = parsePattern(rule.pattern);
+    if (!parsed) continue;
+    if (host === parsed.host) return true;
+    if (host.endsWith(`.${parsed.host}`)) return true;
+    // A granted origin broader than the rule also covers it: granting
+    // example.com covers a rule for shop.example.com.
+    if (parsed.host.endsWith(`.${host}`)) return true;
+  }
+  return false;
+}
+
 /** Origins to request host permission for, given the configured rules. */
 export function originsForRules(rules: SiteRule[]): string[] {
   const out = new Set<string>();

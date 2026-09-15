@@ -53,7 +53,10 @@ export const DEFAULT_MIN_WORDS = 3;
  * which is what keeps the walk cheap on a large page.
  */
 export function shouldSkipElement(el: Element, opts: WalkerOptions): boolean {
-  const tag = el.tagName;
+  // Uppercased because HTML elements report an uppercase tagName but foreign
+  // ones — SVG and MathML — preserve their case. Without this, text inside
+  // <svg> and <math> is treated as prose and woven.
+  const tag = el.tagName.toUpperCase();
   if (SKIP_TAGS.has(tag)) return true;
   if (el.hasAttribute(WEFT_ATTR)) return true;
 

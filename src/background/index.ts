@@ -1,5 +1,5 @@
 import type { Grade, LangCode, LexEntry, MemoryCard, Settings, SiteAttention } from '../core/types.ts';
-import { classifyUrl, originsForRules } from '../core/sites.ts';
+import { classifyUrl, originCoversRules } from '../core/sites.ts';
 import {
   currentAttentionSeconds,
   dayKey,
@@ -586,14 +586,13 @@ async function registerContentScripts(): Promise<number> {
 
   // Intersect what we may access with what the user actually wants woven, so
   // a leftover permission does not silently widen the extension's reach.
-  const wanted = new Set([
-    ...originsForRules(settings.sites.taxed),
-    ...originsForRules(settings.sites.gentle),
-  ]);
+  // Compared by host: "http://localhost/*" and "*://localhost/*" name the
+  // same site, and comparing the pattern strings registers nothing.
+  const rules = [...settings.sites.taxed, ...settings.sites.gentle];
   const matches =
     settings.sites.mode === 'everywhere-except'
       ? granted
-      : granted.filter((origin) => wanted.has(origin) || granted.includes('*://*/*'));
+      : granted.filter((origin) => originCoversRules(origin, rules));
 
   const effective = matches.length ? matches : granted.includes('*://*/*') ? ['*://*/*'] : [];
   if (!effective.length) {

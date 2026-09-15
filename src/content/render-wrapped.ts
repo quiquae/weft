@@ -27,10 +27,16 @@ export class WrappedRenderer implements Renderer {
   private records = new Set<WovenRecord>();
   private activeElement: HTMLElement | null = null;
 
-  constructor(
-    private settings: Settings,
-    private target: LangCode,
-  ) {}
+  private settings: Settings;
+  private target: LangCode;
+
+  // Explicit fields rather than TypeScript parameter properties: those are
+  // not supported by type-stripping runtimes, and keeping the source loadable
+  // without a compile step is what lets the DOM tests import it directly.
+  constructor(settings: Settings, target: LangCode) {
+    this.settings = settings;
+    this.target = target;
+  }
 
   apply(record: WovenRecord): void {
     const { node, woven, swaps } = record;
@@ -76,8 +82,12 @@ export class WrappedRenderer implements Renderer {
 
     try {
       parent.replaceChild(fragment, node);
-    } catch {
-      return; // node moved out from under us between selection and application
+    } catch (err) {
+      // The node moved out from under us between selection and application.
+      // Logged in dev builds: a silent catch here once hid a real failure for
+      // an hour, and the cost of the log is nothing.
+      if (__WEFT_DEV__) console.warn('[weft] wrapped apply failed', err);
+      return;
     }
 
     record.inserted = inserted;

@@ -1,0 +1,30 @@
+{
+  "extName": {
+    "message": "Weft — Language Immersion",
+    "description": "Extension name as shown in the browser and the store."
+  },
+  "extShortName": {
+    "message": "Weft",
+    "description": "Short name, used where space is tight."
+  },
+  "extDescription": {
+    "message": "Reads the web back to you with some words woven into another language. Difficulty rises with the time you spend.",
+    "description": "Store and browser description, under 132 characters."
+  },
+  "actionTitle": {
+    "message": "Weft",
+    "description": "Tooltip on the toolbar button."
+  },
+  "commandReveal": {
+    "message": "Reveal the woven word under the cursor",
+    "description": "Keyboard shortcut description."
+  },
+  "commandCycle": {
+    "message": "Move to the next woven word (keyboard reading)",
+    "description": "Keyboard shortcut description."
+  },
+  "commandPanic": {
+    "message": "Use a panic pass: plain English for a few minutes",
+    "description": "Keyboard shortcut description."
+  }
+}

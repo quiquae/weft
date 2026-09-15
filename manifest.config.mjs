@@ -16,11 +16,10 @@ export const VERSION = '1.0.0';
 
 const SHARED = {
   manifest_version: 3,
-  name: 'Weft — Language Immersion',
-  short_name: 'Weft',
+  name: '__MSG_extName__',
+  short_name: '__MSG_extShortName__',
   version: VERSION,
-  description:
-    'Reads the web back to you with some words woven into another language. Difficulty rises with the time you spend.',
+  description: '__MSG_extDescription__',
   default_locale: 'en',
   icons: {
     16: 'assets/icon-16.png',
@@ -40,7 +39,7 @@ const SHARED = {
   ],
   optional_host_permissions: ['*://*/*'],
   action: {
-    default_title: 'Weft',
+    default_title: '__MSG_actionTitle__',
     default_popup: 'popup.html',
     default_icon: {
       16: 'assets/icon-16.png',
@@ -60,20 +59,35 @@ const SHARED = {
   commands: {
     'weft-reveal': {
       suggested_key: { default: 'Alt+Shift+R', mac: 'Alt+Shift+R' },
-      description: 'Reveal the woven word under the cursor',
+      description: '__MSG_commandReveal__',
     },
     'weft-cycle': {
       suggested_key: { default: 'Alt+Shift+N', mac: 'Alt+Shift+N' },
-      description: 'Move to the next woven word (keyboard reading)',
+      description: '__MSG_commandCycle__',
     },
     'weft-panic': {
-      description: 'Use a panic pass: plain English for a few minutes',
+      description: '__MSG_commandPanic__',
     },
   },
 };
 
-export function buildManifest(target) {
+/**
+ * @param {'chrome'|'firefox'} target
+ * @param {{ test?: boolean }} [opts] `test: true` adds a static host
+ *   permission for localhost. Chrome shows a native dialog for an optional
+ *   permission request, which Playwright cannot dismiss, so the end-to-end
+ *   tests need the origin granted at install time. Everything else is
+ *   identical, and the dynamic registration path still runs — it reads
+ *   permissions.getAll(), which now simply includes localhost — so the code
+ *   under test is the shipping code.
+ */
+export function buildManifest(target, opts = {}) {
   const m = structuredClone(SHARED);
+
+  if (opts.test) {
+    m.host_permissions = ['http://localhost/*', 'http://127.0.0.1/*'];
+    m.name = 'Weft (test build)';
+  }
 
   if (target === 'firefox') {
     // Firefox MV3 uses an event page, not a service worker, and requires an

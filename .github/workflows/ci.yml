@@ -26,6 +26,8 @@ jobs:
       - name: Build (chrome + firefox)
         run: npm run build:all
       - name: Install Playwright browsers
+        # The full Chromium, not the headless shell: the shell cannot load
+        # extensions at all.
         run: npx playwright install --with-deps chromium
       - name: End-to-end tests
         run: npm run test:e2e

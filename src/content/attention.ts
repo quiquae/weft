@@ -42,7 +42,11 @@ export class AttentionTracker {
     if (document.visibilityState === 'hidden') this.report(true);
   };
 
-  constructor(private opts: AttentionOptions) {}
+  private opts: AttentionOptions;
+
+  constructor(opts: AttentionOptions) {
+    this.opts = opts;
+  }
 
   start(): void {
     if (this.running) return;

@@ -130,10 +130,12 @@ export class Tooltip {
   private shown = false;
   private currentLemma: string | null = null;
 
-  constructor(
-    private settings: Settings,
-    private callbacks: TooltipCallbacks,
-  ) {
+  private settings: Settings;
+  private callbacks: TooltipCallbacks;
+
+  constructor(settings: Settings, callbacks: TooltipCallbacks) {
+    this.settings = settings;
+    this.callbacks = callbacks;
     this.host = document.createElement('weft-tooltip');
     this.host.setAttribute(WEFT_ATTR, '1');
     this.root = this.host.attachShadow({ mode: 'closed' });

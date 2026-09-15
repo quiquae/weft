@@ -20,6 +20,15 @@ export interface WovenRecord {
   /** The text we wrote. Compared against nodeValue to detect page rewrites. */
   woven: string;
   swaps: AppliedSwap[];
+  /**
+   * The same swaps in SOURCE-text coordinates.
+   *
+   * `swaps` holds offsets into `woven`, which shift every time the set
+   * changes. Re-weaving at a higher ratio needs to say "keep exactly these
+   * words", and that sentence only has a stable meaning in the coordinates of
+   * the text the page wrote.
+   */
+  sourceSwaps: Swap[];
   /** Wrapped mode only: the nodes we put in place of the original text node. */
   inserted?: Node[];
   /** Wrapped mode only: the elements carrying each swap, parallel to `swaps`. */
@@ -74,6 +83,11 @@ export function swapAtOffset(record: WovenRecord, offset: number): AppliedSwap |
     if (offset === swap.end) return swap;
   }
   return null;
+}
+
+/** Stable identity of a swap within its source text. */
+export function pinKey(swap: { start: number; original: string }): string {
+  return `${swap.start}:${swap.original.toLowerCase()}`;
 }
 
 export interface Hit {

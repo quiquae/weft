@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reconciler hazard</title>
+</head>
+<body>
+<div id="app"></div>
+<p id="status">pending</p>
+<script>
+/*
+ * Reproduces the exact failure that Google Translate causes in React.
+ *
+ * A virtual-DOM library keeps a direct reference to each text node it
+ * created, then later removes it by calling parent.removeChild(thatNode).
+ * If an extension REPLACED the text node, the reference is stale, the node
+ * has no parent, and removeChild throws NotFoundError — which is how
+ * translation extensions crash React applications.
+ *
+ * Weft edits nodeValue in place and never restructures the tree, so the
+ * reference stays valid. This page asserts that.
+ */
+const app = document.getElementById('app');
+const status = document.getElementById('status');
+const refs = [];
+
+function mount() {
+  const sentences = [
+    'The old house stood at the end of a long road by the river.',
+    'A woman came down from the village with bread and salt today.',
+    'The young king rode past on a black horse without saying a word.',
+  ];
+  for (const text of sentences) {
+    const p = document.createElement('p');
+    const node = document.createTextNode(text);
+    p.appendChild(node);
+    app.appendChild(p);
+    refs.push({ parent: p, node });
+  }
+  status.textContent = 'mounted';
+}
+
+window.weftUnmount = function unmount() {
+  try {
+    for (const { parent, node } of refs) {
+      // The call that throws when the node has been replaced.
+      parent.removeChild(node);
+    }
+    status.textContent = 'unmounted-clean';
+    return 'unmounted-clean';
+  } catch (err) {
+    status.textContent = 'threw: ' + err.name;
+    return 'threw: ' + err.name;
+  }
+};
+
+mount();
+</script>
+</body>
+</html>

@@ -353,3 +353,72 @@ describe('entryAllowed', () => {
     assert.equal(entryAllowed(entry({}), input).ok, true);
   });
 });
+
+describe('pinned swaps', () => {
+  test('a pinned word survives a change that would have dropped it', () => {
+    // Ranking is prefix-monotone for fixed inputs, but exposures and reveals
+    // change every card's retrievability, so a word ranked third can rank
+    // ninth after a re-weave and fall outside the budget. That showed up in
+    // the browser as a word flipping back to English while the page got
+    // harder around it. Pinning is the explicit guarantee.
+    const low = selectSwaps(baseInput({ ratio: 0.1 }));
+    assert.ok(low.swaps.length > 0);
+    const keys = new Set(low.swaps.map((s) => `${s.start}:${s.original.toLowerCase()}`));
+
+    // Make every pinned word look freshly reviewed, which drives its "due"
+    // score to the bottom and would otherwise evict it.
+    const cards = cardMap(
+      low.swaps.map((s) =>
+        card({ lemma: s.entry.tgtLemma, reps: 8, stability: 400, lastReview: NOW }),
+      ),
+    );
+
+    const without = selectSwaps(baseInput({ ratio: 0.1, cards }));
+    const withoutKeys = new Set(without.swaps.map((s) => `${s.start}:${s.original.toLowerCase()}`));
+    const dropped = [...keys].filter((k) => !withoutKeys.has(k));
+    assert.ok(
+      dropped.length > 0,
+      'the scenario should evict something, or the test proves nothing',
+    );
+
+    const pinnedResult = selectSwaps(baseInput({ ratio: 0.1, cards, pinned: keys }));
+    const pinnedKeys = new Set(
+      pinnedResult.swaps.map((s) => `${s.start}:${s.original.toLowerCase()}`),
+    );
+    for (const key of keys) {
+      assert.ok(pinnedKeys.has(key), `pinned swap ${key} was dropped`);
+    }
+  });
+
+  test('pinning still respects the spacing and per-sentence caps', () => {
+    const tokens = tokenize(TEXT);
+    const all = selectSwaps(baseInput({ ratio: 1, tokens }));
+    const keys = new Set(all.swaps.map((s) => `${s.start}:${s.original.toLowerCase()}`));
+
+    const tight = selectSwaps(
+      baseInput({
+        ratio: 1,
+        tokens,
+        pinned: keys,
+        settings: settings({ 'weave.maxPerSentence': 1, 'learning.introduceNewPerDay': 500 }),
+      }),
+    );
+    const perSentence = new Map<number, number>();
+    for (const s of tight.swaps) {
+      const sentence = tokens[s.tokenIndex]?.sentence ?? -1;
+      perSentence.set(sentence, (perSentence.get(sentence) ?? 0) + 1);
+    }
+    for (const [sentence, n] of perSentence) {
+      assert.ok(n <= 1, `sentence ${sentence} had ${n} swaps despite the cap`);
+    }
+  });
+
+  test('pinning nothing behaves exactly as before', () => {
+    const plain = selectSwaps(baseInput({ ratio: 0.3 }));
+    const empty = selectSwaps(baseInput({ ratio: 0.3, pinned: new Set() }));
+    assert.deepEqual(
+      empty.swaps.map((s) => s.original),
+      plain.swaps.map((s) => s.original),
+    );
+  });
+});

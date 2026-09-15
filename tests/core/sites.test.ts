@@ -9,6 +9,8 @@ import {
   classifyUrl,
   rulesFromPreset,
   originsForRules,
+  originCoversRules,
+  hostOfOrigin,
   DEFAULT_EXCLUSIONS,
   SITE_PRESETS,
 } from '../../src/core/sites.ts';
@@ -247,5 +249,57 @@ describe('originsForRules', () => {
   test('deduplicates', () => {
     const origins = originsForRules([rule('x.com'), rule('x.com/home')]);
     assert.equal(new Set(origins).size, origins.length);
+  });
+});
+
+describe('originCoversRules', () => {
+  const rules = [rule('twitter.com'), rule('reddit.com/r/all'), rule('off.example', { enabled: false })];
+
+  test('matches regardless of the scheme in the pattern', () => {
+    // This is the bug that registered the content script nowhere: the same
+    // site written with a concrete scheme and with a wildcard produced two
+    // different strings, and the intersection compared strings.
+    assert.equal(originCoversRules('*://twitter.com/*', rules), true);
+    assert.equal(originCoversRules('http://twitter.com/*', rules), true);
+    assert.equal(originCoversRules('https://twitter.com/*', rules), true);
+  });
+
+  test('matches a subdomain of a rule host', () => {
+    assert.equal(originCoversRules('*://mobile.twitter.com/*', rules), true);
+  });
+
+  test('matches an origin broader than the rule', () => {
+    assert.equal(originCoversRules('*://example.com/*', [rule('shop.example.com')]), true);
+  });
+
+  test('all-urls covers everything', () => {
+    assert.equal(originCoversRules('*://*/*', []), true);
+    assert.equal(originCoversRules('<all_urls>', []), true);
+  });
+
+  test('ignores disabled rules', () => {
+    assert.equal(originCoversRules('*://off.example/*', rules), false);
+  });
+
+  test('rejects an unrelated origin', () => {
+    assert.equal(originCoversRules('*://example.org/*', rules), false);
+  });
+
+  test('rejects a malformed origin rather than matching everything', () => {
+    assert.equal(originCoversRules('', rules), false);
+    assert.equal(originCoversRules('*://*', rules), false);
+  });
+});
+
+describe('hostOfOrigin', () => {
+  test('strips scheme, wildcard and path', () => {
+    assert.equal(hostOfOrigin('*://*.twitter.com/*'), 'twitter.com');
+    assert.equal(hostOfOrigin('https://example.com/path'), 'example.com');
+    assert.equal(hostOfOrigin('http://localhost/*'), 'localhost');
+  });
+
+  test('returns null when there is no host', () => {
+    assert.equal(hostOfOrigin('*://*/*'), null);
+    assert.equal(hostOfOrigin(''), null);
   });
 });

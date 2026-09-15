@@ -52,6 +52,19 @@ export interface SelectorInput {
   pageLemmaCounts: Map<string, number>;
   /** Seed for deterministic tie-breaking; normally hashed from the text. */
   seed?: number;
+  /**
+   * Swaps that must be kept, as `${start}:${lowercased original}` in this
+   * text's own coordinates.
+   *
+   * Ranking is prefix-monotone for a FIXED set of inputs, which the unit
+   * tests verify. At runtime the inputs drift: exposures and reveals change
+   * every card's retrievability, so a word ranked third before a re-weave can
+   * rank ninth after one and fall outside the budget. That showed up as a
+   * word flipping back to English while the page got harder around it, which
+   * is the one thing escalation must never do. Pinning makes the guarantee
+   * explicit instead of hoping it falls out of the scoring.
+   */
+  pinned?: Set<string>;
   /** Set true to collect factor breakdowns for the debug panel. */
   explain?: boolean;
 }
@@ -227,6 +240,9 @@ export function entryAllowed(entry: LexEntry, input: SelectorInput): FilterReaso
 
 /* --------------------------------------------------------------- selection */
 
+/** A candidate after scoring, with the bookkeeping the accept pass needs. */
+type ScoredCandidate = Candidate & { window: Window; retired: boolean; jitter: number };
+
 interface Window {
   /** Index into the word-token array. */
   wordIndex: number;
@@ -295,7 +311,7 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
   const sentenceCounts = sentenceWordCounts(tokens);
   const rng = mulberry32(input.seed ?? hashString(tokens.map((t) => t.text).join('')));
 
-  const candidates: Array<Candidate & { window: Window; retired: boolean; jitter: number }> = [];
+  const candidates: ScoredCandidate[] = [];
   let eligible = 0;
 
   for (const win of buildWindows(input)) {
@@ -351,7 +367,7 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
 
   // Deterministic total order. Score first; jitter (seeded, so stable) breaks
   // ties without letting document order bias everything to the top of a page.
-  candidates.sort((a, b) => {
+  candidates.sort((a: ScoredCandidate, b: ScoredCandidate) => {
     if (b.score !== a.score) return b.score - a.score;
     if (a.jitter !== b.jitter) return a.jitter - b.jitter;
     return a.window.start - b.window.start;
@@ -369,40 +385,37 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
     settings.learning.introduceNewPerDay - input.introducedToday.size,
   );
 
-  for (const cand of candidates) {
+  /** Try to take a candidate, enforcing the hard layout constraints. */
+  const tryAccept = (cand: ScoredCandidate, ignoreBudget: boolean): boolean => {
     const isFree = cand.retired && settings.learning.retireKnownWords;
-    if (!isFree && accepted >= budget) continue;
+    if (!isFree && !ignoreBudget && accepted >= budget) return false;
 
     const win = cand.window;
 
-    // Minimum gap, measured in word tokens, so two swaps never touch.
-    let tooClose = false;
+    // Minimum gap, measured in word tokens, so two swaps never touch. An
+    // already-accepted window fails this against itself, which is how the
+    // second pass skips what the first pass took.
     const gap = Math.max(1, settings.weave.minWordGap);
     for (let k = win.wordIndex - gap; k < win.wordIndex + win.span + gap; k++) {
-      if (takenWordIndices.has(k)) {
-        tooClose = true;
-        break;
-      }
+      if (takenWordIndices.has(k)) return false;
     }
-    if (tooClose) continue;
 
     const inSentence = perSentence.get(win.sentence) ?? 0;
-    if (inSentence >= settings.weave.maxPerSentence) continue;
+    if (inSentence >= settings.weave.maxPerSentence) return false;
 
     const isNew = !cand.card || cand.card.reps === 0;
     if (isNew && !input.introducedToday.has(cand.entry.tgtLemma)) {
-      if (newBudget <= 0) continue;
-      newBudget--;
+      if (newBudget <= 0 && !ignoreBudget) return false;
+      if (newBudget > 0) newBudget--;
       newLemmas.push(cand.entry.tgtLemma);
     }
 
-    const replacement = matchCase(cand.entry.tgt, win.text);
     swaps.push({
       tokenIndex: win.tokenIndex,
       start: win.start,
       end: win.end,
       original: win.text,
-      replacement,
+      replacement: matchCase(cand.entry.tgt, win.text),
       entry: cand.entry,
       retired: isFree,
     });
@@ -411,7 +424,20 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
     perSentence.set(win.sentence, inSentence + 1);
     if (isFree) retiredCount++;
     else accepted++;
+    return true;
+  };
+
+  // Pinned words first, outside the budget: whatever the reader can already
+  // see stays where it is.
+  if (input.pinned?.size) {
+    const pinned = input.pinned;
+    for (const cand of candidates) {
+      if (!pinned.has(`${cand.window.start}:${cand.window.text.toLowerCase()}`)) continue;
+      tryAccept(cand, true);
+    }
   }
+
+  for (const cand of candidates) tryAccept(cand, false);
 
   swaps.sort((a, b) => a.start - b.start);
 

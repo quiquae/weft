@@ -17,7 +17,7 @@ import {
   DEFAULT_MIN_WORDS,
   type WalkerOptions,
 } from './walker.ts';
-import { computeWoven, type Hit, type WovenRecord } from './weave.ts';
+import { computeWoven, pinKey, type Hit, type WovenRecord } from './weave.ts';
 import { HighlightRenderer } from './render-highlight.ts';
 import { WrappedRenderer, resolveRenderMode } from './render-wrapped.ts';
 import type { Renderer } from './renderer.ts';
@@ -119,6 +119,19 @@ class WeftPage {
   private unmatched = new Map<string, { pos: string; num?: 'sg' | 'pl'; context: string; hits: number }>();
   private providerRunDone = false;
 
+  /**
+   * Nodes this page object created or detached itself.
+   *
+   * The wrapped renderer replaces a text node with a fragment, which the
+   * MutationObserver then reports as a removal of that text node and an
+   * addition of several others. Without this set the observer reads its own
+   * work as the page changing underneath it: it looks the removed node up,
+   * finds the record, and reverts the weave it had just applied — while
+   * re-queueing the text nodes it inserted, so every paragraph was woven
+   * twice and then immediately undone.
+   */
+  private owned = new WeakSet<Node>();
+
   constructor(state: PageState, pack: LexPack, renderer: Renderer) {
     this.state = state;
     this.pack = pack;
@@ -209,7 +222,7 @@ class WeftPage {
     }
   }
 
-  private weaveNode(node: Text): void {
+  private weaveNode(node: Text, pinned?: Set<string>): void {
     if (!node.isConnected) return;
     const text = node.nodeValue;
     if (!text) return;
@@ -231,6 +244,7 @@ class WeftPage {
       // Seeded from the text itself, so the same paragraph always weaves the
       // same way no matter how many times a framework re-renders it.
       seed: hashString(text),
+      ...(pinned?.size ? { pinned } : {}),
     });
 
     if (this.state.settings.providers.enabled && !this.providerRunDone) {
@@ -246,8 +260,21 @@ class WeftPage {
     }
 
     const { woven, applied } = computeWoven(text, result.swaps);
-    const record: WovenRecord = { node, original: text, woven, swaps: applied };
+    const record: WovenRecord = {
+      node,
+      original: text,
+      woven,
+      swaps: applied,
+      // Kept in source-text coordinates so a later re-weave can pin exactly
+      // the words that are on screen now.
+      sourceSwaps: result.swaps,
+    };
     this.renderer.apply(record);
+
+    // Claim everything the renderer touched before the observer can see it.
+    this.owned.add(node);
+    if (record.inserted) for (const inserted of record.inserted) this.owned.add(inserted);
+
     // In wrapped mode the renderer replaces the node, so key on whatever the
     // record now points at.
     this.records.set(record.node, record);
@@ -263,7 +290,11 @@ class WeftPage {
       if (count <= 0) this.pageLemmaCounts.delete(lemma);
       else this.pageLemmaCounts.set(lemma, count);
     }
+    const inserted = record.inserted ? [...record.inserted] : [];
     this.renderer.revert(record);
+    // The text node revert put back is ours too, as are the ones it removed.
+    this.owned.add(record.node);
+    for (const old of inserted) this.owned.add(old);
     this.records.delete(node);
     if (record.node !== node) this.records.delete(record.node);
   }
@@ -276,16 +307,29 @@ class WeftPage {
    * ratio only appends. Offsets shift, so each node is reverted and re-woven
    * rather than patched.
    */
-  private reweaveAll(): void {
+  private reweaveAll(pin: boolean): void {
     if (this.hoverTimer !== null) window.clearTimeout(this.hoverTimer);
     this.tooltip.hide();
     this.currentHit = null;
 
-    const nodes = [...this.records.keys()];
-    for (const node of nodes) this.revertNode(node);
+    // Iterate the records, not the map keys. In wrapped mode revert replaces
+    // the text node, so the key is a detached node and `isConnected` on it is
+    // false — which silently skipped every node and left the page unwoven
+    // after the first escalation.
+    const records = [...this.records.values()];
+    const pinned = new Map<WovenRecord, Set<string>>();
+    if (pin) {
+      for (const record of records) {
+        pinned.set(record, new Set(record.sourceSwaps.map(pinKey)));
+      }
+    }
+
+    for (const record of records) this.revertNode(record.node);
     this.pageLemmaCounts.clear();
-    for (const node of nodes) {
-      if (node.isConnected) this.weaveNode(node);
+
+    for (const record of records) {
+      if (!record.node.isConnected) continue;
+      this.weaveNode(record.node, pinned.get(record));
     }
     this.renderer.flush();
   }
@@ -376,7 +420,7 @@ class WeftPage {
           (reply.error ? `; ${reply.error}` : ''),
       );
     }
-    this.reweaveAll();
+    this.reweaveAll(true);
   }
 
   /* ----------------------------------------------------------- mutations */
@@ -389,6 +433,7 @@ class WeftPage {
       if (mutation.type === 'characterData') {
         const node = mutation.target as Text;
         const record = this.records.get(node);
+        if (!record && this.owned.has(node)) continue;
         if (record) {
           // Our own write: ignore, or we loop forever.
           if (node.nodeValue === record.woven) continue;
@@ -402,6 +447,7 @@ class WeftPage {
       }
 
       for (const added of mutation.addedNodes) {
+        if (this.owned.has(added)) continue;
         if (added.nodeType === Node.TEXT_NODE) {
           fresh.push(added as Text);
         } else if (added.nodeType === Node.ELEMENT_NODE) {
@@ -412,6 +458,9 @@ class WeftPage {
       }
 
       for (const removed of mutation.removedNodes) {
+        // Our own detachment, not the page's: ignore it, or we revert the
+        // weave we just applied.
+        if (this.owned.has(removed)) continue;
         if (removed.nodeType === Node.TEXT_NODE) {
           const record = this.records.get(removed as Text);
           if (record) {
@@ -683,8 +732,11 @@ class WeftPage {
       return;
     }
     if (Math.abs(reply.ratio - this.ratio) >= RATIO_EPSILON) {
+      const rising = reply.ratio > this.ratio;
       this.ratio = reply.ratio;
-      this.reweaveAll();
+      // Pin the words already on screen when difficulty is going up. Going
+      // down, the reader has asked for less and pinning would deny it.
+      this.reweaveAll(rising);
     }
   }
 
@@ -720,7 +772,7 @@ class WeftPage {
     this.attention.updateOptions({ idleThresholdSec: settings.attention.idleThresholdSec });
     applyPageStyles(settings);
     this.pack = applyLetterformsToPack(this.pack, settings);
-    this.reweaveAll();
+    this.reweaveAll(false);
   }
 
   destroy(): void {

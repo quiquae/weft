@@ -29,6 +29,7 @@ const flag = (name, dflt = undefined) => {
 const TARGET = String(flag('target', 'chrome'));
 const WATCH = Boolean(flag('watch', false));
 const ZIP = Boolean(flag('zip', false));
+const TEST = Boolean(flag('test', false));
 const DEV = Boolean(flag('dev', false)) || WATCH;
 const OUT = join(ROOT, 'dist', TARGET);
 
@@ -170,7 +171,7 @@ async function copyStatic() {
 }
 
 async function writeManifest() {
-  const m = buildManifest(TARGET);
+  const m = buildManifest(TARGET, { test: TEST });
   await writeFile(join(OUT, 'manifest.json'), JSON.stringify(m, null, 2) + '\n');
 }
 
@@ -210,7 +211,7 @@ async function main() {
 
   const size = await dirSize(OUT);
   console.log(
-    `weft ${VERSION} → dist/${TARGET}  ${(size / 1024).toFixed(0)} KB  ${Date.now() - t0}ms${DEV ? '  (dev)' : ''}`,
+    `weft ${VERSION} → dist/${TARGET}${TEST ? ' (test)' : ''}  ${(size / 1024).toFixed(0)} KB  ${Date.now() - t0}ms${DEV ? '  (dev)' : ''}`,
   );
 
   if (ZIP) await makeZip();
