@@ -20,7 +20,7 @@ let sheet: CSSStyleSheet | null = null;
 
 function hexToRgb(hex: string): [number, number, number] {
   const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
-  if (!m) return [124, 92, 255];
+  if (!m) return [74, 111, 165];
   return [parseInt(m[1] as string, 16), parseInt(m[2] as string, 16), parseInt(m[3] as string, 16)];
 }
 

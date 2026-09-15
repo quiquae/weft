@@ -1,0 +1,76 @@
+body {
+  width: 340px;
+}
+
+.pop {
+  padding: 0.95rem 1rem 0.8rem;
+}
+
+.pop__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.pop__title {
+  font-size: var(--t-21);
+  letter-spacing: -0.012em;
+}
+
+.pop__lang {
+  color: var(--woad);
+  font-style: italic;
+  font-size: var(--t-15);
+}
+
+/*
+ * The gloss strip sits above a woad rule, the way an interlinear gloss sits
+ * above the line it annotates.
+ */
+.pop__gloss {
+  padding-bottom: 0.65rem;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px solid var(--woad);
+  font-size: var(--t-17);
+}
+
+.pop__state {
+  margin: 0.55rem 0 0.25rem;
+  font-size: var(--t-17);
+  line-height: 1.4;
+}
+
+.pop__state strong {
+  font-weight: 600;
+  color: var(--woad);
+}
+
+.pop__detail {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--t-13);
+  line-height: 1.5;
+}
+
+.pop__host {
+  font-style: italic;
+}
+
+.pop__actions {
+  margin-top: 0.9rem;
+}
+
+.pop__actions button {
+  width: 100%;
+}
+
+.pop__nav {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.85rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--thread-faint);
+  font-size: var(--t-13);
+}

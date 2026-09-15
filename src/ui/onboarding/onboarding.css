@@ -1,0 +1,116 @@
+.onboard {
+  min-height: 100vh;
+}
+
+.step {
+  margin-top: 2.25rem;
+  max-width: var(--measure);
+}
+
+.step__q {
+  font-size: var(--t-27);
+  letter-spacing: -0.015em;
+  margin-bottom: 1.1rem;
+}
+
+.step__group {
+  margin: 1.25rem 0;
+}
+
+.step__hint {
+  margin: 0 0 0.4rem;
+  color: var(--ink-soft);
+  font-size: var(--t-13);
+}
+
+.step__aside {
+  margin: 0.7rem 0 0;
+  color: var(--ink-soft);
+  max-width: 56ch;
+}
+
+.step__aside em {
+  color: var(--woad);
+  font-style: italic;
+}
+
+.step__chosen {
+  margin: 1.4rem 0 1.6rem;
+  padding-left: 0.8rem;
+  border-left: 2px solid var(--woad);
+  max-width: 54ch;
+}
+
+.step__sites {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.step__site {
+  align-items: start;
+}
+
+.step__site .switch__track {
+  margin-top: 0.22rem;
+}
+
+.step__siteDetail {
+  display: block;
+  color: var(--ink-soft);
+  font-size: var(--t-13);
+  max-width: 52ch;
+}
+
+/* ------------------------------------------------------------- preview */
+
+/*
+ * The preview is set as a real block of prose, at reading width and reading
+ * leading, because its job is to show what reading actually feels like at
+ * this density.
+ */
+.preview {
+  margin-top: 0.5rem;
+  padding: 0.9rem 1rem;
+  background: var(--linen-raised);
+  border: 1px solid var(--thread-faint);
+  border-radius: var(--radius);
+}
+
+.preview__text {
+  margin: 0;
+  font-size: var(--t-17);
+  line-height: 1.62;
+  max-width: 58ch;
+}
+
+.preview__word {
+  color: var(--woad);
+  background: var(--woad-wash);
+  text-decoration: underline dotted;
+  text-decoration-color: var(--woad);
+  text-underline-offset: 0.18em;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.preview__count {
+  margin: 0.55rem 0 0;
+  font-size: var(--t-13);
+}
+
+/* ------------------------------------------------------------ progress */
+
+.progress {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 3rem 0 0;
+  padding: 0.7rem 0 0;
+  border-top: 1px solid var(--thread);
+  font-size: var(--t-13);
+  color: var(--ink-faint);
+}
+
+.progress li[data-done='1'] {
+  color: var(--woad);
+}

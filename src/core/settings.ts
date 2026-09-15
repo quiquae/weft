@@ -149,7 +149,7 @@ export function defaultSettings(now: number, installId: string): Settings {
       renderMode: 'auto',
       style: {
         underline: 'dotted',
-        tint: '#7c5cff',
+        tint: '#4a6fa5',
         tintOpacity: 0.12,
         weight: 'inherit',
         italic: false,

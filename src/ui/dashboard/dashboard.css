@@ -1,0 +1,156 @@
+.headline {
+  margin: 1.75rem 0 0;
+  font-size: var(--t-27);
+  line-height: 1.32;
+  max-width: 40ch;
+  letter-spacing: -0.012em;
+}
+
+.headline strong {
+  color: var(--woad);
+  font-weight: 600;
+}
+
+.plot {
+  grid-column: 1 / -1;
+  padding: 0.6rem 0 0.2rem;
+}
+
+.plot__note {
+  margin: 0.4rem 0 0;
+  font-size: var(--t-13);
+}
+
+/* ---------------------------------------------------------------- table */
+
+.table {
+  margin-top: 0.7rem;
+  border-collapse: collapse;
+  font-size: var(--t-13);
+  max-width: 24rem;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 0.18rem 0.6rem 0.18rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+  font-weight: 400;
+}
+
+.table thead th {
+  color: var(--ink-soft);
+  border-bottom-color: var(--thread);
+}
+
+.table td {
+  text-align: right;
+}
+
+/* ------------------------------------------------------------- vocabulary */
+
+.vocab__controls {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  padding: 0.7rem 0 0.9rem;
+}
+
+.vocab__controls input {
+  max-width: 14rem;
+}
+
+.vocab {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+/*
+ * Each row is a gloss: the target word above its English, hairline between,
+ * exactly as the woven page reads. The little band on the right is the same
+ * cloth device used everywhere else, here showing how well the word is
+ * currently held.
+ */
+.vocab__row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 14rem) 5rem 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+  font-size: var(--t-15);
+}
+
+.vocab__row[data-stage='retired'] {
+  opacity: 0.72;
+}
+
+.vocab__gloss {
+  min-width: 0;
+}
+
+.vocab__hold {
+  display: block;
+}
+
+.vocab__meta {
+  font-size: var(--t-13);
+  white-space: nowrap;
+}
+
+.vocab__etymon {
+  font-size: var(--t-13);
+  color: var(--woad);
+  white-space: nowrap;
+}
+
+.vocab__etymon em {
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------------- log */
+
+.log {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+}
+
+.log__row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr auto;
+  gap: 0.8rem;
+  align-items: baseline;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+  font-size: var(--t-13);
+}
+
+.log__when {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .vocab__row {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.25rem;
+  }
+  .vocab__hold {
+    display: none;
+  }
+  .vocab__etymon {
+    grid-column: 1 / -1;
+  }
+  .log__row {
+    grid-template-columns: 1fr;
+    row-gap: 0.1rem;
+  }
+}

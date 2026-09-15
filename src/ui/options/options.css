@@ -1,0 +1,263 @@
+/* ------------------------------------------------------------- masthead */
+
+/*
+ * The title hangs into the margin column, the way a chapter opening does in a
+ * printed book, and the standfirst sits in the measure beside it.
+ */
+.masthead {
+  display: grid;
+  grid-template-columns: var(--margin-col) 1fr;
+  align-items: baseline;
+  padding-bottom: 1.1rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead__title {
+  grid-column: 1 / -1;
+  font-size: var(--t-34);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+.masthead__line {
+  grid-column: 2;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--t-17);
+  max-width: 46ch;
+}
+
+/* ------------------------------------------------------------- pending */
+
+.pending {
+  margin-top: 1.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--madder);
+  background: var(--madder-wash);
+  border-radius: var(--radius);
+}
+
+.pending__title {
+  font-size: var(--t-17);
+  margin-bottom: 0.5rem;
+}
+
+.pending__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pending__item {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pending__summary {
+  margin: 0;
+  font-weight: 600;
+}
+
+.pending__when {
+  margin: 0.1rem 0 0;
+  font-size: var(--t-13);
+}
+
+.pending__actions {
+  display: flex;
+  gap: 0.4rem;
+  flex: none;
+}
+
+/* ---------------------------------------------------------------- quiz */
+
+.quiz-host {
+  margin-top: 1.5rem;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--woad);
+  background: var(--woad-wash);
+  border-radius: var(--radius);
+}
+
+.quiz p {
+  max-width: 54ch;
+}
+
+.quiz__progress {
+  font-size: var(--t-13);
+  margin-bottom: 0.4rem;
+}
+
+.quiz__prompt {
+  font-size: var(--t-34);
+  line-height: 1.15;
+  margin: 0.2rem 0 0.1rem;
+  letter-spacing: -0.015em;
+}
+
+.quiz__ask {
+  font-size: var(--t-15);
+  margin-bottom: 0.8rem;
+}
+
+.quiz__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.45rem;
+  max-width: 34rem;
+  margin-bottom: 0.6rem;
+}
+
+.quiz__options button {
+  padding-block: 0.5rem;
+  font-size: var(--t-17);
+}
+
+/* --------------------------------------------------------------- flash */
+
+.flash {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0.55rem 0.8rem;
+  background: var(--linen-raised);
+  border: 1px solid var(--woad);
+  border-radius: var(--radius);
+  font-size: var(--t-15);
+}
+
+/* --------------------------------------------------------------- sites */
+
+.sites {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sites__error {
+  margin: 0;
+  color: var(--madder);
+  font-size: var(--t-13);
+}
+
+.sites__empty {
+  margin: 0;
+  font-size: var(--t-13);
+}
+
+.sites__list,
+.sites__flat {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.sites__item {
+  border-bottom: 1px solid var(--thread-faint);
+  padding: 0.2rem 0;
+}
+
+.sites__item:last-child {
+  border-bottom: 0;
+}
+
+.sites__row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sites__spacer {
+  flex: 1;
+}
+
+.sites__tune {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.6rem 0 0.7rem 2.6rem;
+}
+
+.sites__field {
+  display: grid;
+  gap: 0.15rem;
+  font-size: var(--t-13);
+  color: var(--ink-soft);
+}
+
+.sites__flat li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.12rem 0;
+  font-size: var(--t-13);
+}
+
+.sites__presets {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: var(--t-13);
+}
+
+/* ----------------------------------------------------------- hard mode */
+
+.hardmode {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.hardmode textarea {
+  width: 100%;
+  max-width: none;
+}
+
+.hardmode__instructions {
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  background: var(--linen-sunken);
+  border-left: 2px solid var(--thread);
+  font-family: var(--serif);
+  font-size: var(--t-13);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+/* ------------------------------------------------------------ colophon */
+
+.colophon {
+  margin-top: 3.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--thread);
+  color: var(--ink-faint);
+  font-size: var(--t-13);
+}
+
+.colophon p {
+  max-width: var(--measure);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --margin-col: 1.6rem;
+  }
+  .page {
+    padding-inline: 1rem;
+  }
+  .sites__tune {
+    padding-left: 0;
+  }
+}

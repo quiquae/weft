@@ -591,6 +591,25 @@ class WeftPage {
     this.reveal(hit, true);
   }
 
+  /** A few words currently woven into this page, for the popup. */
+  sample(count: number): Array<{ target: string; source: string }> {
+    const out: Array<{ target: string; source: string }> = [];
+    const seen = new Set<string>();
+    for (const record of this.records.values()) {
+      for (const swap of record.swaps) {
+        if (seen.has(swap.entry.tgtLemma)) continue;
+        seen.add(swap.entry.tgtLemma);
+        out.push({ target: swap.replacement, source: swap.original });
+        if (out.length >= count) return out;
+      }
+    }
+    return out;
+  }
+
+  currentRatio(): number {
+    return this.ratio;
+  }
+
   /** Reveal whatever is under the pointer, for the keyboard shortcut. */
   revealAtPointer(): void {
     const hit = this.hitTest(this.pointerAt.x, this.pointerAt.y);
@@ -796,8 +815,15 @@ async function boot(): Promise<void> {
 }
 
 if (contextAlive()) {
-  api.runtime.onMessage.addListener((message: unknown) => {
+  api.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
     const msg = message as { type?: string };
+    if (msg.type === 'weft-sample') {
+      // The popup's interlinear strip shows words actually woven into the
+      // page in front of the user, not a canned sample. Real content is the
+      // whole point of the device.
+      sendResponse({ pairs: page?.sample(3) ?? [], ratio: page?.currentRatio() ?? 0 });
+      return undefined;
+    }
     if (!page) return undefined;
     switch (msg.type) {
       case 'weft-cycle':

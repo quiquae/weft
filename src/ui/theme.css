@@ -1,1 +1,751 @@
-/* theme */
+/*
+ * Weft — shared tokens and base styles.
+ *
+ * The palette is linen, iron-gall ink and woad: the colours of undyed wool,
+ * of the ink these languages were written in, and of the dye used on cloth in
+ * the period Old English was spoken. Chosen against the brief rather than for
+ * neutrality, and specifically not the warm-cream-and-terracotta pairing that
+ * every generated interface currently reaches for.
+ *
+ * One typeface throughout, an old-style serif from the system stack. A tool
+ * for reading should be set in a reading face, and a system face means the
+ * pages render instantly and work offline — which matters for an extension
+ * whose whole promise is that it needs no network.
+ */
+
+:root {
+  /* Surfaces */
+  --linen: #e9e8e3;
+  --linen-raised: #f3f2ee;
+  --linen-sunken: #dedcd4;
+  --thread: #b9b2a2;
+  --thread-faint: #cfcabd;
+
+  /* Ink */
+  --ink: #20262b;
+  --ink-soft: #4d565e;
+  --ink-faint: #7b838a;
+
+  /* Accents */
+  --woad: #2f4b7c;
+  --woad-bright: #3f6390;
+  --woad-wash: #2f4b7c14;
+  --madder: #8c3a3a;
+  --madder-wash: #8c3a3a12;
+
+  /* Type: 15px base, a major-third-ish scale */
+  --t-13: 0.8125rem;
+  --t-15: 0.9375rem;
+  --t-17: 1.0625rem;
+  --t-21: 1.3125rem;
+  --t-27: 1.6875rem;
+  --t-34: 2.125rem;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+    "URW Palladio L", Georgia, "Times New Roman", serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --measure: 62ch;
+  --margin-col: 3.25rem;
+  --radius: 3px;
+
+  --dur: 180ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --linen: #191d21;
+    --linen-raised: #21262b;
+    --linen-sunken: #12161a;
+    --thread: #3c444b;
+    --thread-faint: #2c3338;
+
+    --ink: #dfdcd3;
+    --ink-soft: #a8a79f;
+    --ink-faint: #7d827f;
+
+    --woad: #93b0dd;
+    --woad-bright: #a9c2e9;
+    --woad-wash: #93b0dd1a;
+    --madder: #d08a8a;
+    --madder-wash: #d08a8a14;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 15px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--linen);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: var(--t-15);
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.008em;
+}
+
+h1 {
+  font-size: var(--t-34);
+}
+h2 {
+  font-size: var(--t-21);
+}
+h3 {
+  font-size: var(--t-17);
+}
+
+p {
+  margin: 0 0 0.7em;
+  max-width: var(--measure);
+}
+
+a {
+  color: var(--woad);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--woad);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------- interlinear */
+
+/*
+ * The gloss. Target language above, source below, hairline between —
+ * the convention of a glossed manuscript, and a literal picture of what the
+ * extension does to a page.
+ */
+.gloss {
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  gap: 0;
+  line-height: 1.2;
+}
+
+.gloss__target {
+  color: var(--woad);
+  font-size: 0.86em;
+  font-style: italic;
+  padding: 0 0.15em 0.08em;
+  border-bottom: 1px solid var(--thread);
+}
+
+.gloss__source {
+  padding-top: 0.1em;
+  color: var(--ink);
+}
+
+.gloss-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.1em;
+  align-items: end;
+}
+
+/* ------------------------------------------------------------ weave band */
+
+/*
+ * The density meter, drawn as cloth: vertical warp threads with the weft
+ * crossing a proportion of them. A progress bar would say "34%"; this says
+ * "a third of this cloth is the other colour", which is the actual claim.
+ */
+.band {
+  display: block;
+  width: 100%;
+  height: 26px;
+}
+
+.band__warp {
+  stroke: var(--thread);
+  stroke-width: 1;
+}
+
+.band__weft {
+  stroke: var(--woad);
+  stroke-width: 2.5;
+  stroke-linecap: butt;
+}
+
+.band__weft--drawing {
+  animation: weft-draw 420ms var(--ease) both;
+}
+
+@keyframes weft-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band__weft--drawing {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------ structure */
+
+.page {
+  max-width: calc(var(--measure) + var(--margin-col) + 3rem);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 6rem;
+}
+
+/*
+ * A section head sits on its own rule and hangs into the margin column, the
+ * way a running head sits above a text block. The rule carries the name, so
+ * it is structure rather than decoration.
+ */
+.section {
+  margin: 2.75rem 0 0;
+}
+
+.section__head {
+  display: grid;
+  grid-template-columns: var(--margin-col) 1fr;
+  align-items: baseline;
+  gap: 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--woad);
+}
+
+.section__siglum {
+  color: var(--woad);
+  font-size: var(--t-15);
+  line-height: 1;
+}
+
+.section__note {
+  grid-column: 2;
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: var(--t-15);
+}
+
+.rows {
+  display: grid;
+}
+
+/* A setting row: siglum in the margin, label and control in the measure. */
+.row {
+  display: grid;
+  grid-template-columns: var(--margin-col) 1fr;
+  align-items: start;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.row__siglum {
+  color: var(--ink-faint);
+  font-size: var(--t-13);
+  line-height: 1.7;
+  user-select: none;
+}
+
+.row__siglum[data-locked='1'] {
+  color: var(--madder);
+}
+
+.row__body {
+  min-width: 0;
+}
+
+.row__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.row__title {
+  font-weight: 600;
+}
+
+.row__detail {
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: var(--t-13);
+  max-width: var(--measure);
+}
+
+.row__control {
+  margin-top: 0.5rem;
+}
+
+.row__value {
+  color: var(--woad);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- controls */
+
+button,
+.button {
+  font: inherit;
+  font-size: var(--t-15);
+  color: var(--ink);
+  background: var(--linen-raised);
+  border: 1px solid var(--thread);
+  border-radius: var(--radius);
+  padding: 0.38rem 0.75rem;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+button:hover:not(:disabled),
+.button:hover {
+  background: var(--linen-sunken);
+  border-color: var(--ink-faint);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button[data-variant='primary'] {
+  background: var(--woad);
+  border-color: var(--woad);
+  color: var(--linen-raised);
+}
+
+button[data-variant='primary']:hover:not(:disabled) {
+  background: var(--woad-bright);
+  border-color: var(--woad-bright);
+}
+
+button[data-variant='quiet'] {
+  background: transparent;
+  border-color: transparent;
+  color: var(--woad);
+  padding-inline: 0;
+}
+
+button[data-variant='quiet']:hover:not(:disabled) {
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+button[data-variant='danger'] {
+  color: var(--madder);
+  border-color: var(--madder);
+  background: transparent;
+}
+
+input[type='text'],
+input[type='number'],
+input[type='password'],
+input[type='url'],
+select,
+textarea {
+  font: inherit;
+  font-size: var(--t-15);
+  color: var(--ink);
+  background: var(--linen-raised);
+  border: 1px solid var(--thread);
+  border-radius: var(--radius);
+  padding: 0.32rem 0.45rem;
+  width: 100%;
+  max-width: 24rem;
+}
+
+textarea {
+  min-height: 6rem;
+  resize: vertical;
+  font-family: var(--mono);
+  font-size: var(--t-13);
+}
+
+input[type='range'] {
+  width: 100%;
+  max-width: 20rem;
+  accent-color: var(--woad);
+}
+
+/* A switch, drawn as a shuttle moving across a warp. */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.switch__track {
+  position: relative;
+  width: 2.1rem;
+  height: 1.05rem;
+  flex: none;
+  border: 1px solid var(--thread);
+  border-radius: 999px;
+  background: var(--linen-sunken);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.switch__track::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: calc(1.05rem - 4px);
+  height: calc(1.05rem - 4px);
+  border-radius: 999px;
+  background: var(--ink-faint);
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.switch input:checked + .switch__track {
+  background: var(--woad-wash);
+  border-color: var(--woad);
+}
+
+.switch input:checked + .switch__track::after {
+  transform: translateX(1.05rem);
+  background: var(--woad);
+}
+
+.switch input:focus-visible + .switch__track {
+  outline: 2px solid var(--woad);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 1ms !important;
+  }
+}
+
+/* --------------------------------------------------------------- pieces */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  font-size: var(--t-13);
+  padding: 0.22rem 0.5rem;
+  border: 1px solid var(--thread);
+  border-radius: var(--radius);
+  background: var(--linen-raised);
+  cursor: pointer;
+}
+
+.chip[data-on='1'] {
+  border-color: var(--woad);
+  background: var(--woad-wash);
+  color: var(--woad);
+}
+
+.notice {
+  margin: 1rem 0;
+  padding: 0.7rem 0.85rem;
+  border-left: 2px solid var(--woad);
+  background: var(--woad-wash);
+  font-size: var(--t-15);
+  max-width: var(--measure);
+}
+
+.notice[data-tone='warn'] {
+  border-left-color: var(--madder);
+  background: var(--madder-wash);
+}
+
+.empty {
+  padding: 1.5rem 0;
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+.muted {
+  color: var(--ink-soft);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.stack {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------- charts */
+
+/*
+ * Sequential ramp for vocabulary stages: one hue, stepped light to dark.
+ * Validated for adjacent-step legibility (worst pair ΔE 20.5 light, 18.6
+ * dark) with the dark steps chosen against the dark surface rather than
+ * flipped from the light ones.
+ */
+:root {
+  --seq-1: #a9c1df;
+  --seq-2: #4e7cb4;
+  --seq-3: #22406f;
+  --chart-ink: var(--woad);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --seq-1: #3e5570;
+    --seq-2: #6d93c4;
+    --seq-3: #b4ccec;
+    --chart-ink: var(--woad);
+  }
+}
+
+.chart {
+  margin: 0.5rem 0 0;
+}
+
+.chart__svg {
+  display: block;
+  width: 100%;
+  height: 96px;
+  overflow: visible;
+}
+
+.chart__axis {
+  stroke: var(--thread);
+  stroke-width: 1;
+}
+
+.chart__bar {
+  fill: var(--chart-ink);
+  transition: fill var(--dur) var(--ease);
+  cursor: default;
+}
+
+.chart__bar[data-hover='1'],
+.chart__bar:focus-visible {
+  fill: var(--ink);
+  outline: none;
+}
+
+.chart__labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.3rem;
+  color: var(--ink-faint);
+  font-size: var(--t-13);
+}
+
+.chart__peak {
+  color: var(--ink-soft);
+}
+
+.chart__tip {
+  margin: 0.15rem 0 0;
+  min-height: 1.4em;
+  font-size: var(--t-13);
+  color: var(--ink-soft);
+}
+
+.chart__segment[data-step='1'] {
+  fill: var(--seq-1);
+}
+.chart__segment[data-step='2'] {
+  fill: var(--seq-2);
+}
+.chart__segment[data-step='3'] {
+  fill: var(--seq-3);
+}
+
+.chart__texture {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+/* In forced-colors, fills collapse to system colours, so identity moves to
+ * the outline and the direct labels carry the rest. */
+@media (forced-colors: active) {
+  .chart__segment {
+    fill: Canvas;
+    stroke: CanvasText;
+    stroke-width: 1;
+  }
+  .chart__bar {
+    fill: CanvasText;
+  }
+}
+
+/* ---------------------------------------------------------------- legend */
+
+.legend {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+  font-size: var(--t-13);
+}
+
+.legend__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.legend__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  flex: none;
+  transform: translateY(0.05rem);
+}
+
+.legend__swatch[data-step='1'] {
+  background: var(--seq-1);
+}
+.legend__swatch[data-step='2'] {
+  background: var(--seq-2);
+}
+.legend__swatch[data-step='3'] {
+  background: var(--seq-3);
+}
+
+.legend__label {
+  color: var(--ink-soft);
+}
+
+.legend__value {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- ranked */
+
+.ranked {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.ranked__row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 12rem) 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--t-13);
+}
+
+.ranked__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranked__track {
+  height: 0.55rem;
+  background: var(--linen-sunken);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ranked__fill {
+  display: block;
+  height: 100%;
+  background: var(--chart-ink);
+  border-radius: 0 2px 2px 0;
+}
+
+.ranked__value {
+  color: var(--ink-soft);
+}
+
+/* ---------------------------------------------------------------- tiles */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 1.4rem 2rem;
+  margin: 1.5rem 0 0;
+}
+
+.tile {
+  display: grid;
+  gap: 0.05rem;
+}
+
+.tile__value {
+  font-size: var(--t-34);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.tile__label {
+  font-size: var(--t-15);
+  color: var(--ink-soft);
+}
+
+.tile__detail {
+  font-size: var(--t-13);
+  color: var(--ink-faint);
+}
