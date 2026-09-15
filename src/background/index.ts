@@ -22,7 +22,7 @@ import { validateSettings } from '../core/settings.ts';
 import { clampToTier, exceedsTier, featureInfo } from '../core/entitlements.ts';
 import { describeLicence } from '../core/licence.ts';
 import { newInstallId } from '../core/integrity.ts';
-import { api } from '../shared/browser.ts';
+import { api, can, contextMenus } from '../shared/browser.ts';
 import { fail, ok } from '../shared/rpc.ts';
 import type { PageState, Request, ResponseMap } from '../shared/messages.ts';
 import * as store from './storage.ts';
@@ -764,24 +764,29 @@ api.commands?.onCommand.addListener(async (command) => {
 });
 
 async function setupContextMenus(): Promise<void> {
+  // Safari and Firefox name this namespace `menus`; Chrome names it
+  // `contextMenus`. contextMenus() returns whichever one exists.
+  const menus = contextMenus();
+  if (!menus) return;
   try {
-    await api.contextMenus.removeAll();
-    api.contextMenus.create({
+    await menus.removeAll();
+    menus.create({
       id: 'weft-open-dashboard',
       title: 'Weft: progress',
       contexts: ['action'],
     });
-    api.contextMenus.create({
+    menus.create({
       id: 'weft-open-settings',
       title: 'Weft: settings',
       contexts: ['action'],
     });
   } catch {
-    // contextMenus is unavailable in some builds; not worth failing over.
+    // Still defensive: a browser can expose the namespace and reject the
+    // 'action' context, and a failed menu is not worth losing the worker for.
   }
 }
 
-api.contextMenus?.onClicked.addListener(async (info) => {
+contextMenus()?.onClicked.addListener(async (info) => {
   if (info.menuItemId === 'weft-open-dashboard') {
     await api.tabs.create({ url: api.runtime.getURL('dashboard.html') });
   } else if (info.menuItemId === 'weft-open-settings') {
@@ -789,16 +794,41 @@ api.contextMenus?.onClicked.addListener(async (info) => {
   }
 });
 
+/**
+ * Tell the reader something changed.
+ *
+ * Safari has never shipped `browser.notifications` — not "not yet", it is
+ * marked unsupported outright — so on Safari this used to be a TypeError
+ * swallowed by the catch: the message was simply lost, silently, on a whole
+ * platform. Every notification Weft sends marks a state change the reader
+ * asked for (a lock cleared, a panic pass spent), so losing it is not
+ * cosmetic.
+ *
+ * The fallback marks the toolbar icon instead. It carries less information
+ * than the notification did, which is the honest trade: a badge the reader
+ * can see beats a notification that was never delivered.
+ */
 async function notify(title: string, message: string): Promise<void> {
+  if (can.notify) {
+    try {
+      await api.notifications.create({
+        type: 'basic',
+        iconUrl: api.runtime.getURL('assets/icon-128.png'),
+        title,
+        message,
+      });
+      return;
+    } catch {
+      // Notifications can be denied at the OS level; fall through to the badge.
+    }
+  }
+
+  if (!can.badge) return;
   try {
-    await api.notifications.create({
-      type: 'basic',
-      iconUrl: api.runtime.getURL('assets/icon-128.png'),
-      title,
-      message,
-    });
+    await api.action.setBadgeText({ text: '!' });
+    await api.action.setTitle({ title: `${title} — ${message}` });
   } catch {
-    // Notifications may be denied; the state change still happened.
+    // Out of options, and the state change still happened regardless.
   }
 }
 

@@ -3,6 +3,7 @@ import { migrateSettings, validateSettings } from '../core/settings.ts';
 import { emptyLockState, recordTamper, type LockState } from '../core/lock.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey } from '../core/escalation.ts';
+import { pruneAttention, pruneByAge } from '../core/prune.ts';
 import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
 import type { Tier } from '../core/entitlements.ts';
 import { api } from '../shared/browser.ts';
@@ -164,10 +165,19 @@ export async function saveLock(lock: LockState): Promise<void> {
   if (cache) cache.lock = lock;
 }
 
+/**
+ * Save attention, pruned.
+ *
+ * Pruned on write rather than on a periodic alarm because this is the only
+ * path that grows the record, so it is the only place the bound can actually
+ * be guaranteed. An alarm leaves the size unbounded between firings, which is
+ * precisely the window a quota error happens in.
+ */
 export async function saveAttention(attention: Record<string, SiteAttention>): Promise<void> {
   const meta = await getMeta();
-  await put(KEYS.attention, await seal(meta.installId, attention));
-  if (cache) cache.attention = attention;
+  const { kept } = pruneAttention(attention, Date.now());
+  await put(KEYS.attention, await seal(meta.installId, kept));
+  if (cache) cache.attention = kept;
 }
 
 /** Store a licence key and return what it turned out to be. */
@@ -287,7 +297,8 @@ export async function loadProviderCache(): Promise<Record<string, ProviderCacheE
 export async function saveProviderCache(
   entries: Record<string, ProviderCacheEntry>,
 ): Promise<void> {
-  await put(KEYS.providerCache, entries);
+  const { kept } = pruneByAge(entries, Date.now());
+  await put(KEYS.providerCache, kept);
 }
 
 /* -------------------------------------------------------- export / import */

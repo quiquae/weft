@@ -9,7 +9,7 @@
  * plugins here are much worse than 150 lines of explicit build.
  */
 import * as esbuild from 'esbuild';
-import { buildManifest, VERSION } from './manifest.config.mjs';
+import { buildManifest, VERSION, TARGETS } from './manifest.config.mjs';
 import { mkdir, writeFile, readFile, cp, rm, readdir, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -33,8 +33,8 @@ const TEST = Boolean(flag('test', false));
 const DEV = Boolean(flag('dev', false)) || WATCH;
 const OUT = join(ROOT, 'dist', TARGET);
 
-if (!['chrome', 'firefox'].includes(TARGET)) {
-  console.error(`unknown --target=${TARGET} (expected chrome|firefox)`);
+if (!TARGETS.includes(TARGET)) {
+  console.error(`unknown --target=${TARGET} (expected ${TARGETS.join('|')})`);
   process.exit(1);
 }
 
@@ -52,7 +52,7 @@ const HTML_PAGES = ['popup', 'options', 'dashboard', 'onboarding'];
 
 const sharedOptions = {
   bundle: true,
-  target: ['chrome116', 'firefox128'],
+  target: ['chrome116', 'firefox128', 'safari16.4'],
   platform: 'browser',
   jsx: 'automatic',
   jsxImportSource: 'preact',

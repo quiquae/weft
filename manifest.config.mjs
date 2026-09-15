@@ -10,9 +10,39 @@
  *   1. No "Read and change all your data on all websites" install warning.
  *   2. A clean answer to Chrome Web Store's narrow-permission review.
  *   3. Users can hand us exactly the sites they want taxed and nothing else.
+ *
+ * Permissions are per-target rather than shared, because a permission a
+ * browser does not implement is not free: Safari has never shipped
+ * `notifications`, and declaring it there means an install prompt asking for
+ * something that can never work, in front of a human reviewer who knows that.
+ * `tools/compat-audit.mjs` checks every key here against MDN's compatibility
+ * data and fails the build when one of them is unsupported on the target.
  */
 
 export const VERSION = '1.0.0';
+
+/**
+ * Browser floors, each set by the newest thing Weft genuinely needs.
+ *
+ *  - Chrome 116: the CSS Custom Highlight API (105) plus MV3 dynamic
+ *    registration, rounded up to a version worth supporting.
+ *  - Firefox 128: `optional_host_permissions` landed there and the whole
+ *    per-origin consent design rests on it.
+ *  - Safari 16.4: `scripting.registerContentScripts` (16.4) and
+ *    `adoptedStyleSheets` (16.4). The Highlight API only arrives in Safari
+ *    17.2, so 16.4–17.1 runs the wrapped renderer instead — a degradation
+ *    the content script already detects and handles, rather than a floor.
+ */
+export const MINIMUMS = {
+  chrome: '116',
+  firefox: '128.0',
+  safari: '16.4',
+};
+
+export const TARGETS = ['chrome', 'firefox', 'safari'];
+
+/** Permissions every target needs and every target implements. */
+const CORE_PERMISSIONS = ['storage', 'alarms', 'scripting', 'tabs', 'contextMenus'];
 
 const SHARED = {
   manifest_version: 3,
@@ -27,16 +57,6 @@ const SHARED = {
     48: 'assets/icon-48.png',
     128: 'assets/icon-128.png',
   },
-  permissions: [
-    'storage',
-    'alarms',
-    'scripting',
-    'tabs',
-    'idle',
-    'contextMenus',
-    'notifications',
-    'unlimitedStorage',
-  ],
   optional_host_permissions: ['*://*/*'],
   action: {
     default_title: '__MSG_actionTitle__',
@@ -53,7 +73,6 @@ const SHARED = {
     {
       resources: ['lexicon/*', 'assets/*'],
       matches: ['*://*/*'],
-      use_dynamic_url: false,
     },
   ],
   commands: {
@@ -72,7 +91,7 @@ const SHARED = {
 };
 
 /**
- * @param {'chrome'|'firefox'} target
+ * @param {'chrome'|'firefox'|'safari'} target
  * @param {{ test?: boolean }} [opts] `test: true` adds a static host
  *   permission for localhost. Chrome shows a native dialog for an optional
  *   permission request, which Playwright cannot dismiss, so the end-to-end
@@ -83,6 +102,7 @@ const SHARED = {
  */
 export function buildManifest(target, opts = {}) {
   const m = structuredClone(SHARED);
+  m.permissions = [...CORE_PERMISSIONS];
 
   if (opts.test) {
     m.host_permissions = ['http://localhost/*', 'http://127.0.0.1/*'];
@@ -96,15 +116,26 @@ export function buildManifest(target, opts = {}) {
     m.browser_specific_settings = {
       gecko: {
         id: 'weft@weft.study',
-        strict_min_version: '128.0',
+        strict_min_version: MINIMUMS.firefox,
       },
     };
-    // Firefox has no chrome.offscreen and gates notifications differently;
-    // notifications still works, but contextMenus is `menus` there. We keep
-    // contextMenus because Firefox aliases it.
+    m.permissions.push('notifications');
+  } else if (target === 'safari') {
+    // Safari 15.4+ runs an MV3 service worker. It does NOT implement
+    // notifications or idle at all, so neither is declared: the background
+    // script falls back to a toolbar badge, which Safari does support.
+    m.background = { service_worker: 'background.js' };
+    m.browser_specific_settings = {
+      safari: { strict_min_version: MINIMUMS.safari },
+    };
   } else {
     m.background = { service_worker: 'background.js' };
-    m.minimum_chrome_version = '116';
+    m.minimum_chrome_version = MINIMUMS.chrome;
+    m.permissions.push('notifications');
+    // Chrome 130+ only, and `false` is the default everywhere else, so it is
+    // declared for Chrome alone to avoid an "unrecognised key" warning at
+    // review on the other two stores.
+    m.web_accessible_resources[0].use_dynamic_url = false;
   }
 
   return m;
