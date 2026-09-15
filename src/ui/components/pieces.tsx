@@ -215,7 +215,7 @@ export function Chips<T extends string>({
   onToggle,
   multi = true,
 }: {
-  options: Array<{ id: T; label: string; title?: string }>;
+  options: Array<{ id: T; label: string; title?: string; disabled?: boolean }>;
   selected: T[];
   onToggle(id: T): void;
   multi?: boolean;
@@ -234,7 +234,12 @@ export function Chips<T extends string>({
             aria-checked={multi ? undefined : on}
             role={multi ? undefined : 'radio'}
             title={option.title}
-            onClick={() => onToggle(option.id)}
+            disabled={option.disabled}
+            aria-disabled={option.disabled}
+            onClick={() => {
+              if (option.disabled) return;
+              onToggle(option.id);
+            }}
           >
             {option.label}
           </button>

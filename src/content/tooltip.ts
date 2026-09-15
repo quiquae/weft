@@ -41,6 +41,9 @@ const GENDER_LABELS: Record<string, string> = {
 
 const BAND_LABELS = ['', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+/** How many times a session repeats a language's pronunciation note. */
+const PRONUNCIATION_NOTE_LIMIT = 3;
+
 const CSS = `
 :host {
   all: initial;
@@ -129,6 +132,12 @@ export class Tooltip {
   private card: HTMLElement;
   private shown = false;
   private currentLemma: string | null = null;
+  /**
+   * The reconstructed-pronunciation note is four lines long and identical
+   * every time. It is a thing you learn once, so it appears on the first few
+   * reveals of a session and then gets out of the way.
+   */
+  private noteShownCount = 0;
 
   private settings: Settings;
   private callbacks: TooltipCallbacks;
@@ -277,8 +286,14 @@ export class Tooltip {
       card.append(box);
     }
 
-    if (meta.historical && meta.pronunciationNote && reveal.showIpa) {
+    if (
+      meta.historical &&
+      meta.pronunciationNote &&
+      reveal.showIpa &&
+      this.noteShownCount < PRONUNCIATION_NOTE_LIMIT
+    ) {
       card.append(el('div', 'hint', meta.pronunciationNote));
+      this.noteShownCount++;
     }
 
     const actions = el('div', 'actions');

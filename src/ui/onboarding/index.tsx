@@ -7,6 +7,7 @@ import { SITE_PRESETS, originsForRules, rulesFromPreset } from '../../core/sites
 import { applyPatch } from '../../core/patch.ts';
 import { api } from '../../shared/browser.ts';
 import { send } from '../../shared/rpc.ts';
+import { availabilityFor, availabilityNote, loadPackIndex, type PackIndex } from '../../shared/packs.ts';
 import { Notice, WeaveBand, oneWordIn } from '../components/pieces.tsx';
 import { Preview } from './preview.tsx';
 
@@ -32,6 +33,11 @@ function Onboarding() {
   const [pack, setPack] = useState<LexPack | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [granted, setGranted] = useState(false);
+  const [index, setIndex] = useState<PackIndex | null>(null);
+
+  useEffect(() => {
+    void loadPackIndex().then(setIndex);
+  }, []);
 
   const target = settings.learning.activeTarget;
   const lang = getLanguage(target);
@@ -112,35 +118,46 @@ function Onboarding() {
           <div class="step__group">
             <p class="step__hint">Modern languages</p>
             <div class="chips">
-              {modernLanguages().map((l) => (
-                <button
-                  key={l.code}
-                  type="button"
-                  class="chip"
-                  data-on={target === l.code ? '1' : undefined}
-                  onClick={() => chooseLanguage(l.code)}
-                >
-                  {l.endonym}
-                </button>
-              ))}
+              {modernLanguages().map((l) => {
+                const availability = availabilityFor(index, 'en', l.code, false);
+                const off = availability.kind === 'unavailable';
+                return (
+                  <button
+                    key={l.code}
+                    type="button"
+                    class="chip"
+                    data-on={target === l.code ? '1' : undefined}
+                    disabled={off}
+                    title={`${l.name}. ${availabilityNote(availability, l.name)}`}
+                    onClick={() => chooseLanguage(l.code)}
+                  >
+                    {off ? `${l.endonym} — no lexicon` : l.endonym}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           <div class="step__group">
             <p class="step__hint">Historical languages</p>
             <div class="chips">
-              {historicalLanguages().map((l) => (
-                <button
-                  key={l.code}
-                  type="button"
-                  class="chip"
-                  data-on={target === l.code ? '1' : undefined}
-                  title={l.era}
-                  onClick={() => chooseLanguage(l.code)}
-                >
-                  {l.endonym}
-                </button>
-              ))}
+              {historicalLanguages().map((l) => {
+                const availability = availabilityFor(index, 'en', l.code, false);
+                const off = availability.kind === 'unavailable';
+                return (
+                  <button
+                    key={l.code}
+                    type="button"
+                    class="chip"
+                    data-on={target === l.code ? '1' : undefined}
+                    disabled={off}
+                    title={`${l.name}, ${l.era ?? ''}. ${availabilityNote(availability, l.name)}`}
+                    onClick={() => chooseLanguage(l.code)}
+                  >
+                    {off ? `${l.endonym} — no lexicon` : l.endonym}
+                  </button>
+                );
+              })}
             </div>
             <p class="step__aside">
               These work better than you would guess. In Old English the word Weft puts on the page

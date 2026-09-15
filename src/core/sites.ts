@@ -260,9 +260,10 @@ export function classifyUrl(rawUrl: string, settings: Settings): SiteDecision {
   } catch {
     return off('not a valid URL');
   }
-  if (FORBIDDEN_SCHEMES.has(url.protocol)) return off(`${url.protocol} pages are never woven`);
+  const scheme = url.protocol.replace(/:$/, '');
+  if (FORBIDDEN_SCHEMES.has(url.protocol)) return off(`${scheme} pages are never woven`);
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    return off(`${url.protocol} pages are never woven`);
+    return off(`${scheme} pages are never woven`);
   }
 
   for (const pattern of settings.sites.excluded) {

@@ -7,7 +7,14 @@ import {
 } from '../../core/languages.ts';
 import { DIFFICULTY_PRESETS } from '../../core/settings.ts';
 import { letterformsFor } from '../../core/letterforms.ts';
-import { Chips, Row, Section, Slider, Switch, WeaveBand, oneWordIn, percent } from '../components/pieces.tsx';
+import { useEffect, useState } from 'preact/hooks';
+import {
+  availabilityFor,
+  availabilityNote,
+  loadPackIndex,
+  type PackIndex,
+} from '../../shared/packs.ts';
+import { Chips, Notice, Row, Section, Slider, Switch, WeaveBand, oneWordIn, percent } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
 
 /** Sigla used in the margin column. Each one means something. */
@@ -52,6 +59,32 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
   const target = settings.learning.activeTarget;
   const meta = getLanguage(target);
   const forms = letterformsFor(target);
+  const [index, setIndex] = useState<PackIndex | null>(null);
+
+  useEffect(() => {
+    void loadPackIndex().then(setIndex);
+  }, []);
+
+  const source = settings.learning.sourceLang;
+  const providers = settings.providers.enabled;
+
+  /**
+   * The registry knows more languages than Weft ships lexicons for. Offering
+   * one that would silently do nothing is worse than not offering it, so the
+   * chips carry their availability and the unavailable ones cannot be chosen.
+   */
+  const chipsFor = (languages: ReturnType<typeof modernLanguages>) =>
+    languages.map((l) => {
+      const availability = availabilityFor(index, source, l.code, providers);
+      return {
+        id: l.code,
+        label: availability.kind === 'unavailable' ? `${l.endonym} — no lexicon` : l.endonym,
+        title: `${l.name}${l.era ? `, ${l.era}` : ''}. ${availabilityNote(availability, l.name)}`,
+        disabled: availability.kind === 'unavailable',
+      };
+    });
+
+  const activeAvailability = availabilityFor(index, source, target, providers);
 
   return (
     <Section
@@ -59,14 +92,16 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
       title="Language"
       note="Pick what you are learning. Historical languages behave differently, and better than you might expect: the word Weft puts on the page is often the literal ancestor of the one it replaced."
     >
+      {activeAvailability.kind !== 'packed' ? (
+        <Notice tone={activeAvailability.kind === 'unavailable' ? 'warn' : 'info'}>
+          {availabilityNote(activeAvailability, meta.name)}
+        </Notice>
+      ) : null}
+
       <Row siglum={SIGLA.tongue} title="Modern languages">
         <Chips
           multi={false}
-          options={modernLanguages().map((l) => ({
-            id: l.code,
-            label: l.endonym,
-            title: l.name,
-          }))}
+          options={chipsFor(modernLanguages())}
           selected={[target]}
           onToggle={(id) => void c.setMany({ 'learning.activeTarget': id, 'learning.targetLangs': [id] })}
         />
@@ -79,11 +114,7 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
       >
         <Chips
           multi={false}
-          options={historicalLanguages().map((l) => ({
-            id: l.code,
-            label: l.endonym,
-            title: `${l.name} — ${l.era ?? ''}`,
-          }))}
+          options={chipsFor(historicalLanguages())}
           selected={[target]}
           onToggle={(id) => void c.setMany({ 'learning.activeTarget': id, 'learning.targetLangs': [id] })}
         />

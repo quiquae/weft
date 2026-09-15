@@ -5,6 +5,7 @@ import { send } from '../../shared/rpc.ts';
 import type { PageState } from '../../shared/messages.ts';
 import { formatDuration, minutesToRatio } from '../../core/escalation.ts';
 import { getLanguage } from '../../core/languages.ts';
+import { availabilityFor, availabilityNote, loadPackIndex, type PackIndex } from '../../shared/packs.ts';
 import { GlossStrip, Notice, WeaveBand, oneWordIn } from '../components/pieces.tsx';
 
 /**
@@ -26,6 +27,11 @@ function Popup() {
   const [sample, setSample] = useState<Sample | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [index, setIndex] = useState<PackIndex | null>(null);
+
+  useEffect(() => {
+    void loadPackIndex().then(setIndex);
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -65,6 +71,12 @@ function Popup() {
   const { decision, settings } = state;
   const lang = getLanguage(decision.target);
   const woven = sample?.pairs ?? [];
+  const availability = availabilityFor(
+    index,
+    settings.learning.sourceLang,
+    decision.target,
+    settings.providers.enabled,
+  );
 
   const nextMilestone = (() => {
     if (!decision.escalate) return null;
@@ -104,6 +116,10 @@ function Popup() {
         <div class="pop__gloss">
           <GlossStrip pairs={woven} />
         </div>
+      ) : null}
+
+      {availability.kind === 'unavailable' ? (
+        <Notice tone="warn">{availabilityNote(availability, lang.name)}</Notice>
       ) : null}
 
       {state.panicActive ? (
@@ -158,7 +174,7 @@ function Popup() {
       {message ? <Notice>{message}</Notice> : null}
 
       <div class="pop__actions">
-        {decision.mode !== 'excluded' && !state.panicActive ? (
+        {(decision.mode === 'taxed' || decision.mode === 'gentle') && !state.panicActive ? (
           <button type="button" onClick={() => void panic()}>
             Plain English for {settings.friction.panicMinutes} min
           </button>

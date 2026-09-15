@@ -158,7 +158,7 @@ export function StageBand({ stages }: { stages: Stage[] }) {
   return (
     <div class="chart">
       <svg
-        class="chart__svg"
+        class="chart__svg chart__svg--band"
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
         role="img"
