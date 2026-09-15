@@ -217,6 +217,8 @@ export function defaultSettings(now: number, installId: string): Settings {
       openai: { baseUrl: 'https://api.openai.com/v1', key: '', model: 'gpt-4o-mini' },
       cacheDays: 90,
       neverSendHosts: [...DEFAULT_EXCLUSIONS],
+      sendContext: false,
+      dailyLookupCap: 2000,
     },
 
     privacy: {
@@ -398,6 +400,8 @@ export function validateSettings(raw: unknown, now: number, installId: string): 
       // retained: a provider must never see a banking page because a user
       // pruned a list they did not understand.
       neverSendHosts: [...new Set([...DEFAULT_EXCLUSIONS, ...normalizePatterns(providers.neverSendHosts)])],
+      sendContext: bool(providers.sendContext, false),
+      dailyLookupCap: Math.round(clampNum(providers.dailyLookupCap, 0, 100000, d.providers.dailyLookupCap)),
     },
 
     privacy: {

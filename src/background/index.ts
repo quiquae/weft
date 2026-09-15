@@ -1,0 +1,742 @@
+import type { Grade, LangCode, LexEntry, MemoryCard, Settings, SiteAttention } from '../core/types.ts';
+import { classifyUrl, originsForRules } from '../core/sites.ts';
+import {
+  currentAttentionSeconds,
+  dayKey,
+  recordAttention,
+  weaveRatio,
+} from '../core/escalation.ts';
+import {
+  applyReadyChanges,
+  cancelPending,
+  markQuizPassed,
+  panicActive,
+  penaltyActive,
+  requestChange,
+  usePanicPass,
+} from '../core/lock.ts';
+import { cardId, isRetirable, newCard, reviewCard } from '../core/fsrs.ts';
+import { effectiveLevel } from '../core/selector.ts';
+import { buildQuiz, quizPassed, quizScore } from '../core/quiz.ts';
+import { validateSettings } from '../core/settings.ts';
+import { newInstallId } from '../core/integrity.ts';
+import { api } from '../shared/browser.ts';
+import { fail, ok } from '../shared/rpc.ts';
+import type { PageState, Request, ResponseMap } from '../shared/messages.ts';
+import * as store from './storage.ts';
+import { profileFor } from './hard-mode.ts';
+import { lookupMissing } from './providers/index.ts';
+
+/**
+ * Service worker.
+ *
+ * Holds the authority for anything a page must not be able to decide for
+ * itself: the current difficulty, whether a cooldown has elapsed, what the
+ * learner knows. A content script asks; it never computes.
+ *
+ * Written on the assumption that this worker is killed roughly every thirty
+ * idle seconds. Nothing is kept in memory that has not been written, and
+ * every handler is safe to run on a cold start.
+ */
+
+const CONTENT_SCRIPT_ID = 'weft-content';
+const LOCK_ALARM = 'weft-lock-tick';
+const FLUSH_ALARM = 'weft-flush';
+
+/* ------------------------------------------------------------------ ratio */
+
+interface RatioInput {
+  settings: Settings;
+  decision: ReturnType<typeof classifyUrl>;
+  attentionSeconds: number;
+  panic: boolean;
+  penalty: boolean;
+}
+
+/**
+ * The single place difficulty is decided.
+ *
+ * Order matters: a panic pass wins over everything (that is the whole point of
+ * an escape valve), and a tamper penalty wins over the curve (that is the
+ * whole point of a penalty).
+ */
+function computeRatio(input: RatioInput): number {
+  if (input.panic) return 0;
+  if (input.penalty) return input.decision.ceilingRatio || input.settings.weave.ceilingRatio;
+  return weaveRatio({
+    baseRatio: input.decision.baseRatio,
+    ceilingRatio: input.decision.ceilingRatio,
+    gainPerMinute: input.settings.attention.gainPerMinute,
+    attentionSeconds: input.attentionSeconds,
+    escalate: input.decision.escalate,
+  });
+}
+
+async function buildPageState(url: string): Promise<PageState> {
+  const snapshot = await store.load();
+  const now = Date.now();
+
+  // Apply anything whose cooldown has elapsed before answering, so a page
+  // load never shows stale difficulty.
+  const applied = applyReadyChanges(snapshot.lock, snapshot.settings, now);
+  if (applied.applied.length) {
+    await store.saveLock(applied.state);
+    await store.saveSettings(applied.settings);
+  }
+  const settings = applied.settings;
+  const lock = applied.state;
+
+  const decision = classifyUrl(url, settings);
+  const attention = snapshot.attention[decision.attentionKey];
+  const attentionSeconds = currentAttentionSeconds(attention, now, {
+    rolloverHour: settings.attention.rolloverHour,
+    decayPerHourAway: settings.attention.decayPerHourAway,
+  });
+
+  const panic = panicActive(lock, now);
+  const penalty = penaltyActive(lock, now);
+  const ratio = computeRatio({ settings, decision, attentionSeconds, panic, penalty });
+
+  const allCards = await store.loadCards();
+  const target = decision.target;
+  const cards: Record<string, MemoryCard> = {};
+  let retiredCount = 0;
+  for (const [id, card] of Object.entries(allCards)) {
+    if (card.target !== target) continue;
+    cards[id] = card;
+    if (card.retiredAt || isRetirable(card, settings.learning.retireStabilityDays, now)) {
+      retiredCount++;
+    }
+  }
+
+  return {
+    settings,
+    decision,
+    ratio,
+    attentionSeconds,
+    cards,
+    introducedToday: snapshot.introduced.lemmas,
+    panicActive: panic,
+    effectiveLevel: effectiveLevel(settings.learning.level, retiredCount),
+    penaltyActive: penalty,
+  };
+}
+
+/* ------------------------------------------------------------------ cards */
+
+async function ensureCard(target: LangCode, lemma: string, now: number): Promise<MemoryCard> {
+  const cards = await store.loadCards();
+  const id = cardId(target, lemma);
+  const existing = cards[id];
+  if (existing) return existing;
+  const created = newCard(target, lemma, now);
+  cards[id] = created;
+  store.queueCardWrite();
+  return created;
+}
+
+async function noteIntroduced(lemmas: string[]): Promise<void> {
+  if (!lemmas.length) return;
+  const snapshot = await store.load();
+  const today = dayKey(Date.now(), snapshot.settings.attention.rolloverHour);
+  const current =
+    snapshot.introduced.day === today ? snapshot.introduced : { day: today, lemmas: [] };
+  const set = new Set(current.lemmas);
+  let changed = false;
+  for (const lemma of lemmas) {
+    if (!set.has(lemma)) {
+      set.add(lemma);
+      changed = true;
+    }
+  }
+  if (changed) await store.saveIntroduced({ day: today, lemmas: [...set] });
+}
+
+/* --------------------------------------------------------------- handlers */
+
+type Handlers = {
+  [K in Request['type']]: (
+    request: Extract<Request, { type: K }>,
+    sender: chrome.runtime.MessageSender,
+  ) => Promise<ResponseMap[K]>;
+};
+
+const handlers: Handlers = {
+  'get-page-state': async (request) => buildPageState(request.url),
+
+  'get-pack': async (request) => {
+    // The content script fetches packs from disk directly; this exists for UI
+    // pages, which need a pack to build a quiz.
+    try {
+      const url = api.runtime.getURL(`lexicon/${request.source}-${request.target}.json`);
+      const response = await fetch(url);
+      if (!response.ok) return { pack: null, error: `No pack for ${request.target}.` };
+      return { pack: await response.json() };
+    } catch (err) {
+      return { pack: null, error: (err as Error).message };
+    }
+  },
+
+  'record-attention': async (request) => {
+    const snapshot = await store.load();
+    const now = Date.now();
+    const settings = snapshot.settings;
+    const decision = classifyUrl(request.url, settings);
+
+    // Attention only accrues where difficulty can actually rise. Counting it
+    // on a gentle or excluded site would make the dashboard lie.
+    if (decision.mode === 'excluded' || decision.mode === 'off') {
+      return { ratio: 0, attentionSeconds: 0, panicActive: false };
+    }
+
+    const attention = { ...snapshot.attention };
+    const { attention: updated } = recordAttention(
+      attention[request.host],
+      request.host,
+      request.seconds,
+      now,
+      {
+        rolloverHour: settings.attention.rolloverHour,
+        decayPerHourAway: settings.attention.decayPerHourAway,
+        dailyCapMinutes: settings.attention.dailyCapMinutes,
+      },
+    );
+    attention[request.host] = updated;
+    await store.saveAttention(attention);
+
+    const panic = panicActive(snapshot.lock, now);
+    const penalty = penaltyActive(snapshot.lock, now);
+    const ratio = computeRatio({
+      settings,
+      decision,
+      attentionSeconds: updated.seconds,
+      panic,
+      penalty,
+    });
+    return { ratio, attentionSeconds: updated.seconds, panicActive: panic };
+  },
+
+  'record-exposure': async (request) => {
+    const now = Date.now();
+    const cards = await store.loadCards();
+    const introduced: string[] = [];
+    for (const lemma of request.lemmas) {
+      const id = cardId(request.target, lemma);
+      const card = cards[id] ?? newCard(request.target, lemma, now);
+      if (card.exposures === 0) introduced.push(lemma);
+      cards[id] = { ...card, exposures: card.exposures + 1 };
+    }
+    store.queueCardWrite();
+    await noteIntroduced(introduced);
+    return { ok: true };
+  },
+
+  'record-reveal': async (request) => {
+    const now = Date.now();
+    const cards = await store.loadCards();
+    const id = cardId(request.target, request.lemma);
+    const card = cards[id] ?? (await ensureCard(request.target, request.lemma, now));
+    // Needing the English is the honest signal that the word is not known.
+    // Grading it "again" is what puts it back in front of the learner soon.
+    cards[id] = reviewCard(card, 1 as Grade, now);
+    store.queueCardWrite();
+    return { ok: true };
+  },
+
+  'record-grade': async (request) => {
+    const now = Date.now();
+    const cards = await store.loadCards();
+    const id = cardId(request.target, request.lemma);
+    const card = cards[id] ?? (await ensureCard(request.target, request.lemma, now));
+    const settings = (await store.load()).settings;
+    let updated = reviewCard(card, request.grade, now);
+    if (!updated.retiredAt && isRetirable(updated, settings.learning.retireStabilityDays, now)) {
+      updated = { ...updated, retiredAt: now };
+    }
+    cards[id] = updated;
+    store.queueCardWrite();
+    return { card: updated };
+  },
+
+  'get-settings': async () => ({ settings: (await store.load()).settings }),
+
+  'request-change': async (request) => {
+    const snapshot = await store.load();
+    const now = Date.now();
+    const result = requestChange(
+      snapshot.lock,
+      snapshot.settings,
+      request.patch,
+      now,
+      () => newInstallId().slice(0, 12),
+    );
+    await store.saveLock(result.state);
+    if (result.applied) {
+      await store.saveSettings(validateSettings(result.settings, now, snapshot.settings.installId));
+      await broadcastSettingsChanged();
+      await registerContentScripts();
+    }
+    const response: ResponseMap['request-change'] = {
+      applied: result.applied,
+      message: result.message,
+    };
+    if (result.pending) response.pending = result.pending;
+    return response;
+  },
+
+  'cancel-pending': async (request) => {
+    const snapshot = await store.load();
+    await store.saveLock(cancelPending(snapshot.lock, request.id, Date.now()));
+    return { ok: true };
+  },
+
+  'get-lock-state': async () => {
+    const snapshot = await store.load();
+    const now = Date.now();
+    const applied = applyReadyChanges(snapshot.lock, snapshot.settings, now);
+    if (applied.applied.length) {
+      await store.saveLock(applied.state);
+      await store.saveSettings(applied.settings);
+      await broadcastSettingsChanged();
+    }
+    return { lock: applied.state, settings: applied.settings };
+  },
+
+  'use-panic': async () => {
+    const snapshot = await store.load();
+    const result = usePanicPass(snapshot.lock, snapshot.settings, Date.now());
+    await store.saveLock(result.state);
+    if (result.granted) {
+      await broadcastToTabs({ type: 'weft-suspend' });
+      if (result.activeUntil) {
+        // Resume exactly when the pass expires, rather than waiting for the
+        // next page load. An alarm survives the worker being killed.
+        const minutes = Math.max(0.5, (result.activeUntil - Date.now()) / 60_000);
+        await api.alarms.create('weft-panic-end', { delayInMinutes: minutes });
+      }
+    }
+    const response: ResponseMap['use-panic'] = {
+      granted: result.granted,
+      message: result.message,
+    };
+    if (result.activeUntil) response.activeUntil = result.activeUntil;
+    return response;
+  },
+
+  'build-quiz': async (request) => {
+    const snapshot = await store.load();
+    const change = snapshot.lock.pending.find((p) => p.id === request.changeId);
+    if (!change) return { questions: [], error: 'That change is no longer waiting.' };
+
+    const settings = snapshot.settings;
+    const target = settings.learning.activeTarget;
+    const packUrl = api.runtime.getURL(`lexicon/${settings.learning.sourceLang}-${target}.json`);
+    let pack: { entries: Record<string, LexEntry[]> };
+    try {
+      pack = await (await fetch(packUrl)).json();
+    } catch {
+      return { questions: [], error: 'Could not load the vocabulary pack.' };
+    }
+
+    const pool: LexEntry[] = [];
+    const byLemma = new Map<string, LexEntry>();
+    for (const list of Object.values(pack.entries)) {
+      for (const entry of list) {
+        pool.push(entry);
+        if (!byLemma.has(entry.tgtLemma)) byLemma.set(entry.tgtLemma, entry);
+      }
+    }
+
+    const allCards = await store.loadCards();
+    const cards = Object.values(allCards).filter((c) => c.target === target);
+    const questions = buildQuiz({
+      cards,
+      entriesByLemma: byLemma,
+      pool,
+      target,
+      source: settings.learning.sourceLang,
+      count: settings.friction.quizWordCount,
+      includeTyping: true,
+      // Seeded from the change id so reloading the page does not reroll the
+      // quiz into an easier one.
+      seed: Array.from(request.changeId).reduce((a, c) => a + c.charCodeAt(0), 0),
+    });
+
+    if (!questions.length) {
+      return {
+        questions: [],
+        error:
+          'No words to test yet. Read a little with Weft on first — the check only ever uses words you have already been shown.',
+      };
+    }
+    return { questions };
+  },
+
+  'submit-quiz': async (request) => {
+    const snapshot = await store.load();
+    const settings = snapshot.settings;
+    const passed = quizPassed(request.results, settings.friction.quizPassThreshold);
+    const score = quizScore(request.results);
+
+    // The answers are real retrieval practice, so they feed the scheduler
+    // whether or not the gate opens.
+    const now = Date.now();
+    const cards = await store.loadCards();
+    for (const result of request.results) {
+      const id = cardId(settings.learning.activeTarget, result.lemma);
+      const card = cards[id] ?? newCard(settings.learning.activeTarget, result.lemma, now);
+      cards[id] = reviewCard(card, result.correct ? (3 as Grade) : (1 as Grade), now);
+    }
+    store.queueCardWrite();
+
+    if (!passed) {
+      return {
+        passed: false,
+        score,
+        message: `${Math.round(score * 100)}%. You need ${Math.round(
+          settings.friction.quizPassThreshold * 100,
+        )}%. Try again whenever you like — the answers still counted as practice.`,
+      };
+    }
+
+    await store.saveLock(markQuizPassed(snapshot.lock, request.changeId, now));
+    return {
+      passed: true,
+      score,
+      message: `${Math.round(score * 100)}%. The change will apply when its cooldown ends.`,
+    };
+  },
+
+  'get-stats': async () => {
+    const snapshot = await store.load();
+    const cards = Object.values(await store.loadCards());
+    return {
+      settings: snapshot.settings,
+      cards,
+      attention: Object.values(snapshot.attention) as SiteAttention[],
+      lock: snapshot.lock,
+    };
+  },
+
+  'get-cards': async (request) => {
+    const all = Object.values(await store.loadCards());
+    return { cards: request.target ? all.filter((c) => c.target === request.target) : all };
+  },
+
+  'grant-origins': async (request) => {
+    // The request itself must come from a user gesture on an extension page,
+    // so the UI calls chrome.permissions.request directly. Here we only
+    // confirm and re-register.
+    const granted = await api.permissions.contains({ origins: request.origins });
+    if (granted) await registerContentScripts();
+    return { granted };
+  },
+
+  'get-granted-origins': async () => {
+    const perms = await api.permissions.getAll();
+    return { origins: perms.origins ?? [] };
+  },
+
+  'reregister-scripts': async () => {
+    const registered = await registerContentScripts();
+    return { ok: true, registered };
+  },
+
+  'complete-onboarding': async (request) => {
+    const snapshot = await store.load();
+    const now = Date.now();
+    const next = validateSettings(
+      { ...snapshot.settings, ...applyPatchShallow(snapshot.settings, request.patch), onboarded: true },
+      now,
+      snapshot.settings.installId,
+    );
+    await store.saveSettings(next);
+    const granted = request.origins.length
+      ? await api.permissions.contains({ origins: request.origins })
+      : true;
+    await registerContentScripts();
+    await broadcastSettingsChanged();
+    return { ok: true, granted };
+  },
+
+  'export-data': async () => ({ payload: await store.exportAll() }),
+
+  'import-data': async (request) => {
+    const result = await store.importAll(request.payload);
+    store.invalidate();
+    if (result.ok) {
+      await broadcastSettingsChanged();
+      await registerContentScripts();
+    }
+    return result;
+  },
+
+  'reset-vocabulary': async () => {
+    await store.resetVocabulary();
+    await broadcastSettingsChanged();
+    return { ok: true };
+  },
+
+  'hard-mode-profile': async (request) => profileFor(request.platform),
+
+  'lookup-words': async (request) => {
+    const snapshot = await store.load();
+    const settings = snapshot.settings;
+    if (!settings.providers.enabled) {
+      return { entries: [], fromCache: 0, fromProvider: 0, error: 'Providers are switched off.' };
+    }
+    // The never-send list is enforced here, at the boundary, not in the page.
+    // A content script is the wrong place to hold a privacy guarantee.
+    const blocked = settings.providers.neverSendHosts.some(
+      (pattern) => request.host === pattern || request.host.endsWith(`.${pattern}`),
+    );
+    if (blocked) {
+      return { entries: [], fromCache: 0, fromProvider: 0, error: `${request.host} is on the never-send list.` };
+    }
+    return lookupMissing(request.words, settings.learning.sourceLang, request.target, settings);
+  },
+};
+
+/** Shallow dotted-path apply, for the onboarding patch. */
+function applyPatchShallow(base: Settings, patch: Record<string, unknown>): Partial<Settings> {
+  const out = structuredClone(base) as unknown as Record<string, unknown>;
+  for (const [path, value] of Object.entries(patch)) {
+    const parts = path.split('.');
+    let cur = out;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const key = parts[i] as string;
+      if (typeof cur[key] !== 'object' || cur[key] === null) cur[key] = {};
+      cur = cur[key] as Record<string, unknown>;
+    }
+    cur[parts[parts.length - 1] as string] = value;
+  }
+  return out as unknown as Partial<Settings>;
+}
+
+/* ---------------------------------------------------------------- routing */
+
+api.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  const request = message as Request;
+  const handler = handlers[request.type] as
+    | ((r: Request, s: chrome.runtime.MessageSender) => Promise<unknown>)
+    | undefined;
+
+  if (!handler) {
+    sendResponse(fail(`Unknown request: ${String(request?.type)}`));
+    return false;
+  }
+
+  handler(request, sender)
+    .then((data) => sendResponse(ok(data)))
+    .catch((err) => {
+      console.error('[weft]', request.type, err);
+      sendResponse(fail(err));
+    });
+
+  // Keeps the message channel open for the async reply.
+  return true;
+});
+
+/* ----------------------------------------------------------- broadcasting */
+
+async function broadcastToTabs(message: { type: string }): Promise<void> {
+  try {
+    const tabs = await api.tabs.query({});
+    await Promise.all(
+      tabs.map(async (tab) => {
+        if (tab.id === undefined) return;
+        try {
+          await api.tabs.sendMessage(tab.id, message);
+        } catch {
+          // No content script in that tab. Expected and uninteresting.
+        }
+      }),
+    );
+  } catch {
+    // tabs permission may be absent in a stripped build.
+  }
+}
+
+async function broadcastSettingsChanged(): Promise<void> {
+  store.invalidate();
+  await broadcastToTabs({ type: 'weft-settings-changed' });
+}
+
+/* -------------------------------------------------- script registration */
+
+/**
+ * Register the content script for exactly the origins the user has granted.
+ *
+ * Weft asks for no host permissions at install time, so there is nothing to
+ * run until the user names some sites. Registering dynamically is what turns
+ * "read and change all your data on all websites" into a list the user chose,
+ * and `persistAcrossSessions` means it survives the worker being killed and
+ * the browser being restarted.
+ */
+async function registerContentScripts(): Promise<number> {
+  const snapshot = await store.load();
+  const settings = snapshot.settings;
+
+  const perms = await api.permissions.getAll();
+  const granted = perms.origins ?? [];
+  if (!granted.length) {
+    await unregister();
+    return 0;
+  }
+
+  // Intersect what we may access with what the user actually wants woven, so
+  // a leftover permission does not silently widen the extension's reach.
+  const wanted = new Set([
+    ...originsForRules(settings.sites.taxed),
+    ...originsForRules(settings.sites.gentle),
+  ]);
+  const matches =
+    settings.sites.mode === 'everywhere-except'
+      ? granted
+      : granted.filter((origin) => wanted.has(origin) || granted.includes('*://*/*'));
+
+  const effective = matches.length ? matches : granted.includes('*://*/*') ? ['*://*/*'] : [];
+  if (!effective.length) {
+    await unregister();
+    return 0;
+  }
+
+  await unregister();
+  try {
+    await api.scripting.registerContentScripts([
+      {
+        id: CONTENT_SCRIPT_ID,
+        matches: effective,
+        js: ['content.js'],
+        runAt: 'document_idle',
+        allFrames: false,
+        persistAcrossSessions: true,
+      },
+    ]);
+  } catch (err) {
+    console.error('[weft] could not register content script', err);
+    return 0;
+  }
+  return effective.length;
+}
+
+async function unregister(): Promise<void> {
+  try {
+    const existing = await api.scripting.getRegisteredContentScripts({ ids: [CONTENT_SCRIPT_ID] });
+    if (existing.length) {
+      await api.scripting.unregisterContentScripts({ ids: [CONTENT_SCRIPT_ID] });
+    }
+  } catch {
+    // Nothing registered.
+  }
+}
+
+/* ------------------------------------------------------------- lifecycle */
+
+api.runtime.onInstalled.addListener(async (details) => {
+  await store.load();
+  await api.alarms.create(LOCK_ALARM, { periodInMinutes: 1 });
+  await api.alarms.create(FLUSH_ALARM, { periodInMinutes: 1 });
+  await registerContentScripts();
+  await setupContextMenus();
+
+  if (details.reason === 'install') {
+    await api.tabs.create({ url: api.runtime.getURL('onboarding.html') });
+  }
+});
+
+api.runtime.onStartup.addListener(async () => {
+  await api.alarms.create(LOCK_ALARM, { periodInMinutes: 1 });
+  await api.alarms.create(FLUSH_ALARM, { periodInMinutes: 1 });
+  await registerContentScripts();
+  await setupContextMenus();
+});
+
+api.alarms.onAlarm.addListener(async (alarm) => {
+  if (alarm.name === LOCK_ALARM) {
+    const snapshot = await store.load();
+    const result = applyReadyChanges(snapshot.lock, snapshot.settings, Date.now());
+    if (result.applied.length) {
+      await store.saveLock(result.state);
+      await store.saveSettings(result.settings);
+      await broadcastSettingsChanged();
+      await registerContentScripts();
+      await notify(
+        'Weft',
+        result.applied.length === 1
+          ? `Applied: ${result.applied[0]?.summary ?? 'your change'}.`
+          : `Applied ${result.applied.length} waiting changes.`,
+      );
+    }
+    return;
+  }
+  if (alarm.name === FLUSH_ALARM) {
+    await store.flushCards();
+    return;
+  }
+  if (alarm.name === 'weft-panic-end') {
+    await broadcastToTabs({ type: 'weft-resume' });
+  }
+});
+
+api.permissions.onAdded.addListener(() => void registerContentScripts());
+api.permissions.onRemoved.addListener(() => void registerContentScripts());
+
+api.commands?.onCommand.addListener(async (command) => {
+  if (command === 'weft-panic') {
+    const snapshot = await store.load();
+    const result = usePanicPass(snapshot.lock, snapshot.settings, Date.now());
+    await store.saveLock(result.state);
+    if (result.granted) await broadcastToTabs({ type: 'weft-suspend' });
+    await notify('Weft', result.message);
+    return;
+  }
+  const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+  if (tab?.id === undefined) return;
+  try {
+    await api.tabs.sendMessage(tab.id, { type: command });
+  } catch {
+    // No content script on this page.
+  }
+});
+
+async function setupContextMenus(): Promise<void> {
+  try {
+    await api.contextMenus.removeAll();
+    api.contextMenus.create({
+      id: 'weft-open-dashboard',
+      title: 'Weft: progress',
+      contexts: ['action'],
+    });
+    api.contextMenus.create({
+      id: 'weft-open-settings',
+      title: 'Weft: settings',
+      contexts: ['action'],
+    });
+  } catch {
+    // contextMenus is unavailable in some builds; not worth failing over.
+  }
+}
+
+api.contextMenus?.onClicked.addListener(async (info) => {
+  if (info.menuItemId === 'weft-open-dashboard') {
+    await api.tabs.create({ url: api.runtime.getURL('dashboard.html') });
+  } else if (info.menuItemId === 'weft-open-settings') {
+    await api.runtime.openOptionsPage();
+  }
+});
+
+async function notify(title: string, message: string): Promise<void> {
+  try {
+    await api.notifications.create({
+      type: 'basic',
+      iconUrl: api.runtime.getURL('assets/icon-128.png'),
+      title,
+      message,
+    });
+  } catch {
+    // Notifications may be denied; the state change still happened.
+  }
+}
+
+export {};

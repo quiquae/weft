@@ -205,6 +205,12 @@ export interface Swap {
   /** Replacement text, case-matched to the original. */
   replacement: string;
   entry: LexEntry;
+  /**
+   * True for a word the learner has already mastered, woven outside the
+   * difficulty budget. Styled more faintly, because it is not a demand on
+   * the reader — it is the part of the page they can already read.
+   */
+  retired: boolean;
 }
 
 /* ------------------------------------------------------------- attention */
@@ -380,6 +386,16 @@ export interface Settings {
     cacheDays: number;
     /** Never send text from these hosts to a provider, whatever the settings. */
     neverSendHosts: string[];
+    /**
+     * When false (the default), a provider only ever receives isolated words
+     * and a part-of-speech hint — never a sentence, never page content. That
+     * is a hard privacy guarantee rather than a preference, so improving
+     * translation quality with surrounding context is a separate, explicit
+     * opt-in rather than something that happens quietly.
+     */
+    sendContext: boolean;
+    /** Maximum provider lookups per day, so a key cannot be drained. */
+    dailyLookupCap: number;
   };
 
   privacy: {

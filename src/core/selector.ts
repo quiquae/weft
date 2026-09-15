@@ -404,6 +404,7 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
       original: win.text,
       replacement,
       entry: cand.entry,
+      retired: isFree,
     });
 
     for (let k = win.wordIndex; k < win.wordIndex + win.span; k++) takenWordIndices.add(k);
