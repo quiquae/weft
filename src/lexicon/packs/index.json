@@ -1,0 +1,98 @@
+{
+  "format": 1,
+  "version": "2026.09.1",
+  "builtAt": "2026-09-15",
+  "packs": [
+    {
+      "source": "en",
+      "target": "ang",
+      "file": "en-ang.json",
+      "entryCount": 584,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "de",
+      "file": "en-de.json",
+      "entryCount": 585,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "es",
+      "file": "en-es.json",
+      "entryCount": 588,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "fr",
+      "file": "en-fr.json",
+      "entryCount": 587,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "it",
+      "file": "en-it.json",
+      "entryCount": 588,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "la",
+      "file": "en-la.json",
+      "entryCount": 584,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "source": "en",
+      "target": "pt",
+      "file": "en-pt.json",
+      "entryCount": 588,
+      "lemmaCount": 356,
+      "bands": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ]
+}

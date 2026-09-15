@@ -1,0 +1,382 @@
+# Weft translations: English -> la
+#
+# lemma | pos | tgt | tgt2 | gender | ipa | etymon | note
+#
+# tgt   citation form: singular noun, infinitive verb, masculine
+#       singular adjective, nominative singular for Latin/Old English.
+# tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
+#       a noun means the English plural is never woven, which is the
+#       correct outcome: weaving a singular target under an English
+#       plural teaches a form that does not exist.
+#
+# Classical Latin, nominative singular and plural. English marks case by word
+# order, so a nominative headword slots into an English clause unambiguously:
+# "the rex was angry" is clear where "the regis was angry" is wrong in both
+# languages.
+# 
+# The etymon column is the English word descended from the Latin one, usually a
+# learned borrowing. For Latin this is the whole point: the reader is not
+# memorising a foreign word, they are being shown where their own word came
+# from. "vaccine" from vacca, cow. "mile" from mille passus. "peninsula" from
+# paene insula, almost an island.
+# 
+# IPA is generated from the orthography, which is very nearly deterministic
+# once vowel length is marked. Values are the standard classical
+# reconstruction.
+#
+man	noun	vir	virī	m	/ˈwɪr/	virile	third-person plural "virī" also means "men" collectively
+woman	noun	fēmina	fēminae	f	/ˈfeːmɪna/	feminine	
+child	noun	puer	puerī	m	/ˈpʊɛr/	puerile	"puer" covers boy and child alike
+boy	noun	puer	puerī	m	/ˈpʊɛr/	puerile	
+girl	noun	puella	puellae	f	/pʊˈɛlːa/		
+person	noun	persōna	persōnae	f	/pɛˈrsoːna/	person	originally an actor’s mask
+friend	noun	amīcus	amīcī	m	/aˈmiːkʊs/	amicable	
+family	noun	familia	familiae	f	/faˈmɪlɪa/	family	in Latin it includes the household slaves
+mother	noun	māter	mātrēs	f	/ˈmaːtɛr/	maternal	
+father	noun	pater	patrēs	m	/ˈpatɛr/	paternal	
+brother	noun	frāter	frātrēs	m	/ˈfraːtɛr/	fraternal	
+sister	noun	soror	sorōrēs	f	/ˈsɔrɔr/	sorority	
+son	noun	fīlius	fīliī	m	/ˈfiːlɪʊs/	filial	
+daughter	noun	fīlia	fīliae	f	/ˈfiːlɪa/	filial	
+wife	noun	uxor	uxōrēs	f	/ˈʊksɔr/	uxorious	
+husband	noun	marītus	marītī	m	/maˈriːtʊs/	marital	
+baby	noun	īnfāns	īnfantēs	m	/ˈiːnfaːns/	infant	literally "not speaking"
+king	noun	rēx	rēgēs	m	/ˈreːks/	regal	
+queen	noun	rēgīna	rēgīnae	f	/reːˈɡiːna/	regina	
+lord	noun	dominus	dominī	m	/ˈdɔmɪnʊs/	dominate	
+neighbour	noun	vīcīnus	vīcīnī	m	/wiːˈkiːnʊs/	vicinity	
+stranger	noun	aliēnus	aliēnī	m	/alɪˈeːnʊs/	alien	
+enemy	noun	hostis	hostēs	m	/ˈhɔstɪs/	hostile	
+soldier	noun	mīles	mīlitēs	m	/ˈmiːlɛs/	military	
+teacher	noun	magister	magistrī	m	/maˈɡɪstɛr/	magisterial	
+doctor	noun	medicus	medicī	m	/ˈmɛdɪkʊs/	medical	
+farmer	noun	agricola	agricolae	m	/aˈɡrɪkɔla/	agriculture	a rare masculine first-declension noun
+sailor	noun	nauta	nautae	m	/ˈnau̯ta/	nautical	
+head	noun	caput	capita	n	/ˈkapʊt/	capital	
+hand	noun	manus	manūs	f	/ˈmanʊs/	manual	
+eye	noun	oculus	oculī	m	/ˈɔkʊlʊs/	ocular	
+ear	noun	auris	aurēs	f	/ˈau̯rɪs/	aural	
+mouth	noun	ōs	ōra	n	/ˈoːs/	oral	
+nose	noun	nāsus	nāsī	m	/ˈnaːsʊs/	nasal	
+tooth	noun	dēns	dentēs	m	/ˈdeːns/	dental	
+hair	noun	capillus	capillī	m	/kaˈpɪlːʊs/	capillary	
+heart	noun	cor	corda	n	/ˈkɔr/	cordial	
+blood	noun	sanguis		m	/ˈsaŋɡʷɪs/	sanguine	
+bone	noun	os	ossa	n	/ˈɔs/	ossify	distinct from "ōs", mouth, only by vowel length
+arm	noun	bracchium	bracchia	n	/ˈbrakkʰɪʊm/	brachial	
+leg	noun	crūs	crūra	n	/ˈkruːs/	crural	
+foot	noun	pēs	pedēs	m	/ˈpeːs/	pedal	
+finger	noun	digitus	digitī	m	/ˈdɪɡɪtʊs/	digit	
+face	noun	faciēs	faciēs	f	/ˈfakɪeːs/	facial	
+body	noun	corpus	corpora	n	/ˈkɔrpʊs/	corporeal	
+skin	noun	cutis	cutēs	f	/ˈkʊtɪs/	cuticle	
+voice	noun	vōx	vōcēs	f	/ˈwoːks/	vocal	
+dog	noun	canis	canēs	m	/ˈkanɪs/	canine	
+cat	noun	fēlēs	fēlēs	f	/ˈfeːleːs/	feline	
+horse	noun	equus	equī	m	/ˈɛkʷʊs/	equine	
+bird	noun	avis	avēs	f	/ˈawɪs/	aviary	
+fish	noun	piscis	piscēs	m	/ˈpɪskɪs/	piscine	
+cow	noun	vacca	vaccae	f	/ˈwakːa/	vaccine	Jenner named the vaccine after the cowpox he used
+sheep	noun	ovis	ovēs	f	/ˈɔwɪs/	ovine	
+pig	noun	porcus	porcī	m	/ˈpɔrkʊs/	pork	
+wolf	noun	lupus	lupī	m	/ˈlʊpʊs/	lupine	
+bear	noun	ursus	ursī	m	/ˈʊrsʊs/	ursine	
+lion	noun	leō	leōnēs	m	/ˈlɛoː/	lion	
+mouse	noun	mūs	mūrēs	m	/ˈmuːs/	muscle	"muscle" is a little mouse, from the shape
+snake	noun	serpēns	serpentēs	f	/ˈsɛrpeːns/	serpent	
+bee	noun	apis	apēs	f	/ˈapɪs/	apiary	
+worm	noun	vermis	vermēs	m	/ˈwɛrmɪs/	vermin	
+raven	noun	corvus	corvī	m	/ˈkɔrwʊs/	corvine	
+hound	noun	canis	canēs	m	/ˈkanɪs/	canine	
+ox	noun	bōs	bovēs	m	/ˈboːs/	bovine	
+goat	noun	capra	caprae	f	/ˈkapra/	capricious	
+food	noun	cibus	cibī	m	/ˈkɪbʊs/		
+bread	noun	pānis	pānēs	m	/ˈpaːnɪs/	pantry	
+water	noun	aqua	aquae	f	/ˈakʷa/	aquatic	
+wine	noun	vīnum	vīna	n	/ˈwiːnʊm/	vine	
+milk	noun	lac		n	/ˈlak/	lactose	
+meat	noun	carō	carnēs	f	/ˈkaroː/	carnivore	
+fruit	noun	frūctus	frūctūs	m	/ˈfruːktʊs/	fruit	
+apple	noun	mālum	māla	n	/ˈmaːlʊm/	malic acid	"mālum" apple and "malum" evil differ only in vowel length
+salt	noun	sāl		m	/ˈsaːl/	saline	
+honey	noun	mel		n	/ˈmɛl/	mellifluous	
+cheese	noun	cāseus	cāseī	m	/ˈkaːseu̯s/	casein	
+egg	noun	ōvum	ōva	n	/ˈoːwʊm/	ovum	
+fire	noun	ignis	ignēs	m	/ˈɪɡnɪs/	ignite	
+house	noun	domus	domūs	f	/ˈdɔmʊs/	domestic	
+home	noun	domus	domūs	f	/ˈdɔmʊs/	domicile	
+door	noun	iānua	iānuae	f	/ˈjaːnʊa/	January	Janus, god of doorways, gave the month its name
+window	noun	fenestra	fenestrae	f	/fɛˈnɛstra/	defenestrate	
+wall	noun	mūrus	mūrī	m	/ˈmuːrʊs/	mural	
+roof	noun	tēctum	tēcta	n	/ˈteːktʊm/	protect	
+floor	noun	solum	sola	n	/ˈsɔlʊm/	soil	
+room	noun	camera	camerae	f	/ˈkamɛra/	camera	a vaulted chamber; the photographic sense came much later
+table	noun	mēnsa	mēnsae	f	/ˈmeːnsa/		
+chair	noun	sella	sellae	f	/ˈsɛlːa/		
+bed	noun	lectus	lectī	m	/ˈlɛktʊs/		
+book	noun	liber	librī	m	/ˈlɪbɛr/	library	
+word	noun	verbum	verba	n	/ˈwɛrbʊm/	verbal	
+letter	noun	littera	litterae	f	/ˈlɪtːɛra/	literate	
+name	noun	nōmen	nōmina	n	/ˈnoːmɛn/	nominal	
+key	noun	clāvis	clāvēs	f	/ˈklaːwɪs/	clavicle	the collarbone was named for its key-like shape
+bridge	noun	pōns	pontēs	m	/ˈpoːns/	pontoon	
+church	noun	ecclēsia	ecclēsiae	f	/ɛˈkːleːsɪa/	ecclesiastical	
+ship	noun	nāvis	nāvēs	f	/ˈnaːwɪs/	navy	
+boat	noun	scapha	scaphae	f	/ˈskapʰa/		
+sword	noun	gladius	gladiī	m	/ˈɡladɪʊs/	gladiator	
+shield	noun	scūtum	scūta	n	/ˈskuːtʊm/	escutcheon	
+ring	noun	ānulus	ānulī	m	/ˈaːnʊlʊs/	annular	
+gold	noun	aurum		n	/ˈau̯rʊm/	aureate	
+silver	noun	argentum		n	/aˈrɡɛntʊm/	Argentina	the country is named for the metal
+iron	noun	ferrum		n	/ˈfɛrːʊm/	ferrous	
+stone	noun	lapis	lapidēs	m	/ˈlapɪs/	lapidary	
+glass	noun	vitrum		n	/ˈwɪtrʊm/	vitreous	
+cloth	noun	pannus	pannī	m	/ˈpanːʊs/	pane	
+shoe	noun	calceus	calceī	m	/ˈkalkeu̯s/		
+coat	noun	tunica	tunicae	f	/ˈtʊnɪka/	tunic	
+hat	noun	petasus	petasī	m	/ˈpɛtasʊs/		
+sun	noun	sōl	sōlēs	m	/ˈsoːl/	solar	
+moon	noun	lūna	lūnae	f	/ˈluːna/	lunar	
+star	noun	stēlla	stēllae	f	/ˈsteːlːa/	stellar	
+sky	noun	caelum	caela	n	/ˈkae̯lʊm/	celestial	
+earth	noun	terra	terrae	f	/ˈtɛrːa/	terrain	
+land	noun	terra	terrae	f	/ˈtɛrːa/	territory	
+sea	noun	mare	maria	n	/ˈmarɛ/	marine	
+river	noun	flūmen	flūmina	n	/ˈfluːmɛn/	fluvial	
+lake	noun	lacus	lacūs	m	/ˈlakʊs/	lagoon	
+mountain	noun	mōns	montēs	m	/ˈmoːns/	mountain	
+hill	noun	collis	collēs	m	/ˈkɔlːɪs/		
+forest	noun	silva	silvae	f	/ˈsɪlwa/	sylvan	
+tree	noun	arbor	arborēs	f	/ˈarbɔr/	arboreal	
+leaf	noun	folium	folia	n	/ˈfɔlɪʊm/	foliage	
+flower	noun	flōs	flōrēs	m	/ˈfloːs/	floral	
+grass	noun	herba	herbae	f	/ˈhɛrba/	herb	
+field	noun	ager	agrī	m	/ˈaɡɛr/	agrarian	
+road	noun	via	viae	f	/ˈwɪa/	via	
+path	noun	sēmita	sēmitae	f	/ˈseːmɪta/		
+city	noun	urbs	urbēs	f	/ˈʊrbs/	urban	
+town	noun	oppidum	oppida	n	/ˈɔpːɪdʊm/		
+village	noun	vīcus	vīcī	m	/ˈwiːkʊs/	vicinity	
+world	noun	mundus	mundī	m	/ˈmʊndʊs/	mundane	
+country	noun	patria	patriae	f	/ˈpatrɪa/	patriot	
+place	noun	locus	loca	n	/ˈlɔkʊs/	local	
+rain	noun	pluvia	pluviae	f	/ˈplʊwɪa/	pluvial	
+snow	noun	nix	nivēs	f	/ˈnɪks/		
+wind	noun	ventus	ventī	m	/ˈwɛntʊs/	ventilate	
+cloud	noun	nūbēs	nūbēs	f	/ˈnuːbeːs/	nubilous	
+ice	noun	glaciēs	glaciēs	f	/ˈɡlakɪeːs/	glacier	
+light	noun	lūx	lūcēs	f	/ˈluːks/	lucid	
+shadow	noun	umbra	umbrae	f	/ˈʊmbra/	umbrella	a little shade
+time	noun	tempus	tempora	n	/ˈtɛmpʊs/	temporal	
+day	noun	diēs	diēs	m	/ˈdɪeːs/	diary	
+night	noun	nox	noctēs	f	/ˈnɔks/	nocturnal	
+year	noun	annus	annī	m	/ˈanːʊs/	annual	
+month	noun	mēnsis	mēnsēs	m	/ˈmeːnsɪs/	menstrual	
+week	noun	hebdomas	hebdomadēs	f	/ˈhɛbdɔmas/		
+hour	noun	hōra	hōrae	f	/ˈhoːra/	hour	
+morning	noun	māne		n	/ˈmaːnɛ/	matinee	
+evening	noun	vesper	vesperēs	m	/ˈwɛspɛr/	vespers	
+summer	noun	aestās	aestātēs	f	/ˈae̯staːs/	estival	
+winter	noun	hiems	hiemēs	f	/ˈhɪɛms/	hibernate	
+autumn	noun	autumnus	autumnī	m	/au̯ˈtʊmnʊs/	autumn	
+life	noun	vīta	vītae	f	/ˈwiːta/	vital	
+death	noun	mors	mortēs	f	/ˈmɔrs/	mortal	
+love	noun	amor	amōrēs	m	/ˈamɔr/	amorous	
+war	noun	bellum	bella	n	/ˈbɛlːʊm/	belligerent	
+peace	noun	pāx	pācēs	f	/ˈpaːks/	pacify	
+truth	noun	vēritās	vēritātēs	f	/ˈweːrɪtaːs/	verity	
+law	noun	lēx	lēgēs	f	/ˈleːks/	legal	
+work	noun	labor	labōrēs	m	/ˈlabɔr/	labour	
+money	noun	pecūnia	pecūniae	f	/pɛˈkuːnɪa/	pecuniary	from "pecus", cattle: the original wealth
+price	noun	pretium	pretia	n	/ˈprɛtɪʊm/	precious	
+question	noun	quaestiō	quaestiōnēs	f	/kʷae̯ˈstɪoː/	question	
+answer	noun	respōnsum	respōnsa	n	/rɛˈspoːnsʊm/	response	
+story	noun	fābula	fābulae	f	/ˈfaːbʊla/	fable	
+song	noun	carmen	carmina	n	/ˈkarmɛn/	charm	a carmen was a song and a spell alike
+music	noun	mūsica		f	/ˈmuːsɪka/	music	the art of the Muses
+game	noun	lūdus	lūdī	m	/ˈluːdʊs/	ludicrous	
+dream	noun	somnium	somnia	n	/ˈsɔmnɪʊm/	somnolent	
+fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timid	
+hope	noun	spēs	spēs	f	/ˈspeːs/	despair	"despair" is to be out of spes
+joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	gaudy	
+anger	noun	īra	īrae	f	/ˈiːra/	irate	
+oath	noun	iūsiūrandum	iūsiūranda	n	/juːsɪuːˈrandʊm/	jurisdiction	
+gift	noun	dōnum	dōna	n	/ˈdoːnʊm/	donate	
+good	adj	bonus			/ˈbɔnʊs/	bonus	
+bad	adj	malus			/ˈmalʊs/	malice	
+big	adj	magnus			/ˈmaɡnʊs/	magnitude	
+small	adj	parvus			/ˈparwʊs/		
+great	adj	magnus			/ˈmaɡnʊs/	magnificent	
+little	adj	parvus			/ˈparwʊs/		
+long	adj	longus			/ˈlɔŋɡʊs/	longitude	
+short	adj	brevis			/ˈbrɛwɪs/	brevity	
+high	adj	altus			/ˈaltʊs/	altitude	
+low	adj	humilis			/ˈhʊmɪlɪs/	humble	
+old	adj	vetus			/ˈwɛtʊs/	veteran	
+young	adj	iuvenis			/ˈjʊwɛnɪs/	juvenile	
+new	adj	novus			/ˈnɔwʊs/	novel	
+hot	adj	calidus			/ˈkalɪdʊs/	calorie	
+cold	adj	frīgidus			/ˈfriːɡɪdʊs/	frigid	
+warm	adj	tepidus			/ˈtɛpɪdʊs/	tepid	
+heavy	adj	gravis			/ˈɡrawɪs/	gravity	
+strong	adj	fortis			/ˈfɔrtɪs/	fortitude	
+weak	adj	dēbilis			/ˈdeːbɪlɪs/	debilitate	
+hard	adj	dūrus			/ˈduːrʊs/	durable	
+soft	adj	mollis			/ˈmɔlːɪs/	mollify	
+quick	adj	celer			/ˈkɛlɛr/	celerity	
+slow	adj	tardus			/ˈtardʊs/	tardy	
+true	adj	vērus			/ˈweːrʊs/	verify	
+false	adj	falsus			/ˈfalsʊs/	false	
+rich	adj	dīves			/ˈdiːwɛs/		
+poor	adj	pauper			/ˈpau̯pɛr/	poverty	
+happy	adj	fēlīx			/ˈfeːliːks/	felicity	
+sad	adj	trīstis			/ˈtriːstɪs/	triste	
+tired	adj	fessus			/ˈfɛsːʊs/		
+full	adj	plēnus			/ˈpleːnʊs/	plenary	
+empty	adj	vacuus			/ˈwakʊʊs/	vacuum	
+clean	adj	pūrus			/ˈpuːrʊs/	pure	
+dirty	adj	sordidus			/ˈsɔrdɪdʊs/	sordid	
+beautiful	adj	pulcher			/ˈpʊlkʰɛr/		
+ugly	adj	turpis			/ˈtʊrpɪs/	turpitude	
+easy	adj	facilis			/ˈfakɪlɪs/	facile	
+difficult	adj	difficilis			/dɪˈfːɪkɪlɪs/	difficult	
+free	adj	līber			/ˈliːbɛr/	liberty	
+wise	adj	sapiēns			/ˈsapɪeːns/	sapient	
+brave	adj	audāx			/ˈau̯daːks/	audacious	
+holy	adj	sacer			/ˈsakɛr/	sacred	
+deep	adj	profundus			/prɔˈfʊndʊs/	profound	
+wide	adj	lātus			/ˈlaːtʊs/	latitude	
+narrow	adj	angustus			/aˈŋɡʊstʊs/	anguish	
+dead	adj	mortuus			/ˈmɔrtʊʊs/	mortuary	
+alive	adj	vīvus			/ˈwiːwʊs/	vivid	
+sick	adj	aeger			/ˈae̯ɡɛr/		
+whole	adj	tōtus			/ˈtoːtʊs/	total	
+white	adj	albus			/ˈalbʊs/	albino	
+black	adj	niger			/ˈnɪɡɛr/	negro	
+red	adj	ruber			/ˈrʊbɛr/	ruby	
+green	adj	viridis			/ˈwɪrɪdɪs/	verdant	
+blue	adj	caeruleus			/ˈkae̯rʊleu̯s/	cerulean	
+yellow	adj	flāvus			/ˈflaːwʊs/	flavine	
+grey	adj	cānus			/ˈkaːnʊs/		
+brown	adj	fuscus			/ˈfʊskʊs/	obfuscate	
+have	verb	habēre	habēns		/haˈbeːrɛ/	habit	
+say	verb	dīcere	dīcēns		/ˈdiːkɛrɛ/	dictate	
+go	verb	īre	iēns		/ˈiːrɛ/	exit	
+come	verb	venīre	veniēns		/wɛˈniːrɛ/	advent	
+see	verb	vidēre	vidēns		/wɪˈdeːrɛ/	video	
+know	verb	scīre	sciēns		/ˈskiːrɛ/	science	
+think	verb	putāre	putāns		/pʊˈtaːrɛ/	compute	
+take	verb	capere	capiēns		/ˈkapɛrɛ/	capture	
+give	verb	dare	dāns		/ˈdarɛ/	data	
+make	verb	facere	faciēns		/ˈfakɛrɛ/	factory	
+find	verb	invenīre	inveniēns		/ɪnwɛˈniːrɛ/	invent	
+want	verb	velle	volēns		/ˈwɛlːɛ/	volition	
+tell	verb	nārrāre	nārrāns		/naːˈrːaːrɛ/	narrate	
+ask	verb	rogāre	rogāns		/rɔˈɡaːrɛ/	interrogate	
+work	verb	labōrāre	labōrāns		/laboːˈraːrɛ/	labour	
+play	verb	lūdere	lūdēns		/ˈluːdɛrɛ/	ludic	
+run	verb	currere	currēns		/ˈkʊrːɛrɛ/	current	
+walk	verb	ambulāre	ambulāns		/ambʊˈlaːrɛ/	ambulatory	
+speak	verb	loquī	loquēns		/ˈlɔkʷiː/	eloquent	
+read	verb	legere	legēns		/ˈlɛɡɛrɛ/	legible	
+write	verb	scrībere	scrībēns		/ˈskriːbɛrɛ/	scribe	
+eat	verb	edere	edēns		/ˈɛdɛrɛ/	edible	
+drink	verb	bibere	bibēns		/ˈbɪbɛrɛ/	imbibe	
+sleep	verb	dormīre	dormiēns		/dɔˈrmiːrɛ/	dormitory	
+sit	verb	sedēre	sedēns		/sɛˈdeːrɛ/	sedentary	
+stand	verb	stāre	stāns		/ˈstaːrɛ/	stature	
+live	verb	vīvere	vīvēns		/ˈwiːwɛrɛ/	vivacious	
+die	verb	morī	moriēns		/ˈmɔriː/	moribund	
+love	verb	amāre	amāns		/aˈmaːrɛ/	amateur	
+hate	verb	ōdisse			/oːˈdɪsːɛ/	odium	
+fear	verb	timēre	timēns		/tɪˈmeːrɛ/	timorous	
+hear	verb	audīre	audiēns		/au̯ˈdiːrɛ/	audio	
+feel	verb	sentīre	sentiēns		/sɛˈntiːrɛ/	sentiment	
+hold	verb	tenēre	tenēns		/tɛˈneːrɛ/	tenacious	
+carry	verb	portāre	portāns		/pɔˈrtaːrɛ/	portable	
+bring	verb	ferre	ferēns		/ˈfɛrːɛ/	transfer	
+send	verb	mittere	mittēns		/ˈmɪtːɛrɛ/	mission	
+buy	verb	emere	emēns		/ˈɛmɛrɛ/	redeem	
+sell	verb	vēndere	vēndēns		/ˈweːndɛrɛ/	vend	
+pay	verb	solvere	solvēns		/ˈsɔlwɛrɛ/	solvent	
+build	verb	aedificāre	aedificāns		/ae̯dɪfɪˈkaːrɛ/	edifice	
+break	verb	frangere	frangēns		/ˈfraŋɡɛrɛ/	fracture	
+open	verb	aperīre	aperiēns		/apɛˈriːrɛ/	aperture	
+close	verb	claudere	claudēns		/ˈklau̯dɛrɛ/	conclude	
+begin	verb	incipere	incipiēns		/ɪˈŋkɪpɛrɛ/	incipient	
+help	verb	iuvāre	iuvāns		/jʊˈwaːrɛ/	adjutant	
+learn	verb	discere	discēns		/ˈdɪskɛrɛ/	disciple	
+teach	verb	docēre	docēns		/dɔˈkeːrɛ/	doctrine	
+remember	verb	meminisse			/mɛmɪˈnɪsːɛ/	memory	
+forget	verb	oblīvīscī	oblīvīscēns		/ɔbliːˈwiːskiː/	oblivion	
+win	verb	vincere	vincēns		/ˈwɪŋkɛrɛ/	invincible	
+lose	verb	āmittere	āmittēns		/aːˈmɪtːɛrɛ/		
+fight	verb	pugnāre	pugnāns		/pʊˈɡnaːrɛ/	pugnacious	
+swim	verb	natāre	natāns		/naˈtaːrɛ/	natatorium	
+fly	verb	volāre	volāns		/wɔˈlaːrɛ/	volatile	
+ride	verb	vehī	vehēns		/ˈwɛhiː/	vehicle	
+sing	verb	canere	canēns		/ˈkanɛrɛ/	chant	
+laugh	verb	rīdēre	rīdēns		/riːˈdeːrɛ/	ridicule	
+cry	verb	flēre	flēns		/ˈfleːrɛ/		
+wait	verb	exspectāre	exspectāns		/ɛksspɛˈktaːrɛ/	expect	
+watch	verb	spectāre	spectāns		/spɛˈktaːrɛ/	spectator	
+look	verb	aspicere	aspiciēns		/aˈspɪkɛrɛ/	aspect	
+show	verb	mōnstrāre	mōnstrāns		/moːˈnstraːrɛ/	demonstrate	
+call	verb	vocāre	vocāns		/wɔˈkaːrɛ/	vocation	
+put	verb	pōnere	pōnēns		/ˈpoːnɛrɛ/	position	
+keep	verb	servāre	servāns		/sɛˈrwaːrɛ/	conserve	
+leave	verb	relinquere	relinquēns		/rɛlɪˈŋkʷɛrɛ/	relinquish	
+follow	verb	sequī	sequēns		/ˈsɛkʷiː/	sequence	
+seek	verb	quaerere	quaerēns		/kʷae̯ˈrɛrɛ/	query	
+choose	verb	ēligere	ēligēns		/eːˈlɪɡɛrɛ/	elect	
+change	verb	mūtāre	mūtāns		/muːˈtaːrɛ/	mutate	
+grow	verb	crēscere	crēscēns		/ˈkreːskɛrɛ/	crescent	
+fall	verb	cadere	cadēns		/ˈkadɛrɛ/	cadence	
+rise	verb	surgere	surgēns		/ˈsʊrɡɛrɛ/	surge	
+turn	verb	vertere	vertēns		/ˈwɛrtɛrɛ/	convert	
+move	verb	movēre	movēns		/mɔˈweːrɛ/	motion	
+throw	verb	iacere	iaciēns		/ˈjakɛrɛ/	eject	
+catch	verb	capere	capiēns		/ˈkapɛrɛ/	capture	
+cut	verb	secāre	secāns		/sɛˈkaːrɛ/	section	
+wash	verb	lavāre	lavāns		/laˈwaːrɛ/	lavatory	
+cook	verb	coquere	coquēns		/kɔˈkʷɛrɛ/	concoct	
+always	adv	semper			/ˈsɛmpɛr/	semper fidelis	
+never	adv	numquam			/ˈnʊmkʷam/		
+often	adv	saepe			/ˈsae̯pɛ/		
+sometimes	adv	interdum			/ɪˈntɛrdʊm/		
+today	adv	hodiē			/ˈhɔdɪeː/		
+tomorrow	adv	crās			/ˈkraːs/	procrastinate	to put it off until crās
+yesterday	adv	herī			/ˈhɛriː/		
+now	adv	nunc			/ˈnʊŋk/		
+soon	adv	mox			/ˈmɔks/		
+already	adv	iam			/ˈjam/		
+almost	adv	paene			/ˈpae̯nɛ/	peninsula	paene insula, almost an island
+together	adv	simul			/ˈsɪmʊl/	simultaneous	
+alone	adv	sōlus			/ˈsoːlʊs/	solitary	
+again	adv	iterum			/ˈɪtɛrʊm/	iterate	
+here	adv	hīc			/ˈhiːk/		
+everywhere	adv	ubīque			/ʊˈbiːkʷɛ/	ubiquitous	
+nowhere	adv	nusquam			/ˈnʊskʷam/		
+slowly	adv	lentē			/ˈlɛnteː/	lento	
+quickly	adv	celeriter			/kɛˈlɛrɪtɛr/	accelerate	
+truly	adv	vērē			/ˈweːreː/	very	"very" descends from vērus, true
+perhaps	adv	forsitan			/ˈfɔrsɪtan/		
+very	adv	valdē			/ˈwaldeː/		
+one	num	ūnus			/ˈuːnʊs/	unit	
+two	num	duo			/ˈdʊɔ/	duo	
+three	num	trēs			/ˈtreːs/	trio	
+four	num	quattuor			/kʷaˈtːʊɔr/	quart	
+five	num	quīnque			/kʷiːˈŋkʷɛ/	quintet	
+six	num	sex			/ˈsɛks/	sextet	
+seven	num	septem			/ˈsɛptɛm/	September	the seventh month of the old Roman year
+eight	num	octō			/ˈɔktoː/	octave	
+nine	num	novem			/ˈnɔwɛm/	November	
+ten	num	decem			/ˈdɛkɛm/	decimal	
+hundred	num	centum			/ˈkɛntʊm/	century	
+thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mille passūs, a thousand paces
+first	num	prīmus			/ˈpriːmʊs/	primary	
+yes	intj	ita			/ˈɪta/	ita vero	classical Latin has no bare word for yes; "ita" means "thus"
+hello	intj	salvē			/ˈsalweː/	salvation	literally "be well"
+goodbye	intj	valē			/ˈwaleː/	valediction	literally "be strong"
+please	intj	quaesō			/kʷae̯ˈsoː/		
+sorry	intj	ignōsce			/ɪˈɡnoːskɛ/		

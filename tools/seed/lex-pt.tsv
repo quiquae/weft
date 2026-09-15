@@ -1,0 +1,367 @@
+# Weft translations: English -> pt
+#
+# lemma | pos | tgt | tgt2 | gender | ipa | etymon | note
+#
+# tgt   citation form: singular noun, infinitive verb, masculine
+#       singular adjective, nominative singular for Latin/Old English.
+# tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
+#       a noun means the English plural is never woven, which is the
+#       correct outcome: weaving a singular target under an English
+#       plural teaches a form that does not exist.
+#
+man	noun	homem	homens	m			
+woman	noun	mulher	mulheres	f			
+child	noun	criança	crianças	f			
+boy	noun	menino	meninos	m			
+girl	noun	menina	meninas	f			
+person	noun	pessoa	pessoas	f			
+friend	noun	amigo	amigos	m			
+family	noun	família	famílias	f			
+mother	noun	mãe	mães	f			
+father	noun	pai	pais	m			
+brother	noun	irmão	irmãos	m			
+sister	noun	irmã	irmãs	f			
+son	noun	filho	filhos	m			
+daughter	noun	filha	filhas	f			
+wife	noun	esposa	esposas	f			
+husband	noun	marido	maridos	m			
+baby	noun	bebé	bebés	m			
+king	noun	rei	reis	m			
+queen	noun	rainha	rainhas	f			
+lord	noun	senhor	senhores	m			
+neighbour	noun	vizinho	vizinhos	m			
+stranger	noun	estranho	estranhos	m			
+enemy	noun	inimigo	inimigos	m			
+soldier	noun	soldado	soldados	m			
+teacher	noun	professor	professores	m			
+doctor	noun	médico	médicos	m			
+farmer	noun	agricultor	agricultores	m			
+sailor	noun	marinheiro	marinheiros	m			
+head	noun	cabeça	cabeças	f			
+hand	noun	mão	mãos	f			
+eye	noun	olho	olhos	m			
+ear	noun	orelha	orelhas	f			
+mouth	noun	boca	bocas	f			
+nose	noun	nariz	narizes	m			
+tooth	noun	dente	dentes	m			
+hair	noun	cabelo	cabelos	m			
+heart	noun	coração	corações	m			
+blood	noun	sangue	sangues	m			
+bone	noun	osso	ossos	m			
+arm	noun	braço	braços	m			
+leg	noun	perna	pernas	f			
+foot	noun	pé	pés	m			
+finger	noun	dedo	dedos	m			
+face	noun	rosto	rostos	m			
+body	noun	corpo	corpos	m			
+skin	noun	pele	peles	f			
+voice	noun	voz	vozes	f			
+dog	noun	cão	cães	m			
+cat	noun	gato	gatos	m			
+horse	noun	cavalo	cavalos	m			
+bird	noun	pássaro	pássaros	m			
+fish	noun	peixe	peixes	m			
+cow	noun	vaca	vacas	f			
+sheep	noun	ovelha	ovelhas	f			
+pig	noun	porco	porcos	m			
+wolf	noun	lobo	lobos	m			
+bear	noun	urso	ursos	m			
+lion	noun	leão	leões	m			
+mouse	noun	rato	ratos	m			
+snake	noun	cobra	cobras	f			
+bee	noun	abelha	abelhas	f			
+worm	noun	verme	vermes	m			
+raven	noun	corvo	corvos	m			
+hound	noun	sabujo	sabujos	m			
+ox	noun	boi	bois	m			
+goat	noun	cabra	cabras	f			
+food	noun	comida	comidas	f			
+bread	noun	pão	pães	m			
+water	noun	água	águas	f			
+wine	noun	vinho	vinhos	m			
+milk	noun	leite	leites	m			
+meat	noun	carne	carnes	f			
+fruit	noun	fruta	frutas	f			
+apple	noun	maçã	maçãs	f			
+salt	noun	sal	sais	m			
+honey	noun	mel	méis	m			
+cheese	noun	queijo	queijos	m			
+egg	noun	ovo	ovos	m			
+fire	noun	fogo	fogos	m			
+house	noun	casa	casas	f			
+home	noun	lar	lares	m			
+door	noun	porta	portas	f			
+window	noun	janela	janelas	f			
+wall	noun	parede	paredes	f			
+roof	noun	telhado	telhados	m			
+floor	noun	chão	chões	m			
+room	noun	quarto	quartos	m			
+table	noun	mesa	mesas	f			
+chair	noun	cadeira	cadeiras	f			
+bed	noun	cama	camas	f			
+book	noun	livro	livros	m			
+word	noun	palavra	palavras	f			
+letter	noun	carta	cartas	f			
+name	noun	nome	nomes	m			
+key	noun	chave	chaves	f			
+bridge	noun	ponte	pontes	f			
+church	noun	igreja	igrejas	f			
+ship	noun	navio	navios	m			
+boat	noun	barco	barcos	m			
+sword	noun	espada	espadas	f			
+shield	noun	escudo	escudos	m			
+ring	noun	anel	anéis	m			
+gold	noun	ouro	ouros	m			
+silver	noun	prata	pratas	f			
+iron	noun	ferro	ferros	m			
+stone	noun	pedra	pedras	f			
+glass	noun	vidro	vidros	m			
+cloth	noun	tecido	tecidos	m			
+shoe	noun	sapato	sapatos	m			
+coat	noun	casaco	casacos	m			
+hat	noun	chapéu	chapéus	m			
+sun	noun	sol	sóis	m			
+moon	noun	lua	luas	f			
+star	noun	estrela	estrelas	f			
+sky	noun	céu	céus	m			
+earth	noun	terra	terras	f			
+land	noun	terra	terras	f			
+sea	noun	mar	mares	m			
+river	noun	rio	rios	m			
+lake	noun	lago	lagos	m			
+mountain	noun	montanha	montanhas	f			
+hill	noun	colina	colinas	f			
+forest	noun	floresta	florestas	f			
+tree	noun	árvore	árvores	f			
+leaf	noun	folha	folhas	f			
+flower	noun	flor	flores	f			
+grass	noun	erva	ervas	f			
+field	noun	campo	campos	m			
+road	noun	estrada	estradas	f			
+path	noun	caminho	caminhos	m			
+city	noun	cidade	cidades	f			
+town	noun	vila	vilas	f			
+village	noun	aldeia	aldeias	f			
+world	noun	mundo	mundos	m			
+country	noun	país	países	m			
+place	noun	lugar	lugares	m			
+rain	noun	chuva	chuvas	f			
+snow	noun	neve	neves	f			
+wind	noun	vento	ventos	m			
+cloud	noun	nuvem	nuvens	f			
+ice	noun	gelo	gelos	m			
+light	noun	luz	luzes	f			
+shadow	noun	sombra	sombras	f			
+time	noun	tempo	tempos	m			
+day	noun	dia	dias	m			
+night	noun	noite	noites	f			
+year	noun	ano	anos	m			
+month	noun	mês	meses	m			
+week	noun	semana	semanas	f			
+hour	noun	hora	horas	f			
+morning	noun	manhã	manhãs	f			
+evening	noun	tarde	tardes	f			
+summer	noun	verão	verões	m			
+winter	noun	inverno	invernos	m			
+autumn	noun	outono	outonos	m			
+life	noun	vida	vidas	f			
+death	noun	morte	mortes	f			
+love	noun	amor	amores	m			
+war	noun	guerra	guerras	f			
+peace	noun	paz	pazes	f			
+truth	noun	verdade	verdades	f			
+law	noun	lei	leis	f			
+work	noun	trabalho	trabalhos	m			
+money	noun	dinheiro	dinheiros	m			
+price	noun	preço	preços	m			
+question	noun	pergunta	perguntas	f			
+answer	noun	resposta	respostas	f			
+story	noun	história	histórias	f			
+song	noun	canção	canções	f			
+music	noun	música	músicas	f			
+game	noun	jogo	jogos	m			
+dream	noun	sonho	sonhos	m			
+fear	noun	medo	medos	m			
+hope	noun	esperança	esperanças	f			
+joy	noun	alegria	alegrias	f			
+anger	noun	raiva	raivas	f			
+oath	noun	juramento	juramentos	m			
+gift	noun	presente	presentes	m			
+good	adj	bom					
+bad	adj	mau					
+big	adj	grande					
+small	adj	pequeno					
+great	adj	grande					
+little	adj	pequeno					
+long	adj	longo					
+short	adj	curto					
+high	adj	alto					
+low	adj	baixo					
+old	adj	velho					
+young	adj	jovem					
+new	adj	novo					
+hot	adj	quente					
+cold	adj	frio					
+warm	adj	morno					
+heavy	adj	pesado					
+strong	adj	forte					
+weak	adj	fraco					
+hard	adj	duro					
+soft	adj	macio					
+quick	adj	rápido					
+slow	adj	lento					
+true	adj	verdadeiro					
+false	adj	falso					
+rich	adj	rico					
+poor	adj	pobre					
+happy	adj	feliz					
+sad	adj	triste					
+tired	adj	cansado					
+full	adj	cheio					
+empty	adj	vazio					
+clean	adj	limpo					
+dirty	adj	sujo					
+beautiful	adj	belo					
+ugly	adj	feio					
+easy	adj	fácil					
+difficult	adj	difícil					
+free	adj	livre					
+wise	adj	sábio					
+brave	adj	corajoso					
+holy	adj	santo					
+deep	adj	profundo					
+wide	adj	largo					
+narrow	adj	estreito					
+dead	adj	morto					
+alive	adj	vivo					
+sick	adj	doente					
+whole	adj	inteiro					
+white	adj	branco					
+black	adj	preto					
+red	adj	vermelho					
+green	adj	verde					
+blue	adj	azul					
+yellow	adj	amarelo					
+grey	adj	cinzento					
+brown	adj	marrom					
+have	verb	ter	tendo				
+say	verb	dizer	dizendo				
+go	verb	ir	indo				
+come	verb	vir	vindo				
+see	verb	ver	vendo				
+know	verb	saber	sabendo				
+think	verb	pensar	pensando				
+take	verb	tomar	tomando				
+give	verb	dar	dando				
+make	verb	fazer	fazendo				
+find	verb	encontrar	encontrando				
+want	verb	querer	querendo				
+tell	verb	contar	contando				
+ask	verb	perguntar	perguntando				
+work	verb	trabalhar	trabalhando				
+play	verb	jogar	jogando				
+run	verb	correr	correndo				
+walk	verb	andar	andando				
+speak	verb	falar	falando				
+read	verb	ler	lendo				
+write	verb	escrever	escrevendo				
+eat	verb	comer	comendo				
+drink	verb	beber	bebendo				
+sleep	verb	dormir	dormindo				
+sit	verb	sentar	sentando				
+stand	verb	estar de pé					
+live	verb	viver	vivendo				
+die	verb	morrer	morrendo				
+love	verb	amar	amando				
+hate	verb	odiar	odiando				
+fear	verb	temer	temendo				
+hear	verb	ouvir	ouvindo				
+feel	verb	sentir	sentindo				
+hold	verb	segurar	segurando				
+carry	verb	levar	levando				
+bring	verb	trazer	trazendo				
+send	verb	enviar	enviando				
+buy	verb	comprar	comprando				
+sell	verb	vender	vendendo				
+pay	verb	pagar	pagando				
+build	verb	construir	construindo				
+break	verb	quebrar	quebrando				
+open	verb	abrir	abrindo				
+close	verb	fechar	fechando				
+begin	verb	começar	começando				
+help	verb	ajudar	ajudando				
+learn	verb	aprender	aprendendo				
+teach	verb	ensinar	ensinando				
+remember	verb	lembrar	lembrando				
+forget	verb	esquecer	esquecendo				
+win	verb	ganhar	ganhando				
+lose	verb	perder	perdendo				
+fight	verb	lutar	lutando				
+swim	verb	nadar	nadando				
+fly	verb	voar	voando				
+ride	verb	montar	montando				
+sing	verb	cantar	cantando				
+laugh	verb	rir	rindo				
+cry	verb	chorar	chorando				
+wait	verb	esperar	esperando				
+watch	verb	observar	observando				
+look	verb	olhar	olhando				
+show	verb	mostrar	mostrando				
+call	verb	chamar	chamando				
+put	verb	pôr	pondo				
+keep	verb	guardar	guardando				
+leave	verb	partir	partindo				
+follow	verb	seguir	seguindo				
+seek	verb	procurar	procurando				
+choose	verb	escolher	escolhendo				
+change	verb	mudar	mudando				
+grow	verb	crescer	crescendo				
+fall	verb	cair	caindo				
+rise	verb	subir	subindo				
+turn	verb	virar	virando				
+move	verb	mover	movendo				
+throw	verb	lançar	lançando				
+catch	verb	pegar	pegando				
+cut	verb	cortar	cortando				
+wash	verb	lavar	lavando				
+cook	verb	cozinhar	cozinhando				
+always	adv	sempre					
+never	adv	nunca					
+often	adv	muitas vezes					
+sometimes	adv	às vezes					
+today	adv	hoje					
+tomorrow	adv	amanhã					
+yesterday	adv	ontem					
+now	adv	agora					
+soon	adv	em breve					
+already	adv	já					
+almost	adv	quase					
+together	adv	juntos					
+alone	adv	sozinho					
+again	adv	outra vez					
+here	adv	aqui					
+everywhere	adv	em todo lugar					
+nowhere	adv	em nenhum lugar					
+slowly	adv	lentamente					
+quickly	adv	rapidamente					
+truly	adv	verdadeiramente					
+perhaps	adv	talvez					
+very	adv	muito					
+one	num	um					
+two	num	dois					
+three	num	três					
+four	num	quatro					
+five	num	cinco					
+six	num	seis					
+seven	num	sete					
+eight	num	oito					
+nine	num	nove					
+ten	num	dez					
+hundred	num	cem					
+thousand	num	mil					
+first	num	primeiro					
+yes	intj	sim					
+hello	intj	olá					
+goodbye	intj	adeus					
+please	intj	por favor					
+sorry	intj	desculpa					

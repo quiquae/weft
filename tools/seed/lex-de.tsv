@@ -1,0 +1,372 @@
+# Weft translations: English -> de
+#
+# lemma | pos | tgt | tgt2 | gender | ipa | etymon | note
+#
+# tgt   citation form: singular noun, infinitive verb, masculine
+#       singular adjective, nominative singular for Latin/Old English.
+# tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
+#       a noun means the English plural is never woven, which is the
+#       correct outcome: weaving a singular target under an English
+#       plural teaches a form that does not exist.
+#
+# German plurals are lexically determined, so every one is authored here rather
+# than derived. German nouns keep their capital letter when woven: "the Haus"
+# is correct German inside an English clause, and lowercasing it would teach a
+# spelling error.
+#
+man	noun	Mann	Männer	m			
+woman	noun	Frau	Frauen	f			
+child	noun	Kind	Kinder	n			
+boy	noun	Junge	Jungen	m			
+girl	noun	Mädchen	Mädchen	n			
+person	noun	Person	Personen	f			
+friend	noun	Freund	Freunde	m			
+family	noun	Familie	Familien	f			
+mother	noun	Mutter	Mütter	f			
+father	noun	Vater	Väter	m			
+brother	noun	Bruder	Brüder	m			
+sister	noun	Schwester	Schwestern	f			
+son	noun	Sohn	Söhne	m			
+daughter	noun	Tochter	Töchter	f			
+wife	noun	Ehefrau	Ehefrauen	f			
+husband	noun	Ehemann	Ehemänner	m			
+baby	noun	Baby	Babys	n			
+king	noun	König	Könige	m			
+queen	noun	Königin	Königinnen	f			
+lord	noun	Herr	Herren	m			
+neighbour	noun	Nachbar	Nachbarn	m			
+stranger	noun	Fremder	Fremde	m			
+enemy	noun	Feind	Feinde	m			
+soldier	noun	Soldat	Soldaten	m			
+teacher	noun	Lehrer	Lehrer	m			
+doctor	noun	Arzt	Ärzte	m			
+farmer	noun	Bauer	Bauern	m			
+sailor	noun	Seemann	Seeleute	m			
+head	noun	Kopf	Köpfe	m			
+hand	noun	Hand	Hände	f			
+eye	noun	Auge	Augen	n			
+ear	noun	Ohr	Ohren	n			
+mouth	noun	Mund	Münder	m			
+nose	noun	Nase	Nasen	f			
+tooth	noun	Zahn	Zähne	m			
+hair	noun	Haar	Haare	n			
+heart	noun	Herz	Herzen	n			
+blood	noun	Blut		n			
+bone	noun	Knochen	Knochen	m			
+arm	noun	Arm	Arme	m			
+leg	noun	Bein	Beine	n			
+foot	noun	Fuß	Füße	m			
+finger	noun	Finger	Finger	m			
+face	noun	Gesicht	Gesichter	n			
+body	noun	Körper	Körper	m			
+skin	noun	Haut	Häute	f			
+voice	noun	Stimme	Stimmen	f			
+dog	noun	Hund	Hunde	m			
+cat	noun	Katze	Katzen	f			
+horse	noun	Pferd	Pferde	n			
+bird	noun	Vogel	Vögel	m			
+fish	noun	Fisch	Fische	m			
+cow	noun	Kuh	Kühe	f			
+sheep	noun	Schaf	Schafe	n			
+pig	noun	Schwein	Schweine	n			
+wolf	noun	Wolf	Wölfe	m			
+bear	noun	Bär	Bären	m			
+lion	noun	Löwe	Löwen	m			
+mouse	noun	Maus	Mäuse	f			
+snake	noun	Schlange	Schlangen	f			
+bee	noun	Biene	Bienen	f			
+worm	noun	Wurm	Würmer	m			
+raven	noun	Rabe	Raben	m			
+hound	noun	Jagdhund	Jagdhunde	m			
+ox	noun	Ochse	Ochsen	m			
+goat	noun	Ziege	Ziegen	f			
+food	noun	Essen		n			
+bread	noun	Brot	Brote	n			
+water	noun	Wasser	Wasser	n			
+wine	noun	Wein	Weine	m			
+milk	noun	Milch		f			
+meat	noun	Fleisch		n			
+fruit	noun	Frucht	Früchte	f			
+apple	noun	Apfel	Äpfel	m			
+salt	noun	Salz		n			
+honey	noun	Honig		m			
+cheese	noun	Käse	Käse	m			
+egg	noun	Ei	Eier	n			
+fire	noun	Feuer	Feuer	n			
+house	noun	Haus	Häuser	n			
+home	noun	Heim	Heime	n			
+door	noun	Tür	Türen	f			
+window	noun	Fenster	Fenster	n			
+wall	noun	Wand	Wände	f			
+roof	noun	Dach	Dächer	n			
+floor	noun	Boden	Böden	m			
+room	noun	Zimmer	Zimmer	n			
+table	noun	Tisch	Tische	m			
+chair	noun	Stuhl	Stühle	m			
+bed	noun	Bett	Betten	n			
+book	noun	Buch	Bücher	n			
+word	noun	Wort	Wörter	n			
+letter	noun	Brief	Briefe	m			
+name	noun	Name	Namen	m			
+key	noun	Schlüssel	Schlüssel	m			
+bridge	noun	Brücke	Brücken	f			
+church	noun	Kirche	Kirchen	f			
+ship	noun	Schiff	Schiffe	n			
+boat	noun	Boot	Boote	n			
+sword	noun	Schwert	Schwerter	n			
+shield	noun	Schild	Schilde	m			
+ring	noun	Ring	Ringe	m			
+gold	noun	Gold		n			
+silver	noun	Silber		n			
+iron	noun	Eisen		n			
+stone	noun	Stein	Steine	m			
+glass	noun	Glas	Gläser	n			
+cloth	noun	Stoff	Stoffe	m			
+shoe	noun	Schuh	Schuhe	m			
+coat	noun	Mantel	Mäntel	m			
+hat	noun	Hut	Hüte	m			
+sun	noun	Sonne	Sonnen	f			
+moon	noun	Mond	Monde	m			
+star	noun	Stern	Sterne	m			
+sky	noun	Himmel	Himmel	m			
+earth	noun	Erde		f			
+land	noun	Land	Länder	n			
+sea	noun	Meer	Meere	n			
+river	noun	Fluss	Flüsse	m			
+lake	noun	See	Seen	m			
+mountain	noun	Berg	Berge	m			
+hill	noun	Hügel	Hügel	m			
+forest	noun	Wald	Wälder	m			
+tree	noun	Baum	Bäume	m			
+leaf	noun	Blatt	Blätter	n			
+flower	noun	Blume	Blumen	f			
+grass	noun	Gras	Gräser	n			
+field	noun	Feld	Felder	n			
+road	noun	Straße	Straßen	f			
+path	noun	Pfad	Pfade	m			
+city	noun	Stadt	Städte	f			
+town	noun	Stadt	Städte	f			
+village	noun	Dorf	Dörfer	n			
+world	noun	Welt	Welten	f			
+country	noun	Land	Länder	n			
+place	noun	Ort	Orte	m			
+rain	noun	Regen		m			
+snow	noun	Schnee		m			
+wind	noun	Wind	Winde	m			
+cloud	noun	Wolke	Wolken	f			
+ice	noun	Eis		n			
+light	noun	Licht	Lichter	n			
+shadow	noun	Schatten	Schatten	m			
+time	noun	Zeit	Zeiten	f			
+day	noun	Tag	Tage	m			
+night	noun	Nacht	Nächte	f			
+year	noun	Jahr	Jahre	n			
+month	noun	Monat	Monate	m			
+week	noun	Woche	Wochen	f			
+hour	noun	Stunde	Stunden	f			
+morning	noun	Morgen	Morgen	m			
+evening	noun	Abend	Abende	m			
+summer	noun	Sommer	Sommer	m			
+winter	noun	Winter	Winter	m			
+autumn	noun	Herbst	Herbste	m			
+life	noun	Leben	Leben	n			
+death	noun	Tod	Tode	m			
+love	noun	Liebe		f			
+war	noun	Krieg	Kriege	m			
+peace	noun	Frieden		m			
+truth	noun	Wahrheit	Wahrheiten	f			
+law	noun	Gesetz	Gesetze	n			
+work	noun	Arbeit	Arbeiten	f			
+money	noun	Geld	Gelder	n			
+price	noun	Preis	Preise	m			
+question	noun	Frage	Fragen	f			
+answer	noun	Antwort	Antworten	f			
+story	noun	Geschichte	Geschichten	f			
+song	noun	Lied	Lieder	n			
+music	noun	Musik		f			
+game	noun	Spiel	Spiele	n			
+dream	noun	Traum	Träume	m			
+fear	noun	Angst	Ängste	f			
+hope	noun	Hoffnung	Hoffnungen	f			
+joy	noun	Freude	Freuden	f			
+anger	noun	Wut		f			
+oath	noun	Eid	Eide	m			
+gift	noun	Geschenk	Geschenke	n			
+good	adj	gut					
+bad	adj	schlecht					
+big	adj	groß					
+small	adj	klein					
+great	adj	groß					
+little	adj	klein					
+long	adj	lang					
+short	adj	kurz					
+high	adj	hoch					
+low	adj	niedrig					
+old	adj	alt					
+young	adj	jung					
+new	adj	neu					
+hot	adj	heiß					
+cold	adj	kalt					
+warm	adj	warm					
+heavy	adj	schwer					
+strong	adj	stark					
+weak	adj	schwach					
+hard	adj	hart					
+soft	adj	weich					
+quick	adj	schnell					
+slow	adj	langsam					
+true	adj	wahr					
+false	adj	falsch					
+rich	adj	reich					
+poor	adj	arm					
+happy	adj	glücklich					
+sad	adj	traurig					
+tired	adj	müde					
+full	adj	voll					
+empty	adj	leer					
+clean	adj	sauber					
+dirty	adj	schmutzig					
+beautiful	adj	schön					
+ugly	adj	hässlich					
+easy	adj	leicht					
+difficult	adj	schwierig					
+free	adj	frei					
+wise	adj	weise					
+brave	adj	tapfer					
+holy	adj	heilig					
+deep	adj	tief					
+wide	adj	breit					
+narrow	adj	eng					
+dead	adj	tot					
+alive	adj	lebendig					
+sick	adj	krank					
+whole	adj	ganz					
+white	adj	weiß					
+black	adj	schwarz					
+red	adj	rot					
+green	adj	grün					
+blue	adj	blau					
+yellow	adj	gelb					
+grey	adj	grau					
+brown	adj	braun					
+have	verb	haben	habend				
+say	verb	sagen	sagend				
+go	verb	gehen	gehend				
+come	verb	kommen	kommend				
+see	verb	sehen	sehend				
+know	verb	wissen	wissend				
+think	verb	denken	denkend				
+take	verb	nehmen	nehmend				
+give	verb	geben	gebend				
+make	verb	machen	machend				
+find	verb	finden	findend				
+want	verb	wollen	wollend				
+tell	verb	erzählen	erzählend				
+ask	verb	fragen	fragend				
+work	verb	arbeiten	arbeitend				
+play	verb	spielen	spielend				
+run	verb	laufen	laufend				
+walk	verb	gehen	gehend				
+speak	verb	sprechen	sprechend				
+read	verb	lesen	lesend				
+write	verb	schreiben	schreibend				
+eat	verb	essen	essend				
+drink	verb	trinken	trinkend				
+sleep	verb	schlafen	schlafend				
+sit	verb	sitzen	sitzend				
+stand	verb	stehen	stehend				
+live	verb	leben	lebend				
+die	verb	sterben	sterbend				
+love	verb	lieben	liebend				
+hate	verb	hassen	hassend				
+fear	verb	fürchten	fürchtend				
+hear	verb	hören	hörend				
+feel	verb	fühlen	fühlend				
+hold	verb	halten	haltend				
+carry	verb	tragen	tragend				
+bring	verb	bringen	bringend				
+send	verb	senden	sendend				
+buy	verb	kaufen	kaufend				
+sell	verb	verkaufen	verkaufend				
+pay	verb	zahlen	zahlend				
+build	verb	bauen	bauend				
+break	verb	brechen	brechend				
+open	verb	öffnen	öffnend				
+close	verb	schließen	schließend				
+begin	verb	beginnen	beginnend				
+help	verb	helfen	helfend				
+learn	verb	lernen	lernend				
+teach	verb	lehren	lehrend				
+remember	verb	erinnern	erinnernd				
+forget	verb	vergessen	vergessend				
+win	verb	gewinnen	gewinnend				
+lose	verb	verlieren	verlierend				
+fight	verb	kämpfen	kämpfend				
+swim	verb	schwimmen	schwimmend				
+fly	verb	fliegen	fliegend				
+ride	verb	reiten	reitend				
+sing	verb	singen	singend				
+laugh	verb	lachen	lachend				
+cry	verb	weinen	weinend				
+wait	verb	warten	wartend				
+watch	verb	beobachten	beobachtend				
+look	verb	schauen	schauend				
+show	verb	zeigen	zeigend				
+call	verb	rufen	rufend				
+put	verb	setzen	setzend				
+keep	verb	behalten	behaltend				
+leave	verb	verlassen	verlassend				
+follow	verb	folgen	folgend				
+seek	verb	suchen	suchend				
+choose	verb	wählen	wählend				
+change	verb	ändern	ändernd				
+grow	verb	wachsen	wachsend				
+fall	verb	fallen	fallend				
+rise	verb	steigen	steigend				
+turn	verb	drehen	drehend				
+move	verb	bewegen	bewegend				
+throw	verb	werfen	werfend				
+catch	verb	fangen	fangend				
+cut	verb	schneiden	schneidend				
+wash	verb	waschen	waschend				
+cook	verb	kochen	kochend				
+always	adv	immer					
+never	adv	nie					
+often	adv	oft					
+sometimes	adv	manchmal					
+today	adv	heute					
+tomorrow	adv	morgen					
+yesterday	adv	gestern					
+now	adv	jetzt					
+soon	adv	bald					
+already	adv	schon					
+almost	adv	fast					
+together	adv	zusammen					
+alone	adv	allein					
+again	adv	wieder					
+here	adv	hier					
+everywhere	adv	überall					
+nowhere	adv	nirgendwo					
+slowly	adv	langsam					
+quickly	adv	schnell					
+truly	adv	wirklich					
+perhaps	adv	vielleicht					
+very	adv	sehr					
+one	num	eins					
+two	num	zwei					
+three	num	drei					
+four	num	vier					
+five	num	fünf					
+six	num	sechs					
+seven	num	sieben					
+eight	num	acht					
+nine	num	neun					
+ten	num	zehn					
+hundred	num	hundert					
+thousand	num	tausend					
+first	num	erste					
+yes	intj	ja					
+hello	intj	hallo					
+goodbye	intj	auf Wiedersehen					
+please	intj	bitte					
+sorry	intj	Entschuldigung					

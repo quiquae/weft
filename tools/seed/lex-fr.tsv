@@ -1,0 +1,372 @@
+# Weft translations: English -> fr
+#
+# lemma | pos | tgt | tgt2 | gender | ipa | etymon | note
+#
+# tgt   citation form: singular noun, infinitive verb, masculine
+#       singular adjective, nominative singular for Latin/Old English.
+# tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
+#       a noun means the English plural is never woven, which is the
+#       correct outcome: weaving a singular target under an English
+#       plural teaches a form that does not exist.
+#
+# Verbs are woven as infinitives. "he courir" is not grammatical French and is
+# not meant to be: the reader is decoding a French word inside an English
+# clause, and the infinitive is the form they will meet in a dictionary.
+# Present participles are supplied so English "-ing" forms read naturally.
+#
+man	noun	homme	hommes	m			
+woman	noun	femme	femmes	f			
+child	noun	enfant	enfants	m			
+boy	noun	garçon	garçons	m			
+girl	noun	fille	filles	f			
+person	noun	personne	personnes	f			
+friend	noun	ami	amis	m			
+family	noun	famille	familles	f			
+mother	noun	mère	mères	f			
+father	noun	père	pères	m			
+brother	noun	frère	frères	m			
+sister	noun	sœur	sœurs	f			
+son	noun	fils	fils	m			
+daughter	noun	fille	filles	f			
+wife	noun	épouse	épouses	f			
+husband	noun	mari	maris	m			
+baby	noun	bébé	bébés	m			
+king	noun	roi	rois	m			
+queen	noun	reine	reines	f			
+lord	noun	seigneur	seigneurs	m			
+neighbour	noun	voisin	voisins	m			
+stranger	noun	étranger	étrangers	m			
+enemy	noun	ennemi	ennemis	m			
+soldier	noun	soldat	soldats	m			
+teacher	noun	professeur	professeurs	m			
+doctor	noun	médecin	médecins	m			
+farmer	noun	fermier	fermiers	m			
+sailor	noun	marin	marins	m			
+head	noun	tête	têtes	f			
+hand	noun	main	mains	f			
+eye	noun	œil	yeux	m			
+ear	noun	oreille	oreilles	f			
+mouth	noun	bouche	bouches	f			
+nose	noun	nez	nez	m			
+tooth	noun	dent	dents	f			
+hair	noun	cheveu	cheveux	m			
+heart	noun	cœur	cœurs	m			
+blood	noun	sang	sangs	m			
+bone	noun	os	os	m			
+arm	noun	bras	bras	m			
+leg	noun	jambe	jambes	f			
+foot	noun	pied	pieds	m			
+finger	noun	doigt	doigts	m			
+face	noun	visage	visages	m			
+body	noun	corps	corps	m			
+skin	noun	peau	peaux	f			
+voice	noun	voix	voix	f			
+dog	noun	chien	chiens	m			
+cat	noun	chat	chats	m			
+horse	noun	cheval	chevaux	m			
+bird	noun	oiseau	oiseaux	m			
+fish	noun	poisson	poissons	m			
+cow	noun	vache	vaches	f			
+sheep	noun	mouton	moutons	m			
+pig	noun	cochon	cochons	m			
+wolf	noun	loup	loups	m			
+bear	noun	ours	ours	m			
+lion	noun	lion	lions	m			
+mouse	noun	souris	souris	f			
+snake	noun	serpent	serpents	m			
+bee	noun	abeille	abeilles	f			
+worm	noun	ver	vers	m			
+raven	noun	corbeau	corbeaux	m			
+hound	noun	limier	limiers	m			
+ox	noun	bœuf	bœufs	m			
+goat	noun	chèvre	chèvres	f			
+food	noun	nourriture	nourritures	f			
+bread	noun	pain	pains	m			
+water	noun	eau	eaux	f			
+wine	noun	vin	vins	m			
+milk	noun	lait	laits	m			
+meat	noun	viande	viandes	f			
+fruit	noun	fruit	fruits	m			
+apple	noun	pomme	pommes	f			
+salt	noun	sel	sels	m			
+honey	noun	miel	miels	m			
+cheese	noun	fromage	fromages	m			
+egg	noun	œuf	œufs	m			
+fire	noun	feu	feux	m			
+house	noun	maison	maisons	f			
+home	noun	foyer	foyers	m			
+door	noun	porte	portes	f			
+window	noun	fenêtre	fenêtres	f			
+wall	noun	mur	murs	m			
+roof	noun	toit	toits	m			
+floor	noun	sol	sols	m			
+room	noun	pièce	pièces	f			
+table	noun	table	tables	f			
+chair	noun	chaise	chaises	f			
+bed	noun	lit	lits	m			
+book	noun	livre	livres	m			
+word	noun	mot	mots	m			
+letter	noun	lettre	lettres	f			
+name	noun	nom	noms	m			
+key	noun	clé	clés	f			
+bridge	noun	pont	ponts	m			
+church	noun	église	églises	f			
+ship	noun	navire	navires	m			
+boat	noun	bateau	bateaux	m			
+sword	noun	épée	épées	f			
+shield	noun	bouclier	boucliers	m			
+ring	noun	anneau	anneaux	m			
+gold	noun	or	ors	m			
+silver	noun	argent	argents	m			
+iron	noun	fer	fers	m			
+stone	noun	pierre	pierres	f			
+glass	noun	verre	verres	m			
+cloth	noun	tissu	tissus	m			
+shoe	noun	chaussure	chaussures	f			
+coat	noun	manteau	manteaux	m			
+hat	noun	chapeau	chapeaux	m			
+sun	noun	soleil	soleils	m			
+moon	noun	lune	lunes	f			
+star	noun	étoile	étoiles	f			
+sky	noun	ciel	cieux	m			
+earth	noun	terre	terres	f			
+land	noun	terre	terres	f			
+sea	noun	mer	mers	f			
+river	noun	rivière	rivières	f			
+lake	noun	lac	lacs	m			
+mountain	noun	montagne	montagnes	f			
+hill	noun	colline	collines	f			
+forest	noun	forêt	forêts	f			
+tree	noun	arbre	arbres	m			
+leaf	noun	feuille	feuilles	f			
+flower	noun	fleur	fleurs	f			
+grass	noun	herbe	herbes	f			
+field	noun	champ	champs	m			
+road	noun	route	routes	f			
+path	noun	sentier	sentiers	m			
+city	noun	ville	villes	f			
+town	noun	ville	villes	f			
+village	noun	village	villages	m			
+world	noun	monde	mondes	m			
+country	noun	pays	pays	m			
+place	noun	endroit	endroits	m			
+rain	noun	pluie	pluies	f			
+snow	noun	neige	neiges	f			
+wind	noun	vent	vents	m			
+cloud	noun	nuage	nuages	m			
+ice	noun	glace	glaces	f			
+light	noun	lumière	lumières	f			
+shadow	noun	ombre	ombres	f			
+time	noun	temps	temps	m			
+day	noun	jour	jours	m			
+night	noun	nuit	nuits	f			
+year	noun	année	années	f			
+month	noun	mois	mois	m			
+week	noun	semaine	semaines	f			
+hour	noun	heure	heures	f			
+morning	noun	matin	matins	m			
+evening	noun	soir	soirs	m			
+summer	noun	été	étés	m			
+winter	noun	hiver	hivers	m			
+autumn	noun	automne	automnes	m			
+life	noun	vie	vies	f			
+death	noun	mort	morts	f			
+love	noun	amour	amours	m			
+war	noun	guerre	guerres	f			
+peace	noun	paix	paix	f			
+truth	noun	vérité	vérités	f			
+law	noun	loi	lois	f			
+work	noun	travail	travaux	m			
+money	noun	argent	argents	m			
+price	noun	prix	prix	m			
+question	noun	question	questions	f			
+answer	noun	réponse	réponses	f			
+story	noun	histoire	histoires	f			
+song	noun	chanson	chansons	f			
+music	noun	musique	musiques	f			
+game	noun	jeu	jeux	m			
+dream	noun	rêve	rêves	m			
+fear	noun	peur	peurs	f			
+hope	noun	espoir	espoirs	m			
+joy	noun	joie	joies	f			
+anger	noun	colère	colères	f			
+oath	noun	serment	serments	m			
+gift	noun	cadeau	cadeaux	m			
+good	adj	bon					
+bad	adj	mauvais					
+big	adj	grand					
+small	adj	petit					
+great	adj	grand					
+little	adj	petit					
+long	adj	long					
+short	adj	court					
+high	adj	haut					
+low	adj	bas					
+old	adj	vieux					
+young	adj	jeune					
+new	adj	nouveau					
+hot	adj	chaud					
+cold	adj	froid					
+warm	adj	chaud					
+heavy	adj	lourd					
+strong	adj	fort					
+weak	adj	faible					
+hard	adj	dur					
+soft	adj	doux					
+quick	adj	rapide					
+slow	adj	lent					
+true	adj	vrai					
+false	adj	faux					
+rich	adj	riche					
+poor	adj	pauvre					
+happy	adj	heureux					
+sad	adj	triste					
+tired	adj	fatigué					
+full	adj	plein					
+empty	adj	vide					
+clean	adj	propre					
+dirty	adj	sale					
+beautiful	adj	beau					
+ugly	adj	laid					
+easy	adj	facile					
+difficult	adj	difficile					
+free	adj	libre					
+wise	adj	sage					
+brave	adj	courageux					
+holy	adj	saint					
+deep	adj	profond					
+wide	adj	large					
+narrow	adj	étroit					
+dead	adj	mort					
+alive	adj	vivant					
+sick	adj	malade					
+whole	adj	entier					
+white	adj	blanc					
+black	adj	noir					
+red	adj	rouge					
+green	adj	vert					
+blue	adj	bleu					
+yellow	adj	jaune					
+grey	adj	gris					
+brown	adj	brun					
+have	verb	avoir	ayant				
+say	verb	dire	disant				
+go	verb	aller	allant				
+come	verb	venir	venant				
+see	verb	voir	voyant				
+know	verb	savoir	sachant				
+think	verb	penser	pensant				
+take	verb	prendre	prenant				
+give	verb	donner	donnant				
+make	verb	faire	faisant				
+find	verb	trouver	trouvant				
+want	verb	vouloir	voulant				
+tell	verb	dire	disant				
+ask	verb	demander	demandant				
+work	verb	travailler	travaillant				
+play	verb	jouer	jouant				
+run	verb	courir	courant				
+walk	verb	marcher	marchant				
+speak	verb	parler	parlant				
+read	verb	lire	lisant				
+write	verb	écrire	écrivant				
+eat	verb	manger	mangeant				
+drink	verb	boire	buvant				
+sleep	verb	dormir	dormant				
+sit	verb	asseoir	asseyant				
+stand	verb	tenir debout					
+live	verb	vivre	vivant				
+die	verb	mourir	mourant				
+love	verb	aimer	aimant				
+hate	verb	haïr	haïssant				
+fear	verb	craindre	craignant				
+hear	verb	entendre	entendant				
+feel	verb	sentir	sentant				
+hold	verb	tenir	tenant				
+carry	verb	porter	portant				
+bring	verb	apporter	apportant				
+send	verb	envoyer	envoyant				
+buy	verb	acheter	achetant				
+sell	verb	vendre	vendant				
+pay	verb	payer	payant				
+build	verb	construire	construisant				
+break	verb	casser	cassant				
+open	verb	ouvrir	ouvrant				
+close	verb	fermer	fermant				
+begin	verb	commencer	commençant				
+help	verb	aider	aidant				
+learn	verb	apprendre	apprenant				
+teach	verb	enseigner	enseignant				
+remember	verb	se souvenir					
+forget	verb	oublier	oubliant				
+win	verb	gagner	gagnant				
+lose	verb	perdre	perdant				
+fight	verb	combattre	combattant				
+swim	verb	nager	nageant				
+fly	verb	voler	volant				
+ride	verb	monter	montant				
+sing	verb	chanter	chantant				
+laugh	verb	rire	riant				
+cry	verb	pleurer	pleurant				
+wait	verb	attendre	attendant				
+watch	verb	regarder	regardant				
+look	verb	regarder	regardant				
+show	verb	montrer	montrant				
+call	verb	appeler	appelant				
+put	verb	mettre	mettant				
+keep	verb	garder	gardant				
+leave	verb	partir	partant				
+follow	verb	suivre	suivant				
+seek	verb	chercher	cherchant				
+choose	verb	choisir	choisissant				
+change	verb	changer	changeant				
+grow	verb	grandir	grandissant				
+fall	verb	tomber	tombant				
+rise	verb	monter	montant				
+turn	verb	tourner	tournant				
+move	verb	bouger	bougeant				
+throw	verb	jeter	jetant				
+catch	verb	attraper	attrapant				
+cut	verb	couper	coupant				
+wash	verb	laver	lavant				
+cook	verb	cuisiner	cuisinant				
+always	adv	toujours					
+never	adv	jamais					
+often	adv	souvent					
+sometimes	adv	parfois					
+today	adv	aujourd’hui					
+tomorrow	adv	demain					
+yesterday	adv	hier					
+now	adv	maintenant					
+soon	adv	bientôt					
+already	adv	déjà					
+almost	adv	presque					
+together	adv	ensemble					
+alone	adv	seul					
+again	adv	encore					
+here	adv	ici					
+everywhere	adv	partout					
+nowhere	adv	nulle part					
+slowly	adv	lentement					
+quickly	adv	rapidement					
+truly	adv	vraiment					
+perhaps	adv	peut-être					
+very	adv	très					
+one	num	un					
+two	num	deux					
+three	num	trois					
+four	num	quatre					
+five	num	cinq					
+six	num	six					
+seven	num	sept					
+eight	num	huit					
+nine	num	neuf					
+ten	num	dix					
+hundred	num	cent					
+thousand	num	mille					
+first	num	premier					
+yes	intj	oui					
+hello	intj	bonjour					
+goodbye	intj	au revoir					
+please	intj	s’il vous plaît					
+sorry	intj	pardon					
