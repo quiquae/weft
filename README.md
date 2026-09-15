@@ -1,0 +1,234 @@
+# Weft
+
+**Some of the words on the pages you read are in another language. The longer
+you stay on a page, the more of them there are.**
+
+Weft is a browser extension that weaves a proportion of the words on a page
+into a language you are learning, and raises that proportion with the time you
+actually spend looking at the page. Five minutes on a news article costs you
+almost nothing. Forty minutes on an infinite feed and you are reading half in
+French.
+
+Point at a word and it gives you the English back.
+
+![A woven article](docs/screens/page-woven.png)
+
+> The old house stood at the end of a long **route**, where the **rivière** ran
+> under a stone bridge and the road climbed towards the mountain. In the
+> **matin** a woman came down from the village with bread and salt, and the
+> **jeune** king rode past on a black **cheval** without a word.
+
+---
+
+## Why this works
+
+This is not a new idea. It is the **diglot weave**, developed by Robert Blair
+at BYU in the 1970s: keep a text 95–98% comprehensible and weave the new
+language in just above the reader's threshold, so meaning arrives from context
+rather than from a dictionary. Replications have found it as effective as
+drilling for vocabulary acquisition and considerably more pleasant, and an
+IES-funded tool called LoomVue has since applied the same method with adaptive
+difficulty. Weft's contribution is not the method — it is tying the difficulty
+to *attention*, so that the time you were going to lose anyway is the thing
+that buys the vocabulary.
+
+Three things follow from taking the method seriously, and they are where most
+of the engineering went:
+
+**Function words are never woven.** Replacing "the", "of" and "and" destroys
+the grammatical scaffolding you are using to decode everything else, for
+almost no vocabulary gained. Content words — concrete nouns first, then
+adjectives — are where comprehensible input lives.
+
+**Difficulty only ever goes up mid-page.** A word you have just decoded must
+not flip back to English as the page gets harder around it. Selection is
+therefore pinned: whatever is on screen stays on screen, and rising difficulty
+only appends.
+
+**Words you know stop costing you.** Once a word is genuinely learned it is
+left in the target language permanently and no longer counts against the
+page's difficulty budget. It is not a demand on you any more; it is the part
+of the page you can already read.
+
+See [docs/PEDAGOGY.md](docs/PEDAGOGY.md) for the rest, including why verbs are
+woven as infinitives and why Latin drops in as a nominative.
+
+---
+
+## Historical languages
+
+Weft supports Latin and Old English as first-class targets, and they are the
+best case the whole method has.
+
+![Old English, with the tooltip open](docs/screens/page-old-english.png)
+
+In Old English the word Weft puts on the page is usually the **literal
+ancestor** of the word it replaced — `hūs` for house, `stān` for stone,
+`cyning` for king — and the tooltip tells you so. You are not memorising a
+foreign word; you are being shown where your own word came from. In Latin it
+is the word your English borrowed from: `vacca` gave us *vaccine*, `mille
+passūs` gave us *mile*, `paene insula` gave us *peninsula*.
+
+The false friends are marked, because they are the most memorable thing in the
+language. Old English `drēam` means joy and music, not a sleeping vision.
+`steorfan` means simply to die, and became *starve*. `sellan` means to give.
+
+Neither language has a speech-synthesis voice on any platform, so the tooltip
+shows a reconstructed pronunciation in IPA instead of pretending to offer
+audio. Roughly 700 transcriptions are derived from the orthography, which is
+near-deterministic in both once vowel length is marked, and the derivation is
+tested against known forms.
+
+A letterform switch separates orthographic difficulty from vocabulary
+difficulty. `þēod` is not hard because of the word, it is hard because of the
+thorn and the macron — so beginners can read `theod` and graduate later.
+Collapsing those two axes is why most historical-language tools feel
+impossible on day one.
+
+---
+
+## What is in the box
+
+| | |
+|---|---|
+| **Languages** | French, Spanish, German, Italian, Portuguese, Latin, Old English |
+| **Lexicon** | 356 checked English lemmas per language, 584–588 surface forms, 664 KB for all seven |
+| **Network** | None. No account, no telemetry, no server. Works offline. |
+| **Optional** | Bring-your-own-key DeepL, Google or any OpenAI-compatible endpoint, for words beyond the packs |
+| **Install warning** | None of the scary ones — Weft asks for no site access until you name the sites |
+
+Languages the registry knows but has no lexicon for yet — Dutch, Swedish,
+Welsh, Irish, Middle English, Old Norse, Ancient Greek, Gothic — are shown
+disabled and labelled, rather than silently doing nothing. Building a pack for
+one is `npm run packs`; see [tools/seed/README.md](tools/seed/README.md).
+
+---
+
+## The screen-time half
+
+Anything that makes Weft **easier** waits.
+
+![Settings](docs/screens/options-density.png)
+
+Lower the density, shorten the ceiling, take a site off the list, drop your
+level — each of those is queued behind a cooldown you set in advance. The
+clock is stored rather than scheduled: closing the browser neither cancels it
+nor restarts it, and re-requesting the same change does not move it. Anything
+that makes Weft *harder* applies at once.
+
+Optionally the cooldown is also gated on a short vocabulary check, drawn only
+from words Weft has already shown you. The exit tax is itself the lesson, and
+the answers count as retrieval practice whether or not you pass.
+
+**Cancelling a queued change is always instant and free.** Friction on the way
+*out* of a commitment would be coercion; friction on the way *into* an easier
+setting is a commitment.
+
+**There is a panic pass.** Plain English for a few minutes, a fixed number of
+times a day, logged. This exists because a tool with no escape hatch gets
+uninstalled the first time someone genuinely needs to read something, and an
+uninstalled tool teaches nothing.
+
+**And there is Hard Mode**, for people who want the extension itself to be
+unremovable. Weft generates a browser managed-policy profile that marks it
+`force_installed`, which is the only mechanism that actually stops you from
+clicking Remove. You install it yourself with your own administrator password,
+and the removal instructions ship inside the same file. See
+[docs/HARD-MODE.md](docs/HARD-MODE.md).
+
+---
+
+## Progress
+
+![Progress](docs/screens/dashboard.png)
+
+Weft schedules with **FSRS-6**, the same memory model Anki uses, ported
+directly from the reference implementation. That is not decoration: "which
+words should be in the target language right now?" is exactly the question a
+spaced-repetition scheduler answers. A word whose retrievability has decayed
+to around 0.7 is the word that most benefits from being seen again, and a word
+whose stability has passed the retirement threshold can be left in L2 for
+good. The page becomes the review session.
+
+The honest measure of whether it is working is not time on site or words seen.
+It is words that graduated.
+
+---
+
+## Install
+
+Not on the Chrome Web Store yet. To run it from source:
+
+```sh
+git clone https://github.com/<you>/weft
+cd weft
+npm install
+npm run packs      # build the lexicons from the seed files
+npm run build      # -> dist/chrome
+```
+
+Then open `chrome://extensions`, turn on Developer mode, choose **Load
+unpacked**, and pick `dist/chrome`. Firefox: `npm run build:firefox`, then
+`about:debugging` → This Firefox → Load Temporary Add-on.
+
+Weft will open its first-run page and ask you three questions. It has access
+to no website until you answer the third one.
+
+---
+
+## Development
+
+```sh
+npm run dev            # watch build
+npm run typecheck      # tsc --noEmit
+npm test               # 342 unit + 71 jsdom
+npm run test:e2e       # 18 tests in a real Chromium with the extension loaded
+npm run test:all       # everything
+npm run packs:verify   # sanity-check the lexicons
+npm run zip            # store-ready archives for Chrome and Firefox
+```
+
+`src/core/` is pure: no DOM, no `chrome.*`, no I/O. Every interesting decision
+— which word to swap, how hard the page should get, whether a settings change
+is allowed yet — lives there and is unit-tested without a browser. That
+boundary is the reason the test suite is fast and the reason five real bugs
+were caught before anyone ran the extension.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), which explains the one
+decision everything else follows from: why Weft edits `nodeValue` in place
+instead of replacing text nodes, and why that is what keeps it from crashing
+React applications the way Google Translate does.
+
+---
+
+## Privacy
+
+Everything is on your machine. There is no account, no server, and no
+telemetry — the setting for telemetry does not exist rather than defaulting to
+off, and validation refuses to turn it on.
+
+Weft ships a never-weave list covering money, mail, credentials and health,
+checked before anything else and before any lexicon is even loaded. A language
+tool has no business between you and your bank.
+
+If you enable a translation service, it receives **isolated words and a
+part-of-speech hint, never page text**. There is no parameter in that
+interface to put a paragraph in. Sending one sentence of surrounding context
+improves accuracy and is a separate, explicit opt-in.
+
+Full detail, including what the integrity signing does and does not protect
+against, is in [docs/PRIVACY.md](docs/PRIVACY.md).
+
+---
+
+## Licence
+
+Code is **MIT**. The lexicons are **CC BY-SA 4.0**, because they derive from
+Wiktionary-adjacent and SUBTLEX-derived sources that carry share-alike terms;
+Latin and Old English glosses are checked against public-domain dictionaries.
+Attribution travels inside every generated pack. See
+[docs/THIRD-PARTY.md](docs/THIRD-PARTY.md).
+
+If you intend to sell this, MIT is probably not the licence you want — it
+lets anyone ship a copy. That is a business decision rather than a technical
+one, so it is left as a single file to change.

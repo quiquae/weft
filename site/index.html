@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weft — the web, partly in another language</title>
+<meta name="description" content="A browser extension that weaves some of the words you read into a language you are learning, and raises the proportion with the time you spend. Including Latin and Old English.">
+<meta property="og:title" content="Weft">
+<meta property="og:description" content="Some of the words on the pages you read are in another language. The longer you stay, the more of them there are.">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<style>
+  /*
+   * Same tokens as the extension: linen, iron-gall ink and woad — undyed
+   * wool, the ink these languages were written in, and the dye used on cloth
+   * in the period Old English was spoken. One system face throughout, so the
+   * page renders instantly and needs no download.
+   */
+  :root {
+    --linen: #e9e8e3;
+    --linen-raised: #f3f2ee;
+    --linen-sunken: #dedcd4;
+    --thread: #b9b2a2;
+    --thread-faint: #cfcabd;
+    --ink: #20262b;
+    --ink-soft: #4d565e;
+    --ink-faint: #7b838a;
+    --woad: #2f4b7c;
+    --woad-wash: #2f4b7c14;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+      "URW Palladio L", Georgia, "Times New Roman", serif;
+    --measure: 34rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --linen: #191d21; --linen-raised: #21262b; --linen-sunken: #12161a;
+      --thread: #3c444b; --thread-faint: #2c3338;
+      --ink: #dfdcd3; --ink-soft: #a8a79f; --ink-faint: #7d827f;
+      --woad: #93b0dd; --woad-wash: #93b0dd1a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--linen);
+    color: var(--ink);
+    font: 400 17px/1.6 var(--serif);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.25rem 6rem; }
+
+  h1 { font-size: clamp(2.6rem, 8vw, 4.2rem); line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 0.6rem; }
+  h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 0.5rem; }
+  h3 { font-size: 1.1rem; margin: 0 0 0.2rem; }
+  p { margin: 0 0 0.9em; max-width: var(--measure); }
+
+  a { color: var(--woad); text-underline-offset: 0.16em; }
+  a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 2px solid var(--woad); outline-offset: 2px; border-radius: 2px;
+  }
+
+  .standfirst { font-size: 1.25rem; color: var(--ink-soft); max-width: 32rem; }
+
+  /* --- the hero is the product, live ------------------------------------ */
+
+  .demo {
+    margin: 2.25rem 0 1rem;
+    padding: 1.5rem 1.5rem 1.2rem;
+    background: var(--linen-raised);
+    border: 1px solid var(--thread-faint);
+    border-radius: 4px;
+  }
+
+  .demo__text { font-size: 1.16rem; line-height: 1.68; margin: 0 0 1.2rem; max-width: 36rem; }
+
+  /*
+   * A woven word: dotted underline and a faint tint, exactly as the extension
+   * renders it. Hovering shows the English, which is what the extension's
+   * tooltip does.
+   */
+  /*
+   * inline-block so the hover chip has a predictable box to anchor to. A
+   * single word never needs to wrap, so it costs nothing. The chip overlaps
+   * the line above, which is what an above-anchored tooltip does; the
+   * extension's own tooltip is a floating card that flips when it would go
+   * off-screen.
+   */
+  .w {
+    display: inline-block;
+    color: var(--woad);
+    background: var(--woad-wash);
+    text-decoration: underline dotted var(--woad);
+    text-underline-offset: 0.18em;
+    border-radius: 2px;
+    cursor: help;
+    position: relative;
+  }
+  .w::after {
+    content: attr(data-en);
+    position: absolute;
+    left: 50%; bottom: calc(100% + 0.4rem);
+    transform: translateX(-50%);
+    background: #16161c; color: #f2f2f5;
+    font-size: 0.78rem; line-height: 1.3;
+    padding: 0.18rem 0.42rem; border-radius: 3px;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 120ms ease-out;
+  }
+  .w:hover::after, .w:focus-visible::after { opacity: 1; }
+
+  .demo__controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .demo__controls label { font-size: 0.85rem; color: var(--ink-soft); flex: none; }
+  input[type=range] { flex: 1 1 14rem; accent-color: var(--woad); min-width: 10rem; }
+  .demo__readout { font-size: 0.85rem; color: var(--woad); flex: none; min-width: 11rem; text-align: right; }
+
+  /* --- the cloth meter -------------------------------------------------- */
+
+  .band { display: block; width: 100%; height: 22px; margin: 0.9rem 0 0.1rem; }
+  .band__warp { stroke: var(--thread); stroke-width: 1; }
+  .band__weft { stroke: var(--woad); stroke-width: 2.5; }
+
+  /* --- structure -------------------------------------------------------- */
+
+  section { margin-top: 3.5rem; }
+  .rule { padding-bottom: 0.4rem; border-bottom: 1px solid var(--woad); margin-bottom: 1.1rem; }
+
+  .points { display: grid; gap: 1.4rem; margin-top: 1.2rem; }
+  @media (min-width: 46rem) { .points { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
+  .points p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; max-width: none; }
+
+  /* --- the descent table, the reason to pick Old English ---------------- */
+
+  .descent { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: 0.97rem; }
+  .descent td { padding: 0.42rem 0.8rem 0.42rem 0; border-bottom: 1px solid var(--thread-faint); vertical-align: baseline; }
+  .descent td:first-child { color: var(--woad); font-style: italic; white-space: nowrap; }
+  .descent td:last-child { color: var(--ink-soft); font-size: 0.88rem; }
+  .descent .arrow { color: var(--ink-faint); white-space: nowrap; }
+
+  blockquote {
+    margin: 1.2rem 0; padding-left: 0.9rem;
+    border-left: 2px solid var(--woad); color: var(--ink-soft);
+    max-width: var(--measure);
+  }
+
+  .install {
+    margin-top: 1rem; padding: 0.9rem 1rem;
+    background: var(--linen-sunken); border-left: 2px solid var(--thread);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.82rem; line-height: 1.7; overflow-x: auto;
+  }
+
+  footer {
+    margin-top: 4.5rem; padding-top: 1.2rem;
+    border-top: 1px solid var(--thread);
+    color: var(--ink-faint); font-size: 0.85rem;
+  }
+  footer p { max-width: var(--measure); }
+
+  .brand { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
+  .brand svg { width: 26px; height: 26px; flex: none; }
+  .brand span { font-size: 0.95rem; letter-spacing: 0.02em; color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 1ms !important; } }
+</style>
+</head>
+<body>
+<main>
+
+  <div class="brand">
+    <svg viewBox="0 0 128 128" role="img" aria-label="Weft">
+      <g stroke="currentColor" stroke-width="11" opacity="0.45">
+        <line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
+        <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/>
+        <line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
+        <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/>
+      </g>
+      <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="currentColor" stroke-width="20.5"/>
+    </svg>
+    <span>Weft</span>
+  </div>
+
+  <h1>The web, partly in&nbsp;another language.</h1>
+  <p class="standfirst">The longer you stay on a page, the more of it you read in the language you are learning.</p>
+
+  <!--
+    The hero is the product running. A screenshot would show what it looks
+    like; this shows what it feels like, which is the thing nobody can
+    describe in a sentence.
+  -->
+  <div class="demo">
+    <p class="demo__text" id="sample"></p>
+    <div class="demo__controls">
+      <label for="minutes">Minutes on this page</label>
+      <input type="range" id="minutes" min="0" max="45" step="1" value="4"
+             aria-describedby="readout">
+      <span class="demo__readout" id="readout"></span>
+    </div>
+    <svg class="band" id="band" viewBox="0 0 300 22" preserveAspectRatio="none" role="img" aria-label="Woven density"></svg>
+  </div>
+  <p style="font-size:0.85rem;color:var(--ink-faint)">
+    Drag it. Hover any woven word to get the English back — that is exactly what the extension does.
+  </p>
+
+  <section>
+    <h2 class="rule">Why this works</h2>
+    <p>
+      It is not a new idea. The <strong>diglot weave</strong> was developed by Robert Blair
+      at BYU in the 1970s: keep a text almost entirely comprehensible and weave the new
+      language in just above the reader's threshold, so meaning arrives from context rather
+      than from a dictionary. Replications have found it as effective as drilling for
+      vocabulary, and considerably more pleasant.
+    </p>
+    <p>
+      Weft's contribution is not the method. It is tying the difficulty to
+      <strong>attention</strong>, so the time you were going to lose anyway is the thing
+      that buys the vocabulary.
+    </p>
+
+    <div class="points">
+      <div>
+        <h3>Function words are never touched</h3>
+        <p>Replacing “the” and “of” destroys the scaffolding you are using to decode
+        everything else, for almost no vocabulary gained. Content words carry the meaning.</p>
+      </div>
+      <div>
+        <h3>Difficulty never goes backwards mid-page</h3>
+        <p>A word you have just worked out does not flip back to English as the page gets
+        harder around it. Rising difficulty only ever adds.</p>
+      </div>
+      <div>
+        <h3>Words you learn stop costing you</h3>
+        <p>Once a word is genuinely known it stays in the target language for good and stops
+        counting against the page's difficulty. It is no longer a demand on you.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="rule">Latin and Old English</h2>
+    <p>
+      Seven languages, and two of them are the reason to look twice. In Old English the word
+      Weft puts on the page is usually the <strong>literal ancestor</strong> of the word it
+      replaced — and the tooltip tells you so. You are not memorising a foreign word. You are
+      being shown where your own word came from.
+    </p>
+
+    <table class="descent">
+      <tbody>
+        <tr><td>hūs</td><td class="arrow">→</td><td>house</td><td></td></tr>
+        <tr><td>cyning</td><td class="arrow">→</td><td>king</td><td></td></tr>
+        <tr><td>hlāford</td><td class="arrow">→</td><td>lord</td><td>literally “loaf-keeper”</td></tr>
+        <tr><td>steorfan</td><td class="arrow">→</td><td>starve</td><td>it meant simply “to die”</td></tr>
+        <tr><td>drēam</td><td class="arrow">→</td><td>dream</td><td>it meant joy and music; the sleeping sense is Norse</td></tr>
+        <tr><td>vacca</td><td class="arrow">→</td><td>vaccine</td><td>Jenner named it after the cowpox he used</td></tr>
+        <tr><td>mīlle passūs</td><td class="arrow">→</td><td>mile</td><td>a thousand paces</td></tr>
+        <tr><td>paene īnsula</td><td class="arrow">→</td><td>peninsula</td><td>almost an island</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      Neither language has a speech voice on any platform, so the tooltip shows a
+      reconstructed pronunciation instead of pretending to offer audio. And because
+      <em>þēod</em> is hard for the thorn and the macron rather than for the word, the
+      letterforms have their own switch — you can read <em>theod</em> until you would rather
+      not.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="rule">The screen-time half</h2>
+    <p>
+      Anything that makes Weft <strong>easier</strong> waits. Lower the density, take a site
+      off the list, drop your level — each is queued behind a cooldown you set in advance.
+      The clock is stored rather than scheduled, so closing the browser neither cancels it
+      nor restarts it. Anything that makes it <em>harder</em> applies at once.
+    </p>
+    <p>
+      Optionally the cooldown is also gated on a short vocabulary check, drawn only from
+      words you have already been shown. The exit tax is itself the lesson.
+    </p>
+    <blockquote>
+      Cancelling a queued change is always instant and free. Friction on the way
+      <em>out</em> of a commitment would be coercion; friction on the way <em>into</em> an
+      easier setting is a commitment.
+    </blockquote>
+    <p>
+      There is a rate-limited panic pass for the moment you genuinely need plain English,
+      because a tool with no escape hatch gets uninstalled and an uninstalled tool teaches
+      nothing. And for people who want the extension itself to be unremovable, Weft
+      generates a browser policy that does exactly that — with the removal instructions
+      inside the same file.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="rule">What it will not do</h2>
+    <p>
+      Weft never rewrites a button label, a code sample, anything you are typing, or a
+      screen-reader live region. It ships a never-weave list covering money, mail,
+      credentials and health, checked before anything else — a language tool has no business
+      between you and your bank.
+    </p>
+    <p>
+      There is no account, no server and no telemetry. Everything is on your machine and it
+      works offline. Weft has access to no website until you name the sites yourself, which
+      is why it installs without the warning about reading all your data.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="rule">Get it</h2>
+    <p>Not on the Chrome Web Store yet. From source:</p>
+    <div class="install">git clone https://github.com/&lt;you&gt;/weft<br>cd weft &amp;&amp; npm install<br>npm run packs &amp;&amp; npm run build</div>
+    <p style="margin-top:0.9rem">
+      Then <code>chrome://extensions</code> → Developer mode → Load unpacked → pick
+      <code>dist/chrome</code>. Firefox and Edge work too.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      Code MIT. Lexicons CC BY-SA 4.0, checked against Lewis &amp; Short and
+      Bosworth–Toller. Scheduling by FSRS-6. No trackers on this page either.
+    </p>
+  </footer>
+</main>
+
+<script>
+/*
+ * The live demo.
+ *
+ * Uses the extension's real escalation curve and its real selection ideas in
+ * miniature: candidates ranked once, then taken in that fixed order as the
+ * budget grows, so dragging the slider right only ever ADDS words. That is
+ * the property the extension guarantees, and a demo that reshuffled on every
+ * drag would misrepresent it.
+ */
+(function () {
+  'use strict';
+
+  /*
+   * The passage, with candidates marked {english|french}.
+   *
+   * Written so the candidates are genuinely spread out, because that is what
+   * a real page looks like: most words have no entry in the lexicon, so the
+   * minimum-spacing rule rarely binds. An earlier version made almost every
+   * other word a candidate, which made the demo saturate at 35% and stop
+   * responding — a demo that undersells the product is as bad as one that
+   * oversells it.
+   */
+  var PASSAGE =
+    'The {old|vieux} house stood at the end of a long {road|route}, where the ' +
+    '{river|rivière} ran quietly under a bridge of grey {stone|pierre} and the track ' +
+    'climbed away towards the {mountain|montagne}. In the {morning|matin} a woman came ' +
+    'down from the village carrying {bread|pain} and a little {salt|sel}, and she did not ' +
+    'once look up at the {sky|ciel}.\n\n' +
+    'The {water|eau} was bitterly cold that year. A {bird|oiseau} sang somewhere in the ' +
+    'green field beyond the {wall|mur}, and the light moving on the surface looked almost ' +
+    '{alive|vivant}. Her {brother|frère} carried a heavy {book|livre} under one arm and ' +
+    'would not say a single {word|mot} about what was written in it.\n\n' +
+    'By {evening|soir} the wind had turned. The {sun|soleil} went down behind the ' +
+    '{forest|forêt} and the whole world smelled of {rain|pluie}. A {dog|chien} barked ' +
+    'somewhere near the old {church|église}, and then the {night|nuit} came on and nobody ' +
+    'spoke again until it was light.';
+
+  /** Parse the passage into text runs and candidates, in word coordinates. */
+  function parse(passage) {
+    var pieces = [];
+    var re = /\{([^|}]+)\|([^}]+)\}/g;
+    var cursor = 0;
+    var match;
+    while ((match = re.exec(passage)) !== null) {
+      if (match.index > cursor) pieces.push({ t: passage.slice(cursor, match.index) });
+      pieces.push({ t: match[1], fr: match[2] });
+      cursor = match.index + match[0].length;
+    }
+    if (cursor < passage.length) pieces.push({ t: passage.slice(cursor) });
+
+    // Give every candidate a position measured in words, so spacing means
+    // "how many words apart" rather than "how many pieces apart".
+    var words = 0;
+    for (var i = 0; i < pieces.length; i++) {
+      var piece = pieces[i];
+      if (piece.fr) {
+        piece.word = words;
+        words += 1;
+      } else {
+        var found = piece.t.match(/[A-Za-z\u00C0-\u024F']+/g);
+        words += found ? found.length : 0;
+      }
+    }
+    return pieces;
+  }
+
+  var SAMPLE = parse(PASSAGE);
+
+  /*
+   * Order of preference, easiest first: near-identical cognates, then common
+   * concrete nouns, then the rest. That is the order the extension prefers —
+   * a word you can recover from context arrives before one you cannot.
+   */
+  var ORDER = [
+    'montagne', 'rivière', 'forêt', 'oiseau', 'vivant', 'pierre',
+    'maison', 'route', 'matin', 'soir', 'nuit', 'eau', 'pain', 'sel',
+    'ciel', 'soleil', 'pluie', 'chien', 'église', 'mur', 'livre', 'frère',
+    'mot', 'vieux'
+  ];
+
+  var BASE = 0.06, CEILING = 0.62, GAIN = 0.045;
+
+  function ratioAt(minutes) {
+    var span = CEILING - BASE;
+    var k = GAIN / span;
+    return BASE + span * (1 - Math.exp(-k * minutes));
+  }
+
+  var sample = document.getElementById('sample');
+  var band = document.getElementById('band');
+  var slider = document.getElementById('minutes');
+  var readout = document.getElementById('readout');
+  if (!sample || !band || !slider || !readout) return;
+
+  var candidates = SAMPLE.filter(function (p) { return p.fr; }).length;
+
+  var INDEX_OF = {};
+  for (var n = 0; n < SAMPLE.length; n++) {
+    if (SAMPLE[n].fr) INDEX_OF[SAMPLE[n].fr] = SAMPLE[n].word;
+  }
+  var candidates = 0;
+  for (var m = 0; m < SAMPLE.length; m++) if (SAMPLE[m].fr) candidates++;
+
+  /** Minimum words between two woven words, as the extension enforces. */
+  var MIN_APART = 2;
+
+  function render(minutes) {
+    var ratio = ratioAt(minutes);
+    var budget = Math.round(ratio * candidates);
+    var taken = {};
+    var takenAt = [];
+    for (var i = 0; i < ORDER.length && takenAt.length < budget; i++) {
+      var word = ORDER[i];
+      var at = INDEX_OF[word];
+      if (at === undefined) continue;
+      var tooClose = false;
+      for (var k = 0; k < takenAt.length; k++) {
+        if (Math.abs(takenAt[k] - at) <= MIN_APART) { tooClose = true; break; }
+      }
+      if (tooClose) continue;
+      taken[word] = true;
+      takenAt.push(at);
+    }
+
+    var html = '';
+    for (var j = 0; j < SAMPLE.length; j++) {
+      var piece = SAMPLE[j];
+      if (piece.fr && taken[piece.fr]) {
+        html += '<span class="w" tabindex="0" data-en="' + piece.t + '">' + piece.fr + '</span>';
+      } else {
+        html += piece.t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n\n/g, '</p><p class="demo__text">');
+      }
+    }
+    sample.innerHTML = html;
+
+    var actual = takenAt.length / candidates;
+    var pct = Math.round(actual * 100);
+    var oneIn = actual > 0 ? Math.max(2, Math.round(1 / actual)) : 0;
+    readout.textContent = pct + '% — 1 word in ' + oneIn;
+
+    // The cloth meter: warp threads with the weft crossing a proportion.
+    var warps = 44, step = 300 / warps, crossed = Math.round(warps * actual), svg = '';
+    for (var w = 0; w < warps; w++) {
+      var x = (w * step + step / 2).toFixed(2);
+      svg += '<line class="band__warp" x1="' + x + '" y1="2" x2="' + x + '" y2="20"/>';
+    }
+    if (crossed > 0) {
+      svg += '<line class="band__weft" x1="0" y1="11" x2="' + (crossed * step).toFixed(2) + '" y2="11"/>';
+    }
+    band.innerHTML = svg;
+  }
+
+  slider.addEventListener('input', function () { render(Number(slider.value)); });
+  render(Number(slider.value));
+})();
+</script>
+</body>
+</html>

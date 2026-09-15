@@ -1,0 +1,28 @@
+Weft lexicon data
+=================
+
+The files in tools/seed/ and the packs generated from them into
+src/lexicon/packs/ are licensed under
+
+    Creative Commons Attribution-ShareAlike 4.0 International
+    https://creativecommons.org/licenses/by-sa/4.0/
+
+You may share and adapt them, including commercially, provided you give
+attribution and license your adaptations under the same terms.
+
+Why share-alike rather than the MIT licence covering the code:
+
+  - English frequency bands derive from SUBTLEX-US by way of the wordfreq
+    project. SUBTLEX is distributed under terms equivalent to CC BY-SA.
+  - Where coverage is extended from Wiktionary via wiktextract / kaikki.org,
+    that data is CC BY-SA and GFDL.
+
+Latin glosses are checked against Lewis & Short, A Latin Dictionary (1879) and
+Whitaker's Words, both public domain. Old English glosses are checked against
+Bosworth-Toller, An Anglo-Saxon Dictionary (1898) and Clark Hall, A Concise
+Anglo-Saxon Dictionary (1894), both public domain. Public-domain sources
+impose no conditions; they are listed for scholarly honesty rather than for
+compliance.
+
+Attribution is carried inside every generated pack, in meta.attribution, so it
+travels with the data rather than living only in this file.
