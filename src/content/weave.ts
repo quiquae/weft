@@ -11,6 +11,9 @@ export interface AppliedSwap {
   revealed: boolean;
   /** Already mastered: styled faintly and excluded from the difficulty budget. */
   retired: boolean;
+  /** Why the selector chose this word, when it was asked to explain. */
+  factors?: Record<string, number>;
+  firstMeeting?: boolean;
 }
 
 export interface WovenRecord {
@@ -65,6 +68,8 @@ export function computeWoven(
       entry: swap.entry,
       revealed: false,
       retired: swap.retired,
+      ...(swap.factors ? { factors: swap.factors } : {}),
+      ...(swap.firstMeeting !== undefined ? { firstMeeting: swap.firstMeeting } : {}),
     });
     cursor = swap.end;
   }

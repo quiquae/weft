@@ -3,6 +3,8 @@ import { migrateSettings, validateSettings } from '../core/settings.ts';
 import { emptyLockState, recordTamper, type LockState } from '../core/lock.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey } from '../core/escalation.ts';
+import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
+import type { Tier } from '../core/entitlements.ts';
 import { api } from '../shared/browser.ts';
 
 /**
@@ -32,6 +34,8 @@ const KEYS = {
   cards: 'weft:cards',
   introduced: 'weft:introduced',
   providerCache: 'weft:provider-cache',
+  licence: 'weft:licence',
+  network: 'weft:network',
 } as const;
 
 interface Meta {
@@ -46,12 +50,22 @@ export interface Introduced {
 }
 
 export interface Snapshot {
+  /**
+   * Settings exactly as the user set them, NOT clamped to their tier.
+   *
+   * Clamping happens at the point of use rather than on write, so that a
+   * licence expiring never erases the configuration behind the features it
+   * disables — and renewing restores everything instead of asking the user to
+   * set it all up again.
+   */
   settings: Settings;
   lock: LockState;
   attention: Record<string, SiteAttention>;
   introduced: Introduced;
   /** True when a signature check failed during this load. */
   tampered: boolean;
+  licence: LicenceStatus;
+  tier: Tier;
 }
 
 let cache: Snapshot | null = null;
@@ -96,12 +110,18 @@ export async function load(): Promise<Snapshot> {
   const meta = await getMeta();
   const now = Date.now();
 
-  const [settingsEnv, lockEnv, attentionEnv, introducedRaw] = await Promise.all([
+  const [settingsEnv, lockEnv, attentionEnv, introducedRaw, licenceKey] = await Promise.all([
     raw<unknown>(KEYS.settings),
     raw<unknown>(KEYS.lock),
     raw<unknown>(KEYS.attention),
     raw<Introduced>(KEYS.introduced),
+    raw<string>(KEYS.licence),
   ]);
+
+  // Verified locally, against a public key compiled into the extension. No
+  // request is made, here or anywhere, which is the point: an activation
+  // server would be a per-user identifier and a log of when Weft is used.
+  const licence = await verifyLicence(licenceKey ?? '');
 
   const settingsOpened = await open<unknown>(meta.installId, settingsEnv);
   const lockOpened = await open<LockState>(meta.installId, lockEnv);
@@ -123,7 +143,7 @@ export async function load(): Promise<Snapshot> {
   const introduced: Introduced =
     introducedRaw && introducedRaw.day === today ? introducedRaw : { day: today, lemmas: [] };
 
-  cache = { settings, lock, attention, introduced, tampered };
+  cache = { settings, lock, attention, introduced, tampered, licence, tier: licence.tier };
   if (tampered) await saveLock(lock);
   return cache;
 }
@@ -148,6 +168,25 @@ export async function saveAttention(attention: Record<string, SiteAttention>): P
   const meta = await getMeta();
   await put(KEYS.attention, await seal(meta.installId, attention));
   if (cache) cache.attention = attention;
+}
+
+/** Store a licence key and return what it turned out to be. */
+export async function saveLicence(key: string): Promise<LicenceStatus> {
+  const status = await verifyLicence(key);
+  // An unusable key is not stored, so a typo cannot leave the extension in a
+  // permanently complaining state.
+  if (status.kind === 'invalid') return status;
+  await put(KEYS.licence, key.trim());
+  if (cache) {
+    cache.licence = status;
+    cache.tier = status.tier;
+  }
+  return status;
+}
+
+export async function clearLicence(): Promise<void> {
+  await api.storage.local.remove(KEYS.licence);
+  invalidate();
 }
 
 export async function saveIntroduced(introduced: Introduced): Promise<void> {
@@ -196,6 +235,44 @@ export async function replaceCards(cards: Record<string, MemoryCard>): Promise<v
   await flushCards();
 }
 
+/* ------------------------------------------------------- network counter */
+
+export interface NetworkLog {
+  /** Requests Weft has made since install. Zero unless a provider is on. */
+  requests: number;
+  /** Words sent, cumulative. */
+  words: number;
+  /** Epoch ms of the most recent request, if any. */
+  last?: number;
+  /** Hosts contacted, for the user to check against what they expect. */
+  hosts: string[];
+}
+
+const EMPTY_LOG: NetworkLog = { requests: 0, words: 0, hosts: [] };
+
+export async function loadNetworkLog(): Promise<NetworkLog> {
+  return (await raw<NetworkLog>(KEYS.network)) ?? EMPTY_LOG;
+}
+
+/**
+ * Record that Weft went to the network.
+ *
+ * Exists so the privacy claim is checkable rather than asserted. The
+ * dashboard shows this number, and for anyone who has not configured a
+ * translation key it is zero and stays zero — which is a far better argument
+ * than a paragraph promising the same thing.
+ */
+export async function noteNetworkRequest(host: string, words: number): Promise<void> {
+  const log = await loadNetworkLog();
+  const hosts = log.hosts.includes(host) ? log.hosts : [...log.hosts, host].slice(-12);
+  await put(KEYS.network, {
+    requests: log.requests + 1,
+    words: log.words + words,
+    last: Date.now(),
+    hosts,
+  } satisfies NetworkLog);
+}
+
 /* --------------------------------------------------------- provider cache */
 
 export interface ProviderCacheEntry {
@@ -224,6 +301,9 @@ export async function exportAll(): Promise<Record<string, unknown>> {
     version: __WEFT_VERSION__,
     // The install id is deliberately omitted: it is the signing key material,
     // and an export is a file the user may share when reporting a problem.
+    // The licence key and the install id are both omitted: the id is signing
+    // key material and the licence is the customer's property, and an export
+    // is a file people attach to bug reports.
     settings: { ...snapshot.settings, installId: '' },
     cards,
     attention: snapshot.attention,

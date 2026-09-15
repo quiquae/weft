@@ -3,6 +3,8 @@ import { send } from '../../shared/rpc.ts';
 import type { PendingChange, Settings } from '../../core/types.ts';
 import type { LockState } from '../../core/lock.ts';
 import { assessPatch } from '../../core/lock.ts';
+import type { Feature, Tier } from '../../core/entitlements.ts';
+import type { LicenceStatus } from '../../core/licence.ts';
 
 /**
  * Settings controller.
@@ -22,6 +24,12 @@ import { assessPatch } from '../../core/lock.ts';
 export interface Controller {
   settings: Settings | null;
   lock: LockState | null;
+  tier: Tier;
+  licence: LicenceStatus | null;
+  /** Features the stored settings ask for but the tier does not allow. */
+  exceeds: Feature[];
+  /** Set when the last write was refused because it needs Pro. */
+  blockedBy: Feature | null;
   loading: boolean;
   /** Last message from the worker, e.g. "Queued. Unlocks in 15 min." */
   message: string | null;
@@ -34,6 +42,9 @@ export interface Controller {
   clearMessage(): void;
   /** Would this change be queued rather than applied? */
   wouldQueue(path: string, value: unknown): boolean;
+  /** Enter a licence key. Returns a message to show. */
+  applyLicence(key: string): Promise<string>;
+  clearLicence(): Promise<void>;
 }
 
 export function useController(): Controller {
@@ -42,12 +53,19 @@ export function useController(): Controller {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tier, setTier] = useState<Tier>('free');
+  const [licence, setLicence] = useState<LicenceStatus | null>(null);
+  const [exceeds, setExceeds] = useState<Feature[]>([]);
+  const [blockedBy, setBlockedBy] = useState<Feature | null>(null);
 
   const reload = useCallback(async () => {
     const reply = await send({ type: 'get-lock-state' });
     if (reply) {
       setSettings(reply.settings);
       setLock(reply.lock);
+      setTier(reply.tier);
+      setLicence(reply.licence);
+      setExceeds(reply.exceeds);
     }
     setLoading(false);
   }, []);
@@ -66,6 +84,7 @@ export function useController(): Controller {
         return;
       }
       setMessage(reply.message);
+      setBlockedBy(reply.needsPro ?? null);
       await reload();
     },
     [reload],
@@ -96,9 +115,31 @@ export function useController(): Controller {
     [settings],
   );
 
+  const applyLicence = useCallback(
+    async (key: string): Promise<string> => {
+      setBusy(true);
+      const reply = await send({ type: 'set-licence', key });
+      setBusy(false);
+      if (!reply) return 'Weft could not reach its background worker.';
+      setBlockedBy(null);
+      await reload();
+      return reply.message;
+    },
+    [reload],
+  );
+
+  const clearLicence = useCallback(async () => {
+    await send({ type: 'clear-licence' });
+    await reload();
+  }, [reload]);
+
   return {
     settings,
     lock,
+    tier,
+    licence,
+    exceeds,
+    blockedBy,
     loading,
     message,
     busy,
@@ -106,8 +147,13 @@ export function useController(): Controller {
     setMany,
     cancel,
     reload,
-    clearMessage: () => setMessage(null),
+    clearMessage: () => {
+      setMessage(null);
+      setBlockedBy(null);
+    },
     wouldQueue,
+    applyLicence,
+    clearLicence,
   };
 }
 

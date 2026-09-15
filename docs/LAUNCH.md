@@ -1,0 +1,290 @@
+# Launch and links
+
+**Read this first: do not let an automated account post any of it.** Every
+draft below is written for you to send from your own account. Reddit, Hacker
+News and Lobsters all detect and punish coordinated self-promotion, and the
+punishment is a domain-level shadowban — which would silently destroy the
+several hundred pages of search work in `site/`. The cost of a human spending
+twenty minutes pressing send is far lower than the cost of that.
+
+Two more rules that matter more than the copy:
+
+**Post where you would post anyway.** A first-time account whose only activity
+is promoting its own extension gets removed on sight in most of these
+communities, and deserves to be. If you have no history in r/latin, spend a
+fortnight answering questions there before you post about Weft.
+
+**Lead with the artefact, not the product.** The thing people will actually
+share is the Old English descent table, not the extension. The extension is
+what they find when they follow it.
+
+---
+
+## What will actually earn links
+
+Ranked by what this specific product can support. The first two are worth
+more than everything below them combined.
+
+### 1. The lexicon pages are the linkable asset
+
+`site/old-english-words-that-became-english.html` and
+`site/latin-words-in-everyday-english.html` are reference pages: a curated
+table of descent with pronunciation and the false friends marked. That is the
+kind of page etymology bloggers, language teachers and Wikipedia editors link
+to without being asked, because it saves them work.
+
+Nothing else on the site has that property. The landing page is marketing; the
+descent tables are a resource.
+
+### 2. The live demo is the thing people screenshot
+
+Most language tools cannot be understood without installing them. Weft's demo
+is a paragraph and a slider, works with no install, and produces an
+"oh — *that* is what it does" in about four seconds. That is what belongs in
+every post, every tweet and every submission, in preference to a feature list.
+
+### 3. Places that specifically want this
+
+- **Wikipedia** — the external-links sections of *Diglot weave*, *Old English*
+  and *Language immersion* are plausible homes for the descent tables, *if*
+  they genuinely improve the article. Adding your own link is discouraged;
+  suggesting it on the talk page is not.
+- **University Old English and Latin reading lists.** Departmental "resources"
+  pages link to free reading aids constantly. A short, specific email to the
+  person who maintains one works; a mass mailing does not.
+- **r/languagelearning's wiki and sidebar resources**, via the moderators
+  rather than a post.
+- **Awesome lists** — `awesome-language-learning`,
+  `awesome-chrome-extensions`, `awesome-latin`. A pull request each, with the
+  one-line description from `docs/STORE-LISTING.md`.
+- **Anki and FSRS communities.** Weft uses FSRS-6 properly, which that crowd
+  cares about specifically and which almost no consumer product does.
+- **Hacker News' own archive.** "Show HN" posts get indexed and linked for
+  years.
+
+### 4. Things not worth doing
+
+Paid directory submissions, guest-post link schemes, and "10 best language
+extensions" listicle placements. They are cheap, they are detectable, and for
+a product whose entire pitch is trustworthiness they are actively
+off-brand.
+
+---
+
+## Drafts
+
+Send these yourself. Check each community's current rules before posting —
+they change, and the self-promotion policies below were accurate when written
+but are exactly the sort of thing that gets tightened.
+
+### r/languagelearning
+
+**Rules to check:** self-promotion is usually restricted to a weekly thread.
+Look for the stickied "Share your project" or similar before posting
+standalone. If in doubt, message the moderators — they answer.
+
+> **Title:** I built a browser extension that swaps some words on the pages
+> you read into the language you are learning — and makes it harder the longer
+> you stay on a page
+>
+> The method is not mine. It is the diglot weave, out of BYU in the 1970s:
+> keep a text almost entirely comprehensible and weave the new language in
+> just above your threshold, so meaning arrives from context rather than a
+> dictionary. There is a controlled study where college Spanish learners using
+> a diglot reader picked up as much vocabulary as students drilling on
+> purpose-built software, incidentally, and enjoyed it more
+> ([Christensen, Merrill & Yanchar 2007](https://doi.org/10.1080/09588220601118511)).
+>
+> What I added is the bit I actually wanted: the proportion goes **up with the
+> time you spend on the page**. Five minutes on an article costs you nothing.
+> Forty minutes on a feed and you are reading half in French. The time I was
+> going to lose anyway now buys vocabulary.
+>
+> There is a demo on the site — a paragraph and a slider, no install — because
+> this is hard to describe and instant to see.
+>
+> Some details this sub might care about specifically:
+>
+> - Function words are never swapped. Replacing "the" and "of" wrecks the
+>   scaffolding you are using to decode everything else.
+> - Difficulty never goes backwards mid-page. A word you have just worked out
+>   does not flip back to English as the page gets harder around it.
+> - Scheduling is FSRS-6. Words you genuinely learn are left in the target
+>   language permanently and stop counting against the page's difficulty.
+> - Latin and Old English are supported, and they turn out to be the best case
+>   the method has — the word on the page is usually the literal ancestor of
+>   the one it replaced.
+>
+> Free for one language forever, no account, works offline. I would genuinely
+> like to know whether the attention-scaling feels motivating or punishing,
+> because I cannot tell from using my own thing.
+
+### r/latin
+
+**Rules to check:** this sub dislikes anything that looks like a product
+launch and is unforgiving about incorrect Latin. Expect the macrons and the
+vowel quantities to be checked. That is a feature — if something is wrong, you
+want to know.
+
+> **Title:** A reading aid that drops Latin words into English web pages, with
+> the derivation shown
+>
+> I have been building a browser extension that weaves words of another
+> language into whatever you are reading. Latin turned out to be the most
+> interesting target, because so much of the vocabulary is already in English
+> and the derivation is the lesson: *vacca* → vaccine, *mille passūs* → mile,
+> *paene īnsula* → peninsula, *pecus* → pecuniary.
+>
+> Glosses are checked against Lewis & Short and Whitaker's Words. Pronunciation
+> is generated from the orthography — Classical reconstruction, *v* as /w/, *c*
+> always hard — and I would be glad of corrections on any of it. The full list
+> is here: [latin-words-in-everyday-english].
+>
+> Nouns are woven in the nominative singular, which is deliberate: English
+> marks case by word order, so "the **rex** was angry" is unambiguous where
+> "the **regis** was angry" is wrong in both languages. Verbs go in as
+> infinitives and inflected English forms are skipped entirely rather than
+> guessed.
+>
+> Free, no account, works offline. Mostly I would like a second pair of eyes on
+> the macrons.
+
+### r/OldEnglish
+
+> **Title:** Reading the modern web with Old English woven in — and the
+> descent shown for each word
+>
+> *hūs* for house, *cyning* for king, *hlāford* for lord — and the tooltip
+> tells you it means loaf-keeper. That turns the task from "memorise a foreign
+> word" into "here is where your word came from", which sticks far better and
+> happens to be true.
+>
+> The false friends are marked, because they are the best part of the language:
+> *drēam* meant joy and music, *steorfan* meant simply to die, *sellan* meant
+> to give, *cwic* meant alive.
+>
+> Letterforms have their own switch, separate from vocabulary. *þēod* is hard
+> because of the thorn and the macron, not because of the word, and collapsing
+> those two axes is why most Old English tools feel impossible on day one — you
+> can read *theod* until you would rather not.
+>
+> Glosses checked against Bosworth–Toller and Clark Hall; phonology follows
+> Hogg and Campbell; IPA is derived from the orthography and tested against
+> known forms. Corrections very welcome, particularly on the palatal
+> diacritics.
+
+### Hacker News — Show HN
+
+**Rules to check:** one submission, no marketing voice, and be present in the
+comments for the first few hours or it dies. Title must start with "Show HN:".
+
+> **Title:** Show HN: Weft – a browser extension that translates *some* of the
+> words you read
+>
+> **Comment:**
+>
+> The idea is the diglot weave (BYU, 1970s): keep a page almost entirely
+> comprehensible and swap in words of the language you are learning just above
+> your threshold, so you infer them from context. What I added is tying the
+> proportion to measured attention on the page, so an infinite feed gets
+> progressively harder to read while a news article barely changes.
+>
+> Two engineering bits that might interest this crowd:
+>
+> The reason Google Translate breaks React apps is that it *replaces* text
+> nodes — React's fiber keeps a pointer to the detached node and the next
+> render throws on removeChild. Weft assigns to `nodeValue` in place and styles
+> the character ranges with the CSS Custom Highlight API, so the tree is never
+> restructured and no framework reference is invalidated. There is a test page
+> that stores text-node references and calls removeChild on each, specifically
+> to catch a regression.
+>
+> Selection is prefix-monotone in the difficulty ratio: candidates are ranked
+> once, deterministically, and accepted greedily, so raising difficulty only
+> appends. That held in the unit tests and then broke in the browser, because
+> every exposure changes a card's FSRS retrievability and reshuffles the
+> ranking — a word you had just decoded would flip back to English. The fix was
+> to make the guarantee explicit and pin the words already on screen.
+>
+> Licences are signed files verified locally against an embedded public key.
+> No activation server, no account, no request at launch — which is both the
+> honest implementation of "nothing leaves your machine" and a thing you can
+> verify in the network panel. The trade is that a licence cannot be revoked,
+> which is stated on the pricing page rather than hidden.
+>
+> Free for one language. Source is open, 449 tests, and the lexicon pipeline
+> and the Latin/Old English IPA generator are in the repo.
+
+### Lobsters
+
+**Rules to check:** invitation-only, and `show` posts must be your own work.
+Tag `javascript`, `web`, `education`.
+
+Same as the HN comment, trimmed to the two engineering paragraphs. Lobsters
+cares about the CSS Custom Highlight API choice and the monotonicity bug and
+will not read a product pitch.
+
+### r/chrome_extensions
+
+> **Title:** Weft – partial in-page translation, no host permissions at
+> install, MV3
+>
+> Worth posting here for one reason other extension authors might want: Weft
+> declares **no static content_scripts and no host permissions**. Access is
+> requested per-origin from a user gesture on the first-run page, then the
+> content script is registered at runtime with
+> `chrome.scripting.registerContentScripts({ persistAcrossSessions: true })`.
+>
+> That means it installs with none of the scary warnings — no "read and change
+> all your data on all websites" — which I suspect is worth a lot of
+> conversion. There is an automated test asserting a fresh install has zero
+> granted origins and zero registered scripts.
+>
+> Costs about 150 lines more than declaring `<all_urls>` and I would do it
+> again.
+
+### Product Hunt
+
+**Rules to check:** needs a scheduled launch day, a gallery, and someone
+answering comments all day. Worth doing only once you are ready to be present
+for it.
+
+> **Tagline:** The web, partly in another language
+>
+> **Description:** Weft weaves words of the language you are learning into the
+> pages you already read, and raises the proportion with the time you spend
+> there. Five minutes on an article costs you nothing; forty minutes on a feed
+> and you are reading half in French. Point at any word to get the English
+> back. Seven languages including Latin and Old English, where the word on the
+> page is usually the literal ancestor of the one it replaced. No account, no
+> server, works offline.
+
+---
+
+## Order of operations
+
+1. **Publish the site first.** Every post links to it, and a broken link on
+   launch day is unrecoverable.
+2. **Have the download working.** `/install` with the release attached.
+3. **Submit to the Chrome Web Store before posting anywhere.** Review takes up
+   to a fortnight and "load unpacked" loses most of the traffic a good post
+   sends.
+4. **Then the niche communities** — r/latin, r/OldEnglish, the Anki crowd.
+   Small, specific, forgiving of rough edges, and they will find the errors in
+   the lexicon while it still costs nothing to fix them.
+5. **Then Show HN**, once the rough edges those people found are gone. You get
+   one good shot at it.
+6. **Product Hunt last**, or never. It suits consumer apps with a visual hook
+   more than it suits this.
+
+## What to measure
+
+Not installs. Installs from a launch spike say nothing.
+
+- **Day-7 retention.** Does anyone still have it on?
+- **Words retired per user per week.** The only number that means learning
+  happened.
+- **Free-to-Pro conversion, by which feature they hit first.** That tells you
+  what Pro should actually contain, which is currently a guess.
+- **Which lexicon page brings organic traffic.** That tells you which of the
+  seven languages to deepen next.

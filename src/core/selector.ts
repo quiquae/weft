@@ -418,6 +418,8 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
       replacement: matchCase(cand.entry.tgt, win.text),
       entry: cand.entry,
       retired: isFree,
+      ...(input.explain ? { factors: cand.factors } : {}),
+      firstMeeting: !cand.card || cand.card.reps === 0,
     });
 
     for (let k = win.wordIndex; k < win.wordIndex + win.span; k++) takenWordIndices.add(k);

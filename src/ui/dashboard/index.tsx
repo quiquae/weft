@@ -5,6 +5,9 @@ import { getLanguage } from '../../core/languages.ts';
 import { attentionSummary, stageOf, vocabStats, wordsRead } from '../../core/stats.ts';
 import { cardRetrievability, daysUntilDue } from '../../core/fsrs.ts';
 import { formatDuration } from '../../core/escalation.ts';
+import { buildDiscoveries } from '../../core/discoveries.ts';
+import { earnedMilestones, nextMilestone } from '../../core/milestones.ts';
+import { historyDays } from '../../core/entitlements.ts';
 import { api } from '../../shared/browser.ts';
 import { useRequest } from '../lib/hooks.ts';
 import { Gloss, Notice, Section, WeaveBand } from '../components/pieces.tsx';
@@ -75,12 +78,23 @@ function Dashboard() {
     );
   }
 
-  const { settings, cards, attention, lock } = stats.data;
+  const { settings, cards, attention, lock, tier, network } = stats.data;
   const target = settings.learning.activeTarget;
   const lang = getLanguage(target);
   const mine = cards.filter((c) => c.target === target);
   const v = vocabStats(mine, settings, now);
-  const attn = attentionSummary(attention, now, settings.attention.rolloverHour, 30);
+  const days = historyDays(tier);
+  const attn = attentionSummary(attention, now, settings.attention.rolloverHour, Math.max(days, 7));
+
+  const discoveries = buildDiscoveries({
+    cards: mine,
+    entriesByLemma: glosses,
+    historical: lang.historical,
+    limit: 24,
+  });
+  const milestoneInput = { cards: mine, settings, now, streakDays: attn.streakDays };
+  const earned = earnedMilestones(milestoneInput);
+  const next = nextMilestone(milestoneInput);
 
   const stages = [
     {
@@ -160,6 +174,58 @@ function Dashboard() {
         />
       </div>
 
+      {discoveries.length ? (
+        <Section
+          siglum="¶"
+          title="What you have found out"
+          note="Things the words themselves told you, as you met them. This is the part nobody expects."
+        >
+          <ul class="finds">
+            {discoveries.map((d) => (
+              <li key={d.id} class="finds__row" data-kind={d.kind}>
+                <span class="finds__text">{d.text}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
+
+      {earned.length || next ? (
+        <Section
+          siglum="†"
+          title="Milestones"
+          note="Facts about reading you have actually done. Nothing here decays, and there is no streak to break."
+        >
+          <div class="plot">
+            {earned.length ? (
+              <ul class="marks">
+                {earned.map((m) => (
+                  <li key={m.id} class="marks__row">
+                    <span class="marks__tick" aria-hidden="true">
+                      ✓
+                    </span>
+                    <span>
+                      <strong>{m.label}</strong>
+                      <span class="marks__detail">{m.detail}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {next ? (
+              <div class="marks__next">
+                <p class="marks__nextLabel">
+                  Next: <strong>{next.label}</strong>{' '}
+                  <span class="muted tabular">{next.measure}</span>
+                </p>
+                <WeaveBand ratio={next.progress} height={14} warps={30} label={next.measure} />
+                <p class="marks__detail">{next.detail}</p>
+              </div>
+            ) : null}
+          </div>
+        </Section>
+      ) : null}
+
       <Section
         siglum="⁄⁄"
         title="Where your vocabulary stands"
@@ -178,7 +244,7 @@ function Dashboard() {
 
       <Section
         siglum="⁄⁄"
-        title="Attention, last 30 days"
+        title={`Attention, last ${days === 1 ? "day" : `${days} days`}`}
         note="Time counted only while a taxed page was visible, focused, and you were actually doing something. A tab left open overnight is not attention."
       >
         <div class="plot">
@@ -277,6 +343,28 @@ function Dashboard() {
         {visible.length > 400 ? (
           <p class="muted">Showing the first 400 of {visible.length}.</p>
         ) : null}
+      </Section>
+
+      <Section
+        siglum="§"
+        title="What has left this machine"
+        note="Counted, not promised. Every request Weft has made since you installed it."
+      >
+        <div class="plot">
+          <p class="transparency">
+            <span class="transparency__number tabular">{network.requests.toLocaleString()}</span>
+            <span class="transparency__label">
+              {network.requests === 0
+                ? 'network requests, ever. Nothing has left this machine.'
+                : `network requests, carrying ${network.words.toLocaleString()} individual words to ${network.hosts.join(', ')}.`}
+            </span>
+          </p>
+          <p class="muted plot__note">
+            {network.requests === 0
+              ? 'Weft has no account and no server. It only ever goes to the network if you give it your own translation API key, and you have not.'
+              : 'Only isolated words are ever sent, never page text. Turn this off under Vocabulary in settings.'}
+          </p>
+        </div>
       </Section>
 
       {lock.log.length ? (

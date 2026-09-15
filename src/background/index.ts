@@ -19,6 +19,8 @@ import { cardId, isRetirable, newCard, reviewCard } from '../core/fsrs.ts';
 import { effectiveLevel } from '../core/selector.ts';
 import { buildQuiz, quizPassed, quizScore } from '../core/quiz.ts';
 import { validateSettings } from '../core/settings.ts';
+import { clampToTier, exceedsTier, featureInfo } from '../core/entitlements.ts';
+import { describeLicence } from '../core/licence.ts';
 import { newInstallId } from '../core/integrity.ts';
 import { api } from '../shared/browser.ts';
 import { fail, ok } from '../shared/rpc.ts';
@@ -83,7 +85,9 @@ async function buildPageState(url: string): Promise<PageState> {
     await store.saveLock(applied.state);
     await store.saveSettings(applied.settings);
   }
-  const settings = applied.settings;
+  // Clamped here, at the point of use. Storage keeps what the user chose.
+  const tier = snapshot.tier;
+  const settings = clampToTier(applied.settings, tier);
   const lock = applied.state;
 
   const decision = classifyUrl(url, settings);
@@ -111,6 +115,7 @@ async function buildPageState(url: string): Promise<PageState> {
 
   return {
     settings,
+    tier,
     decision,
     ratio,
     attentionSeconds,
@@ -258,11 +263,62 @@ const handlers: Handlers = {
     return { card: updated };
   },
 
-  'get-settings': async () => ({ settings: (await store.load()).settings }),
+  'get-settings': async () => {
+    const snapshot = await store.load();
+    return { settings: clampToTier(snapshot.settings, snapshot.tier), tier: snapshot.tier };
+  },
+
+  'get-licence': async () => {
+    const snapshot = await store.load();
+    return {
+      licence: snapshot.licence,
+      tier: snapshot.tier,
+      exceeds: exceedsTier(snapshot.settings, snapshot.tier),
+    };
+  },
+
+  'set-licence': async (request) => {
+    const status = await store.saveLicence(request.key);
+    store.invalidate();
+    if (status.kind !== 'invalid') {
+      await broadcastSettingsChanged();
+      await registerContentScripts();
+    }
+    return { licence: status, tier: status.tier, message: describeLicence(status) };
+  },
+
+  'clear-licence': async () => {
+    await store.clearLicence();
+    await broadcastSettingsChanged();
+    return { ok: true };
+  },
 
   'request-change': async (request) => {
     const snapshot = await store.load();
     const now = Date.now();
+
+    // A change that asks for a Pro feature is refused outright rather than
+    // queued. Putting it through the cooldown would make the user wait an
+    // hour to discover they cannot have it, which is the worst possible
+    // ordering of those two pieces of news.
+    const wouldBe = validateSettings(
+      { ...snapshot.settings, ...applyPatchShallow(snapshot.settings, request.patch) },
+      now,
+      snapshot.settings.installId,
+    );
+    const over = exceedsTier(wouldBe, snapshot.tier).filter(
+      (feature) => !exceedsTier(snapshot.settings, snapshot.tier).includes(feature),
+    );
+    if (over.length) {
+      const first = over[0] as (typeof over)[number];
+      const info = featureInfo(first);
+      return {
+        applied: false,
+        message: `${info.label} is part of Weft Pro. ${info.detail}`,
+        needsPro: first,
+      };
+    }
+
     const result = requestChange(
       snapshot.lock,
       snapshot.settings,
@@ -299,7 +355,13 @@ const handlers: Handlers = {
       await store.saveSettings(applied.settings);
       await broadcastSettingsChanged();
     }
-    return { lock: applied.state, settings: applied.settings };
+    return {
+      lock: applied.state,
+      settings: clampToTier(applied.settings, snapshot.tier),
+      tier: snapshot.tier,
+      licence: snapshot.licence,
+      exceeds: exceedsTier(applied.settings, snapshot.tier),
+    };
   },
 
   'use-panic': async () => {
@@ -411,7 +473,9 @@ const handlers: Handlers = {
     const snapshot = await store.load();
     const cards = Object.values(await store.loadCards());
     return {
-      settings: snapshot.settings,
+      tier: snapshot.tier,
+      network: await store.loadNetworkLog(),
+      settings: clampToTier(snapshot.settings, snapshot.tier),
       cards,
       attention: Object.values(snapshot.attention) as SiteAttention[],
       lock: snapshot.lock,

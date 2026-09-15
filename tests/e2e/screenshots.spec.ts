@@ -15,6 +15,12 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), '../../docs/screens');
 test.describe('screenshots', () => {
   test.skip(({}) => process.env['WEFT_SCREENS'] !== '1', 'set WEFT_SCREENS=1');
 
+  // Fourteen surfaces, three of which have to load and weave a real page
+  // first. The default sixty seconds is not enough, and when it runs out the
+  // fixture's HTTP server is torn down mid-run, which surfaces as a confusing
+  // connection-refused rather than as a timeout.
+  test.setTimeout(300_000);
+
   test('capture every surface', async ({ context, extensionId, configure, origin, rpc }) => {
     await mkdir(OUT, { recursive: true });
 
@@ -68,20 +74,24 @@ test.describe('screenshots', () => {
     const day = 86_400_000;
     const now = Date.now();
     const seeded: Record<string, unknown> = {};
+    // Old English, because those entries carry the etymologies and
+    // false-friend notes that the discoveries feed is built from — seeding
+    // French would leave that section empty and the screenshot would not
+    // show the feature.
     const plan: Array<[string, number, number, number, number]> = [
       // lemma, reps, stability, daysSinceReview, exposures
-      ['maison', 9, 120, 2, 61], ['eau', 8, 90, 1, 54], ['roi', 7, 64, 3, 48],
-      ['cheval', 6, 41, 2, 39], ['rivière', 5, 22, 4, 31], ['pont', 4, 14, 2, 26],
-      ['montagne', 4, 11, 5, 22], ['forêt', 3, 8, 1, 19], ['matin', 3, 6, 2, 17],
-      ['soir', 2, 4, 1, 14], ['femme', 2, 3, 3, 12], ['pain', 2, 2, 1, 11],
-      ['sel', 1, 1.4, 2, 9], ['jeune', 1, 1.1, 1, 8], ['noir', 1, 0.9, 2, 7],
-      ['oiseau', 1, 0.6, 3, 6], ['vivant', 0, 0, 0, 4], ['route', 0, 0, 0, 3],
-      ['pierre', 0, 0, 0, 2],
+      ['hūs', 9, 120, 2, 61], ['stān', 8, 90, 1, 54], ['cyning', 7, 64, 3, 48],
+      ['hlāford', 6, 41, 2, 39], ['steorfan', 5, 22, 4, 31], ['drēam', 4, 14, 2, 26],
+      ['cwēn', 4, 11, 5, 22], ['sōþ', 3, 8, 1, 19], ['morgen', 3, 6, 2, 17],
+      ['ǣfen', 2, 4, 1, 14], ['wīfmann', 2, 3, 3, 12], ['hlāf', 2, 2, 1, 11],
+      ['sealt', 1, 1.4, 2, 9], ['ġeong', 1, 1.1, 1, 8], ['blæc', 1, 0.9, 2, 7],
+      ['fugol', 1, 0.6, 3, 6], ['cwic', 0, 0, 0, 4], ['weġ', 0, 0, 0, 3],
+      ['sellan', 0, 0, 0, 2],
     ];
     for (const [lemma, reps, stability, ago, exposures] of plan) {
-      seeded[`fr:${lemma}`] = {
-        id: `fr:${lemma}`,
-        target: 'fr',
+      seeded[`ang:${lemma}`] = {
+        id: `ang:${lemma}`,
+        target: 'ang',
         lemma,
         stability,
         difficulty: 5,
@@ -100,8 +110,8 @@ test.describe('screenshots', () => {
     // Importing validates settings, and a bare settings object resets the
     // site list to the shipped defaults, so reconfigure afterwards.
     await configure({
-      'learning.activeTarget': 'fr',
-      'learning.targetLangs': ['fr'],
+      'learning.activeTarget': 'ang',
+      'learning.targetLangs': ['ang'],
       'weave.baseRatio': 0.28,
       'weave.ceilingRatio': 0.6,
     });
@@ -151,6 +161,9 @@ test.describe('screenshots', () => {
       });
     };
 
+    await shoot('.section:has(.finds)', 'dashboard-discoveries.png');
+    await shoot('.section:has(.marks)', 'dashboard-milestones.png');
+    await shoot('.section:has(.transparency)', 'dashboard-transparency.png');
     await shoot('.section:has(.vocab)', 'dashboard-vocabulary.png');
     await detail.goto(`chrome-extension://${extensionId}/options.html`);
     await detail.waitForTimeout(1200);

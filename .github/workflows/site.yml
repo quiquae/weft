@@ -1,0 +1,65 @@
+name: Site
+
+# Publishes dist/site to GitHub Pages. The 700-odd lexicon pages are
+# generated rather than committed, so this is what turns a push into a
+# deployment.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'tools/build-site.mjs'
+      - 'tools/make-og.mjs'
+      - 'tools/seed/**'
+      - 'src/core/pricing.ts'
+      - 'src/core/entitlements.ts'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Build the lexicons the site is generated from
+        run: npm run packs
+
+      - name: Generate the site
+        run: node tools/build-site.mjs
+        env:
+          # Canonical URLs and the sitemap are absolute, so this has to be
+          # the real domain or search engines will index the wrong one.
+          WEFT_SITE_URL: ${{ vars.WEFT_SITE_URL || 'https://weft.study' }}
+          WEFT_REPO: ${{ github.server_url }}/${{ github.repository }}
+
+      - name: Check every internal link resolves
+        run: node tools/check-links.mjs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

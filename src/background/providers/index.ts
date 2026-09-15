@@ -4,7 +4,12 @@ import { deepl } from './deepl.ts';
 import { google } from './google.ts';
 import { openai } from './openai.ts';
 import { ProviderError, type Provider, type TranslationRequest } from './types.ts';
-import { loadProviderCache, saveProviderCache, type ProviderCacheEntry } from '../storage.ts';
+import {
+  loadProviderCache,
+  noteNetworkRequest,
+  saveProviderCache,
+  type ProviderCacheEntry,
+} from '../storage.ts';
 
 export const PROVIDERS: Record<string, Provider> = { deepl, google, openai };
 
@@ -96,6 +101,10 @@ export async function lookupMissing(
 
       for (let i = 0; i < remaining.length; i += provider.batchSize) {
         const batch = remaining.slice(i, i + provider.batchSize);
+        // Logged before the call, so a request that fails still counts. The
+        // number in the dashboard has to be the number of times Weft went
+        // out, not the number of times it succeeded.
+        await noteNetworkRequest(providerHost(provider.id, settings), batch.length);
         const results = await provider.translate(batch, {
           source,
           target,
@@ -176,6 +185,19 @@ function prune(
     if (kept > 20_000) break;
   }
   return out;
+}
+
+/** The host a provider actually contacts, for the transparency log. */
+function providerHost(id: string, settings: Settings): string {
+  if (id === 'deepl') {
+    return settings.providers.deepl.free ? 'api-free.deepl.com' : 'api.deepl.com';
+  }
+  if (id === 'google') return 'translation.googleapis.com';
+  try {
+    return new URL(settings.providers.openai.baseUrl).hostname;
+  } catch {
+    return 'openai-compatible endpoint';
+  }
 }
 
 /** Status for the settings page: which providers are ready to use. */

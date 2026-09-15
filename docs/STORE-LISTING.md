@@ -155,3 +155,62 @@ In `docs/screens/`. For the listing, in order:
 ## Support and privacy policy URLs
 
 Both required. Host `docs/PRIVACY.md` and the repository issues page.
+
+
+---
+
+## Submission checklist
+
+Things only you can do, in the order they block each other.
+
+### Before you can submit at all
+
+- [ ] **Chrome Web Store developer account.** One-off $5 registration fee at
+      <https://chrome.google.com/webstore/devconsole>. Use an account you will
+      still control in five years, not a throwaway.
+- [ ] **A privacy policy at a public URL.** Required for any extension that
+      handles user data, and Weft is required to declare one even though it
+      transmits nothing. `docs/PRIVACY.md` is written to be published as-is;
+      put it at `https://weft.study/privacy`.
+- [ ] **A support URL.** The repository issues page is fine.
+- [ ] **Decide the publisher name.** It appears on the listing and cannot be
+      changed casually.
+
+### Assets, all present in this repository
+
+- [ ] Icon, 128×128 — `assets/icon-128.png`
+- [ ] Screenshots, 1280×800 or 640×400, at least one, up to five. Use, in
+      order: `docs/screens/page-woven.png`, `page-old-english.png`,
+      `popup.png`, `dashboard.png`, `options-density.png`. They will need
+      padding to the exact dimensions; the Store rejects odd sizes rather
+      than scaling them.
+- [ ] Small promo tile, 440×280 — crop from `site/og.png`
+- [ ] The package — `weft-chrome-<version>.zip` from `npm run zip`
+
+### Fields, all drafted above
+
+- [ ] Name, short description, detailed description — copy from this file
+- [ ] Category: Education
+- [ ] Language: English
+- [ ] Permission justifications — one per permission, above. Reviewers read
+      these individually and reject vague ones.
+- [ ] Single purpose statement — above
+- [ ] Data usage disclosures and the three certifications — above
+
+### Expect
+
+Review takes anywhere from a few hours to a couple of weeks. A first
+submission with `optional_host_permissions: ["*://*/*"]` may draw a question
+about breadth; the answer is that Weft requests per-origin at runtime from a
+user gesture and never at install, which is demonstrable — a fresh install
+reports zero granted origins and zero registered content scripts, and there
+is an automated test asserting exactly that (`tests/e2e/licensing.spec.ts`,
+"a fresh install is Free, and Free weaves").
+
+### Firefox, separately
+
+- [ ] An addons.mozilla.org account, no fee
+- [ ] Submit `weft-firefox-<version>.zip`
+- [ ] AMO requires reviewable source for minified code. `npm run build` is
+      reproducible from the repository; point them at it and at
+      `build.mjs`.

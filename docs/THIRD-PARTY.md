@@ -80,13 +80,20 @@ except Preact.
 Acknowledged because it is real and because pretending otherwise would be
 dishonest:
 
-- **Toucan** — the best-known word-replacement extension, acquired by Babbel
-  in 2022.
-- **Vocabo**, **Fluent**, **Immersive Translate**, **Language Reactor**,
-  **Readlang**, **Migaku** — all do some form of in-page translation or
-  click-to-translate.
-- **LoomVue** (IES-funded) — a reading tool applying the diglot weave with
-  machine-adjusted difficulty, for English learners.
+**Word-replacement extensions.** **Toucan** is the best known, acquired by
+Babbel in 2022. **Vocabo**, **Fluent**, **Immersive Translate**, **Language
+Reactor**, **Readlang** and **Migaku** all do some form of in-page
+translation or click-to-translate.
 
-None of them tie difficulty to attention, and none of them treat historical
-languages as first-class. That is the gap Weft is in.
+**Diglot-weave products specifically.** The method is not obscure and several
+people sell it: **Prismatext** prints woven books, **Quilingo** and
+**joindiglot.com** are web readers, **LingoWeave** teaches the method
+directly, and **LoomVue** — the IES-funded tool above — is a browser
+extension doing dynamic weaving for English learners in schools.
+
+So the honest positioning is narrow and it is this: Weft is the only one that
+makes difficulty a function of **attention** rather than of measured skill or
+a fixed setting, and the only one that treats **Latin and Old English** as
+first-class targets with etymological descent surfaced as the teaching
+device. The method is borrowed and credited. Those two things are the
+product.

@@ -211,6 +211,14 @@ export interface Swap {
    * the reader — it is the part of the page they can already read.
    */
   retired: boolean;
+  /**
+   * Per-factor scores, when the selector was asked to explain itself. Turned
+   * into one sentence for the tooltip so a reader can see the choice was
+   * reasoned rather than random.
+   */
+  factors?: Record<string, number>;
+  /** True when this is the first time the learner has met the word. */
+  firstMeeting?: boolean;
 }
 
 /* ------------------------------------------------------------- attention */
@@ -363,6 +371,8 @@ export interface Settings {
     showEtymon: boolean;
     showExample: boolean;
     showBand: boolean;
+    /** Show one sentence explaining why this word was chosen. */
+    showWhy: boolean;
     tts: boolean;
     grading: 'auto' | 'manual' | 'off';
   };

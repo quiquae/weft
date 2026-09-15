@@ -1,6 +1,6 @@
 import type { Grade, LangCode, LexEntry, Settings } from '../core/types.ts';
 import { getLanguage } from '../core/languages.ts';
-import { cognateReason } from '../core/similarity.ts';
+import { explainChoice } from '../core/explain.ts';
 import { WEFT_ATTR } from './walker.ts';
 
 /**
@@ -91,6 +91,14 @@ const CSS = `
 }
 .etymon b { color: #fff; font-weight: 600; }
 .note { margin-top: 0.4rem; font-size: 0.85em; color: #a8a8b6; }
+.why {
+  margin-top: 0.45rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #2c2c36;
+  font-size: 0.82em;
+  color: #9a9aa8;
+  font-style: italic;
+}
 .example { margin-top: 0.4rem; font-size: 0.87em; color: #c9c9d4; font-style: italic; }
 .actions { margin-top: 0.55rem; display: flex; gap: 0.35rem; align-items: center; }
 button {
@@ -115,6 +123,9 @@ button[data-primary='1'] { background: #2f2a52; border-color: #4e4585; color: #e
 export interface TooltipContent {
   entry: LexEntry;
   target: LangCode;
+  /** Factor breakdown from the selector, if it was asked to explain. */
+  factors?: Record<string, number>;
+  firstMeeting?: boolean;
   /** The English text actually on the page, case included. */
   original: string;
   /** The woven text actually on the page. */
@@ -262,6 +273,18 @@ export class Tooltip {
     if (reveal.showBand) addRow('level', BAND_LABELS[entry.band] ?? String(entry.band));
     if (rows.children.length) card.append(rows);
 
+    if (reveal.showWhy) {
+      // One sentence, not a table of decimals: the reader wants to know the
+      // choice was reasoned, not to audit the arithmetic.
+      const { sentence } = explainChoice(entry, content.factors, {
+        firstMeeting: content.firstMeeting,
+        // Never mention descent here if the reader turned the etymon badge
+        // off; the explanation must not reinstate a fact they hid.
+        allowEtymon: reveal.showEtymon,
+      });
+      card.append(el('div', 'why', sentence));
+    }
+
     if (reveal.showEtymon && entry.etymonOf) {
       const box = el('div', 'etymon');
       box.append(document.createTextNode(`${meta.historical ? 'Ancestor of' : 'Related to'} English `));
@@ -269,9 +292,6 @@ export class Tooltip {
       strong.textContent = entry.etymonOf;
       box.append(strong);
       card.append(box);
-    } else if (reveal.showEtymon) {
-      const reason = cognateReason(entry);
-      if (reason) card.append(el('div', 'note', reason.charAt(0).toUpperCase() + reason.slice(1)));
     }
 
     if (entry.note) card.append(el('div', 'note', entry.note));

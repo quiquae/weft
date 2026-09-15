@@ -12,6 +12,8 @@ import type {
 import type { LockState } from '../core/lock.ts';
 import type { SiteDecision } from '../core/sites.ts';
 import type { QuizQuestion, QuizResult } from '../core/quiz.ts';
+import type { LicenceStatus } from '../core/licence.ts';
+import type { Feature, Tier } from '../core/entitlements.ts';
 
 /**
  * The message protocol between content scripts, UI pages and the service
@@ -24,7 +26,9 @@ import type { QuizQuestion, QuizResult } from '../core/quiz.ts';
  */
 
 export interface PageState {
+  /** Clamped to the current tier. */
   settings: Settings;
+  tier: Tier;
   decision: SiteDecision;
   /** Effective weave ratio right now, after attention and panic. */
   ratio: number;
@@ -66,6 +70,9 @@ export type Request =
   | { type: 'import-data'; payload: unknown }
   | { type: 'reset-vocabulary'; confirm: 'yes' }
   | { type: 'hard-mode-profile'; platform: 'macos' | 'windows' | 'linux' }
+  | { type: 'get-licence' }
+  | { type: 'set-licence'; key: string }
+  | { type: 'clear-licence' }
   | {
       type: 'lookup-words';
       target: LangCode;
@@ -80,14 +87,30 @@ export interface ResponseMap {
   'record-exposure': { ok: true };
   'record-reveal': { ok: true };
   'record-grade': { card: MemoryCard };
-  'get-settings': { settings: Settings };
-  'request-change': { applied: boolean; pending?: PendingChange; message: string };
+  'get-settings': { settings: Settings; tier: Tier };
+  'request-change': {
+    applied: boolean;
+    pending?: PendingChange;
+    message: string;
+    /** Set when the change was refused because it needs Pro. */
+    needsPro?: Feature;
+  };
   'cancel-pending': { ok: true };
-  'get-lock-state': { lock: LockState; settings: Settings };
+  'get-lock-state': {
+    lock: LockState;
+    /** Clamped to the tier. */
+    settings: Settings;
+    tier: Tier;
+    licence: LicenceStatus;
+    /** Features the stored settings ask for but the tier does not allow. */
+    exceeds: Feature[];
+  };
   'use-panic': { granted: boolean; activeUntil?: number; message: string };
   'build-quiz': { questions: QuizQuestion[]; error?: string };
   'submit-quiz': { passed: boolean; score: number; message: string };
   'get-stats': {
+    tier: Tier;
+    network: { requests: number; words: number; last?: number; hosts: string[] };
     settings: Settings;
     cards: MemoryCard[];
     attention: SiteAttention[];
@@ -103,6 +126,9 @@ export interface ResponseMap {
   'reset-vocabulary': { ok: true };
   'hard-mode-profile': { filename: string; contents: string; instructions: string };
   'lookup-words': { entries: LexEntry[]; fromCache: number; fromProvider: number; error?: string };
+  'get-licence': { licence: LicenceStatus; tier: Tier; exceeds: Feature[] };
+  'set-licence': { licence: LicenceStatus; tier: Tier; message: string };
+  'clear-licence': { ok: true };
 }
 
 export type ResponseFor<T extends Request['type']> = ResponseMap[T];

@@ -5,167 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Weft — the web, partly in another language</title>
 <meta name="description" content="A browser extension that weaves some of the words you read into a language you are learning, and raises the proportion with the time you spend. Including Latin and Old English.">
-<meta property="og:title" content="Weft">
-<meta property="og:description" content="Some of the words on the pages you read are in another language. The longer you stay, the more of them there are.">
-<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
-<style>
-  /*
-   * Same tokens as the extension: linen, iron-gall ink and woad — undyed
-   * wool, the ink these languages were written in, and the dye used on cloth
-   * in the period Old English was spoken. One system face throughout, so the
-   * page renders instantly and needs no download.
-   */
-  :root {
-    --linen: #e9e8e3;
-    --linen-raised: #f3f2ee;
-    --linen-sunken: #dedcd4;
-    --thread: #b9b2a2;
-    --thread-faint: #cfcabd;
-    --ink: #20262b;
-    --ink-soft: #4d565e;
-    --ink-faint: #7b838a;
-    --woad: #2f4b7c;
-    --woad-wash: #2f4b7c14;
-    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
-      "URW Palladio L", Georgia, "Times New Roman", serif;
-    --measure: 34rem;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --linen: #191d21; --linen-raised: #21262b; --linen-sunken: #12161a;
-      --thread: #3c444b; --thread-faint: #2c3338;
-      --ink: #dfdcd3; --ink-soft: #a8a79f; --ink-faint: #7d827f;
-      --woad: #93b0dd; --woad-wash: #93b0dd1a;
+<link rel="canonical" href="https://weft.study/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Weft — the web, partly in another language">
+<meta property="og:description" content="Some of the words on the pages you read are in another language. The longer you stay, the more of them there are. Including Latin and Old English.">
+<meta property="og:url" content="https://weft.study/">
+<meta property="og:image" content="https://weft.study/og.png">
+<meta property="og:site_name" content="Weft">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Weft — the web, partly in another language">
+<meta name="twitter:description" content="A browser extension that weaves words of another language into what you read, and raises the proportion with the time you spend.">
+<meta name="twitter:image" content="https://weft.study/og.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Weft",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Chrome, Edge, Firefox",
+  "url": "https://weft.study/",
+  "description": "A browser extension that weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you spend reading. Supports French, Spanish, German, Italian, Portuguese, Latin and Old English.",
+  "offers": [
+    { "@type": "Offer", "price": "0", "priceCurrency": "USD", "name": "Weft Free" },
+    { "@type": "Offer", "price": "24", "priceCurrency": "USD", "name": "Weft Pro, yearly" }
+  ],
+  "featureList": [
+    "Partial in-page translation using the diglot weave method",
+    "Difficulty that rises with measured attention on the page",
+    "Latin and Old English with etymological descent",
+    "FSRS-6 spaced repetition scheduling",
+    "Works offline with no account and no telemetry"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a diglot weave?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A reading method from Brigham Young University in the 1970s: a text is kept almost entirely comprehensible in your own language and words of the new language are woven in just above your threshold, so meaning arrives from context rather than from a dictionary."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Weft send the pages I read anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Weft works offline with a lexicon built into the extension. There is no account, no server and no telemetry. If you choose to add your own translation API key, it receives isolated words and a part-of-speech hint, never page text."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which languages does Weft support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "French, Spanish, German, Italian, Portuguese, Latin and Old English. The historical languages show the English word each one became, so hus is presented as the ancestor of house."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Weft free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, for one language, forever, with the whole lexicon and the whole method. Pro adds every language at once, a different language per site, Hard Mode and your own translation key, from 24 dollars a year."
+      }
     }
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    background: var(--linen);
-    color: var(--ink);
-    font: 400 17px/1.6 var(--serif);
-    font-variant-numeric: tabular-nums;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  main { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.25rem 6rem; }
-
-  h1 { font-size: clamp(2.6rem, 8vw, 4.2rem); line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 0.6rem; }
-  h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 0.5rem; }
-  h3 { font-size: 1.1rem; margin: 0 0 0.2rem; }
-  p { margin: 0 0 0.9em; max-width: var(--measure); }
-
-  a { color: var(--woad); text-underline-offset: 0.16em; }
-  a:focus-visible, button:focus-visible, input:focus-visible {
-    outline: 2px solid var(--woad); outline-offset: 2px; border-radius: 2px;
-  }
-
-  .standfirst { font-size: 1.25rem; color: var(--ink-soft); max-width: 32rem; }
-
-  /* --- the hero is the product, live ------------------------------------ */
-
-  .demo {
-    margin: 2.25rem 0 1rem;
-    padding: 1.5rem 1.5rem 1.2rem;
-    background: var(--linen-raised);
-    border: 1px solid var(--thread-faint);
-    border-radius: 4px;
-  }
-
-  .demo__text { font-size: 1.16rem; line-height: 1.68; margin: 0 0 1.2rem; max-width: 36rem; }
-
-  /*
-   * A woven word: dotted underline and a faint tint, exactly as the extension
-   * renders it. Hovering shows the English, which is what the extension's
-   * tooltip does.
-   */
-  /*
-   * inline-block so the hover chip has a predictable box to anchor to. A
-   * single word never needs to wrap, so it costs nothing. The chip overlaps
-   * the line above, which is what an above-anchored tooltip does; the
-   * extension's own tooltip is a floating card that flips when it would go
-   * off-screen.
-   */
-  .w {
-    display: inline-block;
-    color: var(--woad);
-    background: var(--woad-wash);
-    text-decoration: underline dotted var(--woad);
-    text-underline-offset: 0.18em;
-    border-radius: 2px;
-    cursor: help;
-    position: relative;
-  }
-  .w::after {
-    content: attr(data-en);
-    position: absolute;
-    left: 50%; bottom: calc(100% + 0.4rem);
-    transform: translateX(-50%);
-    background: #16161c; color: #f2f2f5;
-    font-size: 0.78rem; line-height: 1.3;
-    padding: 0.18rem 0.42rem; border-radius: 3px;
-    white-space: nowrap; pointer-events: none;
-    opacity: 0; transition: opacity 120ms ease-out;
-  }
-  .w:hover::after, .w:focus-visible::after { opacity: 1; }
-
-  .demo__controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .demo__controls label { font-size: 0.85rem; color: var(--ink-soft); flex: none; }
-  input[type=range] { flex: 1 1 14rem; accent-color: var(--woad); min-width: 10rem; }
-  .demo__readout { font-size: 0.85rem; color: var(--woad); flex: none; min-width: 11rem; text-align: right; }
-
-  /* --- the cloth meter -------------------------------------------------- */
-
-  .band { display: block; width: 100%; height: 22px; margin: 0.9rem 0 0.1rem; }
-  .band__warp { stroke: var(--thread); stroke-width: 1; }
-  .band__weft { stroke: var(--woad); stroke-width: 2.5; }
-
-  /* --- structure -------------------------------------------------------- */
-
-  section { margin-top: 3.5rem; }
-  .rule { padding-bottom: 0.4rem; border-bottom: 1px solid var(--woad); margin-bottom: 1.1rem; }
-
-  .points { display: grid; gap: 1.4rem; margin-top: 1.2rem; }
-  @media (min-width: 46rem) { .points { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
-  .points p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; max-width: none; }
-
-  /* --- the descent table, the reason to pick Old English ---------------- */
-
-  .descent { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: 0.97rem; }
-  .descent td { padding: 0.42rem 0.8rem 0.42rem 0; border-bottom: 1px solid var(--thread-faint); vertical-align: baseline; }
-  .descent td:first-child { color: var(--woad); font-style: italic; white-space: nowrap; }
-  .descent td:last-child { color: var(--ink-soft); font-size: 0.88rem; }
-  .descent .arrow { color: var(--ink-faint); white-space: nowrap; }
-
-  blockquote {
-    margin: 1.2rem 0; padding-left: 0.9rem;
-    border-left: 2px solid var(--woad); color: var(--ink-soft);
-    max-width: var(--measure);
-  }
-
-  .install {
-    margin-top: 1rem; padding: 0.9rem 1rem;
-    background: var(--linen-sunken); border-left: 2px solid var(--thread);
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    font-size: 0.82rem; line-height: 1.7; overflow-x: auto;
-  }
-
-  footer {
-    margin-top: 4.5rem; padding-top: 1.2rem;
-    border-top: 1px solid var(--thread);
-    color: var(--ink-faint); font-size: 0.85rem;
-  }
-  footer p { max-width: var(--measure); }
-
-  .brand { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
-  .brand svg { width: 26px; height: 26px; flex: none; }
-  .brand span { font-size: 0.95rem; letter-spacing: 0.02em; color: var(--ink-soft); }
-
-  @media (prefers-reduced-motion: reduce) { * { transition-duration: 1ms !important; } }
-</style>
+  ]
+}
+</script>
+<link rel="stylesheet" href="weft.css">
 </head>
 <body>
 <main>
@@ -208,16 +122,33 @@
   <section>
     <h2 class="rule">Why this works</h2>
     <p>
-      It is not a new idea. The <strong>diglot weave</strong> was developed by Robert Blair
-      at BYU in the 1970s: keep a text almost entirely comprehensible and weave the new
+      It is not a new idea. The <strong>diglot weave</strong> came out of Brigham Young
+      University in the 1970s: keep a text almost entirely comprehensible and weave the new
       language in just above the reader's threshold, so meaning arrives from context rather
-      than from a dictionary. Replications have found it as effective as drilling for
-      vocabulary, and considerably more pleasant.
+      than from a dictionary.
     </p>
     <p>
-      Weft's contribution is not the method. It is tying the difficulty to
-      <strong>attention</strong>, so the time you were going to lose anyway is the thing
-      that buys the vocabulary.
+      In a controlled comparison, college learners of Spanish using a diglot reader picked up
+      <strong>as much vocabulary as students drilling on purpose-built software</strong> —
+      incidentally, from context, and they reported enjoying it more
+      (<a href="https://doi.org/10.1080/09588220601118511">Christensen, Merrill &amp; Yanchar,
+      2007</a>). A randomised study of sixty high-school students found a significant
+      advantage over conventional vocabulary teaching after five sessions
+      (<a href="https://www.sciencedirect.com/science/article/pii/S1877042814026421">Nemati
+      &amp; Maleki, 2014</a>). A US Department of Education
+      <a href="https://ies.ed.gov/use-work/awards/loomvue-browser-supporting-language-learning-dynamic-diglot-weave-0">IES-funded
+      browser tool</a> built on the same method reported close to 20% vocabulary gain.
+    </p>
+    <p>
+      The point of that first result is not that weaving wins. It is that it
+      <em>ties</em> — on time you were spending anyway.
+    </p>
+    <p>
+      Weft's contribution is not the method, which is borrowed and credited. It is tying the
+      difficulty to <strong>attention</strong> rather than to a fixed setting or a skill
+      estimate. That part is a bet, and it is untested — said plainly here and in the
+      <a href="https://github.com/quiquae/weft/blob/main/docs/PEDAGOGY.md">pedagogy notes</a>,
+      which also list what else is judgement rather than evidence.
     </p>
 
     <div class="points">
@@ -268,6 +199,23 @@
       letterforms have their own switch — you can read <em>theod</em> until you would rather
       not.
     </p>
+    <p>
+      Browse the lexicon:
+      <a href="old-english-words-that-became-english.html">Old English words that became
+      English words</a> ·
+      <a href="latin-words-in-everyday-english.html">Latin words hiding in everyday
+      English</a> ·
+      <a href="old-english/">every Old English word</a> ·
+      <a href="latin/">every Latin word</a>
+    </p>
+    <p>
+      Or start with the words you do not have to learn:
+      <a href="french-words-you-already-know.html">French</a>,
+      <a href="spanish-words-you-already-know.html">Spanish</a>,
+      <a href="german-words-you-already-know.html">German</a>,
+      <a href="italian-words-you-already-know.html">Italian</a>,
+      <a href="portuguese-words-you-already-know.html">Portuguese</a>.
+    </p>
   </section>
 
   <section>
@@ -313,11 +261,23 @@
 
   <section>
     <h2 class="rule">Get it</h2>
-    <p>Not on the Chrome Web Store yet. From source:</p>
-    <div class="install">git clone https://github.com/&lt;you&gt;/weft<br>cd weft &amp;&amp; npm install<br>npm run packs &amp;&amp; npm run build</div>
-    <p style="margin-top:0.9rem">
-      Then <code>chrome://extensions</code> → Developer mode → Load unpacked → pick
-      <code>dist/chrome</code>. Firefox and Edge work too.
+
+    <div class="download">
+      <a class="download__button" href="install.html">Install Weft</a>
+      <p class="download__meta">
+        Chrome, Edge, Brave and Firefox · about 200&nbsp;KB · about a minute · free for one
+        language, forever
+      </p>
+    </div>
+
+    <p>
+      Weft is not in the Chrome Web Store yet, so this is a manual install: download, unzip,
+      and load the folder. <a href="install.html">Four steps, with the fiddly one explained</a>.
+    </p>
+    <p>
+      <a href="pricing.html">Pro</a> adds every language at once, a different one per site,
+      Hard Mode, and your own translation key — from $24 a year. Your licence is a signed file
+      verified on your own machine, so even paying involves no request to us.
     </p>
   </section>
 

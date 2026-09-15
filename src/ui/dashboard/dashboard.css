@@ -154,3 +154,93 @@
     row-gap: 0.1rem;
   }
 }
+
+/* ------------------------------------------------------------ discoveries */
+
+/*
+ * The feed is set as prose, not as cards. Each line is a sentence someone
+ * might repeat to a friend, and cards would make them look like
+ * notifications.
+ */
+.finds {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+}
+
+.finds__row {
+  padding: 0.5rem 0 0.5rem 0.9rem;
+  border-left: 2px solid var(--thread-faint);
+  font-size: var(--t-15);
+  line-height: 1.5;
+  max-width: var(--measure);
+}
+
+/* A meaning that shifted is the most interesting kind, so it gets the accent. */
+.finds__row[data-kind='false-friend'] { border-left-color: var(--madder); }
+.finds__row[data-kind='descent'] { border-left-color: var(--woad); }
+.finds__row[data-kind='literal'] { border-left-color: var(--woad); }
+.finds__row[data-kind='unchanged'] { border-left-color: var(--thread); }
+
+/* -------------------------------------------------------------- milestones */
+
+.marks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.marks__row {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.marks__tick { color: var(--woad); line-height: 1.4; }
+
+.marks__row strong { display: block; font-weight: 600; }
+
+.marks__detail {
+  display: block;
+  color: var(--ink-soft);
+  font-size: var(--t-13);
+  line-height: 1.5;
+  max-width: var(--measure);
+}
+
+.marks__next {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--thread-faint);
+}
+
+.marks__nextLabel { margin: 0 0 0.35rem; font-size: var(--t-15); }
+
+/* ------------------------------------------------------------ transparency */
+
+/*
+ * A number this large for a value that is usually zero is deliberate. "0
+ * network requests, ever" is the strongest sentence in the product and it
+ * should be the first thing read on this section.
+ */
+.transparency {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0;
+  max-width: var(--measure);
+}
+
+.transparency__number {
+  font-size: var(--t-34);
+  line-height: 1;
+  color: var(--woad);
+  letter-spacing: -0.02em;
+}
+
+.transparency__label { font-size: var(--t-15); line-height: 1.45; }

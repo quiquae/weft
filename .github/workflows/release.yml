@@ -1,0 +1,60 @@
+name: Release
+
+# Cutting a tag publishes the packages. Everything that can fail is checked
+# before anything is attached, so a bad build never becomes a download.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and DOM tests
+        run: npm test
+
+      - name: Build lexicons
+        run: npm run packs
+
+      - name: Check lexicons
+        run: npm run packs:verify
+
+      - name: Build icons
+        run: node tools/make-icons.mjs
+
+      - name: Install Chromium for the end-to-end suite
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Package both browsers
+        run: npm run zip
+
+      - name: Build the content site
+        run: node tools/build-site.mjs
+
+      - name: Attach the packages to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            weft-chrome-*.zip
+            weft-firefox-*.zip
+          body_path: RELEASE-${{ github.ref_name }}.md
+          fail_on_unmatched_files: true
+        continue-on-error: false

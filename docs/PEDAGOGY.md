@@ -12,16 +12,46 @@ meaning arrives from context rather than from a dictionary. It is the same
 principle as Krashen's *i+1* and the same mechanism as a "sandwich story" or
 an interlinear edition.
 
-The evidence is good rather than overwhelming. Christensen et al. (2007) found
-a diglot reader as effective as drill-based instruction for vocabulary growth
-in college Spanish learners, with lower reported stress. A 2014 study of
-Iranian high-school learners found a statistically significant advantage for
-diglot-weave vocabulary teaching over conventional instruction. Work on
-bilingual "sandwich" texts has shown that L1 scaffolding lets learners read
-age-appropriate material they could not otherwise attempt, which matters for
-motivation. An IES-funded browser tool, LoomVue, applies the method with
-machine-adjusted difficulty and reported roughly 20% improvement on a
-researcher-developed vocabulary measure in a small Phase I pilot.
+The evidence is good rather than overwhelming, and it is checkable:
+
+- **Christensen, E., Merrill, P., & Yanchar, S. (2007).** "Second language
+  vocabulary acquisition using a diglot reader or a computer-based drill and
+  practice program." *Computer Assisted Language Learning*, 20(1), 67–77.
+  [doi:10.1080/09588220601118511](https://doi.org/10.1080/09588220601118511) ·
+  [ERIC EJ764047](https://eric.ed.gov/?id=EJ764047)
+
+  College learners of Spanish using a diglot reader acquired *as much*
+  vocabulary as those using a sophisticated computer drill-and-practice
+  program — and did so incidentally, from context, while reporting that they
+  enjoyed it more. The headline is not that the weave wins. It is that it
+  ties, for free, on time you were spending anyway.
+
+- **Nemati, A., & Maleki, E. (2014).** "The Effect of Teaching Vocabulary
+  through the Diglot-Weave Technique on Vocabulary Learning of Iranian High
+  School Students." *Procedia — Social and Behavioral Sciences*, 98,
+  1340–1345.
+  [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1877042814026421)
+
+  Sixty first-year students, randomly assigned, five 45-minute sessions.
+  ANCOVA found a statistically significant advantage for the diglot-weave
+  group over conventional vocabulary teaching. Small, short, and one
+  population — but a real experiment with a real control group.
+
+- **LoomVue Browser: Supporting Language Learning with a Dynamic Diglot
+  Weave.** IES SBIR Phase I.
+  [ies.ed.gov award](https://ies.ed.gov/use-work/awards/loomvue-browser-supporting-language-learning-dynamic-diglot-weave-0)
+
+  The closest prior art, and a browser extension: it flips words between
+  English and Spanish as a machine-learning model judges the reader's skill.
+  Reported nearly 20% improvement pre- to post-test on a researcher-developed
+  vocabulary measure, and an external evaluation by WestEd found middle-school
+  English learners significantly increased vocabulary knowledge after a week.
+
+Note what the last one does **not** do, because it is the honest statement of
+Weft's contribution: LoomVue adapts difficulty to *measured skill*, for
+English learners in classrooms. Weft adapts it to *measured attention*, for
+adults on the open web. The pedagogy is borrowed and credited. Tying it to
+the time you were going to lose anyway is the new part, and it is untested.
 
 Weft's contribution is not the method. It is tying the difficulty to
 **attention**, so the time you were going to lose anyway is what buys the

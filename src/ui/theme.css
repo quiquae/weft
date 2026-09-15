@@ -789,3 +789,107 @@ input[type='range'] {
   font-size: var(--t-13);
   color: var(--ink-faint);
 }
+
+/* -------------------------------------------------------------- licensing */
+
+/*
+ * A locked control is replaced by its explanation, in place, once. No modal,
+ * no badge on every row, no countdown. Someone using Weft free is using the
+ * product as designed and their attention should not be spent on being told
+ * otherwise.
+ */
+.locked {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  background: var(--linen-sunken);
+  border-left: 2px solid var(--thread);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: var(--t-13);
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+.locked__mark {
+  color: var(--ink-faint);
+  flex: none;
+}
+
+.pro__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  max-width: var(--measure);
+}
+
+.pro__list li {
+  display: grid;
+  gap: 0.1rem;
+  font-size: var(--t-13);
+}
+
+.pro__list strong {
+  font-size: var(--t-15);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.pro__list span {
+  color: var(--ink-soft);
+}
+
+.pro__plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.6rem;
+  max-width: 30rem;
+}
+
+.pro__plan {
+  display: grid;
+  gap: 0.05rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--thread);
+  border-radius: var(--radius);
+  background: var(--linen-raised);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.pro__plan:hover {
+  border-color: var(--woad);
+  background: var(--woad-wash);
+}
+
+.pro__plan[data-featured='1'] {
+  border-color: var(--woad);
+  border-width: 2px;
+}
+
+.pro__planLabel {
+  font-size: var(--t-13);
+  color: var(--ink-soft);
+}
+
+.pro__planPrice {
+  font-size: var(--t-27);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--woad);
+}
+
+.pro__planPer {
+  font-size: var(--t-13);
+  color: var(--ink-soft);
+}
+
+.pro__planNote {
+  margin-top: 0.25rem;
+  font-size: var(--t-13);
+  color: var(--ink-faint);
+  line-height: 1.4;
+}

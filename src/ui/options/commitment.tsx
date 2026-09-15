@@ -2,6 +2,8 @@ import { useState } from 'preact/hooks';
 import type { Settings } from '../../core/types.ts';
 import { describeWait } from '../../core/lock.ts';
 import { send } from '../../shared/rpc.ts';
+import { has } from '../../core/entitlements.ts';
+import { Locked } from './pro.tsx';
 import { Chips, Notice, Row, Section, Slider, Switch, minutes } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
 import { SIGLA } from './sections.tsx';
@@ -45,15 +47,19 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
         title="Vocabulary check"
         detail="Require a short check before an easier setting unlocks. Questions are drawn only from words you have already been shown, so it is never a test of unseen material — and the answers count as practice whether or not you pass."
       >
-        <Switch
-          checked={settings.friction.requireQuizToUnlock}
-          label={
-            settings.friction.requireQuizToUnlock
-              ? 'A check is required to unlock'
-              : 'The cooldown alone is enough'
-          }
-          onChange={(v) => void c.set('friction.requireQuizToUnlock', v)}
-        />
+        {has(c.tier, 'unlock-quiz') ? (
+          <Switch
+            checked={settings.friction.requireQuizToUnlock}
+            label={
+              settings.friction.requireQuizToUnlock
+                ? 'A check is required to unlock'
+                : 'The cooldown alone is enough'
+            }
+            onChange={(v) => void c.set('friction.requireQuizToUnlock', v)}
+          />
+        ) : (
+          <Locked feature="unlock-quiz" />
+        )}
       </Row>
 
       {settings.friction.requireQuizToUnlock ? (
@@ -137,7 +143,13 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
         />
       </Row>
 
-      <HardMode settings={settings} c={c} />
+      {has(c.tier, 'hard-mode') ? (
+        <HardMode settings={settings} c={c} />
+      ) : (
+        <Row siglum={SIGLA.locked} title="Hard Mode">
+          <Locked feature="hard-mode" />
+        </Row>
+      )}
     </Section>
   );
 }

@@ -155,9 +155,56 @@ It is words that graduated.
 
 ---
 
+## What it costs
+
+**Free, for one language, forever** — any of the seven, including Latin and
+Old English. The whole lexicon for it, the whole escalation curve, the whole
+tooltip, your vocabulary and progress, and export. Not a trial.
+
+**Pro** adds every language at once, a different language per site, Hard Mode,
+your own translation key for unlimited vocabulary, phrases, the full history
+and custom word lists. $3.50 a month, $24 a year, or $59 once.
+
+Some things are never gated at any price: accessibility, the never-weave list,
+panic passes, and exporting your own data. There is a test that fails if
+anyone moves one of them behind the paywall.
+
+Your licence is a **signed file verified on your own machine** against a key
+compiled into the extension. No account, no activation server, and no request
+— not at purchase, not at launch, not ever. The honest cost is that a licence
+cannot be revoked; [docs/PRICING.md](docs/PRICING.md) says so rather than
+pretending otherwise.
+
+---
+
+## Three things that make it trustworthy rather than magic
+
+**It tells you why.** Hover a woven word and, next to the translation, it says
+why that word was chosen — *"Chosen because it is due for review, and it is
+recognisably related to the English word."* The selector already computed a
+factor breakdown; rendering it as a sentence rather than a table of decimals
+is the difference between a debugging panel and an explanation.
+
+**It counts what leaves.** The progress page shows how many network requests
+Weft has made since you installed it. For anyone who has not configured a
+translation key that number is zero and stays zero, which is a better argument
+than a paragraph promising the same thing.
+
+**It shows you what you found out.** The lexicon knows that `hlāford` means
+loaf-keeper, that `steorfan` meant simply to die, that `cwēn` originally just
+meant woman. Those are the most charming facts in the product and nothing
+surfaced them. Now there is a feed, built only from words you have actually
+met, with the meaning-shifts first — because a list where two lines in three
+read "English X comes straight from Y" stops being read.
+
+![Discoveries](docs/screens/dashboard-discoveries.png)
+
+---
+
 ## Install
 
-Not on the Chrome Web Store yet. To run it from source:
+Not on the Chrome Web Store yet — [the install page](https://weft.study/install)
+walks through the four steps and the fiddly one is a toggle. From source:
 
 ```sh
 git clone https://github.com/<you>/weft
@@ -186,6 +233,10 @@ npm run test:e2e       # 18 tests in a real Chromium with the extension loaded
 npm run test:all       # everything
 npm run packs:verify   # sanity-check the lexicons
 npm run zip            # store-ready archives for Chrome and Firefox
+npm run site           # generate the 700-page content site from the lexicon
+npm run og             # render the social card
+npm run release -- --version=X.Y.Z           # version, build, package, notes
+npm run licence -- --name="..." --tier=pro   # issue a licence key
 ```
 
 `src/core/` is pure: no DOM, no `chrome.*`, no I/O. Every interesting decision
@@ -198,6 +249,13 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), which explains the one
 decision everything else follows from: why Weft edits `nodeValue` in place
 instead of replacing text nodes, and why that is what keeps it from crashing
 React applications the way Google Translate does.
+
+Two more worth the time. [PEDAGOGY.md](docs/PEDAGOGY.md) cites the research
+and then lists, under its own heading, which claims are judgement rather than
+evidence. [LAUNCH.md](docs/LAUNCH.md) is the link-building kit, with drafts
+per community — written to be sent by a human, because an automated account
+posting self-promotion gets the domain shadowbanned and would undo the search
+work.
 
 ---
 

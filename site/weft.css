@@ -1,0 +1,502 @@
+/*
+ * Weft site styles.
+ *
+ * Shared by the landing page and every generated word page. Extracted from
+ * the landing page so that seven hundred pages link one cached stylesheet
+ * rather than inlining the same three hundred lines each.
+ */
+
+/*
+ * Same tokens as the extension: linen, iron-gall ink and woad — undyed
+ * wool, the ink these languages were written in, and the dye used on cloth
+ * in the period Old English was spoken. One system face throughout, so the
+ * page renders instantly and needs no download.
+ */
+:root {
+  --linen: #e9e8e3;
+  --linen-raised: #f3f2ee;
+  --linen-sunken: #dedcd4;
+  --thread: #b9b2a2;
+  --thread-faint: #cfcabd;
+  --ink: #20262b;
+  --ink-soft: #4d565e;
+  --ink-faint: #7b838a;
+  --woad: #2f4b7c;
+  --woad-wash: #2f4b7c14;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+    "URW Palladio L", Georgia, "Times New Roman", serif;
+  --measure: 34rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --linen: #191d21; --linen-raised: #21262b; --linen-sunken: #12161a;
+    --thread: #3c444b; --thread-faint: #2c3338;
+    --ink: #dfdcd3; --ink-soft: #a8a79f; --ink-faint: #7d827f;
+    --woad: #93b0dd; --woad-wash: #93b0dd1a;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--linen);
+  color: var(--ink);
+  font: 400 17px/1.6 var(--serif);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+main { max-width: 46rem; margin: 0 auto; padding: 3.5rem 1.25rem 6rem; }
+
+h1 { font-size: clamp(2.6rem, 8vw, 4.2rem); line-height: 1.02; letter-spacing: -0.03em; margin: 0 0 0.6rem; }
+h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); line-height: 1.2; letter-spacing: -0.015em; margin: 0 0 0.5rem; }
+h3 { font-size: 1.1rem; margin: 0 0 0.2rem; }
+p { margin: 0 0 0.9em; max-width: var(--measure); }
+
+a { color: var(--woad); text-underline-offset: 0.16em; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--woad); outline-offset: 2px; border-radius: 2px;
+}
+
+.standfirst { font-size: 1.25rem; color: var(--ink-soft); max-width: 32rem; }
+
+/* --- the hero is the product, live ------------------------------------ */
+
+.demo {
+  margin: 2.25rem 0 1rem;
+  padding: 1.5rem 1.5rem 1.2rem;
+  background: var(--linen-raised);
+  border: 1px solid var(--thread-faint);
+  border-radius: 4px;
+}
+
+.demo__text { font-size: 1.16rem; line-height: 1.68; margin: 0 0 1.2rem; max-width: 36rem; }
+
+/*
+ * A woven word: dotted underline and a faint tint, exactly as the extension
+ * renders it. Hovering shows the English, which is what the extension's
+ * tooltip does.
+ */
+/*
+ * inline-block so the hover chip has a predictable box to anchor to. A
+ * single word never needs to wrap, so it costs nothing. The chip overlaps
+ * the line above, which is what an above-anchored tooltip does; the
+ * extension's own tooltip is a floating card that flips when it would go
+ * off-screen.
+ */
+.w {
+  display: inline-block;
+  color: var(--woad);
+  background: var(--woad-wash);
+  text-decoration: underline dotted var(--woad);
+  text-underline-offset: 0.18em;
+  border-radius: 2px;
+  cursor: help;
+  position: relative;
+}
+.w::after {
+  content: attr(data-en);
+  position: absolute;
+  left: 50%; bottom: calc(100% + 0.4rem);
+  transform: translateX(-50%);
+  background: #16161c; color: #f2f2f5;
+  font-size: 0.78rem; line-height: 1.3;
+  padding: 0.18rem 0.42rem; border-radius: 3px;
+  white-space: nowrap; pointer-events: none;
+  opacity: 0; transition: opacity 120ms ease-out;
+}
+.w:hover::after, .w:focus-visible::after { opacity: 1; }
+
+.demo__controls { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.demo__controls label { font-size: 0.85rem; color: var(--ink-soft); flex: none; }
+input[type=range] { flex: 1 1 14rem; accent-color: var(--woad); min-width: 10rem; }
+.demo__readout { font-size: 0.85rem; color: var(--woad); flex: none; min-width: 11rem; text-align: right; }
+
+/* --- the cloth meter -------------------------------------------------- */
+
+.band { display: block; width: 100%; height: 22px; margin: 0.9rem 0 0.1rem; }
+.band__warp { stroke: var(--thread); stroke-width: 1; }
+.band__weft { stroke: var(--woad); stroke-width: 2.5; }
+
+/* --- structure -------------------------------------------------------- */
+
+section { margin-top: 3.5rem; }
+.rule { padding-bottom: 0.4rem; border-bottom: 1px solid var(--woad); margin-bottom: 1.1rem; }
+
+.points { display: grid; gap: 1.4rem; margin-top: 1.2rem; }
+@media (min-width: 46rem) { .points { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
+.points p { font-size: 0.95rem; color: var(--ink-soft); margin: 0; max-width: none; }
+
+/* --- the descent table, the reason to pick Old English ---------------- */
+
+.descent { width: 100%; border-collapse: collapse; margin: 1.1rem 0; font-size: 0.97rem; }
+.descent td { padding: 0.42rem 0.8rem 0.42rem 0; border-bottom: 1px solid var(--thread-faint); vertical-align: baseline; }
+.descent td:first-child { color: var(--woad); font-style: italic; white-space: nowrap; }
+.descent td:last-child { color: var(--ink-soft); font-size: 0.88rem; }
+.descent .arrow { color: var(--ink-faint); white-space: nowrap; }
+
+blockquote {
+  margin: 1.2rem 0; padding-left: 0.9rem;
+  border-left: 2px solid var(--woad); color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+.install {
+  margin-top: 1rem; padding: 0.9rem 1rem;
+  background: var(--linen-sunken); border-left: 2px solid var(--thread);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem; line-height: 1.7; overflow-x: auto;
+}
+
+footer {
+  margin-top: 4.5rem; padding-top: 1.2rem;
+  border-top: 1px solid var(--thread);
+  color: var(--ink-faint); font-size: 0.85rem;
+}
+footer p { max-width: var(--measure); }
+
+.brand { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
+.brand svg { width: 26px; height: 26px; flex: none; }
+.brand span { font-size: 0.95rem; letter-spacing: 0.02em; color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) { * { transition-duration: 1ms !important; } }
+
+/* ===================================================================== */
+/* Generated content pages                                               */
+/* ===================================================================== */
+
+/*
+ * The interlinear gloss: target word above its English, hairline between.
+ * The product's signature device, and a picture of what it does to a page.
+ * Duplicated from the extension's theme deliberately — the site and the
+ * extension ship separately and must not depend on each other's CSS.
+ */
+.gloss {
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  gap: 0;
+  line-height: 1.16;
+}
+
+.gloss__target {
+  color: var(--woad);
+  font-size: 0.88em;
+  font-style: italic;
+  padding: 0 0.15em 0.1em;
+  border-bottom: 1px solid var(--thread);
+}
+
+.gloss__source {
+  padding-top: 0.12em;
+  color: var(--ink);
+}
+
+.brand a { color: inherit; text-decoration: none; }
+.brand a:hover { text-decoration: underline; text-underline-offset: 0.16em; }
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 1.75rem;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+.crumbs__sep { color: var(--thread); }
+.crumbs [aria-current] { color: var(--ink-soft); }
+
+/* --- a word page ------------------------------------------------------ */
+
+.word__head { margin-bottom: 1.5rem; }
+
+.word__eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+/*
+ * The word itself is the hero. Set large, in the target language, with the
+ * historical letterforms intact — it is the thing someone came to see.
+ */
+.word__target {
+  font-size: clamp(3rem, 11vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.35rem;
+}
+
+.word__gloss {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--ink-soft);
+}
+.word__gloss strong { color: var(--ink); font-weight: 600; }
+
+.word__interlinear {
+  margin: 1.75rem 0;
+  padding: 1.1rem 1.2rem;
+  background: var(--linen-raised);
+  border: 1px solid var(--thread-faint);
+  border-radius: 4px;
+  font-size: 1.5rem;
+}
+
+.word__interlinearNote {
+  margin: 0.9rem 0 0;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+.word__descent {
+  margin: 2rem 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--woad);
+}
+.word__descent h2 { font-size: 1.3rem; margin-bottom: 0.4rem; }
+.word__descent em { font-style: italic; }
+
+.word__pronNote {
+  margin: 0.7rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  max-width: var(--measure);
+}
+
+article section { margin-top: 2.25rem; }
+article h2 { font-size: 1.35rem; margin-bottom: 0.6rem; }
+
+/* --- data table ------------------------------------------------------- */
+
+.worddata {
+  width: 100%;
+  max-width: 26rem;
+  border-collapse: collapse;
+  font-size: 0.97rem;
+}
+.worddata th,
+.worddata td {
+  text-align: left;
+  padding: 0.4rem 0.9rem 0.4rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+  vertical-align: baseline;
+}
+.worddata th {
+  font-weight: 400;
+  color: var(--ink-soft);
+  width: 9rem;
+}
+/*
+ * IPA in the body serif, not a monospace stack: the mono fonts on most
+ * systems lack the length mark and the fallback opens a gap mid-symbol, so
+ * /huːs/ renders as "/hu ː s/".
+ */
+.ipa {
+  font-variant-numeric: normal;
+  letter-spacing: 0.01em;
+}
+
+.worddata__note { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.5; }
+
+/* --- word lists ------------------------------------------------------- */
+
+.wordlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem 1.5rem;
+}
+@media (min-width: 34rem) {
+  .wordlist { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wordlist--wide { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.wordlist li { font-size: 0.97rem; }
+.wordlist li span { color: var(--ink-faint); font-size: 0.85rem; }
+.wordlist--gloss { gap: 0.9rem 1.5rem; }
+.wordlist--gloss li { font-size: 1.05rem; }
+
+.count {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  font-weight: 400;
+  vertical-align: super;
+}
+
+/* --- hubs ------------------------------------------------------------- */
+
+.hub__head { margin-bottom: 2rem; }
+.hub__head h1 {
+  font-size: clamp(2rem, 6vw, 3rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.7rem;
+}
+
+.descent--full { font-size: 0.95rem; }
+.descent--full thead th {
+  font-weight: 400;
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--thread);
+  padding-bottom: 0.3rem;
+  text-align: left;
+}
+.descent--full td:nth-child(3) { color: var(--ink); white-space: nowrap; }
+
+/* --- call to action --------------------------------------------------- */
+
+/*
+ * Repeated at the foot of every generated page. Quiet, and it earns its place
+ * by following content the reader chose to read.
+ */
+.cta {
+  margin-top: 3.5rem;
+  padding: 1.4rem 1.5rem;
+  background: var(--woad-wash);
+  border-left: 2px solid var(--woad);
+  border-radius: 0 4px 4px 0;
+}
+.cta h2 { font-size: 1.25rem; margin-bottom: 0.4rem; }
+.cta p { margin-bottom: 0.6rem; }
+.cta__link { font-size: 1.05rem; }
+
+/* --- pricing ---------------------------------------------------------- */
+
+.plans {
+  display: grid;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+@media (min-width: 40rem) {
+  .plans { grid-template-columns: repeat(3, 1fr); }
+}
+.plan {
+  display: grid;
+  gap: 0.15rem;
+  align-content: start;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--thread);
+  border-radius: 4px;
+  background: var(--linen-raised);
+}
+.plan[data-featured] {
+  border-color: var(--woad);
+  border-width: 2px;
+}
+.plan__label { font-size: 0.9rem; color: var(--ink-soft); }
+.plan__price {
+  font-size: 2.6rem;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--woad);
+}
+.plan__per { font-size: 0.9rem; color: var(--ink-soft); }
+.plan__note { margin-top: 0.5rem; font-size: 0.85rem; color: var(--ink-faint); line-height: 1.45; }
+.plan__buy {
+  margin-top: 0.9rem;
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  background: var(--woad);
+  color: var(--linen-raised);
+  border-radius: 3px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  text-align: center;
+}
+.plan__buy:hover { background: var(--woad-bright, var(--woad)); }
+
+/*
+ * Two columns: what it is, and what that means. An earlier version of this
+ * rule set a 5.5rem width on the second and third columns for a
+ * feature/free/pro comparison grid that these tables are not, which squeezed
+ * the explanation into a ribbon one word wide.
+ */
+.tiers {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+.tiers th,
+.tiers td {
+  text-align: left;
+  padding: 0.55rem 0 0.55rem 0;
+  border-bottom: 1px solid var(--thread-faint);
+  vertical-align: baseline;
+}
+.tiers th {
+  font-weight: 600;
+  width: 34%;
+  padding-right: 1.5rem;
+}
+.tiers td {
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+@media (max-width: 34rem) {
+  .tiers th, .tiers td { display: block; width: auto; padding-right: 0; }
+  .tiers th { border-bottom: 0; padding-bottom: 0.1rem; }
+}
+
+/* --- download and install -------------------------------------------- */
+
+.download {
+  margin: 2rem 0 2.5rem;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: var(--linen-raised);
+  border: 1px solid var(--thread-faint);
+  border-radius: 4px;
+}
+
+/*
+ * One button, large, with nothing competing. The whole point of this page is
+ * that someone gets the file.
+ */
+.download__button {
+  display: inline-block;
+  padding: 0.75rem 1.8rem;
+  font-size: 1.2rem;
+  background: var(--woad);
+  color: var(--linen-raised);
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.download__button:hover { background: var(--woad-bright, var(--woad)); }
+
+.download__meta {
+  margin: 0.9rem auto 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  max-width: none;
+}
+
+.steps {
+  margin: 0.8rem 0 0;
+  padding-left: 1.4rem;
+  max-width: var(--measure);
+}
+
+.steps li { margin-bottom: 0.9rem; line-height: 1.55; }
+.steps strong { color: var(--ink); }
+
+.steps code,
+p code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--linen-sunken);
+  padding: 0.05em 0.3em;
+  border-radius: 2px;
+}
+
+.steps__note {
+  margin-top: 0.8rem;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}

@@ -23,7 +23,12 @@
     "packs:verify": "node tools/verify-packs.mjs",
     "zip": "node build.mjs --target=chrome --zip && node build.mjs --target=firefox --zip",
     "lint": "tsc --noEmit",
-    "build:test": "node build.mjs --target=chrome --test"
+    "build:test": "node build.mjs --target=chrome --test",
+    "release": "node tools/release.mjs",
+    "site": "node tools/build-site.mjs",
+    "og": "node tools/make-og.mjs",
+    "licence": "node tools/make-licence.mjs",
+    "site:check": "node tools/check-links.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

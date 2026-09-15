@@ -244,6 +244,7 @@ class WeftPage {
       // Seeded from the text itself, so the same paragraph always weaves the
       // same way no matter how many times a framework re-renders it.
       seed: hashString(text),
+      explain: this.state.settings.reveal.showWhy,
       ...(pinned?.size ? { pinned } : {}),
     });
 
@@ -585,6 +586,8 @@ class WeftPage {
         target: this.state.decision.target,
         original: hit.swap.original,
         replacement: hit.swap.replacement,
+        ...(hit.swap.factors ? { factors: hit.swap.factors } : {}),
+        ...(hit.swap.firstMeeting !== undefined ? { firstMeeting: hit.swap.firstMeeting } : {}),
       },
       rect,
       viaKeyboard,

@@ -13,6 +13,7 @@ import {
 import { SitesSection } from './sites.tsx';
 import { CommitmentSection, PendingPanel } from './commitment.tsx';
 import { SourcesSection } from './data.tsx';
+import { ProSection } from './pro.tsx';
 import { Quiz } from './quiz.tsx';
 
 function Options() {
@@ -84,10 +85,12 @@ function Options() {
       <RevealSection c={c} settings={settings} />
       <AccessibilitySection c={c} settings={settings} />
       <SourcesSection c={c} settings={settings} />
+      <ProSection c={c} />
 
       <footer class="colophon">
         <p>
-          Weft {__WEFT_VERSION__}. Lexicons for Latin and Old English are checked against Lewis &amp;
+          Weft {__WEFT_VERSION__} ({c.tier === 'pro' ? 'Pro' : 'Free'}). Lexicons for Latin and Old
+          English are checked against Lewis &amp;
           Short and Bosworth–Toller, both public domain; frequency bands derive from SUBTLEX by way
           of the wordfreq project. <a href={api.runtime.getURL('dashboard.html')}>See your progress</a>.
         </p>
