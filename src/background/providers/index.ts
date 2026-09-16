@@ -132,7 +132,13 @@ export async function lookupMissing(
     }
   }
 
-  await saveProviderCache(prune(cache, now, ttl));
+  // saveProviderCache prunes. There used to be a second pruner here, and
+  // the two disagreed: this one capped at 20,000 entries by iterating
+  // Object.entries and breaking, which keeps an arbitrary subset rather than
+  // the newest, while the one in core/prune.ts caps at 5,000 by recency.
+  // Two bounds on the same store is one bound too many; the survivor is the
+  // one with tests.
+  await saveProviderCache(cache);
   const outcome: LookupOutcome = { entries, fromCache, fromProvider };
   if (lastError) outcome.error = lastError;
   return outcome;
@@ -169,22 +175,6 @@ function makeEntry(
   if (num) entry.num = num;
   if (gender) entry.gender = gender;
   return entry;
-}
-
-function prune(
-  cache: Record<string, ProviderCacheEntry>,
-  now: number,
-  ttl: number,
-): Record<string, ProviderCacheEntry> {
-  const out: Record<string, ProviderCacheEntry> = {};
-  let kept = 0;
-  for (const [key, value] of Object.entries(cache)) {
-    if (now - value.at >= ttl) continue;
-    out[key] = value;
-    kept++;
-    if (kept > 20_000) break;
-  }
-  return out;
 }
 
 /** The host a provider actually contacts, for the transparency log. */
