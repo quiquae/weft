@@ -305,3 +305,65 @@ export function daysUntilDue(
   const elapsed = card.lastReview ? (Date.now() - card.lastReview) / DAY_MS : 0;
   return Math.max(0, ivl - elapsed);
 }
+
+/**
+ * Merge two records of the same word.
+ *
+ * Needed by import, and it has to be exactly right, because the failure mode
+ * is silently resetting a word someone has learned.
+ *
+ * The obvious version is wrong, and was shipped:
+ *
+ *     if (!current || card.reps > current.reps || card.exposures > current.exposures)
+ *       merged[id] = card;
+ *
+ * That replaces the *whole* record when *either* counter is higher, under a
+ * comment promising it "never loses progress in either direction". Give it
+ * an existing card at reps 10 / exposures 5 and an incoming one at reps 1 /
+ * exposures 50, and the incoming record wins on exposures and drops nine
+ * reviews, a mature stability and the retirement flag with it. Exposures
+ * count page sightings and grow much faster than reviews, so the *less*
+ * studied copy is the one that usually wins that comparison.
+ *
+ * The fix is not to take field-wise maxima either. Stability, difficulty,
+ * lastReview, reps and lapses are one coherent FSRS state; a card with one
+ * machine's stability and another's review count describes a history that
+ * never happened, and the scheduler would then act on it.
+ *
+ * So: the review state moves as a unit, from whichever copy has genuinely
+ * reviewed more. The counters that are only ever monotone — exposures, and
+ * first-seen as a minimum — are merged independently, because those really
+ * are additive facts about the same word.
+ */
+export function mergeCards(a: MemoryCard, b: MemoryCard): MemoryCard {
+  /**
+   * Which copy has the more advanced review history.
+   *
+   * `reps` first, then the more recent review as a tie-break: two copies at
+   * the same rep count differ only in when they were last seen, and the
+   * later one is the one whose stability the scheduler should trust.
+   */
+  const primary =
+    b.reps > a.reps || (b.reps === a.reps && b.lastReview > a.lastReview) ? b : a;
+  const other = primary === a ? b : a;
+
+  return {
+    ...primary,
+    // Sightings are additive facts, not review state. Max rather than sum:
+    // the same word read on two machines is not twice as familiar, and
+    // summing would let a round-trip through export inflate it.
+    exposures: Math.max(a.exposures, b.exposures),
+    // The earliest meeting is the true one.
+    firstSeen: Math.min(a.firstSeen || b.firstSeen, b.firstSeen || a.firstSeen),
+    // Retirement is a promise to stop teaching the word. If either copy
+    // earned it, honour it, and date it from whichever happened first.
+    ...(a.retiredAt || b.retiredAt
+      ? { retiredAt: Math.min(a.retiredAt ?? Infinity, b.retiredAt ?? Infinity) }
+      : {}),
+    // Lapses are a count of failures; losing them would make a difficult
+    // word look easy. Keep the higher.
+    lapses: Math.max(a.lapses, b.lapses),
+    // Guard against a hand-edited or older export missing the field.
+    id: primary.id || other.id,
+  };
+}

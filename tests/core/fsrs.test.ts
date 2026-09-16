@@ -15,8 +15,10 @@ import {
   newCard,
   clipWeights,
   daysUntilDue,
+  mergeCards,
 } from '../../src/core/fsrs.ts';
 import { card, NOW } from '../helpers.ts';
+import type { MemoryCard } from '../../src/core/types.ts';
 
 const DAY = 86_400_000;
 
@@ -223,5 +225,112 @@ describe('daysUntilDue', () => {
   test('is positive for a freshly reviewed stable card', () => {
     const c = card({ reps: 3, stability: 30, lastReview: Date.now() });
     assert.ok(daysUntilDue(c) > 20);
+  });
+});
+
+describe('mergeCards', () => {
+  /*
+   * The bug this replaces lost real learning. Import merged two copies of a
+   * word with
+   *
+   *     card.reps > current.reps || card.exposures > current.exposures
+   *
+   * and replaced the whole record when either was higher, under a comment
+   * claiming it never lost progress in either direction.
+   */
+  const base = (over: Partial<MemoryCard> = {}): MemoryCard => ({
+    id: 'fr:maison',
+    target: 'fr',
+    lemma: 'house',
+    stability: 1,
+    difficulty: 5,
+    lastReview: 0,
+    reps: 0,
+    lapses: 0,
+    exposures: 0,
+    firstSeen: NOW,
+    ...over,
+  });
+
+  test('a high exposure count cannot overwrite a real review history', () => {
+    // The exact shape of the old bug. Exposures count page sightings and
+    // grow far faster than reviews, so the barely-studied copy wins that
+    // comparison routinely — this is the common case, not a corner.
+    const studied = base({ reps: 10, exposures: 5, stability: 120, lastReview: NOW });
+    const seenOften = base({ reps: 1, exposures: 50, stability: 1.2, lastReview: NOW - 1000 });
+
+    const merged = mergeCards(studied, seenOften);
+    assert.equal(merged.reps, 10, 'nine reviews were thrown away');
+    assert.equal(merged.stability, 120, 'a mature stability was replaced by a fresh one');
+    assert.equal(merged.exposures, 50, 'the higher sighting count should still be kept');
+  });
+
+  test('the FSRS state moves as one unit, never field by field', () => {
+    /*
+     * Taking maxima per field would look safer and be worse: a card with one
+     * machine's stability and another's rep count describes a history that
+     * never happened, and the scheduler would then act on it.
+     */
+    const a = base({ reps: 8, stability: 90, difficulty: 3, lastReview: NOW });
+    const b = base({ reps: 2, stability: 200, difficulty: 9, lastReview: NOW - 5000 });
+
+    const merged = mergeCards(a, b);
+    assert.equal(merged.reps, 8);
+    assert.equal(merged.stability, 90, 'stability came from the other copy');
+    assert.equal(merged.difficulty, 3, 'difficulty came from the other copy');
+    assert.equal(merged.lastReview, NOW);
+  });
+
+  test('equal rep counts are broken by the more recent review', () => {
+    const older = base({ reps: 4, stability: 20, lastReview: NOW - 86_400_000 });
+    const newer = base({ reps: 4, stability: 35, lastReview: NOW });
+    assert.equal(mergeCards(older, newer).stability, 35);
+    assert.equal(mergeCards(newer, older).stability, 35, 'result depends on argument order');
+  });
+
+  test('retirement survives from either side, dated from the earlier', () => {
+    // Retirement is a promise to stop teaching a word. Losing it means a
+    // word the reader has finished with starts appearing again.
+    const retired = base({ reps: 6, retiredAt: NOW - 1000 });
+    const active = base({ reps: 9 });
+    const merged = mergeCards(active, retired);
+    assert.equal(merged.retiredAt, NOW - 1000, 'retirement was dropped');
+    assert.equal(merged.reps, 9, 'the review history should still be the richer one');
+  });
+
+  test('lapses keep the higher count, so a hard word stays hard', () => {
+    const a = base({ reps: 9, lapses: 4 });
+    const b = base({ reps: 2, lapses: 7 });
+    assert.equal(mergeCards(a, b).lapses, 7);
+  });
+
+  test('the earliest first-seen wins', () => {
+    const early = base({ reps: 1, firstSeen: NOW - 30 * 86_400_000 });
+    const late = base({ reps: 5, firstSeen: NOW });
+    assert.equal(mergeCards(late, early).firstSeen, NOW - 30 * 86_400_000);
+  });
+
+  test('a missing firstSeen does not become zero', () => {
+    // An older export, or a hand-edited file. Math.min(0, real) would date
+    // the word to 1970 and every "learning for N days" figure with it.
+    const noDate = base({ reps: 1, firstSeen: 0 });
+    const dated = base({ reps: 5, firstSeen: NOW });
+    assert.equal(mergeCards(dated, noDate).firstSeen, NOW);
+  });
+
+  test('is commutative in everything that matters', () => {
+    const a = base({ reps: 7, exposures: 12, lapses: 2, stability: 44, lastReview: NOW });
+    const b = base({ reps: 3, exposures: 30, lapses: 5, stability: 9, retiredAt: NOW - 500 });
+    const ab = mergeCards(a, b);
+    const ba = mergeCards(b, a);
+    assert.deepEqual(ab, ba, 'merging depends on which file you happened to import');
+  });
+
+  test('exposures are maxed, not summed', () => {
+    // Summing would let a word inflate every time a file is exported and
+    // imported back into the same install.
+    const a = base({ exposures: 20 });
+    const b = base({ exposures: 20 });
+    assert.equal(mergeCards(a, b).exposures, 20);
   });
 });

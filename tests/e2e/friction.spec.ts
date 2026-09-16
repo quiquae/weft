@@ -331,3 +331,110 @@ test.describe('the notification fallback', () => {
     await page.close();
   });
 });
+
+test.describe('taking your data with you', () => {
+  /*
+   * Export is in NEVER_GATED — it is promised to free users forever — and
+   * losing someone's vocabulary is the worst bug this product could have.
+   * The merge rule that import uses is unit-tested; this covers the rest of
+   * the path, which the unit tests cannot reach: exportAll, the settings
+   * validation on the way in, and the re-signing of imported state with THIS
+   * install's key.
+   */
+  test('a round trip keeps the vocabulary and re-signs it', async ({ rpc }) => {
+    const day = 86_400_000;
+    const now = Date.now();
+
+    const seeded = {
+      'fr:maison': {
+        id: 'fr:maison',
+        target: 'fr',
+        lemma: 'house',
+        stability: 120,
+        difficulty: 4,
+        lastReview: now - 2 * day,
+        reps: 9,
+        lapses: 1,
+        exposures: 61,
+        firstSeen: now - 30 * day,
+        retiredAt: now - 2 * day,
+      },
+      'fr:riviere': {
+        id: 'fr:riviere',
+        target: 'fr',
+        lemma: 'river',
+        stability: 3,
+        difficulty: 7,
+        lastReview: now - day,
+        reps: 2,
+        lapses: 2,
+        exposures: 11,
+        firstSeen: now - 10 * day,
+      },
+    };
+
+    await rpc({ type: 'import-data', payload: { format: 'weft-export/1', settings: {}, cards: seeded } });
+
+    const exported = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
+    const payload = exported.payload;
+
+    expect(payload['format']).toBe('weft-export/1');
+
+    // The install id is signing key material and an export is a file people
+    // attach to bug reports, so it is blanked rather than omitted — the
+    // field stays so the shape is stable, the value goes.
+    const settingsOut = payload['settings'] as Record<string, unknown>;
+    expect(settingsOut['installId'], 'the signing id leaked into an export').toBe('');
+    expect(Object.keys(payload), 'the licence key is the customer’s, not ours to export')
+      .not.toContain('licence');
+
+    const cardsOut = payload['cards'] as Record<string, { reps: number; retiredAt?: number }>;
+    expect(cardsOut['fr:maison']?.reps).toBe(9);
+    expect(cardsOut['fr:maison']?.retiredAt, 'retirement was lost on the way out').toBeTruthy();
+    expect(cardsOut['fr:riviere']?.reps).toBe(2);
+
+    // Import the file back. This is the case the old merge rule got wrong:
+    // re-importing your own export must be a no-op, not a reset.
+    await rpc({ type: 'import-data', payload });
+    const again = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
+    const after = again.payload['cards'] as Record<string, { reps: number; exposures: number }>;
+
+    expect(after['fr:maison']?.reps, 'a round trip lost reviews').toBe(9);
+    expect(after['fr:maison']?.exposures, 'a round trip inflated exposures').toBe(61);
+    expect(after['fr:riviere']?.reps).toBe(2);
+  });
+
+  test('importing a file cannot clear a cooldown', async ({ rpc }) => {
+    /*
+     * An export carries the lock state, including anything queued. Import
+     * deliberately ignores it, and that asymmetry is load-bearing rather
+     * than an oversight: if import restored the lock, the whole commitment
+     * device would come apart — export before requesting an easier setting,
+     * wait nothing, import the old file, and the pending change and its
+     * clock are gone.
+     *
+     * Nothing said so, and "make export/import round-trip completely" is
+     * exactly the kind of tidying a future change would do. This test is
+     * here to fail when it does.
+     */
+    const before = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
+
+    const queued = await rpc<{ applied: boolean }>({
+      type: 'request-change',
+      patch: { 'weave.baseRatio': 0.01 },
+    });
+    expect(queued.applied, 'an easier setting should be queued, not applied').toBe(false);
+
+    const waiting = await rpc<{ lock: { pending: unknown[] } }>({ type: 'get-lock-state' });
+    expect(waiting.lock.pending.length, 'nothing was queued, so this proves nothing').toBe(1);
+
+    // Import the pre-cooldown file. The queued change must survive.
+    await rpc({ type: 'import-data', payload: before.payload });
+
+    const after = await rpc<{ lock: { pending: unknown[] } }>({ type: 'get-lock-state' });
+    expect(
+      after.lock.pending.length,
+      'importing an older export erased a pending change — that is a cooldown bypass',
+    ).toBe(1);
+  });
+});

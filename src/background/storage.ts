@@ -3,6 +3,7 @@ import { migrateSettings, validateSettings } from '../core/settings.ts';
 import { emptyLockState, noteClock, recordTamper, type LockState } from '../core/lock.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey } from '../core/escalation.ts';
+import { mergeCards } from '../core/fsrs.ts';
 import { pruneAttention, pruneByAge } from '../core/prune.ts';
 import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
 import type { Tier } from '../core/entitlements.ts';
@@ -377,10 +378,18 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
     for (const [id, card] of Object.entries(incoming)) {
       if (!card || typeof card !== 'object' || typeof card.lemma !== 'string') continue;
       const current = merged[id];
-      // Keep whichever record shows more learning, so a merge never loses
-      // progress in either direction.
-      if (!current || card.reps > current.reps || card.exposures > current.exposures) {
+      if (!current) {
         merged[id] = { ...card, id };
+        added++;
+        continue;
+      }
+      // mergeCards keeps the FSRS state as one unit and merges only the
+      // genuinely additive counters. The version of this loop that compared
+      // reps OR exposures and replaced the whole record could drop nine
+      // reviews to gain an exposure count — see the note on mergeCards.
+      const next = mergeCards(current, { ...card, id });
+      if (next !== current) {
+        merged[id] = next;
         added++;
       }
     }
