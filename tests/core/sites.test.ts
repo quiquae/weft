@@ -303,3 +303,64 @@ describe('hostOfOrigin', () => {
     assert.equal(hostOfOrigin(''), null);
   });
 });
+
+describe('the shipped exclusion list has no dead entries', () => {
+  /*
+   * DEFAULT_EXCLUSIONS is both the never-weave list and the default
+   * never-send list, so a pattern in it that cannot match anything is a
+   * protection the settings page advertises and does not provide.
+   *
+   * That was real. The provider never-send check compared hostnames with
+   * `host === pattern || host.endsWith('.' + pattern)`, and the list
+   * contains `amazon.com/gp/buy` and `github.com/*` + `/compare`. A hostname
+   * never contains a slash, so those entries matched nothing. The site
+   * exclusion path used patternMatches all along and was fine; only the
+   * provider check was naive, which is exactly the kind of divergence a
+   * property test over the list catches and a per-case test does not.
+   */
+
+  /** Build a URL the pattern ought to match, from the pattern itself. */
+  function exampleUrlFor(pattern: string): string {
+    const parsed = parsePattern(pattern);
+    assert.ok(parsed, `unparseable pattern in the shipped list: ${pattern}`);
+    const host = parsed.subdomainsOnly ? `www.${parsed.host}` : parsed.host;
+    // A `*` inside a path prefix is literal to parsePattern, so substitute
+    // something plausible rather than asserting on the star itself.
+    const path = (parsed.pathPrefix ?? '/').replace(/\*/g, 'weft');
+    return `https://${host}${path.startsWith('/') ? path : `/${path}`}`;
+  }
+
+  test('every pattern matches at least one URL', () => {
+    const dead: string[] = [];
+    for (const pattern of DEFAULT_EXCLUSIONS) {
+      const url = new URL(exampleUrlFor(pattern));
+      if (!patternMatches(pattern, url)) dead.push(`${pattern}  (tried ${url.href})`);
+    }
+    assert.deepEqual(dead, [], `patterns that can never match:\n  ${dead.join('\n  ')}`);
+  });
+
+  test('the list is non-trivial, so the test above means something', () => {
+    assert.ok(DEFAULT_EXCLUSIONS.length > 40, `only ${DEFAULT_EXCLUSIONS.length} exclusions`);
+    const withPaths = DEFAULT_EXCLUSIONS.filter((p) => p.includes('/'));
+    assert.ok(
+      withPaths.length > 0,
+      'no path-bearing patterns left in the list, so this no longer guards the bug it was written for',
+    );
+  });
+
+  test('a path pattern does not protect the whole host by accident', () => {
+    // The other direction: amazon.com/gp/buy must not be read as
+    // "all of amazon.com". Over-blocking would quietly stop Weft working on
+    // sites the user never excluded.
+    const buy = DEFAULT_EXCLUSIONS.find((p) => p.startsWith('amazon.com/'));
+    assert.ok(buy, 'the amazon checkout pattern went away; update this test');
+    assert.equal(patternMatches(buy, new URL('https://amazon.com/gp/buy/spc')), true);
+    assert.equal(patternMatches(buy, new URL('https://amazon.com/dp/B0001')), false);
+  });
+
+  test('a bare host pattern covers its subdomains', () => {
+    const host = DEFAULT_EXCLUSIONS.find((p) => p === 'proton.me');
+    assert.ok(host, 'proton.me went away; update this test');
+    assert.equal(patternMatches(host, new URL('https://mail.proton.me/u/0')), true);
+  });
+});

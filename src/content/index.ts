@@ -393,7 +393,6 @@ class WeftPage {
     const reply = await send({
       type: 'lookup-words',
       target: this.state.decision.target,
-      host: location.hostname,
       words: ranked.map(([word, info]) => ({
         word,
         pos: info.pos as LexEntry['pos'],

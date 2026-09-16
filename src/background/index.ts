@@ -1,5 +1,5 @@
 import type { Grade, LangCode, LexEntry, MemoryCard, Settings, SiteAttention } from '../core/types.ts';
-import { classifyUrl, originCoversRules } from '../core/sites.ts';
+import { classifyUrl, originCoversRules, patternMatches } from '../core/sites.ts';
 import {
   currentAttentionSeconds,
   dayKey,
@@ -550,19 +550,62 @@ const handlers: Handlers = {
 
   'hard-mode-profile': async (request) => profileFor(request.platform),
 
-  'lookup-words': async (request) => {
+  /**
+   * Translate words the packs do not cover.
+   *
+   * The never-send list is enforced here rather than in the page, and two
+   * details of that took a second pass to get right.
+   *
+   * **It matches with `patternMatches`, not string comparison.** The check
+   * used to be `host === pattern || host.endsWith('.' + pattern)`, against a
+   * default list that includes `amazon.com/gp/buy` and
+   * `github.com/*\/compare`. A hostname never contains a slash, so those
+   * entries could not match anything — dead weight that read, in the
+   * settings UI, as protection. GitHub compare pages were the real casualty:
+   * unlike docs.google.com/forms, plain github.com is not separately listed,
+   * so nothing covered them. patternMatches is the same path-aware matcher
+   * the site rules use, and it also understands the `*.` and `=` prefixes
+   * that a user typing into this field would reasonably expect to work.
+   *
+   * **The URL comes from the sender, not the message.** The old check
+   * trusted a `host` the content script reported about itself, under a
+   * comment observing that a content script is the wrong place to keep a
+   * privacy guarantee — which it is, and reading its self-report is the same
+   * thing one step removed. `sender.url` is filled in by the browser.
+   *
+   * And it fails closed: if there is no URL to judge, nothing is sent.
+   */
+  'lookup-words': async (request, sender) => {
     const snapshot = await store.load();
     const settings = snapshot.settings;
     if (!settings.providers.enabled) {
       return { entries: [], fromCache: 0, fromProvider: 0, error: 'Providers are switched off.' };
     }
-    // The never-send list is enforced here, at the boundary, not in the page.
-    // A content script is the wrong place to hold a privacy guarantee.
-    const blocked = settings.providers.neverSendHosts.some(
-      (pattern) => request.host === pattern || request.host.endsWith(`.${pattern}`),
-    );
-    if (blocked) {
-      return { entries: [], fromCache: 0, fromProvider: 0, error: `${request.host} is on the never-send list.` };
+
+    const raw = sender?.url ?? sender?.tab?.url ?? '';
+    let url: URL | null = null;
+    try {
+      url = raw ? new URL(raw) : null;
+    } catch {
+      url = null;
+    }
+    if (!url) {
+      return {
+        entries: [],
+        fromCache: 0,
+        fromProvider: 0,
+        error: 'Could not identify the page, so nothing was sent.',
+      };
+    }
+
+    const hit = settings.providers.neverSendHosts.find((pattern) => patternMatches(pattern, url));
+    if (hit) {
+      return {
+        entries: [],
+        fromCache: 0,
+        fromProvider: 0,
+        error: `${url.hostname} is on the never-send list (${hit}).`,
+      };
     }
     return lookupMissing(request.words, settings.learning.sourceLang, request.target, settings);
   },

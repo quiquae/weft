@@ -67,7 +67,12 @@ export interface ParsedPattern {
  *   twitter.com            host and all subdomains
  *   *.twitter.com          subdomains only
  *   reddit.com/r/all       host (and subdomains) with a path prefix
+ *   reddit.com/r/*         a * in a path stands for one path segment
  *   =news.ycombinator.com  exact host, no subdomains
+ *
+ * A star may also appear between segments, so a pattern can match a compare
+ * page under any repository. The example is not written out here because the
+ * sequence would close this comment.
  */
 export function parsePattern(pattern: string): ParsedPattern | null {
   let p = pattern.trim().toLowerCase();
@@ -108,9 +113,41 @@ export function patternMatches(pattern: string, url: URL): boolean {
   if (!hostOk) return false;
 
   if (parsed.pathPrefix) {
-    return (url.pathname + url.search).toLowerCase().startsWith(parsed.pathPrefix);
+    return pathMatches(parsed.pathPrefix, (url.pathname + url.search).toLowerCase());
   }
   return true;
+}
+
+/**
+ * Match a path prefix, where `*` stands for a single path segment.
+ *
+ * Added because the shipped exclusion list already contained a pattern using
+ * this syntax and it had never matched anything: `*` was literal, so the
+ * pattern required a path beginning with a literal asterisk, which no real
+ * URL has. It was dead in both places the list is used — the never-weave
+ * site rules and the provider never-send list — while the settings page
+ * displayed it as protection the entire time.
+ *
+ * One segment rather than `.*` deliberately. A compare-page pattern should
+ * cover /owner/repo/compare/main...branch and must NOT quietly become
+ * "everything on this host": over-blocking stops Weft working on sites
+ * nobody excluded, and that fails silently, whereas under-blocking at least
+ * shows up as words on a page.
+ *
+ * Still a prefix match, so a pattern ending at a segment covers what is
+ * beneath it.
+ */
+function pathMatches(prefix: string, path: string): boolean {
+  if (!prefix.includes('*')) return path.startsWith(prefix);
+  const escaped = prefix
+    .split('*')
+    .map(escapeRegExp)
+    .join('[^/]*');
+  return new RegExp('^' + escaped).test(path);
+}
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /** Specificity, so that reddit.com/r/all beats reddit.com. */
@@ -186,7 +223,7 @@ export const DEFAULT_EXCLUSIONS: string[] = [
   'turbotax.intuit.com', 'hrblock.com',
   // Where you are writing, not reading
   'docs.google.com', 'notion.so', 'overleaf.com', 'figma.com',
-  'github.com/*/compare', 'mail.superhuman.com',
+  'github.com/*/*/compare', 'mail.superhuman.com',
 ];
 
 /** Curated presets for onboarding, so the first run is one click. */

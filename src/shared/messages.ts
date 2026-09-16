@@ -77,7 +77,6 @@ export type Request =
       type: 'lookup-words';
       target: LangCode;
       words: Array<{ word: string; pos: Pos; num?: 'sg' | 'pl'; context?: string }>;
-      host: string;
     };
 
 export interface ResponseMap {
