@@ -1,6 +1,6 @@
 import { test, expect } from './fixtures.ts';
 import { webcrypto } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { TEST_LICENCE_PRIVATE_JWK } from '../fixtures/licence-keypair.ts';
 
 /**
  * The commercial path, end to end in a real browser.
@@ -8,6 +8,15 @@ import { readFile } from 'node:fs/promises';
  * Proves three things that are easy to get wrong and expensive to get wrong:
  * a fresh install is Free and works; a genuine key unlocks Pro with no network
  * request; and a forged key does not.
+ *
+ * "Genuine" means signed by the key the extension under test verifies
+ * against. These tests used to sign with the publisher's real private key,
+ * read from `.licence-private.jwk` — which is gitignored, correctly, so they
+ * passed locally and failed in CI on every push. Skipping them would have
+ * removed "does a paid licence unlock Pro" from the only place that runs
+ * everything, so instead `build.mjs --test` compiles in a throwaway public
+ * key and these sign with its private half. `npm run validate` fails if that
+ * key ever appears in a shippable package.
  */
 
 const b64url = (b: Buffer | ArrayBuffer) =>
@@ -22,10 +31,13 @@ async function issue(payload: Record<string, unknown>, forged = false): Promise<
     ]);
     key = pair.privateKey;
   } else {
-    const jwk = JSON.parse(await readFile('.licence-private.jwk', 'utf8'));
-    key = await webcrypto.subtle.importKey('jwk', jwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, [
-      'sign',
-    ]);
+    key = await webcrypto.subtle.importKey(
+      'jwk',
+      TEST_LICENCE_PRIVATE_JWK,
+      { name: 'ECDSA', namedCurve: 'P-256' },
+      false,
+      ['sign'],
+    );
   }
   const part = b64url(Buffer.from(JSON.stringify(payload), 'utf8'));
   const sig = await webcrypto.subtle.sign(

@@ -29,6 +29,8 @@ import { existsSync } from 'node:fs';
 import { join, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TARGETS } from '../manifest.config.mjs';
+import { PUBLISHER_KEY_X } from '../src/core/licence-key.ts';
+import { TEST_LICENCE_PUBLIC_JWK } from '../tests/fixtures/licence-keypair.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src');
@@ -185,6 +187,45 @@ async function validate(target, src) {
     if (/new\s+Function\s*\(/.test(js)) fail(target, `${name} uses new Function() — remote code`);
     if (/<script/i.test(js) && name !== 'content.js') {
       note(target, `${name} contains the string "<script" — check it is not injecting one`);
+    }
+  }
+
+  /* ------------------------------------------------------- licence key */
+
+  /*
+   * Which licence key does this package trust?
+   *
+   * A test build verifies licences against a throwaway keypair whose private
+   * half is committed, so that the end-to-end suite can mint a licence the
+   * extension actually accepts. If that key ever reached a release, anyone
+   * who cloned the repository could sign themselves a Pro licence — the one
+   * failure here that costs money rather than a review round-trip.
+   *
+   * Checked in both directions, because "the test key is absent" is also
+   * true of a build where the licence module failed to bundle at all.
+   */
+  {
+    let hasTestKey = false;
+    let hasRealKey = false;
+    for (const name of await readdir(dir)) {
+      if (extname(name) !== '.js') continue;
+      const js = await readFile(join(dir, name), 'utf8');
+      if (js.includes(TEST_LICENCE_PUBLIC_JWK.x)) hasTestKey = true;
+      if (js.includes(PUBLISHER_KEY_X)) hasRealKey = true;
+    }
+    if (hasTestKey) {
+      fail(
+        target,
+        'the TEST licence public key is in this package — anyone could mint ' +
+          'themselves Pro; rebuild without --test',
+      );
+    }
+    if (!hasRealKey) {
+      fail(
+        target,
+        "the publisher's licence public key is not in this package, so no " +
+          'real licence can ever verify',
+      );
     }
   }
 

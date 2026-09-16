@@ -36,6 +36,17 @@ async function startServer(): Promise<{ server: Server; origin: string }> {
       res.writeHead(404).end('not found');
     }
   });
+  /*
+   * Short keep-alive, because this server has to be able to die.
+   *
+   * Chromium holds keep-alive connections open to the origin it loaded a
+   * page from, and `server.close()` waits for every open connection before
+   * its callback fires. With Node's 5-second default the teardown outlived
+   * the 60-second test timeout in CI and nine tests failed with
+   * "Tearing down 'origin' exceeded the test timeout" — not one of them a
+   * real failure, every one of them a test that had actually loaded a page.
+   */
+  server.keepAliveTimeout = 500;
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   const port = typeof address === 'object' && address ? address.port : 0;
@@ -105,7 +116,16 @@ export const test = base.extend<WeftFixtures>({
   origin: async ({}, use) => {
     const { server, origin } = await startServer();
     await use(origin);
-    await new Promise<void>((resolve) => server.close(() => resolve()));
+    await new Promise<void>((resolve) => {
+      // close() stops accepting and then waits for existing connections.
+      // The browser's keep-alive sockets are exactly such connections, so
+      // without destroying them first the callback may never fire. Guarded
+      // because closeAllConnections is Node 18.2+ and the message it would
+      // otherwise produce ("exceeded the test timeout") names the wrong
+      // culprit entirely.
+      server.closeAllConnections?.();
+      server.close(() => resolve());
+    });
   },
 
   rpc: async ({ context, extensionId }, use) => {

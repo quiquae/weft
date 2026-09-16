@@ -10,6 +10,10 @@
  */
 import * as esbuild from 'esbuild';
 import { buildManifest, VERSION, TARGETS } from './manifest.config.mjs';
+// Test builds verify licences against a throwaway key so the end-to-end
+// suite can mint one. See src/core/licence-key.ts for why, and
+// tools/validate-package.mjs for the check that keeps it out of a release.
+import { TEST_LICENCE_PUBLIC_JWK } from './tests/fixtures/licence-keypair.ts';
 import { mkdir, writeFile, readFile, cp, rm, readdir, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -66,6 +70,10 @@ const sharedOptions = {
     __WEFT_VERSION__: JSON.stringify(VERSION),
     __WEFT_TARGET__: JSON.stringify(TARGET),
     __WEFT_DEV__: JSON.stringify(DEV),
+    // 'undefined' as a literal, not the string: the ternary in
+    // licence-key.ts then folds at build time and the test key is absent
+    // from shipped bytes entirely rather than merely unused.
+    __WEFT_LICENCE_KEY__: TEST ? JSON.stringify(TEST_LICENCE_PUBLIC_JWK) : 'undefined',
   },
   loader: {
     '.svg': 'text',

@@ -8,10 +8,46 @@
  * Rotating this key invalidates every licence already issued, so it is not a
  * thing to do casually.
  */
-export const LICENCE_PUBLIC_KEY_JWK = {
-  "kty": "EC",
-  "crv": "P-256",
-  "x": "vXfnnd7SLw18xZsTHjVEY1nZCfPgKLOQXXjGW7tng5U",
-  "y": "sMGb7EEp7x-UImM1GhdzistkkAQGvqsTaRPSARhj6yI",
-  "ext": true
+const PUBLISHER_PUBLIC_KEY_JWK = {
+  kty: 'EC',
+  crv: 'P-256',
+  x: 'vXfnnd7SLw18xZsTHjVEY1nZCfPgKLOQXXjGW7tng5U',
+  y: 'sMGb7EEp7x-UImM1GhdzistkkAQGvqsTaRPSARhj6yI',
+  ext: true,
 } as const;
+
+/**
+ * Substituted by `build.mjs --test` and by nothing else.
+ *
+ * The end-to-end tests have to mint a licence the extension will genuinely
+ * accept, which means signing with the key the extension verifies against.
+ * The publisher's private key is gitignored — correctly, it is the thing that
+ * mints licences — so those tests passed on a machine that had it and failed
+ * in CI on every single push with `ENOENT: .licence-private.jwk`.
+ *
+ * Skipping them was the wrong answer: what would have been skipped is
+ * "does a paid licence unlock Pro", in the one place that runs everything.
+ * So a test build trusts a throwaway keypair whose halves are both committed
+ * in `tests/fixtures/licence-keypair.ts`, and the real build trusts this
+ * file.
+ *
+ * Three things keep that from becoming a hole:
+ *
+ *   - Production builds define this as literal `undefined`, so the ternary
+ *     folds at build time and the test key never reaches shipped bytes.
+ *   - `tools/validate-package.mjs` greps every shipped bundle for the test
+ *     key and fails if it finds it — and checks the real key IS present.
+ *   - `npm run validate` already refuses a package carrying any other
+ *     test-build seam.
+ *
+ * `typeof` rather than a bare reference because Node runs these modules
+ * directly for the unit tests, with no bundler and therefore no define at
+ * all; a bare reference would be a ReferenceError.
+ */
+declare const __WEFT_LICENCE_KEY__: JsonWebKey | undefined;
+
+export const LICENCE_PUBLIC_KEY_JWK: JsonWebKey =
+  typeof __WEFT_LICENCE_KEY__ === 'undefined' ? PUBLISHER_PUBLIC_KEY_JWK : __WEFT_LICENCE_KEY__;
+
+/** The publisher's key, regardless of build. For assertions only. */
+export const PUBLISHER_KEY_X = PUBLISHER_PUBLIC_KEY_JWK.x;

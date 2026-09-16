@@ -126,15 +126,34 @@ function at(path) {
   return node;
 }
 
+const clean = (v) => String(v).replace(/^[≤<>=~ ]+/, '');
+
+/** True when a BCD version string is something we can actually compare. */
+function isNumericVersion(v) {
+  const parts = clean(v).split('.');
+  return parts.length > 0 && parts.every((p) => p !== '' && Number.isFinite(Number(p)));
+}
+
 /**
  * Compare dotted version strings numerically.
  *
  * Needed because string comparison puts "9" after "16.4", and because BCD
  * uses "≤" prefixes for "at or before this release" and `true` for "since
  * forever". Returns negative when a < b.
+ *
+ * Throws on anything non-numeric rather than returning NaN, because NaN was
+ * a silent false pass. BCD also uses "preview" for a feature that exists
+ * only in a browser's technology preview — Safari's requestIdleCallback was
+ * marked that way — and `cmp('preview', '16.4')` is NaN, so the
+ * `cmp(...) > 0` test read false and the feature was reported as SUPPORTED
+ * at our floor. A tool whose whole job is refusing to guess about browser
+ * support cannot afford to guess optimistically when it meets a version
+ * string it does not understand.
  */
 function cmp(a, b) {
-  const clean = (v) => String(v).replace(/^[≤<>=~ ]+/, '');
+  if (!isNumericVersion(a) || !isNumericVersion(b)) {
+    throw new Error(`non-numeric version compared: ${a} vs ${b}`);
+  }
   const pa = clean(a).split('.').map(Number);
   const pb = clean(b).split('.').map(Number);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
@@ -193,6 +212,20 @@ for (const dep of DEPENDENCIES) {
 
     if (!s.supported) {
       const detail = s.removedIn ? `removed in ${s.removedIn}` : 'never implemented';
+      if (dep.fallback) {
+        results.push({ dep, browser: target, verdict: 'DEGRADES', detail });
+        degradations++;
+      } else {
+        results.push({ dep, browser: target, verdict: 'FAIL', detail });
+        failures++;
+      }
+      continue;
+    }
+
+    // "preview" and friends: present somewhere, but not in a release a user
+    // can install, so treat it exactly as unsupported.
+    if (!isNumericVersion(s.since)) {
+      const detail = `marked "${s.since}" — not a released version`;
       if (dep.fallback) {
         results.push({ dep, browser: target, verdict: 'DEGRADES', detail });
         degradations++;
