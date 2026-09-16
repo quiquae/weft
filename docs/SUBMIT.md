@@ -38,6 +38,27 @@ These block each other, so the order matters.
    public privacy policy URL before it will accept a submission, and Weft has
    to declare one even though it transmits nothing. `docs/PRIVACY.md` is
    written to be published as-is.
+
+   This means putting the site up, which is deliberately **not** automatic.
+   The `Site` workflow builds and link-checks all 709 pages on every push,
+   but only deploys when told:
+
+   ```bash
+   # Settings -> Pages -> Source: GitHub Actions, then:
+   gh variable set WEFT_PAGES --body true
+   ```
+
+   **Fix these two before flipping it**, because publishing is not reversible
+   the way a commit is — once indexed, taking the site down leaves search
+   results pointing at nothing:
+
+   - The install page's download button points at
+     `<repo>/releases/latest`, which **404s while the repository is
+     private**. Either `gh repo edit quiquae/weft --visibility public`, or
+     host the zips elsewhere and set `WEFT_REPO`.
+   - The pricing page's checkout URLs point at a placeholder Lemon Squeezy
+     store. A live pricing page with a dead buy button is worse than no
+     pricing page.
 2. **Decide the publisher name.** It appears on every listing, and changing it
    later is awkward on Chrome and painful on Apple.
 3. **Chrome Web Store first.** It is the largest audience, the fastest review,

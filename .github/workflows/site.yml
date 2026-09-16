@@ -1,8 +1,27 @@
 name: Site
 
-# Publishes dist/site to GitHub Pages. The 700-odd lexicon pages are
-# generated rather than committed, so this is what turns a push into a
-# deployment.
+# Builds and verifies the content site on every push, and deploys it only
+# when told to. The 700-odd lexicon pages are generated rather than
+# committed, so this workflow is the only thing that checks them.
+#
+# Deployment is opt-in via the repository variable WEFT_PAGES=true, for two
+# reasons that both matter more than a green tick:
+#
+#   1. Publishing is not reversible in the way a commit is. Once the site is
+#      live and indexed, taking it down leaves search results pointing at
+#      nothing.
+#   2. It should not go live until the links on it work. While the repository
+#      is private, the install page's download button points at
+#      `<repo>/releases/latest`, which 404s for everyone but the owner, and
+#      the pricing page's checkout URLs point at a placeholder store.
+#
+# So the build and the link check run unconditionally — a broken site still
+# fails the build — and the deploy waits for a decision. Enable Pages at
+# Settings -> Pages (source: GitHub Actions), then set the variable:
+#
+#     gh variable set WEFT_PAGES --body true
+#
+# Without it the deploy job is skipped, not failed.
 on:
   push:
     branches: [main]
@@ -56,6 +75,11 @@ jobs:
 
   deploy:
     needs: build
+    # Skipped rather than failed when Pages has not been enabled. Before this
+    # guard the job failed on every push with a 404 from deploy-pages, which
+    # is a red X for a configuration decision nobody had made yet — and a red
+    # X that is ignored is worse than no check at all.
+    if: vars.WEFT_PAGES == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
