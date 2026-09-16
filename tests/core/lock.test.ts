@@ -2,6 +2,7 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   emptyLockState,
+  noteClock,
   requestChange,
   cancelPending,
   markQuizPassed,
@@ -291,5 +292,147 @@ describe('audit log', () => {
       state = requestChange(state, s, { 'weave.baseRatio': 0.2 + i / 10000 }, NOW + i, ids).state;
     }
     assert.ok(state.log.length <= 200, `log grew to ${state.log.length}`);
+  });
+});
+
+describe('noteClock', () => {
+  /*
+   * Winding the system clock forward clears a pending cooldown, and that
+   * cannot be detected without a trusted time source — which would mean a
+   * network request, the one thing Weft promises never to make. The return
+   * trip can be detected, because time does not run backwards on its own.
+   */
+  const base = settings();
+
+  test('the first observation is never suspicious', () => {
+    const { state, rewound } = noteClock(emptyLockState(NOW), base, NOW);
+    assert.equal(rewound, false);
+    assert.equal(state.lastSeenAt, NOW);
+    assert.equal(state.tamperCount, 0);
+  });
+
+  test('time moving forward is normal, and advances the baseline', () => {
+    const first = noteClock(emptyLockState(NOW), base, NOW).state;
+    const { state, rewound } = noteClock(first, base, NOW + 7 * 24 * 3_600_000);
+    assert.equal(rewound, false, 'a week of a closed browser is not tampering');
+    assert.equal(state.lastSeenAt, NOW + 7 * 24 * 3_600_000);
+    assert.equal(state.tamperCount, 0);
+  });
+
+  test('a small backwards correction is tolerated', () => {
+    // NTP and suspend/resume produce sub-second to second-scale skew. A
+    // penalty for that would fire on ordinary machines doing nothing wrong.
+    const first = noteClock(emptyLockState(NOW), base, NOW).state;
+    const { rewound, state } = noteClock(first, base, NOW - 30_000);
+    assert.equal(rewound, false);
+    assert.equal(state.tamperCount, 0);
+    assert.equal(state.lastSeenAt, NOW, 'the baseline must not drop on tolerated skew');
+  });
+
+  test('a large backwards jump is recorded as tampering', () => {
+    const first = noteClock(emptyLockState(NOW), base, NOW).state;
+    const { state, rewound } = noteClock(first, base, NOW - 3 * 3_600_000);
+    assert.equal(rewound, true);
+    assert.equal(state.tamperCount, 1);
+    assert.ok(state.penaltyUntil && state.penaltyUntil > NOW, 'no penalty was applied');
+  });
+
+  test('the audit log says what happened, not "integrity check"', () => {
+    // The user reads this log. Blaming the integrity check for a clock
+    // change would send them looking for corrupted storage.
+    const first = noteClock(emptyLockState(NOW), base, NOW).state;
+    const { state } = noteClock(first, base, NOW - 3 * 3_600_000);
+    assert.equal(state.log.at(-1)?.summary, 'the clock moved backwards');
+  });
+
+  test('one jump is penalised once, not on every later wake', () => {
+    /*
+     * The bug this guards: keeping the high-water mark as the baseline means
+     * a single jump a year ahead leaves every subsequent wake for a year
+     * reporting a rewind — one act, hundreds of penalties.
+     */
+    const year = 365 * 24 * 3_600_000;
+    const jumped = noteClock(emptyLockState(NOW), base, NOW + year).state;
+    const returned = noteClock(jumped, base, NOW);
+    assert.equal(returned.rewound, true);
+    assert.equal(returned.state.tamperCount, 1);
+
+    const later = noteClock(returned.state, base, NOW + 60_000);
+    assert.equal(later.rewound, false, 'penalised twice for one jump');
+    assert.equal(later.state.tamperCount, 1);
+  });
+
+  test('a repeat attempt is still caught', () => {
+    const year = 365 * 24 * 3_600_000;
+    let state = noteClock(emptyLockState(NOW), base, NOW + year).state;
+    state = noteClock(state, base, NOW).state;
+    assert.equal(state.tamperCount, 1);
+    // Round two.
+    state = noteClock(state, base, NOW + year).state;
+    const again = noteClock(state, base, NOW);
+    assert.equal(again.rewound, true, 'accepting the corrected time must not grant amnesty');
+    assert.equal(again.state.tamperCount, 2);
+  });
+
+  test("respects the user's choice to ignore tampering", () => {
+    const ignoring = settings({ 'friction.tamperResponse': 'ignore' });
+    const first = noteClock(emptyLockState(NOW), ignoring, NOW).state;
+    const { state, rewound } = noteClock(first, ignoring, NOW - 3 * 3_600_000);
+    assert.equal(rewound, true, 'still observed');
+    assert.equal(state.tamperCount, 1, 'still counted');
+    assert.equal(state.penaltyUntil, undefined, 'but not penalised');
+  });
+});
+
+describe('the clock attack, end to end', () => {
+  /*
+   * An executable statement of the threat model, including the half that
+   * works. Written down because the limitation is real and a future reader
+   * should meet it here rather than discover it in a bug report — and
+   * because a test asserting a known limitation stops someone "fixing" the
+   * detector into something that also fires on a closed browser.
+   */
+  const base = settings({ 'friction.cooldownMinutes': 60 });
+
+  test('winding the clock forward DOES clear a cooldown — this is not prevented', () => {
+    const queued = requestChange(emptyLockState(NOW), base, { 'weave.baseRatio': 0.01 }, NOW, ids);
+    const pending = queued.state.pending[0];
+    assert.ok(pending, 'nothing was queued');
+    assert.equal(isReady(pending, base, NOW + 30 * 60_000), false, 'ready too early');
+
+    // The clock is now a day ahead. Nothing offline can tell this from a
+    // browser that was simply closed for a day, which is exactly why it
+    // works and why detecting it would need a trusted time source.
+    assert.equal(
+      isReady(pending, base, NOW + 24 * 3_600_000),
+      true,
+      'a forward clock jump clears the wait; if this ever fails, the ' +
+        'cooldown model changed and the honesty note in docs/HARD-MODE.md ' +
+        'needs revisiting',
+    );
+  });
+
+  test('but coming back to the real time is recorded', () => {
+    const day = 24 * 3_600_000;
+    // Move forward, do the deed, then restore the clock so that mail,
+    // calendars and TLS keep working. That second move is the evidence.
+    let lock = noteClock(emptyLockState(NOW), base, NOW + day).state;
+    assert.equal(lock.tamperCount, 0, 'the forward jump alone is invisible');
+
+    const back = noteClock(lock, base, NOW);
+    assert.equal(back.rewound, true);
+    assert.equal(back.state.tamperCount, 1);
+    assert.equal(back.state.log.at(-1)?.summary, 'the clock moved backwards');
+  });
+
+  test('leaving the clock wrong forever avoids detection, at a price', () => {
+    // The one way to escape the footprint is to never come back — and a
+    // machine permanently a day ahead is its own punishment. Weft does not
+    // need to win this; it needs the cheap bypass to cost something.
+    const day = 24 * 3_600_000;
+    let lock = noteClock(emptyLockState(NOW), base, NOW + day).state;
+    const later = noteClock(lock, base, NOW + day + 60_000);
+    assert.equal(later.rewound, false);
+    assert.equal(later.state.tamperCount, 0);
   });
 });

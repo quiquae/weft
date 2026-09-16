@@ -1,6 +1,6 @@
 import type { MemoryCard, Settings, SiteAttention } from '../core/types.ts';
 import { migrateSettings, validateSettings } from '../core/settings.ts';
-import { emptyLockState, recordTamper, type LockState } from '../core/lock.ts';
+import { emptyLockState, noteClock, recordTamper, type LockState } from '../core/lock.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey } from '../core/escalation.ts';
 import { pruneAttention, pruneByAge } from '../core/prune.ts';
@@ -140,12 +140,28 @@ export async function load(): Promise<Snapshot> {
     settings = validateSettings(settings, now, meta.installId);
   }
 
+  /*
+   * Every wake is a clock observation.
+   *
+   * Here rather than on an alarm because an MV3 service worker is killed
+   * when idle: load() is the one path guaranteed to run whenever the
+   * extension does anything at all, which makes it the densest sampling of
+   * the wall clock available. See noteClock for why only the backwards
+   * direction is detectable.
+   */
+  const clock = noteClock(lock, settings, now);
+  lock = clock.state;
+
   const today = dayKey(now, settings.attention.rolloverHour);
   const introduced: Introduced =
     introducedRaw && introducedRaw.day === today ? introducedRaw : { day: today, lemmas: [] };
 
   cache = { settings, lock, attention, introduced, tampered, licence, tier: licence.tier };
-  if (tampered) await saveLock(lock);
+  // Persisted when the clock moved too, so the new baseline survives the
+  // worker being killed — otherwise the same rewind is re-detected forever.
+  if (tampered || clock.rewound || lock.lastSeenAt !== lockOpened.data?.lastSeenAt) {
+    await saveLock(lock);
+  }
   return cache;
 }
 

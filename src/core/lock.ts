@@ -175,6 +175,13 @@ export interface LockState {
   lastTamperAt?: number;
   /** Set when tamper response has forced difficulty up for the current day. */
   penaltyUntil?: number;
+  /**
+   * Highest wall-clock time this install has observed.
+   *
+   * Signed along with the rest of the lock state, so it cannot simply be
+   * edited back. See `noteClock`.
+   */
+  lastSeenAt?: number;
   /** Append-only audit of applied changes, newest last, capped. */
   log: LogEntry[];
 }
@@ -443,7 +450,12 @@ export function panicActive(state: LockState, now: number): boolean {
  * signing key ships inside the extension and a determined user can forge it.
  * docs/PRIVACY.md says so in plain words rather than implying otherwise.
  */
-export function recordTamper(state: LockState, settings: Settings, now: number): LockState {
+export function recordTamper(
+  state: LockState,
+  settings: Settings,
+  now: number,
+  summary = 'stored state failed its integrity check',
+): LockState {
   if (settings.friction.tamperResponse === 'ignore') {
     return { ...state, tamperCount: state.tamperCount + 1, lastTamperAt: now };
   }
@@ -455,11 +467,71 @@ export function recordTamper(state: LockState, settings: Settings, now: number):
     penaltyUntil: Math.max(state.penaltyUntil ?? 0, endOfDayPenalty),
     log: appendLog(state.log, {
       at: now,
-      summary: 'stored state failed its integrity check',
+      summary,
       direction: 'harder',
       via: 'immediate',
     }),
   };
+}
+
+/**
+ * Small clock corrections that are not evidence of anything.
+ *
+ * NTP adjustments are sub-second and suspend/resume can skew a little, so
+ * the threshold is generous. It only has to be tight enough that winding the
+ * clock far enough to clear a cooldown cannot hide under it, and the shortest
+ * cooldown Weft offers is far longer than two minutes.
+ */
+export const CLOCK_TOLERANCE_MS = 120_000;
+
+export interface ClockNote {
+  state: LockState;
+  /** True when the wall clock moved backwards by more than the tolerance. */
+  rewound: boolean;
+}
+
+/**
+ * Notice the wall clock moving backwards.
+ *
+ * A cooldown is judged by comparing `Date.now()` against a stored
+ * `unlocksAt`, so winding the system clock forward clears any pending change
+ * instantly. That cannot be detected offline: a clock that reads a week
+ * later is indistinguishable from a browser that was closed for a week, and
+ * telling them apart needs a trusted time source — that is, a network
+ * request, which is the one thing this product promises never to make.
+ *
+ * Requiring observed ticks instead is not available either. Weft
+ * deliberately promises that closing the browser neither cancels a wait nor
+ * restarts it, and an elapsed-ticks cooldown would break exactly that.
+ *
+ * What *is* detectable is the return trip. Defeating a cooldown this way is
+ * two moves, not one: forward to unlock, then back to the real time, because
+ * leaving the machine a week in the future breaks mail, calendars and TLS.
+ * Time never legitimately runs backwards by minutes, so the second move is
+ * unambiguous. The attack is invisible; its footprint is not.
+ *
+ * A genuinely wrong clock being corrected backwards trips this too, which is
+ * why the response is whatever the user chose for tampering — and why
+ * 'ignore' exists.
+ */
+export function noteClock(state: LockState, settings: Settings, now: number): ClockNote {
+  const last = state.lastSeenAt ?? 0;
+  const rewound = last > 0 && now < last - CLOCK_TOLERANCE_MS;
+
+  if (rewound) {
+    /*
+     * Baseline resets to the new time rather than keeping the high-water
+     * mark. Keeping it would mean a single jump a year into the future left
+     * every subsequent wake for a year reporting a rewind — one act,
+     * penalised hundreds of times. Accepting the corrected time records the
+     * event once and leaves a repeat attempt just as detectable as the
+     * first.
+     */
+    const penalised = recordTamper(state, settings, now, 'the clock moved backwards');
+    return { state: { ...penalised, lastSeenAt: now }, rewound: true };
+  }
+
+  return { state: { ...state, lastSeenAt: Math.max(last, now) }, rewound: false };
 }
 
 export function penaltyActive(state: LockState, now: number): boolean {

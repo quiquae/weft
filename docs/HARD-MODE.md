@@ -92,6 +92,40 @@ It also does not change what Weft does to your pages. Density, cooldowns and
 panic passes are all still your settings. Hard Mode only stops you from
 removing the extension to escape them.
 
+## The system clock, which is the honest weak point
+
+A cooldown is a stored timestamp compared against `Date.now()`. So winding
+your system clock forward clears any change you have queued, immediately.
+Weft does not prevent this, and this section exists because you should hear
+it here rather than work it out yourself.
+
+**Why it is not fixed.** Telling "the clock says next week" apart from "the
+browser was closed for a week" needs a time source you cannot edit — which
+means asking a server what time it is. Weft makes no network requests, at
+all, and there is a test asserting it; trading that for a screen-time tool
+that can be beaten by holding down the power button is a bad trade.
+
+The other candidate fix is worse. Weft could require the wait to elapse in
+*observed* time — counting alarm ticks rather than comparing timestamps — but
+that would break a property it deliberately promises: that closing the
+browser neither cancels a wait nor restarts it. A cooldown you can pause by
+quitting the browser is not a cooldown.
+
+**What is detected.** Defeating a cooldown this way takes two moves, not
+one: forward to unlock, then back to the real time, because leaving a machine
+a week in the future breaks mail, calendars and certificates. Time does not
+run backwards on its own, so the second move is unambiguous. Weft notices it,
+counts it with the other tampering events, and applies whatever response you
+chose for tampering — including `ignore`, which exists because a genuinely
+wrong clock being corrected looks identical.
+
+So the bypass is not blocked. It is made to cost something: either a
+permanently wrong clock, or an entry in a log you asked to be kept.
+
+**If you want to actually be stopped**, that is what the policy file is for.
+It is administrator-enforced, and someone who is not you holds the password.
+An extension cannot be more committed than the person who installed it.
+
 ## The switch in settings
 
 The Hard Mode switch in settings records your *intent*. Enforcement comes
