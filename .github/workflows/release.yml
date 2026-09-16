@@ -28,6 +28,9 @@ jobs:
       - name: Unit and DOM tests
         run: npm test
 
+      - name: Browser compatibility audit
+        run: npm run compat
+
       - name: Build lexicons
         run: npm run packs
 
@@ -43,8 +46,13 @@ jobs:
       - name: End-to-end tests
         run: npm run test:e2e
 
-      - name: Package both browsers
+      - name: Package all three browsers
         run: npm run zip
+
+      # Last gate before anything is attached to a release. The zips are
+      # built from dist/, so validating dist/ validates what ships.
+      - name: Validate packages
+        run: npm run validate
 
       - name: Build the content site
         run: node tools/build-site.mjs
@@ -55,6 +63,7 @@ jobs:
           files: |
             weft-chrome-*.zip
             weft-firefox-*.zip
+            weft-safari-*.zip
           body_path: RELEASE-${{ github.ref_name }}.md
           fail_on_unmatched_files: true
         continue-on-error: false

@@ -23,8 +23,19 @@ jobs:
         run: npm run test:unit
       - name: DOM tests
         run: npm run test:dom
-      - name: Build (chrome + firefox)
+      # Asks MDN's compatibility data whether every browser we claim to
+      # support actually implements what we use. Fails on anything
+      # unsupported that has no named fallback. Runs before the build
+      # because it needs no browser and takes under a second.
+      - name: Browser compatibility audit
+        run: npm run compat
+      - name: Build (chrome + firefox + safari)
         run: npm run build:all
+      # Pre-flights the built packages against what the stores reject for:
+      # unused permissions, a leaked test seam, unresolved __MSG_*__,
+      # inline scripts, missing referenced files, remote code.
+      - name: Validate packages
+        run: npm run validate
       - name: Install Playwright browsers
         # The full Chromium, not the headless shell: the shell cannot load
         # extensions at all.

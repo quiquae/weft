@@ -203,20 +203,33 @@ read "English X comes straight from Y" stops being read.
 
 ## Install
 
-Not on the Chrome Web Store yet — [the install page](https://weft.study/install)
-walks through the four steps and the fiddly one is a toggle. From source:
+Not in the stores yet — [docs/SUBMIT.md](docs/SUBMIT.md) is the runbook for
+getting it there, and [the install page](https://weft.study/install) walks a
+reader through loading it by hand. From source:
 
 ```sh
-git clone https://github.com/<you>/weft
+git clone https://github.com/quiquae/weft
 cd weft
 npm install
 npm run packs      # build the lexicons from the seed files
-npm run build      # -> dist/chrome
+npm run build:all  # -> dist/chrome, dist/firefox, dist/safari
 ```
 
-Then open `chrome://extensions`, turn on Developer mode, choose **Load
-unpacked**, and pick `dist/chrome`. Firefox: `npm run build:firefox`, then
-`about:debugging` → This Firefox → Load Temporary Add-on.
+| Browser | How |
+|---|---|
+| **Chrome / Edge / Brave** | `chrome://extensions` → Developer mode → **Load unpacked** → `dist/chrome` |
+| **Firefox** | `about:debugging` → This Firefox → **Load Temporary Add-on** → `dist/firefox/manifest.json` |
+| **Safari** | `npm run safari`, then build the generated Xcode project. Needs the full Xcode; the script explains what to install. |
+
+Edge takes the Chrome package unchanged — there is no separate Edge build
+because there is no difference.
+
+Safari needs more than a zip: the extension has to be wrapped in a native app
+and signed. `npm run safari` does the conversion and prints the remaining
+Xcode steps. Three APIs behave differently there — no notifications, no
+keyboard shortcuts below Safari 26, and no CSS Custom Highlight API below
+17.2 — all handled with fallbacks, all listed in
+[docs/SUBMIT.md](docs/SUBMIT.md).
 
 Weft will open its first-run page and ask you three questions. It has access
 to no website until you answer the third one.
@@ -228,11 +241,15 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 342 unit + 71 jsdom
-npm run test:e2e       # 18 tests in a real Chromium with the extension loaded
-npm run test:all       # everything
+npm test               # 427 unit + 81 jsdom
+npm run test:e2e       # 24 tests in a real Chromium with the extension loaded
+npm run compat         # every API we use, checked against MDN's compat data
+npm run validate       # pre-flight the built packages against store rules
+npm run test:all       # everything, in the order that fails fastest
 npm run packs:verify   # sanity-check the lexicons
-npm run zip            # store-ready archives for Chrome and Firefox
+npm run build:all      # chrome + firefox + safari
+npm run zip            # store-ready archives for all three
+npm run safari         # wrap the Safari build in an Xcode project
 npm run site           # generate the 700-page content site from the lexicon
 npm run og             # render the social card
 npm run release -- --version=X.Y.Z           # version, build, package, notes

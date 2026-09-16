@@ -94,18 +94,35 @@ user's list, and notifies open tabs when settings change so they re-render
 without a reload. No browsing history is read or stored; attention is recorded
 against the registrable domain only.
 
-**idle** — Distinguishes active reading from a tab left open. Attention only
-accumulates while the user is actually interacting, which is the core of the
-feature.
-
 **contextMenus** — Two entries on the extension's own toolbar button, for the
-progress and settings pages.
+progress and settings pages. (Named `menus` in Safari and Firefox; the code
+resolves whichever the browser provides.)
 
 **notifications** — Informs the user when a settings change they queued has
-finished its cooldown and taken effect.
+finished its cooldown and taken effect. **Not requested in the Safari build**,
+which has no notifications API; there the toolbar badge is used instead.
 
-**unlimitedStorage** — A large vocabulary plus the optional translation cache
-can exceed the default local-storage quota.
+### Two permissions that were removed, and why the answer matters
+
+An earlier draft of this listing justified two permissions Weft did not need.
+Both are gone from the manifest, and the reasoning is recorded here because a
+reviewer comparing versions will see them disappear.
+
+**`idle` was never used at all.** It had zero call sites. The justification
+claimed it was how attention is distinguished from a parked tab — "the core of
+the feature" — which was simply wrong. Attention is measured in the content
+script from `visibilitychange`, window focus and an activity-event idle
+threshold (`src/content/attention.ts`). That is strictly better than
+`chrome.idle`: it is per-page rather than per-machine, and it needs no
+permission. An unused permission with a confident explanation attached is
+worse than an unused permission.
+
+**`unlimitedStorage` was masking a bug rather than granting a capability.**
+Two stores grew without bound — per-host attention (sixty days of history per
+host, no cap on hosts) and the optional provider cache (no cap at all). Around
+five thousand hosts crosses the quota, which is a realistic few years of
+browsing. `src/core/prune.ts` now bounds both, with a test asserting the
+serialised size stays well under quota, so the permission is unnecessary.
 
 **optional_host_permissions (`*://*/*`)** — Requested per-origin at runtime,
 from a user gesture on the extension's own first-run page, for only the sites
@@ -144,13 +161,40 @@ determine creditworthiness or for lending purposes.
 
 ## Screenshots
 
-In `docs/screens/`. For the listing, in order:
+Generated at each store's exact required size by
+`WEFT_STORE=1 npx playwright test store-assets`, into `docs/store/`.
+Chrome wants 1280x800 "square corners, no padding (full bleed)", so these are
+viewport captures, not full-page ones — a full-page shot of the settings page
+comes out 1280x3000 and is rejected.
 
-1. `page-woven.png` — a real article woven at 28%
-2. `page-old-english.png` — Old English with the tooltip showing the etymon
-3. `popup.png` — the status readout
-4. `dashboard.png` — progress
-5. `options-density.png` — the difficulty controls
+| # | Chrome (1280x800) | Shows |
+|---|---|---|
+| 1 | `chrome-01-woven.png` | An ordinary article, ~30% woven into French |
+| 2 | `chrome-02-reveal.png` | The tooltip handing back the English |
+| 3 | `chrome-03-old-english.png` | Old English, with the etymon |
+| 4 | `chrome-04-progress.png` | Progress, scrolled to the discoveries feed |
+| 5 | `chrome-05-settings.png` | The difficulty controls and the friction |
+
+`edge-*` (1366x768) and `apple-*` (1440x900) are the same five scenes at
+those stores' sizes.
+
+The screenshots use `tests/e2e/pages/showcase.html`, not the test fixture.
+`article.html` deliberately displays the things Weft must *not* touch — a
+button, a code block, a three-word sentence — because those elements are its
+assertions; in a screenshot they read as a broken page.
+
+They also set the ratio to ~30% rather than the shipped 6% default. One
+changed word in a paragraph reads as a typo rather than as a feature, and the
+listing text states the default is gentler, so nothing is overstated.
+
+### Promo tiles
+
+`node tools/make-store-tiles.mjs` writes, into `docs/store/`:
+
+- `tile-small-440x280.png` — Chrome small tile, **required**
+- `tile-marquee-1400x560.png` — Chrome marquee; optional, but an extension
+  cannot be featured without one
+- `logo-edge-300x300.png` — Edge store logo, **required** there
 
 ## Support and privacy policy URLs
 
@@ -165,9 +209,11 @@ Things only you can do, in the order they block each other.
 
 ### Before you can submit at all
 
-- [ ] **Chrome Web Store developer account.** One-off $5 registration fee at
-      <https://chrome.google.com/webstore/devconsole>. Use an account you will
-      still control in five years, not a throwaway.
+- [ ] **Chrome Web Store developer account.** A one-time registration fee at
+      <https://chrome.google.com/webstore/devconsole>. Chrome's docs confirm
+      it is one-time and not recurring but do not print the amount; it has
+      been $5 for years, and the figure is shown at registration. Use an
+      account you will still control in five years, not a throwaway.
 - [ ] **A privacy policy at a public URL.** Required for any extension that
       handles user data, and Weft is required to declare one even though it
       transmits nothing. `docs/PRIVACY.md` is written to be published as-is;
@@ -179,13 +225,14 @@ Things only you can do, in the order they block each other.
 ### Assets, all present in this repository
 
 - [ ] Icon, 128×128 — `assets/icon-128.png`
-- [ ] Screenshots, 1280×800 or 640×400, at least one, up to five. Use, in
-      order: `docs/screens/page-woven.png`, `page-old-english.png`,
-      `popup.png`, `dashboard.png`, `options-density.png`. They will need
-      padding to the exact dimensions; the Store rejects odd sizes rather
-      than scaling them.
-- [ ] Small promo tile, 440×280 — crop from `site/og.png`
+- [ ] Screenshots, exactly 1280×800 — the five `docs/store/chrome-*.png`,
+      in numbered order. Already the right size; no padding needed.
+- [ ] Small promo tile, exactly 440×280 — `docs/store/tile-small-440x280.png`
+- [ ] Marquee, 1400×560 — `docs/store/tile-marquee-1400x560.png`
 - [ ] The package — `weft-chrome-<version>.zip` from `npm run zip`
+- [ ] Run `npm run validate` first. It fails on the things the stores
+      reject for: an unused permission, a leaked test seam, an unresolved
+      `__MSG_*__`, an inline script, a missing referenced file, remote code.
 
 ### Fields, all drafted above
 

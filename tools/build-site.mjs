@@ -578,7 +578,7 @@ function installPage(version) {
   const url = `${SITE}/install`;
   const description =
     `Install Weft in about a minute. Download the package, open your browser's extensions ` +
-    `page, turn on developer mode, and load the folder. Chrome, Edge, Brave and Firefox.`;
+    `page, turn on developer mode, and load the folder. Chrome, Edge, Brave, Firefox and Safari.`;
 
   return {
     path: 'install.html',
@@ -614,7 +614,7 @@ function installPage(version) {
       Download Weft ${esc(version)}
     </a>
     <p class="download__meta">
-      Chrome, Edge, Brave and Firefox · about 200&nbsp;KB · free for one language, forever
+      Chrome, Edge, Brave, Firefox and Safari · about 200&nbsp;KB · free for one language, forever
     </p>
   </div>
 
@@ -663,6 +663,39 @@ function installPage(version) {
   </section>
 
   <section>
+    <h2>Safari</h2>
+    <p>
+      Safari is the awkward one, and not because of anything Weft does: Apple requires a web
+      extension to be wrapped in a signed native app rather than loaded from a folder. There
+      is no one-minute path.
+    </p>
+    <ol class="steps">
+      <li>
+        <strong>Install Xcode</strong> from the Mac App Store — free, about 7&nbsp;GB. The
+        Command Line Tools are not enough; the converter Apple ships lives inside Xcode
+        itself.
+      </li>
+      <li>
+        <strong>Run <code>npm run safari</code></strong> in a clone of the repository. It
+        checks your setup, rebuilds, and generates an Xcode project.
+      </li>
+      <li>
+        <strong>Open the project and press Run.</strong> Then in Safari: Settings → Advanced →
+        “Show features for web developers”, Develop → Allow Unsigned Extensions, and enable
+        Weft under Settings → Extensions.
+      </li>
+    </ol>
+    <p class="steps__note">
+      Three things differ on Safari, all deliberate and all handled. Safari has no
+      notifications API at all, so Weft marks its toolbar icon instead. Keyboard shortcuts
+      need Safari&nbsp;26 — everything they do is also in the popup. And below
+      Safari&nbsp;17.2 there is no CSS Custom Highlight API, so Weft styles woven words with
+      wrapped spans rather than highlight ranges; it looks near-identical and behaves the
+      same.
+    </p>
+  </section>
+
+  <section>
     <h2>What Weft asks for</h2>
     <p>
       Nothing, at first. Weft installs with <strong>no access to any website</strong> — which
@@ -680,9 +713,10 @@ function installPage(version) {
   <section>
     <h2>Building it yourself</h2>
     <p>Everything is open source, and the build is three commands:</p>
-    <div class="install">git clone ${esc(REPO)}<br>cd weft &amp;&amp; npm install<br>npm run packs &amp;&amp; npm run build</div>
+    <div class="install">git clone ${esc(REPO)}<br>cd weft &amp;&amp; npm install<br>npm run packs &amp;&amp; npm run build:all</div>
     <p class="steps__note">
-      That writes <code>dist/chrome</code>, which is the folder to load in step 4.
+      That writes <code>dist/chrome</code>, <code>dist/firefox</code> and
+      <code>dist/safari</code>. The first is the folder to load in step 4.
     </p>
   </section>
 `,
@@ -726,7 +760,7 @@ function pricingPage() {
         '@type': 'SoftwareApplication',
         name: 'Weft',
         applicationCategory: 'EducationalApplication',
-        operatingSystem: 'Chrome, Edge, Firefox',
+        operatingSystem: 'Chrome, Edge, Firefox, Safari',
         description: PITCH,
         url: SITE,
         offers: PLANS.map((plan) => ({
