@@ -280,3 +280,54 @@ test.describe('the progress page', () => {
     await expect(dashboard.locator('.tile').first()).toBeVisible();
   });
 });
+
+test.describe('the notification fallback', () => {
+  /*
+   * Safari has never implemented browser.notifications, so `notify()` falls
+   * back to marking the toolbar button. That fallback shipped with a bug: it
+   * set the badge and never took it off, and `setTitle` replaces the tooltip
+   * outright, so the button would go on describing a cooldown that had
+   * finished days ago.
+   *
+   * Safari cannot be driven by Playwright, so the fallback itself is not
+   * reachable here — on Chrome the notifications branch is taken. What IS
+   * reachable, and what actually broke, is the clearing half: whether
+   * opening the popup takes the badge back off. So the test sets the badge
+   * the way the fallback would and then checks the popup's own handshake
+   * clears it.
+   */
+  test('opening the popup clears a badge left by the fallback', async ({
+    context,
+    extensionId,
+    origin,
+  }) => {
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+
+    // Set it exactly as notify() does when notifications are unavailable.
+    await page.evaluate(async () => {
+      await chrome.action.setBadgeText({ text: '!' });
+      await chrome.action.setTitle({ title: 'Weft — a change you queued has taken effect' });
+    });
+    expect(await page.evaluate(() => chrome.action.getBadgeText({}))).toBe('!');
+
+    // get-page-state is the popup's first call, so it is the acknowledgement.
+    await page.evaluate(async (url) => {
+      await chrome.runtime.sendMessage({ type: 'get-page-state', url });
+    }, `${origin}/article.html`);
+
+    await expect
+      .poll(async () => page.evaluate(() => chrome.action.getBadgeText({})), {
+        timeout: 5_000,
+        message: 'the badge was never cleared, so it would stay until reinstall',
+      })
+      .toBe('');
+
+    // The title has to come back too. An empty string restores the
+    // manifest's default_title rather than leaving a stale sentence.
+    const title = await page.evaluate(() => chrome.action.getTitle({}));
+    expect(title).not.toContain('taken effect');
+
+    await page.close();
+  });
+});

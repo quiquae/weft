@@ -167,7 +167,14 @@ type Handlers = {
 };
 
 const handlers: Handlers = {
-  'get-page-state': async (request) => buildPageState(request.url),
+  'get-page-state': async (request) => {
+    // Opening the popup is the acknowledgement gesture, so it is where the
+    // notification badge gets cleared. Without this the badge set by the
+    // Safari fallback would never come off, and a badge that never clears is
+    // noise a user learns to ignore rather than a signal.
+    await clearBadge();
+    return buildPageState(request.url);
+  },
 
   'get-pack': async (request) => {
     // The content script fetches packs from disk directly; this exists for UI
@@ -829,6 +836,25 @@ async function notify(title: string, message: string): Promise<void> {
     await api.action.setTitle({ title: `${title} — ${message}` });
   } catch {
     // Out of options, and the state change still happened regardless.
+  }
+}
+
+/**
+ * Take the badge back off, and restore the toolbar tooltip.
+ *
+ * Both halves matter. An uncleared badge is merely noise; an uncleared title
+ * is worse, because `setTitle` replaces the tooltip outright, so the button
+ * would go on describing a cooldown that finished days ago. Resetting to the
+ * empty string restores the manifest's own default_title rather than
+ * hardcoding the product name here, which would drift from _locales.
+ */
+async function clearBadge(): Promise<void> {
+  if (!can.badge) return;
+  try {
+    await api.action.setBadgeText({ text: '' });
+    await api.action.setTitle({ title: '' });
+  } catch {
+    // Nothing to do; a stale badge is not worth an unhandled rejection.
   }
 }
 
