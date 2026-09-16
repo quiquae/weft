@@ -69,18 +69,53 @@ export function fromBase64Url(text: string): Uint8Array {
 
 /* -------------------------------------------------------------- verify */
 
-let cachedKey: CryptoKey | null = null;
+/**
+ * Imported keys, cached by the key itself rather than in a single slot.
+ *
+ * Keyed because the verifying key is a parameter (see `verifyLicence`), and a
+ * single cached slot would hand the first key used to every later caller —
+ * which in a test suite means one test's ephemeral key silently verifying
+ * another test's licence.
+ */
+const cachedKeys = new Map<string, Promise<CryptoKey>>();
 
-async function publicKey(): Promise<CryptoKey> {
-  if (cachedKey) return cachedKey;
-  cachedKey = await crypto.subtle.importKey(
-    'jwk',
-    LICENCE_PUBLIC_KEY_JWK,
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    false,
-    ['verify'],
-  );
-  return cachedKey;
+async function publicKey(jwk: JsonWebKey): Promise<CryptoKey> {
+  const id = JSON.stringify(jwk);
+  let pending = cachedKeys.get(id);
+  if (!pending) {
+    pending = crypto.subtle.importKey(
+      'jwk',
+      jwk,
+      { name: 'ECDSA', namedCurve: 'P-256' },
+      false,
+      ['verify'],
+    );
+    cachedKeys.set(id, pending);
+  }
+  return pending;
+}
+
+export interface VerifyOptions {
+  /**
+   * The key to verify against. Defaults to the publisher's.
+   *
+   * A parameter rather than a hardcoded import for two reasons, only one of
+   * which is testing.
+   *
+   * The tests previously signed with the real private key, read from
+   * `.licence-private.jwk`. That file is gitignored — correctly, it mints
+   * licences — so the suite passed locally and six subtests failed in CI on
+   * every push, with an ENOENT that would never fix itself. Skipping them
+   * when the key is absent would have left the revenue path untested in the
+   * only place that tests everything. Now the tests generate a throwaway
+   * keypair and verify against it, exercising the real code path with no
+   * secret involved.
+   *
+   * The other reason is key rotation. Rotating the signing key invalidates
+   * every licence already issued, so it needs to be rehearsable rather than
+   * attempted for the first time in anger.
+   */
+  publicKeyJwk?: JsonWebKey;
 }
 
 /**
@@ -97,7 +132,10 @@ export function normalizeKey(input: string): string {
     .replace(/\s+/g, '');
 }
 
-export async function verifyLicence(input: string): Promise<LicenceStatus> {
+export async function verifyLicence(
+  input: string,
+  opts: VerifyOptions = {},
+): Promise<LicenceStatus> {
   const key = normalizeKey(input);
   if (!key) return { kind: 'none', tier: 'free' };
 
@@ -124,7 +162,7 @@ export async function verifyLicence(input: string): Promise<LicenceStatus> {
   try {
     ok = await crypto.subtle.verify(
       { name: 'ECDSA', hash: 'SHA-256' },
-      await publicKey(),
+      await publicKey(opts.publicKeyJwk ?? LICENCE_PUBLIC_KEY_JWK),
       fromBase64Url(signaturePart) as unknown as ArrayBuffer,
       enc.encode(payloadPart) as unknown as ArrayBuffer,
     );

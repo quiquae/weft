@@ -1,7 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { webcrypto } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import {
   verifyLicence,
   normalizeKey,
@@ -11,23 +10,61 @@ import {
   fromBase64Url,
 } from '../../src/core/licence.ts';
 import type { LicencePayload } from '../../src/core/licence.ts';
+import { LICENCE_PUBLIC_KEY_JWK } from '../../src/core/licence-key.ts';
 
 const enc = new TextEncoder();
 const b64url = (b: Uint8Array | ArrayBuffer) => toBase64Url(new Uint8Array(b));
 
-/** Sign a payload with the real private key, as the issuing tool does. */
+/**
+ * A throwaway publisher keypair, generated once for this file.
+ *
+ * These tests used to sign with the real private key, read from
+ * `.licence-private.jwk`. That file is gitignored — correctly, it is the
+ * thing that mints licences — so the suite passed on a machine that had it
+ * and failed in CI on every single push with
+ * `ENOENT: .licence-private.jwk`. Six subtests, permanently red, for a
+ * reason that could never fix itself.
+ *
+ * Skipping them when the key was missing would have been worse: CI is the
+ * one place that runs everything, and the thing being skipped is whether a
+ * paid licence is accepted at all.
+ *
+ * So the tests mint their own. `verifyLicence` takes the verifying key as an
+ * option, defaulting to the publisher's, and these pass their own — which
+ * exercises the identical code path with no secret in it. A separate test
+ * below asserts the default really is the compiled-in publisher key, so this
+ * seam cannot quietly become the normal path.
+ */
+let publisher: Promise<CryptoKeyPair> | null = null;
+function keys(): Promise<CryptoKeyPair> {
+  publisher ??= webcrypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+    'sign',
+    'verify',
+  ]) as Promise<CryptoKeyPair>;
+  return publisher;
+}
+
+/** The public half, in the shape verifyLicence wants. */
+async function publicKeyJwk(): Promise<JsonWebKey> {
+  const { publicKey } = await keys();
+  return webcrypto.subtle.exportKey('jwk', publicKey) as Promise<JsonWebKey>;
+}
+
+/** Sign a payload as the issuing tool does. */
 async function issue(payload: LicencePayload): Promise<string> {
-  const jwk = JSON.parse(await readFile('.licence-private.jwk', 'utf8'));
-  const key = await webcrypto.subtle.importKey(
-    'jwk',
-    jwk,
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    false,
-    ['sign'],
-  );
+  const { privateKey } = await keys();
   const part = b64url(enc.encode(JSON.stringify(payload)));
-  const sig = await webcrypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, enc.encode(part));
+  const sig = await webcrypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    privateKey,
+    enc.encode(part),
+  );
   return `WEFT-${part}.${b64url(sig)}`;
+}
+
+/** verifyLicence against this file's keypair rather than the publisher's. */
+async function verify(input: string) {
+  return verifyLicence(input, { publicKeyJwk: await publicKeyJwk() });
 }
 
 /** Sign with a keypair that is NOT the publisher's. */
@@ -87,14 +124,14 @@ describe('normalizeKey', () => {
 
 describe('verifyLicence', () => {
   test('accepts a genuine lifetime licence', async () => {
-    const status = await verifyLicence(await issue(lifetime));
+    const status = await verify(await issue(lifetime));
     assert.equal(status.kind, 'valid');
     assert.equal(status.tier, 'pro');
     if (status.kind === 'valid') assert.equal(status.payload.name, 'Ada Lovelace');
   });
 
   test('accepts a genuine subscription that has not expired', async () => {
-    const status = await verifyLicence(
+    const status = await verify(
       await issue({ ...lifetime, expires: Date.now() + 30 * 86_400_000 }),
     );
     assert.equal(status.kind, 'valid');
@@ -102,7 +139,7 @@ describe('verifyLicence', () => {
   });
 
   test('reports an expired subscription as expired, and falls back to free', async () => {
-    const status = await verifyLicence(
+    const status = await verify(
       await issue({ ...lifetime, expires: Date.now() - 86_400_000 }),
     );
     assert.equal(status.kind, 'expired');
@@ -112,7 +149,7 @@ describe('verifyLicence', () => {
   test('rejects a licence signed by anyone else', async () => {
     // The one that matters: a plausible payload, correctly formatted, signed
     // with a keypair that is not the publisher's.
-    const status = await verifyLicence(await forge(lifetime));
+    const status = await verify(await forge(lifetime));
     assert.equal(status.kind, 'invalid');
     assert.equal(status.tier, 'free');
   });
@@ -122,7 +159,7 @@ describe('verifyLicence', () => {
     const key = normalizeKey(await issue({ ...lifetime, tier: 'free' }));
     const sig = key.slice(key.indexOf('.') + 1);
     const upgraded = toBase64Url(enc.encode(JSON.stringify({ ...lifetime, tier: 'pro' })));
-    const status = await verifyLicence(`${upgraded}.${sig}`);
+    const status = await verify(`${upgraded}.${sig}`);
     assert.equal(status.kind, 'invalid');
   });
 
@@ -130,12 +167,12 @@ describe('verifyLicence', () => {
     const key = normalizeKey(await issue(lifetime));
     const dot = key.indexOf('.');
     const flipped = key.slice(0, dot + 1) + (key[dot + 1] === 'A' ? 'B' : 'A') + key.slice(dot + 2);
-    assert.equal((await verifyLicence(flipped)).kind, 'invalid');
+    assert.equal((await verify(flipped)).kind, 'invalid');
   });
 
   test('treats an absent key as free rather than as an error', async () => {
     for (const empty of ['', '   ', 'WEFT-']) {
-      const status = await verifyLicence(empty);
+      const status = await verify(empty);
       assert.equal(status.kind, 'none', JSON.stringify(empty));
       assert.equal(status.tier, 'free');
     }
@@ -143,7 +180,7 @@ describe('verifyLicence', () => {
 
   test('gives a readable reason for malformed input', async () => {
     for (const junk of ['not a licence', 'abc', '.', 'abc.', '.def']) {
-      const status = await verifyLicence(junk);
+      const status = await verify(junk);
       assert.equal(status.kind, 'invalid', junk);
       if (status.kind === 'invalid') {
         assert.ok(status.reason.length > 10, `unhelpful reason for ${junk}`);
@@ -153,7 +190,7 @@ describe('verifyLicence', () => {
   });
 
   test('rejects a licence from a future format version', async () => {
-    const status = await verifyLicence(await issue({ ...lifetime, v: 2 as unknown as 1 }));
+    const status = await verify(await issue({ ...lifetime, v: 2 as unknown as 1 }));
     assert.equal(status.kind, 'invalid');
   });
 
@@ -166,7 +203,7 @@ describe('verifyLicence', () => {
       toBase64Url(enc.encode('[]')) + '.AAAA',
     ];
     for (const input of nasty) {
-      const status = await verifyLicence(input);
+      const status = await verify(input);
       assert.ok(['invalid', 'none'].includes(status.kind), input.slice(0, 24));
     }
   });
@@ -230,5 +267,43 @@ describe('needsAttention', () => {
     );
     assert.equal(needsAttention({ kind: 'expired', tier: 'free', payload: lifetime }), true);
     assert.equal(needsAttention({ kind: 'invalid', tier: 'free', reason: 'x' }), true);
+  });
+});
+
+describe('the verifying key defaults to the publisher', () => {
+  test('a licence minted by this test file does NOT verify by default', async () => {
+    /*
+     * The guard on the seam above. `verifyLicence` takes the verifying key as
+     * an option so the tests can mint their own without the gitignored
+     * private key; the danger is that the option quietly becomes how
+     * production verifies too, at which point anyone's self-signed licence
+     * would be accepted as Pro.
+     *
+     * Calling verifyLicence with NO options must reject a licence signed by
+     * this file's throwaway key. If that ever passes, the default has stopped
+     * being the publisher's key and Pro is free for anyone who can run
+     * generateKey.
+     */
+    const status = await verifyLicence(await issue(lifetime));
+    assert.equal(status.kind, 'invalid', 'a self-signed licence was accepted by default');
+    assert.equal(status.tier, 'free');
+  });
+
+  test('the default key is the one compiled into the extension', async () => {
+    const status = await verifyLicence(await issue(lifetime), {
+      publicKeyJwk: LICENCE_PUBLIC_KEY_JWK as unknown as JsonWebKey,
+    });
+    // Same verdict as passing nothing, which is what "defaults to" means.
+    assert.equal(status.kind, 'invalid');
+  });
+
+  test('two different keys do not share a cache entry', async () => {
+    // The import cache is keyed by the key itself. With a single cached slot
+    // the first key used would be handed to every later caller, so one
+    // test's ephemeral key would verify another's licence.
+    const mine = await issue(lifetime);
+    assert.equal((await verify(mine)).kind, 'valid');
+    assert.equal((await verifyLicence(mine)).kind, 'invalid');
+    assert.equal((await verify(mine)).kind, 'valid');
   });
 });
