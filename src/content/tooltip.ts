@@ -66,11 +66,33 @@ const CSS = `
   text-align: left;
   opacity: 0;
   transform: translateY(3px);
-  transition: opacity 120ms ease-out, transform 120ms ease-out;
 }
 .card[data-shown='1'] { opacity: 1; transform: none; }
+
+/*
+ * Motion is opt-in rather than declared-and-then-removed.
+ *
+ * The rule used to be an unconditional transition with a
+ * a prefers-reduced-motion: reduce block taking it away. That reads the same
+ * in a browser that understands the query and animates anyway in one that
+ * does not, which is the wrong way round: the safe default is stillness.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .card { transition: opacity 120ms ease-out, transform 120ms ease-out; }
+}
+
+/*
+ * The reader overriding their own OS preference, for this surface only.
+ *
+ * a11y.respectReducedMotion defaults to true and used to do nothing at
+ * all: the CSS above honours the system setting whatever the toggle said, so
+ * turning it off changed nothing and the control was decorative. Someone who
+ * set reduce-motion system-wide for one bad offender, and wants a 120ms
+ * fade here, can now actually have it.
+ */
+.card[data-motion='force'] { transition: opacity 120ms ease-out, transform 120ms ease-out; }
 @media (prefers-reduced-motion: reduce) {
-  .card { transition: none; transform: none; }
+  .card:not([data-motion='force']) { transform: none; }
 }
 .head { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
 .english { font-size: 1.12em; font-weight: 600; letter-spacing: -0.005em; }
@@ -170,6 +192,10 @@ export class Tooltip {
     this.host.style.top = '-9999px';
     this.host.style.left = '-9999px';
     this.applyFontSize();
+    // Also at construction, not only on update: a reader whose override is
+    // already on when the page loads should not have to change a setting to
+    // make it take effect.
+    this.applyMotion();
   }
 
   attach(): void {
@@ -179,10 +205,23 @@ export class Tooltip {
   updateSettings(settings: Settings): void {
     this.settings = settings;
     this.applyFontSize();
+    this.applyMotion();
   }
 
   private applyFontSize(): void {
     this.host.style.setProperty('--weft-font-size', `${this.settings.a11y.minTooltipFontPx}px`);
+  }
+
+  /**
+   * Mark the card when the reader has chosen to override the OS preference.
+   *
+   * Only the "force" direction needs an attribute: respecting the system
+   * setting is what the stylesheet already does on its own.
+   */
+  private applyMotion(): void {
+    if (!this.card) return;
+    if (this.settings.a11y.respectReducedMotion) this.card.removeAttribute('data-motion');
+    else this.card.setAttribute('data-motion', 'force');
   }
 
   isOpen(): boolean {

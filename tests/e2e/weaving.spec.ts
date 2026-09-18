@@ -270,3 +270,90 @@ test.describe('weaving a page', () => {
     expect(await first.getAttribute('aria-description')).toContain('in ang');
   });
 });
+
+test.describe('announcing swaps to a screen reader', () => {
+  /*
+   * `a11y.announceSwaps` shipped as a setting that did nothing: no live
+   * region was ever created, so a reader who found the toggle and switched
+   * it on got silence. The unit tests cover the region's own behaviour;
+   * this covers the part they cannot, which is whether the content script
+   * actually builds one on a real page and feeds it.
+   */
+  test('a live region appears and carries the English on reveal', async ({
+    context,
+    configure,
+    origin,
+  }) => {
+    await configure({
+      'weave.baseRatio': 0.3,
+      'weave.renderMode': 'wrapped',
+      'reveal.hoverDelayMs': 0,
+      'a11y.announceSwaps': true,
+    });
+
+    const page = await context.newPage();
+    await page.goto(`${origin}/showcase.html`);
+    await expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 });
+
+    const region = page.locator('[data-weft-announcer]');
+    await expect(region).toHaveCount(1);
+    await expect(region).toHaveAttribute('role', 'status');
+    await expect(region).toHaveAttribute('aria-live', 'polite');
+
+    // The page summary lands once weaving settles.
+    await expect(region).toContainText(/words on this page are in/i, { timeout: 10_000 });
+
+    // Revealing a word must say it. This is the moment the reader is
+    // waiting to hear something, and the tooltip alone is visual.
+    const word = page.locator('#prose-2 weft-w').first();
+    await word.hover();
+    await expect(region).toContainText('—', { timeout: 5_000 });
+  });
+
+  test('the region exists before anything is announced', async ({ context, configure, origin }) => {
+    /*
+     * The discriminating test, and the reason the first version of this
+     * block was worthless: Announcer.say() creates the region lazily if one
+     * is missing, so any page that announces something ends up with a
+     * region whether or not the content script ever called start(). I
+     * removed the start() call to check the test caught it and it passed
+     * happily.
+     *
+     * A live region has to exist BEFORE its text changes or the change is
+     * announced unreliably, so eager creation is the property worth
+     * protecting. Weaving nothing is what separates the two: no swaps means
+     * no summary and no reveal, so the region can only be there if it was
+     * created up front.
+     */
+    await configure({
+      'weave.baseRatio': 0,
+      'weave.ceilingRatio': 0,
+      'weave.renderMode': 'wrapped',
+      'a11y.announceSwaps': true,
+    });
+
+    const page = await context.newPage();
+    await page.goto(`${origin}/showcase.html`);
+    // Nothing is woven at ratio zero, so wait on the region itself.
+    const region = page.locator('[data-weft-announcer]');
+    await expect(region, 'the region is created lazily, not up front').toHaveCount(1, {
+      timeout: 15_000,
+    });
+    await expect(page.locator('weft-w')).toHaveCount(0);
+    await expect(region).toHaveText('');
+  });
+
+  test('no region exists when the setting is off', async ({ context, configure, origin }) => {
+    // The default. An empty live region is harmless but it is still a node
+    // injected into someone's page for no reason.
+    await configure({
+      'weave.baseRatio': 0.3,
+      'weave.renderMode': 'wrapped',
+      'a11y.announceSwaps': false,
+    });
+    const page = await context.newPage();
+    await page.goto(`${origin}/showcase.html`);
+    await expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-weft-announcer]')).toHaveCount(0);
+  });
+});

@@ -24,6 +24,7 @@ import type { Renderer } from './renderer.ts';
 import { applyPageStyles, removePageStyles } from './styles.ts';
 import { Tooltip } from './tooltip.ts';
 import { AttentionTracker } from './attention.ts';
+import { Announcer } from './announce.ts';
 
 /**
  * Page orchestrator.
@@ -95,6 +96,7 @@ class WeftPage {
   private renderer: Renderer;
   private tooltip: Tooltip;
   private attention: AttentionTracker;
+  private announcer: Announcer;
   private observer: MutationObserver | null = null;
   private records = new Map<Text, WovenRecord>();
   private walkerOptions: WalkerOptions;
@@ -157,6 +159,8 @@ class WeftPage {
       reportEverySec: 5,
       onReport: (seconds) => this.reportAttention(seconds),
     });
+
+    this.announcer = new Announcer(state.settings.a11y.announceSwaps);
   }
 
   start(): void {
@@ -181,6 +185,9 @@ class WeftPage {
     document.addEventListener('focusin', this.onFocusIn, { capture: true });
 
     this.attention.start();
+    // Created empty and up front: a live region inserted at the same moment
+    // its text appears is announced unreliably.
+    this.announcer.start();
     this.exposureTimer = window.setInterval(() => this.sweepExposures(), EXPOSURE_SWEEP_MS);
     this.flushTimer = window.setInterval(() => this.flushExposures(), EXPOSURE_FLUSH_MS);
   }
@@ -209,9 +216,20 @@ class WeftPage {
         this.scheduleScan();
       } else {
         this.renderer.flush();
+        // Once the page has settled, not per word: forty announcements is a
+        // denial of service, and the reader is about to read the page
+        // anyway. The count is the part worth hearing.
+        this.announcer.summarise(this.wovenCount(), getLanguage(this.state.decision.target).name);
         void this.extendVocabulary();
       }
     });
+  }
+
+  /** How many words are currently in the target language. */
+  private wovenCount(): number {
+    let n = 0;
+    for (const record of this.records.values()) n += record.swaps.length;
+    return n;
   }
 
   private processSlice(): void {
@@ -576,6 +594,9 @@ class WeftPage {
     this.currentHit = hit;
     hit.swap.revealed = true;
     this.renderer.setRevealed(hit.record, hit.swap);
+    // The tooltip is visual. A reader who asked for the English has to be
+    // told it, and this is the one moment they are waiting to hear something.
+    this.announcer.reveal(hit.swap.replacement, hit.swap.original);
 
     const rect = this.renderer.rectFor(hit.record, hit.swap);
     if (!rect) return;
@@ -772,6 +793,10 @@ class WeftPage {
     this.tooltip.updateSettings(settings);
     this.renderer.updateSettings(settings);
     this.attention.updateOptions({ idleThresholdSec: settings.attention.idleThresholdSec });
+    this.announcer.setEnabled(settings.a11y.announceSwaps);
+    // A reweave is a new state of the page, so its summary is worth saying
+    // again — the count will have changed.
+    this.announcer.resetSummary();
     applyPageStyles(settings);
     this.pack = applyLetterformsToPack(this.pack, settings);
     this.reweaveAll(false);
@@ -783,6 +808,7 @@ class WeftPage {
     this.observer?.disconnect();
     this.observer = null;
     this.attention.stop();
+    this.announcer.stop();
     if (this.exposureTimer !== null) window.clearInterval(this.exposureTimer);
     if (this.flushTimer !== null) window.clearInterval(this.flushTimer);
     this.cancelHover();
