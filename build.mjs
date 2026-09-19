@@ -193,18 +193,55 @@ async function dirSize(dir) {
   return total;
 }
 
-async function makeZip() {
-  const zipPath = join(ROOT, `weft-${TARGET}-${VERSION}.zip`);
-  await rm(zipPath, { force: true });
-  await new Promise((resolve, reject) => {
-    // `zip` ships with macOS and every CI image we target; shelling out avoids
-    // adding an archiver dependency for one line of work.
-    const proc = spawn('zip', ['-r', '-q', '-X', zipPath, '.'], { cwd: OUT, stdio: 'inherit' });
+/** Run `zip`, which ships with macOS and every CI image we target. */
+function runZip(args, cwd) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn('zip', args, { cwd, stdio: 'inherit' });
     proc.on('error', reject);
     proc.on('exit', (code) => (code === 0 ? resolve() : reject(new Error(`zip exited ${code}`))));
   });
-  const s = await stat(zipPath);
-  console.log(`  zip     ${zipPath.replace(ROOT + '/', '')}  ${(s.size / 1024).toFixed(0)} KB`);
+}
+
+/**
+ * Two archives, because the store and a human want opposite things.
+ *
+ * A Chrome Web Store upload must have manifest.json at the root of the zip.
+ * A person who downloads that same file and opens it gets nineteen loose
+ * files and folders emptied into Downloads, next to everything else they
+ * have ever downloaded — and then the install instructions tell them to
+ * "pick the folder itself, not the manifest.json inside it", when no folder
+ * exists. That is a miserable first thirty seconds, and it is the first
+ * thirty seconds anyone has with this product until it is in a store.
+ *
+ * So: the flat one keeps its name and goes to the stores, and a second one
+ * wraps everything in a clearly named folder for people. Which to link is
+ * then obvious from the filename rather than from a paragraph.
+ */
+async function makeZip() {
+  const base = `weft-${TARGET}-${VERSION}`;
+
+  // For the stores: manifest.json at the root.
+  const storeZip = join(ROOT, `${base}.zip`);
+  await rm(storeZip, { force: true });
+  await runZip(['-r', '-q', '-X', storeZip, '.'], OUT);
+
+  // For people: one folder, named, so unzipping anywhere stays tidy.
+  const folderZip = join(ROOT, `${base}-folder.zip`);
+  await rm(folderZip, { force: true });
+  const staging = join(ROOT, 'dist', `.zipstage-${TARGET}`);
+  await rm(staging, { recursive: true, force: true });
+  await mkdir(staging, { recursive: true });
+  await cp(OUT, join(staging, base), { recursive: true });
+  await runZip(['-r', '-q', '-X', folderZip, base], staging);
+  await rm(staging, { recursive: true, force: true });
+
+  for (const p of [storeZip, folderZip]) {
+    const st = await stat(p);
+    const note = p === storeZip ? 'store upload' : 'unzips to a folder';
+    console.log(
+      `  zip     ${p.replace(ROOT + '/', '').padEnd(34)} ${(st.size / 1024).toFixed(0).padStart(4)} KB  (${note})`,
+    );
+  }
 }
 
 async function main() {

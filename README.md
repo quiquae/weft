@@ -248,7 +248,7 @@ npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest
 npm run packs:verify   # sanity-check the lexicons
 npm run build:all      # chrome + firefox + safari
-npm run zip            # store-ready archives for all three
+npm run zip            # per target: a flat archive for the store, a -folder one for humans
 npm run safari         # wrap the Safari build in an Xcode project
 npm run site           # generate the 700-page content site from the lexicon
 npm run og             # render the social card

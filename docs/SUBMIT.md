@@ -76,9 +76,16 @@ These block each other, so the order matters.
 
 ```bash
 npm run test:all          # must be green
-npm run zip               # writes weft-chrome-1.0.0.zip
+npm run zip               # writes two archives per target
 npm run validate          # re-check the exact bytes being uploaded
 ```
+
+**Upload the plain `weft-chrome-1.0.0.zip`, not the `-folder` one.** The
+store requires `manifest.json` at the root of the archive and rejects one
+wrapped in a directory. The `-folder` variant exists for humans installing
+by hand: the flat archive unzips nineteen loose files into whatever
+directory it is opened in, which is a poor first thirty seconds and no
+folder to point "Load unpacked" at.
 
 1. Register at <https://chrome.google.com/webstore/devconsole> and pay the
    one-time fee.

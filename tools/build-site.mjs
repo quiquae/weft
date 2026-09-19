@@ -623,8 +623,10 @@ function installPage(version) {
     <ol class="steps">
       <li>
         <strong>Unzip the download.</strong>
-        You should end up with a folder containing a <code>manifest.json</code>. Keep it
-        somewhere you will not delete by accident — the browser reads it from that folder
+        Take the file ending <code>-folder.zip</code> — it unzips to a single folder called
+        <code>weft-chrome-${esc(version)}</code>. (The plain <code>.zip</code> is the one the
+        stores want; it has no folder inside and will empty itself into your Downloads.) Keep
+        the folder somewhere you will not delete by accident: the browser reads it from there
         every time it starts.
       </li>
       <li>
@@ -639,7 +641,8 @@ function installPage(version) {
       </li>
       <li>
         <strong>Click “Load unpacked” and choose the folder.</strong>
-        Pick the folder itself, not the <code>manifest.json</code> inside it. Weft will open
+        Pick <code>weft-chrome-${esc(version)}</code> itself, not the
+        <code>manifest.json</code> inside it. Weft will open
         its first-run page and ask you three questions.
       </li>
     </ol>
@@ -654,7 +657,7 @@ function installPage(version) {
     <h2>Firefox</h2>
     <ol class="steps">
       <li><strong>Open <code>about:debugging</code></strong> and choose <strong>This Firefox</strong>.</li>
-      <li><strong>Click “Load Temporary Add-on”</strong> and pick the Firefox zip.</li>
+      <li><strong>Click “Load Temporary Add-on”</strong> and pick <code>manifest.json</code> inside the unzipped Firefox folder.</li>
     </ol>
     <p class="steps__note">
       Firefox unloads temporary add-ons when it closes, so this is for trying Weft rather than
