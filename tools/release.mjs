@@ -96,7 +96,13 @@ run('node', ['tools/build-site.mjs']);
 
 /* ----------------------------------------------------------------- notes */
 
-const zips = ['chrome', 'firefox'].map((t) => `weft-${t}-${version}.zip`);
+// Every artefact the release attaches: three targets, and for each the flat
+// archive the stores want plus the -folder one people download. Safari was
+// missing from this list entirely, so its package went out unmentioned.
+const zips = ['chrome', 'firefox', 'safari'].flatMap((t) => [
+  `weft-${t}-${version}.zip`,
+  `weft-${t}-${version}-folder.zip`,
+]);
 const sizes = await Promise.all(
   zips.map(async (z) => {
     try {
