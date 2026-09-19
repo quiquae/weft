@@ -23,10 +23,15 @@ website until you answer the third one.
 ## Packages
 
 - weft-chrome-1.0.0.zip — 211 KB
+- weft-chrome-1.0.0-folder.zip — 212 KB
 - weft-firefox-1.0.0.zip — 211 KB
+- weft-firefox-1.0.0-folder.zip — 212 KB
+- weft-safari-1.0.0.zip — 211 KB
+- weft-safari-1.0.0-folder.zip — 212 KB
 
 ## Changes since the beginning
 
+d4b1393 The release notes listed two packages and shipped six
 e91c228 Release notes told Firefox users to pick the zip
 32cc7be The release workflow looked for notes under a filename nothing writes
 dda741e "Part of Pro" was rendering as a narrow column on every locked row
@@ -46,7 +51,6 @@ e525849 Build the site on every push; deploy it only when asked
 144cb30 Store-ready: exact-size assets, a runbook, and a gate that leaves clean bytes
 4a68345 Safari is a third target, and two permissions we never used
 06e7afb Regenerate the screenshots after the discoveries fixes
-f43048b Something to sell, somewhere to be found, and reasons to be believed
 
 ---
 
