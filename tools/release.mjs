@@ -122,12 +122,20 @@ const notes = `# Weft ${version}
 
 ## Install
 
-**Chrome, Edge, Brave** — download \`weft-chrome-${version}.zip\`, unzip it, open
-\`chrome://extensions\`, turn on Developer mode, then **Load unpacked** and pick the
-unzipped folder.
+Take the file ending **\`-folder.zip\`**. The plain \`.zip\` is the one the
+stores want: it has no folder inside and will empty itself into your Downloads.
 
-**Firefox** — download \`weft-firefox-${version}.zip\`, open \`about:debugging\`
-→ This Firefox → **Load Temporary Add-on**, and pick the zip.
+**Chrome, Edge, Brave** — download \`weft-chrome-${version}-folder.zip\`, unzip it,
+open \`chrome://extensions\`, turn on Developer mode, then **Load unpacked** and
+pick the \`weft-chrome-${version}\` folder itself, not the \`manifest.json\` inside it.
+
+**Firefox** — download \`weft-firefox-${version}-folder.zip\`, unzip it, open
+\`about:debugging\` → This Firefox → **Load Temporary Add-on**, and pick the
+\`manifest.json\` inside the folder. Firefox unloads temporary add-ons when it
+closes, so this is for trying Weft rather than living with it.
+
+**Safari** — needs the extension wrapped in a signed app, which needs Xcode.
+See \`docs/SUBMIT.md\`.
 
 Weft opens its first-run page and asks three questions. It has access to no
 website until you answer the third one.
