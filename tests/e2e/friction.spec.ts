@@ -521,3 +521,38 @@ test.describe('turning a site on from the popup', () => {
     await page.close();
   });
 });
+
+test.describe('the progress page before you have done anything', () => {
+  /*
+   * A fresh install opening Progress used to meet "You have read 0 words",
+   * four zero tiles, "Nothing learned yet" under a heading about where your
+   * vocabulary stands, and a flat chart reading "peak 0s". Each panel was
+   * correct and the page as a whole read as broken, on the first screen
+   * someone opens after installing.
+   */
+  test('shows an explanation, not a wall of zeros', async ({ context, extensionId, rpc }) => {
+    await rpc({ type: 'reset-vocabulary', confirm: 'yes' });
+
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
+
+    await expect(page.locator('.empty__lead')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('.headline')).toHaveCount(0);
+    await expect(page.locator('.tiles')).toHaveCount(0);
+
+    // The history panels describe a history there is none of.
+    await expect(page.getByText('Where your vocabulary stands')).toHaveCount(0);
+    await expect(page.getByText('Nothing learned yet')).toHaveCount(0);
+
+    /*
+     * But the transparency panel stays. "0 requests" is the most useful
+     * thing this page can tell someone who has just installed an extension
+     * and wants to know what it is doing, so it is the one panel that is
+     * worth more empty than full.
+     */
+    await expect(page.getByText('What has left this machine')).toBeVisible();
+    await expect(page.getByText(/network requests, ever/i)).toBeVisible();
+
+    await page.close();
+  });
+});

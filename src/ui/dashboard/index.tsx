@@ -92,6 +92,17 @@ function Dashboard() {
     historical: lang.historical,
     limit: 24,
   });
+  /**
+   * Has this install ever done anything?
+   *
+   * Worth its own branch, because every panel below is built for someone
+   * with a history. Shown to a new reader they render as a wall of zeros —
+   * "you have read 0 words", four zero tiles, an empty chart and a flat
+   * line — which reads as a broken page rather than as an unused one, on
+   * the first screen they open after installing.
+   */
+  const untouched = v.total === 0 && attn.todaySeconds === 0 && wordsRead(mine) === 0;
+
   const milestoneInput = { cards: mine, settings, now, streakDays: attn.streakDays };
   const earned = earnedMilestones(milestoneInput);
   const next = nextMilestone(milestoneInput);
@@ -146,11 +157,30 @@ function Dashboard() {
         </p>
       </header>
 
-      <p class="headline">
-        You have read <strong>{wordsRead(mine).toLocaleString()}</strong> words of{' '}
-        {lang.name} without setting out to.
-      </p>
+      {untouched ? (
+        <section class="empty">
+          <p class="empty__lead">
+            Nothing here yet — which is exactly right, because you have not read anything with
+            Weft on.
+          </p>
+          <p class="empty__body">
+            Open a site you have chosen and read it normally. Words appear here as you meet them,
+            and this page fills in on its own. There is nothing to set up and nothing to study.
+          </p>
+          <div class="empty__actions">
+            <button type="button" data-variant="primary" onClick={() => void api.runtime.openOptionsPage()}>
+              Choose which sites
+            </button>
+          </div>
+        </section>
+      ) : (
+        <p class="headline">
+          You have read <strong>{wordsRead(mine).toLocaleString()}</strong> words of{' '}
+          {lang.name} without setting out to.
+        </p>
+      )}
 
+      {untouched ? null : (
       <div class="tiles">
         <Tile
           value={String(v.total)}
@@ -173,6 +203,7 @@ function Dashboard() {
           detail={attn.streakDays > 1 ? `${attn.streakDays}-day run` : 'first day'}
         />
       </div>
+      )}
 
       {discoveries.length ? (
         <Section
@@ -226,6 +257,19 @@ function Dashboard() {
         </Section>
       ) : null}
 
+      {/*
+        Everything from here to the transparency panel describes a history.
+        With no history they render as empty shells — "nothing learned yet"
+        under a heading about where your vocabulary stands, a flat chart
+        with "peak 0s", an empty word list — which is a worse answer than
+        not asking the question. The empty state above says it once.
+
+        The transparency panel below is deliberately NOT hidden: "0 requests"
+        is the most useful thing this page can tell a reader who has just
+        installed the extension and wants to know what it does.
+      */}
+      {untouched ? null : (
+      <>
       <Section
         siglum="⁄⁄"
         title="Where your vocabulary stands"
@@ -344,6 +388,8 @@ function Dashboard() {
           <p class="muted">Showing the first 400 of {visible.length}.</p>
         ) : null}
       </Section>
+      </>
+      )}
 
       <Section
         siglum="§"
