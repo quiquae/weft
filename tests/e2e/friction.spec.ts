@@ -556,3 +556,37 @@ test.describe('the progress page before you have done anything', () => {
     await page.close();
   });
 });
+
+test.describe('the locked-feature rows', () => {
+  /*
+   * `.locked` is a flex container, and the message used to be loose inline
+   * content: the text, the "Part of Pro" link and the full stop each became
+   * their own flex item. The link collapsed into a narrow column reading
+   * "Part / of / Pro" with a stray period beside it — on every locked row,
+   * which for a free reader is most of the settings page.
+   *
+   * Measured rather than eyeballed, because the markup looked entirely
+   * reasonable and only the layout was wrong.
+   */
+  test('the Pro link reads as one line, not a narrow column', async ({ context, extensionId }) => {
+    const page = await context.newPage();
+    await page.setViewportSize({ width: 1000, height: 900 });
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+
+    const link = page.locator('.locked a').first();
+    await expect(link).toBeVisible({ timeout: 10_000 });
+
+    const box = await link.boundingBox();
+    expect(box, 'the Pro link has no box').not.toBeNull();
+
+    // One line of 13px text is ~16-20px tall. Three stacked lines is ~50px.
+    expect(
+      box!.height,
+      `the Pro link is ${Math.round(box!.height)}px tall, so it has wrapped into a column`,
+    ).toBeLessThan(30);
+    // And it should be wider than it is tall — "Part of Pro" on one line.
+    expect(box!.width).toBeGreaterThan(box!.height);
+
+    await page.close();
+  });
+});

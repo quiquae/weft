@@ -76,15 +76,23 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
    * chips carry their availability and the unavailable ones cannot be chosen.
    */
   const chipsFor = (languages: ReturnType<typeof modernLanguages>) =>
-    languages.map((l) => {
-      const availability = availabilityFor(index, source, l.code, providers);
-      return {
+    languages
+      // Hidden rather than disabled, matching onboarding. Eight of the
+      // fifteen registered languages have no lexicon, so listing them all
+      // greyed out made both the first-run screen and this page look
+      // mostly broken in exchange for advertising languages nobody can
+      // pick. What is missing is said once, below.
+      .filter((l) => availabilityFor(index, source, l.code, providers).kind !== 'unavailable')
+      .map((l) => ({
         id: l.code,
-        label: availability.kind === 'unavailable' ? `${l.endonym} — no lexicon` : l.endonym,
-        title: `${l.name}${l.era ? `, ${l.era}` : ''}. ${availabilityNote(availability, l.name)}`,
-        disabled: availability.kind === 'unavailable',
-      };
-    });
+        label: l.endonym,
+        title: `${l.name}${l.era ? `, ${l.era}` : ''}`,
+      }));
+
+  /** Registered but unshippable, for the one honest line about them. */
+  const notYet = [...modernLanguages(), ...historicalLanguages()].filter(
+    (l) => availabilityFor(index, source, l.code, providers).kind === 'unavailable',
+  );
 
   const activeAvailability = availabilityFor(index, source, target, providers);
 
@@ -127,6 +135,16 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
           onToggle={(id) => void c.setMany({ 'learning.activeTarget': id, 'learning.targetLangs': [id] })}
         />
       </Row>
+
+      {notYet.length ? (
+        <Row siglum={SIGLA.tongue} title="Not yet">
+          <p class="muted">
+            {notYet.map((l) => l.name).join(', ')} are in the registry but have no checked
+            lexicon, so they are not offered. Weft will not put a machine gloss on your page and
+            call it a language.
+          </p>
+        </Row>
+      ) : null}
 
       {meta.historical ? (
         <Row

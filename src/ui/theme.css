@@ -816,6 +816,12 @@ input[type='range'] {
   flex: none;
 }
 
+/* min-width:0 so a long word can wrap instead of forcing the row wider than
+   its measure — the default min-width:auto on a flex item refuses to. */
+.locked__body {
+  min-width: 0;
+}
+
 .pro__list {
   list-style: none;
   margin: 0;

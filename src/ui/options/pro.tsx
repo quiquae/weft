@@ -160,11 +160,21 @@ export function Locked({ feature }: { feature: Feature }) {
       <span class="locked__mark" aria-hidden="true">
         {SIGLA.leaf}
       </span>
-      {info.detail}{' '}
-      <a href={PRICING_URL} target="_blank" rel="noreferrer">
-        Part of Pro
-      </a>
-      .
+      {/*
+        One element for the whole message, because .locked is a flex
+        container: without this every inline piece — the text, the link, the
+        full stop — becomes its own flex item, and the link collapses into a
+        narrow column reading "Part / of / Pro" with a stray period beside
+        it. Visible on every locked row, which for a free reader is most of
+        this page.
+      */}
+      <span class="locked__body">
+        {info.detail}{' '}
+        <a href={PRICING_URL} target="_blank" rel="noreferrer">
+          Part of Pro
+        </a>
+        .
+      </span>
     </p>
   );
 }
