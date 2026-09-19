@@ -28,6 +28,8 @@ function Popup() {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState<PackIndex | null>(null);
+  const [tabUrl, setTabUrl] = useState<string>('');
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     void loadPackIndex().then(setIndex);
@@ -37,6 +39,7 @@ function Popup() {
     void (async () => {
       const [tab] = await api.tabs.query({ active: true, currentWindow: true });
       const url = tab?.url ?? '';
+      setTabUrl(url);
       const next = await send({ type: 'get-page-state', url });
       setState(next);
       setLoading(false);
@@ -71,6 +74,13 @@ function Popup() {
   const { decision, settings } = state;
   const lang = getLanguage(decision.target);
   const woven = sample?.pairs ?? [];
+  const hostLabel = (() => {
+    try {
+      return new URL(tabUrl).hostname.replace(/^www\./, '');
+    } catch {
+      return '';
+    }
+  })();
   const availability = availabilityFor(
     index,
     settings.learning.sourceLang,
@@ -95,6 +105,77 @@ function Popup() {
     }
     return null;
   })();
+
+  /**
+   * Turn this site on, from here, in one click.
+   *
+   * The popup used to answer "this site is not on your list" with a link to
+   * the settings page, where the reader had to work out that a site is added
+   * by typing a pattern into a list. That is the single most common thing
+   * anyone wants from this popup and it was the one thing the popup would
+   * not do.
+   *
+   * It has to happen here rather than in the background because
+   * `permissions.request` needs a user gesture, and a click on this button
+   * is one; the same call from the service worker is rejected.
+   *
+   * Adding a site is a *harder* change, so `request-change` applies it
+   * immediately — no cooldown. Removing one is what waits, which is the
+   * right way round and comes free from the existing lock rules.
+   */
+  async function addThisSite() {
+    let host = '';
+    let scheme = '';
+    try {
+      const u = new URL(tabUrl);
+      host = u.hostname;
+      // The page's own scheme, not a wildcard. Asking for *:// requests
+      // http and https together, which is broader than the reader is
+      // looking at and a worse thing to put in a permission prompt. Ports
+      // are deliberately absent: Chrome match patterns reject them and
+      // ignore them when matching.
+      scheme = u.protocol.replace(':', '');
+    } catch {
+      setMessage('Weft could not read this page\u2019s address.');
+      return;
+    }
+    if (!host || !scheme) return;
+
+    setAdding(true);
+    try {
+      const origins = [`${scheme}://${host}/*`];
+      // Ask only if Weft does not already hold it. Chrome shows its native
+      // dialog for permissions.request whether or not the origin is already
+      // granted, so skipping the call is the difference between one click
+      // and a prompt the reader has already answered once.
+      const held = await api.permissions.contains({ origins }).catch(() => false);
+      if (!held) {
+        const ok = await api.permissions.request({ origins });
+        if (!ok) {
+          setMessage('Access was not granted, so this site is unchanged.');
+          return;
+        }
+      }
+
+      const taxed = [...settings.sites.taxed, { pattern: host, enabled: true, escalate: true }];
+      const reply = await send({ type: 'request-change', patch: { 'sites.taxed': taxed } });
+      if (!reply?.applied) {
+        setMessage(reply?.message ?? 'Weft could not add this site.');
+        return;
+      }
+
+      // Registration is what actually puts the content script on the page,
+      // and the open tab predates it, so it needs a reload to pick it up.
+      await send({ type: 'reregister-scripts' });
+      const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+      if (tab?.id !== undefined) await api.tabs.reload(tab.id);
+      window.close();
+    } catch (err) {
+      setMessage(`The browser refused: ${(err as Error).message}`);
+    } finally {
+      setAdding(false);
+    }
+  }
 
   async function panic() {
     const reply = await send({ type: 'use-panic' });
@@ -130,14 +211,32 @@ function Popup() {
         </p>
       ) : decision.mode === 'off' ? (
         <>
-          <p class="pop__state">This site is not on your list, so nothing is woven here.</p>
-          <button
-            type="button"
-            data-variant="quiet"
-            onClick={() => void api.runtime.openOptionsPage()}
-          >
-            Add it in settings
-          </button>
+          <p class="pop__state">
+            Nothing is woven here yet.{' '}
+            {hostLabel ? (
+              <>
+                Turn <span class="pop__host">{hostLabel}</span> on and difficulty will climb the
+                longer you stay.
+              </>
+            ) : null}
+          </p>
+          <div class="pop__actions">
+            <button
+              type="button"
+              data-variant="primary"
+              disabled={adding || !hostLabel}
+              onClick={() => void addThisSite()}
+            >
+              {adding ? 'Asking the browser…' : `Weave ${hostLabel || 'this site'}`}
+            </button>
+            <button
+              type="button"
+              data-variant="quiet"
+              onClick={() => void api.runtime.openOptionsPage()}
+            >
+              All sites and settings
+            </button>
+          </div>
         </>
       ) : (
         <>

@@ -60,6 +60,10 @@ body {
 
 .pop__actions {
   margin-top: 0.9rem;
+  /* Stacked with a gap: two full-width buttons sharing an edge read as one
+     control, and the quiet one is a different decision from the primary. */
+  display: grid;
+  gap: 0.4rem;
 }
 
 .pop__actions button {

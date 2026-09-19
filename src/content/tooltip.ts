@@ -138,7 +138,7 @@ button:hover { background: #2c2c36; border-color: #4a4a58; }
 button:focus-visible { outline: 2px solid #a79bff; outline-offset: 1px; }
 button[data-primary='1'] { background: #2f2a52; border-color: #4e4585; color: #e9e6ff; }
 .spacer { flex: 1; }
-.hint { color: #6f6f7c; font-size: 0.78em; }
+.hint { color: #82828f; font-size: 0.78em; }
 .speak { font-size: 1em; line-height: 1; padding: 0.22rem 0.42rem; }
 `;
 
@@ -351,7 +351,10 @@ export class Tooltip {
       reveal.showIpa &&
       this.noteShownCount < PRONUNCIATION_NOTE_LIMIT
     ) {
-      card.append(el('div', 'hint', meta.pronunciationNote));
+      // Styled as a note, not a hint: this is how to pronounce the
+      // language, which is the substance of the tooltip for a historical
+      // target, and .hint is the smallest and quietest text in the card.
+      card.append(el('div', 'note', meta.pronunciationNote));
       this.noteShownCount++;
     }
 

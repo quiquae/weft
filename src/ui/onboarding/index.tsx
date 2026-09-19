@@ -7,7 +7,7 @@ import { SITE_PRESETS, originsForRules, rulesFromPreset } from '../../core/sites
 import { applyPatch } from '../../core/patch.ts';
 import { api } from '../../shared/browser.ts';
 import { send } from '../../shared/rpc.ts';
-import { availabilityFor, availabilityNote, loadPackIndex, type PackIndex } from '../../shared/packs.ts';
+import { availabilityFor, loadPackIndex, type PackIndex } from '../../shared/packs.ts';
 import { Notice, WeaveBand, oneWordIn } from '../components/pieces.tsx';
 import { Preview } from './preview.tsx';
 
@@ -68,6 +68,23 @@ function Onboarding() {
   const rules = chosenSites.flatMap((id) => rulesFromPreset(id).taxed.concat(rulesFromPreset(id).gentle));
   const origins = originsForRules(rules);
 
+  /**
+   * Only the languages that actually work.
+   *
+   * The first screen used to list all fifteen and disable the eight with no
+   * lexicon, each reading "endonym — no lexicon". A new reader's opening
+   * impression of the product was therefore a list that was mostly broken,
+   * which is a poor trade for advertising eight languages nobody can pick.
+   * What is missing is said once, in a sentence, underneath.
+   */
+  function ready<T extends { code: string }>(all: T[]): T[] {
+    return all.filter((l) => availabilityFor(index, 'en', l.code, false).kind !== 'unavailable');
+  }
+
+  const notYet = [...modernLanguages(), ...historicalLanguages()].filter(
+    (l) => availabilityFor(index, 'en', l.code, false).kind === 'unavailable',
+  );
+
   async function finish() {
     if (origins.length) {
       try {
@@ -118,47 +135,43 @@ function Onboarding() {
           <div class="step__group">
             <p class="step__hint">Modern languages</p>
             <div class="chips">
-              {modernLanguages().map((l) => {
-                const availability = availabilityFor(index, 'en', l.code, false);
-                const off = availability.kind === 'unavailable';
-                return (
-                  <button
-                    key={l.code}
-                    type="button"
-                    class="chip"
-                    data-on={target === l.code ? '1' : undefined}
-                    disabled={off}
-                    title={`${l.name}. ${availabilityNote(availability, l.name)}`}
-                    onClick={() => chooseLanguage(l.code)}
-                  >
-                    {off ? `${l.endonym} — no lexicon` : l.endonym}
-                  </button>
-                );
-              })}
+              {ready(modernLanguages()).map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  class="chip"
+                  data-on={target === l.code ? '1' : undefined}
+                  title={l.name}
+                  onClick={() => chooseLanguage(l.code)}
+                >
+                  {l.endonym}
+                </button>
+              ))}
             </div>
           </div>
 
           <div class="step__group">
             <p class="step__hint">Historical languages</p>
             <div class="chips">
-              {historicalLanguages().map((l) => {
-                const availability = availabilityFor(index, 'en', l.code, false);
-                const off = availability.kind === 'unavailable';
-                return (
-                  <button
-                    key={l.code}
-                    type="button"
-                    class="chip"
-                    data-on={target === l.code ? '1' : undefined}
-                    disabled={off}
-                    title={`${l.name}, ${l.era ?? ''}. ${availabilityNote(availability, l.name)}`}
-                    onClick={() => chooseLanguage(l.code)}
-                  >
-                    {off ? `${l.endonym} — no lexicon` : l.endonym}
-                  </button>
-                );
-              })}
+              {ready(historicalLanguages()).map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  class="chip"
+                  data-on={target === l.code ? '1' : undefined}
+                  title={`${l.name}, ${l.era ?? ''}`}
+                  onClick={() => chooseLanguage(l.code)}
+                >
+                  {l.endonym}
+                </button>
+              ))}
             </div>
+            {notYet.length ? (
+              <p class="step__aside">
+                {notYet.length} more ({notYet.map((l) => l.name).join(', ')}) are drafted but have
+                no checked lexicon yet, so they are not offered.
+              </p>
+            ) : null}
             <p class="step__aside">
               These work better than you would guess. In Old English the word Weft puts on the page
               is usually the literal ancestor of the one it replaced — <em>hūs</em> for house,{' '}

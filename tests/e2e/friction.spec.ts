@@ -438,3 +438,86 @@ test.describe('taking your data with you', () => {
     ).toBe(1);
   });
 });
+
+test.describe('turning a site on from the popup', () => {
+  /*
+   * The most common thing anyone wants from the popup, and for a long time
+   * the one thing it would not do: on a site that is not on the list it said
+   * "Add it in settings" and sent the reader off to work out that sites are
+   * added by typing a pattern into a list.
+   *
+   * permissions.request needs a user gesture, so this has to happen in the
+   * popup rather than the worker. In the test build localhost is already a
+   * static host permission, so the call resolves without the native dialog
+   * that Playwright cannot dismiss — the rest of the path is the shipping
+   * path.
+   */
+  test('one click adds the current site and it takes effect', async ({
+    context,
+    extensionId,
+    rpc,
+    origin,
+  }) => {
+    const host = new URL(origin).hostname;
+
+    // Start from a clean list so the assertion means something.
+    await rpc({
+      type: 'complete-onboarding',
+      patch: {
+        'sites.taxed': [],
+        'sites.gentle': [],
+        'weave.baseRatio': 0.3,
+        // Wrapped, because the assertion below looks for weft-w elements.
+        // Highlight mode styles ranges and creates no elements at all, so
+        // the first version of this test failed against a working feature.
+        'weave.renderMode': 'wrapped',
+      },
+      origins: [],
+    });
+
+    const before = await rpc<{ settings: { sites: { taxed: unknown[] } } }>({ type: 'get-settings' });
+    expect(before.settings.sites.taxed, 'the list should start empty').toHaveLength(0);
+
+    const popup = await context.newPage();
+    await popup.addInitScript(
+      ({ url }) => {
+        const query = chrome.tabs.query.bind(chrome.tabs);
+        (chrome.tabs as unknown as { query: unknown }).query = async (info: unknown) => {
+          const real = await query(info as chrome.tabs.QueryInfo);
+          return real.map((tab) => ({ ...tab, url }));
+        };
+        // The popup reloads the active tab and closes itself on success;
+        // neither is meaningful when the popup IS the active tab.
+        (chrome.tabs as unknown as { reload: unknown }).reload = async () => {};
+        window.close = () => {};
+      },
+      { url: `${origin}/showcase.html` },
+    );
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+
+    const add = popup.getByRole('button', { name: new RegExp(`weave ${host}`, 'i') });
+    await expect(add, 'the popup did not offer to weave this site').toBeVisible({ timeout: 10_000 });
+    await add.click();
+
+    await expect
+      .poll(
+        async () => {
+          const s = await rpc<{ settings: { sites: { taxed: Array<{ pattern: string }> } } }>({
+            type: 'get-settings',
+          });
+          return s.settings.sites.taxed.map((r) => r.pattern);
+        },
+        { timeout: 10_000, message: 'the site was never added' },
+      )
+      .toContain(host);
+
+    await popup.close();
+
+    // And it must actually weave, not merely appear in a list.
+    await rpc({ type: 'reregister-scripts' });
+    const page = await context.newPage();
+    await page.goto(`${origin}/showcase.html`);
+    await expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 });
+    await page.close();
+  });
+});
