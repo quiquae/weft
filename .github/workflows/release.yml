@@ -57,6 +57,23 @@ jobs:
       - name: Build the content site
         run: node tools/build-site.mjs
 
+      # The tag is v1.2.3; tools/release.mjs writes RELEASE-1.2.3.md. Without
+      # stripping the v, the release action looks for RELEASE-v1.2.3.md,
+      # fails to find it, and reports a generic error about the body file.
+      # This turns the first release of any version into a puzzle, which is
+      # exactly when nobody wants one.
+      - name: Locate the release notes
+        id: notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          path="RELEASE-${version}.md"
+          if [ ! -f "$path" ]; then
+            echo "::error::Expected release notes at $path (tag ${GITHUB_REF_NAME})."
+            echo "::error::Run: npm run release -- --version=${version}   then commit ${path}."
+            exit 1
+          fi
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+
       - name: Attach the packages to the release
         uses: softprops/action-gh-release@v2
         with:
@@ -64,6 +81,6 @@ jobs:
             weft-chrome-*.zip
             weft-firefox-*.zip
             weft-safari-*.zip
-          body_path: RELEASE-${{ github.ref_name }}.md
+          body_path: ${{ steps.notes.outputs.path }}
           fail_on_unmatched_files: true
         continue-on-error: false
