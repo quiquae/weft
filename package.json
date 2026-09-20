@@ -32,7 +32,8 @@
     "build:safari": "node build.mjs --target=safari",
     "compat": "node tools/compat-audit.mjs",
     "safari": "node tools/safari.mjs",
-    "validate": "node tools/validate-package.mjs"
+    "validate": "node tools/validate-package.mjs",
+    "verify:release": "node tools/verify-release.mjs"
   },
   "devDependencies": {
     "@mdn/browser-compat-data": "^7.3.17",

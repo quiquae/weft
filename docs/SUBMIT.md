@@ -13,6 +13,17 @@ runs typecheck, 427 unit tests, 81 jsdom tests, the compatibility audit, all
 three builds, the package validator, and 24 end-to-end tests in real
 Chromium. Nothing below should be attempted until that is green.
 
+After tagging a release, check what GitHub actually serves:
+
+```bash
+npm run verify:release        # or: npm run verify:release -- v1.0.0
+```
+
+It downloads the published `-folder.zip`, loads it in a real browser and
+checks the first-run page renders, the worker answers, and no test seam
+shipped. Everything else in the repository tests what the build produces;
+this tests what a person downloads.
+
 ---
 
 ## What this costs, and what is verified
