@@ -21,8 +21,20 @@ const OUT = join(ROOT, 'assets');
 const WOAD = [47, 75, 124];
 const WOAD_LIGHT = [122, 150, 192];
 
-/** Proportion of the warp the weft crosses. */
-const CROSSING = 0.62;
+/**
+ * How far across the warp the weft reaches.
+ *
+ * Per-count, because "0.62 of the span" means different things depending on
+ * how many threads that span holds. With four warps they sit at 0, 1/3, 2/3
+ * and 1, so 0.62 stops *just* short of the third — crossing two, leaving
+ * two, and stranding the fourth on its own with a visible gap. The mark then
+ * reads as an H with a stray stroke beside it rather than as one woven
+ * thing, which is exactly how it looked in the toolbar.
+ *
+ * Crossing all but the last thread keeps the meaning — a partly woven page,
+ * never a fully translated one — while holding together as a single shape.
+ */
+const CROSSING = { 2: 0.58, 3: 0.62, 4: 0.72 };
 
 function crc32(buf) {
   let table = crc32.table;
@@ -100,44 +112,77 @@ function fillRect(buf, width, height, x0, y0, x1, y1, colour, alpha = 1) {
   }
 }
 
+/**
+ * Geometry per size, because one set of proportions cannot serve 16px and
+ * 128px at once.
+ *
+ * The original drew four warp threads at 8.5% of the size with 85% opacity
+ * at every size. At 128 that is a clean 11px line. At 16 it is 1.36px of
+ * pale blue landing on fractional coordinates, so each thread smeared
+ * across two columns at roughly half coverage and the mark dissolved into
+ * four grey smudges and a bar — in the toolbar, which is where this icon
+ * spends its entire life and is the most-seen thing in the product.
+ *
+ * So the small sizes get fewer, thicker, fully opaque threads, snapped to
+ * whole pixels. Same mark, drawn for the space it has.
+ */
+const GEOMETRY = {
+  // Two threads at 16px, not three. Three 2px verticals with 2px gaps is a
+  // picket fence: at a glance it is texture, not a mark. Two thick ones
+  // crossed by a bar is still unmistakably thread-over-thread, and it is
+  // the only version of this shape that survives sixteen pixels.
+  16: { warps: 2, warpFrac: 0.19, weftFrac: 0.28, insetFrac: 0.16, alpha: 1, snap: true },
+  32: { warps: 3, warpFrac: 0.115, weftFrac: 0.22, insetFrac: 0.08, alpha: 1, snap: true },
+  48: { warps: 4, warpFrac: 0.095, weftFrac: 0.18, insetFrac: 0.09, alpha: 0.95, snap: true },
+  // Chrome documents the 128px icon as 96px of artwork inside 16px of
+  // transparent padding, so that it sits level with every other extension
+  // in the store grid rather than bleeding to the edge.
+  128: { warps: 4, warpFrac: 0.085, weftFrac: 0.16, insetFrac: 0.125, alpha: 0.85, snap: false },
+};
+
 function icon(size) {
+  const g = GEOMETRY[size] ?? GEOMETRY[128];
   const buf = Buffer.alloc(size * size * 4, 0);
-  const inset = size * 0.1;
+  const inset = Math.round(size * g.insetFrac);
   const span = size - inset * 2;
 
-  // Warp: vertical threads. Four at every size keeps the mark readable at 16px.
-  const warps = 4;
-  const warpWidth = Math.max(1, size * 0.085);
-  const pitch = span / (warps - 1);
-  for (let i = 0; i < warps; i++) {
+  /*
+   * Whole-pixel edges at small sizes.
+   *
+   * An antialiased 1.4px line straddling a pixel boundary is two columns at
+   * ~70% each, which reads as blur rather than as a thread. Rounding the
+   * edges — not the centre — keeps the drawn width an exact number of
+   * pixels.
+   */
+  const snap = (v) => (g.snap ? Math.round(v) : v);
+
+  const warpWidth = Math.max(g.snap ? 2 : 1, size * g.warpFrac);
+  const pitch = span / (g.warps - 1);
+  for (let i = 0; i < g.warps; i++) {
     const cx = inset + i * pitch;
-    fillRect(
-      buf,
-      size,
-      size,
-      cx - warpWidth / 2,
-      inset,
-      cx + warpWidth / 2,
-      size - inset,
-      WOAD_LIGHT,
-      0.85,
-    );
+    let x0 = snap(cx - warpWidth / 2);
+    let x1 = snap(cx + warpWidth / 2);
+    // Rounding can collapse a thin thread to nothing; never let it vanish.
+    if (x1 - x0 < 1) x1 = x0 + 1;
+    // And never let the last thread fall off the right edge.
+    if (x1 > size) {
+      x1 = size;
+      x0 = Math.min(x0, size - Math.round(warpWidth));
+    }
+    fillRect(buf, size, size, x0, inset, x1, size - inset, WOAD_LIGHT, g.alpha);
   }
 
   // Weft: one horizontal thread crossing part of the warp, drawn over it.
-  const weftHeight = Math.max(2, size * 0.16);
+  // A full crossing would mean a fully translated page, which is exactly
+  // what Weft does not do.
+  const weftHeight = Math.max(2, size * g.weftFrac);
   const cy = size / 2;
-  fillRect(
-    buf,
-    size,
-    size,
-    inset - warpWidth / 2,
-    cy - weftHeight / 2,
-    inset - warpWidth / 2 + span * CROSSING + warpWidth,
-    cy + weftHeight / 2,
-    WOAD,
-    1,
-  );
+  const y0 = snap(cy - weftHeight / 2);
+  const y1 = Math.max(y0 + 2, snap(cy + weftHeight / 2));
+  const left = snap(inset - warpWidth / 2);
+  const crossing = CROSSING[g.warps] ?? 0.72;
+  const right = snap(inset - warpWidth / 2 + span * crossing + warpWidth);
+  fillRect(buf, size, size, Math.max(0, left), y0, Math.min(size, right), y1, WOAD, 1);
 
   return png(size, size, buf);
 }
