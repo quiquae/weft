@@ -899,3 +899,41 @@ input[type='range'] {
   color: var(--ink-faint);
   line-height: 1.4;
 }
+
+/* ------------------------------------------------------------------ help */
+
+.help__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+
+/*
+ * The diagnostic report, shown in full before it can be copied.
+ *
+ * Scrollable rather than truncated: a collapsed report is how someone sends
+ * something they did not read. tabIndex on the element makes the scroll
+ * region reachable without a mouse, which a plain <pre> is not.
+ */
+.help__report {
+  margin: 0.6rem 0 0;
+  padding: 0.7rem 0.8rem;
+  max-height: 22rem;
+  overflow: auto;
+  background: var(--linen-sunken);
+  border: 1px solid var(--thread);
+  border-radius: var(--radius);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: var(--t-13);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.help__report:focus-visible {
+  outline: 2px solid var(--woad);
+  outline-offset: 2px;
+}

@@ -4,6 +4,7 @@ import { api } from '../../shared/browser.ts';
 import { useNow } from '../lib/hooks.ts';
 import { Notice } from '../components/pieces.tsx';
 import { useController } from './controller.ts';
+import { HelpSection } from './help.tsx';
 import {
   AccessibilitySection,
   DensitySection,
@@ -86,6 +87,7 @@ function Options() {
       <AccessibilitySection c={c} settings={settings} />
       <SourcesSection c={c} settings={settings} />
       <ProSection c={c} />
+      <HelpSection c={c} />
 
       <footer class="colophon">
         <p>

@@ -853,6 +853,22 @@ function speak(text: string, lang: string | null): void {
 
 let page: WeftPage | null = null;
 
+/**
+ * Why this page is not being woven, when the answer would surprise someone.
+ *
+ * boot() has six early returns and three of them are failures a reader
+ * cannot see: the worker did not answer, the page is already in the
+ * language they are learning, or the lexicon would not load. In each case
+ * they switched Weft on, the page looks entirely normal, and nothing
+ * anywhere says why — which reads as a broken extension rather than as a
+ * considered decision.
+ *
+ * Module scope on purpose: the message listener below is registered whether
+ * or not boot() got anywhere, so the popup can ask even when nothing
+ * started.
+ */
+let inactiveReason: string | null = null;
+
 async function boot(): Promise<void> {
   // Re-injection happens on extension update and on manual re-registration.
   if (window.__weftActive) return;
@@ -866,13 +882,24 @@ async function boot(): Promise<void> {
   }
 
   const state = await send({ type: 'get-page-state', url: location.href });
-  if (!state) return;
+  if (!state) {
+    inactiveReason = 'Weft could not reach its background worker. Reloading the page usually fixes it.';
+    return;
+  }
   if (state.decision.mode === 'excluded' || state.decision.mode === 'off') return;
   if (state.panicActive) return;
-  if (!documentLanguageMatches(state.settings.learning.sourceLang)) return;
+  if (!documentLanguageMatches(state.settings.learning.sourceLang)) {
+    // Not a fault: weaving French into a French page would be nonsense.
+    // But it is invisible, and "nothing happened" needs a reason.
+    inactiveReason = `This page is not in ${state.settings.learning.sourceLang.toUpperCase()}, so there is nothing to weave from.`;
+    return;
+  }
 
   const raw = await loadPack(state.settings.learning.sourceLang, state.decision.target);
-  if (!raw) return;
+  if (!raw) {
+    inactiveReason = 'The word list for this language would not load. Reinstalling Weft replaces it.';
+    return;
+  }
   const pack = applyLetterformsToPack(raw, state.settings);
 
   const framework = detectFramework();
@@ -890,6 +917,7 @@ async function boot(): Promise<void> {
     );
   }
 
+  inactiveReason = null;
   page = new WeftPage(state, pack, renderer);
   page.start();
 }
@@ -901,7 +929,11 @@ if (contextAlive()) {
       // The popup's interlinear strip shows words actually woven into the
       // page in front of the user, not a canned sample. Real content is the
       // whole point of the device.
-      sendResponse({ pairs: page?.sample(3) ?? [], ratio: page?.currentRatio() ?? 0 });
+      sendResponse({
+        pairs: page?.sample(3) ?? [],
+        ratio: page?.currentRatio() ?? 0,
+        ...(inactiveReason ? { reason: inactiveReason } : {}),
+      });
       return undefined;
     }
     if (!page) return undefined;

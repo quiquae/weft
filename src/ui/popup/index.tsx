@@ -20,6 +20,16 @@ import { GlossStrip, Notice, WeaveBand, oneWordIn } from '../components/pieces.t
 interface Sample {
   pairs: Array<{ target: string; source: string }>;
   ratio: number;
+  /**
+   * Why nothing was woven, when the answer is not obvious.
+   *
+   * The content script has several early returns — the worker did not
+   * answer, the page is already in the language being learned, the lexicon
+   * would not load — and each one left the reader looking at an ordinary
+   * page with no explanation anywhere. Silence is the least useful failure
+   * a product can have: it is indistinguishable from being broken.
+   */
+  reason?: string;
 }
 
 function Popup() {
@@ -202,6 +212,12 @@ function Popup() {
       {availability.kind === 'unavailable' ? (
         <Notice tone="warn">{availabilityNote(availability, lang.name)}</Notice>
       ) : null}
+
+      {/*
+        A recorded reason outranks the mode, because it describes something
+        that went wrong on THIS page rather than how the site is configured.
+      */}
+      {sample?.reason ? <Notice tone="warn">{sample.reason}</Notice> : null}
 
       {state.panicActive ? (
         <Notice tone="warn">A panic pass is running. This page is in plain English.</Notice>

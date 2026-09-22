@@ -590,3 +590,59 @@ test.describe('the locked-feature rows', () => {
     await page.close();
   });
 });
+
+test.describe('saying why nothing happened', () => {
+  /*
+   * boot() has several early returns and three of them were silent
+   * failures: the worker did not answer, the page is already in the
+   * language being learned, or the lexicon would not load. In each case the
+   * reader switched Weft on, the page looked entirely normal, and nothing
+   * anywhere said why — indistinguishable from a broken extension.
+   */
+  test('the popup explains a page that is already in the target language', async ({
+    context,
+    extensionId,
+    configure,
+    origin,
+  }) => {
+    await configure({ 'weave.baseRatio': 0.3, 'weave.renderMode': 'wrapped' });
+
+    // lang="fr" while learning fr from en: correctly declined, previously
+    // in silence.
+    const reader = await context.newPage();
+    await reader.goto(`${origin}/notenglish.html`);
+    await reader.waitForTimeout(2500);
+    await expect(reader.locator('weft-w')).toHaveCount(0);
+
+    const popup = await context.newPage();
+    /*
+     * The popup asks the *active tab* for a sample. Opened as a tab for a
+     * test, the active tab is the popup itself, so the earlier version of
+     * this stub rewrote the URL but kept the popup's own id and the message
+     * went nowhere — the test failed against a working feature.
+     *
+     * Finding the real reader tab by URL gives the message somewhere to
+     * land, which is what happens in an actual popup.
+     */
+    await popup.addInitScript(
+      ({ needle }) => {
+        const query = chrome.tabs.query.bind(chrome.tabs);
+        (chrome.tabs as unknown as { query: unknown }).query = async (info: unknown) => {
+          const all = await query({});
+          const match = all.find((t) => (t.url ?? '').includes(needle));
+          return match ? [match] : await query(info as chrome.tabs.QueryInfo);
+        };
+      },
+      { needle: 'notenglish.html' },
+    );
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+
+    await expect(
+      popup.getByText(/not in EN|nothing to weave from/i),
+      'the popup said nothing about why the page was left alone',
+    ).toBeVisible({ timeout: 10_000 });
+
+    await popup.close();
+    await reader.close();
+  });
+});

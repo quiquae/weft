@@ -80,3 +80,12 @@ export const PITCH =
 
 /** Where someone goes to buy. Kept here so the extension links correctly. */
 export const PRICING_URL = 'https://weft.study/pricing';
+
+/**
+ * Where someone goes when something is wrong.
+ *
+ * Every store requires one of these, and it is the field reviewers check
+ * first. Kept beside the pricing URL so both move together if the domain
+ * does; the site generator reads this file too.
+ */
+export const SUPPORT_URL = 'https://weft.study/support';
