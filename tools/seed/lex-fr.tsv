@@ -19,53 +19,53 @@ woman	noun	femme	femmes	f
 child	noun	enfant	enfants	m			
 boy	noun	garçon	garçons	m			
 girl	noun	fille	filles	f			
-person	noun	personne	personnes	f			
-friend	noun	ami	amis	m			
+person	noun	personne	personnes	f		person	
+friend	noun	ami	amis	m			shares a root with English “amiable”
 family	noun	famille	familles	f			
-mother	noun	mère	mères	f			
-father	noun	père	pères	m			
-brother	noun	frère	frères	m			
-sister	noun	sœur	sœurs	f			
-son	noun	fils	fils	m			
-daughter	noun	fille	filles	f			
+mother	noun	mère	mères	f			shares a root with English “maternal”
+father	noun	père	pères	m			shares a root with English “paternal”
+brother	noun	frère	frères	m			shares a root with English “fraternal”
+sister	noun	sœur	sœurs	f			shares a root with English “sorority”
+son	noun	fils	fils	m			shares a root with English “filial”
+daughter	noun	fille	filles	f			shares a root with English “filial”
 wife	noun	épouse	épouses	f			
 husband	noun	mari	maris	m			
 baby	noun	bébé	bébés	m			
-king	noun	roi	rois	m			
-queen	noun	reine	reines	f			
+king	noun	roi	rois	m			the root of English “royal”
+queen	noun	reine	reines	f			shares a root with English “regina”
 lord	noun	seigneur	seigneurs	m			
 neighbour	noun	voisin	voisins	m			
 stranger	noun	étranger	étrangers	m			
-enemy	noun	ennemi	ennemis	m			
-soldier	noun	soldat	soldats	m			
+enemy	noun	ennemi	ennemis	m		enemy	
+soldier	noun	soldat	soldats	m		soldier	
 teacher	noun	professeur	professeurs	m			
 doctor	noun	médecin	médecins	m			
 farmer	noun	fermier	fermiers	m			
 sailor	noun	marin	marins	m			
-head	noun	tête	têtes	f			
-hand	noun	main	mains	f			
-eye	noun	œil	yeux	m			
+head	noun	tête	têtes	f			shares a root with English “chief” and “captain”
+hand	noun	main	mains	f			the root of English “manual” and “manicure”
+eye	noun	œil	yeux	m			shares a root with English “ocular”
 ear	noun	oreille	oreilles	f			
 mouth	noun	bouche	bouches	f			
 nose	noun	nez	nez	m			
-tooth	noun	dent	dents	f			
+tooth	noun	dent	dents	f			shares a root with English “dentist”
 hair	noun	cheveu	cheveux	m			
-heart	noun	cœur	cœurs	m			
-blood	noun	sang	sangs	m			
+heart	noun	cœur	cœurs	m			shares a root with English “cordial”
+blood	noun	sang	sangs	m			shares a root with English “sanguine”
 bone	noun	os	os	m			
 arm	noun	bras	bras	m			
 leg	noun	jambe	jambes	f			
-foot	noun	pied	pieds	m			
+foot	noun	pied	pieds	m			shares a root with English “pedal” and “pedestrian”
 finger	noun	doigt	doigts	m			
-face	noun	visage	visages	m			
+face	noun	visage	visages	m		face	
 body	noun	corps	corps	m			
 skin	noun	peau	peaux	f			
-voice	noun	voix	voix	f			
-dog	noun	chien	chiens	m			
+voice	noun	voix	voix	f		voice	
+dog	noun	chien	chiens	m			the root of English “canine”
 cat	noun	chat	chats	m			
-horse	noun	cheval	chevaux	m			
-bird	noun	oiseau	oiseaux	m			
-fish	noun	poisson	poissons	m			
+horse	noun	cheval	chevaux	m			the root of English “cavalry” and “chivalry”
+bird	noun	oiseau	oiseaux	m			shares a root with English “aviary”
+fish	noun	poisson	poissons	m			shares a root with English “Pisces”
 cow	noun	vache	vaches	f			
 sheep	noun	mouton	moutons	m			
 pig	noun	cochon	cochons	m			
@@ -81,36 +81,36 @@ hound	noun	limier	limiers	m
 ox	noun	bœuf	bœufs	m			
 goat	noun	chèvre	chèvres	f			
 food	noun	nourriture	nourritures	f			
-bread	noun	pain	pains	m			
-water	noun	eau	eaux	f			
+bread	noun	pain	pains	m			shares a root with English “pantry” and “companion”
+water	noun	eau	eaux	f			shares a root with English “aquatic”
 wine	noun	vin	vins	m			
-milk	noun	lait	laits	m			
+milk	noun	lait	laits	m			shares a root with English “lactose”
 meat	noun	viande	viandes	f			
 fruit	noun	fruit	fruits	m			
 apple	noun	pomme	pommes	f			
-salt	noun	sel	sels	m			
+salt	noun	sel	sels	m			shares a root with English “saline”
 honey	noun	miel	miels	m			
 cheese	noun	fromage	fromages	m			
-egg	noun	œuf	œufs	m			
-fire	noun	feu	feux	m			
-house	noun	maison	maisons	f			
+egg	noun	œuf	œufs	m			shares a root with English “oval”
+fire	noun	feu	feux	m			shares a root with English “focus”, originally a hearth
+house	noun	maison	maisons	f			shares a root with English “mansion”
 home	noun	foyer	foyers	m			
-door	noun	porte	portes	f			
-window	noun	fenêtre	fenêtres	f			
+door	noun	porte	portes	f			the root of English “portal”
+window	noun	fenêtre	fenêtres	f			the root of English “defenestration”, throwing someone out of one
 wall	noun	mur	murs	m			
 roof	noun	toit	toits	m			
 floor	noun	sol	sols	m			
 room	noun	pièce	pièces	f			
 table	noun	table	tables	f			
-chair	noun	chaise	chaises	f			
+chair	noun	chaise	chaises	f		chair	
 bed	noun	lit	lits	m			
-book	noun	livre	livres	m			
+book	noun	livre	livres	m			shares a root with English “library”
 word	noun	mot	mots	m			
-letter	noun	lettre	lettres	f			
-name	noun	nom	noms	m			
+letter	noun	lettre	lettres	f		letter	
+name	noun	nom	noms	m			shares a root with English “nominate”
 key	noun	clé	clés	f			
-bridge	noun	pont	ponts	m			
-church	noun	église	églises	f			
+bridge	noun	pont	ponts	m			the root of English “pontoon”
+church	noun	église	églises	f			shares a root with English “ecclesiastical”
 ship	noun	navire	navires	m			
 boat	noun	bateau	bateaux	m			
 sword	noun	épée	épées	f			
@@ -119,48 +119,48 @@ ring	noun	anneau	anneaux	m
 gold	noun	or	ors	m			
 silver	noun	argent	argents	m			
 iron	noun	fer	fers	m			
-stone	noun	pierre	pierres	f			
+stone	noun	pierre	pierres	f			shares a root with English “petrify”
 glass	noun	verre	verres	m			
 cloth	noun	tissu	tissus	m			
 shoe	noun	chaussure	chaussures	f			
 coat	noun	manteau	manteaux	m			
 hat	noun	chapeau	chapeaux	m			
-sun	noun	soleil	soleils	m			
-moon	noun	lune	lunes	f			
+sun	noun	soleil	soleils	m			shares a root with English “solar”
+moon	noun	lune	lunes	f			shares a root with English “lunar”
 star	noun	étoile	étoiles	f			
 sky	noun	ciel	cieux	m			
-earth	noun	terre	terres	f			
+earth	noun	terre	terres	f			the root of English “terrain” and “territory”
 land	noun	terre	terres	f			
-sea	noun	mer	mers	f			
-river	noun	rivière	rivières	f			
+sea	noun	mer	mers	f			shares a root with English “marine”
+river	noun	rivière	rivières	f		river	
 lake	noun	lac	lacs	m			
-mountain	noun	montagne	montagnes	f			
+mountain	noun	montagne	montagnes	f		mountain	
 hill	noun	colline	collines	f			
-forest	noun	forêt	forêts	f			
-tree	noun	arbre	arbres	m			
+forest	noun	forêt	forêts	f		forest	
+tree	noun	arbre	arbres	m			shares a root with English “arbour”
 leaf	noun	feuille	feuilles	f			
-flower	noun	fleur	fleurs	f			
+flower	noun	fleur	fleurs	f		flower	
 grass	noun	herbe	herbes	f			
-field	noun	champ	champs	m			
-road	noun	route	routes	f			
+field	noun	champ	champs	m			shares a root with English “campus” and “champion”
+road	noun	route	routes	f			shares a root with English “route”
 path	noun	sentier	sentiers	m			
-city	noun	ville	villes	f			
+city	noun	ville	villes	f		city	
 town	noun	ville	villes	f			
 village	noun	village	villages	m			
 world	noun	monde	mondes	m			
-country	noun	pays	pays	m			
+country	noun	pays	pays	m		country	
 place	noun	endroit	endroits	m			
 rain	noun	pluie	pluies	f			
 snow	noun	neige	neiges	f			
 wind	noun	vent	vents	m			
 cloud	noun	nuage	nuages	m			
 ice	noun	glace	glaces	f			
-light	noun	lumière	lumières	f			
+light	noun	lumière	lumières	f			shares a root with English “lucid”
 shadow	noun	ombre	ombres	f			
-time	noun	temps	temps	m			
-day	noun	jour	jours	m			
-night	noun	nuit	nuits	f			
-year	noun	année	années	f			
+time	noun	temps	temps	m			shares a root with English “temporal”
+day	noun	jour	jours	m			the root of English “journal” and “journey”
+night	noun	nuit	nuits	f			shares a root with English “nocturnal”
+year	noun	année	années	f			shares a root with English “annual”
 month	noun	mois	mois	m			
 week	noun	semaine	semaines	f			
 hour	noun	heure	heures	f			
@@ -169,21 +169,21 @@ evening	noun	soir	soirs	m
 summer	noun	été	étés	m			
 winter	noun	hiver	hivers	m			
 autumn	noun	automne	automnes	m			
-life	noun	vie	vies	f			
-death	noun	mort	morts	f			
-love	noun	amour	amours	m			
-war	noun	guerre	guerres	f			
-peace	noun	paix	paix	f			
+life	noun	vie	vies	f			shares a root with English “vital”
+death	noun	mort	morts	f			shares a root with English “mortal”
+love	noun	amour	amours	m			shares a root with English “amorous”
+war	noun	guerre	guerres	f		war	
+peace	noun	paix	paix	f		peace	
 truth	noun	vérité	vérités	f			
 law	noun	loi	lois	f			
-work	noun	travail	travaux	m			
-money	noun	argent	argents	m			
-price	noun	prix	prix	m			
+work	noun	travail	travaux	m			shares a root with English “travail”
+money	noun	argent	argents	m		money	
+price	noun	prix	prix	m		price	
 question	noun	question	questions	f			
-answer	noun	réponse	réponses	f			
-story	noun	histoire	histoires	f			
+answer	noun	réponse	réponses	f		answer	
+story	noun	histoire	histoires	f		story	
 song	noun	chanson	chansons	f			
-music	noun	musique	musiques	f			
+music	noun	musique	musiques	f		music	
 game	noun	jeu	jeux	m			
 dream	noun	rêve	rêves	m			
 fear	noun	peur	peurs	f			
@@ -191,34 +191,34 @@ hope	noun	espoir	espoirs	m
 joy	noun	joie	joies	f			
 anger	noun	colère	colères	f			
 oath	noun	serment	serments	m			
-gift	noun	cadeau	cadeaux	m			
-good	adj	bon					
-bad	adj	mauvais					
-big	adj	grand					
-small	adj	petit					
+gift	noun	cadeau	cadeaux	m		gift	
+good	adj	bon					shares a root with English “bonus”
+bad	adj	mauvais					shares a root with English “malice”
+big	adj	grand					shares a root with English “grandeur”
+small	adj	petit					the root of English “petty”
 great	adj	grand					
 little	adj	petit					
-long	adj	long					
+long	adj	long					shares a root with English “longitude”
 short	adj	court					
 high	adj	haut					
 low	adj	bas					
-old	adj	vieux					
+old	adj	vieux					shares a root with English “veteran”
 young	adj	jeune					
-new	adj	nouveau					
+new	adj	nouveau					shares a root with English “novel”
 hot	adj	chaud					
-cold	adj	froid					
+cold	adj	froid					shares a root with English “frigid”
 warm	adj	chaud					
-heavy	adj	lourd					
-strong	adj	fort					
-weak	adj	faible					
+heavy	adj	lourd					shares a root with English “pendant”, from weighing
+strong	adj	fort					shares a root with English “fortify”
+weak	adj	faible					shares a root with English “fragile”
 hard	adj	dur					
 soft	adj	doux					
 quick	adj	rapide					
 slow	adj	lent					
-true	adj	vrai					
-false	adj	faux					
-rich	adj	riche					
-poor	adj	pauvre					
+true	adj	vrai					shares a root with English “verify”
+false	adj	faux				false	
+rich	adj	riche				rich	
+poor	adj	pauvre				poor	
 happy	adj	heureux					
 sad	adj	triste					
 tired	adj	fatigué					
@@ -228,9 +228,9 @@ clean	adj	propre
 dirty	adj	sale					
 beautiful	adj	beau					
 ugly	adj	laid					
-easy	adj	facile					
+easy	adj	facile				easy	
 difficult	adj	difficile					
-free	adj	libre					
+free	adj	libre					shares a root with English “liberty”
 wise	adj	sage					
 brave	adj	courageux					
 holy	adj	saint					
@@ -241,10 +241,10 @@ dead	adj	mort
 alive	adj	vivant					
 sick	adj	malade					
 whole	adj	entier					
-white	adj	blanc					
-black	adj	noir					
+white	adj	blanc					shares a root with English “blank”
+black	adj	noir					shares a root with English “nocturne”
 red	adj	rouge					
-green	adj	vert					
+green	adj	vert					shares a root with English “verdant”
 blue	adj	bleu					
 yellow	adj	jaune					
 grey	adj	gris					
@@ -253,61 +253,61 @@ have	verb	avoir	ayant
 say	verb	dire	disant				
 go	verb	aller	allant				
 come	verb	venir	venant				
-see	verb	voir	voyant				
-know	verb	savoir	sachant				
+see	verb	voir	voyant				shares a root with English “vision”
+know	verb	savoir	sachant				shares a root with English “savant”
 think	verb	penser	pensant				
-take	verb	prendre	prenant				
-give	verb	donner	donnant				
+take	verb	prendre	prenant				shares a root with English “prehensile”
+give	verb	donner	donnant				shares a root with English “donate”
 make	verb	faire	faisant				
-find	verb	trouver	trouvant				
+find	verb	trouver	trouvant				shares a root with English “treasure trove”
 want	verb	vouloir	voulant				
 tell	verb	dire	disant				
 ask	verb	demander	demandant				
-work	verb	travailler	travaillant				
+work	verb	travailler	travaillant				shares a root with English “travail”
 play	verb	jouer	jouant				
-run	verb	courir	courant				
-walk	verb	marcher	marchant				
-speak	verb	parler	parlant				
-read	verb	lire	lisant				
-write	verb	écrire	écrivant				
-eat	verb	manger	mangeant				
-drink	verb	boire	buvant				
-sleep	verb	dormir	dormant				
+run	verb	courir	courant				shares a root with English “current”
+walk	verb	marcher	marchant				shares a root with English “marching”
+speak	verb	parler	parlant				shares a root with English “parable”
+read	verb	lire	lisant				shares a root with English “lecture”
+write	verb	écrire	écrivant				shares a root with English “escritoire”
+eat	verb	manger	mangeant				shares a root with English “manger”, a feeding trough
+drink	verb	boire	buvant				shares a root with English “bibulous”
+sleep	verb	dormir	dormant				shares a root with English “dormitory”
 sit	verb	asseoir	asseyant				
 stand	verb	tenir debout					
-live	verb	vivre	vivant				
-die	verb	mourir	mourant				
-love	verb	aimer	aimant				
+live	verb	vivre	vivant				shares a root with English “vivid”
+die	verb	mourir	mourant				shares a root with English “mourn”
+love	verb	aimer	aimant				shares a root with English “amorous”
 hate	verb	haïr	haïssant				
 fear	verb	craindre	craignant				
-hear	verb	entendre	entendant				
+hear	verb	entendre	entendant				shares a root with English “audience”
 feel	verb	sentir	sentant				
 hold	verb	tenir	tenant				
-carry	verb	porter	portant				
+carry	verb	porter	portant			carry	
 bring	verb	apporter	apportant				
 send	verb	envoyer	envoyant				
 buy	verb	acheter	achetant				
 sell	verb	vendre	vendant				
-pay	verb	payer	payant				
+pay	verb	payer	payant			pay	
 build	verb	construire	construisant				
 break	verb	casser	cassant				
 open	verb	ouvrir	ouvrant				
-close	verb	fermer	fermant				
-begin	verb	commencer	commençant				
+close	verb	fermer	fermant			close	
+begin	verb	commencer	commençant				shares a root with English “commence”
 help	verb	aider	aidant				
 learn	verb	apprendre	apprenant				
 teach	verb	enseigner	enseignant				
 remember	verb	se souvenir					
 forget	verb	oublier	oubliant				
 win	verb	gagner	gagnant				
-lose	verb	perdre	perdant				
+lose	verb	perdre	perdant				shares a root with English “perdition”
 fight	verb	combattre	combattant				
 swim	verb	nager	nageant				
 fly	verb	voler	volant				
 ride	verb	monter	montant				
 sing	verb	chanter	chantant				
-laugh	verb	rire	riant				
-cry	verb	pleurer	pleurant				
+laugh	verb	rire	riant				shares a root with English “risible”
+cry	verb	pleurer	pleurant				shares a root with English “plaintive”
 wait	verb	attendre	attendant				
 watch	verb	regarder	regardant				
 look	verb	regarder	regardant				
@@ -319,14 +319,14 @@ leave	verb	partir	partant
 follow	verb	suivre	suivant				
 seek	verb	chercher	cherchant				
 choose	verb	choisir	choisissant				
-change	verb	changer	changeant				
+change	verb	changer	changeant			change	
 grow	verb	grandir	grandissant				
 fall	verb	tomber	tombant				
 rise	verb	monter	montant				
 turn	verb	tourner	tournant				
 move	verb	bouger	bougeant				
 throw	verb	jeter	jetant				
-catch	verb	attraper	attrapant				
+catch	verb	attraper	attrapant			catch	
 cut	verb	couper	coupant				
 wash	verb	laver	lavant				
 cook	verb	cuisiner	cuisinant				

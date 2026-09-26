@@ -80,19 +80,39 @@ function classify(entry: LexEntry): DiscoveryKind | null {
 }
 
 /**
- * Most interesting kind first.
+ * Most interesting kind first — which depends on the language.
  *
- * A feed where two lines in three read "English X comes straight from Y"
- * stops being read. A meaning that shifted is the thing worth repeating to
- * someone, so it goes at the top.
+ * The original order put descents last, on the reasoning that a feed where
+ * two lines in three read "English X comes straight from Y" stops being
+ * read. That is true of Old English, where 544 of 584 entries carry an
+ * etymon and a descent is the default rather than a find.
+ *
+ * It is exactly wrong for French. There a descent is rare — 30 entries
+ * against 88 notes — and "English river comes from rivière" is the
+ * striking line, while "shares a root with amiable" is the common one.
+ * Ranking descents last there produced a feed of two dozen identically
+ * phrased notes: the same monotony, arrived at from the opposite
+ * direction.
+ *
+ * So the order is a function of the data shape, not a constant. The rule
+ * underneath both cases is the same: whatever is rare in this language is
+ * what is worth reading.
  */
-const INTEREST: Record<DiscoveryKind, number> = {
-  'false-friend': 0,
-  literal: 1,
-  unchanged: 2,
-  note: 3,
-  descent: 4,
-};
+function interestOf(kind: DiscoveryKind, historical: boolean): number {
+  switch (kind) {
+    case 'false-friend':
+      return 0;
+    case 'literal':
+      return 1;
+    case 'unchanged':
+      return 2;
+    case 'descent':
+      // Rare and surprising in a living language; the default in a dead one.
+      return historical ? 4 : 3;
+    case 'note':
+      return historical ? 3 : 4;
+  }
+}
 
 /**
  * Phrasings for a plain descent, varied by a stable hash of the word.
@@ -107,10 +127,29 @@ const DESCENT_FRAMES = [
   (target: string, descendant: string) => `${target} survived into English as ${descendant}.`,
 ];
 
+/**
+ * The same variation, for a language that is still spoken.
+ *
+ * The historical frames do not transfer: "survived into English as" implies
+ * the source language did not, which is true of Old English and rude about
+ * French. The living-language set says borrowing rather than descent,
+ * because that is what actually happened.
+ *
+ * This branch had no frames at all until French gained etymologies — one
+ * template, repeated, which is the monotony the historical frames were
+ * written to fix, arrived at from the other direction.
+ */
+const BORROWING_FRAMES = [
+  (target: string, descendant: string) => `English ${descendant} comes from ${target}.`,
+  (target: string, descendant: string) => `${target} is where English ${descendant} comes from.`,
+  (target: string, descendant: string) => `English borrowed ${descendant} from ${target}.`,
+  (target: string, descendant: string) => `${descendant} came into English from ${target}.`,
+];
+
 function frameFor(word: string): number {
   let h = 0;
   for (let i = 0; i < word.length; i++) h = (h * 31 + word.charCodeAt(i)) >>> 0;
-  return h % DESCENT_FRAMES.length;
+  return h;
 }
 
 /**
@@ -136,8 +175,8 @@ function sentence(entry: LexEntry, kind: DiscoveryKind, historical: boolean): st
         : `${entry.tgt} is simply ${entry.etymonOf}.`;
     case 'descent': {
       const descendant = entry.etymonOf ?? '';
-      if (!historical) return `English ${descendant} came from ${entry.tgt}.`;
-      const frame = DESCENT_FRAMES[frameFor(entry.tgtLemma)];
+      const frames = historical ? DESCENT_FRAMES : BORROWING_FRAMES;
+      const frame = frames[frameFor(entry.tgtLemma) % frames.length];
       return frame ? frame(entry.tgt, descendant) : `English ${descendant} comes from ${entry.tgt}.`;
     }
     case 'note':
@@ -185,7 +224,11 @@ export function buildDiscoveries(opts: BuildDiscoveriesOptions): Discovery[] {
   }
 
   // Most interesting kind first, then most recently met within a kind.
-  out.sort((a, b) => INTEREST[a.kind] - INTEREST[b.kind] || b.metAt - a.metAt);
+  out.sort(
+    (a, b) =>
+      interestOf(a.kind, opts.historical) - interestOf(b.kind, opts.historical) ||
+      b.metAt - a.metAt,
+  );
   return out.slice(0, opts.limit ?? 40);
 }
 

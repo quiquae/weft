@@ -25,9 +25,8 @@ import { fileURLToPath } from 'node:url';
  *     change to make, not a `scale` field that nothing reads.
  *
  * Five is Chrome's maximum, so the sequence has to carry the whole pitch:
- * what it does, how you escape it, why the historical languages are the
- * reason to look twice, that progress is being kept, and that the friction
- * is deliberate.
+ * what it does, how you escape it, why the etymology makes it stick, that
+ * progress is being kept, and that the friction is deliberate.
  */
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../../docs/store');
@@ -109,22 +108,59 @@ test.describe('store assets', () => {
       }
     });
 
-    // 3. Old English, the reason this is not another translate extension.
+    /*
+     * 3. The tooltip doing the thing that makes Weft worth having: telling
+     *    you the French word is already inside an English one you know.
+     *
+     *    This scene used to be Old English, which is the more striking
+     *    etymology and the wrong shop window — it reads as a curiosity for
+     *    medievalists rather than as a way to learn French. The French
+     *    pack now carries the same kind of data, so the point can be made
+     *    in the language people actually came for.
+     */
     await configure({
-      'learning.activeTarget': 'ang',
-      'learning.targetLangs': ['ang'],
+      'learning.activeTarget': 'fr',
+      'learning.targetLangs': ['fr'],
       'weave.baseRatio': 0.3,
       'weave.renderMode': 'wrapped',
       'reveal.hoverDelayMs': 0,
+      'reveal.showEtymon': true,
     });
-    await capture('03-old-english', async (page) => {
+    await capture('03-cousins', async (page) => {
       await page.goto(`${origin}/showcase.html`);
       await expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 });
-      const word = page.locator('#prose-4 weft-w').first();
-      if (await word.count()) {
-        await word.hover();
-        await page.waitForTimeout(700);
+
+      /*
+       * Hover a word that actually carries an etymology.
+       *
+       * Taking the first woven word in a paragraph landed on "soir", which
+       * has no cousin note, so the tooltip fell back to "chosen because it
+       * sits at your level" — a screenshot of the feature this scene exists
+       * to show, not showing it. Only a minority of entries carry an
+       * etymology, so the one being demonstrated has to be chosen.
+       */
+      const withEtymology = /^(cheval|forêt|rivière|montagne|main|roi|chien|oiseau|pain|nuit|jour)$/i;
+      const words = page.locator('weft-w');
+      const count = await words.count();
+      /*
+       * Searched from the end. The first match is in the opening line, and
+       * the tooltip opens above and to the right of the word it explains —
+       * so the headline of the page being demonstrated ends up underneath
+       * it. A word further down leaves the title visible.
+       */
+      let hovered = false;
+      for (let i = count - 1; i >= 0; i--) {
+        const w = words.nth(i);
+        if (withEtymology.test(((await w.innerText()) ?? '').trim())) {
+          await w.scrollIntoViewIfNeeded();
+          await w.hover();
+          hovered = true;
+          break;
+        }
       }
+      // Never silently ship the fallback tooltip as if it were the feature.
+      expect(hovered, 'no word with an etymology was woven into this page').toBe(true);
+      await page.waitForTimeout(700);
     });
 
     // Seed a plausible vocabulary through the real import path so the
@@ -132,19 +168,25 @@ test.describe('store assets', () => {
     const day = 86_400_000;
     const now = Date.now();
     const seeded: Record<string, unknown> = {};
+    /*
+     * French words that carry an etymology, so the discoveries feed in the
+     * screenshot shows the feature rather than an empty panel. Chosen from
+     * the entries with a descent or a cousin note; the counts describe a
+     * few weeks of ordinary reading.
+     */
     const plan: Array<[string, number, number, number, number]> = [
-      ['hūs', 9, 120, 2, 61], ['stān', 8, 90, 1, 54], ['cyning', 7, 64, 3, 48],
-      ['hlāford', 6, 41, 2, 39], ['steorfan', 5, 22, 4, 31], ['drēam', 4, 14, 2, 26],
-      ['cwēn', 4, 11, 5, 22], ['sōþ', 3, 8, 1, 19], ['morgen', 3, 6, 2, 17],
-      ['ǣfen', 2, 4, 1, 14], ['wīfmann', 2, 3, 3, 12], ['hlāf', 2, 2, 1, 11],
-      ['sealt', 1, 1.4, 2, 9], ['ġeong', 1, 1.1, 1, 8], ['blæc', 1, 0.9, 2, 7],
-      ['fugol', 1, 0.6, 3, 6], ['cwic', 0, 0, 0, 4], ['weġ', 0, 0, 0, 3],
-      ['sellan', 0, 0, 0, 2],
+      ['rivière', 9, 120, 2, 61], ['montagne', 8, 90, 1, 54], ['roi', 7, 64, 3, 48],
+      ['main', 6, 41, 2, 39], ['nuit', 5, 22, 4, 31], ['jour', 4, 14, 2, 26],
+      ['cheval', 4, 11, 5, 22], ['forêt', 3, 8, 1, 19], ['matin', 3, 6, 2, 17],
+      ['chien', 2, 4, 1, 14], ['oiseau', 2, 3, 3, 12], ['pain', 2, 2, 1, 11],
+      ['sel', 1, 1.4, 2, 9], ['pierre', 1, 1.1, 1, 8], ['fenêtre', 1, 0.9, 2, 7],
+      ['livre', 1, 0.6, 3, 6], ['mère', 0, 0, 0, 4], ['père', 0, 0, 0, 3],
+      ['ami', 0, 0, 0, 2],
     ];
     for (const [lemma, reps, stability, ago, exposures] of plan) {
-      seeded[`ang:${lemma}`] = {
-        id: `ang:${lemma}`,
-        target: 'ang',
+      seeded[`fr:${lemma}`] = {
+        id: `fr:${lemma}`,
+        target: 'fr',
         lemma,
         stability,
         difficulty: 5,
@@ -161,8 +203,8 @@ test.describe('store assets', () => {
       payload: { format: 'weft-export/1', settings: {}, cards: seeded },
     });
     await configure({
-      'learning.activeTarget': 'ang',
-      'learning.targetLangs': ['ang'],
+      'learning.activeTarget': 'fr',
+      'learning.targetLangs': ['fr'],
       'weave.baseRatio': 0.28,
       'weave.ceilingRatio': 0.6,
     });

@@ -230,13 +230,46 @@ describe('buildDiscoveries', () => {
     assert.ok(new Set(first.map((d) => d.text.replace(/[a-zāēīōūǣþðæġ]+/gi, 'X'))).size > 1, 'must vary');
   });
 
-  test('says "came from" rather than "comes straight from" for a modern language', () => {
+  test('a living language is never described as having died', () => {
+    /*
+     * This asserted the literal string "came from", which was a proxy for
+     * the real rule and broke the moment the living-language branch gained
+     * varied phrasing. The rule itself is what matters: "survived into
+     * English as" and "has not changed in a thousand years" are true of Old
+     * English and absurd about French, so those framings must never reach a
+     * language that still has speakers.
+     */
     const found = buildDiscoveries({
       cards: [card({ lemma: 'hūs', target: 'ang', exposures: 3 })],
       entriesByLemma: entries,
       historical: false,
     });
-    assert.match(String(found[0]?.text), /came from/);
+    const text = String(found[0]?.text);
+    assert.match(text, /from/, `expected a borrowing sentence, got "${text}"`);
+    for (const dead of [/survived into/i, /comes straight from/i, /thousand years/i]) {
+      assert.ok(!dead.test(text), `a living language was described with "${text}"`);
+    }
+  });
+
+  test('the living-language frames vary, as the historical ones do', () => {
+    /*
+     * The historical branch had four frames and a test demanding variation;
+     * the living branch had one template and no such test, so when French
+     * gained etymologies the feed came out as two dozen identical lines.
+     * Same bug, opposite direction.
+     */
+    const many = new Map(entries);
+    const cards: ReturnType<typeof card>[] = [];
+    for (const [lemma, entry] of entries) {
+      if (!entry.etymonOf) continue;
+      many.set(lemma, entry);
+      cards.push(card({ lemma, target: 'ang', exposures: 3 }));
+    }
+    const found = buildDiscoveries({ cards, entriesByLemma: many, historical: false });
+    const descents = found.filter((d) => d.kind === 'descent');
+    if (descents.length < 2) return; // not enough data in the fixture to judge
+    const shapes = new Set(descents.map((d) => d.text.replace(/[^ ]+/g, (w) => (/^[A-Z]/.test(w) ? 'X' : w))));
+    assert.ok(shapes.size > 1, 'every borrowing sentence used the same wording');
   });
 
   test('puts the most recently met first', () => {
