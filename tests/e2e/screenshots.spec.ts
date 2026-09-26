@@ -78,20 +78,25 @@ test.describe('screenshots', () => {
     // false-friend notes that the discoveries feed is built from — seeding
     // French would leave that section empty and the screenshot would not
     // show the feature.
+    /*
+     * French, with entries that carry an etymology, so the discoveries feed
+     * in the README shows the feature. Seeding Old English here was why
+     * every progress screenshot in the project showed hūs and cyning — the
+     * data was only there for the historical languages.
+     */
     const plan: Array<[string, number, number, number, number]> = [
-      // lemma, reps, stability, daysSinceReview, exposures
-      ['hūs', 9, 120, 2, 61], ['stān', 8, 90, 1, 54], ['cyning', 7, 64, 3, 48],
-      ['hlāford', 6, 41, 2, 39], ['steorfan', 5, 22, 4, 31], ['drēam', 4, 14, 2, 26],
-      ['cwēn', 4, 11, 5, 22], ['sōþ', 3, 8, 1, 19], ['morgen', 3, 6, 2, 17],
-      ['ǣfen', 2, 4, 1, 14], ['wīfmann', 2, 3, 3, 12], ['hlāf', 2, 2, 1, 11],
-      ['sealt', 1, 1.4, 2, 9], ['ġeong', 1, 1.1, 1, 8], ['blæc', 1, 0.9, 2, 7],
-      ['fugol', 1, 0.6, 3, 6], ['cwic', 0, 0, 0, 4], ['weġ', 0, 0, 0, 3],
-      ['sellan', 0, 0, 0, 2],
+      ['rivière', 9, 120, 2, 61], ['montagne', 8, 90, 1, 54], ['roi', 7, 64, 3, 48],
+      ['main', 6, 41, 2, 39], ['nuit', 5, 22, 4, 31], ['jour', 4, 14, 2, 26],
+      ['cheval', 4, 11, 5, 22], ['forêt', 3, 8, 1, 19], ['matin', 3, 6, 2, 17],
+      ['chien', 2, 4, 1, 14], ['oiseau', 2, 3, 3, 12], ['pain', 2, 2, 1, 11],
+      ['sel', 1, 1.4, 2, 9], ['pierre', 1, 1.1, 1, 8], ['fenêtre', 1, 0.9, 2, 7],
+      ['livre', 1, 0.6, 3, 6], ['mère', 0, 0, 0, 4], ['père', 0, 0, 0, 3],
+      ['ami', 0, 0, 0, 2],
     ];
     for (const [lemma, reps, stability, ago, exposures] of plan) {
-      seeded[`ang:${lemma}`] = {
-        id: `ang:${lemma}`,
-        target: 'ang',
+      seeded[`fr:${lemma}`] = {
+        id: `fr:${lemma}`,
+        target: 'fr',
         lemma,
         stability,
         difficulty: 5,
@@ -110,8 +115,8 @@ test.describe('screenshots', () => {
     // Importing validates settings, and a bare settings object resets the
     // site list to the shipped defaults, so reconfigure afterwards.
     await configure({
-      'learning.activeTarget': 'ang',
-      'learning.targetLangs': ['ang'],
+      'learning.activeTarget': 'fr',
+      'learning.targetLangs': ['fr'],
       'weave.baseRatio': 0.28,
       'weave.ceilingRatio': 0.6,
     });

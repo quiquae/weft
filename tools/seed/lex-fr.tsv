@@ -142,7 +142,7 @@ leaf	noun	feuille	feuilles	f
 flower	noun	fleur	fleurs	f		flower	
 grass	noun	herbe	herbes	f			
 field	noun	champ	champs	m			shares a root with English “campus” and “champion”
-road	noun	route	routes	f			shares a root with English “route”
+road	noun	route	routes	f			shares a root with English “rupture”, from a way broken through
 path	noun	sentier	sentiers	m			
 city	noun	ville	villes	f		city	
 town	noun	ville	villes	f			
@@ -176,7 +176,7 @@ war	noun	guerre	guerres	f		war
 peace	noun	paix	paix	f		peace	
 truth	noun	vérité	vérités	f			
 law	noun	loi	lois	f			
-work	noun	travail	travaux	m			shares a root with English “travail”
+work	noun	travail	travaux	m			the root of English “travel”, which was once an ordeal
 money	noun	argent	argents	m		money	
 price	noun	prix	prix	m		price	
 question	noun	question	questions	f			
@@ -263,14 +263,14 @@ find	verb	trouver	trouvant				shares a root with English “treasure trove”
 want	verb	vouloir	voulant				
 tell	verb	dire	disant				
 ask	verb	demander	demandant				
-work	verb	travailler	travaillant				shares a root with English “travail”
+work	verb	travailler	travaillant				the root of English “travel”, which was once an ordeal
 play	verb	jouer	jouant				
 run	verb	courir	courant				shares a root with English “current”
 walk	verb	marcher	marchant				shares a root with English “marching”
 speak	verb	parler	parlant				shares a root with English “parable”
 read	verb	lire	lisant				shares a root with English “lecture”
 write	verb	écrire	écrivant				shares a root with English “escritoire”
-eat	verb	manger	mangeant				shares a root with English “manger”, a feeding trough
+eat	verb	manger	mangeant				the English word for a feeding trough comes from this verb
 drink	verb	boire	buvant				shares a root with English “bibulous”
 sleep	verb	dormir	dormant				shares a root with English “dormitory”
 sit	verb	asseoir	asseyant				

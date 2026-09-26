@@ -55,10 +55,17 @@ const CARD = `<!doctype html>
   <h1>The web, partly in another language.</h1>
 
   <div class="gloss">
+    <!--
+      All four French, where they used to be one French, two Old English and
+      one Latin. The card is the first thing anyone sees of this product,
+      shared into a feed with no other context, and hūs next to cyning reads
+      as a tool for medievalists rather than as a way to learn a language
+      someone is actually planning to speak.
+    -->
     <span class="pair"><span class="t">rivière</span><span class="s">river</span></span>
-    <span class="pair"><span class="t">hūs</span><span class="s">house</span></span>
-    <span class="pair"><span class="t">cyning</span><span class="s">king</span></span>
-    <span class="pair"><span class="t">vacca</span><span class="s">cow</span></span>
+    <span class="pair"><span class="t">cheval</span><span class="s">horse</span></span>
+    <span class="pair"><span class="t">matin</span><span class="s">morning</span></span>
+    <span class="pair"><span class="t">forêt</span><span class="s">forest</span></span>
   </div>
 
   <p class="foot">The longer you stay on a page, the more of it you read in the language you are learning.</p>

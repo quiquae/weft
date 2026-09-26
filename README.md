@@ -55,10 +55,33 @@ woven as infinitives and why Latin drops in as a nominative.
 
 ---
 
+## The English word you already know
+
+Weft does not just show you a foreign word. It tells you which English word
+it is related to, which is usually the thing that makes it stick.
+
+A very large part of English arrived from French, and most of the rest shares
+a Latin root with it — so the French word on your page is often already
+inside an English word you use:
+
+| French | | English | related to |
+|---|---|---|---|
+| `cheval` | → | horse | the root of *cavalry* and *chivalry* |
+| `fenêtre` | → | window | the root of *defenestration* |
+| `jour` | → | day | the root of *journal* and *journey* |
+| `main` | → | hand | the root of *manual* and *manicure* |
+| `rivière` | → | river | English took the word itself |
+
+Two different claims, kept apart deliberately. `rivière` **became** the
+English word; `cheval` never did — it shares a root with a word that means
+something else. Stating the second as though it were the first would be a
+nice story and a false one, and the discoveries feed would then repeat it as
+fact. `tools/seed/fr-cousins.tsv` holds both, labelled.
+
 ## Historical languages
 
-Weft supports Latin and Old English as first-class targets, and they are the
-best case the whole method has.
+The same device, taken as far as it goes — a narrower interest than French,
+and there for the people who have it.
 
 ![Old English, with the tooltip open](docs/screens/page-old-english.png)
 

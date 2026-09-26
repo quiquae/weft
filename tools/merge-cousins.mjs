@@ -12,8 +12,14 @@
  * when someone checks a claim. Mixing them means every etymology review has
  * to read 356 rows of vocabulary to find the nine that matter.
  *
- * Refuses to overwrite an existing value. If a row already carries an etymon
+ * Refuses to overwrite an existing value: if a row already carries an etymon
  * or a note, whoever wrote it there knew something this file does not.
+ *
+ * Which makes the tool non-idempotent in one specific and predictable case —
+ * correcting a claim. Once the merged values are committed, editing
+ * fr-cousins.tsv and re-running does nothing at all, silently, and the
+ * correction appears to have been applied. --force exists for that, and only
+ * that: it overwrites values that this file is the source of.
  */
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
@@ -23,6 +29,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LEX = join(ROOT, 'tools/seed/lex-fr.tsv');
 const COUSINS = join(ROOT, 'tools/seed/fr-cousins.tsv');
 const dry = process.argv.includes('--dry');
+const force = process.argv.includes('--force');
 
 /** lemma -> { descent?: string, cousin?: string } */
 const wanted = new Map();
@@ -59,17 +66,19 @@ for (const line of lines) {
   matched.add(lemma);
 
   if (want.descent) {
-    if (cols[6]) skippedExisting++;
+    if (cols[6] && !force) skippedExisting++;
     else {
+      const changed = cols[6] !== want.descent;
       cols[6] = want.descent;
-      etymonsAdded++;
+      if (changed) etymonsAdded++;
     }
   }
   if (want.cousin) {
-    if (cols[7]) skippedExisting++;
+    if (cols[7] && !force) skippedExisting++;
     else {
+      const changed = cols[7] !== want.cousin;
       cols[7] = want.cousin;
-      notesAdded++;
+      if (changed) notesAdded++;
     }
   }
   out.push(cols.join('\t'));

@@ -41,6 +41,15 @@ const SCRIPT_EXTRAS = {
   got: 'āēīōūþƕ-',
 };
 
+/** Compare words ignoring diacritics, so "route" matches "route". */
+function fold(word) {
+  return String(word)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z]/g, '');
+}
+
 let errors = 0;
 let warnings = 0;
 const fail = (m) => {
@@ -69,7 +78,9 @@ async function verifySeed(lang) {
   const allowed = new RegExp(`^[a-zA-Z ${extras}]+$`, 'u');
 
   for (const { line, cols } of rows) {
-    const [lemma, pos, tgt, tgt2, gender, ipa] = cols;
+    // etymon and note were never destructured, so no check had ever looked
+    // at either column — including Old English's 544 etymons.
+    const [lemma, pos, tgt, tgt2, gender, ipa, etymon, note] = cols;
     const where = `lex-${lang}.tsv:${line} ${lemma} (${pos})`;
     if (!tgt) continue;
 
@@ -102,6 +113,32 @@ async function verifySeed(lang) {
       warn(`${where}: no IPA, and ${lang} has no speech-synthesis voice`);
     }
     if (gender && !'mfnc'.includes(gender)) fail(`${where}: bad gender "${gender}"`);
+
+    /*
+     * A note that claims kinship must not name the target as its own
+     * relative.
+     *
+     * "route — shares a root with English “route”" is circular and tells
+     * nobody anything, and it reaches the discoveries feed verbatim.
+     *
+     * The first version of this check flagged any note quoting the target
+     * and failed on 21 correct ones: «"wīf" meant woman generally, and was
+     * neuter» quotes the target in order to DEFINE it, which is both
+     * natural and the most interesting thing about the word. Naming the
+     * word you are explaining is fine; claiming it is related to itself is
+     * not. Only the relationship phrasings are checked.
+     */
+    if (note && /\b(root|related|comes? from|descend|ancestor)\b/i.test(note)) {
+      for (const match of note.matchAll(/[“"]([^”"]+)[”"]/g)) {
+        const quoted = fold(match[1] ?? '');
+        if (quoted && quoted === fold(tgt)) {
+          fail(
+            `${where}: note claims kinship with "${match[1]}", which is the target ` +
+              'itself — name the English relative instead',
+          );
+        }
+      }
+    }
 
     // Multi-word targets are legitimate ("au revoir", "por favor") but they
     // read awkwardly under a single underline, so list them for review.

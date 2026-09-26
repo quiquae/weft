@@ -33,6 +33,10 @@
 # directly — it was left out rather than fudged. A charming etymology that
 # turns out to be false costs more trust than a blank field.
 #
+# A note must never quote the French word back at the reader. Three did:
+# "route — shares a root with English “route”" is circular and says
+# nothing. tools/verify-packs.mjs fails on it now.
+#
 # Format: lemma <TAB> kind(descent|cousin) <TAB> value
 # For descent, value is the English word. For cousin, it is the note text.
 
@@ -138,14 +142,14 @@ son	cousin	shares a root with English “filial”
 daughter	cousin	shares a root with English “filial”
 friend	cousin	shares a root with English “amiable”
 house	cousin	shares a root with English “mansion”
-road	cousin	shares a root with English “route”
+road	cousin	shares a root with English “rupture”, from a way broken through
 church	cousin	shares a root with English “ecclesiastical”
-work	cousin	shares a root with English “travail”
+work	cousin	the root of English “travel”, which was once an ordeal
 speak	cousin	shares a root with English “parable”
 hear	cousin	shares a root with English “audience”
 see	cousin	shares a root with English “vision”
 know	cousin	shares a root with English “savant”
-eat	cousin	shares a root with English “manger”, a feeding trough
+eat	cousin	the English word for a feeding trough comes from this verb
 drink	cousin	shares a root with English “bibulous”
 sleep	cousin	shares a root with English “dormitory”
 walk	cousin	shares a root with English “marching”

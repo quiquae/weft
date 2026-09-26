@@ -36,12 +36,17 @@ context rather than from a dictionary. Weft's addition is tying the difficulty
 to your attention, so the time you were going to lose anyway is what buys the
 vocabulary.
 
-**Seven languages, including two nobody else offers.** French, Spanish,
-German, Italian, Portuguese — and Latin and Old English, which turn out to be
-the best case the method has. In Old English the word on the page is usually
-the literal ancestor of the one it replaced: hūs for house, stān for stone,
-cyning for king, and the tooltip tells you so. In Latin it is the word your
-English borrowed from — vacca gave us "vaccine", mille passūs gave us "mile".
+**You already know more French than you think.** A very large part of
+English arrived from French, and most of the rest shares a Latin root with it,
+so the word on your page is often already inside an English word you use —
+and the tooltip says which. cheval is the root of "cavalry" and "chivalry".
+fenêtre is the root of "defenestration". jour is the root of "journal" and
+"journey". That is the difference between memorising a word and noticing you
+have known it for years.
+
+**Seven languages.** French, Spanish, German, Italian and Portuguese — plus
+Latin and Old English, which nobody else offers, for anyone who wants the
+same device taken as far as it goes.
 
 **A real memory model.** Weft schedules with FSRS-6, the algorithm Anki uses.
 Words you are about to forget come back; words you have genuinely learned are
@@ -171,7 +176,7 @@ comes out 1280x3000 and is rejected.
 |---|---|---|
 | 1 | `chrome-01-woven.png` | An ordinary article, ~30% woven into French |
 | 2 | `chrome-02-reveal.png` | The tooltip handing back the English |
-| 3 | `chrome-03-old-english.png` | Old English, with the etymon |
+| 3 | `chrome-03-cousins.png` | The tooltip naming the English relative |
 | 4 | `chrome-04-progress.png` | Progress, scrolled to the discoveries feed |
 | 5 | `chrome-05-settings.png` | The difficulty controls and the friction |
 
