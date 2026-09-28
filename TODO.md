@@ -302,9 +302,23 @@ not registered**.
 
 ## Next
 
-Nothing queued, and Now is empty too, as of 2026-09-28 — every item an agent
-could pick up has been worked. Everything remaining lives in Blocked, and all
-of it needs Creagh: B0 first, then B1.
+- [ ] **The tooltip under `iānua` never says *which* month.** It reads "Janus,
+      god of doorways, gave the month its name", and the reader hovering the
+      English word *door* has no January anywhere in front of them — the note
+      assumes a connection it does not make. Found during the orthography
+      audit of 2026-09-28 and deliberately left there, because it is a copy
+      question and that pass was about spelling. One seed line,
+      `tools/seed/lex-la.tsv` (the `door` row), then `npm run packs`; it
+      reaches three surfaces, the shipped tooltip plus `/latin/ianua` and the
+      descent hub, so it is worth getting right. Check first whether naming
+      January is even an improvement: the note's subject is the *door* sense
+      of `iānua`, and "gave January its name" may pull the reader away from
+      the word they are actually reading. If it does, the fix is to cut the
+      clause rather than complete it. **~15 minutes.**
+
+Otherwise Now is empty as of 2026-09-28 — every other item an agent could pick
+up has been worked. Everything remaining lives in Blocked, and all of it needs
+Creagh: B0 first, then B1.
 
 ## Blocked
 
