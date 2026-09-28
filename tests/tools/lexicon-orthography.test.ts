@@ -39,7 +39,7 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -158,5 +158,50 @@ describe('a Latin word is spelled the same way everywhere Weft shows it', () => 
       [],
       `${offenders.length} places in published copy disagree with the lexicon's own spelling:\n  ${[...new Set(offenders)].join('\n  ')}`,
     );
+  });
+});
+
+/**
+ * A note quotes with the same marks the site's own prose does.
+ *
+ * Latin and Old English were seeded with a straight `"`; French was seeded with
+ * curly `“ ”`; the other five packs carry no notes at all. Reading all 59
+ * straight-quoted notes shows this is not two different jobs — both packs quote
+ * target-language citation forms (`"mann"`, `"frēon"`) *and* English descendant
+ * words (`"muscle"`, `"despair"`, `"hopeless"`, `"warden"`), the same mix French
+ * writes in curly, so the split tracks which pack a note was typed into rather
+ * than what kind of word it names. `site/index.html` uses curly quotes 24 times
+ * in running prose and straight none, so curly is the site's own convention;
+ * unifying on it, rather than leaving two conventions, is what this guard now
+ * holds. The note itself is plain text — `tooltip.ts`'s `el()` sets
+ * `textContent`, not `innerHTML` — so a curly quote is a content change only,
+ * with nothing to escape and no markup to add.
+ */
+const ALL_LANGS = readdirSync(join(ROOT, 'src/lexicon/packs'))
+  .filter((f) => f.startsWith('en-') && f.endsWith('.json'))
+  .map((f) => f.slice('en-'.length, -'.json'.length));
+
+describe('a lexicon note quotes with the same marks the site itself does', () => {
+  test('no pack note contains a straight double quote', () => {
+    const offenders: string[] = [];
+
+    for (const lang of ALL_LANGS) {
+      for (const entry of pack(lang)) {
+        const { note = '', tgtLemma = '', src = '?' } = entry;
+        if (note.includes('"')) {
+          offenders.push(`en-${lang} ${src} → ${tgtLemma}: ${note}`);
+        }
+      }
+    }
+
+    assert.deepEqual(
+      offenders,
+      [],
+      `${offenders.length} notes quote with a straight " where the site's own prose uses curly “ ”:\n  ${offenders.join('\n  ')}`,
+    );
+  });
+
+  test('the guard has something to police', () => {
+    assert.ok(ALL_LANGS.length >= 7, `expected at least 7 packs, found ${ALL_LANGS.length}`);
   });
 });
