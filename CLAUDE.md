@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **23 pass**, 7 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **24 pass**, 7 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,114 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the guard could not see the gap the same session left
+
+`TODO.md`'s top item was one seed field: give `novem` → November the note
+`septem` → September had just gained. The last run had written the note out
+in full and then declined to apply it, on the grounds that writing lexicon
+*content* is a different decision from fixing a defect. The queue asked for it
+in as many words, so that reservation is lifted and the proposed sentence went
+in unchanged — `tools/seed/lex-la.tsv:373`, "November was the ninth month of
+the old Roman year". Both surfaces were checked **by rendering**, which is the
+house rule for this file and which the previous two sessions also paid for:
+`/latin/novem` and `/latin/septem` are now the same shape sentence for
+sentence, and the hub table's note column is full where it rendered empty
+directly under September's.
+
+**The transferable half is why PR #14's guard was silent on a defect PR #14's
+own session had found.** `tests/tools/lexicon-notes.test.ts` derives a rule
+from the data — a note whose descendant is a proper noun must *name* it,
+because a proper noun cannot be alluded to — and its loop opens
+`if (!note || !etymonOf || !isProperNoun(etymonOf)) continue`. `novem` had no
+note, so it was skipped, correctly and uselessly. **The general form is worth
+keeping: a guard that filters on the presence of a field can never police that
+field's absence, so absence has to be asked about separately.** Here it was
+also a defect, and the answer is one more test in the same file rather than a
+new suite — an eighth suite would have implied a new rule where this is the
+unguarded half of an existing one, exactly as #14's note-versus-badge finding
+was the unguarded half of `tooltip.ts:320`.
+
+**Narrow for a measured reason.** The obvious rule — an entry with an
+`etymonOf` should explain it — is wrong **962 times out of 1131** across the
+seven packs, and rightly: an ordinary descendant is inferable from the
+headword printed beside it, *octō* under "Ancestor of English octave"
+explaining itself. A name is not; *novem* under "Ancestor of English November"
+tells the reader nothing about why nine became a month. Capitalisation
+separates the two — the same derivation #14 used, and the same reason it beats
+the curated `UNDEFINED` list PR #13 needed — leaving **5 rows** to police, four
+distinct entries because `door`/`doors` share `iānua`'s note. Done test-first;
+the red run named exactly one offender,
+`en-la nine → novem: nothing says why it became "November"`, with no false
+positives.
+
+The rebuild behaved as the reproducibility fix promises: **1 field of 7088**
+in `en-la.json`, `index.json` untouched because a note is not a count
+(`packs:verify` still reports en-la at 584 entries / 579 surface forms), and
+`builtAt` stayed 2026-09-28, so **zero** sitemap entries were redated.
+
+**The count sweep found the public document stale again, and that is now a
+pattern rather than an incident.** Counts moved 641 → 642 in **six**
+documents, one more than the usual five, because `docs/LAUNCH.md:221` still
+said "638 tests" inside the Show HN draft — precisely the pre-#14 total
+(484 + 97 + 21 + 36). #14 added one jsdom test and two tool tests, moved five
+documents to 641, and missed that one. This file's Journal already records
+"449 tests" in the same draft on 2026-09-27 and the same draft wrong again at
+the 617 → 620 sweep. The reason it keeps being missed looks structural: it is
+the only count that sits inside a blockquote of copy rather than in a command
+table or a test-count sentence, so a reader sweeping "the documents that state
+test counts" does not see it as one. Re-sweep it by name.
+
+**B0 was re-measured and is stale in the one way that matters: `main` has
+moved.** Its text says "`main` did not move", which was true when written.
+Creagh merged **#1 into `main`** at 15:26:13 UTC and #2 into #1's branch at
+15:26:04, after the nine top-down merges at 15:18–15:19. `main` is `f6733af`;
+#3 and #5 are **closed**, #1/#2/#4 merged, and #14 was the only open PR before
+this session's. So B0's "close #1, #2 and #3 as superseded" step is already
+done and the drifted-screenshot hazard it warned about is gone — #3 cannot be
+merged first because it cannot be merged at all. **What replaced it is a
+conflict.** #1 was *squash*-merged, so `main` holds a new commit carrying #1's
+content while the stack still carries #1's original `ee277d2`; the merge base
+falls back to `3060d93` and git sees two independent creations of the same
+files. Trial-merged in memory with `git merge-tree --write-tree origin/main
+HEAD`: **four conflicts** — `.github/workflows/site.yml`, `CLAUDE.md`,
+`TODO.md`, `tools/build-site.mjs`. The two Markdown ones take the stack's side
+wholesale; the two code ones are #6's `fetch-depth: 0` and eight sessions of
+site-builder edits against #1's copies, which is the same squash artefact
+rather than a disagreement. Written into B0.
+
+**Rendering the fix found a bigger defect than the fix, which is the argument
+for the house rule.** `/latin/novem` reads "This is the Latin word your
+English borrowed from **November**." Subject "your English", verb "borrowed",
+"from November" the source — it states the descent **backwards**, that English
+took *novem* from *November*. `META.la.descent`
+(`tools/build-site.mjs:62`) ends in the preposition and `:286` appends
+`<strong>${entry.etymonOf}</strong>` after it, so the construction the wording
+was written for — "the Latin word your English *November* borrowed from",
+descendant before the preposition, "word" elided — is broken by where the
+builder puts the descendant. Its sibling four lines down,
+`META.ang.descent` = "This is the Old English word that became", takes its
+object at the end and is correct on all **325** Old English pages. The Latin
+sentence is on **312**. Queued as the only item in `Next`, with the two
+candidate shapes and a preference, because *borrowed* is the accurate verb for
+a learned borrowing and *became* is not — `vaccine` did not become anything.
+Not a lexicon edit and no pack rebuild.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **24 tools / 7 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.2 min, then build and validate again. Separately
+`packs:verify` 0 errors / 4 warnings and `site:check` 711 pages / 16 087 links
+all resolving — both run here because a shipped pack moved and the two pages
+it feeds are published copy. The `com.apple.fileprovider.ignore#P` attribute
+is still set on `dist/` and the full gate created **zero** iCloud conflict
+copies for the third session running.
+
+What needs a human: **B0**, rewritten again this session — still one merge to
+`main`, but a conflicted one, with the four files named. `Now` is empty;
+`Next` has the backwards Latin descent sentence above, which is agent-shaped
+and does not wait on B0. Nothing else moved.
 
 ### 2026-09-28 — the note leaned on a line the reader can switch off
 
