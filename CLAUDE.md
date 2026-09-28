@@ -260,8 +260,9 @@ Measured at the end, on Node 26.7, with npm's own exit status captured rather
 than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
 suites, 98 jsdom / 22 suites, **29 tools / 9 suites**, compat 56 pass / 7
 degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e passed
-and 3 skipped in 1.9 min, then build and validate again. Separately `site:check` 711 pages
-/ 16 087 links all resolving — run here because the change is *to* published
+and 3 skipped in 1.9 min, then build and validate again. Separately
+`site:check` 711 pages / 16 087 links all resolving — run here because the
+change is *to* published
 copy on 99 pages — and `packs:verify` not re-run, because no pack moved and no
 `builtAt` advanced. The `com.apple.fileprovider.ignore#P` attribute is still
 set on `dist/` and the full gate created **zero** iCloud conflict copies for the
