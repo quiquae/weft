@@ -113,7 +113,22 @@ downloads what GitHub actually serves, loads it in a real browser, and checks
 the first-run page renders, the worker answers and no test seam shipped —
 everything else in the repository tests what the build produces.
 
-**Built with** 636 tests: 484 unit, 97 in jsdom, 19 over the build tools, and
+**One Latin word, spelled two ways.** The lexicon marks vowel length, because
+the IPA is generated from the orthography and is only deterministic once it is
+marked: the headword for a thousand is `mīlle`. But the tooltip note sitting
+under it read "a mile was mille passūs" — the same word, one line apart,
+without its macron — and that bare spelling had also reached the Latin landing
+page's published meta description, `README.md` and `docs/PEDAGOGY.md`. Nothing
+generates that prose from the lexicon, so nothing could notice.
+`tests/tools/lexicon-orthography.test.ts` now checks both halves: a pack note
+may not spell its own headword without the macron, and the three documents
+that quote Latin headwords at a reader must spell them the way the pack does.
+Writing the guard before the fix found two more instances that a search for
+*mille* could not have — `spēs` in the note under *hope*, and `rēx` in the
+sentence explaining why a nominative headword drops cleanly into an English
+frame.
+
+**Built with** 638 tests: 484 unit, 97 in jsdom, 21 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

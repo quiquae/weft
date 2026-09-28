@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
-suites, **19** tool tests / 5 suites, **36** e2e passing in 3.9 min
+suites, **21** tool tests / 6 suites, **36** e2e passing in 3.9 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -19,9 +19,11 @@ honest about the shipped default as of 2026-09-28, which it had not been: see
 the `docs/LAUNCH.md` item below. **So is the live demo, as of 2026-09-28** — it
 now runs the Standard preset's own constants and a test fails if it stops
 doing so, which was the last place in the product claiming a number nobody
-gets. The code is not what is holding the release
+gets. **And the Latin it shows is spelled one way, as of 2026-09-28** — a
+guard now holds the tooltip notes and the three documents that quote
+headwords to the pack's own orthography. The code is not what is holding the release
 up. The critical path runs through two things only
-Creagh can do: **B0 — eight stacked PRs have to be merged into `main`** before
+Creagh can do: **B0 — nine stacked PRs have to be merged into `main`** before
 the version can be bumped, and then **B1 — the domain `weft.study` is not
 registered**. Everything in Now can land before either and depends on
 neither.
@@ -124,24 +126,33 @@ neither.
       asserted rather than recalled. See the note at the top of Notes for the
       measurement, the two things folded in, and what was left for later.
 
-- [ ] **Spell `mīlle` with its macron in the three places that do not.**
-      *Topmost unchecked item as of 2026-09-28,* promoted from Next. The
-      Latin pack's headword is `mīlle`, but `tools/build-site.mjs:442` — the
-      Latin page's meta description, which is *published* copy — plus
-      `docs/PEDAGOGY.md:116` and the gloss note at `tools/seed/lex-la.tsv:376`
-      all write `mille passūs`. Inconsistent with the lexicon's own
-      orthography rather than wrong, and the seed one drags a `npm run packs`
-      rebuild and a pack diff behind it, which is why it was left out of the
-      `docs/LAUNCH.md` sweep rather than folded in. Note that the pack rebuild
-      is the point of interest, not a nuisance: `en-la.json` and `index.json`
-      should be the only two files that move, and their `builtAt` should
-      advance to the day of the edit while the other six packs keep theirs —
-      if more than two files change, the reproducibility fix regressed.
-      *~15 minutes.* Low priority.
+- [x] **Spell `mīlle` with its macron in the places that do not.** Done
+      2026-09-28, and it was **six** places rather than three, of which
+      **two were a different word**. Written as a guard first, which is the
+      only reason the extra three were found: a search for *mille* cannot find
+      `spēs` or `rēx`. `tests/tools/lexicon-orthography.test.ts` (2 tests)
+      checks the two halves separately — a pack note may not spell **its own**
+      entry's headword without the macron, and the three documents that quote
+      Latin headwords at a reader (`README.md`, `docs/PEDAGOGY.md`,
+      `tools/build-site.mjs`) must spell them the way the pack does. Fixed:
+      `mille` → `mīlle` in the seed note, in `README.md:92` (which the item
+      did not list), in `docs/PEDAGOGY.md:116` and in the published meta
+      description at `tools/build-site.mjs:442`; `spes` → `spēs` in the
+      tooltip note under *hope*; `rex`/`regis` → `rēx`/`rēgis` in
+      `docs/PEDAGOGY.md:100`, plus the same two examples in the `lex-la.tsv`
+      header comment. **The reproducibility fix held, and did better than this
+      item predicted:** exactly *one* file moved, `en-la.json`, whose `builtAt`
+      advanced 2026-09-26 → 09-28 while the other six kept theirs. A
+      field-level diff puts the whole change at **4 fields out of 7087** — the
+      stamp and the three notes. `index.json` did *not* move, and should not
+      have: it records only `entryCount`, `lemmaCount` and `bands` per pack,
+      none of which a prose edit touches, so its own stamp correctly stayed at
+      2026-09-26. The previous session's `lion` experiment moved it because
+      that edit changed a count. `packs:verify` still 0 errors / 4 warnings,
+      packs still 653 KB. Counts moved 636 → 638 in five documents.
 
-## Next
-
-- [ ] **Check `npm run og` for byte-stability.** The rest of this item is
+- [ ] **Check `npm run og` for byte-stability.** *Topmost unchecked item as of
+      2026-09-28,* promoted from Next. The rest of this item is
       done. `grep -n 'new Date()' tools/*.mjs build.mjs` found exactly three
       sites on 2026-09-28 — the pack builder (fixed), the sitemap (fixed), and
       `tools/make-licence.mjs`, where `issued` and `expires` are genuinely
@@ -153,6 +164,8 @@ neither.
       gitignored `dist/`, so a wobble there dirties the tree the way the packs
       used to. Same check: run it twice, diff. Low priority; nothing is known
       to be wrong.
+
+## Next
 
 - [ ] **Decide whether the popup's density label wants the same qualifier the
       demo just gained.** Found 2026-09-28 while fixing the demo, and recorded
@@ -173,20 +186,24 @@ neither.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the eight stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 → #7 → #8 are
-stacked in that order, all eight are drafts, so `main` is eleven commits
+**B0 — Merge the nine stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → … → #9 are
+stacked in that order, all nine are drafts, so `main` is twelve commits
 behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
 documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
 the launch and store copy and carries one comment change in
 `src/core/escalation.ts`. #8 is the landing-page demo: three constants in
 `site/index.html`, the readout's wording, and a new test suite
-(`tests/tools/demo-curve.test.ts`). Nothing in the extension moves in either.
+(`tests/tools/demo-curve.test.ts`). #9 is Latin orthography: three tooltip
+notes in the lexicon, four prose citations, and a second new test suite
+(`tests/tools/lexicon-orthography.test.ts`). It is the only one of the nine
+that rebuilds a shipped pack — `en-la.json`, four fields. Nothing in the
+extension's *code* moves in any of them.
 Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
 
-1. Merge #1, #2, #3, #4, #5, #6, #7, #8 bottom-up — each targets the branch
+1. Merge #1 … #9 bottom-up — each targets the branch
    below it, so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
@@ -300,6 +317,73 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the guard found three defects; the item named one.** The item
+was "spell `mīlle` with its macron in the three places that do not". Writing
+the check first turned three into six places and one word into three, and the
+extra ones are the reason to write the check first rather than grep:
+
+- **`spēs`, in shipped tooltip copy.** The note under *hope* read `"despair"
+  is to be out of spes`. Identical defect to `mīlle`, in the same pack, and
+  invisible to any search for *mille*.
+- **`rēx` and `rēgis`, in `docs/PEDAGOGY.md:100`** — the sentence arguing
+  that a nominative headword drops cleanly into an English frame, which is
+  the paragraph explaining *why the Latin pack is spelled the way it is*.
+- **`README.md:92`**, a fourth site of `mille` the item did not list.
+
+**Two clauses are what keep the guard from being noise, and both were
+measured rather than guessed.** The obvious rule — no note may spell any
+macron-bearing headword bare — fires **14 times on Old English**, because
+headwords collide with ordinary English words the notes legitimately use
+(`an`, `is`, `dead`, `ham`). So: check only the entry's **own** `tgtLemma`,
+and allow the bare form when the note also shows the macron form. The second
+clause is not a loophole, it is the `mālum` apple / `malum` evil note, whose
+whole subject is that the two differ only in vowel length — saying that
+requires writing both.
+
+**Why the prose half stops at three files.** `README.md`,
+`docs/PEDAGOGY.md` and `tools/build-site.mjs` quote Latin headwords at a
+reader. Sweeping every document instead was tried and rejected on
+measurement: `docs/LAUNCH.md` says a Show HN post "dies" and
+`docs/PRIVACY.md` says "your OS", which collide with `diēs` and `ōs` and
+have nothing to do with the lexicon. Latin and English share too many
+homographs for a general prose scan, and a gate that fires for two different
+reasons gets ignored — the same reasoning that rejected the sitemap-date
+gate. The seed TSV is excluded for a third reason: scanned as text it hits
+its own singular/plural pairs (`manus`/`manūs`, `domus`/`domūs`), which are
+not defects. Its two header-comment examples were fixed by hand.
+
+**`index.json` not moving is correct, and the item expected otherwise.** It
+records `entryCount`, `lemmaCount` and `bands` per pack and nothing else, so
+a prose-only edit leaves it byte-identical and `writeStamped()` rightly keeps
+its 2026-09-26 date. Only `en-la.json` moved, 2026-09-26 → 09-28, **4 fields
+out of 7087**. The previous session's `lion` experiment moved `index.json`
+because changing a mapping changes a count; a note does not. So "two files or
+the fix regressed" should be read as "at most two".
+
+**The URL slugs stay ASCII, and must.** `npm run site` still writes
+`/latin/mille`, and a grep of `dist/site` for a bare *mille* finds four
+pages. All four are the slug — `href="/latin/mille"`, the canonical URL, the
+JSON-LD `url` — and in every one the *visible* link text is `mīlle`. Do not
+"fix" these: the slug is the page's address, 16 087 internal links resolve
+against it, and changing it after **B3** would strand indexed URLs.
+
+**One consequence to know about, not a bug.** `<lastmod>` is pack-granular:
+word pages take the `builtAt` of the pack behind them, so a three-note edit
+to `en-la.json` redated **703 of 711** pages to 2026-09-28. This is the rule
+PR #6 chose working as designed — a page whose pack genuinely changed today
+may say so — and it is not the bug PR #6 fixed, which was every page claiming
+today's date whether or not anything had changed. But it is coarse, and this
+is the first edit to exercise it. If it ever matters, the finer date would be
+per-entry and the pack does not carry one. Nothing to do before B3.
+
+**The iCloud trap has a third location: `test-results/`.** `npm run test:all`
+exited 1 with `Unknown system error -11 ... scandir
+'test-results/.playwright-artifacts-0'` before a single e2e test ran; `ls`
+on that directory returns `fts_read: Resource deadlock avoided`. Same fix as
+`dist/`, same absence of a filename in the error when it is `dist/`.
+`test-results/` is gitignored and Playwright regenerates it, so
+`rm -rf test-results` is free. Worth adding to the pre-`test:all` clean.
 
 **2026-09-28 — the demo was turned down to the default, because the argument
 for keeping it up was a misdiagnosis.** The item called this a product

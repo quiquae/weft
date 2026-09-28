@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **19 pass**, 5 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **21 pass**, 6 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,82 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the item named one misspelling; writing the check found three
+
+`TODO.md`'s top item was "spell `mīlle` with its macron in the three places
+that do not" — a fifteen-minute copy fix, and the cheapest item on the list.
+It was six places, and **two of them were a different word**, which is the
+whole argument for writing the guard before the fix: a grep for *mille* cannot
+find `spēs`.
+
+What the guard found beyond the item: **`spēs` in shipped tooltip copy** — the
+note under *hope* read `"despair" is to be out of spes`, the identical defect
+in the identical place; **`rēx` and `rēgis` at `docs/PEDAGOGY.md:100`**, in the
+sentence arguing that a nominative headword drops cleanly into an English
+frame, which is the paragraph explaining why the pack is spelled the way it is;
+and **`README.md:92`**, a fourth site of *mille* the item had not listed. Eight
+edits in five files, each verified to match exactly once before it was applied.
+
+**The two clauses that keep `tests/tools/lexicon-orthography.test.ts` from
+being noise were measured, not guessed.** The obvious rule — no note may spell
+any macron-bearing headword bare — **fires 14 times on Old English**, because
+headwords collide with ordinary English words the notes legitimately use
+(`an`, `is`, `dead`, `ham`). So the rule checks only the entry's **own**
+`tgtLemma` (not `tgt`: the inflected form is often the macron-bearing one,
+`manus` → `manūs`, and the singular in the note is then right), and allows the
+bare form when the note also shows the macron form. That second clause is not
+a loophole — it is the `mālum` apple / `malum` evil note, whose entire subject
+is that the two differ only in vowel length. Saying that requires writing both.
+
+The prose half stops at the three documents that quote headwords at a reader
+for the same reason, also measured: sweeping every document was tried and
+rejected because `docs/LAUNCH.md` says a Show HN post "dies" and
+`docs/PRIVACY.md` says "your OS", which collide with `diēs` and `ōs`. Latin
+and English share too many homographs, and a gate that fires for two different
+reasons gets ignored — the reasoning this file already records against the
+sitemap-date gate. The seed TSV is out for a third reason: scanned as text it
+hits its own singular/plural pairs (`manus`/`manūs`, `domus`/`domūs`).
+
+**The reproducibility fix held, and beat the item's own prediction.** The item
+warned that more than two files moving meant a regression. **One** moved:
+`en-la.json`, `builtAt` 2026-09-26 → 09-28, and a field-level diff puts the
+whole change at **4 fields out of 7087** — the stamp and the three notes.
+`index.json` did not move and should not have: it records `entryCount`,
+`lemmaCount` and `bands` per pack, none of which a prose edit touches, so
+`writeStamped()` rightly kept its 2026-09-26 date. The previous session's
+`lion` experiment moved it because changing a mapping changes a count.
+
+Two things worth knowing before touching this again. `npm run site` still
+writes the slug `/latin/mille`, and a grep of `dist/site` finds four pages
+with a bare *mille* in them — **all four are the URL**, and the visible link
+text is `mīlle` in every one. Leave them: 16 087 internal links resolve
+against that address. And `<lastmod>` is pack-granular, so three edited notes
+redated **703 of 711** pages to 09-28. That is PR #6's rule working as
+designed rather than its bug returning — a page may say it changed today when
+its pack really did — but it is coarse, and this is the first edit to exercise
+it.
+
+One environment note: **the iCloud trap has a third location.** `test:all`
+exited 1 before a single e2e test ran, with `Unknown system error -11 ...
+scandir 'test-results/.playwright-artifacts-0'`; `ls` on that directory says
+`fts_read: Resource deadlock avoided`. `test-results/` is gitignored and
+Playwright regenerates it, so `rm -rf test-results` alongside the `dist/`
+clean is free. Worth doing before every `test:all` on this machine.
+
+Measured at the end, on Node 26.7: `npm run test:all` **exit 0** — typecheck
+clean, 484 unit / 122 suites, 97 jsdom / 22 suites, **21 tools / 6 suites**,
+compat 56 pass / 7 degrade / 0 fail, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.0 min, then build and validate again. Separately
+`packs:verify` 0 errors and the same 4 IPA warnings, and `site:check` 711
+pages / 16 087 links all resolving — run here because the change is to a
+published meta description and to a shipped pack. Packs still 653 KB; counts
+moved 636 → 638 in five documents.
+
+What needs a human: **B0** is now *nine* stacked PRs, this being #9, and it is
+the only one of the nine that rebuilds a shipped lexicon pack. `TODO.md`'s Now
+section has one item left, `npm run og` byte-stability, promoted from Next.
+Nothing else moved.
 
 ### 2026-09-28 — the demo was not a product decision, it was a misdiagnosis
 

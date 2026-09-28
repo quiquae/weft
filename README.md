@@ -89,7 +89,7 @@ In Old English the word Weft puts on the page is usually the **literal
 ancestor** of the word it replaced — `hūs` for house, `stān` for stone,
 `cyning` for king — and the tooltip tells you so. You are not memorising a
 foreign word; you are being shown where your own word came from. In Latin it
-is the word your English borrowed from: `vacca` gave us *vaccine*, `mille
+is the word your English borrowed from: `vacca` gave us *vaccine*, `mīlle
 passūs` gave us *mile*, `paene insula` gave us *peninsula*.
 
 The false friends are marked, because they are the most memorable thing in the

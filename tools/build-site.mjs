@@ -439,7 +439,7 @@ function descentHub(lang, entries) {
   const description =
     lang === 'ang'
       ? `${withEtymon.length} Old English words and the modern English words they became, from hūs to house and cyning to king — with pronunciation and the false friends.`
-      : `${withEtymon.length} Latin words and the English words they gave us, from vacca to vaccine and mille passūs to mile — with classical pronunciation.`;
+      : `${withEtymon.length} Latin words and the English words they gave us, from vacca to vaccine and mīlle passūs to mile — with classical pronunciation.`;
 
   const intro =
     lang === 'ang'
