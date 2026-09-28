@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **29 pass**, 9 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **31 pass**, 10 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,103 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the queued task was already done; the item after it was not
+
+The queue handed this session the lowercase-note fix by name — "247 of 318
+notes begin lowercase" — but `TODO.md` showed it already `[x]`, closed by
+PR #19 the same day, and `70c2db9` was already this branch's tip before a
+single tool call ran. Nothing to redo. `TODO.md`'s own convention is to work
+the topmost unchecked item, and there was exactly one: the quote-mark item
+this file's `Next` section had already measured and left as an open
+judgement call, with no stated preference.
+
+**Reading the full 59 rather than the handful this file had already quoted
+is what decided it.** The recorded argument for leaving Latin/Old English's
+straight quotes and French's curly ones as two conventions was that the
+packs quote different kinds of thing — target-language citation forms versus
+English words. It is a reasonable argument and every example this file had
+quoted for it (`"mann"`, `"mālum"`, `"ne ǣfre"`) was consistent with it. It
+is also wrong: a third of the 59 straight-quoted notes cite **English**
+words, not target-language forms — `"muscle"` (mūs), `"despair"` (spēs),
+`"hopeless"` (lēas), `"warden"` (weardian), `"hale"` (hāl), `"bank teller"`
+(tellan) — the identical job French does in curly. The split tracks which
+pack a note was typed into, not what kind of word it names. **The general
+form, worth keeping alongside this file's other "measure before choosing"
+entries: when a queued item states an argument *for* its own recorded
+preference, check whether that argument was verified against the whole set
+it describes, or only the examples that happened to be quoted alongside it.**
+A handful of confirming examples reads as evidence; here it was a sample of
+convenience.
+
+Unified on curly — the only option `TODO.md` had costed out (~30 minutes)
+and the convention the site's own prose already uses everywhere else (24
+curly quotes, zero straight, in `site/index.html`). The third option it
+named, `<em>` for cited forms, was ruled out on inspection rather than
+cost: `src/content/tooltip.ts`'s `el()` sets `textContent`, never
+`innerHTML`, so the tooltip note is plain text with nothing to render
+markup into — that option would need new rendering support on a surface
+nowhere budgeted for it.
+
+Converted all 59 notes in `tools/seed/lex-la.tsv` (12) and `lex-ang.tsv`
+(47), pairing each straight quote with curly open/close in sequence after
+confirming every note carries a balanced, even quote count. A scratch script
+did the mechanical pairing; the diff was read line by line afterward to
+confirm only the note column moved (the `"wend one’s way"` note, which
+already mixed a curly apostrophe with straight double quotes, came through
+with the apostrophe untouched). Guarded in
+`tests/tools/lexicon-orthography.test.ts`, the suite this file named as
+already policing pack spelling conventions: no note in any of the seven
+packs may contain a straight double quote, derived from `src/lexicon/packs/`
+directly rather than a hand-maintained language list, so an eighth pack
+needs no edit here. Done test-first; the red run named all 59 distinct
+notes as more instances (a note shared by `door`/`doors` counts once per
+surface form) before any seed file was touched.
+
+Rebuilt both packs. `en-ang.json`'s `builtAt` advanced 09-26 → 09-28, its
+first edit today; `en-la.json`'s stayed 09-28, already stamped today by
+earlier sessions' edits to the same seed file. `index.json` untouched, since
+no count moved. Verified by rendering, the house rule this file keeps
+proving right: `/old-english/mann`'s descent sentence and the
+`old-english-words-that-became-english` hub's note column both now read
+`“mann” meant a human being of either sex` with curly marks, on both
+surfaces at once.
+
+**Environment finding, worth recording alongside the iCloud entries this
+file already keeps.** Partway through, `git rev-parse HEAD` returned `main`'s
+commit rather than this branch's tip, with no command from this session
+responsible. `git reflog --date=iso` on the primary working directory named
+it precisely: a `checkout: moving from lexicon/proper-noun-notes to main`
+and a `merge origin/main: Fast-forward`, both timestamped about four minutes
+into the session — most likely Creagh, working in the same checkout this
+file's own instructions run in, picking up B0 live. `ListAgents` showed no
+other `weft`-named session to account for it. **The response, worth reusing:
+stop, and move the actual work into an isolated `git worktree`
+(`.worktrees/`, now gitignored) branched from `origin/lexicon/proper-noun-notes`
+rather than the primary directory's checkout, and land by pushing a new
+branch and opening a PR against the stack head rather than committing in
+place.** Nothing in this session touched `main` or the primary directory's
+working tree at any point after that discovery. The fix (PR #20) landed the
+same way PRs #15–19 did: opened against `lexicon/proper-noun-notes`, CI
+green in 2m58s, squash-merged, branch deleted. `main` and B0 are untouched.
+
+Measured at the end, inside the isolated worktree, on Node 26.7, with npm's
+own exit status captured rather than a pipe's: `npm run test:all` **exit
+0** — typecheck clean, 484 unit / 122 suites, 98 jsdom / 22 suites, **31
+tools / 10 suites** (one new `describe`, two new tests), compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 3.1 min, then build and validate again. Separately
+`packs:verify` 0 errors / 4 warnings, unchanged, and `site:check` 711 pages
+/ 16 087 links all resolving — run here because two shipped packs moved and
+the pages they feed are published copy. `<lastmod>` moved to today on 705 of
+713 sitemap entries, because `en-ang.json` had not been touched today before
+this edit and most Old English word pages take their pack's `builtAt` — the
+same pack-granular coarseness this file already records, not a new defect.
+
+What needs a human: **B0**, unchanged — one conflicted merge into `main`,
+four files named there, and — per the finding above — quite possibly already
+in progress on Creagh's own machine as this session ran. `Now` and `Next`
+are both empty. Nothing here is agent-actionable until B0 or B1 move.
 
 ### 2026-09-28 — the exception list the item asked for was a fifth of the corpus
 
