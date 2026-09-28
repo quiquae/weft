@@ -381,13 +381,15 @@ squash-merge cascaded the accumulated work one step further down the stack,
 and GitHub deleted every head branch as it landed. **`main` did not move.**
 Two things follow, both verified rather than assumed:
 
-- **All of #1 – #14's work now sits on one branch,
-  `tools/reproducible-lexicon-packs`.** It was #5's head; #5 was *closed*
-  rather than merged, which is what broke the chain — its base
+- **All of #1 – #13's work now sits on one branch,
+  `tools/reproducible-lexicon-packs`** (`0e41950`). It was #5's head; #5 was
+  *closed* rather than merged, which is what broke the chain — its base
   (`store/regenerate-listing-screenshots`) was deleted without ever receiving
-  #5 – #13. So that branch is the stack, sixteen-plus commits above `main`,
-  and its ancestry still runs through #1's and #2's heads (checked with
-  `git merge-base --is-ancestor`).
+  #5 – #13. So that branch is the stack, eighteen commits above `main`, and
+  its ancestry still runs through #1's and #2's heads (checked with
+  `git merge-base --is-ancestor`). **#14 is stacked on it in turn**, on
+  `lexicon/proper-noun-notes`, checks green — so it is two merges, or one if
+  #14 is landed into its base first.
 - **PRs #1, #2 and #3 are still open** (#1 and #2 draft, #3 not). #1 and #2
   are strict ancestors of the branch above, so merging them is optional.
   **#3's head has moved to `51503a7`**, the squash of #4, which is *not* an
@@ -401,9 +403,11 @@ Two things follow, both verified rather than assumed:
 So the merge is now **one** PR, not thirteen. Merging is still a human step
 here, as is committing to `main`. In order:
 
-1. Open and merge one PR: `tools/reproducible-lexicon-packs` → `main`. That
-   lands #1 – #14 in a single commit. Then close #1, #2 and #3 as superseded
-   — do **not** merge #3 first, or you reintroduce the drifted screenshot.
+1. Merge **#14** (`lexicon/proper-noun-notes` → `tools/reproducible-lexicon-packs`,
+   checks green), then open and merge one PR from
+   `tools/reproducible-lexicon-packs` → `main`. That lands #1 – #14. Then
+   close #1, #2 and #3 as superseded — do **not** merge #3 first, or you
+   reintroduce the drifted screenshot #12 removed.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
