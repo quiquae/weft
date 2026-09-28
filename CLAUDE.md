@@ -248,9 +248,10 @@ warnings, `site:check` 711 pages and 16 087 links all resolving. The tracked
 tree was clean of `src/lexicon/packs/` after all of it, which is the fix
 demonstrating itself.
 
-What needs a human: **B0** in `TODO.md` is new — four stacked documentation PRs
-(#1 → #2 → #3 → #4) have to be merged before `VERSION` can move, since a
-version bump on a branch that may never merge is worse than no bump. Then B1,
+What needs a human: **B0** in `TODO.md` is new — five stacked PRs
+(#1 → #2 → #3 → #4 → #5, this one being #5) have to be merged before `VERSION`
+can move, since a version bump on a branch that may never merge is worse than
+no bump. Then B1,
 the unregistered domain, as before.
 
 ### 2026-09-28 — the listing screenshots were already right

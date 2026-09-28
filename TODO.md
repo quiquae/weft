@@ -15,9 +15,9 @@ regenerated on 2026-09-28 and came back **byte-identical**, so the listing art
 already shows the lexicon that ships, and `npm run packs` is now idempotent, so
 running the whole gate leaves the tracked tree clean. The code is not what is
 holding the release up. The critical path runs through two things only Creagh
-can do: **B0 — four stacked documentation PRs have to be merged into `main`**
-before the version can be bumped, and then **B1 — the domain `weft.study` is
-not registered**. Everything in Now can land before either and depends on
+can do: **B0 — five stacked PRs have to be merged into `main`** before the
+version can be bumped, and then **B1 — the domain `weft.study` is not
+registered**. Everything in Now can land before either and depends on
 neither.
 
 ## Now
@@ -117,14 +117,14 @@ neither.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the four stacked documentation PRs, then cut 1.0.1.** *Blocks the
-version bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 are stacked in
-that order, all four are drafts, so `main` is six commits behind and `VERSION`
-in `manifest.config.mjs` is still 1.0.0. Two steps here belong to a human
-rather than an agent, by the rules agents run under here: merging, and
-committing to `main`. In order:
+**B0 — Merge the five stacked PRs, then cut 1.0.1.** *Blocks the version bump,
+and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 are stacked in that order,
+all five are drafts, so `main` is seven commits behind and `VERSION` in
+`manifest.config.mjs` is still 1.0.0. Four are documentation; #5 is the pack
+builder. Two steps here belong to a human rather than an agent, by the rules
+agents run under here: merging, and committing to `main`. In order:
 
-1. Merge #1, #2, #3, #4 bottom-up — each targets the branch below it, so
+1. Merge #1, #2, #3, #4, #5 bottom-up — each targets the branch below it, so
    GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
