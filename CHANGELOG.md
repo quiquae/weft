@@ -60,6 +60,52 @@ command last ran. That makes the generator reproducible, which in turn lets CI
 rebuild the packs and diff them: a `tools/seed/*.tsv` edit that was never
 rebuilt used to ship the old words with every check green.
 
+**The sitemap dated all 711 pages by the clock.** `<lastmod>` was `new Date()`
+for every URL, so each deploy announced that all ~700 word pages had changed
+that morning — and the site workflow rebuilds on every push. Search engines
+use the field only while it is verifiably accurate and otherwise ignore it, so
+the effect was to throw away the signal the 711-page lexicon exists to earn.
+Each page is now dated by the content behind it: the word pages by the
+`builtAt` of the lexicon pack they are generated from, the five hand-written
+pages by the commit date of the document holding their prose. Where no date
+can be established the element is left out rather than filled in, because
+`<lastmod>` is optional and an absent date is honest where today's is not.
+
+**The listing said half and the extension does a third.** "Forty minutes on
+an infinite feed and you are reading half in French" was the product's
+headline promise, in the README, the store listing, the launch drafts and the
+doc comment the other three were copied from. It is not what ships: the
+default is the Standard preset, whose ceiling is 0.35, so forty minutes of
+attention gives 33.2% and half is unreachable at any attention at all. Half is
+the **Committed** preset, which is opt-in. Every copy now says a third.
+
+**And the live demo said sixty.** Its curve was base 0.06, ceiling 0.62, gain
+0.045 — not any shipped preset — so a visitor dragged the slider to forty
+minutes, watched the passage go 60% French, installed, and got a third. It now
+runs the Standard preset's own constants and reads 35% at the ceiling, which is
+what a fresh install does. The reason it had been turned up does not survive
+measurement: an earlier, denser passage saturated because the minimum-gap rule
+capped it near 35%, which is also the escalation ceiling, and the two were
+confused — spreading the candidates out had already removed the cap, and 20 of
+this passage's 23 are takeable. `tests/tools/demo-curve.test.ts` drives the
+slider in jsdom and compares every readout against `weaveRatio` on
+`defaultSettings`, so a static page with no build step cannot drift from the
+product again. The readout said "1 word in 3" where it meant one *content* word
+in three, which is the denominator the extension's own ratio uses; it now says
+so, and the caption names the preset on show.
+
+**The launch drafts were read against the code instead of grepped.** The one
+file in the repository whose errors leave it had six of them, and not one was
+a number: an undefined Markdown reference where the r/latin draft links to the
+Latin descent table, so it would have pasted into Reddit as literal brackets;
+two claims about Latin morphology that the shipped lexicon contradicts — 149
+of 327 noun forms are nominative plural, and 86 of 160 verb forms are
+participles matched to English *-ing*, where the draft said singular-only and
+inflections-skipped; `pecus` given as the etymon of *pecuniary*, which
+descends from *pecūnia*; a missing macron on *mīlle*, in the draft whose own
+preamble says the macrons will be checked; and two file paths that do not
+exist.
+
 **Two more fixes to the tools rather than the product.** The lexicon verifier
 had destructured six of its eight columns, so Old English's 544 etymons and 126
 notes had never been checked by anything at all. And `npm run verify:release`
@@ -67,7 +113,34 @@ downloads what GitHub actually serves, loads it in a real browser, and checks
 the first-run page renders, the worker answers and no test seam shipped —
 everything else in the repository tests what the build produces.
 
-**Built with** 620 tests: 484 unit, 97 in jsdom, 3 over the build tools, and
+**One Latin word, spelled two ways.** The lexicon marks vowel length, because
+the IPA is generated from the orthography and is only deterministic once it is
+marked: the headword for a thousand is `mīlle`. But the tooltip note sitting
+under it read "a mile was mille passūs" — the same word, one line apart,
+without its macron — and that bare spelling had also reached the Latin landing
+page's published meta description, `README.md` and `docs/PEDAGOGY.md`. Nothing
+generates that prose from the lexicon, so nothing could notice.
+`tests/tools/lexicon-orthography.test.ts` now checks both halves: a pack note
+may not spell its own headword without the macron, and the three documents
+that quote Latin headwords at a reader must spell them the way the pack does.
+Writing the guard before the fix found two more instances that a search for
+*mille* could not have — `spēs` in the note under *hope*, and `rēx` in the
+sentence explaining why a nominative headword drops cleanly into an English
+frame.
+
+**Two more surfaces said "1 word in N" with no unit.** The demo's readout
+did too, until "And the live demo said sixty" above; the popup and the
+options page's density rows still did, because both build that string from
+the same `oneWordIn()` function. The ratio behind it is a proportion of
+*content* words, not of everything on the page, and the popup's own
+sentence — "1 word in 3 you could read is in French" — read as a claim about
+all of it. Both now say "of the content words", matching the demo and the
+phrase `src/core/settings.ts` already used for the Standard preset. Checked
+in a real Chromium build rather than assumed safe, since the popup is a
+genuine 340×330px surface and the options page's value badges do not wrap:
+no overflow at any ratio from 6% to 60%.
+
+**Built with** 638 tests: 484 unit, 97 in jsdom, 21 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

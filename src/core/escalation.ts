@@ -6,7 +6,9 @@ import type { SiteAttention } from './types.ts';
  * Weft's central idea is that the proportion of a page rendered in the target
  * language is a function of how long you have been looking at that page. Five
  * minutes on a news article costs you almost nothing. Forty minutes on an
- * infinite feed and you are reading half in French.
+ * infinite feed and you are reading a third in French — a third because the
+ * shipped default is the Standard preset, whose ceiling is 0.35. Half of the
+ * page needs Committed or above.
  *
  * The curve is exponential-approach rather than linear:
  *

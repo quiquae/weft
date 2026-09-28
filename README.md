@@ -6,8 +6,8 @@ you stay on a page, the more of them there are.**
 Weft is a browser extension that weaves a proportion of the words on a page
 into a language you are learning, and raises that proportion with the time you
 actually spend looking at the page. Five minutes on a news article costs you
-almost nothing. Forty minutes on an infinite feed and you are reading half in
-French.
+almost nothing. Forty minutes on an infinite feed and you are reading a third
+in French, and more than half of it if you raise the ceiling.
 
 Point at a word and it gives you the English back.
 
@@ -89,8 +89,8 @@ In Old English the word Weft puts on the page is usually the **literal
 ancestor** of the word it replaced — `hūs` for house, `stān` for stone,
 `cyning` for king — and the tooltip tells you so. You are not memorising a
 foreign word; you are being shown where your own word came from. In Latin it
-is the word your English borrowed from: `vacca` gave us *vaccine*, `mille
-passūs` gave us *mile*, `paene insula` gave us *peninsula*.
+is the word your English borrowed from: `vacca` gave us *vaccine*, `mīlle
+passūs` gave us *mile*, `paene īnsula` gave us *peninsula*.
 
 The false friends are marked, because they are the most memorable thing in the
 language. Old English `drēam` means joy and music, not a sleeping vision.
@@ -264,7 +264,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 484 unit + 97 jsdom + 3 over the build tools
+npm test               # 484 unit + 97 jsdom + 19 over the build tools
 npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules

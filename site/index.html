@@ -116,7 +116,8 @@
     <svg class="band" id="band" viewBox="0 0 300 22" preserveAspectRatio="none" role="img" aria-label="Woven density"></svg>
   </div>
   <p style="font-size:0.85rem;color:var(--ink-faint)">
-    Drag it. Hover any woven word to get the English back — that is exactly what the extension does.
+    Drag it. Hover any woven word to get the English back — that is exactly what the extension does,
+    on the Standard setting a fresh install gives you. Committed and Monastic go a good deal further.
   </p>
 
   <section>
@@ -339,9 +340,17 @@
    * Written so the candidates are genuinely spread out, because that is what
    * a real page looks like: most words have no entry in the lexicon, so the
    * minimum-spacing rule rarely binds. An earlier version made almost every
-   * other word a candidate, which made the demo saturate at 35% and stop
-   * responding — a demo that undersells the product is as bad as one that
-   * oversells it.
+   * other word a candidate, which made the demo saturate and stop responding
+   * — a demo that undersells the product is as bad as one that oversells it.
+   *
+   * That saturation was MIN_APART binding, not the escalation ceiling. It
+   * happened to land near 35%, which is also the shipped ceiling, and the two
+   * were confused: the constants below were raised to compensate for a cap
+   * that spreading the candidates out had already removed. Measured on this
+   * passage: 20 of 23 candidates are takeable under MIN_APART, an 87% cap, so
+   * there is no room left for spacing to be mistaken for the ceiling.
+   * `tests/tools/demo-curve.test.ts` asserts the slider still responds, so
+   * the property this paragraph describes is now checked rather than recalled.
    */
   var PASSAGE =
     'The {old|vieux} house stood at the end of a long {road|route}, where the ' +
@@ -401,7 +410,27 @@
     'mot', 'vieux'
   ];
 
-  var BASE = 0.06, CEILING = 0.62, GAIN = 0.045;
+  /*
+   * The shipped default, and nothing else.
+   *
+   * These are the Standard preset from `src/core/settings.ts` — base 0.06,
+   * ceiling 0.35, gain 0.02 — which is what `defaultSettings()` hands a fresh
+   * install. They were once 0.06 / 0.62 / 0.045, which is not any preset at
+   * all: it read 60% at forty minutes where the default reaches 33% and
+   * cannot pass 35% at any attention whatsoever. A visitor dragged the
+   * slider, watched the passage go 60% French, installed, and got a third.
+   *
+   * This page has no build step, so the numbers cannot be imported; they are
+   * copied, and a copy drifts. `tests/tools/demo-curve.test.ts` drives this
+   * slider in jsdom and compares every readout against `weaveRatio` on
+   * `defaultSettings`, so the drift is caught rather than noticed.
+   *
+   * Do not tune these for slider feel. Committed (0.10 / 0.55 / 0.035) and
+   * Monastic (0.15 / 0.75 / 0.06) are livelier and both are real, but they
+   * are opt-in, and a demo of a setting nobody is given is an advertisement
+   * for a different product.
+   */
+  var BASE = 0.06, CEILING = 0.35, GAIN = 0.02;
 
   function ratioAt(minutes) {
     var span = CEILING - BASE;
@@ -456,10 +485,18 @@
     }
     sample.innerHTML = html;
 
+    /*
+     * The denominator is candidates, not words on the page — which is what
+     * the extension's ratio means too (`selector.ts`: "proportion of
+     * *eligible* words"). Said plainly, because "35% — 1 word in 3" next to a
+     * passage that is visibly 8 French words in 148 reads as a broken
+     * counter. The Standard preset's own copy says "a third of the content
+     * words"; this is the same figure in the same units.
+     */
     var actual = takenAt.length / candidates;
     var pct = Math.round(actual * 100);
     var oneIn = actual > 0 ? Math.max(2, Math.round(1 / actual)) : 0;
-    readout.textContent = pct + '% — 1 word in ' + oneIn;
+    readout.textContent = pct + '% of content words — 1 in ' + oneIn;
 
     // The cloth meter: warp threads with the weft crossing a proportion.
     var warps = 44, step = 300 / warps, crossed = Math.round(warps * actual), svg = '';
