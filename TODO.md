@@ -473,10 +473,12 @@ So the stack is still **one** merge to `main`, but it is a conflicted one
 rather than the clean fast-forward the old text implied. Merging is a human
 step here, as is committing to `main`. In order:
 
-1. Merge **#14** and the PR stacked on it, both into
-   `tools/reproducible-lexicon-packs`, then open one PR from that branch to
-   `main` and resolve the four conflicts above. Taking `CLAUDE.md` and
-   `TODO.md` from the stack side is safe; read the two code hunks.
+1. Merge **#14** into `tools/reproducible-lexicon-packs`. It is the only open
+   PR: #15 was squash-merged into #14's head on 2026-09-28 with CI green, so
+   #14 now carries both and there is nothing stacked above it. Then open one
+   PR from that branch to `main` and resolve the four conflicts above. Taking
+   `CLAUDE.md` and `TODO.md` from the stack side is safe; read the two code
+   hunks.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
