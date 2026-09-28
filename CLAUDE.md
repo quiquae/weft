@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **24 pass**, 7 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **27 pass**, 8 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,96 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the queued item named the fix, and the fix was one word wrong
+
+`TODO.md`'s only item was the backwards Latin descent sentence the previous
+session found by rendering `/latin/novem`: `META.la.descent`
+(`tools/build-site.mjs:62`) ended in a preposition and `:286` appended the
+descendant after it, so **312** published pages read "This is the Latin word
+your English borrowed from **November**" — English took *novem* **from**
+*November*, the descent stated backwards. The item offered two shapes and
+preferred the second, a prefix/suffix split keeping *borrowed*, because
+*borrowed* is accurate for a learned borrowing where the Old English sibling's
+*became* is not: `vaccine` did not become anything.
+
+**The split is right and the sentence it proposed is not, which is the
+transferable half.** "The Latin word your English *November* borrowed from"
+puts *November* in the subject slot of *borrowed* and so makes the English
+word the **borrower**. The borrower is English the language, and the codebase
+already had the idiom written down — `src/core/discoveries.ts:145`, "English
+borrowed ${descendant} from ${target}". One word of passive settles it:
+`{ before: 'This is the Latin word your English', after: 'was borrowed from' }`,
+rendering **"This is the Latin word your English *November* was borrowed
+from."** Old English keeps an empty `after` and its 325 pages came out
+byte-identical. **Two sessions running found the queued *premise* wrong
+(`iānua`, then `/latin/novem`'s heading); this one found the queued *remedy*
+wrong. In all three the thing that settled it was building the page and
+reading it** — a queued item that names its own fix has usually had that fix
+reasoned about rather than rendered.
+
+**The guard is one word, chosen by measurement.** The general rule — a
+descendant must not be the object of a preposition — is wrong, because most
+prepositions take it correctly ("the ancestor **of** November"). *From* is the
+one that cannot: in a descent sentence it names the source, and the source is
+the page's own headword. `/\bfrom$/` over the text preceding the `<strong>`
+fired on **312** Latin pages and **zero** of the 325 Old English ones, so the
+rule separates the two frames with no curated exclusion list — the same
+derive-it-from-the-data move PR #14 made with capitalisation. Done test-first;
+the red run named all 312 before anything was edited.
+
+**It went into `tests/tools/build-site.test.ts` rather than an eighth file,
+and the reason is the seam rather than the clock.** A test of this tool must
+render into `mktemp -d` and never into `dist/site`, which `npm run site:check`
+reads; a second suite would duplicate that setup to re-derive the same 711
+pages. The build is **0.6 s**, so cost was not what decided it. Three tests:
+the rule, a check that the descendant is actually in the sentence (the cheap
+way out of the rule is to delete it rather than move it), and a non-vacuity
+floor. Note for the next count sweep: **`suites` counts `describe` blocks, not
+files** — one new `describe` in an existing file moved `test:tools` from 7
+suites to 8 across the same six files.
+
+**Rendering the fix found the next item, as it has every session this week.**
+`/latin/mille` now reads "…your English *mile* was borrowed from. a mile was
+mīlle passūs" — the note joins the descent sentence's full stop in lowercase.
+That is not this fix's doing and it is not rare: **247 of the 318** notes
+across the seven packs begin lowercase, because they are written as appositive
+fragments for the tooltip, where `src/content/tooltip.ts` gives each one its
+own `<div class="note">` and it lands correctly as a caption. The word page is
+the only surface that joins a note to a finished sentence. Queued as the one
+item in `Next` with three candidate shapes and a preference, because which
+corpus to move — 1 template, 1 render-time transform, or 247 seed rows — is a
+judgement about the note corpus rather than a defect with one answer.
+
+Counts moved 642 → 645 and suites 7 → 8 in **six** documents, with
+`docs/LAUNCH.md:221` swept **by name and first** — the Journal entry below
+records it being missed three times, always because it is the only count
+sitting inside a blockquote of copy rather than a command table. Taking it
+first rather than last is the cheap fix for that.
+
+One small thing worth knowing rather than fixing: the install page's
+`<lastmod>` will now say today, because `tools/build-site.mjs` is one of the
+two files `contentDate()` reads for it — that page's prose lives in
+`installPage()` — so editing the *word-page* template in the same file redates
+a page whose text did not change. Same coarseness class as the pack-granular
+dates, and nothing is indexed yet (B3).
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **27 tools / 8 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.9 min, then build and validate again. Separately
+`site:check` 711 pages / 16 087 links all resolving — run here because the
+change is *to* published copy on 312 pages — and `packs:verify` 0 errors / 4
+warnings, unchanged, since no pack moved and no `builtAt` advanced. The
+`com.apple.fileprovider.ignore#P` attribute is still set on `dist/` and the
+full gate created **zero** iCloud conflict copies for the fourth session
+running.
+
+What needs a human: **B0**, unchanged from the last session — one conflicted
+merge into `main`, four files named there. `Now` is empty; `Next` has the
+lowercase-note item above, which is agent-shaped and does not wait on B0.
+Nothing else moved.
 
 ### 2026-09-28 — the guard could not see the gap the same session left
 

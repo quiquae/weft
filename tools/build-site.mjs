@@ -53,13 +53,23 @@ const SITE = process.env.WEFT_SITE_URL ?? 'https://weft.study';
 /** Languages rich enough to justify a page per word. */
 const DEEP = ['la', 'ang'];
 
+/**
+ * `descent` is a pair rather than a string because the two languages put the
+ * English descendant in different places, and a template that always appends
+ * gets one of them backwards. Old English's frame takes its object at the end
+ * ("…that became **abide**"); Latin's needs it before the preposition, since
+ * "borrowed **from** X" makes X the *source*, and the source is this page's
+ * own headword. Latin keeps *borrowed* rather than borrowing the sibling's
+ * *became* because a learned borrowing is what it is: `vaccine` did not become
+ * anything, it was coined from `vacca`.
+ */
 const META = {
   la: {
     name: 'Latin',
     endonym: 'Latina',
     era: 'Classical, c. 75 BC – AD 200',
     slug: 'latin',
-    descent: 'This is the Latin word your English borrowed from',
+    descent: { before: 'This is the Latin word your English', after: 'was borrowed from' },
     note: 'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard.',
   },
   ang: {
@@ -67,7 +77,7 @@ const META = {
     endonym: 'Englisc',
     era: 'West Saxon, c. 900–1050',
     slug: 'old-english',
-    descent: 'This is the Old English word that became',
+    descent: { before: 'This is the Old English word that became', after: '' },
     note: 'þ and ð are both "th"; c before a front vowel is "ch"; sc is "sh". A macron marks a long vowel.',
   },
 };
@@ -93,6 +103,16 @@ const esc = (s) =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+
+/**
+ * The descent sentence, with the English descendant set inside the frame
+ * rather than appended to it. See the note above `META`: appending is what
+ * put the descendant after Latin's "from" and so named it as the source.
+ */
+function descentSentence(meta, etymonOf) {
+  const tail = meta.descent.after ? ` ${esc(meta.descent.after)}` : '';
+  return `${esc(meta.descent.before)} <strong>${esc(etymonOf)}</strong>${tail}.`;
+}
 
 /**
  * URL slug for a target word.
@@ -283,7 +303,7 @@ function wordPage(entry, lang, index) {
         ? `<section class="word__descent">
       <h2>Where <em>${esc(entry.etymonOf)}</em> comes from</h2>
       <p>
-        ${esc(meta.descent)} <strong>${esc(entry.etymonOf)}</strong>.
+        ${descentSentence(meta, entry.etymonOf)}
         ${entry.note ? esc(entry.note) + '.' : ''}
       </p>
     </section>`
