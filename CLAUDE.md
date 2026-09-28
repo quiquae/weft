@@ -188,6 +188,75 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — the marketing promised half and the default ships a third
+
+`TODO.md` asked for a read-through of `docs/LAUNCH.md` rather than a grep,
+on the reasoning that the same sentence had been wrong three times and each
+correction had come from grepping for a number. The reasoning was right in a
+way that is worth recording: **not one of the six errors found was a number,
+and the single number in the file — "633 tests" — was correct.** A grep-shaped
+pass would have returned clean.
+
+The one that matters is the product's headline promise. "Forty minutes on an
+infinite feed and you are reading half in French" is false on the extension
+people will install. `weaveRatio` is an exponential approach to a ceiling, and
+the shipped default is the **Standard** preset: base 0.06, ceiling **0.35**,
+gain 0.02. That is 14.5% at five minutes and **33.2% at forty**, and because
+the ceiling is 0.35 the page cannot reach half at any attention whatsoever.
+Half needs **Committed** (53% at forty), which is opt-in. The sentence had
+spread from the doc comment at `src/core/escalation.ts:8` into `README.md`,
+`docs/STORE-LISTING.md` and twice into `docs/LAUNCH.md`, so it was corrected
+in all four — the store listing because that copy goes to Google, and the
+comment because it is where the other three were copied from and would have
+re-seeded them.
+
+**Where "half" actually comes from is the demo, and that is now the top item in
+`TODO.md`.** `site/index.html:404` runs `BASE = 0.06, CEILING = 0.62, GAIN =
+0.045`, which is not any shipped preset; it reaches 59.7% at forty minutes. So
+a visitor drags the slider, watches the passage go 60% French, installs, and
+gets a third. The copy is now honest about the default, so nothing *claims*
+half any more — but demo and default still disagree, and which one should move
+is a product decision, not an agent's. The comment at `site/index.html:342`
+is the piece of evidence to read first: it records that the demo was tuned
+*up* once already because an earlier version "saturated at 35% and stopped
+responding", which is the same 35% ceiling, and suggests the constants were
+chosen for slider feel and never reconciled with the preset.
+
+Second, and cheaper to fix than to find: `[latin-words-in-everyday-english]`
+was an **undefined Markdown reference**. There is no link definition anywhere
+in the file, so the r/latin draft's one pointer to the resource the whole post
+exists to share would have pasted into Reddit as literal brackets. The general
+rule this file needed and now follows: **reference-style links are wrong in a
+document of copy-paste drafts**, because the definition stays behind when the
+blockquote is copied out. Inline only, as the Christensen citation already
+was.
+
+Then the r/latin draft, which is the one aimed at readers who check. Two
+grammar claims were contradicted by the lexicon it describes. "Nouns are woven
+in the nominative singular" — 149 of 327 noun surface forms are nominative
+*plural*; nominative singular is the **headword** convention
+(`morphology: 'citation'`), not what lands on the page, and
+`tools/seed/lex-la.tsv:12` says "nominative singular and plural" outright.
+"Inflected English forms are skipped entirely rather than guessed" — 86 of 160
+verb forms are present participles matched to English *-ing* (*going* →
+*iēns*, *giving* → *dāns*); what is genuinely absent is past tense and third
+person. And `pecus` → pecuniary skips a link: the pack has *pecūnia* →
+pecuniary, *pecus* is not in it, and *pecuniary* descends from *pecūnia* which
+descends from *pecus*. `mille` gained the macron the pack's headword carries,
+in the draft whose own preamble says the macrons will be checked.
+
+The ~30 claims that were **right** are listed in `TODO.md`'s Notes rather than
+here, because that is the expensive half of a pass like this and it should
+only be paid for once: every Old English example and its gloss, all six cited
+dictionaries and grammars, the Christensen finding, *v* as /w/ and *c* always
+hard (148 Latin *c*-words, zero palatal), the 78 surface forms with palatal
+diacritics, the letterform switch, the retirement-is-free rule at
+`selector.ts:82`, the reconciler page, and the permission story.
+
+What needs a human: **B0** is now *seven* stacked PRs, this being #7. The new
+top item in `TODO.md` is the demo-versus-default decision above. Nothing else
+moved.
+
 ### 2026-09-28 — the sitemap said 711 pages changed today, and said it daily
 
 Same bug class as the pack builder, one file along and with worse

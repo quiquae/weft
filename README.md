@@ -6,8 +6,8 @@ you stay on a page, the more of them there are.**
 Weft is a browser extension that weaves a proportion of the words on a page
 into a language you are learning, and raises that proportion with the time you
 actually spend looking at the page. Five minutes on a news article costs you
-almost nothing. Forty minutes on an infinite feed and you are reading half in
-French.
+almost nothing. Forty minutes on an infinite feed and you are reading a third
+in French, and more than half of it if you raise the ceiling.
 
 Point at a word and it gives you the English back.
 

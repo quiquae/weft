@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
-suites, **16** tool tests / 4 suites, **36** e2e passing in 2.5 min
+suites, **16** tool tests / 4 suites, **36** e2e passing in 2.1 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -14,9 +14,11 @@ errors / 4 warnings, **711** site pages with **16 087** links all resolving.
 regenerated on 2026-09-28 and came back **byte-identical**, so the listing art
 already shows the lexicon that ships; `npm run packs` is idempotent, so running
 the whole gate leaves the tracked tree clean; and `npm run site` is now
-byte-stable too, so a second build of the site changes nothing. The code is not
-what is holding the release up. The critical path runs through two things only
-Creagh can do: **B0 — six stacked PRs have to be merged into `main`** before
+byte-stable too, so a second build of the site changes nothing. The copy is
+honest about the shipped default as of 2026-09-28, which it had not been: see
+the `docs/LAUNCH.md` item below. The code is not what is holding the release
+up. The critical path runs through two things only
+Creagh can do: **B0 — seven stacked PRs have to be merged into `main`** before
 the version can be bumped, and then **B1 — the domain `weft.study` is not
 registered**. Everything in Now can land before either and depends on
 neither.
@@ -80,21 +82,56 @@ neither.
       708 URLs at 2026-09-26, three at 09-27, one at 09-22, one at 09-28;
       before, 713 at today. See the note at the top of Notes.
 
-- [ ] **Re-sweep every factual claim in `docs/LAUNCH.md`.** *Topmost unchecked
-      item as of 2026-09-28.* It is the only file
-      in the repository whose errors leave it — the drafts are copy a human
-      posts to Hacker News, Reddit and the language forums — and the same
-      sentence in the HN comment draft has now been wrong three times: "449
-      tests", then "617", then "620", each corrected only because a later
-      session grepped for a number. Grepping only finds the claims that *are*
-      numbers.
-      Read it end to end against the code instead: the permission list, the
-      lexicon sizes, what is Free versus Pro, the renderer claim, the
-      licence-revocation honesty, and every URL. Nothing here posts anything —
-      `docs/LAUNCH.md` is drafts for a human to send, by the decision recorded
-      in `CLAUDE.md` — so this is a read-and-correct pass. *~1 hour.*
+- [x] **Re-sweep every factual claim in `docs/LAUNCH.md`.** Done 2026-09-28,
+      claim by claim against the code rather than by grep — and the item's
+      premise held exactly: **none of the six errors found was a number, and
+      the one number in the file ("633 tests") was correct.** Ten corrections
+      across four files. The two that matter: "forty minutes on a feed and you
+      are reading **half** in French" is false on the shipped default, which
+      ceilings at 35% and reaches 33.2% at forty minutes, so half is not
+      merely unmet but unreachable — and that sentence had spread to
+      `README.md`, to `docs/STORE-LISTING.md`, which is the copy that goes to
+      Google, and to the doc comment in `src/core/escalation.ts` that seeded
+      it; and `[latin-words-in-everyday-english]` was an **undefined Markdown
+      reference**, so the r/latin draft's one link to the resource the post
+      exists to share would have pasted into Reddit as literal brackets. Also
+      corrected: two grammar claims the lexicon contradicts, a missing macron
+      and a wrong etymon in the draft that warns macrons will be checked, and
+      two file paths that do not exist. What was checked and found **right**
+      is listed in the note at the top of Notes, so the next session need not
+      re-check it.
+
+- [ ] **Decide whether the demo or the default is telling the truth about
+      "half".** *Topmost unchecked item as of 2026-09-28.* Found by the sweep
+      above, left as an item because it is a product decision and not a fix.
+      The live demo at `site/index.html:404` runs `BASE = 0.06, CEILING =
+      0.62, GAIN = 0.045`, which is **not any shipped preset**: it reads 24.5%
+      at five minutes and **59.7% at forty**. The shipped default is the
+      Standard preset (`src/core/settings.ts:66` — base 0.06, ceiling **0.35**,
+      gain 0.02), which reads 14.5% and **33.2%**, and cannot pass 35% at any
+      attention at all. So a visitor drags the slider to forty minutes, watches
+      the passage go 60% French, installs, and gets a third. The copy has been
+      corrected to the default everywhere, so nothing now *claims* half; what
+      is left is the choice between turning the demo down to the default,
+      turning the default up to the demo, or labelling the demo as a stronger
+      setting than the one you get. It is the product's headline promise, so it
+      is Creagh's call. Note before deciding: the comment at
+      `site/index.html:342` records that the demo was deliberately tuned *up*
+      once already, because an earlier version saturated at 35% and stopped
+      responding to the slider — which is the same 35% ceiling, and suggests
+      the demo's constants were chosen for feel and never reconciled with the
+      preset. *~20 minutes once decided.*
 
 ## Next
+
+- [ ] **Spell `mīlle` with its macron in the three places that do not.** The
+      Latin pack's headword is `mīlle`, but `tools/build-site.mjs:442` — the
+      Latin page's meta description, which is *published* copy — plus
+      `docs/PEDAGOGY.md:116` and the gloss note at `tools/seed/lex-la.tsv:376`
+      all write `mille passūs`. Inconsistent with the lexicon's own
+      orthography rather than wrong, and the seed one drags a `npm run packs`
+      rebuild and a pack diff behind it, which is why it was left out of the
+      `docs/LAUNCH.md` sweep rather than folded in. Low priority.
 
 - [ ] **Check `npm run og` for byte-stability.** The rest of this item is
       done. `grep -n 'new Date()' tools/*.mjs build.mjs` found exactly three
@@ -114,16 +151,18 @@ neither.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the six stacked PRs, then cut 1.0.1.** *Blocks the version bump,
-and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 are stacked in that
-order, all six are drafts, so `main` is nine commits behind and `VERSION` in
-`manifest.config.mjs` is still 1.0.0. Four are documentation; #5 is the pack
-builder and #6 the sitemap dates. Two steps here belong to a human rather than
+**B0 — Merge the seven stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 → #7 are
+stacked in that order, all seven are drafts, so `main` is ten commits behind
+and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
+documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
+the launch and store copy and carries one comment change in
+`src/core/escalation.ts`. Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
 
-1. Merge #1, #2, #3, #4, #5, #6 bottom-up — each targets the branch below it,
-   so GitHub retargets the next as each lands.
+1. Merge #1, #2, #3, #4, #5, #6, #7 bottom-up — each targets the branch below
+   it, so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -150,8 +189,10 @@ Chrome Web Store requires. *Unblocks: B2, B3, and the whole of B5.*
 If a different domain is chosen instead, note that
 `browser_specific_settings.gecko.id` is `weft@weft.study` and **must not
 change** — it orphans every Firefox install — so the id will simply outlive
-the domain name. Change `src/core/pricing.ts` and `WEFT_SITE_URL` in
-`.github/workflows/site.yml` and nothing else.
+the domain name. Change `src/core/pricing.ts`, `WEFT_SITE_URL` in
+`.github/workflows/site.yml` and the one URL in the r/latin draft at
+`docs/LAUNCH.md` — added 2026-09-28, where an undefined Markdown reference had
+been — and nothing else.
 
 **B2 — Make the repository public, or set `WEFT_REPO`.** The install page's
 download button points at `<repo>/releases/latest`
@@ -234,6 +275,91 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — what `docs/LAUNCH.md` claims, and which claims were true.**
+Every assertion in the file was taken one at a time and matched against the
+file that would falsify it. Recorded here in full, because the expensive half
+of this pass was the ~30 claims that turned out to be **right**, and nobody
+should pay for that twice.
+
+- **Verified correct, do not re-check unless the code moves.** All seven Old
+  English examples, against `src/lexicon/packs/en-ang.json` — *hūs*, *cyning*,
+  *hlāford* with its "loaf-keeper" note, and the four false friends *drēam*,
+  *steorfan*, *sellan*, *cwic*, each of which carries the exact gloss the draft
+  quotes. All six cited authorities, against `docs/THIRD-PARTY.md`: Lewis &
+  Short, Whitaker's Words, Bosworth–Toller, Clark Hall, Hogg, Campbell. The
+  Christensen 2007 citation, its DOI, and the draft's one-sentence summary of
+  its finding, against `docs/PEDAGOGY.md:17`. Blair / BYU / 1970s. Latin *v*
+  as /w/ and *c* always hard — 148 Latin surface forms contain a *c* and not
+  one has a palatal or affricate IPA. Palatal diacritics do exist to be
+  corrected: 78 Old English surface forms carry ċ or ġ. Letterforms really are
+  a separate switch (`src/ui/options/sections.tsx:152`,
+  `src/core/letterforms.ts:22`, which uses the draft's own *þēod*/*theod*
+  example). The demo really is a paragraph and a slider
+  (`site/index.html:109,112`). Retired words really are "woven for free and
+  excluded from the budget" — that is `src/core/selector.ts:82` verbatim, and
+  `:390`. Prefix-monotone selection, `src/core/selector.ts:21`. The reconciler
+  page really does store text-node references and call `removeChild` on each
+  (`tests/e2e/pages/reconciler.html:35,47`). Free tier is one language
+  (`src/core/entitlements.ts:132`); seven packs ship. **633 tests** = 484 + 97
+  + 16 + 36, which is the one number in the file and it was right.
+
+- **The claim that cost the most to check is the one worth re-checking: the
+  weave ratio.** `weaveRatio` is `base + (ceiling − base)·(1 − e^(−k·m))`,
+  `k = gain/(ceiling − base)`. On the shipped default (Standard) that is 14.5%
+  at five minutes, 31.3% at thirty, 33.2% at forty, hard ceiling 35%. Committed
+  gives 53% at forty; Monastic 73.9%. Escalation only applies to *taxed* sites
+  at all — `src/core/sites.ts:352`, `mode === 'taxed' && rule.escalate &&
+  settings.attention.enabled` — which by default is the fifteen domains in the
+  `social` preset, so "five minutes on an article costs you nothing" is about
+  a page that never escalates and sits at the 6% base. That is why the
+  correction was "almost nothing" and not a number.
+
+- **Two Latin grammar claims were contradicted by the lexicon itself.** "Nouns
+  are woven in the nominative singular" — 149 of 327 noun surface forms are
+  nominative *plural* (*virī*, *fēminae*, *puerī*, *puellae*). Nominative
+  singular is the **headword** convention (`src/core/types.ts:34`,
+  `languages.ts:130`, `morphology: 'citation'`), not what lands on the page,
+  and `tools/seed/lex-la.tsv:12` says "nominative singular **and plural**" in
+  as many words. "Inflected English forms are skipped entirely rather than
+  guessed" — 86 of 160 verb surface forms are present active participles
+  matched to English *-ing* (*having* → *habēns*, *going* → *iēns*, *giving* →
+  *dāns*). What *is* absent is past tense and third-person singular: `went`,
+  `saw`, `gave`, `goes`, `says` are not keys in the pack. The "never guess"
+  principle is real but lives on the provider path (`src/core/pos-guess.ts:11`
+  — "silence is cheaper than that"), not in the shipped lexicon.
+
+- **`pecus` → pecuniary was the wrong etymon.** The pack has *pecūnia*
+  (money) → pecuniary; *pecus* is not in it at all. *Pecuniary* descends from
+  *pecūnia*, which descends from *pecus*, so the draft skipped a link in the
+  chain — in the post aimed at the one audience that would check. Replaced
+  with the pack's own entry. *mille* gained its macron for the same reason: the
+  pack's headword is *mīlle* and the draft's own preamble says the macrons will
+  be checked.
+
+- **Assumed, because nobody was available to ask.** (1) That correcting
+  `README.md`, `docs/STORE-LISTING.md` and the `src/core/escalation.ts` doc
+  comment was in scope, though the item named only `docs/LAUNCH.md`: it is one
+  sentence with one defect in four places, the store listing is the copy that
+  goes to Google, and the code comment is where the other three were copied
+  from, so fixing the drafts alone would have left the error to be re-seeded.
+  The `escalation.ts` change is a comment; no behaviour moved. (2) That the
+  undefined reference should become the canonical `https://weft.study/...` URL
+  rather than another placeholder — the sitemap already declares that URL and
+  `src/core/pricing.ts` already compiles the domain into the shipped
+  extension, so the repository has committed to it; **B1** now lists
+  `docs/LAUNCH.md` among the files a domain change has to reach. (3) That
+  reference-style Markdown links are simply wrong in this file, whatever the
+  URL: every draft here is meant to be copied out of the document on its own,
+  and a link definition left behind at the bottom is how this bug happened.
+  Inline links only — which is what the Christensen citation already does.
+
+- **Not done, deliberately.** The "costs about 150 lines more than declaring
+  `<all_urls>`" estimate in the r/chrome_extensions draft was left alone: it is
+  a counterfactual about code that was never written, it is hedged with
+  "about", and there is nothing to measure it against. Lobsters' tag list and
+  the community rules were left alone too — they are external, they change, and
+  the document already tells the sender to re-check them.
 
 **2026-09-28 — the sitemap dates pages by their content now, and omits the
 date it cannot establish.** 713 URLs shared one `new Date()`; they now carry

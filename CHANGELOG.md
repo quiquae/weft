@@ -71,6 +71,29 @@ pages by the commit date of the document holding their prose. Where no date
 can be established the element is left out rather than filled in, because
 `<lastmod>` is optional and an absent date is honest where today's is not.
 
+**The listing said half and the extension does a third.** "Forty minutes on
+an infinite feed and you are reading half in French" was the product's
+headline promise, in the README, the store listing, the launch drafts and the
+doc comment the other three were copied from. It is not what ships: the
+default is the Standard preset, whose ceiling is 0.35, so forty minutes of
+attention gives 33.2% and half is unreachable at any attention at all. Half is
+the **Committed** preset, which is opt-in. Every copy now says a third. The
+live demo on the landing page is the remaining disagreement — its curve is not
+any shipped preset and reaches 59.7% at forty minutes — and which of the two
+should move is recorded as an open decision rather than guessed at.
+
+**The launch drafts were read against the code instead of grepped.** The one
+file in the repository whose errors leave it had six of them, and not one was
+a number: an undefined Markdown reference where the r/latin draft links to the
+Latin descent table, so it would have pasted into Reddit as literal brackets;
+two claims about Latin morphology that the shipped lexicon contradicts — 149
+of 327 noun forms are nominative plural, and 86 of 160 verb forms are
+participles matched to English *-ing*, where the draft said singular-only and
+inflections-skipped; `pecus` given as the etymon of *pecuniary*, which
+descends from *pecūnia*; a missing macron on *mīlle*, in the draft whose own
+preamble says the macrons will be checked; and two file paths that do not
+exist.
+
 **Two more fixes to the tools rather than the product.** The lexicon verifier
 had destructured six of its eight columns, so Old English's 544 etymons and 126
 notes had never been checked by anything at all. And `npm run verify:release`
