@@ -50,11 +50,11 @@ than a fragment after it, as of 2026-09-28** — 55 pages opened a second
 sentence in lower case ("…was borrowed from. a mile was mīlle passūs"), and
 the note is now dash-joined into the one sentence; a render-time capital was
 measured and rejected, because it is a no-op on the 44 of 99 notes that open
-with a quotation mark or a proper noun. **Now is empty; Next has one item**,
-found while measuring that fix — 59 of the 100 Latin and Old English notes
-quote with straight `"` where the French pack and all the site's own prose use
-curly, and zero notes mix the two, so it is two conventions rather than 59
-typos; see Next. The
+with a quotation mark or a proper noun. **And Latin and Old English notes now
+quote with the same marks the site's own prose does, as of 2026-09-28** — 59
+of 185 distinct notes quoted with straight `"` while French and the site quote
+with curly `“ ”`; the recorded argument for leaving both stood on a premise
+that reading all 59 disproved (see Now). **Now and Next are both empty**. The
 code is not what is holding the release
 up. The critical
 path runs through two things only Creagh can do: **B0 — one conflicted merge
@@ -493,49 +493,56 @@ domain `weft.study` is not registered**.
       interpolation removed one blank line inside the `<p>` on the other 538,
       which HTML whitespace collapse makes invisible. The sitemap did not move.
 
+- [x] **The note corpus disagrees with itself about quote marks.** Done
+      2026-09-28. Reading all **59** straight-quoted notes — rather than
+      deciding from the premise recorded in this file — is what settled it:
+      the "two different jobs" argument for leaving both conventions does not
+      survive contact with the data. A third of the 59 quote **English**
+      words, not target-language citation forms — `"muscle"`, `"despair"`,
+      `"hopeless"`, `"warden"`, `"hale"`, `"bank teller"` — the identical job
+      French does in curly. The split tracks which pack a note was typed into,
+      not what kind of word it names. Unified on curly, the only option this
+      file had costed out and the convention the site's own prose already
+      uses (24 curly quotes, zero straight, in `site/index.html`).
+
+      **Option 3 (`<em>` for cited forms) was ruled out on inspection, not
+      just cost.** The tooltip note is plain text —
+      `src/content/tooltip.ts`'s `el()` sets `textContent`, never
+      `innerHTML` — so semantic markup inside a note would need new rendering
+      support on that surface, nowhere budgeted in this file's ~30-minute
+      estimate for the curly option.
+
+      Converted all 59 notes in `tools/seed/lex-la.tsv` (12) and
+      `lex-ang.tsv` (47), pairing each straight quote with curly open/close in
+      sequence; every note has a balanced, even quote count, checked before
+      converting. Diffed line by line: only the note column changed, nothing
+      else. Guarded in `tests/tools/lexicon-orthography.test.ts`, the suite
+      this file named: no note in any of the seven packs may contain a
+      straight double quote. Done test-first; the red run named all 59 (as
+      more instances, since a shared note like `door`/`doors` counts once per
+      surface form).
+
+      Rebuilt both packs: `en-ang.json`'s `builtAt` advances 09-26 → 09-28,
+      its first edit today; `en-la.json`'s stays 09-28, already stamped today
+      by earlier sessions' edits to the same file. `index.json` untouched, no
+      count moved. `packs:verify` still 0 errors / 4 warnings. Verified by
+      rendering, the house rule: `/old-english/mann`'s descent sentence and
+      the `old-english-words-that-became-english` hub's note column both show
+      `"mann" meant a human being of either sex` with curly marks.
+      `site:check` still 711 pages / 16 087 links, all resolving; redated
+      **705 of 713** sitemap entries to today, the same pack-granular
+      coarseness this file already records, because `en-ang.json` had not
+      moved today before this edit and most Old English word pages take their
+      `builtAt`. Tool suites moved 9 → 10 (one new `describe`, two new tests).
+
+      Done in an isolated git worktree — see the Journal in `CLAUDE.md` for
+      why — as PR #20, opened against `lexicon/proper-noun-notes` and
+      squash-merged into it after CI passed, the same pattern PRs #15–19
+      used. Not touched: `main`, or any part of B0.
+
 ## Next
 
-- [ ] **The note corpus disagrees with itself about quote marks, and the split
-      is exactly along pack lines.** Found 2026-09-28 while measuring the note
-      corpus for the dash fix above, so the numbers below are measured rather
-      than estimated. Of the **185** distinct notes across the seven packs:
-
-          straight " only   59   (en-ang 47 of 72, en-la 12 of 28)
-          curly “ ” only    84   (en-fr 85 of 85, less one with no quotes)
-          both               0
-          no double quotes  42
-
-      **Zero notes mix the two**, so this is not 59 typos — it is two packs
-      written to one convention and one pack written to the other. And the
-      convention the site's own prose uses is curly: `site/index.html` has 24
-      curly quotes and no straight ones in running text. So on `/old-english/mann`
-      a straight-quoted `"mann"` sits inside a page whose surrounding prose is
-      curly-quoted, and `esc()` renders it as `&quot;`, which displays straight.
-
-      **The two deep packs are the visible ones**, which is why this matters
-      more than the count suggests: `DEEP = ['la','ang']` means only Latin and
-      Old English get word pages, so all **59** straight-quoted notes are on a
-      published page *and* in the tooltip *and* in the descent hub's note
-      column, while the 84 curly French ones are tooltip-only.
-
-      **The judgement to make first, because it decides the direction.** The
-      two packs are not quoting the same kind of thing. Latin and Old English
-      quote *target-language citation forms* — `"mann"`, `"mālum"`, `"ne ǣfre"`
-      — where straight quotes or italics are the linguistic convention. French
-      quotes *English words* in ordinary prose — `“amiable”` — where curly is
-      simply correct typography. So "make them all curly" is one answer and
-      "these are two different jobs, leave both" is a defensible other one. A
-      third: use `<em>` for cited forms on the word page, which is what
-      `/latin/paene`'s own heading already does with *peninsula*.
-
-      Whichever way: it is a `tools/seed/*.tsv` edit, so it **rebuilds two
-      packs, advances their `builtAt`, and redates ~637 sitemap entries** — the
-      pack-granular coarseness this file already records. ~30 minutes for the
-      unify-on-curly version, plus `npm run packs`, `packs:verify`, `site`
-      and `site:check`. Guard it in `tests/tools/lexicon-orthography.test.ts`,
-      which is already the suite that polices how the packs spell things.
-
-Everything else remaining lives in Blocked, and all of it needs Creagh: B0
+Empty. Everything remaining lives in Blocked, and all of it needs Creagh: B0
 first, then B1.
 
 One thing found and deliberately not queued, because it is a judgement about
@@ -708,6 +715,36 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — a queued judgement call is still worth reading the data for,
+not just reasoning from the premise already written down.** This file
+recorded a real argument for leaving Latin/OE's straight quotes and French's
+curly ones as two different conventions: the two packs quote different kinds
+of thing, so they earn different punctuation. It was a reasonable-sounding
+argument and it was wrong, and reading all 59 straight-quoted notes rather
+than the ~6 examples already quoted in this file is what showed that: a third
+of them quote English words, the same job French does in curly. **The
+general form: when a queued item states an argument for its non-default
+option, check whether that argument was checked against the *whole* set it
+claims to describe, or only the handful of examples that fit it.** The
+examples this file quoted for "Latin/OE quote target-language forms" —
+`"mann"`, `"mālum"`, `"ne ǣfre"` — were all real and all consistent with the
+claim; they just were not a sample, and the notes that did not fit
+(`"muscle"`, `"despair"`, `"warden"`, `"hale"`, `"bank teller"`, and a dozen
+more) were sitting in the same two files the whole time.
+
+**Also worth recording: this session found concurrent git activity in the
+primary working directory partway through** — a `checkout` to `main` and a
+`fast-forward merge`, both timestamped roughly four minutes into the session
+via `git reflog --date=iso`, matching neither this session's own commands.
+Most likely explanation is Creagh picking up B0 live in the same checkout
+this file's instructions run in. The response was to stop, and finish the
+work in an isolated `git worktree` (`.worktrees/`, now gitignored) based on
+`origin/lexicon/proper-noun-notes` rather than the primary directory's
+checkout, and to land by pushing a new branch and opening a PR against the
+stack head rather than committing in place. Nothing here touched `main` or
+any part of B0. Worth the same caution again if a future session finds the
+primary checkout's branch does not match what a session-start snapshot said.
 
 **2026-09-28 — the exception list the item asked for was a fifth of the
 corpus, so the other option won.** The queued item preferred shape 2,
