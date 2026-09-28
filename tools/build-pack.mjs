@@ -12,15 +12,19 @@
  *   node tools/build-pack.mjs --all
  *   node tools/build-pack.mjs --lang=fr --lang=la
  *   node tools/build-pack.mjs --all --strict     # fail on any warning
+ *   node tools/build-pack.mjs --all --out=/tmp/p  # build somewhere else
+ *
+ * A rebuild that produces the same content rewrites the same bytes: each
+ * pack's `builtAt` is kept unless something else about that pack changed. See
+ * writeStamped() for why that matters.
  */
 import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEED = join(ROOT, 'tools/seed');
-const OUT = join(ROOT, 'src/lexicon/packs');
 
 const PACK_FORMAT = 1;
 const PACK_VERSION = '2026.09.1';
@@ -31,6 +35,11 @@ const strict = args.includes('--strict');
 const wantLangs = args
   .filter((a) => a.startsWith('--lang='))
   .map((a) => a.slice('--lang='.length));
+const outArg = args.find((a) => a.startsWith('--out='));
+
+// Where the packs land. Overridable so a test can build into a temporary
+// directory instead of the tracked src/lexicon/packs/.
+const OUT = outArg ? resolve(outArg.slice('--out='.length)) : join(ROOT, 'src/lexicon/packs');
 
 const ATTRIBUTION = [
   'Curated core lexicon: Weft contributors, CC BY-SA 4.0.',
@@ -293,8 +302,46 @@ async function buildPack(lang, core) {
 
   await mkdir(OUT, { recursive: true });
   const path = join(OUT, `en-${lang}.json`);
-  await writeFile(path, JSON.stringify(pack) + '\n');
+  await writeStamped(path, pack, (p) => p.meta);
   return { lang, path, entryCount, lemmaCount: translated, bands };
+}
+
+/**
+ * Write a generated JSON file, keeping the `builtAt` the previous one carried
+ * when nothing else about it has changed.
+ *
+ * `builtAt` is meant to say when the *content* was built. Stamping today on
+ * every run made it say when the command last ran, so `npm run packs`
+ * rewrote all eight files whether or not a seed lexicon had moved: the setup
+ * step in CLAUDE.md left a fresh clone dirty, and `npm run release`, which
+ * refuses a dirty tree, refused. Comparing everything except the stamp keeps
+ * the date honest and makes a rebuild that changes nothing change nothing —
+ * which is also what lets CI assert the committed packs still match the seeds.
+ *
+ * `stampHolder` returns the object carrying `builtAt`: the pack's `meta`, or
+ * the index itself.
+ */
+async function writeStamped(path, value, stampHolder, indent) {
+  const withoutStamp = (obj) => {
+    const copy = structuredClone(obj);
+    const holder = stampHolder(copy);
+    if (holder && typeof holder === 'object') delete holder.builtAt;
+    return JSON.stringify(copy);
+  };
+
+  let previous = null;
+  try {
+    previous = JSON.parse(await readFile(path, 'utf8'));
+  } catch {
+    // No previous file, or one this build cannot read: stamp today.
+  }
+
+  if (previous && withoutStamp(previous) === withoutStamp(value)) {
+    const kept = stampHolder(previous)?.builtAt;
+    if (typeof kept === 'string') stampHolder(value).builtAt = kept;
+  }
+
+  await writeFile(path, JSON.stringify(value, null, indent) + '\n');
 }
 
 async function writeIndex(results) {
@@ -313,7 +360,7 @@ async function writeIndex(results) {
       }))
       .sort((a, b) => a.target.localeCompare(b.target)),
   };
-  await writeFile(join(OUT, 'index.json'), JSON.stringify(index, null, 2) + '\n');
+  await writeStamped(join(OUT, 'index.json'), index, (i) => i, 2);
 }
 
 async function discoverLangs() {

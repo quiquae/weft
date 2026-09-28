@@ -4,16 +4,21 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-09-28:** every automatable check is green — typecheck clean,
-484 unit, 97 jsdom, 36 e2e passing (3 asset-generator specs skipped by
-design), compat clean, all three packages built at 979 KB and passing
-`npm run validate`, `packs:verify` 0 errors / 4 warnings, **711** site pages
-with **16 087** links all resolving. The fifteen store screenshots were
-regenerated on 2026-09-28 and came back **byte-identical**, so the listing
-art already shows the lexicon that ships. The code is not what is holding the
-release up. The critical path runs through **B1 — the domain `weft.study` is
-not registered**, which only Creagh can fix. Everything in Now is work that
-can land before that and does not depend on it.
+**State on 2026-09-28:** every automatable check is green, measured at the end
+of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
+suites, **3** tool tests / 1 suite (new today), **36** e2e passing in 2.5 min
+with 3 asset-generator specs skipped by design, compat clean, all three
+packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
+errors / 4 warnings, **711** site pages with **16 087** links all resolving.
+`npm run test:all` exits 0 end to end. The fifteen store screenshots were
+regenerated on 2026-09-28 and came back **byte-identical**, so the listing art
+already shows the lexicon that ships, and `npm run packs` is now idempotent, so
+running the whole gate leaves the tracked tree clean. The code is not what is
+holding the release up. The critical path runs through two things only Creagh
+can do: **B0 — four stacked documentation PRs have to be merged into `main`**
+before the version can be bumped, and then **B1 — the domain `weft.study` is
+not registered**. Everything in Now can land before either and depends on
+neither.
 
 ## Now
 
@@ -48,35 +53,95 @@ can land before that and does not depend on it.
       item was half wrong and the worry behind it was sound; both are written
       up at the top of Notes.
 
+- [x] **Make `npm run packs` reproducible.** Done 2026-09-28. It stamped
+      `builtAt` with today's date, so every run rewrote all eight files under
+      `src/lexicon/packs/` whether or not a seed lexicon had moved — which left
+      a fresh clone dirty and `npm run release`, which refuses a dirty tree,
+      refusing. The stamp is now kept when nothing else about that pack has
+      changed, so it says when the content was built rather than when the
+      command last ran. Three things came with it: a new `npm run test:tools`
+      suite (`tests/tools/build-pack.test.ts`, 3 tests, inside `npm test` and
+      so inside `test:all`); a CI step that rebuilds the packs and diffs them,
+      which is the only thing that catches a `tools/seed/*.tsv` edit nobody
+      rebuilt; and five documents' counts moved 617 → 620. See the note at the
+      top of Notes.
+
+- [ ] **Give the sitemap a `lastmod` that means something.** *Topmost unchecked
+      item as of 2026-09-28.* `tools/build-site.mjs:1237` stamps `new Date()`
+      on **all 711** `<url>` entries, so every deploy tells search engines that
+      all ~700 word pages changed today. `.github/workflows/site.yml` rebuilds
+      on every push, so the claim is made repeatedly and is false every time.
+      Google's sitemap documentation says it uses `lastmod` only when the value
+      is consistently and verifiably accurate, and may ignore it otherwise —
+      so the effect is to throw away the signal the 711-page asset exists to
+      earn. Worth re-reading that page rather than trusting this sentence.
+      It is the same bug just fixed in the pack builder, in the one place it
+      is awkward to undo: once URLs are indexed with bad dates, the correction
+      has to be crawled. Cheap now that
+      the packs carry an honest date — the ~700 word pages are generated from
+      `src/lexicon/packs/en-*.json`, so that pack's `builtAt` *is* their
+      content date, and the five hand-written pages can take the commit date
+      of the Markdown behind them. If a per-file git date is used instead,
+      `site.yml`'s checkout needs `fetch-depth: 0`: at the default depth of 1
+      every file reports HEAD's date, which is this bug again with more steps.
+      Do it before **B3**, not after. *~1 hour.*
+
+- [ ] **Re-sweep every factual claim in `docs/LAUNCH.md`.** It is the only file
+      in the repository whose errors leave it — the drafts are copy a human
+      posts to Hacker News, Reddit and the language forums — and it has now
+      been wrong twice about the same sentence: "449 tests" on 2026-09-27 and
+      "617 tests" today, both inside the HN comment draft. Both were caught by
+      grepping for a number, which only finds the claims that *are* numbers.
+      Read it end to end against the code instead: the permission list, the
+      lexicon sizes, what is Free versus Pro, the renderer claim, the
+      licence-revocation honesty, and every URL. Nothing here posts anything —
+      `docs/LAUNCH.md` is drafts for a human to send, by the decision recorded
+      in `CLAUDE.md` — so this is a read-and-correct pass. *~1 hour.*
+
 ## Next
 
-- [ ] **Cut 1.0.1.** *Topmost unchecked item as of 2026-09-28.*
-      `npm run release -- --version=1.0.1` bumps `VERSION` in
-      `manifest.config.mjs`, keeps `package.json` in step, rebuilds, packages
-      all three targets and writes `RELEASE-1.0.1.md`. It refuses a dirty tree
-      and runs the tests first, so land everything above first. It stops
-      before committing and prints the `git tag` / `git push --tags` lines —
-      pushing the tag fires `.github/workflows/release.yml`, which is an
-      outward-facing publish, so that is **B2**, not this. *~20 minutes.*
-      **Not from a feature branch.** Four documentation branches are stacked
-      and unmerged as of 2026-09-28 — PRs #1, #2, #3 and the screenshot
-      verification on top of them — and a version bump belongs on `main`
-      once they land, or `VERSION` moves on a branch that may never merge.
-
-- [ ] **Re-run `npm run test:all` on the bumped tree**, plus
-      `npm run packs:verify` and `npm run site:check`, and paste the result
-      into the Journal in `CLAUDE.md`. That is the gate `docs/SUBMIT.md` names
-      as the thing nothing below should be attempted without. The two extra
-      commands are there because `test:all` does **not** include them — found
-      2026-09-27, when the command table in `CLAUDE.md` claimed it did.
-      `packs:verify` is the only thing that reads the lexicons and
-      `site:check` is the only thing that proves the privacy policy URL has a
-      page behind it.
+- [ ] **Check the remaining artefact generators for byte-stability.** The date
+      half of this is already done: `grep -n 'new Date()' tools/*.mjs build.mjs`
+      found exactly three sites on 2026-09-28 — the pack builder (fixed), the
+      sitemap (first item in Now), and `tools/make-licence.mjs`, where `issued`
+      and `expires` are genuinely wall-clock and correct. `build.mjs`'s two are
+      timing output. What is *not* checked is whether `npm run og` and
+      `npm run site` are otherwise byte-stable for unchanged input, which
+      matters for the same reason: a generated artefact that changes without
+      its input changing cannot be reviewed, and both write into gitignored
+      `dist/`, so nothing would notice. Low priority — nothing is known to be
+      wrong, unlike the two items above.
 
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
+
+**B0 — Merge the four stacked documentation PRs, then cut 1.0.1.** *Blocks the
+version bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 are stacked in
+that order, all four are drafts, so `main` is six commits behind and `VERSION`
+in `manifest.config.mjs` is still 1.0.0. Two steps here belong to a human
+rather than an agent, by the rules agents run under here: merging, and
+committing to `main`. In order:
+
+1. Merge #1, #2, #3, #4 bottom-up — each targets the branch below it, so
+   GitHub retargets the next as each lands.
+2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
+   runs the tests first, bumps `VERSION`, keeps `package.json` in step,
+   rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
+   stops before committing and prints the `git tag` / `git push --tags` lines.
+3. Re-run the whole gate on the bumped tree: `npm run test:all`, **plus**
+   `npm run packs:verify` and `npm run site:check`, which `test:all` does not
+   include. Paste the result into the Journal in `CLAUDE.md`. That is the gate
+   `docs/SUBMIT.md` names as the thing nothing below should be attempted
+   without.
+4. Do **not** push the tag yet: that fires
+   `.github/workflows/release.yml`, which publishes outward. The tag push
+   belongs to **B2**, which is where the repository also becomes public — a
+   release whose download button 404s is worse than no release.
+
+*~30 minutes. Numbered B0 rather than renumbering B1–B6, whose names are
+referenced from Notes here and from the Journal in `CLAUDE.md`.*
 
 **B1 — Register `weft.study`.** *Everything else waits on this.* `dig` returns
 NXDOMAIN from both 8.8.8.8 and 1.1.1.1 while the `.study` TLD itself resolves,
@@ -95,7 +160,8 @@ download button points at `<repo>/releases/latest`
 (`tools/build-site.mjs:613`), which 404s for everyone but the owner while the
 repo is private. `gh repo edit quiquae/weft --visibility public`, or host the
 zips elsewhere and set `WEFT_REPO`. Then push the `v1.0.1` tag so the release
-workflow attaches the packages. *Needs: B1 decided.*
+workflow attaches the packages. *Needs: B1 decided, and B0 done — the tag
+cannot be pushed before it exists.*
 
 **B3 — Turn on Pages and set `WEFT_PAGES=true`.** Settings → Pages → Source:
 GitHub Actions, then `gh variable set WEFT_PAGES --body true`. Deliberately
@@ -170,6 +236,61 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — `npm run packs` is reproducible, so CI can police the
+lexicons now.** The stamp is kept when the content has not changed. A
+`test:tools` suite and a CI diff step came with it.
+
+- **The fix is a content comparison, not a deleted field.** `builtAt` still
+  exists and still means what it says: `writeStamped()` in
+  `tools/build-pack.mjs` parses the pack already on disk, compares everything
+  *except* the stamp, and keeps the old date when the rest is identical.
+  Deleting the field or freezing it to a constant would have been a smaller
+  diff and would have thrown away the only record of when a lexicon was last
+  touched.
+- **Verified by watching it fail, in both directions.** The test has to
+  simulate a day boundary, because two runs on the same day cannot expose a
+  wall-clock stamp — they agree. So: build, rewrite the stamp to `2020-01-01`
+  as though it had been committed then, build again, assert both the date and
+  the bytes survived. Before the fix it failed with `actual: '2026-09-28',
+  expected: '2020-01-01'`. The guard in the other direction — content really
+  changed, so the stamp *must* move — passed before the fix as well as after,
+  and is there to keep passing.
+- **`--out=<dir>` is a seam, not a feature.** `tools/build-pack.mjs` wrote to a
+  hardcoded `src/lexicon/packs/`, so any test of it would have dirtied the
+  tracked packs — which is the bug under test. The flag was added on its own,
+  before the fix, so the failing test could run against a temp directory.
+- **The CI guard was verified by breaking a lexicon on purpose.** Changed
+  `lion` in `tools/seed/lex-fr.tsv`, ran `npm run packs`, and
+  `git diff --exit-code -- src/lexicon/packs` exited 1 — touching only
+  `en-fr.json` and `index.json` and leaving the other six packs' dates alone.
+  That per-file behaviour is what makes the CI diff readable: it names the
+  language that moved instead of showing eight files every time.
+- **One wrinkle: the comparison is against the file on disk, not against
+  git.** Change a seed, rebuild, then revert the seed and rebuild again, and
+  the stamp is left at today — because the file on disk really did change
+  twice. `git checkout -- src/lexicon/packs/` is the fix, and is what was done
+  here after the guard test above.
+- **Deliberately not added: a line of output saying "nothing changed".** It was
+  tempting, because the previous session had to compare mtimes to tell "ran and
+  changed nothing" apart from "never ran". But the new CI step asserts exactly
+  that and *fails* on it, which is the enforced version of the same signal; a
+  second, unenforced copy in stdout would be surface without a guarantee. Do
+  not re-litigate this without a reason the CI step does not cover.
+- **`tests/tools/` is a third suite, deliberately not folded into
+  `tests/core/`.** That glob would have picked the file up with no wiring at
+  all, which is exactly why it does not live there: the core suite's documented
+  virtue is that it does no I/O and needs no browser, and this test spawns a
+  child process and writes files. `npm test` runs all three, so `test:all` —
+  the gate — includes it without `test:all` itself changing.
+- **Five documents' counts moved**, 617 → 620, `docs/LAUNCH.md:215` among them
+  — inside the Hacker News draft, *again*. Twice in two sessions the same
+  sentence has been wrong, both times caught by grepping for a number, which
+  only finds the claims that are numbers. Hence the second item in Now: read
+  it, do not grep it.
+- **Found on the way, not fixed:** `tools/build-site.mjs:1237` stamps today on
+  all 711 sitemap `<lastmod>` entries. Same bug class, worse consequence,
+  first item in Now.
 
 **2026-09-28 — the store screenshots already ship the current lexicon.** All
 fifteen regenerate byte-for-byte, so there was nothing to commit.

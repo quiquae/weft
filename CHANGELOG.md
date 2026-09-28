@@ -50,17 +50,27 @@ drift. `npm run site:check` now fails the build if `SUPPORT_URL`,
 the policy wrong: its permission table still listed `idle` and
 `unlimitedStorage`, neither of which the manifest declares.
 
-**Two fixes to the tools rather than the product.** The lexicon verifier had
-destructured six of its eight columns, so Old English's 544 etymons and 126
+**`npm run packs` no longer rewrites every lexicon it reads.** It stamped
+`builtAt` with today's date, so all eight files under `src/lexicon/packs/`
+changed on every run whether or not a seed lexicon had moved — which left a
+fresh clone dirty after the setup step the README prints, and `npm run
+release` refuses a dirty tree. The stamp is now kept when nothing else about
+a pack has changed, so it says when the content was built rather than when the
+command last ran. That makes the generator reproducible, which in turn lets CI
+rebuild the packs and diff them: a `tools/seed/*.tsv` edit that was never
+rebuilt used to ship the old words with every check green.
+
+**Two more fixes to the tools rather than the product.** The lexicon verifier
+had destructured six of its eight columns, so Old English's 544 etymons and 126
 notes had never been checked by anything at all. And `npm run verify:release`
 downloads what GitHub actually serves, loads it in a real browser, and checks
 the first-run page renders, the worker answers and no test seam shipped —
 everything else in the repository tests what the build produces.
 
-**Built with** 617 tests: 484 unit, 97 in jsdom, 36 end-to-end in a real
-Chromium with the extension loaded. Three further end-to-end specs are
-defined and deliberately skipped; they generate assets rather than assert
-anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
+**Built with** 620 tests: 484 unit, 97 in jsdom, 3 over the build tools, and
+36 end-to-end in a real Chromium with the extension loaded. Three further
+end-to-end specs are defined and deliberately skipped; they generate assets
+rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface
 forms per language, 653 KB for all seven.
 

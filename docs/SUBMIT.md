@@ -9,9 +9,10 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 484 unit tests, 97 jsdom tests, the compatibility audit, all
-three builds, the package validator, and 36 end-to-end tests in real
-Chromium. Nothing below should be attempted until that is green.
+runs typecheck, 484 unit tests, 97 jsdom tests, 3 tool tests, the
+compatibility audit, all three builds, the package validator, and 36 end-to-end
+tests in real Chromium. Nothing below should be attempted until that is
+green.
 
 Three further end-to-end specs are defined and deliberately skipped — they
 generate assets rather than assert anything, and run only behind

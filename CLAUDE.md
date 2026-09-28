@@ -27,19 +27,24 @@ unchanged), `firefox`, `safari`. The pedagogical method is the diglot weave
 and scheduling with FSRS-6. `docs/PEDAGOGY.md` separates the cited research
 from the judgement calls.
 
-**What "done" looks like:** the code is done. `git log` shows 34 commits
-ending in a green `v1.0.0` tag plus five commits after it. "Done" now means
-*released* — a Chrome Web Store listing that a stranger can install from. That
-is a submission Creagh performs by hand with her own developer account, so
-this repository's job is to be release-ready and to keep the remaining human
-steps written down. `TODO.md` is that list; `docs/SUBMIT.md` is the long-form
-runbook and `docs/STORE-LISTING.md` holds every field's copy.
+**What "done" looks like:** the code is done. `git log` shows 29 commits
+ending in a green `v1.0.0` tag, five more on `main` after it, and an unmerged
+documentation stack on top of that (**B0** in `TODO.md`), which is why `VERSION`
+has not moved. "Done" now means *released* — a Chrome Web Store listing that a
+stranger can install from. That is a submission Creagh performs by hand with
+her own developer account, so this repository's job is to be release-ready and
+to keep the remaining human steps written down. `TODO.md` is that list;
+`docs/SUBMIT.md` is the long-form runbook and `docs/STORE-LISTING.md` holds
+every field's copy.
 
 ## How to work here
 
-Node 22 (`.nvmrc`; `engines.node >= 20`; CI pins 22). `npm ci` then
-`npm run packs` before a first build — the lexicon packs in
-`src/lexicon/packs/` are generated from `tools/seed/*.tsv`.
+Node 22 (`.nvmrc`; `engines.node >= 20`; CI pins 22). `npm ci`, then
+`npm run packs` if you have touched `tools/seed/*.tsv` — the lexicon packs in
+`src/lexicon/packs/` are generated from those and committed, so a fresh clone
+already has them. Running it anyway is a no-op: since 2026-09-28 it keeps each
+pack's `builtAt` when nothing else about that pack has changed, so it no longer
+leaves a clean tree dirty.
 
 The commands that matter, with what each actually produced on 2026-09-27:
 
@@ -48,13 +53,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **3 pass**, 1 suite, ~1 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 979 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run test:all` | typecheck, unit, jsdom, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
+| `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
 store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
@@ -146,6 +152,18 @@ builds substitute a throwaway keypair so the e2e suite can mint a real-looking
 key; `tools/validate-package.mjs` greps every shipped bundle for that test key
 and fails if it finds it, and checks the publisher key *is* present.
 
+**Generated files record when their content was built, not when the build
+ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when
+everything else about that pack is byte-identical, and only stamps today when
+the content genuinely changed. Do not simplify that back to
+`new Date()`: it made all eight files under `src/lexicon/packs/` change on
+every `npm run packs`, which left a fresh clone dirty and `npm run release`
+— which refuses a dirty tree — refusing. Reproducibility is also what the
+`Committed packs match the seed lexicons` step in CI rests on; that step
+rebuilds the packs and diffs them, and is the only thing that catches a
+`tools/seed/*.tsv` edit nobody rebuilt. `tests/tools/build-pack.test.ts`
+fails if the stamp starts tracking the wall clock again.
+
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
@@ -169,6 +187,71 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — a generator that was not reproducible, and the guard it buys
+
+`npm run packs` stamped `builtAt` with today's date, so it rewrote all eight
+files under `src/lexicon/packs/` on every run whether or not a seed lexicon had
+moved. The previous session found that and reverted the churn; this one fixed
+it. `writeStamped()` in `tools/build-pack.mjs` compares the pack it is about to
+write against the one already on disk, ignoring the stamp, and keeps the old
+date when the rest is byte-identical. `builtAt` therefore now says what it
+always claimed to: when the *content* was built.
+
+The reason to care is not tidiness. `npm run release` refuses a dirty tree, and
+the setup line in this file told a new contributor to run `npm run packs`
+before a first build — so following the documented setup produced a tree the
+documented release command would not accept. That line now says the packs are
+committed and the command is a no-op unless `tools/seed/*.tsv` has changed.
+
+**What reproducibility buys, and is the point of the change:** CI can now
+rebuild the packs and diff them. The new `Committed packs match the seed
+lexicons` step is the only thing in the repository that catches a
+`tools/seed/*.tsv` edit nobody rebuilt — which until today would have shipped
+the old words with every other check green, because nothing else reads the
+seeds. Verified the way a guard has to be: changed `lion` in `lex-fr.tsv`, ran
+the build, watched `git diff --exit-code` exit 1. It touched `en-fr.json` and
+`index.json` only, leaving the other six packs' dates alone, which is what
+makes the CI diff legible rather than eight files wide.
+
+Done test-first. The test has to simulate a day boundary — two runs on the same
+day cannot expose a wall-clock stamp, since they agree — so it builds, rewrites
+the stamp to `2020-01-01` as though committed then, builds again, and asserts
+the date and the bytes survived. It failed with `actual: '2026-09-28', expected:
+'2020-01-01'` before the fix. `--out=<dir>` was added first and alone, as a
+seam: without it any test of this tool would have written into the tracked
+packs, which is the bug under test.
+
+That test is a **third suite**, `npm run test:tools`, not a file in
+`tests/core/`. The core glob would have picked it up with no wiring, and that is
+the reason to keep it out: that suite's documented virtue is no I/O and no
+browser, and this one spawns a child process. `npm test` runs all three, so the
+gate picks it up without `test:all` changing. Counts moved 617 → 620 in five
+documents, `docs/LAUNCH.md:215` among them — the Hacker News draft, wrong about
+the same sentence for the second session running. Both times a grep for a
+number found it, which is why `TODO.md` now asks for a read-through instead.
+
+Found and deliberately left: `tools/build-site.mjs:1237` stamps today on all
+711 sitemap `<lastmod>` entries, so every deploy claims ~700 word pages changed
+today. Same bug class, and worse, because a wrong date that has been indexed
+has to be re-crawled to correct. It is the top item in `TODO.md` rather than
+fixed here, because the fix wants a decision — the pack's honest `builtAt` is
+the right date for the word pages, but a per-file git date would need
+`fetch-depth: 0` in `site.yml` — and the site is not published yet (B3), so
+nothing is indexed and there is no hurry that justifies guessing.
+
+Measured at the end, on Node 26.7: `npm run test:all` exit 0 — typecheck clean,
+484 unit / 122 suites, 97 jsdom / 22 suites, 3 tools / 1 suite, compat clean,
+979 KB × 3 passing `validate`, 36 e2e passed and 3 skipped in 2.5 min, then
+build and validate again. Separately `packs:verify` 0 errors and the same 4 IPA
+warnings, `site:check` 711 pages and 16 087 links all resolving. The tracked
+tree was clean of `src/lexicon/packs/` after all of it, which is the fix
+demonstrating itself.
+
+What needs a human: **B0** in `TODO.md` is new — four stacked documentation PRs
+(#1 → #2 → #3 → #4) have to be merged before `VERSION` can move, since a
+version bump on a branch that may never merge is worse than no bump. Then B1,
+the unregistered domain, as before.
 
 ### 2026-09-28 — the listing screenshots were already right
 
