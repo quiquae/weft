@@ -1,7 +1,7 @@
 /**
  * What the site builder writes, checked by reading the pages it wrote.
  *
- * Two unrelated claims live here because they are answered by one build. The
+ * Three unrelated claims live here because they are answered by one build. The
  * builder takes 0.6 s for all 711 pages, but the setup is the awkward part —
  * it must render into a temporary directory and never into `dist/site`, which
  * is what `npm run site:check` reads — so a second suite would duplicate that
@@ -11,6 +11,7 @@
  *      page. `tests/tools/sitemap.test.ts` covers where a date comes from;
  *      this covers whether the builder asks.
  *   2. No word page states its own descent backwards. See below.
+ *   3. No word page starts a second sentence with a lexicon note. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -182,6 +183,72 @@ describe('a word page states its descent in the right direction', () => {
     assert.ok(
       byLang('/old-english/') > 300,
       `only ${byLang('/old-english/')} Old English pages render a descent sentence`,
+    );
+  });
+});
+
+/**
+ * A lexicon note is an appositive fragment, and the word page is the one
+ * surface that forgets it.
+ *
+ * `src/content/tooltip.ts` gives each note its own `<div class="note">` and
+ * the descent hub gives it its own `<td>`, so in both places a lowercase
+ * opener lands as a caption and reads correctly — which is what the corpus is
+ * written for: 141 of the 185 distinct notes across the seven packs begin with
+ * a lowercase letter ("a beech-wood tablet", "the near-dweller", "literally
+ * 'woman-person'"). The word page alone put the note in the *same* `<p>` as
+ * the descent sentence, after that sentence's full stop, so on 55 pages it
+ * opened a second sentence in lower case:
+ *
+ *     This is the Latin word your English mile was borrowed from.
+ *     a mile was mīlle passūs, a thousand paces.
+ *
+ * The fix joins the note into the sentence with a dash rather than moving the
+ * corpus, and which corpus to move is what the measurement settled. Of the 99
+ * notes that reach a word page, 39 open with a quotation mark around a cited
+ * target-language form ("mann" meant a human being of either sex) and 5 open
+ * with a proper noun (Jenner, Janus, Argentina, September, November). So
+ * capitalising the first letter at render time would have been a silent no-op
+ * on 44 of the 99, and on `paene īnsula, almost an island` it would have
+ * capitalised a cited Latin phrase. A dash needs no exception list: every
+ * capital already in the corpus is required by a name, not by sentence
+ * position, so the dash can never produce a spurious one.
+ *
+ * The rule is therefore about the paragraph, not the letter — one sentence,
+ * one full stop, and it comes last. That is strictly stronger than "no
+ * sentence starts in lower case", which would have passed all 39 quoted notes
+ * and all 5 named ones straight back through.
+ */
+describe('a word page joins its note to the descent sentence', () => {
+  test('no descent paragraph starts a second sentence', () => {
+    // `after` is everything the builder puts past the descendant, which is
+    // where the note lands. A full stop with text past it is the defect.
+    const offenders = descents.filter((d) => /\.\s*\S/.test(d.after));
+
+    assert.deepEqual(
+      offenders.map((d) => d.page).slice(0, 5),
+      [],
+      `${offenders.length} pages append the note after the sentence's full stop instead of joining it:\n  ${offenders
+        .slice(0, 5)
+        .map((d) => `${d.page}: "…${d.descendant}${d.after}"`)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('the notes are still on the page, joined rather than dropped', () => {
+    // Guards the cheap way out of the rule above: deleting the note satisfies
+    // a check that only looks for a second full stop. A floor rather than an
+    // exact count, so adding a note to a seed lexicon needs no edit here.
+    const joined = descents.filter((d) => d.after.includes('—'));
+
+    assert.ok(
+      joined.length > 90,
+      `only ${joined.length} word pages carry a note joined to the descent sentence`,
+    );
+    assert.deepEqual(
+      joined.filter((d) => !/—\s*\S/.test(d.after)).map((d) => d.page),
+      [],
+      'a page renders the joining dash with nothing after it',
     );
   });
 });
