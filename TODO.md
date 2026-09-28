@@ -25,12 +25,16 @@ headwords to the pack's own orthography. **And the launch drafts and the OG
 card both hold up under a second look, as of 2026-09-28** — `docs/LAUNCH.md`
 was independently re-swept claim by claim against the code a second time and
 nothing new was wrong, and `npm run og` joins `npm run packs` and `npm run
-site` as measured byte-stable. The code is not what is holding the release
-up. The critical path runs through two things only
-Creagh can do: **B0 — ten stacked PRs have to be merged into `main`** before
-the version can be bumped, and then **B1 — the domain `weft.study` is not
-registered**. Everything in Now can land before either and depends on
-neither.
+site` as measured byte-stable. **And the popup and the options page now say
+what the demo says, as of 2026-09-28** — both rendered the weave ratio as
+"1 word in N" with no unit, the exact ambiguity the demo's own fix (PR #8,
+below) had already corrected to "N% of content words"; neither surface was
+named by that item, because it named only the demo. **Now is empty.** Every
+item queued for an agent is done and Next has nothing behind it; the code is
+not what is holding the release up. The critical path runs through two things
+only Creagh can do: **B0 — twelve stacked PRs have to be merged into `main`**
+before the version can be bumped, and then **B1 — the domain `weft.study` is
+not registered**.
 
 ## Now
 
@@ -175,31 +179,53 @@ neither.
       left, only a comment describing the bug it used to have) — only the
       mechanics of how that was found were retold slightly wrong.
 
-- [ ] **Decide whether the popup's density label wants the same qualifier the
-      demo just gained.** *Topmost unchecked item as of 2026-09-28,* promoted
-      from Next. `density()` at `src/ui/components/pieces.tsx:280` renders a
-      ratio as `1 word in ${round(1/ratio)}`, and that ratio is a proportion
-      of **eligible** words (`selector.ts:38`), not of words on the page — so
-      "1 word in 3" is one *content* word in three, and on a real page that is
-      nearer 1 word in 20 overall. The demo now says "1 in 3 of content
-      words", which is the language `src/core/settings.ts:64` already uses
-      ("a third of the content words"), so the product has the right phrase
-      in two places out of three. Against changing it: the popup is narrow and
-      the user watching their own page can see the density directly, which a
-      visitor to the landing page cannot. *~10 minutes; copy only.*
+- [x] **Decide whether the popup's density label wants the same qualifier the
+      demo just gained.** Done 2026-09-28. **Yes**, and the one recorded
+      argument against it does not survive the comparison it invites: "the
+      user watching their own page can see the density directly" is exactly
+      the argument that was already rejected for the demo, where the visitor
+      could also see the passage directly, and a claim that did not match what
+      was visibly on screen was what made the old demo readout "read as a
+      broken counter". A user who glances from "1 word in 3" at their own page
+      and sees nothing like one word in three is looking at the same failure,
+      not a smaller one. Fixed both unqualified call sites of `oneWordIn()`
+      (`src/ui/components/pieces.tsx:277`): the popup
+      (`src/ui/popup/index.tsx:261`, "...you could read is in French" →
+      "...of the content words is in French") and the two options-page rows
+      that share its exact `value` pattern (`src/ui/options/sections.tsx:276,294`,
+      "6% — 1 word in 16" → "6% of content words — 1 word in 16"). Left alone:
+      onboarding's two call sites (`src/ui/onboarding/index.tsx:219,227`),
+      which already carry their own qualifier ("of the words Weft knows") —
+      wording that describes the same *eligible* set from the lexicon-coverage
+      angle rather than the part-of-speech angle, not a gap to close.
+      Verified in a real Chromium build rather than assumed: a scratch
+      Playwright script (not committed) drove both the 340×330 popup and the
+      900-wide options page and checked `scrollWidth` against `clientWidth` on
+      the affected rows, because `.row__value` is `white-space: nowrap` in
+      `src/ui/theme.css:311` and a longer string could in principle have
+      overflowed a narrow row — it did not, at ratios from 6% to 60%. The two
+      committed screenshots that show this text were regenerated and kept:
+      `docs/screens/options-density.png` (embedded in `README.md`) and
+      `docs/screens/popup.png` (tracked but not embedded); `docs/screens/options.png`
+      changed for the same reason and was kept too. Five other regenerated
+      screenshots (`dashboard*.png`) were reverted — they drift on any day the
+      whole `WEFT_SCREENS=1` suite reruns, for a reason unconnected to this fix;
+      see Notes.
 
 ## Next
 
-Nothing queued. The one item that was here was promoted to Now on 2026-09-28.
+Nothing queued, and Now is empty too, as of 2026-09-28 — every item an agent
+could pick up has been worked. Everything remaining lives in Blocked, and all
+of it needs Creagh: B0 first, then B1.
 
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the ten stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → … → #10 are
-stacked in that order, all ten are drafts, so `main` is thirteen commits
+**B0 — Merge the twelve stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → … → #12 are
+stacked in that order, all twelve are drafts, so `main` is fifteen commits
 behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
 documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
 the launch and store copy and carries one comment change in
@@ -207,16 +233,19 @@ the launch and store copy and carries one comment change in
 `site/index.html`, the readout's wording, and a new test suite
 (`tests/tools/demo-curve.test.ts`). #9 is Latin orthography: three tooltip
 notes in the lexicon, four prose citations, and a second new test suite
-(`tests/tools/lexicon-orthography.test.ts`); it is the only one of the ten
-that rebuilds a shipped pack — `en-la.json`, four fields. #10 re-checked the
-launch drafts against the code a second time and confirmed `npm run og` is
-byte-stable; both came back clean, so it is a `TODO.md` bookkeeping commit
-only. Nothing in the extension's *code* moves in any of them.
-Two steps here belong to a human rather than
+(`tests/tools/lexicon-orthography.test.ts`); it is the only one of the twelve
+that rebuilds a shipped pack — `en-la.json`, four fields. #10 and #11 are
+both `TODO.md`-only bookkeeping: re-checking a claim a second time, and
+confirming a queued macron fix had already shipped that same day — nothing to
+merge in the code either time. #12 is the popup and options page picking up
+the "content words" wording #8 gave the demo, plus a screenshot regeneration
+and a correction to this file's own PR count, which had drifted by one
+before #12 even existed. Nothing in the extension's *code* moves in #10 or
+#11. Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
 
-1. Merge #1 … #9 bottom-up — each targets the branch
+1. Merge #1 … #12 bottom-up — each targets the branch
    below it, so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
@@ -330,6 +359,68 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the demo's fix had not reached the two surfaces that use the
+same function.** The item asked only whether the popup wanted the demo's
+qualifier; `oneWordIn()` turned out to have two unqualified call sites, not
+one, and both got fixed together because they are the same string pattern
+produced by the same function.
+
+- **The "against" argument was the demo's own argument, aimed at the wrong
+  target.** "The user watching their own page can see the density directly,
+  which a visitor to the landing page cannot" is true, but it was already
+  tried as a defence of the *demo's* old wording and lost: the demo visitor
+  could also see the passage directly, and a number that did not match what
+  was visibly on screen is precisely what made the old readout "read as a
+  broken counter" (PR #8, further down). Seeing the page
+  does not make an unqualified ratio safe to state; if anything it is what
+  turns a mismatch into a noticed one.
+- **The second call site was not named by the item.** `src/ui/options/sections.tsx:276,294`
+  builds the identical `"${percent} — ${oneWordIn}"` string as the popup, for
+  the Resting-density and Ceiling rows. Fixed both, for the same reason as
+  the popup: leaving one of two identical patterns qualified and the other
+  not would have been a worse inconsistency than the one being fixed.
+  `src/ui/onboarding/index.tsx:219,227` was left alone on purpose — it already
+  carries its own qualifier, "of the words Weft knows", which names the same
+  *eligible* set from the lexicon-coverage side rather than the
+  part-of-speech side. Two honest descriptions of one set is not the bug the
+  demo had.
+- **Checked in a browser, not assumed safe.** `.row__value` is
+  `white-space: nowrap` (`src/ui/theme.css:311`), so a longer string could in
+  principle have overflowed the options page's compact badge, and the popup
+  is a genuine 340×330px surface where any added text has less room to hide
+  in. A scratch Playwright script (not committed) built the real `dist/chrome`
+  test target, drove both surfaces, and compared `scrollWidth` to
+  `clientWidth` on the affected rows at ratios from 6% to 60%. No overflow at
+  any of them; the popup's sentence wraps onto a second line the way the
+  original did.
+- **`docs/screens/*.png` is not byte-stable across days, and it has nothing
+  to do with this fix.** Regenerating it to update the two screenshots that
+  show the new text (`WEFT_SCREENS=1 npx playwright test screenshots`) also
+  rewrote `dashboard.png`, `dashboard-dark.png`, `dashboard-discoveries.png`,
+  `dashboard-milestones.png` and `dashboard-vocabulary.png` — none of which
+  render `oneWordIn` at all. `tests/e2e/screenshots.spec.ts` seeds vocabulary
+  progress with `lastReview: now - ago * day`, and
+  `src/ui/dashboard/index.tsx:299,429` renders that as an absolute calendar
+  date (`new Date(entry.at).toLocaleDateString(...)`), so every capture after
+  today differs from today's by a few bytes of date text, on every dashboard
+  screenshot, forever. Not a regression. Reverted those five with
+  `git checkout --` and kept only the three whose diff is real —
+  `options-density.png` and `popup.png`, both embedded or tracked and both
+  showing the edited text directly, plus `options.png`, the full-page shot
+  that contains the same rows. **Do not build a determinism gate around this
+  directory the way `docs/store/*` earned one**: that gate's justification
+  was OS/font antialiasing as the *only* source of drift on lexicon-fixed
+  content; this directory has a second, calendar-shaped source on top, so a
+  from-scratch diff would flag ordinary future sessions as often as it flags
+  a real regression.
+- **`TODO.md`'s own PR count was already wrong before this session added a
+  PR to it.** B0 said "ten stacked PRs" and "Merge #1 … #9", but PR #11 (a
+  same-day bookkeeping commit, no code) was already open. Corrected to twelve
+  while adding this session's #12, and the merge instruction now covers the
+  full range rather than stopping two short of it — worth knowing because
+  that stale instruction would have told Creagh to stop merging before the
+  most recent work.
 
 **2026-09-28 — a queue entry asked for the macron fix `1fc81be` had already
 shipped, same day.** The task named the same three sites `1fc81be` corrected

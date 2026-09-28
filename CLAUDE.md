@@ -188,6 +188,69 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — the demo learned to say "content words"; two more surfaces had not
+
+`TODO.md`'s top item asked only whether the popup's density line wanted the
+qualifier the demo gained back in PR #8. It did, and so did a surface the
+item never named: `oneWordIn()` (`src/ui/components/pieces.tsx:277`) has four
+call sites, and two of them — the popup and the two options-page density rows
+— built the exact unqualified `"1 word in N"` string the demo used to.
+
+The argument the item recorded against changing it was the demo's own
+argument, aimed at the wrong target. "The user watching their own page can
+see the density directly, which a visitor to the landing page cannot" is
+true, but the demo visitor could see the passage directly too, and a number
+that did not match what was visibly on screen is exactly what made the old
+demo readout "read as a broken counter" back then. Being able to check
+a claim against reality does not make an unqualified claim safe — it is what
+turns a mismatch into a noticed one. Fixed: the popup
+(`src/ui/popup/index.tsx:261`, "...you could read is in French" → "...of the
+content words is in French") and the options page's Resting-density and
+Ceiling rows (`src/ui/options/sections.tsx:276,294`, "6% — 1 word in 16" →
+"6% of content words — 1 word in 16"). Left alone: onboarding's two call
+sites (`src/ui/onboarding/index.tsx:219,227`), which already say "of the
+words Weft knows" — a different, already-adequate framing of the same
+*eligible* set (lexicon coverage rather than part of speech), not a gap.
+
+Verified in a real Chromium build rather than assumed safe. `.row__value` is
+`white-space: nowrap` (`src/ui/theme.css:311`) and the popup is a genuine
+340×330px surface, so a scratch Playwright script (not committed) built
+`dist/chrome` in test mode, drove both surfaces, and compared `scrollWidth`
+to `clientWidth` on the affected rows at ratios from 6% to 60%. No overflow
+anywhere; the popup's longer sentence wraps the way the original did.
+
+Regenerating the screenshots that show the new text
+(`WEFT_SCREENS=1 npx playwright test screenshots`) surfaced an unrelated kind
+of drift: it also rewrote five `dashboard*.png` files that render nothing
+this session touched, because `tests/e2e/screenshots.spec.ts` seeds
+vocabulary progress relative to `Date.now()` and
+`src/ui/dashboard/index.tsx:299,429` renders that as an absolute calendar
+date. Every future capture of those five will differ from today's by a few
+bytes of date text regardless of what changed in the code — not a
+regression, and not something to build a determinism gate around the way
+`docs/store/*` earned one. Reverted those five with `git checkout --` and
+kept only the three whose diff is real: `options-density.png` (embedded in
+`README.md`) and `popup.png` (tracked but unreferenced), plus `options.png`,
+the full-page shot containing the same rows.
+
+`TODO.md`'s own PR count had drifted before this session added to it: B0 said
+"ten stacked PRs" and an instruction to merge only "#1 … #9", but PR #11 — a
+same-day bookkeeping commit with no code, unlisted — was already open.
+Corrected to twelve, covering this session's own PR as #12, and the merge
+instruction now covers the full range instead of stopping two short of it.
+
+Measured at the end, on Node 26.7: `npm run test:all` **exit 0**, run twice —
+typecheck clean, 484 unit / 122 suites, 97 jsdom / 22 suites, 21 tools / 6
+suites, compat 56 pass / 7 degrade / 0 fail, 979 KB × 3 passing `validate`,
+36 e2e passed and 3 skipped in 1.8 min, then build and validate again.
+Separately `packs:verify` 0 errors / 4 warnings and `site:check` 711 pages /
+16 087 links all resolving — both unchanged from the last measurement, as
+expected, since nothing here touched a lexicon or the site generator.
+
+What needs a human: **B0** is now *twelve* stacked PRs, this being #12.
+`Now` and `Next` are both empty; nothing here is agent-actionable until B0
+or B1 move. Nothing else moved.
+
 ### 2026-09-28 — the item named one misspelling; writing the check found three
 
 `TODO.md`'s top item was "spell `mīlle` with its macron in the three places
