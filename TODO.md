@@ -54,9 +54,15 @@ Everything in Now is work that can land before that and does not depend on it.
       pushing the tag fires `.github/workflows/release.yml`, which is an
       outward-facing publish, so that is **B2**, not this. *~20 minutes.*
 
-- [ ] **Re-run `npm run test:all` on the bumped tree** and paste the result
+- [ ] **Re-run `npm run test:all` on the bumped tree**, plus
+      `npm run packs:verify` and `npm run site:check`, and paste the result
       into the Journal in `CLAUDE.md`. That is the gate `docs/SUBMIT.md` names
-      as the thing nothing below should be attempted without.
+      as the thing nothing below should be attempted without. The two extra
+      commands are there because `test:all` does **not** include them — found
+      2026-09-27, when the command table in `CLAUDE.md` claimed it did.
+      `packs:verify` is the only thing that reads the lexicons and
+      `site:check` is the only thing that proves the privacy policy URL has a
+      page behind it.
 
 ## Blocked
 

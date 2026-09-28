@@ -46,15 +46,15 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, 1.7 s |
-| `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, 1.6 s |
-| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 2.2 min |
-| `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers, clean |
+| `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
+| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
+| `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 979 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run test:all` | all of the above, ordered to fail fastest | the gate before any release |
+| `npm run test:all` | typecheck, unit, jsdom, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
 store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
@@ -201,6 +201,16 @@ the byte size. `3060d93` added etymons and notes to existing French entries
 rather than adding entries, which is why 584–588 / 579–583 is right in both
 changelog entries and only the KB differs. Worth knowing before assuming a
 lexicon change implies a count change.
+
+Then the command table in this file turned out to be the fifth wrong document,
+which is the sort of thing that happens once you go looking. **`npm run
+test:all` does not run `packs:verify` or `site:check`** — it is typecheck,
+test, compat, build:all, validate, e2e, build:all, validate — so the row
+claiming "all of the above" was inviting a release to be cut without the
+lexicons or the 711 pages ever being checked. `compat` reports 56 pass / 7
+degrade with a named fallback rather than "clean", and the two fast suites take
+about 9 s each here, not the 1.7 s and 1.6 s claimed. Wall-clock figures are
+now marked as this machine's; the counts are the part to trust.
 
 Also verified, rather than assumed, that the previous session's `/privacy` and
 `/support` work is real: `npm run site:check` reports 711 pages and 16 087

@@ -18,6 +18,12 @@ generate assets rather than assert anything, and run only behind
 `WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "36 passed, 3
 skipped" is the green result, not a partial one.
 
+`test:all` does **not** include `npm run packs:verify` or `npm run site:check`.
+Run both as well before a submission. `packs:verify` is the only thing that
+reads the lexicons, and `site:check` is the only thing that proves the privacy
+policy URL Chrome requires — and the support URL compiled into the shipped
+extension — has a page behind it.
+
 After tagging a release, check what GitHub actually serves:
 
 ```bash
