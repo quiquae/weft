@@ -7,25 +7,19 @@
 **State on 2026-09-27:** every automatable check is green — typecheck clean,
 484 unit, 97 jsdom, 36 e2e passing (3 asset-generator specs skipped by
 design), compat clean, all three packages built at 979 KB and passing
-`npm run validate`, 709 site pages with 13 228 links all resolving. The code
-is not what is holding the release up. The critical path runs through
+`npm run validate`, **711** site pages with **16 087** links all resolving.
+The code is not what is holding the release up. The critical path runs through
 **B1 — the domain `weft.study` is not registered**, which only Creagh can fix.
 Everything in Now is work that can land before that and does not depend on it.
 
 ## Now
 
-- [ ] **Generate `/privacy` and `/support` pages in `tools/build-site.mjs`.**
-      It currently writes the index, `install.html`, `pricing.html`, the seven
-      language hubs and ~700 word pages — and neither of these two.
-      `src/core/pricing.ts:91` compiles `https://weft.study/support` into the
-      shipped extension and `src/ui/options/help.tsx:91` renders it as the
-      support button, so today that button points at a page that would 404
-      even once the domain exists. The Chrome Web Store will not accept a
-      submission without a live privacy policy URL, and
-      `docs/STORE-LISTING.md` promises it at `/privacy`. `docs/PRIVACY.md` is
-      written to be published as-is; render it through the same template the
-      other static pages use, and confirm `npm run site:check` still passes
-      with the two new pages in its count. *~1–2 hours.*
+- [x] **Generate `/privacy` and `/support` pages in `tools/build-site.mjs`.**
+      Done 2026-09-27. Both are rendered from Markdown through the same
+      template as every other page, so the published page and the document in
+      `docs/` cannot drift. `npm run site:check` now also *fails the build*
+      if `SUPPORT_URL`, `PRICING_URL` or `/privacy` has no page behind it.
+      See the note at the top of Notes for what changed and what it turned up.
 
 - [ ] **Correct the test counts in three documents.** They disagree with each
       other and all three are wrong. `README.md` says "427 unit + 81 jsdom"
@@ -96,9 +90,10 @@ workflow attaches the packages. *Needs: B1 decided.*
 **B3 — Turn on Pages and set `WEFT_PAGES=true`.** Settings → Pages → Source:
 GitHub Actions, then `gh variable set WEFT_PAGES --body true`. Deliberately
 opt-in: publishing is not reversible the way a commit is, and once indexed,
-taking the site down leaves search results pointing at nothing. *Needs: B1,
-B2, and Now #1 — do not publish a site whose privacy and support pages do not
-exist and whose download button 404s.*
+taking the site down leaves search results pointing at nothing. *Needs: B1
+and B2* — the privacy and support pages now exist and `site:check` fails
+without them, but the install page's download button and the support page's
+issue-tracker link both still 404 while the repository is private.
 
 **B4 — Replace the placeholder checkout URLs.** `CHECKOUT_BASE` in
 `src/core/pricing.ts:31` is `https://weft.lemonsqueezy.com/checkout/buy`,
@@ -163,6 +158,45 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-27 — `/privacy` and `/support` now exist.** `npm run site` writes
+711 pages; `npm run site:check` reports 16 087 links, all resolving.
+
+- **They are rendered, not hand-written.** `tools/build-site.mjs` gained a
+  ~110-line Markdown renderer and a `docPage()` that runs a `docs/*.md` file
+  through the same `page()` template as everything else. Two copies of a
+  privacy policy is a guarantee they diverge, and the document also has to
+  stay readable on GitHub. **Do not** add a Markdown dependency to undo this:
+  the renderer handles exactly the subset these documents use, and if a
+  document needs more, rewriting the document is the cheaper fix.
+- **`docs/SUPPORT.md` is new.** There was no such document; the support URL
+  had been compiled into the extension for a page nobody had written. It
+  covers the popup's own explanations, the five things most likely to look
+  broken, how to produce a diagnostic report, and what Weft will never ask
+  for. Every claim in it was checked against the code, not the docs.
+- **The privacy policy was wrong about permissions.** Its table still listed
+  `idle` and `unlimitedStorage`, which `manifest.config.mjs:25` has not
+  declared for some time. Publishing that at `/privacy` would have handed a
+  Chrome reviewer a policy claiming two permissions the package never
+  requests — a mismatch on exactly the tab that gets submissions rejected.
+  Corrected, with the removals explained and pointed at the fuller account
+  in `docs/STORE-LISTING.md`.
+- **`npm run site:check` now fails the build** if `SUPPORT_URL`,
+  `PRICING_URL` (both read from `src/core/pricing.ts`) or `/privacy` has no
+  page behind it. That is the class of bug this item was: a URL compiled
+  into a *shipped extension*, which cannot be fixed by rebuilding the site.
+  Verified by deleting each page and watching it exit 1.
+- **The site workflow now rebuilds on `docs/PRIVACY.md` and
+  `docs/SUPPORT.md`.** Without that, editing the published privacy policy
+  would not have reached the site.
+- **The footer of every page now links Install · Pricing · Support ·
+  Privacy.** That is where the ~2 900 extra checked links came from.
+- **Still 404 while the repository is private:** the install page's download
+  button *and* the new support page's link to the issue tracker. Both clear
+  together at **B2**; neither is fixable here. If issues are never going to
+  be the support channel, `docs/SUPPORT.md` is the one place to change.
+- No email address exists anywhere in this repository, so the support page
+  does not invent one. If a contact address is wanted it needs B1 first.
 
 **2026-09-27 — survey pass.** Wrote `CLAUDE.md` from the repository and
 rewrote this file. Changed nothing else; read-mostly by instruction.

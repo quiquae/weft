@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 979 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 709 pages, 13 228 links, all resolve |
+| `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run test:all` | all of the above, ordered to fail fastest | the gate before any release |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -169,6 +169,36 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-27 — the two pages the outside world points at
+
+`npm run site` now writes `/privacy` and `/support`. They are `docs/PRIVACY.md`
+and a new `docs/SUPPORT.md` rendered through the same `page()` template as the
+rest of the site, by a ~110-line Markdown renderer added to
+`tools/build-site.mjs`. Rendered rather than duplicated because a privacy
+policy kept in two places is a privacy policy that will eventually disagree
+with itself, and because the document has to stay readable on GitHub too.
+A Markdown dependency would be thousands of lines to parse input this
+repository writes and reviews itself; if a document ever needs more than the
+subset the renderer handles, rewrite the document.
+
+Writing the privacy page found the privacy page wrong: its permission table
+still listed `idle` and `unlimitedStorage`, neither of which
+`manifest.config.mjs` declares. That is a mismatch on the Privacy practices
+tab, which is the tab that gets Chrome submissions rejected, so it was
+corrected and pointed at the fuller account in `docs/STORE-LISTING.md`.
+
+`npm run site:check` now also fails the build when `SUPPORT_URL`,
+`PRICING_URL` (read from `src/core/pricing.ts`) or `/privacy` has no page
+behind it. That is the shape of the bug this was: a URL compiled into a
+*shipped extension*, where rebuilding the site cannot rescue it. Verified by
+deleting each page and watching the checker exit 1.
+
+Two links on the site still 404 while the repository is private — the install
+page's download button and the support page's issue tracker. Both clear at
+B2 in `TODO.md`. Assumed GitHub issues is the support channel, because no
+email address exists anywhere in this repository and inventing one would be
+worse than pointing at something real.
 
 ### 2026-09-27 — surveyed the repo, wrote these two files
 

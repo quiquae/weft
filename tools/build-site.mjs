@@ -167,6 +167,7 @@ ${body}
       another language into the pages you read. Latin glosses checked against Lewis &amp; Short;
       Old English against Bosworth–Toller. Lexicon CC BY-SA 4.0.
     </p>
+    <p><a href="/install">Install</a> · <a href="/pricing">Pricing</a> · <a href="/support">Support</a> · <a href="/privacy">Privacy</a></p>
   </footer>
 </main>
 </body>
@@ -856,6 +857,265 @@ ${pro
   };
 }
 
+/* ----------------------------------------------- documents as site pages */
+
+/**
+ * Two documents in `docs/` also have to exist at a public URL.
+ *
+ * The Chrome Web Store will not accept a submission without a live privacy
+ * policy, and `SUPPORT_URL` in `src/core/pricing.ts` is compiled into the
+ * shipped extension and rendered as a button on the help page — a button
+ * that has to land somewhere. Both also have to stay readable on GitHub,
+ * and both have to say exactly the same thing in each place, because a
+ * privacy policy that disagrees with itself is worse than one that exists
+ * in only one of them.
+ *
+ * So they are rendered here, not duplicated. A general Markdown library
+ * would be a few thousand lines to parse input this repository writes and
+ * reviews itself; what follows handles the subset those documents use —
+ * headings, paragraphs, tables, lists, blockquotes, fenced code, and inline
+ * emphasis, code and links. If a document starts needing more than that,
+ * the cheaper fix is to write the document differently.
+ */
+
+/**
+ * Documents whose subject has a page of its own, and where that page lives.
+ *
+ * `PRICING.md` is the reasoning behind the prices rather than the prices,
+ * but a reader on the site who follows a pricing link wants `/pricing`, and
+ * a reader on GitHub who follows the same link wants the reasoning. Both get
+ * what they came for from one link in the source.
+ */
+const DOC_PAGES = {
+  'PRIVACY.md': '/privacy',
+  'SUPPORT.md': '/support',
+  'PRICING.md': '/pricing',
+};
+
+/**
+ * Where a link inside a `docs/` document points once published.
+ *
+ * The documents link each other by filename, which is right on GitHub and a
+ * 404 on the site. A document with a page of its own gets that page;
+ * anything else in `docs/` gets the copy in the repository, which is a real
+ * destination rather than a broken one.
+ */
+function docHref(href) {
+  if (/^(?:[a-z]+:|\/\/|\/|#)/i.test(href)) return href;
+  const [file, hash] = href.split('#');
+  const anchor = hash ? `#${hash}` : '';
+  if (DOC_PAGES[file]) return DOC_PAGES[file] + anchor;
+  if (file.endsWith('.md')) return `${REPO}/blob/main/docs/${file}${anchor}`;
+  return href;
+}
+
+/** Placeholder for a lifted-out code span. Never appears in a document. */
+const HOLD = '';
+
+/** Inline spans: code, links, strong, emphasis. Escaping happens first. */
+function inline(text) {
+  let s = esc(text);
+
+  // Code spans are lifted out before anything else reads the line, so the
+  // contents of one are never re-read as markup: the host pattern
+  // `*://*/*` is not two emphasis marks, and `__MSG_extName__` is not bold.
+  const spans = [];
+  s = s.replace(/`([^`]+)`/g, (_, code) => `${HOLD}${spans.push(code) - 1}${HOLD}`);
+
+  s = s.replace(
+    /\[([^\]]+)\]\(([^)\s]+)\)/g,
+    (_, label, href) => `<a href="${docHref(href)}">${label}</a>`,
+  );
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+
+  return s.replace(new RegExp(`${HOLD}(\\d+)${HOLD}`, 'g'), (_, n) => `<code>${spans[Number(n)]}</code>`);
+}
+
+const TABLE_RULE = /^\s*\|?[-:\s|]*-[-:\s|]*\|?\s*$/;
+const THEMATIC_BREAK = /^(?:---|\*\*\*|___)\s*$/;
+
+const tableCells = (line) =>
+  line
+    .replace(/^\s*\|/, '')
+    .replace(/\|\s*$/, '')
+    .split('|')
+    .map((c) => c.trim());
+
+/** Block-level Markdown. Recurses once, for the contents of a blockquote. */
+function markdown(src) {
+  const lines = src.replace(/\r\n/g, '\n').split('\n');
+  const out = [];
+  let i = 0;
+
+  const isTableHead = (n) =>
+    Boolean(lines[n]?.includes('|')) && lines[n + 1] !== undefined && TABLE_RULE.test(lines[n + 1]);
+
+  /** True where a paragraph has to stop because something else starts. */
+  const opensBlock = (n) =>
+    lines[n] === undefined ||
+    !lines[n].trim() ||
+    /^#{1,6}\s/.test(lines[n]) ||
+    /^\s*>/.test(lines[n]) ||
+    lines[n].startsWith('```') ||
+    THEMATIC_BREAK.test(lines[n]) ||
+    /^\s*(?:[-*+]|\d+\.)\s+/.test(lines[n]) ||
+    isTableHead(n);
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (!line.trim()) {
+      i++;
+      continue;
+    }
+
+    const heading = /^(#{1,6})\s+(.+?)\s*#*\s*$/.exec(line);
+    if (heading) {
+      // Clamped to h2: the page template has already emitted the h1, and a
+      // second one breaks the outline a screen reader navigates by.
+      const level = Math.max(2, Math.min(6, heading[1].length));
+      out.push(`<h${level}>${inline(heading[2])}</h${level}>`);
+      i++;
+      continue;
+    }
+
+    if (THEMATIC_BREAK.test(line)) {
+      out.push('<hr>');
+      i++;
+      continue;
+    }
+
+    if (line.startsWith('```')) {
+      const body = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith('```')) body.push(lines[i++]);
+      i++;
+      out.push(`<pre class="doc__code"><code>${esc(body.join('\n'))}</code></pre>`);
+      continue;
+    }
+
+    if (isTableHead(i)) {
+      const head = tableCells(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].trim() && lines[i].includes('|')) {
+        rows.push(tableCells(lines[i++]));
+      }
+      // `| | |` — an all-empty header row — is how a two-column glossary is
+      // written in Markdown. Rendering that as a <thead> would draw a rule
+      // above the first row and label nothing with it.
+      const thead = head.some((c) => c)
+        ? `<thead><tr>${head.map((c) => `<th scope="col">${inline(c)}</th>`).join('')}</tr></thead>`
+        : '';
+      const tbody = rows
+        .map(
+          (cells) =>
+            `<tr>${cells
+              .map((c, n) =>
+                n === 0 ? `<th scope="row">${inline(c)}</th>` : `<td>${inline(c)}</td>`,
+              )
+              .join('')}</tr>`,
+        )
+        .join('\n');
+      out.push(`<table class="tiers">${thead}<tbody>\n${tbody}\n</tbody></table>`);
+      continue;
+    }
+
+    if (/^\s*>/.test(line)) {
+      const body = [];
+      while (i < lines.length && /^\s*>/.test(lines[i])) {
+        body.push(lines[i++].replace(/^\s*>\s?/, ''));
+      }
+      out.push(`<blockquote>${markdown(body.join('\n'))}</blockquote>`);
+      continue;
+    }
+
+    const bullet = /^\s*(?:([-*+])|\d+\.)\s+/.exec(line);
+    if (bullet) {
+      const tag = bullet[1] ? 'ul' : 'ol';
+      const items = [];
+      while (i < lines.length) {
+        const item = /^\s*(?:[-*+]|\d+\.)\s+(.*)$/.exec(lines[i]);
+        if (item) {
+          items.push([item[1]]);
+          i++;
+          continue;
+        }
+        // A wrapped line belongs to the item above it. These documents are
+        // hard wrapped at 78 columns, so most items run over.
+        if (items.length && /^\s+\S/.test(lines[i])) {
+          items[items.length - 1].push(lines[i].trim());
+          i++;
+          continue;
+        }
+        break;
+      }
+      out.push(`<${tag}>${items.map((p) => `<li>${inline(p.join(' '))}</li>`).join('')}</${tag}>`);
+      continue;
+    }
+
+    const para = [];
+    while (i < lines.length && !opensBlock(i)) para.push(lines[i++]);
+    out.push(`<p>${inline(para.join(' '))}</p>`);
+  }
+
+  return out.join('\n');
+}
+
+/**
+ * A `docs/*.md` file as a page on the site.
+ *
+ * The document's own H1 becomes the page heading and its opening paragraph
+ * the standfirst, so a published document has the same shape as every other
+ * page here rather than a heading floating loose inside the body.
+ */
+async function docPage({ file, slug, title, description, label }) {
+  const src = await readFile(join(ROOT, 'docs', file), 'utf8');
+  const url = `${SITE}/${slug}`;
+
+  const lines = src.replace(/\r\n/g, '\n').split('\n');
+  let n = 0;
+  while (n < lines.length && !lines[n].trim()) n++;
+  const h1 = /^#\s+(.+)$/.exec(lines[n] ?? '');
+  if (h1) n++;
+  while (n < lines.length && !lines[n].trim()) n++;
+
+  // The standfirst is the opening paragraph, and only if it is one: a
+  // document that opens on a heading or a table keeps its own shape.
+  const lede = [];
+  if (!/^(?:[#>|`]|[-*+]\s|\d+\.\s|---)/.test(lines[n] ?? '#')) {
+    while (n < lines.length && lines[n].trim()) lede.push(lines[n++]);
+  }
+
+  return {
+    path: `${slug}.html`,
+    url,
+    html: page({
+      title,
+      description,
+      canonical: url,
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: title,
+        description,
+        url,
+        isPartOf: { '@type': 'WebSite', name: 'Weft', url: `${SITE}/` },
+      },
+      breadcrumbs: [{ href: '/', label: 'Weft' }, { label }],
+      body: `  <header class="hub__head">
+    <h1>${esc(h1 ? h1[1] : label)}</h1>
+${lede.length ? `    <p class="standfirst">${inline(lede.join(' '))}</p>\n` : ''}  </header>
+
+  <div class="prose">
+${markdown(lines.slice(n).join('\n'))}
+  </div>
+`,
+    }),
+  };
+}
+
 /* ------------------------------------------------------------------ main */
 
 async function main() {
@@ -939,12 +1199,48 @@ async function main() {
   await writeFile(join(OUT, pricing.path), pricing.html);
   console.log('  pricing');
 
+  /*
+   * The two pages something outside this repository depends on.
+   *
+   * `/privacy` is what a store submission is rejected for not having, and
+   * `/support` is what `SUPPORT_URL` — compiled into the extension and
+   * rendered as a button on its help page — resolves to. Both are rendered
+   * from the documents in `docs/`, so the published page and the one a
+   * reader finds in the repository can never drift apart.
+   */
+  const documents = [
+    await docPage({
+      file: 'PRIVACY.md',
+      slug: 'privacy',
+      label: 'Privacy',
+      title: 'Privacy — Weft',
+      description:
+        'Everything Weft stores is on your machine. No account, no server, no telemetry. ' +
+        'This is the long version, including the parts that are limitations rather than features.',
+    }),
+    await docPage({
+      file: 'SUPPORT.md',
+      slug: 'support',
+      label: 'Support',
+      title: 'Support — Weft',
+      description:
+        'What to try when Weft is not weaving, how to report a problem with the details ' +
+        'attached, and what Weft will never ask you for.',
+    }),
+  ];
+  for (const doc of documents) {
+    await writeFile(join(OUT, doc.path), doc.html);
+    console.log(`  ${doc.path.replace('.html', '')}`);
+  }
+
   // Sitemap and robots.
   const today = new Date().toISOString().slice(0, 10);
   const urls = [
     { url: `${SITE}/`, priority: '1.0' },
     { url: `${SITE}/install`, priority: '0.95' },
     { url: `${SITE}/pricing`, priority: '0.9' },
+    { url: `${SITE}/support`, priority: '0.6' },
+    { url: `${SITE}/privacy`, priority: '0.5' },
     ...written,
   ];
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
