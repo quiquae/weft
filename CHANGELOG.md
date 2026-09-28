@@ -77,10 +77,22 @@ headline promise, in the README, the store listing, the launch drafts and the
 doc comment the other three were copied from. It is not what ships: the
 default is the Standard preset, whose ceiling is 0.35, so forty minutes of
 attention gives 33.2% and half is unreachable at any attention at all. Half is
-the **Committed** preset, which is opt-in. Every copy now says a third. The
-live demo on the landing page is the remaining disagreement — its curve is not
-any shipped preset and reaches 59.7% at forty minutes — and which of the two
-should move is recorded as an open decision rather than guessed at.
+the **Committed** preset, which is opt-in. Every copy now says a third.
+
+**And the live demo said sixty.** Its curve was base 0.06, ceiling 0.62, gain
+0.045 — not any shipped preset — so a visitor dragged the slider to forty
+minutes, watched the passage go 60% French, installed, and got a third. It now
+runs the Standard preset's own constants and reads 35% at the ceiling, which is
+what a fresh install does. The reason it had been turned up does not survive
+measurement: an earlier, denser passage saturated because the minimum-gap rule
+capped it near 35%, which is also the escalation ceiling, and the two were
+confused — spreading the candidates out had already removed the cap, and 20 of
+this passage's 23 are takeable. `tests/tools/demo-curve.test.ts` drives the
+slider in jsdom and compares every readout against `weaveRatio` on
+`defaultSettings`, so a static page with no build step cannot drift from the
+product again. The readout said "1 word in 3" where it meant one *content* word
+in three, which is the denominator the extension's own ratio uses; it now says
+so, and the caption names the preset on show.
 
 **The launch drafts were read against the code instead of grepped.** The one
 file in the repository whose errors leave it had six of them, and not one was
@@ -101,7 +113,7 @@ downloads what GitHub actually serves, loads it in a real browser, and checks
 the first-run page renders, the worker answers and no test seam shipped —
 everything else in the repository tests what the build produces.
 
-**Built with** 633 tests: 484 unit, 97 in jsdom, 16 over the build tools, and
+**Built with** 636 tests: 484 unit, 97 in jsdom, 19 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

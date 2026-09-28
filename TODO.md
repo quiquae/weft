@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
-suites, **16** tool tests / 4 suites, **36** e2e passing in 2.1 min
+suites, **19** tool tests / 5 suites, **36** e2e passing in 3.9 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -16,9 +16,12 @@ already shows the lexicon that ships; `npm run packs` is idempotent, so running
 the whole gate leaves the tracked tree clean; and `npm run site` is now
 byte-stable too, so a second build of the site changes nothing. The copy is
 honest about the shipped default as of 2026-09-28, which it had not been: see
-the `docs/LAUNCH.md` item below. The code is not what is holding the release
+the `docs/LAUNCH.md` item below. **So is the live demo, as of 2026-09-28** — it
+now runs the Standard preset's own constants and a test fails if it stops
+doing so, which was the last place in the product claiming a number nobody
+gets. The code is not what is holding the release
 up. The critical path runs through two things only
-Creagh can do: **B0 — seven stacked PRs have to be merged into `main`** before
+Creagh can do: **B0 — eight stacked PRs have to be merged into `main`** before
 the version can be bumped, and then **B1 — the domain `weft.study` is not
 registered**. Everything in Now can land before either and depends on
 neither.
@@ -101,37 +104,42 @@ neither.
       is listed in the note at the top of Notes, so the next session need not
       re-check it.
 
-- [ ] **Decide whether the demo or the default is telling the truth about
-      "half".** *Topmost unchecked item as of 2026-09-28.* Found by the sweep
-      above, left as an item because it is a product decision and not a fix.
-      The live demo at `site/index.html:404` runs `BASE = 0.06, CEILING =
-      0.62, GAIN = 0.045`, which is **not any shipped preset**: it reads 24.5%
-      at five minutes and **59.7% at forty**. The shipped default is the
-      Standard preset (`src/core/settings.ts:66` — base 0.06, ceiling **0.35**,
-      gain 0.02), which reads 14.5% and **33.2%**, and cannot pass 35% at any
-      attention at all. So a visitor drags the slider to forty minutes, watches
-      the passage go 60% French, installs, and gets a third. The copy has been
-      corrected to the default everywhere, so nothing now *claims* half; what
-      is left is the choice between turning the demo down to the default,
-      turning the default up to the demo, or labelling the demo as a stronger
-      setting than the one you get. It is the product's headline promise, so it
-      is Creagh's call. Note before deciding: the comment at
-      `site/index.html:342` records that the demo was deliberately tuned *up*
-      once already, because an earlier version saturated at 35% and stopped
-      responding to the slider — which is the same 35% ceiling, and suggests
-      the demo's constants were chosen for feel and never reconciled with the
-      preset. *~20 minutes once decided.*
+- [x] **Decide whether the demo or the default is telling the truth about
+      "half".** Done 2026-09-28. **The demo was turned down to the default**,
+      and the decision stopped being a product judgement once the one recorded
+      argument against it was measured. That argument was the comment at
+      `site/index.html:343`: the demo had been tuned *up* because an earlier
+      version "saturated at 35% and stopped responding", which the item read as
+      the 35% ceiling. It was not. It was `MIN_APART` — the minimum-gap rule —
+      binding on a passage where almost every word was a candidate, and it
+      landed near 35% by coincidence. The passage rewrite that came with the
+      retune had already removed that cap: on the passage in the file, **20 of
+      23 candidates are takeable**, an 87% headroom, so there is no room left
+      for spacing to be mistaken for the ceiling. Raising the constants was
+      treating a symptom that had already gone. Turning them back down
+      therefore changes no shipped behaviour, forecloses nothing, and makes
+      the demo show the extension a visitor installs: `BASE = 0.06, CEILING =
+      0.35, GAIN = 0.02`, reading 13% at five minutes and **35% at forty**.
+      The slider still has 8 distinct readings across its range, which is now
+      asserted rather than recalled. See the note at the top of Notes for the
+      measurement, the two things folded in, and what was left for later.
 
-## Next
-
-- [ ] **Spell `mīlle` with its macron in the three places that do not.** The
+- [ ] **Spell `mīlle` with its macron in the three places that do not.**
+      *Topmost unchecked item as of 2026-09-28,* promoted from Next. The
       Latin pack's headword is `mīlle`, but `tools/build-site.mjs:442` — the
       Latin page's meta description, which is *published* copy — plus
       `docs/PEDAGOGY.md:116` and the gloss note at `tools/seed/lex-la.tsv:376`
       all write `mille passūs`. Inconsistent with the lexicon's own
       orthography rather than wrong, and the seed one drags a `npm run packs`
       rebuild and a pack diff behind it, which is why it was left out of the
-      `docs/LAUNCH.md` sweep rather than folded in. Low priority.
+      `docs/LAUNCH.md` sweep rather than folded in. Note that the pack rebuild
+      is the point of interest, not a nuisance: `en-la.json` and `index.json`
+      should be the only two files that move, and their `builtAt` should
+      advance to the day of the edit while the other six packs keep theirs —
+      if more than two files change, the reproducibility fix regressed.
+      *~15 minutes.* Low priority.
+
+## Next
 
 - [ ] **Check `npm run og` for byte-stability.** The rest of this item is
       done. `grep -n 'new Date()' tools/*.mjs build.mjs` found exactly three
@@ -146,23 +154,40 @@ neither.
       used to. Same check: run it twice, diff. Low priority; nothing is known
       to be wrong.
 
+- [ ] **Decide whether the popup's density label wants the same qualifier the
+      demo just gained.** Found 2026-09-28 while fixing the demo, and recorded
+      rather than changed because it is extension UI copy and a separate
+      surface. `density()` at `src/ui/components/pieces.tsx:280` renders a
+      ratio as `1 word in ${round(1/ratio)}`, and that ratio is a proportion
+      of **eligible** words (`selector.ts:38`), not of words on the page — so
+      "1 word in 3" is one *content* word in three, and on a real page that is
+      nearer 1 word in 20 overall. The demo now says "1 in 3 of content
+      words", which is the language `src/core/settings.ts:64` already uses
+      ("a third of the content words"), so the product has the right phrase
+      in two places out of three. Against changing it: the popup is narrow and
+      the user watching their own page can see the density directly, which a
+      visitor to the landing page cannot. *~10 minutes; copy only.*
+
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the seven stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 → #7 are
-stacked in that order, all seven are drafts, so `main` is ten commits behind
-and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
+**B0 — Merge the eight stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 → #7 → #8 are
+stacked in that order, all eight are drafts, so `main` is eleven commits
+behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
 documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
 the launch and store copy and carries one comment change in
-`src/core/escalation.ts`. Two steps here belong to a human rather than
+`src/core/escalation.ts`. #8 is the landing-page demo: three constants in
+`site/index.html`, the readout's wording, and a new test suite
+(`tests/tools/demo-curve.test.ts`). Nothing in the extension moves in either.
+Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
 
-1. Merge #1, #2, #3, #4, #5, #6, #7 bottom-up — each targets the branch below
-   it, so GitHub retargets the next as each lands.
+1. Merge #1, #2, #3, #4, #5, #6, #7, #8 bottom-up — each targets the branch
+   below it, so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -275,6 +300,74 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the demo was turned down to the default, because the argument
+for keeping it up was a misdiagnosis.** The item called this a product
+decision and reserved it for Creagh. It measured out as a fix, and the
+measurement is the part worth keeping.
+
+- **The "saturated at 35%" in the comment at `site/index.html:343` was not
+  the ceiling. It was `MIN_APART`.** The two numbers coincide, which is how
+  they came to be confused. With candidates at nearly every word, a
+  two-word minimum gap lets you take at most every third one — about 33%,
+  which reads as 35% and looks exactly like the escalation ceiling. The fix
+  applied at the time was *two* changes at once: the passage was rewritten to
+  spread the candidates out (which removed the real cap) and the constants
+  were raised (which was unnecessary, and is what shipped the false promise).
+  Measured on the passage as it stands: **23 candidates, 20 of them takeable
+  under `MIN_APART = 2`** — an 87% headroom, so spacing cannot be mistaken for
+  a 35% ceiling any more. Do not re-raise the constants for "slider feel"; the
+  feel problem it was aimed at does not exist on this passage.
+- **What the demo now reads,** against `weaveRatio` on `defaultSettings`:
+  4% at rest, 13% at five minutes, 26% at twenty, **35% at forty and at the
+  slider's maximum**. Eight distinct readings across the drag, so it is
+  visibly live; the old constants gave fourteen. For comparison on the same
+  passage, Taster gives three distinct readings — which is what a genuinely
+  dead slider looks like, and is what the new saturation test was checked
+  against to prove it can fail.
+- **The guard is `tests/tools/demo-curve.test.ts`, and it is in
+  `tests/tools/` on purpose.** It reads a file off disk, which `tests/core/`
+  forbids, and `tests/dom/` builds its HTML in memory rather than loading a
+  shipped artefact. It drives the real slider in jsdom — `runScripts:
+  'dangerously'` is safe here because the only other `<script>` elements on
+  the page are `application/ld+json`, which jsdom does not execute.
+- **It counts candidates inside the `PASSAGE` declaration, not across the
+  file.** The doc comment above it writes `{english|french}` to explain the
+  notation, so a whole-file count returns 24 where the demo uses 23. That
+  moved every expected percentage by one step and was caught only because the
+  first (red) run printed them side by side. A later edit that "simplifies"
+  that regex to scan the whole file will make the test wrong, not failing.
+- **Folded in, and assumed to be in scope.** (1) The readout said `35% — 1
+  word in 3`, where the denominator is *candidates*, not words on the page —
+  the same units the extension's ratio uses (`selector.ts:38`, "proportion of
+  *eligible* words"). Left alone it would have sat next to a passage visibly
+  showing 8 French words in 148 and read as a broken counter, and the fix
+  makes that starker rather than better, so it went in the same change: it now
+  says `35% of content words — 1 in 3`, which is the phrase
+  `src/core/settings.ts:64` already uses. (2) The caption now names the preset
+  on show and says Committed and Monastic go further — the "label the demo"
+  option from the item, which costs one sentence and is true either way.
+- **Found and deliberately left.** `ORDER` in the demo lists 24 words but the
+  passage has 23 candidates: `maison` is in the preference order and *house*
+  is not marked in the passage (it sits next to `{old|vieux}`, so marking it
+  would put two candidates adjacent). Harmless — an unused entry in a ranking
+  — and deleting it would change a tracked file for no behavioural reason.
+  Recorded so the next reader does not spend the twenty minutes working out
+  why `maison` never appears.
+- **Counts moved 633 → 636** (+3 tool tests, tool suites 4 → 5) in
+  `CHANGELOG.md`, `CLAUDE.md`, `README.md`, `docs/SUBMIT.md` and
+  `docs/LAUNCH.md`. The three surviving mentions of 633 — `CLAUDE.md:197`,
+  and `TODO.md:88` and `:304` below — are **history and were left alone**: they
+  record that the number was correct when it was checked, which it was. Same
+  convention as the 1.0.0 changelog entry, which was corrected to 1.0.0 rather
+  than to today.
+- **What this does not settle.** Whether the *default* should be higher is
+  still entirely open, and nothing here argues it either way. What has changed
+  is that it is no longer urgent: no surface in the product now promises a
+  number the default cannot reach, so raising the default would be a product
+  improvement rather than the repair of a false claim. If it is ever raised,
+  the demo follows for free — `demo-curve.test.ts` will fail and name the new
+  figures.
 
 **2026-09-28 — what `docs/LAUNCH.md` claims, and which claims were true.**
 Every assertion in the file was taken one at a time and matched against the

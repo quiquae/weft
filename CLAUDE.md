@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **16 pass**, 4 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **19 pass**, 5 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,76 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the demo was not a product decision, it was a misdiagnosis
+
+`TODO.md`'s top item reserved this one for a human: the live demo reached
+59.7% at forty minutes where the shipped default ceilings at 35%, and turning
+the demo down, turning the default up, or labelling the demo were offered as
+three options for Creagh to choose between. It stopped being a choice once the
+one recorded argument for keeping the demo high was measured.
+
+That argument is the comment at `site/index.html:343`, which records that the
+demo had been tuned *up* because an earlier version "saturated at 35% and
+stopped responding". The item read the 35% as the escalation ceiling. **It was
+`MIN_APART`.** With candidates at nearly every word, a two-word minimum gap
+admits at most every third one — about 33%, which reads as 35% and is
+indistinguishable from the ceiling unless you go looking. The repair applied at
+the time was two changes at once: the passage was rewritten so the candidates
+are spread out, which removed the real cap, *and* the constants were raised,
+which was unnecessary. On the passage as it stands, **20 of 23 candidates are
+takeable under `MIN_APART`** — 87% headroom, so spacing cannot be mistaken for
+a 35% ceiling any more. So turning the constants back down to the Standard
+preset changes no shipped behaviour, forecloses nothing, and was done:
+`BASE = 0.06, CEILING = 0.35, GAIN = 0.02`, reading 13% at five minutes and
+35% at forty. Eight distinct readings across the drag; the old constants gave
+fourteen and Taster gives three, which is what a dead slider looks like.
+
+Done test-first, and TDD paid for itself twice. The red run printed the whole
+curve side by side — `4 min: demo says 22%, the default gives 13%` and so on —
+which exposed that **the test's own arithmetic was wrong**: it counted
+candidates across the whole file, and the doc comment above `PASSAGE` writes
+`{english|french}` to explain the notation, so it found 24 where the demo uses
+23. Every expected percentage was one step out. A test written after the fix
+would have been calibrated against the fixed page and would have agreed with
+itself. Second, the saturation assertion passes on the current page, so it
+proves nothing until you watch it fail: set the constants to Taster's and it
+says `only 3 distinct readouts, so the demo has saturated and stopped
+responding`, which is the failure the comment describes and which had never
+been checked.
+
+The guard is a **fourth thing in `tests/tools/`** rather than `tests/dom/`,
+although it uses jsdom: it reads a shipped artefact off disk, which
+`tests/core/` forbids outright and which no `tests/dom/` test does — those
+build their HTML in memory. `runScripts: 'dangerously'` is safe on this page
+because every other `<script>` in it is `application/ld+json`, which jsdom
+does not execute. Counts moved 633 → 636 in five documents; the three
+remaining mentions of 633 are journal and Notes history and were left, on the
+same reasoning that corrected the 1.0.0 changelog entry to 1.0.0.
+
+Two things were folded in on the assumption they were in scope. The readout
+said `35% — 1 word in 3`, but the denominator is *candidates* — the same units
+the extension's own ratio uses (`selector.ts:38`, "proportion of *eligible*
+words") — so next to a passage visibly showing 8 French words in 148 it read
+as a broken counter, and turning the demo down makes that starker rather than
+better. It now says `35% of content words — 1 in 3`, which is the phrase
+`src/core/settings.ts:64` was already using. And the caption names the preset
+on show, which is the "label the demo" option and true whichever way the
+numbers later go.
+
+Measured at the end, on Node 26.7: `npm run test:all` exit 0 — typecheck
+clean, 484 unit / 122 suites, 97 jsdom / 22 suites, **19 tools / 5 suites**,
+compat clean, 979 KB × 3 passing `validate`, 36 e2e passed and 3 skipped in
+3.9 min, then build and validate again. Separately `packs:verify` 0 errors and
+the same 4 IPA warnings, and `site:check` 711 pages / 16 087 links all
+resolving — worth running here because the change is *to* the site, and the
+one page it touches is the one every other page links back to.
+
+What needs a human: **B0** is now *eight* stacked PRs, this being #8. Whether
+the *default* should be higher is still entirely open and nothing here argues
+it either way — but it is no longer urgent, because no surface now promises a
+number the default cannot reach. If it is ever raised, `demo-curve.test.ts`
+fails and names the new figures, so the demo follows for free.
 
 ### 2026-09-28 — the marketing promised half and the default ships a third
 
