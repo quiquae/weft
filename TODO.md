@@ -545,13 +545,13 @@ rather than the clean fast-forward the old text implied. Merging is a human
 step here, as is committing to `main`. In order:
 
 1. Merge **#14** into `tools/reproducible-lexicon-packs`. It is the only open
-   PR: **#15, #16 and #17** were each squash-merged into #14's head on
-   2026-09-28 with CI green, so #14 carries all of them and there is nothing
-   stacked above it. Then open one PR from that branch to `main` and resolve
-   the four conflicts above. Taking `CLAUDE.md` and `TODO.md` from the stack
-   side is safe; read the two code hunks. The conflict list was re-measured
-   after #17, which edits `tools/build-site.mjs` again: still exactly those
-   four files, same reasons.
+   PR: **#15, #16, #17, #18 and #19** were each squash-merged into #14's head
+   on 2026-09-28 with CI green, so #14 carries all of them and there is
+   nothing stacked above it. Then open one PR from that branch to `main` and
+   resolve the four conflicts above. Taking `CLAUDE.md` and `TODO.md` from the
+   stack side is safe; read the two code hunks. The conflict list was
+   re-measured after #17 and #19, both of which edit `tools/build-site.mjs`
+   again: still exactly those four files, same reasons.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
