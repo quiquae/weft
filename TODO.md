@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
-of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
-suites, **21** tool tests / 6 suites, **36** e2e passing in 3.9 min
+of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
+suites, **23** tool tests / 7 suites, **36** e2e passing in 2.5 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -300,21 +300,65 @@ not registered**.
       tests, 6 suites): the guard was widened, not added to, so no
       count sweep across the five documents was needed.
 
+- [x] **The tooltip under `iānua` never says *which* month.** Done
+      2026-09-28, and the item's premise was wrong in the way that mattered:
+      *January* **is** in front of the reader, on all three surfaces the item
+      named. The tooltip prints an `Ancestor of English **January**` badge
+      directly above the note (`src/content/tooltip.ts:327`), `/latin/ianua`
+      makes it the `<h2>` ("Where *January* comes from"), and the descent hub
+      puts it in the adjacent `<td>`. So "gave the month its name" resolves
+      fine, and the item's proposed edit looked redundant.
+
+      **What is actually wrong is one level down, and it is structural rather
+      than editorial.** The badge is behind a user switch —
+      `reveal.showEtymon`, default on, toggled on the options page under
+      "Where your English word came from" (`src/ui/options/sections.tsx:463`).
+      The note is not: `tooltip.ts:336` appends it unconditionally. Turn the
+      badge off and "the month" has no antecedent anywhere on the card. The
+      codebase already knows this worry for the note's sibling — the "why"
+      sentence is handed `allowEtymon: reveal.showEtymon` with the comment
+      "must not reinstate a fact they hid" (`tooltip.ts:320`) — so the note
+      was the unguarded half of a rule the file had already written down.
+
+      **And it was three notes, not one.** The class is derivable rather than
+      curated, which is the part worth keeping: every `etymonOf` in all seven
+      packs is an ordinary English word stored lowercase except four, and a
+      **proper noun cannot be alluded to, only named**. Scanning for a
+      capitalised etymon whose note never says it fires on exactly
+      `iānua` → January ("gave the month its name"),
+      `argentum` → Argentina ("the country is named for the metal") and
+      `septem` → September ("the seventh month of the old Roman year"), with
+      zero false positives — no hand-curated table needed, unlike the
+      `UNDEFINED` list PR #13 had to fall back on. `septem` is the worst of
+      the three: with the badge off it does not merely dangle, it reads as a
+      gloss, and *septem* means seven, not September.
+
+      Fixed in `tools/seed/lex-la.tsv` (rows 108, 130, 371) and rebuilt:
+      "Janus, god of doorways, gave January its name", "Argentina is named
+      for the metal", "September was the seventh month of the old Roman
+      year". The repetition this creates on the word page ("Where *January*
+      comes from … borrowed from **January**. … gave January its name") is
+      the house pattern already shipping under `mīlle` and `vacca`, and was
+      checked by rendering all three pages rather than reasoned about.
+      Guarded by a new suite, `tests/tools/lexicon-notes.test.ts`, plus one
+      jsdom test pinning the premise it rests on — that the note survives
+      when the badge is hidden, which nothing asserted before.
+
 ## Next
 
-- [ ] **The tooltip under `iānua` never says *which* month.** It reads "Janus,
-      god of doorways, gave the month its name", and the reader hovering the
-      English word *door* has no January anywhere in front of them — the note
-      assumes a connection it does not make. Found during the orthography
-      audit of 2026-09-28 and deliberately left there, because it is a copy
-      question and that pass was about spelling. One seed line,
-      `tools/seed/lex-la.tsv` (the `door` row), then `npm run packs`; it
-      reaches three surfaces, the shipped tooltip plus `/latin/ianua` and the
-      descent hub, so it is worth getting right. Check first whether naming
-      January is even an improvement: the note's subject is the *door* sense
-      of `iānua`, and "gave January its name" may pull the reader away from
-      the word they are actually reading. If it does, the fix is to cut the
-      clause rather than complete it. **~15 minutes.**
+- [ ] **`novem` → November is the only numeral with an etymon and no note,
+      and it shows.** `septem` → September now reads "September was the
+      seventh month of the old Roman year"; the `novem` row of
+      `latin-words-in-everyday-english` renders an empty note cell directly
+      below it, and `/latin/novem` gets no `Where November comes from`
+      prose at all beyond the one-line descent sentence. One seed field,
+      `tools/seed/lex-la.tsv:373`, then `npm run packs`. The obvious parallel
+      — "November was the ninth month of the old Roman year" — is true and
+      would pass the new guard, but writing lexicon *content* is a different
+      decision from fixing a defect, so an unattended run left it. Note the
+      other two numerals with month-shaped etymons are not affected:
+      `octō` → octave and `decem` → decimal. **~10 minutes**, plus a pack
+      rebuild and `site:check`.
 
 Otherwise Now is empty as of 2026-09-28 — every other item an agent could pick
 up has been worked. Everything remaining lives in Blocked, and all of it needs
@@ -325,32 +369,39 @@ Creagh: B0 first, then B1.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the thirteen stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → … → #13 are
-stacked in that order, all thirteen are drafts, so `main` is sixteen commits
-behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
-documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
-the launch and store copy and carries one comment change in
-`src/core/escalation.ts`. #8 is the landing-page demo: three constants in
-`site/index.html`, the readout's wording, and a new test suite
-(`tests/tools/demo-curve.test.ts`). #9 is Latin orthography: three tooltip
-notes in the lexicon, four prose citations, and a second new test suite
-(`tests/tools/lexicon-orthography.test.ts`); it is one of only two
-that rebuild a shipped pack — `en-la.json`, four fields. #10 and #11 are
-both `TODO.md`-only bookkeeping: re-checking a claim a second time, and
-confirming a queued macron fix had already shipped that same day — nothing to
-merge in the code either time. #12 is the popup and options page picking up
-the "content words" wording #8 gave the demo, plus a screenshot regeneration
-and a correction to this file's own PR count, which had drifted by one
-before #12 even existed. #13 is the second pack rebuild: one field of
-`en-la.json` (`paene`'s tooltip note), the two prose citations that shared
-its misspelling, and a widening of #9's orthography guard so that neither can
-come back. Nothing in the extension's *code* moves in #10 or #11. Two steps here belong to a human rather than
-an agent, by the rules agents run under here: merging, and committing to
-`main`. In order:
+**B0 — Land the stack on `main`, then cut 1.0.1.** *Blocks the version bump,
+and nothing else in Now.* **The shape of this changed on 2026-09-28 and the
+old instruction below would now do the wrong thing — read this first.**
 
-1. Merge #1 … #13 bottom-up — each targets the branch
-   below it, so GitHub retargets the next as each lands.
+Creagh merged nine of the stack that afternoon (15:18–15:19 UTC), top-down:
+#13 into #12's branch, #12 into #11's, and so on down to #6, plus #4. Each
+squash-merge cascaded the accumulated work one step further down the stack,
+and GitHub deleted every head branch as it landed. **`main` did not move.**
+Two things follow, both verified rather than assumed:
+
+- **All of #1 – #14's work now sits on one branch,
+  `tools/reproducible-lexicon-packs`.** It was #5's head; #5 was *closed*
+  rather than merged, which is what broke the chain — its base
+  (`store/regenerate-listing-screenshots`) was deleted without ever receiving
+  #5 – #13. So that branch is the stack, sixteen-plus commits above `main`,
+  and its ancestry still runs through #1's and #2's heads (checked with
+  `git merge-base --is-ancestor`).
+- **PRs #1, #2 and #3 are still open** (#1 and #2 draft, #3 not). #1 and #2
+  are strict ancestors of the branch above, so merging them is optional.
+  **#3's head has moved to `51503a7`**, the squash of #4, which is *not* an
+  ancestor. Diffed: the only thing it carries that the stack branch lacks is
+  `docs/store/apple-04-progress.png` (126 408 → 126 711 bytes) — and that is
+  the date-drifted dashboard capture PR #12 explicitly reverted five
+  siblings of, so losing it is the preferred outcome, not a loss.
+  `playwright.config.ts` is byte-identical in both; its `CLAUDE.md` and
+  `TODO.md` text is superseded by the eight sessions after it.
+
+So the merge is now **one** PR, not thirteen. Merging is still a human step
+here, as is committing to `main`. In order:
+
+1. Open and merge one PR: `tools/reproducible-lexicon-packs` → `main`. That
+   lands #1 – #14 in a single commit. Then close #1, #2 and #3 as superseded
+   — do **not** merge #3 first, or you reintroduce the drifted screenshot.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -463,6 +514,39 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the item's premise was wrong, and the setting underneath it was
+the real finding.** `iānua`'s note was queued as "never says which month". It
+does — `January` is printed directly above it on all three surfaces. What is
+not guaranteed is that the reader has left it switched on: `reveal.showEtymon`
+hides the badge and the note is appended regardless. **The general rule this
+gives, worth applying to any future tooltip copy: a note may not lean on
+anything the reveal switches can hide.** `src/content/tooltip.ts:320` had
+already applied it to the "why" sentence and only to that.
+
+*What was checked and deliberately left.* A wider sweep of "notes that never
+name their etymon" returns **62 of 99** and is mostly noise — those notes
+describe the *target*, not the descendant, and read fine alone. Two are the
+same shape as the three that were fixed but with a **common**-noun
+descendant: `līċ` → lychgate, "the corpse-gate of a churchyard", and
+`setl` → settle, "the high-backed bench". Read with the badge off these still
+parse as a gloss of the Old English word, which is near enough true to be
+harmless, and drawing the line at proper nouns is what keeps the guard from
+needing a judgement call per entry. If that line is ever moved, it is
+`tests/tools/lexicon-notes.test.ts:` `isProperNoun` that defines it.
+
+*And a stale count found on the way.* `README.md:267` said `npm test` runs
+"19 over the build tools" where `docs/SUBMIT.md`, `CHANGELOG.md` and
+`CLAUDE.md` all said 21 — it had been missed in PR #9's sweep, which is the
+first time one of the five documents has disagreed with the other four rather
+than all five being stale together. Worth grepping all five for the *old*
+number as well as the new one when counts move.
+
+*On the stack.* Nine of the thirteen PRs were merged into each other on
+2026-09-28 without `main` moving, and #5 was closed rather than merged, which
+is what left everything on `tools/reproducible-lexicon-packs`. See B0 —
+the old "merge #1 … #13 bottom-up" instruction is gone because most of those
+branches no longer exist.
 
 **2026-09-28 — a guard that reads the lexicon cannot see Latin the lexicon
 does not define.** The queued item (`npm run og` byte-stability) had already

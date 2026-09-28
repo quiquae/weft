@@ -140,7 +140,7 @@ in a real Chromium build rather than assumed safe, since the popup is a
 genuine 340×330px surface and the options page's value badges do not wrap:
 no overflow at any ratio from 6% to 60%.
 
-**Built with** 638 tests: 484 unit, 97 in jsdom, 21 over the build tools, and
+**Built with** 641 tests: 484 unit, 98 in jsdom, 23 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

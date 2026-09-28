@@ -155,6 +155,28 @@ describe('tooltip content', () => {
     assert.doesNotMatch(text, /Ancestor of English/);
   });
 
+  test('keeps the note when the etymon badge is hidden', () => {
+    // The note is appended unconditionally while the badge above it is behind
+    // a switch, so a note written to lean on that badge loses its referent
+    // and nothing in the rendering notices. Pinned here because it is the
+    // premise tests/tools/lexicon-notes.test.ts rests on: if the note ever
+    // becomes conditional too, that guard is policing a problem that no
+    // longer exists.
+    const { root, text } = open(
+      'la',
+      { 'reveal.showEtymon': false },
+      {
+        tgt: 'iānua',
+        tgtLemma: 'iānua',
+        ipa: '/ˈjaːnʊa/',
+        etymonOf: 'January',
+        note: 'Janus, god of doorways, gave January its name',
+      },
+    );
+    assert.equal(root.querySelector('.etymon'), null, 'the etymon badge should be hidden');
+    assert.match(text, /Janus, god of doorways, gave January its name/);
+  });
+
   test('shows the band only when asked', () => {
     assert.doesNotMatch(open('ang').text, /A1/);
     assert.match(open('ang', { 'reveal.showBand': true }).text, /A1/);

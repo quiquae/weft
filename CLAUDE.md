@@ -52,8 +52,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **21 pass**, 6 suites, ~2 s here |
+| `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **23 pass**, 7 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,92 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the note leaned on a line the reader can switch off
+
+`TODO.md`'s queued item said the tooltip under `iānua` "never says *which*
+month". It does, on every surface the item named: the tooltip prints
+`Ancestor of English **January**` immediately above the note
+(`src/content/tooltip.ts:327`), `/latin/ianua` makes it the `<h2>`, and the
+descent hub puts it in the adjacent `<td>`. So the premise was wrong and the
+proposed edit was redundant — but only because of a **default**.
+
+`reveal.showEtymon` is a user switch (`src/ui/options/sections.tsx:463`,
+default true at `src/core/settings.ts:196`). Turn it off and the badge goes;
+the note does not, because `tooltip.ts:336` appends it unconditionally. "Gave
+the month its name" then has no antecedent anywhere on the card. **The file
+had already written the rule down for the note's sibling** — the "why"
+sentence is handed `allowEtymon: reveal.showEtymon` with the comment "must not
+reinstate a fact they hid" (`tooltip.ts:320`) — so this was an unguarded half
+of an existing decision rather than a new one.
+
+**The class is derivable, and that is the transferable part.** Sweeping for
+"notes that never name their etymon" fires **62 times of 99** and is almost
+all false positives: `persōna`'s "originally an actor's mask" and `bōc`'s "a
+beech-wood tablet" describe the *target* and read perfectly alone. What
+separates the real cases is that their descendant is a **proper noun**, and a
+proper noun cannot be alluded to, only named — "the month" and "the country"
+are placeholders, not descriptions. Every `etymonOf` across all seven packs is
+an ordinary English word stored lowercase except four, so capitalisation
+derives the rule straight from the data, with **zero** false positives. No
+hand-curated table, unlike the `UNDEFINED` list PR #13 had to fall back on
+when its own derivation could not see `īnsula`.
+
+Three offenders, all Latin, all fixed in `tools/seed/lex-la.tsv`:
+`iānua` → January, `argentum` → Argentina, and `septem` → September. The last
+is the worst: with the badge off, "the seventh month of the old Roman year"
+does not merely dangle, it reads as a *gloss*, and *septem* means seven. The
+fourth capitalised etymon, `novem` → November, carries no note at all, which
+the rule correctly skips — and which is now the top item in `TODO.md`, because
+the hub table renders its empty note cell directly under September's full one.
+
+Done test-first; the red run named all three before anything was edited (four
+lines, because `door` and `doors` share one note). Two guards, because the
+finding has two halves. `tests/tools/lexicon-notes.test.ts` is the rule, a
+**seventh** tools suite; it also asserts the rule has something to police, so
+it cannot go quietly vacuous the way a scan over an empty set does. And one
+jsdom test pins the premise — that the note survives when the badge is hidden
+— which nothing asserted before, so if the note ever becomes conditional too
+the guard will be policing a problem that no longer exists and the test says
+so.
+
+The repetition the fix creates on the word page ("Where *January* comes from
+… borrowed from **January**. … gave January its name") was **checked by
+rendering, not reasoned about**: it is the house pattern already shipping
+under `mīlle` ("Where *mile* comes from … A mile was mīlle passūs") and
+`vacca`. Rebuilt: **4 fields of 7087** in `en-la.json`, `index.json` untouched
+because no count moved, and `builtAt` stayed 2026-09-28 — so unlike PR #9 this
+edit redated **zero** sitemap entries.
+
+**The stack is not thirteen PRs any more, and `TODO.md`'s B0 would have done
+the wrong thing.** Creagh merged nine of them at 15:18–15:19 UTC, top-down,
+each squash cascading the accumulated work one step further down and GitHub
+deleting the head branch behind it. `main` never moved. #5 was *closed* rather
+than merged, which broke the chain and left **all** the work on its head
+branch, `tools/reproducible-lexicon-packs`. #1 and #2 are strict ancestors of
+it; #3's head moved to `51503a7` and is not, but the only thing it carries
+that the stack lacks is `docs/store/apple-04-progress.png` — the date-drifted
+dashboard capture PR #12 reverted five siblings of. So B0 is now one merge,
+and merging #3 first would reintroduce exactly what #12 removed.
+
+One environment note, confirming the last session's fix: the
+`com.apple.fileprovider.ignore#P` attribute is still set on `dist/`, and the
+full gate created **zero** iCloud conflict copies again. `rm -rf test-results`
+beforehand is still worth it.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 484 unit / 122 suites, **98** jsdom / 22 suites, **23 tools /
+7 suites**, compat 56 pass / 7 degrade / 0 fail / 0 without data, 979 KB × 3
+passing `validate`, 36 e2e passed and 3 skipped in 2.5 min, then build and
+validate again. Separately `packs:verify` 0 errors / 4 warnings and
+`site:check` 711 pages / 16 087 links all resolving — both run here because a
+shipped pack moved and the three word pages it feeds are published copy. Counts
+moved in five documents; `README.md` was the odd one out, see `TODO.md` Notes.
+
+What needs a human: **B0**, rewritten this session — it is one merge now, not
+thirteen, and this session's PR is #14 on top of the same branch. `Now` is
+empty; `Next` has the `novem` note. Nothing else moved.
 
 ### 2026-09-28 — the card was stable; the guard could not see the word it was missing
 
