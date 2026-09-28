@@ -124,7 +124,9 @@ been checked. The remaining steps, in order:
 3. Publish the privacy policy at `https://<domain>/privacy` and confirm it
    loads in a logged-out browser. Have the support URL ready too.
 4. Run `npm run test:all`, then `npm run zip`, then `npm run validate`. All
-   three must be green on the exact bytes you are about to upload.
+   three must be green on the exact bytes you are about to upload. If
+   `validate` dies with `Unknown system error -11`, that is iCloud conflict
+   copies inside `dist/`, not the package — see the 2026-09-28 note below.
 5. Upload **`weft-chrome-1.0.1.zip`** — the plain one. The `-folder.zip` is
    for humans loading unpacked; the store rejects an archive with
    `manifest.json` inside a directory.
@@ -209,6 +211,16 @@ fifteen regenerate byte-for-byte, so there was nothing to commit.
   `headless: true` unconditionally and `.github/workflows/ci.yml` has no xvfb
   step and no headed path. Comment corrected — it is the only change to a
   non-Markdown file in this pass, and it changes no behaviour.
+- **iCloud can make `npm run validate` crash, and the error says nothing.**
+  This checkout lives under `~/Documents`, which iCloud syncs, and iCloud
+  drops conflict copies (`manifest 2.json`, `dashboard 2.html`, `_locales 2/`)
+  into `dist/` while a build is running — 61 of them here. `validate` reads
+  every `.html` in the package directory, hits a duplicate that is still a
+  placeholder, and dies with `Error: Unknown system error -11 ... syscall:
+  'read'` and no filename. It is not a packaging fault: `rm -rf dist/chrome
+  dist/firefox dist/safari && npm run build:all` takes under a second and
+  `validate` then passes all three. Worth knowing at **B5 step 4**, which is
+  where someone runs `validate` on the exact bytes they are about to upload.
 
 **2026-09-27 — every count in the repository is now a measured one.** The three
 documents named in the item were four, and `git grep -nE '427|449|379|664 KB'`

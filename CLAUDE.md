@@ -209,6 +209,15 @@ headed, so CI runs headed under xvfb". `tests/e2e/fixtures.ts:76` sets
 Chromium and runs `npm run test:e2e` with no xvfb anywhere. The comment now
 says what the code does. That is the only non-Markdown change in this pass.
 
+One environment trap, because it wastes an hour and the error names nothing:
+iCloud drops conflict copies into `dist/` while a build runs — 61 of them
+here, `manifest 2.json`, `dashboard 2.html`, `_locales 2/`. `validate` reads
+every `.html` in the package directory, hits one that is still a placeholder,
+and dies with `Error: Unknown system error -11 ... syscall: 'read'` and no
+filename. `rm -rf dist/chrome dist/firefox dist/safari && npm run build:all`
+fixes it in under a second. It matters at `docs/SUBMIT.md` time, when
+`validate` is being run on the exact bytes about to be uploaded.
+
 Measured today, on Node 26.7 again: typecheck clean, `npm run test:all` green
 end to end (36 e2e passed, 3 skipped, 3.7 min; all three packages 979 KB and
 passing `validate`), `packs:verify` 0 errors and the same 4 IPA warnings,
