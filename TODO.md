@@ -485,6 +485,14 @@ skipped.
   without a macronizer. Old English came back clean, which is itself worth
   recording so nobody re-reads it: every quoted OE word already carries its
   diacritics. Redo the read, not a grep, if the packs gain notes.
+- **All seven packs are covered, not just the two with diacritics.** Checked
+  afterwards rather than assumed: `es`, `de`, `it` and `pt` have **no notes at
+  all**, and all 85 French notes are one of two templates — "shares a root
+  with English *X*" and "the root of English *X*" — which quote an **English**
+  word, never a French one. So not one French note contains an accented
+  character, and that is correct rather than suspicious. The defect class is
+  structurally absent outside Latin and Old English; it would only appear if a
+  note started quoting the target language.
 - **`npm run test:all | grep ...` reports grep's exit code, not npm's.** Two
   runs in this session read `[exited with code 0]` that way; run as
   `npm run test:all > log 2>&1; echo $?` and one of them had exited **1**.

@@ -253,6 +253,15 @@ purpose: the note under `iānua` says "Janus, god of doorways" — the English
 name of the god in English prose, the same register as the adjacent note's
 "Jenner", not a failure to write `Iānus`.
 
+**The audit covers all seven packs, which was checked rather than assumed.**
+`es`, `de`, `it` and `pt` carry **no notes at all**; French carries 85, and
+every one of them is one of two templates — "shares a root with English *X*"
+and "the root of English *X*" — which quote an **English** word, never a French
+one. Not one French note contains an accented character, and that is the
+templates working, not a defect hiding. The class is structurally absent
+outside Latin and Old English, and would only appear if a note began quoting
+the target language.
+
 Done test-first, and the red run named all three scanned sites at once
 (`en-la almost → paene`, `README.md`, `docs/PEDAGOGY.md`) before anything was
 edited. The rebuild then demonstrated PR #5's fix again: **1 field changed out
