@@ -154,7 +154,7 @@ accurate verb for a learned borrowing where *became* is not. A guard reads all
 637 rendered word pages and fails on any frame that hands the English word to
 "from".
 
-**Built with** 645 tests: 484 unit, 98 in jsdom, 27 over the build tools, and
+**Built with** 647 tests: 484 unit, 98 in jsdom, 29 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

@@ -108,10 +108,26 @@ const esc = (s) =>
  * The descent sentence, with the English descendant set inside the frame
  * rather than appended to it. See the note above `META`: appending is what
  * put the descendant after Latin's "from" and so named it as the source.
+ *
+ * The lexicon note, where there is one, is joined into the same sentence with
+ * a dash rather than following its full stop. A note is written as an
+ * appositive fragment — 141 of the 185 distinct notes across the packs open in
+ * lower case — because the surfaces it was written for give it its own block:
+ * `src/content/tooltip.ts` a `<div class="note">`, the descent hub a `<td>`.
+ * This is the one place a note abuts a finished sentence, so this is the one
+ * place it has to be joined to it.
+ *
+ * A dash rather than a render-time capital, which was measured: of the 99
+ * notes that reach a word page, 39 open with a quotation mark around a cited
+ * form and 5 with a proper noun, so capitalising would be a no-op on 44 of
+ * them and would capitalise the cited Latin of "paene īnsula, almost an
+ * island". Every capital already in the corpus is required by a name rather
+ * than by sentence position, so a dash needs no exception list.
  */
-function descentSentence(meta, etymonOf) {
+function descentSentence(meta, etymonOf, note) {
   const tail = meta.descent.after ? ` ${esc(meta.descent.after)}` : '';
-  return `${esc(meta.descent.before)} <strong>${esc(etymonOf)}</strong>${tail}.`;
+  const aside = note ? ` — ${esc(note)}` : '';
+  return `${esc(meta.descent.before)} <strong>${esc(etymonOf)}</strong>${tail}${aside}.`;
 }
 
 /**
@@ -303,8 +319,7 @@ function wordPage(entry, lang, index) {
         ? `<section class="word__descent">
       <h2>Where <em>${esc(entry.etymonOf)}</em> comes from</h2>
       <p>
-        ${descentSentence(meta, entry.etymonOf)}
-        ${entry.note ? esc(entry.note) + '.' : ''}
+        ${descentSentence(meta, entry.etymonOf, entry.note)}
       </p>
     </section>`
         : entry.note

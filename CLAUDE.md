@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **27 pass**, 8 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **29 pass**, 9 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,105 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the exception list the item asked for was a fifth of the corpus
+
+`TODO.md`'s only item was the lowercase note the previous session found by
+rendering `/latin/mille`: `tools/build-site.mjs` put the note in the *same*
+`<p>` as the descent sentence, after that sentence's full stop, so **55** word
+pages opened a second sentence in lower case — "…your English *mile* was
+borrowed from. a mile was mīlle passūs, a thousand paces." The item offered
+three shapes and preferred the second, capitalising the first letter at render
+time, "with a measured exception list", and asked for the list to be measured
+before choosing.
+
+**Measuring it is what disqualified the shape, and that is the transferable
+half.** Of the **99** notes that reach a word page, **39** open with a
+quotation mark around a cited target-language form (`"mann" meant a human
+being of either sex`) and **5** open with a proper noun. So
+`charAt(0).toUpperCase()` is a **silent no-op on 44 of the 99** — and on the
+one un-quoted citation, `paene īnsula, almost an island`, it is not a no-op but
+a mistake, capitalising a Latin phrase that is being quoted rather than used.
+Shape 1, the dash, needs no list, and the reason is the finding: **every
+capital already in the corpus is required by a name — Jenner, Janus,
+Argentina, September, November — rather than by sentence position**, so a dash
+can never produce a spurious one. The general rule: *before writing an
+exception list for a transform, check whether the set needing the exception is
+the same set the transform silently misses. If it is, the transform is the
+wrong tool.* `descentSentence()` now takes the note and joins it with ` — `,
+one sentence with one full stop at the end.
+
+**Three of the item's numbers were larger than the job, all for structural
+reasons worth knowing.** "247 of 318 notes begin lowercase" counts *instances*
+across all seven packs; the transform acts on strings, of which there are
+**185** distinct — `door`/`doors` share `iānua`'s — and only **99** reach a
+word page, because French carries 85 notes and `DEEP = ['la','ang']` gives it
+no word page. "71 notes begin with a capital" is **5** once quotation marks are
+separated from letters. And the "Worth knowing" branch the item named as a
+second site renders on **0** of the 711 pages: every Latin and Old English
+entry with a note also has an `etymonOf`. Left alone, and it is not the same
+defect anyway — a bare note under a heading is the *caption* frame, which is
+what these fragments are written for and what the tooltip's `<div
+class="note">` and the hub's `<td>` already give them. **Four sessions running
+the queued item's premise, remedy or arithmetic has been partly wrong, and all
+four times what settled it was rendering the page and reading it.**
+
+**The rule is about the paragraph, not the letter.** One sentence, one full
+stop, and it comes last — `/\.\s*\S/` over the `after` half of the split the
+previous session's guard already computes, which is exactly where the note
+lands. That is strictly stronger than "no sentence starts in lower case", which
+would have waved all 39 quoted notes and all 5 named ones through. Done
+test-first; the red run named **99** pages and reported only **1** note already
+joined — `wes hāl` → wassail, whose note contains a dash of its own, and which
+renders as a clean parenthetical. Two tests in the existing
+`tests/tools/build-site.test.ts` rather than a tenth file, same seam argument as
+last session: it already renders every word page into `mktemp -d`. Nine pages
+read one per class: `mille`, `paene`, `vacca`, `novem`, `mann`, `wes-hal`,
+`micel`, `vir`, `malum`.
+
+One thing to know before touching this again: **the diff is six times wider
+than the fix and that is correct.** Dropping the note's own interpolation
+removed a blank line inside the descent `<p>`, so **637** word pages changed
+bytes where only the **99** changed visibly; HTML whitespace collapse makes the
+rest invisible. `sitemap.xml` is byte-identical, so nothing was redated. And
+**shape 3 is now strictly worse than it was**: capitalising the seed notes would
+make three surfaces worse and none better, since the word page no longer needs
+the capital. Recorded in `TODO.md` Notes so it is not revisited.
+
+Counts moved 645 → 647 and tool suites 8 → 9 in **six** documents, with
+`docs/LAUNCH.md:221` swept **by name and first** for the second session
+running — the cheap fix for the structural reason it kept being missed.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **29 tools / 9 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e passed
+and 3 skipped in 1.9 min, then build and validate again. Separately
+`site:check` 711 pages / 16 087 links all resolving — run here because the
+change is *to* published
+copy on 99 pages — and `packs:verify` not re-run, because no pack moved and no
+`builtAt` advanced. The `com.apple.fileprovider.ignore#P` attribute is still
+set on `dist/` and the full gate created **zero** iCloud conflict copies for the
+fifth session running.
+
+**Measuring the corpus found the next item, as rendering it has every session
+this week.** The notes disagree with themselves about quote marks and the split
+is exactly along pack lines: **59** distinct notes use straight `"` (en-ang 47
+of 72, en-la 12 of 28), **84** use curly `“ ”` (all of en-fr), and **zero mix
+the two**. So it is two conventions rather than 59 typos — and the site's own
+prose is curly-only, 24 to nothing in `site/index.html`. It lands hardest on
+the deep packs, because they are the ones with word pages, so all 59 are on a
+published page *and* in the tooltip *and* in the hub's note column. Queued with
+the judgement stated rather than decided: Latin and Old English quote
+*target-language citation forms*, where straight quotes are a linguistic
+convention, and French quotes *English words* in prose, where curly is simply
+correct — so "unify on curly" and "two different jobs, leave both" are both
+defensible, and it is a seed edit either way, which rebuilds two packs and
+redates ~637 sitemap entries.
+
+What needs a human: **B0**, unchanged from the last two sessions — one
+conflicted merge into `main`, four files named there. `Now` is empty; `Next`
+has the quote-mark item above, which is agent-shaped and does not wait on B0.
 
 ### 2026-09-28 — the queued item named the fix, and the fix was one word wrong
 

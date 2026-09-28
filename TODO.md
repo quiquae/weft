@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **27** tool tests / 8 suites, **36** e2e passing in 2.9 min
+suites, **29** tool tests / 9 suites, **36** e2e passing in 2.9 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -45,10 +45,17 @@ forwards, as of 2026-09-28** — they said English borrowed *novem* **from**
 *November*, because the frame ended in a preposition and the builder appended
 the descendant after it; `descent` is a before/after pair now, and a guard
 reads all 637 rendered pages and fails on any frame that hands the English
-word to "from". **Now is empty; Next has one item**, found while rendering
-that fix — a lexicon note follows the descent sentence's full stop and 247 of
-318 notes begin lowercase, so most word pages carry a fragment that starts
-mid-sentence; see Next. The code is not otherwise what is holding the release
+word to "from". **And a word page's note is now part of that sentence rather
+than a fragment after it, as of 2026-09-28** — 55 pages opened a second
+sentence in lower case ("…was borrowed from. a mile was mīlle passūs"), and
+the note is now dash-joined into the one sentence; a render-time capital was
+measured and rejected, because it is a no-op on the 44 of 99 notes that open
+with a quotation mark or a proper noun. **Now is empty; Next has one item**,
+found while measuring that fix — 59 of the 100 Latin and Old English notes
+quote with straight `"` where the French pack and all the site's own prose use
+curly, and zero notes mix the two, so it is two conventions rather than 59
+typos; see Next. The
+code is not what is holding the release
 up. The critical
 path runs through two things only Creagh can do: **B0 — one conflicted merge
 into `main`** (re-measured later on 2026-09-28: `main` *has* moved, and the
@@ -433,49 +440,111 @@ domain `weft.study` is not registered**.
       Not a lexicon edit: no pack moved, no `builtAt` moved, `packs:verify`
       untouched. `site:check` still 711 pages / 16 087 links, all resolving.
 
+- [x] **A word page's note started mid-sentence after a full stop.** Done
+      2026-09-28. `tools/build-site.mjs` put the note in the same `<p>` as the
+      descent sentence, *after* that sentence's full stop, so on **55** pages a
+      lowercase appositive opened a second sentence: "…your English *mile* was
+      borrowed from. a mile was mīlle passūs, a thousand paces." `descentSentence()`
+      now takes the note and joins it into the one sentence with a dash — "…was
+      borrowed from **—** a mile was mīlle passūs, a thousand paces." One
+      template, no lexicon edit, no pack rebuild, no sitemap redating.
+
+      **Option 1, and the measurement is what chose it over the item's own
+      preference.** The item preferred 2 (capitalise at render time) "with a
+      measured exception list", and the exception list turns out to be a fifth
+      of the corpus. Of the **99** notes that reach a word page — the item's
+      "247 of 318" counted all seven packs, and French has no word pages —
+      **39** open with a quotation mark around a cited target-language form
+      (`"mann" meant a human being of either sex`) and **5** open with a proper
+      noun (Jenner, Janus, Argentina, September, November). So
+      `charAt(0).toUpperCase()` would have been a silent **no-op on 44 of the
+      99**, and on `paene īnsula, almost an island` it would have capitalised a
+      cited Latin phrase. The dash needs no exception list, because **every
+      capital already in the corpus is required by a name rather than by
+      sentence position** — so the dash can never produce a spurious one. Also
+      relevant to the counts: there are **185** distinct notes, not 318; a note
+      shared by `door`/`doors` is one string to transform but two instances.
+
+      **The item's second site does not exist.** It said the defect is "also
+      visible in the 'Worth knowing' branch". That branch renders on **0** of
+      the 711 pages: every Latin and Old English entry that carries a note also
+      carries an `etymonOf`, and the 85 note-bearing entries without one are all
+      French, which gets no word page. Left alone rather than fixed — and it is
+      arguably not broken anyway, because a bare note under a heading *is* the
+      caption frame the fragments are written for, the same frame the tooltip
+      and the hub `<td>` give them.
+
+      Done test-first; the red run named **99** pages and reported only 1 note
+      already joined (`wes hāl` → wassail, whose note contains a dash of its
+      own — rendered and read, it comes out as a clean parenthetical). The rule
+      is about the paragraph rather than the letter: one sentence, one full
+      stop, and it comes last. That is strictly stronger than "no sentence
+      starts in lower case", which would have waved all 39 quoted notes and all
+      5 named ones straight through. Two tests in the existing
+      `tests/tools/build-site.test.ts`, which already renders every word page —
+      counts 645 → 647 and tool suites 8 → 9 across six documents,
+      `docs/LAUNCH.md:221` swept **by name and first**.
+
+      Nine pages rendered and read rather than reasoned about — `mille`,
+      `paene`, `vacca`, `novem`, `mann`, `wes-hal`, `micel`, `vir`, `malum` —
+      one per class. `site:check` 711 pages / 16 087 links, all resolving.
+      A diff of the whole site before and after shows **637** word pages
+      changed, of which only the 99 change visibly: dropping the note's own
+      interpolation removed one blank line inside the `<p>` on the other 538,
+      which HTML whitespace collapse makes invisible. The sitemap did not move.
+
 ## Next
 
-- [ ] **A word page's note starts mid-sentence after a full stop.** Found
-      2026-09-28 while rendering the descent fix above, so it is a real render
-      rather than a reading of the template. `tools/build-site.mjs` puts the
-      note in the same `<p>` as the descent sentence, after that sentence's
-      full stop:
+- [ ] **The note corpus disagrees with itself about quote marks, and the split
+      is exactly along pack lines.** Found 2026-09-28 while measuring the note
+      corpus for the dash fix above, so the numbers below are measured rather
+      than estimated. Of the **185** distinct notes across the seven packs:
 
-          This is the Latin word your English *mile* was borrowed from.
-          a mile was mīlle passūs, a thousand paces.
+          straight " only   59   (en-ang 47 of 72, en-la 12 of 28)
+          curly “ ” only    84   (en-fr 85 of 85, less one with no quotes)
+          both               0
+          no double quotes  42
 
-      **Lowercase is the dominant convention in the lexicon, not the
-      exception**: 247 of the 318 notes across the seven packs begin with a
-      lowercase letter, and they are written as appositive fragments —
-      "literally 'woman-person'", "the near-dweller", "a beech-wood tablet" —
-      which read correctly in the tooltip, where `src/content/tooltip.ts`
-      gives the note its own `<div class="note">` and it lands as a caption on
-      its own line. The word page is the only surface that joins it to a
-      finished sentence, so the word page is where it breaks. It is also
-      visible in the "Worth knowing" branch (`tools/build-site.mjs`), where an
-      etymon-less note opens a paragraph in lowercase.
+      **Zero notes mix the two**, so this is not 59 typos — it is two packs
+      written to one convention and one pack written to the other. And the
+      convention the site's own prose uses is curly: `site/index.html` has 24
+      curly quotes and no straight ones in running text. So on `/old-english/mann`
+      a straight-quoted `"mann"` sits inside a page whose surrounding prose is
+      curly-quoted, and `esc()` renders it as `&quot;`, which displays straight.
 
-      Three shapes, and the decision is which corpus to move:
+      **The two deep packs are the visible ones**, which is why this matters
+      more than the count suggests: `DEEP = ['la','ang']` means only Latin and
+      Old English get word pages, so all **59** straight-quoted notes are on a
+      published page *and* in the tooltip *and* in the descent hub's note
+      column, while the 84 curly French ones are tooltip-only.
 
-      1. **Join with a dash on the word page only** — "…was borrowed from — a
-         mile was mīlle passūs". One template, zero lexicon churn, and it
-         reads well for the 247. It reads oddly for the 71 notes that already
-         begin with a capital ("— Jenner named the vaccine after the cowpox").
-      2. **Capitalise at render time**, word page only. Handles both sets,
-         costs one `charAt(0).toUpperCase()`, and is wrong on any note that
-         opens with a lowercase word that must stay lowercase — check for one
-         before choosing this.
-      3. **Capitalise the notes in `tools/seed/*.tsv`.** 247 edits, rebuilds
-         packs, redates ~700 sitemap entries, and changes the tooltip too,
-         where the fragment is currently fine.
+      **The judgement to make first, because it decides the direction.** The
+      two packs are not quoting the same kind of thing. Latin and Old English
+      quote *target-language citation forms* — `"mann"`, `"mālum"`, `"ne ǣfre"`
+      — where straight quotes or italics are the linguistic convention. French
+      quotes *English words* in ordinary prose — `“amiable”` — where curly is
+      simply correct typography. So "make them all curly" is one answer and
+      "these are two different jobs, leave both" is a defensible other one. A
+      third: use `<em>` for cited forms on the word page, which is what
+      `/latin/paene`'s own heading already does with *peninsula*.
 
-      **Prefer 2 with a measured exception list, or 1 if the 71 capitalised
-      notes turn out to be the ones that should move.** ~30 minutes either
-      way, plus `site:check`; guard it in `tests/tools/build-site.test.ts`,
-      which now already reads every rendered word page.
+      Whichever way: it is a `tools/seed/*.tsv` edit, so it **rebuilds two
+      packs, advances their `builtAt`, and redates ~637 sitemap entries** — the
+      pack-granular coarseness this file already records. ~30 minutes for the
+      unify-on-curly version, plus `npm run packs`, `packs:verify`, `site`
+      and `site:check`. Guard it in `tests/tools/lexicon-orthography.test.ts`,
+      which is already the suite that polices how the packs spell things.
 
-Otherwise Next is empty as of 2026-09-28. Everything else remaining lives in
-Blocked, and all of it needs Creagh: B0 first, then B1.
+Everything else remaining lives in Blocked, and all of it needs Creagh: B0
+first, then B1.
+
+One thing found and deliberately not queued, because it is a judgement about
+the note corpus rather than a defect: **the descent hub's note column and the
+tooltip are untouched by the above**, and should stay that way. Both give the
+note its own box, which is the frame a lowercase fragment is written for. If
+anyone is ever tempted to capitalise the notes in `tools/seed/*.tsv` to
+"fix" them, `tests/tools/build-site.test.ts` no longer needs them capitalised
+and the tooltip would get worse, not better.
 
 ## Blocked
 
@@ -520,13 +589,13 @@ rather than the clean fast-forward the old text implied. Merging is a human
 step here, as is committing to `main`. In order:
 
 1. Merge **#14** into `tools/reproducible-lexicon-packs`. It is the only open
-   PR: **#15, #16 and #17** were each squash-merged into #14's head on
-   2026-09-28 with CI green, so #14 carries all of them and there is nothing
-   stacked above it. Then open one PR from that branch to `main` and resolve
-   the four conflicts above. Taking `CLAUDE.md` and `TODO.md` from the stack
-   side is safe; read the two code hunks. The conflict list was re-measured
-   after #17, which edits `tools/build-site.mjs` again: still exactly those
-   four files, same reasons.
+   PR: **#15, #16, #17, #18 and #19** were each squash-merged into #14's head
+   on 2026-09-28 with CI green, so #14 carries all of them and there is
+   nothing stacked above it. Then open one PR from that branch to `main` and
+   resolve the four conflicts above. Taking `CLAUDE.md` and `TODO.md` from the
+   stack side is safe; read the two code hunks. The conflict list was
+   re-measured after #17 and #19, both of which edit `tools/build-site.mjs`
+   again: still exactly those four files, same reasons.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -639,6 +708,50 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the exception list the item asked for was a fifth of the
+corpus, so the other option won.** The queued item preferred shape 2,
+capitalising a note's first letter at render time, "with a measured exception
+list", and asked for the list to be measured before choosing. Measuring it is
+what disqualified the shape. Of the **99** notes that reach a word page, **39**
+open with a quotation mark around a cited target-language form and **5** open
+with a proper noun, so `charAt(0).toUpperCase()` is a **silent no-op on 44 of
+them** — and on the one un-quoted citation, `paene īnsula, almost an island`,
+it is not a no-op but a mistake, capitalising a Latin phrase that is being
+quoted rather than used. Shape 1, the dash, needs no list at all, and the
+reason is worth keeping: **every capital already in the note corpus is required
+by a name — Jenner, Janus, Argentina, September, November — rather than by
+sentence position**, so a dash can never produce a spurious capital. The
+general form: before writing an exception list for a transform, check whether
+the set needing the exception is the same set the transform silently misses. If
+it is, the transform is the wrong tool.
+
+Three corrections to the item's own numbers, all in the direction of a smaller
+job than it described. **"247 of 318 notes" counts instances across all seven
+packs**; the transform acts on *strings*, of which there are **185** distinct,
+and only **99** reach a word page at all, because French has 85 notes and no
+word page. **"71 notes begin with a capital" is 5** once quotation marks are
+separated out from letters. And **the "Worth knowing" branch the item named as
+a second site renders on 0 of the 711 pages** — every la/ang entry with a note
+also has an `etymonOf`, so that branch is unreachable on the current lexicon.
+It was left alone, and on reflection it is not the same defect: a bare note
+under a heading is the *caption* frame, which is the frame these fragments are
+written for and the one the tooltip and the hub `<td>` already give them.
+
+**Do not capitalise the notes in `tools/seed/*.tsv`.** Shape 3 is now strictly
+worse than before this fix: the word page no longer needs a capital, and the
+tooltip and the descent hub would both get worse, because in a `<div
+class="note">` and a `<td>` the lowercase fragment is correct. 247 edits to
+make three surfaces worse and none better.
+
+The diff is wider than the fix. **637 word pages changed bytes; only 99 changed
+visibly.** Dropping the note's own `${...}` interpolation removed one blank line
+inside the descent `<p>` on the 538 note-less pages, which HTML whitespace
+collapse makes invisible. No pack moved, no `builtAt` moved, and the sitemap is
+byte-identical, so nothing was redated — the one date that will move is the
+install page's, because `contentDate()` reads `tools/build-site.mjs` for it and
+that file was edited. Same known coarseness the previous session recorded, and
+nothing is indexed yet (B3).
 
 **2026-09-28 — the queued fix was right about the slot and wrong about the
 role.** The item reconstructed the sentence `META.la.descent` was written for
