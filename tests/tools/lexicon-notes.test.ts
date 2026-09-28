@@ -95,6 +95,31 @@ describe('a tooltip note reads on its own, without the etymon badge above it', (
     );
   });
 
+  test('a descendant that is a proper noun has a note at all', () => {
+    // The other half of the same premise. The rule above polices notes that
+    // exist; a missing note leaves the proper noun unexplained outright, and
+    // the surfaces still promise prose — `/latin/novem` renders its "Where
+    // November comes from" heading regardless, and the descent hub renders an
+    // empty note cell in the column its neighbours fill.
+    //
+    // Narrow for the same measured reason: 962 of the 1131 entries carrying an
+    // `etymonOf` have no note, and almost all of them are right to. An
+    // ordinary descendant is inferable from the headword beside it — *octō*
+    // next to "Ancestor of English octave" explains itself. A name is not:
+    // *novem* next to "Ancestor of English November" tells the reader nothing
+    // about why nine became a month, so the historical fact is the only thing
+    // that can.
+    const missing = everyEntry()
+      .filter(({ entry }) => entry.etymonOf && isProperNoun(entry.etymonOf) && !entry.note)
+      .map(({ pack, entry }) => `${pack} ${entry.src ?? '?'} → ${entry.tgtLemma ?? '?'}: nothing says why it became "${entry.etymonOf}"`);
+
+    assert.deepEqual(
+      [...new Set(missing)],
+      [],
+      `${missing.length} proper-noun descendants are left unexplained:\n  ${missing.join('\n  ')}`,
+    );
+  });
+
   test('the rule has something to police', () => {
     // Without this the guard goes quietly vacuous the day someone lowercases
     // an etymon or the packs stop shipping a proper-noun descendant at all: a

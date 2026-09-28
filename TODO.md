@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **23** tool tests / 7 suites, **36** e2e passing in 2.5 min
+suites, **24** tool tests / 7 suites, **36** e2e passing in 2.5 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -36,12 +36,17 @@ closes the reproducibility trio (`packs`, `site`, `og`); the re-check's real
 yield was elsewhere, in six places that spelled `paene insula` without the
 macron on `īnsula`, three of them published copy, none of them visible to
 the orthography guard because `īnsula` is not a lexicon headword.
-**Now is empty.** Every
-item queued for an agent is done and Next has nothing behind it; the code is
-not what is holding the release up. The critical path runs through two things
-only Creagh can do: **B0 — thirteen stacked PRs have to be merged into `main`**
-before the version can be bumped, and then **B1 — the domain `weft.study` is
-not registered**.
+**And every proper-noun etymon now
+explains itself, as of 2026-09-28** — `novem` → November was the last numeral
+with a descendant and no note, and the guard PR #14 wrote could not see it,
+because that guard polices notes that exist and `novem` had none; the missing
+half is now a test too. **Now and Next are both empty.** Every item queued for
+an agent is done; the code is not what is holding the release up. The critical
+path runs through two things only Creagh can do: **B0 — one conflicted merge
+into `main`** (re-measured later on 2026-09-28: `main` *has* moved, and the
+stack no longer applies cleanly — four files conflict, all of them squash
+artefacts; see B0) before the version can be bumped, and then **B1 — the
+domain `weft.study` is not registered**.
 
 ## Now
 
@@ -344,27 +349,48 @@ not registered**.
       jsdom test pinning the premise it rests on — that the note survives
       when the badge is hidden, which nothing asserted before.
 
+- [x] **`novem` → November is the only numeral with an etymon and no note.**
+      Done 2026-09-28. The content decision the last run reserved was taken
+      by the queue, which asked for the note in as many words, so the
+      parallel the item had already written out went in unchanged:
+      `tools/seed/lex-la.tsv:373` now reads "November was the ninth month of
+      the old Roman year". Both surfaces checked by rendering, not reasoned
+      about — `/latin/novem` and `/latin/septem` are now the same shape
+      sentence for sentence, and the hub table's note column is full where it
+      was empty.
+
+      **The guard that came with it is the transferable half, and it is the
+      other half of PR #14's rule rather than a new one.**
+      `tests/tools/lexicon-notes.test.ts` polices notes that *exist* — a note
+      whose descendant is a proper noun must name it. It cannot see a
+      descendant with no note at all, which is the state `novem` was in, so
+      the defect the last run described was invisible to the guard written in
+      the same session. One more test closes it: a proper-noun descendant
+      must carry a note. Red run named exactly one offender
+      (`en-la nine → novem: nothing says why it became "November"`) before
+      anything was edited.
+
+      **Narrow for a measured reason, not a guessed one.** "An etymon implies
+      a note" is nonsense — **962 of the 1131** entries carrying an `etymonOf`
+      across the seven packs have no note and are right not to, because an
+      ordinary descendant is inferable from the headword beside it (*octō*
+      under "Ancestor of English octave" explains itself). A name is not:
+      *novem* under "Ancestor of English November" tells the reader nothing
+      about why nine became a month. Capitalisation separates the two, the
+      same derivation PR #14 used, and it leaves **5 rows** to police — four
+      distinct entries, because `door`/`doors` share `iānua`'s note.
+
+      One field of **7088** moved in `en-la.json`; `index.json` did not,
+      because a note is not a count, and `builtAt` stayed 2026-09-28, so
+      **zero** sitemap entries were redated. Counts moved 641 → 642 across
+      six documents, one more than the usual five — see the Notes entry for
+      the stale one.
+
 ## Next
 
-- [ ] **`novem` → November is the only numeral with an etymon and no note,
-      and it shows.** `septem` → September now reads "September was the
-      seventh month of the old Roman year"; the `novem` row of
-      `latin-words-in-everyday-english` renders an empty note cell directly
-      below it, and `/latin/novem` renders its `Where November comes from`
-      heading over a single bare sentence — "This is the Latin word your
-      English borrowed from November." — where `/latin/septem` now has two
-      (checked in `dist/site`, not assumed). One seed field,
-      `tools/seed/lex-la.tsv:373`, then `npm run packs`. The obvious parallel
-      — "November was the ninth month of the old Roman year" — is true and
-      would pass the new guard, but writing lexicon *content* is a different
-      decision from fixing a defect, so an unattended run left it. Note the
-      other two numerals with month-shaped etymons are not affected:
-      `octō` → octave and `decem` → decimal. **~10 minutes**, plus a pack
-      rebuild and `site:check`.
-
-Otherwise Now is empty as of 2026-09-28 — every other item an agent could pick
-up has been worked. Everything remaining lives in Blocked, and all of it needs
-Creagh: B0 first, then B1.
+Empty as of 2026-09-28. Every item an agent could pick up has been worked.
+Everything remaining lives in Blocked, and all of it needs Creagh: B0 first,
+then B1.
 
 ## Blocked
 
@@ -375,39 +401,43 @@ is not reversible the way a commit is. Ordered by what blocks what.
 and nothing else in Now.* **The shape of this changed on 2026-09-28 and the
 old instruction below would now do the wrong thing — read this first.**
 
-Creagh merged nine of the stack that afternoon (15:18–15:19 UTC), top-down:
-#13 into #12's branch, #12 into #11's, and so on down to #6, plus #4. Each
-squash-merge cascaded the accumulated work one step further down the stack,
-and GitHub deleted every head branch as it landed. **`main` did not move.**
-Two things follow, both verified rather than assumed:
+**Re-measured 2026-09-28 (later): `main` has moved, and the merge no longer
+applies cleanly.** The paragraph this replaced said "`main` did not move",
+which was true when written and is not now. Creagh merged #1 into `main` at
+15:26:13 UTC and #2 into #1's branch at 15:26:04, after the nine top-down
+merges at 15:18–15:19. `main` is `f6733af`. #3 and #5 are **closed**, not
+open; #1, #2 and #4 are merged; **#14 is the only open PR** (plus this
+session's, stacked on it). So the "close #1, #2 and #3 as superseded" step is
+already done and the drifted-screenshot hazard is gone with it — #3 cannot be
+merged first because it cannot be merged at all.
 
-- **All of #1 – #13's work now sits on one branch,
-  `tools/reproducible-lexicon-packs`** (`0e41950`). It was #5's head; #5 was
-  *closed* rather than merged, which is what broke the chain — its base
-  (`store/regenerate-listing-screenshots`) was deleted without ever receiving
-  #5 – #13. So that branch is the stack, eighteen commits above `main`, and
-  its ancestry still runs through #1's and #2's heads (checked with
-  `git merge-base --is-ancestor`). **#14 is stacked on it in turn**, on
-  `lexicon/proper-noun-notes`, checks green — so it is two merges, or one if
-  #14 is landed into its base first.
-- **PRs #1, #2 and #3 are still open** (#1 and #2 draft, #3 not). #1 and #2
-  are strict ancestors of the branch above, so merging them is optional.
-  **#3's head has moved to `51503a7`**, the squash of #4, which is *not* an
-  ancestor. Diffed: the only thing it carries that the stack branch lacks is
-  `docs/store/apple-04-progress.png` (126 408 → 126 711 bytes) — and that is
-  the date-drifted dashboard capture PR #12 explicitly reverted five
-  siblings of, so losing it is the preferred outcome, not a loss.
-  `playwright.config.ts` is byte-identical in both; its `CLAUDE.md` and
-  `TODO.md` text is superseded by the eight sessions after it.
+**What replaced that hazard is a merge conflict, and it is the thing to plan
+for.** #1 was *squash*-merged, so `main` carries a new commit holding #1's
+content while the stack still carries #1's original `ee277d2`. The merge base
+is therefore `3060d93`, behind both, and git sees two independent creations of
+the same files. Trial-merged in memory with
+`git merge-tree --write-tree origin/main HEAD` — **four conflicts**:
 
-So the merge is now **one** PR, not thirteen. Merging is still a human step
-here, as is committing to `main`. In order:
+    .github/workflows/site.yml   (content)
+    CLAUDE.md                    (add/add)
+    TODO.md                      (add/add)
+    tools/build-site.mjs         (content)
 
-1. Merge **#14** (`lexicon/proper-noun-notes` → `tools/reproducible-lexicon-packs`,
-   checks green), then open and merge one PR from
-   `tools/reproducible-lexicon-packs` → `main`. That lands #1 – #14. Then
-   close #1, #2 and #3 as superseded — do **not** merge #3 first, or you
-   reintroduce the drifted screenshot #12 removed.
+`CLAUDE.md` and `TODO.md` resolve to **the stack's side wholesale** — `main`'s
+copies are #1's first drafts and every later session rewrote them. The two
+code conflicts are narrower and want reading: `site.yml` is #6's
+`fetch-depth: 0` against #1's version of the same job, and `build-site.mjs` is
+eight sessions of edits against #1's. Neither is a semantic disagreement; both
+are the same squash artefact.
+
+So the stack is still **one** merge to `main`, but it is a conflicted one
+rather than the clean fast-forward the old text implied. Merging is a human
+step here, as is committing to `main`. In order:
+
+1. Merge **#14** and the PR stacked on it, both into
+   `tools/reproducible-lexicon-packs`, then open one PR from that branch to
+   `main` and resolve the four conflicts above. Taking `CLAUDE.md` and
+   `TODO.md` from the stack side is safe; read the two code hunks.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -520,6 +550,38 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — a guard cannot see the absence of the thing it inspects.**
+PR #14 derived a rule from the data — a note whose descendant is a proper noun
+must name it — and shipped it the same session `novem` was found to have no
+note at all. The guard was silent on `novem`, correctly and uselessly: its
+loop begins `if (!note) continue`. **The general form, worth checking against
+any scanning guard: a rule that filters on the presence of a field can never
+police the field's absence, so ask separately whether absence is also a
+defect.** Here it was, and the fix was one more test in the same file.
+
+**The narrowing is the reusable part.** "Carries an `etymonOf` ⇒ must have a
+note" fails **962 of 1131** times across the seven packs and is plainly wrong;
+"carries a *capitalised* `etymonOf` ⇒ must have a note" leaves **5 rows** and
+fired exactly once. Same derivation PR #14 used, and the same reason it beats
+a curated list. The substantive difference between the two cases is that an
+ordinary descendant is inferable from the headword sitting next to it — *octō*
+under "Ancestor of English octave" — and a name is not.
+
+**One count was two sessions stale, and it was the public one again.**
+`docs/LAUNCH.md:221` said "638 tests" inside the Show HN draft, which is
+exactly the pre-#14 total (484 + 97 + 21 + 36). PR #14 added one jsdom test
+and two tool tests and moved **five** documents to 641; `docs/LAUNCH.md` was
+not one of them. That makes it the third separate occasion this file's drafts
+have carried a number nobody had re-measured — the Journal already records
+"449 tests" here on 2026-09-27 and the same draft wrong again at the 617 → 620
+sweep. (The 2026-09-28 launch re-sweep is the exception that proves it is
+worth checking: the "633 tests" it found was *correct*.) Six documents now say
+642. `git grep -nE '\b(638|641)\b'` returns nothing outside Journal history.
+**Re-sweep `docs/LAUNCH.md` by name whenever a count moves.** It is the only
+file here whose errors leave the repository, and it is the one a
+five-document sweep keeps omitting, because it is the only one where the
+number sits inside a blockquote rather than in a command table.
 
 **2026-09-28 — the item's premise was wrong, and the setting underneath it was
 the real finding.** `iānua`'s note was queued as "never says which month". It
