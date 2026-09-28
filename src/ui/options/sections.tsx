@@ -273,7 +273,7 @@ export function DensitySection({ c, settings }: { c: Controller; settings: Setti
         locked
         title="Resting density"
         detail="What a page looks like the moment you arrive, before any attention has accumulated."
-        value={`${percent(settings.weave.baseRatio)} — ${oneWordIn(settings.weave.baseRatio)}`}
+        value={`${percent(settings.weave.baseRatio)} of content words — ${oneWordIn(settings.weave.baseRatio)}`}
       >
         <WeaveBand ratio={settings.weave.baseRatio} height={20} />
         <Slider
@@ -291,7 +291,7 @@ export function DensitySection({ c, settings }: { c: Controller; settings: Setti
         locked
         title="Ceiling"
         detail="The most a page will ever be woven, however long you stay. Difficulty approaches this and never passes it."
-        value={`${percent(settings.weave.ceilingRatio)} — ${oneWordIn(settings.weave.ceilingRatio)}`}
+        value={`${percent(settings.weave.ceilingRatio)} of content words — ${oneWordIn(settings.weave.ceilingRatio)}`}
       >
         <WeaveBand ratio={settings.weave.ceilingRatio} height={20} />
         <Slider

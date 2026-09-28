@@ -128,6 +128,18 @@ Writing the guard before the fix found two more instances that a search for
 sentence explaining why a nominative headword drops cleanly into an English
 frame.
 
+**Two more surfaces said "1 word in N" with no unit.** The demo's readout
+did too, until "And the live demo said sixty" above; the popup and the
+options page's density rows still did, because both build that string from
+the same `oneWordIn()` function. The ratio behind it is a proportion of
+*content* words, not of everything on the page, and the popup's own
+sentence — "1 word in 3 you could read is in French" — read as a claim about
+all of it. Both now say "of the content words", matching the demo and the
+phrase `src/core/settings.ts` already used for the Standard preset. Checked
+in a real Chromium build rather than assumed safe, since the popup is a
+genuine 340×330px surface and the options page's value badges do not wrap:
+no overflow at any ratio from 6% to 60%.
+
 **Built with** 638 tests: 484 unit, 97 in jsdom, 21 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
