@@ -21,9 +21,13 @@ now runs the Standard preset's own constants and a test fails if it stops
 doing so, which was the last place in the product claiming a number nobody
 gets. **And the Latin it shows is spelled one way, as of 2026-09-28** — a
 guard now holds the tooltip notes and the three documents that quote
-headwords to the pack's own orthography. The code is not what is holding the release
+headwords to the pack's own orthography. **And the launch drafts and the OG
+card both hold up under a second look, as of 2026-09-28** — `docs/LAUNCH.md`
+was independently re-swept claim by claim against the code a second time and
+nothing new was wrong, and `npm run og` joins `npm run packs` and `npm run
+site` as measured byte-stable. The code is not what is holding the release
 up. The critical path runs through two things only
-Creagh can do: **B0 — nine stacked PRs have to be merged into `main`** before
+Creagh can do: **B0 — ten stacked PRs have to be merged into `main`** before
 the version can be bumped, and then **B1 — the domain `weft.study` is not
 registered**. Everything in Now can land before either and depends on
 neither.
@@ -151,26 +155,29 @@ neither.
       that edit changed a count. `packs:verify` still 0 errors / 4 warnings,
       packs still 653 KB. Counts moved 636 → 638 in five documents.
 
-- [ ] **Check `npm run og` for byte-stability.** *Topmost unchecked item as of
-      2026-09-28,* promoted from Next. The rest of this item is
-      done. `grep -n 'new Date()' tools/*.mjs build.mjs` found exactly three
-      sites on 2026-09-28 — the pack builder (fixed), the sitemap (fixed), and
-      `tools/make-licence.mjs`, where `issued` and `expires` are genuinely
-      wall-clock and correct; `build.mjs`'s two are timing output. And
-      `npm run site` is now *measured* byte-stable: two builds into separate
-      temporary directories (`node tools/build-site.mjs --out=<dir>`) diff
-      identical. That leaves `npm run og`, which is different in kind from the
-      other two — it writes `site/og.png`, a **tracked** file, not into
-      gitignored `dist/`, so a wobble there dirties the tree the way the packs
-      used to. Same check: run it twice, diff. Low priority; nothing is known
-      to be wrong.
-
-## Next
+- [x] **Check `npm run og` for byte-stability.** Done 2026-09-28: three
+      separate runs on this machine produced the identical SHA-256
+      (`6f2ef13f…eb6f3e66`) as the `site/og.png` already committed, so there
+      was nothing to stage. That closes out the reproducibility work this
+      stack has been doing since the pack builder: `npm run packs`, `npm run
+      site` and now `npm run og` are all measured byte-stable, so nothing left
+      in the site or lexicon pipeline stamps a tracked file with the wall
+      clock. One correction along the way, found while re-checking rather than
+      taken on faith: this item's own account of the `new Date()` audit was
+      loose. The literal command it names, `grep -n 'new Date()' tools/*.mjs
+      build.mjs`, matches only `build-pack.mjs` (×2) and `build.mjs` (×1) —
+      not `tools/make-licence.mjs`, which uses `Date.now()` rather than the
+      literal string `new Date()`, and not the sitemap, which is `tools/
+      sitemap.ts` and was never inside a `.mjs` glob to begin with. The
+      conclusion was still right (`make-licence.mjs`'s `issued`/`expires` are
+      genuinely wall-clock by design; `build.mjs`'s two calls are console
+      timing output nothing diffs; the sitemap has zero live `Date` calls
+      left, only a comment describing the bug it used to have) — only the
+      mechanics of how that was found were retold slightly wrong.
 
 - [ ] **Decide whether the popup's density label wants the same qualifier the
-      demo just gained.** Found 2026-09-28 while fixing the demo, and recorded
-      rather than changed because it is extension UI copy and a separate
-      surface. `density()` at `src/ui/components/pieces.tsx:280` renders a
+      demo just gained.** *Topmost unchecked item as of 2026-09-28,* promoted
+      from Next. `density()` at `src/ui/components/pieces.tsx:280` renders a
       ratio as `1 word in ${round(1/ratio)}`, and that ratio is a proportion
       of **eligible** words (`selector.ts:38`), not of words on the page — so
       "1 word in 3" is one *content* word in three, and on a real page that is
@@ -181,14 +188,18 @@ neither.
       the user watching their own page can see the density directly, which a
       visitor to the landing page cannot. *~10 minutes; copy only.*
 
+## Next
+
+Nothing queued. The one item that was here was promoted to Now on 2026-09-28.
+
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the nine stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → … → #9 are
-stacked in that order, all nine are drafts, so `main` is twelve commits
+**B0 — Merge the ten stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → … → #10 are
+stacked in that order, all ten are drafts, so `main` is thirteen commits
 behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
 documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
 the launch and store copy and carries one comment change in
@@ -196,9 +207,11 @@ the launch and store copy and carries one comment change in
 `site/index.html`, the readout's wording, and a new test suite
 (`tests/tools/demo-curve.test.ts`). #9 is Latin orthography: three tooltip
 notes in the lexicon, four prose citations, and a second new test suite
-(`tests/tools/lexicon-orthography.test.ts`). It is the only one of the nine
-that rebuilds a shipped pack — `en-la.json`, four fields. Nothing in the
-extension's *code* moves in any of them.
+(`tests/tools/lexicon-orthography.test.ts`); it is the only one of the ten
+that rebuilds a shipped pack — `en-la.json`, four fields. #10 re-checked the
+launch drafts against the code a second time and confirmed `npm run og` is
+byte-stable; both came back clean, so it is a `TODO.md` bookkeeping commit
+only. Nothing in the extension's *code* moves in any of them.
 Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
@@ -317,6 +330,74 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the launch drafts held up on a second, independent read; the
+OG card is the third thing now confirmed byte-stable.** This session's task
+named `docs/LAUNCH.md` as the item to work and pointed at "TODO.md > Now,
+topmost unchecked" — but by the time it ran, a sibling session on
+`docs/launch-copy-sweep` had already closed that item out (the ten
+corrections recorded two entries below), and the topmost unchecked item was
+actually the `npm run og` check. Swept `docs/LAUNCH.md` end to end anyway,
+against the code rather than against the note, on the reasoning this file
+itself already argues: a note is a claim, not a proof.
+
+- **What was actually checked, category by category, the way the task asked.**
+  *Permission list:* the r/chrome_extensions draft's exact code snippet,
+  `chrome.scripting.registerContentScripts({ persistAcrossSessions: true })`,
+  against `src/background/index.ts:719` — verbatim. *Free vs Pro:* "Free for
+  one language forever" against `FREE_LANGUAGE_LIMIT = 1` and the free-tier
+  list in `src/core/entitlements.ts` and `docs/PRICING.md`. *The renderer
+  claim:* `nodeValue` assignment and the CSS Custom Highlight API against
+  `src/content/render-highlight.ts` (`new Highlight()`), and the HN draft's
+  "test page that stores text-node references and calls removeChild on each"
+  against `tests/e2e/pages/reconciler.html` — verbatim. *Licence-revocation
+  honesty:* "cannot be revoked, stated on the pricing page rather than
+  hidden" against `docs/PRICING.md`'s own "A licence cannot be revoked. There
+  is nowhere to publish a revocation." *Lexicon sizes / claims:* all four
+  Latin etymology examples in the r/latin draft — `vacca`→vaccine,
+  `mīlle`→mile, `paene`→peninsula, `pecūnia`→pecuniary — against
+  `src/lexicon/packs/en-la.json` directly (the entries are keyed arrays, not
+  flat objects; a first pass at querying the pack silently matched nothing
+  until that was noticed). *Every URL:* the Christensen DOI against
+  `docs/PEDAGOGY.md`, and the two lexicon-page slugs the document's own
+  opening section claims (`/old-english-words-that-became-english`,
+  `/latin-words-in-everyday-english`) against the literal string in
+  `tools/build-site.mjs:430`. All of it matched.
+- **One adjacent finding, not in `docs/LAUNCH.md` and not fixed.** The pack's
+  own note on the `paene` entry reads `"paene insula, almost an island"` —
+  without the macron that `docs/LAUNCH.md` correctly gives it (`paene
+  īnsula`), and that "īnsula" is standardly long is not in question. This is
+  the document being *more* correct than the lexicon note behind it, not the
+  other way round, and it is invisible to `lexicon-orthography.test.ts` by
+  design: that guard checks only an entry's own `tgtLemma`, and `insula` is
+  not `paene`'s. Left for a session that wants to touch the lexicon rather
+  than folded in here, on the same narrow-scope discipline every PR on this
+  stack has kept. Recorded so it is not found twice.
+- **The `npm run og` result belongs here too, since it was the actual
+  topmost item.** Three runs on this machine produced the identical SHA-256
+  (`6f2ef13f…eb6f3e66`) as the committed `site/og.png`. See the Now item
+  above for the result and for one small correction to that item's own
+  account of a `new Date()` grep.
+- **Two of the six prompts sitting in the local `cq` queue for this repo
+  turned out to be this exact `npm run og` check, queued a second and third
+  time** (`q_20260928T093343_e59a`, `q_20260928T100248_4dce`). Left them
+  alone rather than remove them — pruning another queued task is outside
+  what this one asked for, the queue's own design already tolerates
+  redundant re-verification (this very session is an instance of it, for
+  `docs/LAUNCH.md`), and whoever drains them next will find this item
+  already `[x]` and the SHA-256 written down.
+- **`npm run test:all` hit the iCloud trap again — same location as before,
+  but this time mid-build rather than before it.** `dist/` was cleaned before
+  the run started, same as every
+  prior session's precaution, but the *second* `build:all` (the one after
+  `test:e2e`) still died on `Unknown system error -11 … scandir
+  '.../dist/safari/_locales 2'` — a conflict copy iCloud dropped in *while
+  the gate was running*, not one left over from before it. Everything through
+  typecheck, 484 unit, 97 jsdom, 21 tools, compat, the first `build:all` and
+  `validate`, and all 36 e2e tests had already passed by then. Cleaned
+  `dist/` again and re-ran only the remaining `build:all && validate`, which
+  passed. Worth knowing: the existing "clean before you run" advice is
+  necessary but was not, this time, sufficient.
 
 **2026-09-28 — the guard found three defects; the item named one.** The item
 was "spell `mīlle` with its macron in the three places that do not". Writing
