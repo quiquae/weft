@@ -203,7 +203,19 @@ listing text states the default is gentler, so nothing is overstated.
 
 ## Support and privacy policy URLs
 
-Both required. Host `docs/PRIVACY.md` and the repository issues page.
+Both required, and both are generated pages rather than anything to host by
+hand. `npm run site` renders `docs/PRIVACY.md` to `/privacy` and
+`docs/SUPPORT.md` to `/support` through the same template as the rest of the
+site, so the published page and the document in this repository cannot drift
+apart. `npm run site:check` fails the build if either is missing, along with
+whatever `SUPPORT_URL` in `src/core/pricing.ts` resolves to.
+
+| Field | Value |
+|---|---|
+| Privacy policy URL | `https://weft.study/privacy` |
+| Support URL | `https://weft.study/support` — the same URL the extension's own help page links to |
+
+Both wait on the domain being registered. Neither URL is reachable until then.
 
 
 ---
@@ -221,9 +233,12 @@ Things only you can do, in the order they block each other.
       account you will still control in five years, not a throwaway.
 - [ ] **A privacy policy at a public URL.** Required for any extension that
       handles user data, and Weft is required to declare one even though it
-      transmits nothing. `docs/PRIVACY.md` is written to be published as-is;
-      put it at `https://weft.study/privacy`.
-- [ ] **A support URL.** The repository issues page is fine.
+      transmits nothing. `docs/PRIVACY.md` is rendered to `/privacy` by
+      `npm run site`; publish the site and it is live at
+      `https://weft.study/privacy`. Confirm it loads logged out.
+- [ ] **A support URL.** `docs/SUPPORT.md` is rendered to `/support` by the
+      same build, and it is the page `SUPPORT_URL` in `src/core/pricing.ts`
+      already points the extension's help button at. Both need the domain.
 - [ ] **Decide the publisher name.** It appears on the listing and cannot be
       changed casually.
 

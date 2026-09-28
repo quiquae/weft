@@ -500,3 +500,46 @@ p code {
   font-size: 0.88rem;
   color: var(--ink-soft);
 }
+
+/* --- published documents ---------------------------------------------- */
+
+/*
+ * `/privacy` and `/support` are `docs/*.md` rendered through the same page
+ * template as everything else, so they arrive as bare elements rather than
+ * with the hand-written classes the other pages carry. Scoped to .prose so
+ * that a document can never restyle a word page.
+ */
+.prose h2 { font-size: 1.45rem; margin: 2.8rem 0 0.6rem; }
+.prose h3 { font-size: 1.05rem; margin: 1.9rem 0 0.35rem; color: var(--ink-soft); }
+.prose > :first-child { margin-top: 0; }
+
+.prose ul, .prose ol { margin: 0 0 0.9em; padding-left: 1.3rem; max-width: var(--measure); }
+.prose li { margin-bottom: 0.5rem; line-height: 1.55; }
+.prose li > strong { color: var(--ink); }
+
+/* Tables here are two-column glossaries, so the row header stays narrow. */
+.prose thead th {
+  font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-faint); font-weight: 600;
+}
+.prose thead th + th { width: auto; }
+
+.prose :is(li, td, th) code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--linen-sunken);
+  padding: 0.05em 0.3em;
+  border-radius: 2px;
+}
+
+.prose hr { border: 0; border-top: 1px solid var(--thread); margin: 2.6rem 0; }
+
+.doc__code {
+  margin: 1.1rem 0; padding: 0.9rem 1rem;
+  background: var(--linen-sunken); border-left: 2px solid var(--thread);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.82rem; line-height: 1.7; overflow-x: auto;
+}
+.doc__code code { background: none; padding: 0; }
+
+footer nav, footer p + p { margin-bottom: 0; }

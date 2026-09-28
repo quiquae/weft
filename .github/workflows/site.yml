@@ -28,10 +28,16 @@ on:
     paths:
       - 'site/**'
       - 'tools/build-site.mjs'
+      - 'tools/check-links.mjs'
       - 'tools/make-og.mjs'
       - 'tools/seed/**'
       - 'src/core/pricing.ts'
       - 'src/core/entitlements.ts'
+      # Rendered into /privacy and /support. The privacy policy is a
+      # published legal document; an edit to it that never reaches the site
+      # is the one kind of staleness that matters to a store reviewer.
+      - 'docs/PRIVACY.md'
+      - 'docs/SUPPORT.md'
       - '.github/workflows/site.yml'
   workflow_dispatch:
 
