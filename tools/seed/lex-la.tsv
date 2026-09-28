@@ -11,14 +11,14 @@
 #
 # Classical Latin, nominative singular and plural. English marks case by word
 # order, so a nominative headword slots into an English clause unambiguously:
-# "the rex was angry" is clear where "the regis was angry" is wrong in both
+# "the rēx was angry" is clear where "the rēgis was angry" is wrong in both
 # languages.
 # 
 # The etymon column is the English word descended from the Latin one, usually a
 # learned borrowing. For Latin this is the whole point: the reader is not
 # memorising a foreign word, they are being shown where their own word came
-# from. "vaccine" from vacca, cow. "mile" from mille passus. "peninsula" from
-# paene insula, almost an island.
+# from. "vaccine" from vacca, cow. "mile" from mīlle passūs. "peninsula" from
+# paene īnsula, almost an island.
 # 
 # IPA is generated from the orthography, which is very nearly deterministic
 # once vowel length is marked. Values are the standard classical
@@ -197,7 +197,7 @@ music	noun	mūsica		f	/ˈmuːsɪka/	music	the art of the Muses
 game	noun	lūdus	lūdī	m	/ˈluːdʊs/	ludicrous	
 dream	noun	somnium	somnia	n	/ˈsɔmnɪʊm/	somnolent	
 fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timid	
-hope	noun	spēs	spēs	f	/ˈspeːs/	despair	"despair" is to be out of spes
+hope	noun	spēs	spēs	f	/ˈspeːs/	despair	"despair" is to be out of spēs
 joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	gaudy	
 anger	noun	īra	īrae	f	/ˈiːra/	irate	
 oath	noun	iūsiūrandum	iūsiūranda	n	/juːsɪuːˈrandʊm/	jurisdiction	
@@ -350,7 +350,7 @@ yesterday	adv	herī			/ˈhɛriː/
 now	adv	nunc			/ˈnʊŋk/		
 soon	adv	mox			/ˈmɔks/		
 already	adv	iam			/ˈjam/		
-almost	adv	paene			/ˈpae̯nɛ/	peninsula	paene insula, almost an island
+almost	adv	paene			/ˈpae̯nɛ/	peninsula	paene īnsula, almost an island
 together	adv	simul			/ˈsɪmʊl/	simultaneous	
 alone	adv	sōlus			/ˈsoːlʊs/	solitary	
 again	adv	iterum			/ˈɪtɛrʊm/	iterate	
@@ -373,7 +373,7 @@ eight	num	octō			/ˈɔktoː/	octave
 nine	num	novem			/ˈnɔwɛm/	November	
 ten	num	decem			/ˈdɛkɛm/	decimal	
 hundred	num	centum			/ˈkɛntʊm/	century	
-thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mille passūs, a thousand paces
+thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mīlle passūs, a thousand paces
 first	num	prīmus			/ˈpriːmʊs/	primary	
 yes	intj	ita			/ˈɪta/	ita vero	classical Latin has no bare word for yes; "ita" means "thus"
 hello	intj	salvē			/ˈsalweː/	salvation	literally "be well"
