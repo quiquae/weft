@@ -170,6 +170,51 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — the listing screenshots were already right
+
+`WEFT_STORE=1 npx playwright test store-assets` rewrote all fifteen store
+shots and all fifteen came back byte-identical, so the worry that `3060d93`
+had invalidated the French words in the listing art is answered: it had not.
+Nothing was committed under `docs/store/`. The regeneration was real rather
+than skipped — every file's mtime moved to 00:24 — and that is the check that
+separates "reproduced exactly" from "never ran", because `git status` shows
+the same nothing for both.
+
+`TODO.md` had the provenance half wrong. `chrome-03/04/05` were captured at
+`d1d545a`, but `01` and `02` had not changed since `144cb30` on 2026-09-15,
+twenty-two commits earlier. They are current regardless, and that is the useful
+finding: **the capture is deterministic**, so identical bytes are a result.
+The temptation that follows is a pixel-equality gate. Resist it — these were
+taken on macOS/arm64 and CI runs the same suite on `ubuntu-latest`, where the
+font stack and text antialiasing differ, so the gate would fail for a reason
+unrelated to the lexicon. The spec already carries the portable form of it,
+`expect(hovered, 'no word with an etymology was woven into this page')`,
+which fails exactly when a lexicon edit empties the tooltip scene 3 exists to
+show.
+
+One thing found on the way: **`npm run packs` is not idempotent.** It writes
+`builtAt` as today's date, so it modifies all eight files under
+`src/lexicon/packs/` whenever it runs. A field-by-field diff puts the whole
+difference at 1 of 66 fields in `index.json` plus that one date in each pack,
+so the committed packs are semantically current with `tools/seed/*.tsv`; the
+churn was reverted, not committed. It matters because the setup line above
+the command table tells a new contributor to run `npm run packs` before a
+first build, which leaves a fresh clone dirty, and because `npm run release`
+refuses a dirty tree.
+
+Checking that antialiasing claim turned up a second stale document:
+`playwright.config.ts` said extension service workers are "more reliable
+headed, so CI runs headed under xvfb". `tests/e2e/fixtures.ts:76` sets
+`headless: true` unconditionally and `.github/workflows/ci.yml` installs
+Chromium and runs `npm run test:e2e` with no xvfb anywhere. The comment now
+says what the code does. That is the only non-Markdown change in this pass.
+
+Measured today, on Node 26.7 again: typecheck clean, `npm run test:all` green
+end to end (36 e2e passed, 3 skipped, 3.7 min; all three packages 979 KB and
+passing `validate`), `packs:verify` 0 errors and the same 4 IPA warnings,
+`site:check` 711 pages and 16 087 links all resolving. Nothing needs a human
+here; the release is still waiting on B1 in `TODO.md`.
+
 ### 2026-09-27 — the numbers in the documents were fiction
 
 Four documents stated test counts. All four were wrong, none agreed with any
