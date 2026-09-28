@@ -258,7 +258,7 @@ function Popup() {
         <>
           <WeaveBand ratio={state.ratio} animate label={`${Math.round(state.ratio * 100)} percent woven`} />
           <p class="pop__state">
-            <strong>{oneWordIn(state.ratio)}</strong> you could read is in {lang.name}.
+            <strong>{oneWordIn(state.ratio)}</strong> of the content words is in {lang.name}.
           </p>
 
           {decision.escalate ? (

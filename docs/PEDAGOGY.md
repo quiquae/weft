@@ -97,8 +97,8 @@ is the form they will meet in a dictionary.
 ## Why Latin and Old English work at all
 
 English marks case by word order rather than by endings, so a nominative
-headword slots into an English frame unambiguously. "The **rex** was angry" is
-clear. "The **regis** was angry" is wrong in both languages.
+headword slots into an English frame unambiguously. "The **rēx** was angry" is
+clear. "The **rēgis** was angry" is wrong in both languages.
 
 That is why both use `morphology: 'citation'` — nominative singular for nouns,
 infinitive for verbs — and why the approach that would fail for a
@@ -113,8 +113,8 @@ and it means *loaf-keeper*. The tooltip says so, which changes the task from
 stickier framing, and a true one.
 
 For Latin it is the learned descendant rather than the ancestor: `vacca` gave
-us *vaccine* (Jenner named it after the cowpox he used), `mille passūs` gave us
-*mile*, `paene insula` gave us *peninsula*, `pecus` — cattle, the original
+us *vaccine* (Jenner named it after the cowpox he used), `mīlle passūs` gave us
+*mile*, `paene īnsula` gave us *peninsula*, `pecus` — cattle, the original
 wealth — gave us *pecuniary*.
 
 The false friends are marked deliberately, because they are the most memorable
