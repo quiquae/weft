@@ -47,11 +47,13 @@ These block each other, so the order matters.
 
 1. **Publish the privacy policy and support URLs.** Every store requires a
    public privacy policy URL before it will accept a submission, and Weft has
-   to declare one even though it transmits nothing. `docs/PRIVACY.md` is
-   written to be published as-is.
+   to declare one even though it transmits nothing. `npm run site` renders
+   `docs/PRIVACY.md` to `/privacy` and `docs/SUPPORT.md` to `/support`; the
+   second is the URL `SUPPORT_URL` already sends the extension's own help
+   button to. `npm run site:check` fails if either page is missing.
 
    This means putting the site up, which is deliberately **not** automatic.
-   The `Site` workflow builds and link-checks all 709 pages on every push,
+   The `Site` workflow builds and link-checks all 711 pages on every push,
    but only deploys when told:
 
    ```bash
@@ -64,9 +66,12 @@ These block each other, so the order matters.
    results pointing at nothing:
 
    - The install page's download button points at
-     `<repo>/releases/latest`, which **404s while the repository is
-     private**. Either `gh repo edit quiquae/weft --visibility public`, or
-     host the zips elsewhere and set `WEFT_REPO`.
+     `<repo>/releases/latest`, and the support page's issue-tracker link at
+     `<repo>/issues`. Both **404 while the repository is private**. Either
+     `gh repo edit quiquae/weft --visibility public`, or host the zips
+     elsewhere and set `WEFT_REPO` — and if issues are not going to be the
+     support channel, change `docs/SUPPORT.md`, which is the only place that
+     link is written.
    - The pricing page's checkout URLs point at a placeholder Lemon Squeezy
      store. A live pricing page with a dead buy button is worse than no
      pricing page.
@@ -228,5 +233,5 @@ precisely why that check is written down.
   not been executed and will need a look the first time it runs.
 - **Post to Reddit, Hacker News or anywhere else.** Drafts are in
   `LAUNCH.md`. An automated account posting self-promotion gets the domain
-  shadowbanned, which would cost the 709-page search asset. That was a
+  shadowbanned, which would cost the 711-page search asset. That was a
   decision, not an omission.

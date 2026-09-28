@@ -132,10 +132,16 @@ your settings alone.
 | `alarms` | Cooldown expiry and the daily rollover must survive the service worker being killed |
 | `scripting` | Registering the content script for the sites you granted |
 | `tabs` | Reading the current tab's URL to decide whether to weave, and telling open tabs that settings changed |
-| `idle` | Distinguishing "reading" from "walked away" |
 | `contextMenus` | Right-click entries on the toolbar button |
-| `notifications` | Telling you when a queued change has applied |
-| `unlimitedStorage` | A large vocabulary plus the provider cache can exceed the default quota |
+| `notifications` | Telling you when a queued change has applied. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used |
+
+That is the whole list. Two permissions an earlier version declared have been
+removed: `idle`, which had no call sites at all — attention is measured in
+the content script, which needs no permission — and `unlimitedStorage`, which
+was covering for two stores that grew without bound and are now capped. The
+full reasoning is in
+[the store listing](STORE-LISTING.md#two-permissions-that-were-removed-and-why-the-answer-matters),
+recorded there because a reviewer comparing two versions will see them go.
 
 **No host permissions at install time.** Weft cannot read any website until
 you name the sites, which is why it installs without the "read and change all
@@ -146,4 +152,8 @@ exactly those origins.
 ## Reporting a problem
 
 The whole extension is a few thousand lines and the interesting half is pure
-functions with no I/O. If a claim in this document is wrong, it is checkable.
+functions with no I/O. If a claim in this document is wrong, it is checkable —
+and [Support](SUPPORT.md) is where to say so. The diagnostic report Weft
+assembles for a bug report carries counts and settings, never which sites you
+read or which words you know, and it is shown to you in full before you copy
+it because nothing sends it for you.

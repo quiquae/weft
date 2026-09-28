@@ -12,6 +12,7 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PRICING_URL, SUPPORT_URL } from '../src/core/pricing.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist/site');
@@ -68,11 +69,45 @@ for (const file of files) {
   }
 }
 
+/*
+ * The three pages something outside this repository depends on.
+ *
+ * `SUPPORT_URL` is compiled into the shipped extension and rendered as a
+ * button on its help page; `PRICING_URL` is linked from the paywall; and
+ * `/privacy` is the URL `docs/STORE-LISTING.md` hands the Chrome Web Store,
+ * which rejects a submission without a live one.
+ *
+ * None of those three can be fixed by shipping the site again — a published
+ * extension keeps pointing wherever it was built pointing. So a missing page
+ * here fails the build rather than waiting for a user, or a reviewer, to
+ * find the 404.
+ */
+const REQUIRED = [
+  ['SUPPORT_URL, on the extension help page', new URL(SUPPORT_URL).pathname],
+  ['PRICING_URL, from the paywall', new URL(PRICING_URL).pathname],
+  ['the privacy policy the store listing promises', '/privacy'],
+];
+
+const missing = [];
+for (const [why, path] of REQUIRED) {
+  const target = join(OUT, path.replace(/^\//, ''));
+  const found = await Promise.all(
+    [target, `${target}.html`, join(target, 'index.html')].map(exists),
+  );
+  if (!found.some(Boolean)) missing.push(`${path} — ${why}`);
+}
+
 console.log(`${files.length} pages, ${checked} internal links checked`);
+
 if (broken.length) {
   console.error(`\n${broken.length} broken:`);
   for (const b of broken.slice(0, 30)) console.error(`  ${b}`);
   if (broken.length > 30) console.error(`  … and ${broken.length - 30} more`);
-  process.exit(1);
 }
-console.log('all resolve');
+if (missing.length) {
+  console.error(`\n${missing.length} required page(s) not generated:`);
+  for (const m of missing) console.error(`  ${m}`);
+}
+if (broken.length || missing.length) process.exit(1);
+
+console.log(`all resolve, and all ${REQUIRED.length} externally-referenced pages exist`);
