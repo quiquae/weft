@@ -188,6 +188,116 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — the card was stable; the guard could not see the word it was missing
+
+`TODO.md`'s queued item was `npm run og` byte-stability, and it had already
+been closed by PR #10 earlier the same day. So this pass reproduced it instead
+of believing it: three fresh runs wrote `6f2ef13f…eb6f3e66`, byte-identical to
+the committed `site/og.png`, to each other and to PR #10's recorded hash, with
+`git status` clean each time. Worth recording *why*, because it is not the
+pack builder's reason or the sitemap's: **`tools/make-og.mjs` has no
+`new Date()` in it at all.** It screenshots a static HTML string, so there was
+never a logical clock to remove and the only wobble available to it was the
+renderer's own — font fallback, Chromium's PNG encoder, antialiasing. On this
+machine there is none. That closes the trio: `packs`, `site` and `og` are all
+measured byte-stable, and nothing in either pipeline can hand `npm run release`
+the dirty tree it refuses.
+
+**The substantive half is what the re-check found on the way, and PR #10 had
+already found it and declined to fix it as out of scope for a docs sweep.** Its
+commit message calls it "one adjacent pack-note inconsistency": `paene`'s note
+spells `insula` bare. It is **six** sites, and three of them are copy a
+stranger reads — the tooltip that ships in the extension, the "Where
+*peninsula* comes from" section of `/latin/paene`, and the note column of
+`latin-words-in-everyday-english`, which is the descent hub `docs/LAUNCH.md`'s
+r/latin draft exists to link to. The rest: `README.md:93`,
+`docs/PEDAGOGY.md:117`, and the seed comment at `tools/seed/lex-la.tsv:21`.
+Four files to edit rather than six, because the first three are one pack note
+rendered three ways.
+Two places already had `īnsula` (`docs/LAUNCH.md:140`, `site/index.html:222`),
+so this was the repository disagreeing with itself rather than a call about how
+to spell a word — and `īnsula` is what vowel-lengthening before `ns` gives
+anyway, the rule behind `cōnsul` and `mēnsa`.
+
+**Why PR #9's guard could not see any of it is structural, not an oversight.**
+`tests/tools/lexicon-orthography.test.ts` builds its vocabulary by walking
+`tgtLemma` across the packs, so every word it can police is a word the lexicon
+*defines*. Prose is under no such limit — it explains `peninsula` with a Latin
+word the lexicon never glosses — and `īnsula` was therefore invisible by
+construction, including inside the two documents the guard was already
+scanning. The fix is a second, hand-curated vocabulary, `UNDEFINED`: the Latin
+Weft writes down but does not carry. It is checked against *every* note in both
+packs, where the headword rule is deliberately narrowed to the entry that owns
+it, and that asymmetry is the point — the headword list contains English
+homographs nobody chose (`an`, `is`, `dead`, `ham`, the 14 false positives #9
+measured), and this one contains only words somebody checked.
+
+**Two more documents joined the prose guard, and finding them is the
+transferable part.** #9 excluded `docs/LAUNCH.md` and `docs/PRIVACY.md` for
+named homographs and stopped at three files, which had quietly come to read as
+"every other document is excluded". Only those two had ever been measured.
+Adding `site/index.html`, `docs/STORE-LISTING.md` and `docs/LAUNCH.md` together
+fires **exactly one** offender — the known `dies`/`diēs` — so the first two are
+clean and are now in `PROSE`. The landing page and the copy that goes to Google
+were the last two places a misspelling should have been able to survive. The
+rule: when a gate excludes something, check whether the exclusion was measured
+or inherited.
+
+**Read, not grepped, and grep could not have worked.** 27 distinct Latin notes
+and 72 Old English, 99 in all, read in full — a grep needs a pattern and the
+pattern here is "a Latin word that should carry a macron", which is undecidable
+without a macronizer. **Old English came back clean**, which is worth recording
+so nobody pays for it twice: every OE word quoted in a note already carries its
+macrons and palatal diacritics. Latin had exactly the one defect. Left alone on
+purpose: the note under `iānua` says "Janus, god of doorways" — the English
+name of the god in English prose, the same register as the adjacent note's
+"Jenner", not a failure to write `Iānus`.
+
+**The audit covers all seven packs, which was checked rather than assumed.**
+`es`, `de`, `it` and `pt` carry **no notes at all**; French carries 85, and
+every one of them is one of two templates — "shares a root with English *X*"
+and "the root of English *X*" — which quote an **English** word, never a French
+one. Not one French note contains an accented character, and that is the
+templates working, not a defect hiding. The class is structurally absent
+outside Latin and Old English, and would only appear if a note began quoting
+the target language.
+
+Done test-first, and the red run named all three scanned sites at once
+(`en-la almost → paene`, `README.md`, `docs/PEDAGOGY.md`) before anything was
+edited. The rebuild then demonstrated PR #5's fix again: **1 field changed out
+of 7087**, `index.json` did not move because no count did, and `builtAt` stayed
+2026-09-28 — so unlike #9 this edit redated **no** sitemap entries.
+
+**Two environment findings, and the first one invalidated this session's own
+first two measurements.** `npm run test:all | grep ...` reports **grep's** exit
+code, not npm's — so a run that died reads as `[exited with code 0]`, and the
+journal's convention is to quote exactly that. Two runs here looked green that
+way; run with `> log 2>&1; echo $?` instead, and one of them turns out to have
+exited **1**. Anything claiming `test:all` passed should have captured npm's
+own status. Second: the iCloud trap this file records three times is worse than
+recorded. Cleaning `dist/` beforehand is **necessary but not sufficient** —
+both failures here were conflict copies that appeared *during* the run
+(`dist/chrome/_locales 2` at `validate`, `dist/chrome/assets 2` at the rebuild
+after e2e), as unreadable directories with 65535 links. What actually holds is
+telling macOS File Provider to leave the directory alone, once:
+`rm -rf dist && mkdir dist && xattr -w 'com.apple.fileprovider.ignore#P' 1 dist`.
+Done on this machine; the next full run created **zero** conflict copies and
+exited 0. It is local, gitignored and reversible with `xattr -d`.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 97 jsdom / 22 suites, 21 tools / 6 suites, compat 56 pass / 7 degrade /
+0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e passed and 3
+skipped in 1.8 min, then build and validate again. Separately `packs:verify` 0 errors /
+4 warnings and `site:check` 711 pages / 16 087 links all resolving — run here
+because a shipped pack and published copy both moved. Tool-test counts did not
+change (the guard was widened, not added to), so no count sweep across the five
+documents was needed this time.
+
+What needs a human: **B0** is now *thirteen* stacked PRs, this being #13, and
+it is the second of the thirteen to rebuild a shipped pack. `Now` and `Next`
+are both empty again; nothing here is agent-actionable until B0 or B1 move.
+
 ### 2026-09-28 — the demo learned to say "content words"; two more surfaces had not
 
 `TODO.md`'s top item asked only whether the popup's density line wanted the

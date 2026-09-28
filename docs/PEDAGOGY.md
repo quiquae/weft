@@ -114,7 +114,7 @@ stickier framing, and a true one.
 
 For Latin it is the learned descendant rather than the ancestor: `vacca` gave
 us *vaccine* (Jenner named it after the cowpox he used), `mīlle passūs` gave us
-*mile*, `paene insula` gave us *peninsula*, `pecus` — cattle, the original
+*mile*, `paene īnsula` gave us *peninsula*, `pecus` — cattle, the original
 wealth — gave us *pecuniary*.
 
 The false friends are marked deliberately, because they are the most memorable
