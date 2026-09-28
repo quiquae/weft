@@ -40,8 +40,9 @@ the orthography guard because `īnsula` is not a lexicon headword.
 explains itself, as of 2026-09-28** — `novem` → November was the last numeral
 with a descendant and no note, and the guard PR #14 wrote could not see it,
 because that guard polices notes that exist and `novem` had none; the missing
-half is now a test too. **Now and Next are both empty.** Every item queued for
-an agent is done; the code is not what is holding the release up. The critical
+half is now a test too. **Now is empty; Next has one item**, found while
+rendering that fix — 312 Latin word pages state the descent backwards, see
+Next. The code is not otherwise what is holding the release up. The critical
 path runs through two things only Creagh can do: **B0 — one conflicted merge
 into `main`** (re-measured later on 2026-09-28: `main` *has* moved, and the
 stack no longer applies cleanly — four files conflict, all of them squash
@@ -388,9 +389,47 @@ domain `weft.study` is not registered**.
 
 ## Next
 
-Empty as of 2026-09-28. Every item an agent could pick up has been worked.
-Everything remaining lives in Blocked, and all of it needs Creagh: B0 first,
-then B1.
+- [ ] **The Latin word pages say English borrowed the Latin word *from* the
+      English one.** Found 2026-09-28 while rendering `/latin/novem` to check
+      the item above, so it is a real render rather than a reading of the
+      template. `META.la.descent` (`tools/build-site.mjs:62`) is
+      `'This is the Latin word your English borrowed from'`, and
+      `tools/build-site.mjs:286` appends `<strong>${entry.etymonOf}</strong>.`
+      to it. Rendered:
+
+          This is the Latin word your English borrowed from **November**.
+
+      Subject "your English", verb "borrowed", "from November" the source —
+      so it states that English took *novem* **from** *November*, which is the
+      descent backwards. **The construction the template was written for looks
+      like "This is the Latin word your English *November* borrowed from",**
+      with the descendant *before* the preposition and "word" elided after
+      "your English"; the builder appends it after, where the preposition
+      captures it.
+
+      Two things make this a defect rather than a quibble. Its sibling four
+      lines down gets the direction right —
+      `META.ang.descent` is `'This is the Old English word that became'`, which
+      takes its object at the end and reads correctly on all **325** Old
+      English pages. And the Latin sentence is on **312** published pages,
+      every Latin word page carrying an etymon, which is the bulk of the
+      709-page search asset `docs/LAUNCH.md`'s r/latin draft exists to point
+      at. Not a lexicon edit: one template, no pack rebuild.
+
+      Fix wants a decision between two shapes — match the sibling
+      (`'This is the Latin word that became'`, one field, zero structural
+      change) or keep the borrowing frame and split `descent` into a
+      prefix/suffix pair so the etymon can sit before "borrowed from". The
+      first is smaller and makes the two languages parallel; the second keeps
+      the Latin page saying *borrowed*, which is the accurate verb for a
+      learned borrowing where "became" is not. **Prefer the second** on that
+      last point — `vaccine` did not *become* anything, it was coined from
+      `vacca` — but either is defensible and both are cheap. **~20 minutes**,
+      plus `site:check`; guard it in `tests/tools/` the way
+      `build-site.test.ts` already reaches into a rendered page.
+
+Otherwise Next is empty as of 2026-09-28. Everything else remaining lives in
+Blocked, and all of it needs Creagh: B0 first, then B1.
 
 ## Blocked
 

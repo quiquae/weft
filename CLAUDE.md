@@ -263,6 +263,23 @@ wholesale; the two code ones are #6's `fetch-depth: 0` and eight sessions of
 site-builder edits against #1's copies, which is the same squash artefact
 rather than a disagreement. Written into B0.
 
+**Rendering the fix found a bigger defect than the fix, which is the argument
+for the house rule.** `/latin/novem` reads "This is the Latin word your
+English borrowed from **November**." Subject "your English", verb "borrowed",
+"from November" the source — it states the descent **backwards**, that English
+took *novem* from *November*. `META.la.descent`
+(`tools/build-site.mjs:62`) ends in the preposition and `:286` appends
+`<strong>${entry.etymonOf}</strong>` after it, so the construction the wording
+was written for — "the Latin word your English *November* borrowed from",
+descendant before the preposition, "word" elided — is broken by where the
+builder puts the descendant. Its sibling four lines down,
+`META.ang.descent` = "This is the Old English word that became", takes its
+object at the end and is correct on all **325** Old English pages. The Latin
+sentence is on **312**. Queued as the only item in `Next`, with the two
+candidate shapes and a preference, because *borrowed* is the accurate verb for
+a learned borrowing and *became* is not — `vaccine` did not become anything.
+Not a lexicon edit and no pack rebuild.
+
 Measured at the end, on Node 26.7, with npm's own exit status captured rather
 than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
 suites, 98 jsdom / 22 suites, **24 tools / 7 suites**, compat 56 pass / 7
@@ -275,8 +292,9 @@ is still set on `dist/` and the full gate created **zero** iCloud conflict
 copies for the third session running.
 
 What needs a human: **B0**, rewritten again this session — still one merge to
-`main`, but a conflicted one, with the four files named. `Now` and `Next` are
-both empty. Nothing else moved.
+`main`, but a conflicted one, with the four files named. `Now` is empty;
+`Next` has the backwards Latin descent sentence above, which is agent-shaped
+and does not wait on B0. Nothing else moved.
 
 ### 2026-09-28 — the note leaned on a line the reader can switch off
 
