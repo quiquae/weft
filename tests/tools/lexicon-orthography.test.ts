@@ -26,12 +26,16 @@
  * it is the point of the note: `mālum` apple and `malum` evil differ only in
  * vowel length, and saying so requires writing both.
  *
- * The second guard is the three documents that quote Latin headwords at a
- * reader. It stops at three rather than sweeping every document because Latin
- * and English are full of homographs — `docs/LAUNCH.md` says a Show HN post
- * "dies" and `docs/PRIVACY.md` says "your OS", which collide with `diēs` and
- * `ōs` and have nothing to do with the lexicon. Same reasoning as above: a
- * general scan of English prose fires for the wrong reason.
+ * The second guard is the documents that quote Latin headwords at a reader. It
+ * stops short of sweeping every document because Latin and English are full of
+ * homographs — `docs/LAUNCH.md` says a Show HN post "dies" and
+ * `docs/PRIVACY.md` says "your OS", which collide with `diēs` and `ōs` and have
+ * nothing to do with the lexicon. Same reasoning as above: a general scan of
+ * English prose fires for the wrong reason. But the boundary is drawn by
+ * measurement, not by assumption, and it had only ever been measured against
+ * those two: adding `site/index.html` and `docs/STORE-LISTING.md` turns out to
+ * fire nothing at all, so both are in — the landing page and the copy that goes
+ * to Google are the last two places a misspelling should survive.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -41,8 +45,41 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
-/** The documents that quote Latin headwords at a reader, rather than mentioning Latin. */
-const PROSE = ['README.md', 'docs/PEDAGOGY.md', 'tools/build-site.mjs'];
+/**
+ * The documents that quote Latin headwords at a reader, rather than mentioning
+ * Latin. `site/index.html` and `docs/STORE-LISTING.md` were added after being
+ * measured rather than assumed: adding them plus `docs/LAUNCH.md` fires exactly
+ * one offender, and it is the known homograph below, so the first two are clean
+ * and the third stays out.
+ */
+const PROSE = [
+  'README.md',
+  'docs/PEDAGOGY.md',
+  'tools/build-site.mjs',
+  'site/index.html',
+  'docs/STORE-LISTING.md',
+];
+
+/**
+ * Latin that Weft writes down but the lexicon never defines.
+ *
+ * Both guards below derive their vocabulary from the packs, so they can only
+ * police a word the lexicon contains — and the prose is free to reach for Latin
+ * it never glosses. `peninsula` is explained as `paene īnsula` in four source
+ * files and `īnsula` is not an entry, so every one of them was invisible: the
+ * note under `paene`, the seed comment above it, `README.md` and
+ * `docs/PEDAGOGY.md`. That note alone reaches three surfaces — the shipped
+ * tooltip, `/latin/paene`, and the `latin-words-in-everyday-english` hub —
+ * while `docs/LAUNCH.md` and `site/index.html` had the macron all along.
+ *
+ * Unlike the headword list, this one is applied across every note rather than
+ * only to the entry that owns it, and that is safe *because* it is hand-picked:
+ * the 14 false positives that rule out a pack-wide headword scan are English
+ * homographs (`an`, `is`, `dead`, `ham`), and a word only enters this table once
+ * someone has checked it is not one. Add to it when prose gains a Latin word the
+ * lexicon does not carry.
+ */
+const UNDEFINED: ReadonlyMap<string, string> = new Map([['insula', 'īnsula']]);
 
 type Entry = { tgtLemma?: string; note?: string; src?: string };
 
@@ -81,7 +118,7 @@ describe('a Latin word is spelled the same way everywhere Weft shows it', () => 
         const { note = '', tgtLemma = '', src = '?' } = entry;
         if (!note) continue;
 
-        for (const [stripped, headword] of headwords([entry])) {
+        for (const [stripped, headword] of [...headwords([entry]), ...UNDEFINED]) {
           // A note showing both spellings is contrasting vowel length on purpose.
           if (note.includes(headword)) continue;
           if (writes(note, stripped)) {
@@ -99,7 +136,7 @@ describe('a Latin word is spelled the same way everywhere Weft shows it', () => 
   });
 
   test('published prose spells a Latin headword the way the lexicon does', () => {
-    const latin = headwords(pack('la'));
+    const latin = new Map([...headwords(pack('la')), ...UNDEFINED]);
     const offenders: string[] = [];
 
     for (const file of PROSE) {

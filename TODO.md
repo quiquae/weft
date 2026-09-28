@@ -25,12 +25,23 @@ headwords to the pack's own orthography. **And the launch drafts and the OG
 card both hold up under a second look, as of 2026-09-28** — `docs/LAUNCH.md`
 was independently re-swept claim by claim against the code a second time and
 nothing new was wrong, and `npm run og` joins `npm run packs` and `npm run
-site` as measured byte-stable. The code is not what is holding the release
-up. The critical path runs through two things only
-Creagh can do: **B0 — ten stacked PRs have to be merged into `main`** before
-the version can be bumped, and then **B1 — the domain `weft.study` is not
-registered**. Everything in Now can land before either and depends on
-neither.
+site` as measured byte-stable. **And the popup and the options page now say
+what the demo says, as of 2026-09-28** — both rendered the weave ratio as
+"1 word in N" with no unit, the exact ambiguity the demo's own fix (PR #8,
+below) had already corrected to "N% of content words"; neither surface was
+named by that item, because it named only the demo. **And `npm run og` is
+byte-stable under an independent second measurement, as of 2026-09-28** —
+three fresh runs reproduced the committed card's SHA-256 exactly, which
+closes the reproducibility trio (`packs`, `site`, `og`); the re-check's real
+yield was elsewhere, in six places that spelled `paene insula` without the
+macron on `īnsula`, three of them published copy, none of them visible to
+the orthography guard because `īnsula` is not a lexicon headword.
+**Now is empty.** Every
+item queued for an agent is done and Next has nothing behind it; the code is
+not what is holding the release up. The critical path runs through two things
+only Creagh can do: **B0 — thirteen stacked PRs have to be merged into `main`**
+before the version can be bumped, and then **B1 — the domain `weft.study` is
+not registered**.
 
 ## Now
 
@@ -175,31 +186,148 @@ neither.
       left, only a comment describing the bug it used to have) — only the
       mechanics of how that was found were retold slightly wrong.
 
-- [ ] **Decide whether the popup's density label wants the same qualifier the
-      demo just gained.** *Topmost unchecked item as of 2026-09-28,* promoted
-      from Next. `density()` at `src/ui/components/pieces.tsx:280` renders a
-      ratio as `1 word in ${round(1/ratio)}`, and that ratio is a proportion
-      of **eligible** words (`selector.ts:38`), not of words on the page — so
-      "1 word in 3" is one *content* word in three, and on a real page that is
-      nearer 1 word in 20 overall. The demo now says "1 in 3 of content
-      words", which is the language `src/core/settings.ts:64` already uses
-      ("a third of the content words"), so the product has the right phrase
-      in two places out of three. Against changing it: the popup is narrow and
-      the user watching their own page can see the density directly, which a
-      visitor to the landing page cannot. *~10 minutes; copy only.*
+- [x] **Decide whether the popup's density label wants the same qualifier the
+      demo just gained.** Done 2026-09-28. **Yes**, and the one recorded
+      argument against it does not survive the comparison it invites: "the
+      user watching their own page can see the density directly" is exactly
+      the argument that was already rejected for the demo, where the visitor
+      could also see the passage directly, and a claim that did not match what
+      was visibly on screen was what made the old demo readout "read as a
+      broken counter". A user who glances from "1 word in 3" at their own page
+      and sees nothing like one word in three is looking at the same failure,
+      not a smaller one. Fixed both unqualified call sites of `oneWordIn()`
+      (`src/ui/components/pieces.tsx:277`): the popup
+      (`src/ui/popup/index.tsx:261`, "...you could read is in French" →
+      "...of the content words is in French") and the two options-page rows
+      that share its exact `value` pattern (`src/ui/options/sections.tsx:276,294`,
+      "6% — 1 word in 16" → "6% of content words — 1 word in 16"). Left alone:
+      onboarding's two call sites (`src/ui/onboarding/index.tsx:219,227`),
+      which already carry their own qualifier ("of the words Weft knows") —
+      wording that describes the same *eligible* set from the lexicon-coverage
+      angle rather than the part-of-speech angle, not a gap to close.
+      Verified in a real Chromium build rather than assumed: a scratch
+      Playwright script (not committed) drove both the 340×330 popup and the
+      900-wide options page and checked `scrollWidth` against `clientWidth` on
+      the affected rows, because `.row__value` is `white-space: nowrap` in
+      `src/ui/theme.css:311` and a longer string could in principle have
+      overflowed a narrow row — it did not, at ratios from 6% to 60%. The two
+      committed screenshots that show this text were regenerated and kept:
+      `docs/screens/options-density.png` (embedded in `README.md`) and
+      `docs/screens/popup.png` (tracked but not embedded); `docs/screens/options.png`
+      changed for the same reason and was kept too. Five other regenerated
+      screenshots (`dashboard*.png`) were reverted — they drift on any day the
+      whole `WEFT_SCREENS=1` suite reruns, for a reason unconnected to this fix;
+      see Notes.
+
+- [x] **Re-measure `npm run og` byte-stability, independently of the item
+      above.** Done 2026-09-28. The item above was closed by PR #10 earlier
+      the same day, so this run's job was to reproduce it rather than believe
+      it — and it reproduces exactly: three fresh runs wrote
+      `6f2ef13ff4583ea47b81f642e3bfb43a61b412dff835117e3a524dddeb6f3e66`,
+      byte-identical to the committed `site/og.png`, to each other, and to
+      the hash PR #10 recorded, leaving `git status` clean each time. Worth
+      recording *why* it is stable, because it is a different reason from the
+      pack builder's and the sitemap's: `tools/make-og.mjs` contains no
+      `new Date()` at all. It screenshots a static HTML string, so there was
+      never a logical clock in it to remove, and the only wobble available to
+      it is the renderer's own — font fallback, Chromium's PNG encoder,
+      antialiasing. On this machine there is none. **That closes the
+      reproducibility trio**: `npm run packs`, `npm run site` and `npm run og`
+      are all measured byte-stable, so nothing in the lexicon or site
+      pipeline stamps a tracked file with the wall clock, and `npm run
+      release` cannot be refused by a dirty tree one of them created.
+
+      **The re-check's real yield was the thing it found on the way.** PR
+      #10's commit message recorded, and deliberately declined to fix as
+      out of scope, "one adjacent pack-note inconsistency": `paene`'s tooltip
+      note spells `insula` bare where `docs/LAUNCH.md` has `īnsula`. It was
+      **six** sites, not one, and three of them are copy a stranger reads —
+      the tooltip that ships in the extension, the "Where *peninsula* comes
+      from" section of `/latin/paene`, and the note column of
+      `latin-words-in-everyday-english`, which is the descent hub the r/latin
+      launch draft exists to link to. The other three are
+      `README.md:93`, `docs/PEDAGOGY.md:117` and the seed comment at
+      `tools/seed/lex-la.tsv:21`. Four files to edit, not six: the first three
+      are one pack note rendered three ways. Two places already had it right
+      (`docs/LAUNCH.md:140`, `site/index.html:222`), so this was the repo
+      disagreeing with itself about a word rather than a judgement call about
+      how to spell it; `īnsula` is also what the lengthening-before-`ns` rule
+      gives, the same rule behind `cōnsul` and `mēnsa`.
+
+      **Why #9's guard could not see any of it, and what now covers it.**
+      That guard derives its whole vocabulary from the packs, so it can only
+      police a word the lexicon defines — and `īnsula` is not an entry. Prose
+      is free to reach for Latin the lexicon never glosses, and that Latin
+      was invisible by construction, including in the two documents the guard
+      already scanned. Fixed with a second, hand-curated vocabulary in
+      `tests/tools/lexicon-orthography.test.ts`: `UNDEFINED`, the Latin that
+      Weft writes down but the lexicon does not carry, currently one word.
+      Unlike the headword list it is applied across *every* note rather than
+      only the entry that owns it, and that is safe precisely because it is
+      hand-picked — the 14 false positives that rule out a pack-wide headword
+      scan are English homographs (`an`, `is`, `dead`, `ham`), and nothing
+      enters this table until someone has checked it is not one.
+
+      **Two more documents joined the prose guard, by measurement.** #9 drew
+      its boundary at three files because `docs/LAUNCH.md` says "dies" and
+      `docs/PRIVACY.md` says "your OS" — but only those two had ever been
+      measured, and the exclusion had quietly been read as "every other
+      document". Adding `site/index.html`, `docs/STORE-LISTING.md` and
+      `docs/LAUNCH.md` together fires **exactly one** offender, the known
+      `dies`/`diēs`. So the first two are clean and are now in the list: the
+      landing page and the copy that goes to Google are the last two places a
+      misspelling should survive. `docs/LAUNCH.md` stays out, for the reason
+      #9 gave.
+
+      **The whole note corpus was read rather than grepped**, which is the
+      only way this class is findable: 27 distinct Latin notes and 72 Old
+      English ones, 99 in total, which is small enough to be cheap and is
+      worth redoing rather than trusting if a lexicon gains notes. Old
+      English came back **clean** — every OE word quoted in a note carries
+      its macrons and palatal diacritics. Latin had exactly the one defect.
+      One thing was looked at and deliberately left: the note under
+      `iānua` says "Janus, god of doorways", using the English name of the
+      god in English prose the way the adjacent note says "Jenner", not the
+      classical `Iānus`. That is a different convention, not a lapse in this
+      one.
+
+      Measured after: `en-la.json` moved by **1 field out of 7087** and
+      `index.json` did not move at all, since no count changed — PR #5's
+      stamp-preservation behaving exactly as designed. `builtAt` stayed
+      2026-09-28, so unlike #9 this edit redated **no** sitemap entries.
+      `packs:verify` 0 errors / 4 warnings and `site:check` 711 pages /
+      16 087 links, both unchanged. Test counts did not move either (21 tool
+      tests, 6 suites): the guard was widened, not added to, so no
+      count sweep across the five documents was needed.
 
 ## Next
 
-Nothing queued. The one item that was here was promoted to Now on 2026-09-28.
+- [ ] **The tooltip under `iānua` never says *which* month.** It reads "Janus,
+      god of doorways, gave the month its name", and the reader hovering the
+      English word *door* has no January anywhere in front of them — the note
+      assumes a connection it does not make. Found during the orthography
+      audit of 2026-09-28 and deliberately left there, because it is a copy
+      question and that pass was about spelling. One seed line,
+      `tools/seed/lex-la.tsv` (the `door` row), then `npm run packs`; it
+      reaches three surfaces, the shipped tooltip plus `/latin/ianua` and the
+      descent hub, so it is worth getting right. Check first whether naming
+      January is even an improvement: the note's subject is the *door* sense
+      of `iānua`, and "gave January its name" may pull the reader away from
+      the word they are actually reading. If it does, the fix is to cut the
+      clause rather than complete it. **~15 minutes.**
+
+Otherwise Now is empty as of 2026-09-28 — every other item an agent could pick
+up has been worked. Everything remaining lives in Blocked, and all of it needs
+Creagh: B0 first, then B1.
 
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the ten stacked PRs, then cut 1.0.1.** *Blocks the version
-bump, and nothing else in Now.* PRs #1 → #2 → … → #10 are
-stacked in that order, all ten are drafts, so `main` is thirteen commits
+**B0 — Merge the thirteen stacked PRs, then cut 1.0.1.** *Blocks the version
+bump, and nothing else in Now.* PRs #1 → #2 → … → #13 are
+stacked in that order, all thirteen are drafts, so `main` is sixteen commits
 behind and `VERSION` in `manifest.config.mjs` is still 1.0.0. Five are
 documentation; #5 is the pack builder and #6 the sitemap dates. #7 corrects
 the launch and store copy and carries one comment change in
@@ -207,16 +335,21 @@ the launch and store copy and carries one comment change in
 `site/index.html`, the readout's wording, and a new test suite
 (`tests/tools/demo-curve.test.ts`). #9 is Latin orthography: three tooltip
 notes in the lexicon, four prose citations, and a second new test suite
-(`tests/tools/lexicon-orthography.test.ts`); it is the only one of the ten
-that rebuilds a shipped pack — `en-la.json`, four fields. #10 re-checked the
-launch drafts against the code a second time and confirmed `npm run og` is
-byte-stable; both came back clean, so it is a `TODO.md` bookkeeping commit
-only. Nothing in the extension's *code* moves in any of them.
-Two steps here belong to a human rather than
+(`tests/tools/lexicon-orthography.test.ts`); it is one of only two
+that rebuild a shipped pack — `en-la.json`, four fields. #10 and #11 are
+both `TODO.md`-only bookkeeping: re-checking a claim a second time, and
+confirming a queued macron fix had already shipped that same day — nothing to
+merge in the code either time. #12 is the popup and options page picking up
+the "content words" wording #8 gave the demo, plus a screenshot regeneration
+and a correction to this file's own PR count, which had drifted by one
+before #12 even existed. #13 is the second pack rebuild: one field of
+`en-la.json` (`paene`'s tooltip note), the two prose citations that shared
+its misspelling, and a widening of #9's orthography guard so that neither can
+come back. Nothing in the extension's *code* moves in #10 or #11. Two steps here belong to a human rather than
 an agent, by the rules agents run under here: merging, and committing to
 `main`. In order:
 
-1. Merge #1 … #9 bottom-up — each targets the branch
+1. Merge #1 … #13 bottom-up — each targets the branch
    below it, so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
@@ -330,6 +463,166 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — a guard that reads the lexicon cannot see Latin the lexicon
+does not define.** The queued item (`npm run og` byte-stability) had already
+been closed the same day, so this pass re-measured it — it holds, three runs,
+identical SHA-256 — and then went after the finding PR #10 had recorded and
+skipped.
+
+- **The blind spot has a precise shape, and it is structural rather than an
+  oversight.** `tests/tools/lexicon-orthography.test.ts` builds its vocabulary
+  by walking `tgtLemma` across the packs. Every word it can police is
+  therefore a word the lexicon defines. Prose is under no such limit: it
+  explains `peninsula` as `paene īnsula`, and `īnsula` is not an entry. Six
+  sites spelled it bare, two of them inside documents the guard was already
+  scanning, and it could not have flagged any of them. The fix is a second
+  hand-curated vocabulary (`UNDEFINED`), not a wider automatic scan — the
+  wider scan was already measured at 14 false positives in #9.
+- **A hand-picked list may be applied globally where a derived one may not.**
+  `UNDEFINED` is checked against every note in both packs, where the headword
+  rule is deliberately narrowed to the entry that owns it. That asymmetry is
+  the whole point: the headword list contains English homographs nobody chose
+  (`an`, `is`, `dead`, `ham`), and this one contains only words somebody
+  checked. Widening it is safe exactly as far as that checking goes.
+- **The exclusion list was read as "everything else" when only two documents
+  had been measured.** #9 kept `docs/LAUNCH.md` and `docs/PRIVACY.md` out for
+  named homographs and stopped there, which left `site/index.html` and
+  `docs/STORE-LISTING.md` — the landing page and the copy Google reads —
+  unguarded for no measured reason at all. Adding all three at once fires one
+  offender, the known `dies`/`diēs`, so the two clean ones are now in the
+  list. **If a document is excluded from a gate, check whether that was
+  measured or inherited.**
+- **Reading 99 notes beat grepping them, and grep could not have worked.**
+  27 Latin notes and 72 Old English, read in full. A grep needs a pattern, and
+  the pattern here is "a Latin word that should carry a macron" — undecidable
+  without a macronizer. Old English came back clean, which is itself worth
+  recording so nobody re-reads it: every quoted OE word already carries its
+  diacritics. Redo the read, not a grep, if the packs gain notes.
+- **All seven packs are covered, not just the two with diacritics.** Checked
+  afterwards rather than assumed: `es`, `de`, `it` and `pt` have **no notes at
+  all**, and all 85 French notes are one of two templates — "shares a root
+  with English *X*" and "the root of English *X*" — which quote an **English**
+  word, never a French one. So not one French note contains an accented
+  character, and that is correct rather than suspicious. The defect class is
+  structurally absent outside Latin and Old English; it would only appear if a
+  note started quoting the target language.
+- **`npm run test:all | grep ...` reports grep's exit code, not npm's.** Two
+  runs in this session read `[exited with code 0]` that way; run as
+  `npm run test:all > log 2>&1; echo $?` and one of them had exited **1**.
+  Every `test:all` result quoted in the Journal is quoted as an exit code, so
+  capture npm's own, not a pipe's.
+- **The iCloud trap: cleaning `dist/` first is necessary but not sufficient.**
+  Both failures above were conflict copies created *during* the run — at
+  `validate`, and at the rebuild after e2e — as unreadable directories with
+  65535 links. The fix that holds is one command, run once on this machine
+  and already applied: `rm -rf dist && mkdir dist &&
+  xattr -w 'com.apple.fileprovider.ignore#P' 1 dist`, which tells macOS File
+  Provider to skip the directory. The next full gate created zero conflict
+  copies and exited 0. Local, gitignored, reversible with `xattr -d`. If a
+  future session sees `Unknown system error -11` again, check the attribute
+  survived — `build.mjs` recreating `dist/` from scratch would drop it.
+- **Left alone on purpose:** the note under `iānua` reads "Janus, god of
+  doorways", which is the English name of the god in English prose — the same
+  register as the adjacent note's "Jenner" — not a failure to write `Iānus`.
+  Changing it would be imposing classical orthography on an English sentence.
+  Also left: that note's "gave the month its name" never says *which* month,
+  which is a copy question and not an orthography one.
+
+**2026-09-28 — the demo's fix had not reached the two surfaces that use the
+same function.** The item asked only whether the popup wanted the demo's
+qualifier; `oneWordIn()` turned out to have two unqualified call sites, not
+one, and both got fixed together because they are the same string pattern
+produced by the same function.
+
+- **The "against" argument was the demo's own argument, aimed at the wrong
+  target.** "The user watching their own page can see the density directly,
+  which a visitor to the landing page cannot" is true, but it was already
+  tried as a defence of the *demo's* old wording and lost: the demo visitor
+  could also see the passage directly, and a number that did not match what
+  was visibly on screen is precisely what made the old readout "read as a
+  broken counter" (PR #8, further down). Seeing the page
+  does not make an unqualified ratio safe to state; if anything it is what
+  turns a mismatch into a noticed one.
+- **The second call site was not named by the item.** `src/ui/options/sections.tsx:276,294`
+  builds the identical `"${percent} — ${oneWordIn}"` string as the popup, for
+  the Resting-density and Ceiling rows. Fixed both, for the same reason as
+  the popup: leaving one of two identical patterns qualified and the other
+  not would have been a worse inconsistency than the one being fixed.
+  `src/ui/onboarding/index.tsx:219,227` was left alone on purpose — it already
+  carries its own qualifier, "of the words Weft knows", which names the same
+  *eligible* set from the lexicon-coverage side rather than the
+  part-of-speech side. Two honest descriptions of one set is not the bug the
+  demo had.
+- **Checked in a browser, not assumed safe.** `.row__value` is
+  `white-space: nowrap` (`src/ui/theme.css:311`), so a longer string could in
+  principle have overflowed the options page's compact badge, and the popup
+  is a genuine 340×330px surface where any added text has less room to hide
+  in. A scratch Playwright script (not committed) built the real `dist/chrome`
+  test target, drove both surfaces, and compared `scrollWidth` to
+  `clientWidth` on the affected rows at ratios from 6% to 60%. No overflow at
+  any of them; the popup's sentence wraps onto a second line the way the
+  original did.
+- **`docs/screens/*.png` is not byte-stable across days, and it has nothing
+  to do with this fix.** Regenerating it to update the two screenshots that
+  show the new text (`WEFT_SCREENS=1 npx playwright test screenshots`) also
+  rewrote `dashboard.png`, `dashboard-dark.png`, `dashboard-discoveries.png`,
+  `dashboard-milestones.png` and `dashboard-vocabulary.png` — none of which
+  render `oneWordIn` at all. `tests/e2e/screenshots.spec.ts` seeds vocabulary
+  progress with `lastReview: now - ago * day`, and
+  `src/ui/dashboard/index.tsx:299,429` renders that as an absolute calendar
+  date (`new Date(entry.at).toLocaleDateString(...)`), so every capture after
+  today differs from today's by a few bytes of date text, on every dashboard
+  screenshot, forever. Not a regression. Reverted those five with
+  `git checkout --` and kept only the three whose diff is real —
+  `options-density.png` and `popup.png`, both embedded or tracked and both
+  showing the edited text directly, plus `options.png`, the full-page shot
+  that contains the same rows. **Do not build a determinism gate around this
+  directory the way `docs/store/*` earned one**: that gate's justification
+  was OS/font antialiasing as the *only* source of drift on lexicon-fixed
+  content; this directory has a second, calendar-shaped source on top, so a
+  from-scratch diff would flag ordinary future sessions as often as it flags
+  a real regression.
+- **`TODO.md`'s own PR count was already wrong before this session added a
+  PR to it.** B0 said "ten stacked PRs" and "Merge #1 … #9", but PR #11 (a
+  same-day bookkeeping commit, no code) was already open. Corrected to twelve
+  while adding this session's #12, and the merge instruction now covers the
+  full range rather than stopping two short of it — worth knowing because
+  that stale instruction would have told Creagh to stop merging before the
+  most recent work.
+
+**2026-09-28 — a queue entry asked for the macron fix `1fc81be` had already
+shipped, same day.** The task named the same three sites `1fc81be` corrected
+that morning, down to the line number: `tools/build-site.mjs:442`,
+`docs/PEDAGOGY.md:116`, `tools/seed/lex-la.tsv:376`. All three still read
+`mīlle passūs`. `git grep -n mille` across the three files returns nothing;
+`git grep -n mīlle` finds exactly the three corrected spellings plus the
+seed's own header-comment mention; `git blame -L 376,376 tools/seed/lex-la.tsv`
+names `1fc81be` as line 376's last author. No edit was made.
+
+- **Run anyway, since the task asked for it: `npm run packs` against an
+  already-correct seed.** The tree came back completely clean — not the two
+  files the task predicted (`en-la.json` + `index.json`), but zero, because an
+  unchanged seed produces an unchanged pack once `writeStamped()` (PR #5) is
+  doing its job. `npm run typecheck`, `npm run test:tools` (21/21, both
+  `lexicon-orthography.test.ts` cases included) and `npm run packs:verify` (0
+  errors, 4 warnings — the same four Old English interjections lacking IPA)
+  all pass against the untouched tree.
+- **The task's own prediction was also wrong, independent of whether the bug
+  still existed.** "Only `en-la.json` + `index.json` should move" restates
+  exactly what `1fc81be`'s own note already corrected: `index.json` records
+  `entryCount`/`lemmaCount`/`bands` per pack, none of which a note's spelling
+  touches, so it rightly does not move for this class of fix at all — only
+  `en-la.json` does, and only when there is a real change to make. Worth
+  restating since a new queue entry asserted the opposite.
+- **Same shape as the duplicate `npm run og` queue entries two notes below.**
+  Left the queue alone rather than prune it, same reasoning as then: pruning
+  is outside what any one task asked for, and the queue already tolerates
+  redundant re-verification by design. No code changed in this pass; this
+  note is the only diff, and only `TODO.md` carries it — `CLAUDE.md`'s Journal
+  stayed untouched here for the same reason it stayed untouched for the last
+  bookkeeping-only pass (PR #10, immediately below): nothing about the shipped
+  product moved.
 
 **2026-09-28 — the launch drafts held up on a second, independent read; the
 OG card is the third thing now confirmed byte-stable.** This session's task
