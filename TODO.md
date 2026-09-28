@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **24** tool tests / 7 suites, **36** e2e passing in 2.5 min
+suites, **27** tool tests / 8 suites, **36** e2e passing in 2.9 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -40,9 +40,16 @@ the orthography guard because `īnsula` is not a lexicon headword.
 explains itself, as of 2026-09-28** — `novem` → November was the last numeral
 with a descendant and no note, and the guard PR #14 wrote could not see it,
 because that guard polices notes that exist and `novem` had none; the missing
-half is now a test too. **Now is empty; Next has one item**, found while
-rendering that fix — 312 Latin word pages state the descent backwards, see
-Next. The code is not otherwise what is holding the release up. The critical
+half is now a test too. **And the 312 Latin word pages now state their descent
+forwards, as of 2026-09-28** — they said English borrowed *novem* **from**
+*November*, because the frame ended in a preposition and the builder appended
+the descendant after it; `descent` is a before/after pair now, and a guard
+reads all 637 rendered pages and fails on any frame that hands the English
+word to "from". **Now is empty; Next has one item**, found while rendering
+that fix — a lexicon note follows the descent sentence's full stop and 247 of
+318 notes begin lowercase, so most word pages carry a fragment that starts
+mid-sentence; see Next. The code is not otherwise what is holding the release
+up. The critical
 path runs through two things only Creagh can do: **B0 — one conflicted merge
 into `main`** (re-measured later on 2026-09-28: `main` *has* moved, and the
 stack no longer applies cleanly — four files conflict, all of them squash
@@ -387,46 +394,85 @@ domain `weft.study` is not registered**.
       six documents, one more than the usual five — see the Notes entry for
       the stale one.
 
+- [x] **The Latin word pages say English borrowed the Latin word *from* the
+      English one.** Done 2026-09-28. `META.la.descent` is a `{ before, after }`
+      pair now and `descentSentence()` sets the descendant *inside* the frame:
+      **"This is the Latin word your English *November* was borrowed from."**
+      312 pages changed; the 325 Old English pages are byte-identical, because
+      that language's `after` is empty and its frame already took its object
+      at the end.
+
+      **The queue's preferred shape was right about where the descendant goes
+      and one word short of correct.** The item reconstructed the sentence the
+      template was written for as "the Latin word your English *November*
+      borrowed from" — which puts *November* in the subject slot of *borrowed*
+      and so makes the English word the **borrower**. It is not: English
+      borrowed *November*, and the idiom the codebase already uses says so
+      (`src/core/discoveries.ts:145`, "English borrowed ${descendant} from
+      ${target}"). The passive fixes the role without giving up the verb —
+      *was* borrowed from — and keeps the "This is the Latin word …" opening
+      that makes the two languages parallel. Rendered and read on seven pages
+      rather than reasoned about: `novem`, `vacca`, `mīlle`, `iānua`,
+      `argentum`, `ābīdan`, `bōc`.
+
+      **The guard is one word, and the word is "from".** The general rule — a
+      descendant must not be the object of a preposition — is wrong, because
+      most prepositions take it correctly ("the ancestor **of** November"). In
+      a descent sentence *from* names the source, and the source is the page's
+      own headword, so a frame ending in "from" captures whatever is appended
+      and hands the descendant the Latin word's role. The red run named **312**
+      offenders and **zero** of the 325 Old English pages, so the rule
+      separates the two frames with no curated exclusion list. Three tests in
+      `tests/tools/build-site.test.ts` rather than a new suite: the file is
+      already the one that renders the site into a temp directory, and a
+      second suite would have duplicated that seam to re-derive the same
+      output for a 0.6 s build. Counts moved 642 → 645 and suites 7 → 8 across
+      six documents — `docs/LAUNCH.md:221` swept **by name**, as this file now
+      asks.
+
+      Not a lexicon edit: no pack moved, no `builtAt` moved, `packs:verify`
+      untouched. `site:check` still 711 pages / 16 087 links, all resolving.
+
 ## Next
 
-- [ ] **The Latin word pages say English borrowed the Latin word *from* the
-      English one.** Found 2026-09-28 while rendering `/latin/novem` to check
-      the item above, so it is a real render rather than a reading of the
-      template. `META.la.descent` (`tools/build-site.mjs:62`) is
-      `'This is the Latin word your English borrowed from'`, and
-      `tools/build-site.mjs:286` appends `<strong>${entry.etymonOf}</strong>.`
-      to it. Rendered:
+- [ ] **A word page's note starts mid-sentence after a full stop.** Found
+      2026-09-28 while rendering the descent fix above, so it is a real render
+      rather than a reading of the template. `tools/build-site.mjs` puts the
+      note in the same `<p>` as the descent sentence, after that sentence's
+      full stop:
 
-          This is the Latin word your English borrowed from **November**.
+          This is the Latin word your English *mile* was borrowed from.
+          a mile was mīlle passūs, a thousand paces.
 
-      Subject "your English", verb "borrowed", "from November" the source —
-      so it states that English took *novem* **from** *November*, which is the
-      descent backwards. **The construction the template was written for looks
-      like "This is the Latin word your English *November* borrowed from",**
-      with the descendant *before* the preposition and "word" elided after
-      "your English"; the builder appends it after, where the preposition
-      captures it.
+      **Lowercase is the dominant convention in the lexicon, not the
+      exception**: 247 of the 318 notes across the seven packs begin with a
+      lowercase letter, and they are written as appositive fragments —
+      "literally 'woman-person'", "the near-dweller", "a beech-wood tablet" —
+      which read correctly in the tooltip, where `src/content/tooltip.ts`
+      gives the note its own `<div class="note">` and it lands as a caption on
+      its own line. The word page is the only surface that joins it to a
+      finished sentence, so the word page is where it breaks. It is also
+      visible in the "Worth knowing" branch (`tools/build-site.mjs`), where an
+      etymon-less note opens a paragraph in lowercase.
 
-      Two things make this a defect rather than a quibble. Its sibling four
-      lines down gets the direction right —
-      `META.ang.descent` is `'This is the Old English word that became'`, which
-      takes its object at the end and reads correctly on all **325** Old
-      English pages. And the Latin sentence is on **312** published pages,
-      every Latin word page carrying an etymon, which is the bulk of the
-      709-page search asset `docs/LAUNCH.md`'s r/latin draft exists to point
-      at. Not a lexicon edit: one template, no pack rebuild.
+      Three shapes, and the decision is which corpus to move:
 
-      Fix wants a decision between two shapes — match the sibling
-      (`'This is the Latin word that became'`, one field, zero structural
-      change) or keep the borrowing frame and split `descent` into a
-      prefix/suffix pair so the etymon can sit before "borrowed from". The
-      first is smaller and makes the two languages parallel; the second keeps
-      the Latin page saying *borrowed*, which is the accurate verb for a
-      learned borrowing where "became" is not. **Prefer the second** on that
-      last point — `vaccine` did not *become* anything, it was coined from
-      `vacca` — but either is defensible and both are cheap. **~20 minutes**,
-      plus `site:check`; guard it in `tests/tools/` the way
-      `build-site.test.ts` already reaches into a rendered page.
+      1. **Join with a dash on the word page only** — "…was borrowed from — a
+         mile was mīlle passūs". One template, zero lexicon churn, and it
+         reads well for the 247. It reads oddly for the 71 notes that already
+         begin with a capital ("— Jenner named the vaccine after the cowpox").
+      2. **Capitalise at render time**, word page only. Handles both sets,
+         costs one `charAt(0).toUpperCase()`, and is wrong on any note that
+         opens with a lowercase word that must stay lowercase — check for one
+         before choosing this.
+      3. **Capitalise the notes in `tools/seed/*.tsv`.** 247 edits, rebuilds
+         packs, redates ~700 sitemap entries, and changes the tooltip too,
+         where the fragment is currently fine.
+
+      **Prefer 2 with a measured exception list, or 1 if the 71 capitalised
+      notes turn out to be the ones that should move.** ~30 minutes either
+      way, plus `site:check`; guard it in `tests/tools/build-site.test.ts`,
+      which now already reads every rendered word page.
 
 Otherwise Next is empty as of 2026-09-28. Everything else remaining lives in
 Blocked, and all of it needs Creagh: B0 first, then B1.
@@ -592,6 +638,57 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-09-28 — the queued fix was right about the slot and wrong about the
+role.** The item reconstructed the sentence `META.la.descent` was written for
+as "the Latin word your English *November* borrowed from", and asked for a
+prefix/suffix split so the descendant could sit before the preposition. The
+split is right. The sentence is not: it puts *November* in the subject slot of
+*borrowed*, which makes the English word the **borrower**, and the borrower is
+English the language. The codebase already had the idiom
+(`src/core/discoveries.ts:145`, "English borrowed ${descendant} from
+${target}") and it disagrees. One word of passive — *was* borrowed from —
+fixes the role without giving up the verb, and *borrowed* was the whole reason
+the item preferred this shape over copying the Old English sibling's *became*.
+**The transferable half: a queued item that names the fix as well as the
+defect has had its fix reasoned about but usually not rendered, so render it
+before adopting it.** Two sessions running have now found the queued
+*premise* wrong (`iānua`, `novem` heading) and this one found the queued
+*remedy* wrong; in all three cases the thing that settled it was building the
+page and reading it.
+
+**A guard over prose direction can be one word, if the word is chosen by
+measurement.** The obvious rule — the descendant must not be the object of a
+preposition — is wrong, because most prepositions take it correctly: "the
+ancestor **of** November", "the root **of** vaccine". *From* is the one that
+cannot, because in a descent sentence it names the source and the source is
+the page's own headword. `/\bfrom$/` over the text preceding the descendant
+fired on **312** Latin pages and **zero** of the 325 Old English ones — the
+defect exactly, with no curated exclusion list, which is the same
+derive-it-from-the-data move PR #14 used with capitalisation.
+
+**Where the guard went, and why not a new suite.** `tests/tools/build-site.test.ts`,
+which already builds the site into a temp directory to check sitemap dates.
+The two rules are unrelated, which normally argues for a new file, but the
+expensive, delicate part here is the seam rather than the build: a test of
+this tool must render into `mktemp -d` and never into `dist/site`, which
+`npm run site:check` reads. A second suite would have duplicated that setup to
+re-derive the same 711 pages. The file's docblock now names both claims. The
+build itself is **0.6 s**, so cost was not the deciding factor — duplication
+was.
+
+**`suites` counts `describe` blocks, not files.** Adding one `describe` to an
+existing file moved `npm run test:tools` from 7 suites to 8 with no new file,
+which is worth knowing before a count sweep: six files, eight suites.
+
+**The install page's `<lastmod>` now says today, and that is the known
+coarseness rather than a new bug.** `tools/build-site.mjs` is one of the two
+files `contentDate()` reads for the install page, because that page's prose
+lives in `installPage()` rather than in a document of its own — so editing the
+*word-page* template in the same file redates a page whose text did not
+change. Same class as the pack-granular dates PR #9 exercised: a page may say
+it changed today when the file behind it really did. Nothing is indexed yet
+(B3), so there is nothing to re-crawl.
+
 **2026-09-28 — a guard cannot see the absence of the thing it inspects.**
 PR #14 derived a rule from the data — a note whose descendant is a proper noun
 must name it — and shipped it the same session `novem` was found to have no
@@ -618,7 +715,9 @@ have carried a number nobody had re-measured — the Journal already records
 "449 tests" here on 2026-09-27 and the same draft wrong again at the 617 → 620
 sweep. (The 2026-09-28 launch re-sweep is the exception that proves it is
 worth checking: the "633 tests" it found was *correct*.) Six documents now say
-642. `git grep -nE '\b(638|641)\b'` returns nothing outside Journal history.
+645, swept again on 2026-09-28 for the descent fix with `docs/LAUNCH.md`
+taken by name first rather than last. `git grep -nE '\b(638|641|642)\b'`
+returns nothing outside Journal history and one SHA-256.
 **Re-sweep `docs/LAUNCH.md` by name whenever a count moves.** It is the only
 file here whose errors leave the repository, and it is the one a
 five-document sweep keeps omitting, because it is the only one where the

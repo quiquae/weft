@@ -140,7 +140,21 @@ in a real Chromium build rather than assumed safe, since the popup is a
 genuine 340×330px surface and the options page's value badges do not wrap:
 no overflow at any ratio from 6% to 60%.
 
-**Built with** 642 tests: 484 unit, 98 in jsdom, 24 over the build tools, and
+**312 Latin word pages stated their descent backwards.** Every Latin page
+carrying an etymology opened "This is the Latin word your English borrowed
+from **November**" — which says English took *novem* from *November*, the
+descent the wrong way round, in the one sentence a reader arriving from a
+search result reads first. The frame ended in a preposition and the builder
+appended the descendant after it, where "from" captured it and gave it the
+source's role; the Old English sibling, "the Old English word that became
+X", takes its object at the end and was right on all 325 of its pages. The
+Latin frame is now split around the descendant — "This is the Latin word your
+English **November** was borrowed from" — keeping *borrowed*, which is the
+accurate verb for a learned borrowing where *became* is not. A guard reads all
+637 rendered word pages and fails on any frame that hands the English word to
+"from".
+
+**Built with** 645 tests: 484 unit, 98 in jsdom, 27 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

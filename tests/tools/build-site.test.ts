@@ -1,15 +1,21 @@
 /**
- * The site builder's one testable claim about dates: every `<lastmod>` in the
- * sitemap comes from the content behind that page. `tests/tools/sitemap.test.ts`
- * covers where a date comes from; this covers whether the builder asks.
+ * What the site builder writes, checked by reading the pages it wrote.
  *
- * It runs the real builder into a temporary directory. It must never write
- * into `dist/site`, which is what `npm run site:check` reads.
+ * Two unrelated claims live here because they are answered by one build. The
+ * builder takes 0.6 s for all 711 pages, but the setup is the awkward part —
+ * it must render into a temporary directory and never into `dist/site`, which
+ * is what `npm run site:check` reads — so a second suite would duplicate that
+ * seam to re-derive the same output.
+ *
+ *   1. Every `<lastmod>` in the sitemap comes from the content behind that
+ *      page. `tests/tools/sitemap.test.ts` covers where a date comes from;
+ *      this covers whether the builder asks.
+ *   2. No word page states its own descent backwards. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -31,13 +37,53 @@ function lastmods(xml: string): Map<string, string | null> {
   return found;
 }
 
+/**
+ * A rendered descent sentence, split at the English descendant it names.
+ *
+ * Read off the page rather than out of `META`, because the defect this guards
+ * is not in either half — it is in where the builder puts the descendant
+ * relative to the frame, which only the rendered sentence shows.
+ */
+type Descent = { page: string; before: string; descendant: string; after: string };
+
+const plain = (html: string): string =>
+  html
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+function descentOf(page: string, html: string): Descent | null {
+  // The same section renders a bare "Worth knowing" note on entries with no
+  // etymon, which has no <strong> and no descent claim to make.
+  const para = html.match(/<section class="word__descent">[\s\S]*?<p>([\s\S]*?)<\/p>/)?.[1];
+  const split = para?.match(/^([\s\S]*?)<strong>([^<]+)<\/strong>([\s\S]*)$/);
+  if (!split) return null;
+  return {
+    page,
+    before: plain(split[1] as string),
+    descendant: split[2] as string,
+    after: plain(split[3] as string),
+  };
+}
+
 let dates: Map<string, string | null>;
+let descents: Descent[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
   try {
     execFileSync(process.execPath, [TOOL, `--out=${out}`], { stdio: 'pipe' });
     dates = lastmods(readFileSync(join(out, 'sitemap.xml'), 'utf8'));
+    descents = [];
+    for (const dir of ['latin', 'old-english']) {
+      for (const file of readdirSync(join(out, dir))) {
+        const found = descentOf(
+          `/${dir}/${file.replace(/\.html$/, '')}`,
+          readFileSync(join(out, dir, file), 'utf8'),
+        );
+        if (found) descents.push(found);
+      }
+    }
   } finally {
     rmSync(out, { recursive: true, force: true });
   }
@@ -80,5 +126,62 @@ describe('the sitemap dates each page by its own content', () => {
       `all ${dates.size} URLs share one <lastmod> (${[...distinct]}), which is the wall clock, not their content`,
     );
     assert.notEqual([...distinct].join(), TODAY, 'every page claims to have changed today');
+  });
+});
+
+/**
+ * A word page's whole claim is which word came from which. Saying it backwards
+ * is not a typo, it is the page asserting the opposite of the truth, and it is
+ * the one sentence a reader arriving from a search result reads first.
+ *
+ * The rule is one word, and it is narrow for a reason that was measured. The
+ * general form — "the descendant must not be the object of a preposition" —
+ * is wrong, because most prepositions take the descendant correctly: "the
+ * ancestor of November" and "the root of vaccine" both put the English word
+ * exactly where it belongs. **from** is the one that cannot: in a sentence
+ * about descent it names the source, and the source is the page's own
+ * headword. So a frame that ends in "from" captures whatever the builder
+ * appends after it and hands the descendant the role the Latin word holds.
+ *
+ * That is the shape the defect had. `META.la.descent` read "This is the Latin
+ * word your English borrowed from" and `wordPage()` appended the descendant,
+ * so 312 published Latin pages said English took *novem* **from** *November*.
+ * Its Old English sibling, "This is the Old English word that became", takes
+ * its object at the end and was right on all 325 of its pages — which is why
+ * this is a guard over both languages rather than a fix to one string.
+ */
+describe('a word page states its descent in the right direction', () => {
+  test('no page names its English descendant as the word it came from', () => {
+    const offenders = descents.filter((d) => /\bfrom$/i.test(d.before));
+
+    assert.deepEqual(
+      offenders.map((d) => d.page).slice(0, 5),
+      [],
+      `${offenders.length} pages hand the English descendant to "from", which names the source:\n  ${offenders
+        .slice(0, 5)
+        .map((d) => `${d.page}: "${d.before} ${d.descendant}"`)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('every page with a descent sentence names its own descendant in it', () => {
+    // Guards the cheap way out of the rule above: deleting the descendant
+    // rather than moving it would satisfy a check that only reads the frame.
+    const silent = descents.filter((d) => !d.descendant.trim());
+
+    assert.deepEqual(silent.map((d) => d.page), [], 'a descent sentence renders an empty descendant');
+  });
+
+  test('the rule has something to police', () => {
+    // A floor, not an exact count, so a new word page does not have to be
+    // registered here — but a builder that stops rendering the sentence, or a
+    // parser that stops finding it, can no longer pass by inspecting nothing.
+    const byLang = (prefix: string) => descents.filter((d) => d.page.startsWith(prefix)).length;
+
+    assert.ok(byLang('/latin/') > 300, `only ${byLang('/latin/')} Latin pages render a descent sentence`);
+    assert.ok(
+      byLang('/old-english/') > 300,
+      `only ${byLang('/old-english/')} Old English pages render a descent sentence`,
+    );
   });
 });
