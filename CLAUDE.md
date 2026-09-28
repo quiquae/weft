@@ -170,6 +170,44 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-27 — the numbers in the documents were fiction
+
+Four documents stated test counts. All four were wrong, none agreed with any
+other, and `CHANGELOG.md`'s did not add up — "449 tests: 379 unit, 71 in
+jsdom, 24 end-to-end" is 474. Every count in the repository is now one this
+session measured: **484 unit / 122 suites**, **97 jsdom / 22 suites**, **39
+e2e defined in 7 files of which 36 run**, **584–588 entries across 579–583
+surface forms**, and **653 KB** of packs — 668 270 bytes at the `size / 1024`
+convention `tools/validate-package.mjs` already uses. Nothing in the tracked
+tree matches `427|449|379|664 KB|709` any more.
+
+The fourth document is the one worth remembering: `docs/LAUNCH.md:215` had
+"449 tests" inside the Hacker News comment draft. Every other stale count was
+wrong where only a contributor would read it; that one is copy a human sends
+out in public, and `docs/LAUNCH.md` is the only file here whose errors leave
+the repository. Re-sweep it before anything is posted.
+
+The judgement call: `CHANGELOG.md`'s 1.0.0 entry was corrected **to 1.0.0**,
+not to today. A changelog entry for a shipped release that describes the
+current tree is a different kind of wrong, so the real 1.0.0 numbers were
+measured in a throwaway worktree at `ef97167` — 470 unit, 97 jsdom, 35 of 38
+e2e, 602 in total, packs 644 KB — and today's went into a new `1.0.1` entry.
+That entry says out loud that it is not cut yet, because `VERSION` is still
+1.0.0; `tools/release.mjs` writes `RELEASE-X.Y.Z.md` and never touches
+`CHANGELOG.md`, so the two cannot disagree when the bump happens.
+
+The lexicon *entry* counts turned out not to have moved since `v1.0.0` — only
+the byte size. `3060d93` added etymons and notes to existing French entries
+rather than adding entries, which is why 584–588 / 579–583 is right in both
+changelog entries and only the KB differs. Worth knowing before assuming a
+lexicon change implies a count change.
+
+Also verified, rather than assumed, that the previous session's `/privacy` and
+`/support` work is real: `npm run site:check` reports 711 pages and 16 087
+links, all resolving, plus "all 3 externally-referenced pages exist", and
+`docs/PRIVACY.md` mentions `idle` and `unlimitedStorage` only to explain their
+removal.
+
 ### 2026-09-27 — the two pages the outside world points at
 
 `npm run site` now writes `/privacy` and `/support`. They are `docs/PRIVACY.md`

@@ -21,29 +21,24 @@ Everything in Now is work that can land before that and does not depend on it.
       if `SUPPORT_URL`, `PRICING_URL` or `/privacy` has no page behind it.
       See the note at the top of Notes for what changed and what it turned up.
 
-- [ ] **Correct the test counts in three documents.** They disagree with each
-      other and all three are wrong. `README.md` says "427 unit + 81 jsdom"
-      and "24 tests"; `docs/SUBMIT.md` says "427 unit tests, 81 jsdom tests"
-      and "24 end-to-end"; `CHANGELOG.md` says "449 tests: 379 unit, 71 in
-      jsdom, 24 end-to-end". Measured today: **484 unit, 97 jsdom, 39 e2e
-      defined of which 36 run** (the other three are the `WEFT_STORE` /
-      `WEFT_SCREENS` / `WEFT_FIRSTRUN` asset generators). While in there:
-      README and CHANGELOG both say "584–588 surface forms", but
-      `npm run packs:verify` reports 584–588 *entries* across **579–583**
-      surface forms. *~15 minutes.*
+- [x] **Correct the test counts in three documents.** Done 2026-09-27, and it
+      was **four** — `docs/LAUNCH.md:215` had "449 tests" inside an HN comment
+      draft, where a wrong number goes out in public. Every count in the
+      repository is now a measured one; `git grep` for the old values returns
+      nothing. See the note at the top of Notes for what was measured and for
+      the one judgement call (what the 1.0.0 changelog entry should say).
 
-- [ ] **Add a CHANGELOG entry for the five commits after the `v1.0.0` tag.**
-      `5f1922f` `verify:release`, `0d9910e` redrawn toolbar icons, `7f7faaa`
-      the help page and the diagnostics support path, `d1d545a` French
-      etymologies, `3060d93` French leading everywhere plus a two-column fix
-      in the lexicon verifier. The published 2026-09-19 release has none of
-      them, so a reader comparing the tag to `main` currently finds five
-      undocumented commits. Head it `1.0.1` to match the bump below.
-      *~30 minutes.*
+- [x] **Add a CHANGELOG entry for the five commits after the `v1.0.0` tag.**
+      Done 2026-09-27, headed `1.0.1` and stating plainly that it is not cut
+      yet. It covers seven paragraphs rather than five commits: the two
+      documentation commits on this branch stack are in it too, because
+      `/privacy` and `/support` change where a *shipped* button lands and so
+      belong in the release notes a user reads.
 
 ## Next
 
-- [ ] **Regenerate the five `docs/store/chrome-*.png`.** They were captured in
+- [ ] **Regenerate the five `docs/store/chrome-*.png`.** *Topmost unchecked
+      item as of 2026-09-27.* They were captured in
       `d1d545a`, one commit before `3060d93` changed `tools/seed/lex-fr.tsv`
       and `fr-cousins.tsv` and rebuilt `en-fr.json` — so the French words in
       the listing screenshots are not guaranteed to be the ones that ship.
@@ -158,6 +153,39 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-27 — every count in the repository is now a measured one.** The three
+documents named in the item were four, and `git grep -nE '427|449|379|664 KB'`
+now returns nothing.
+
+- **Measured, not copied.** `npm run test:unit` → 484 pass / 122 suites.
+  `npm run test:dom` → 97 pass / 22 suites. `npx playwright test --list` →
+  39 defined in 7 files, of which 3 are the `WEFT_STORE` / `WEFT_SCREENS` /
+  `WEFT_FIRSTRUN` asset generators, so **36 run**. `npm run packs:verify` →
+  584–588 entries across 579–583 surface forms. The packs are 668 270 bytes,
+  which is **653 KB** at the `size / 1024` convention
+  `tools/validate-package.mjs:281` uses — not the 664 KB three documents
+  claimed, which matches no measurement under either convention.
+- **`docs/LAUNCH.md:215` was the fourth document.** "449 tests" sat inside
+  the Hacker News comment draft, which is copy a human sends out in public.
+  Worth re-sweeping the whole of `docs/LAUNCH.md` before anything is posted:
+  it is the only file here whose errors leave the repository.
+- **The 1.0.0 changelog entry was wrong even for 1.0.0, so it was corrected
+  to 1.0.0, not to today.** Its "449 tests: 379 unit, 71 in jsdom, 24
+  end-to-end" does not even add up (379 + 71 + 24 = 474). Measured in a
+  throwaway worktree at `ef97167`: **470 unit, 97 jsdom, 38 e2e defined of
+  which 35 run** — 602 in total — and packs of 659 451 bytes = 644 KB. The
+  entry now says that. A changelog entry for a shipped release describing
+  today's tree would be a second kind of wrong. Today's numbers went into the
+  new 1.0.1 entry instead.
+- **The lexicon entry counts did not change between `v1.0.0` and now**, only
+  the byte size: `3060d93` added etymons and notes to existing French
+  entries rather than new entries. So 584–588 / 579–583 is correct in both
+  changelog entries and only the KB differs.
+- **The 1.0.1 entry says out loud that it is not cut.** `VERSION` in
+  `manifest.config.mjs` is still 1.0.0 and `tools/release.mjs` does not touch
+  `CHANGELOG.md` — it writes `RELEASE-X.Y.Z.md` — so the two will not fight
+  when the bump happens.
 
 **2026-09-27 — `/privacy` and `/support` now exist.** `npm run site` writes
 711 pages; `npm run site:check` reports 16 087 links, all resolving.

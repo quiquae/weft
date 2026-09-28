@@ -9,9 +9,14 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 427 unit tests, 81 jsdom tests, the compatibility audit, all
-three builds, the package validator, and 24 end-to-end tests in real
+runs typecheck, 484 unit tests, 97 jsdom tests, the compatibility audit, all
+three builds, the package validator, and 36 end-to-end tests in real
 Chromium. Nothing below should be attempted until that is green.
+
+Three further end-to-end specs are defined and deliberately skipped — they
+generate assets rather than assert anything, and run only behind
+`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "36 passed, 3
+skipped" is the green result, not a partial one.
 
 After tagging a release, check what GitHub actually serves:
 
