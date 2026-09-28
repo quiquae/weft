@@ -291,6 +291,12 @@ it feeds are published copy. The `com.apple.fileprovider.ignore#P` attribute
 is still set on `dist/` and the full gate created **zero** iCloud conflict
 copies for the third session running.
 
+This session's own PR was **#15**, and it is merged: squashed into #14's head
+(`lexicon/proper-noun-notes`) at 18:54 UTC with CI green end to end, including
+the `Committed packs match the seed lexicons` step that rebuilds the packs on
+Node 22 and diffs them. So the stack is back to a single open PR, #14, now
+carrying both.
+
 What needs a human: **B0**, rewritten again this session — still one merge to
 `main`, but a conflicted one, with the four files named. `Now` is empty;
 `Next` has the backwards Latin descent sentence above, which is agent-shaped
