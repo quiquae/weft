@@ -54,14 +54,17 @@ with a quotation mark or a proper noun. **And Latin and Old English notes now
 quote with the same marks the site's own prose does, as of 2026-09-28** — 59
 of 185 distinct notes quoted with straight `"` while French and the site quote
 with curly `“ ”`; the recorded argument for leaving both stood on a premise
-that reading all 59 disproved (see Now). **Now and Next are both empty**. The
-code is not what is holding the release
-up. The critical
-path runs through two things only Creagh can do: **B0 — one conflicted merge
-into `main`** (re-measured later on 2026-09-28: `main` *has* moved, and the
-stack no longer applies cleanly — four files conflict, all of them squash
-artefacts; see B0) before the version can be bumped, and then **B1 — the
-domain `weft.study` is not registered**.
+that reading all 59 disproved. **And as of 2026-09-28 all of it is on
+`main`** — the nineteen-commit stack that had accumulated since 2026-09-27 was
+merged in one PR, which is **B0 step 1, now done**. The four conflicts B0
+predicted were all squash artefact and the resolution was *proved* rather than
+judged: `main`'s tree SHA was byte-identical to `02fc7d8`'s, an ancestor of the
+stack, so `main` contributed nothing to any path and the merge changed not one
+byte of content. **Now and Next are both empty.** The code is not what is
+holding the release up. The critical path is now **B0 step 2 — cut 1.0.1** (a
+version bump, landable by any session on a branch; the *tag push* is B2 and is
+outward-facing), and then **B1 — the domain `weft.study` is not registered**,
+which only Creagh can do.
 
 ## Now
 
@@ -558,67 +561,58 @@ and the tooltip would get worse, not better.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Land the stack on `main`, then cut 1.0.1.** *Blocks the version bump,
-and nothing else in Now.* **The shape of this changed on 2026-09-28 and the
-old instruction below would now do the wrong thing — read this first.**
+**B0 — Step 1 is done: the stack is on `main`. Step 2, cut 1.0.1, is not.**
+*Blocks the version bump, and nothing else.*
 
-**Re-measured 2026-09-28 (later): `main` has moved, and the merge no longer
-applies cleanly.** The paragraph this replaced said "`main` did not move",
-which was true when written and is not now. Creagh merged #1 into `main` at
-15:26:13 UTC and #2 into #1's branch at 15:26:04, after the nine top-down
-merges at 15:18–15:19. `main` is `f6733af`. #3 and #5 are **closed**, not
-open; #1, #2 and #4 are merged; **#14 is the only open PR** (plus this
-session's, stacked on it). So the "close #1, #2 and #3 as superseded" step is
-already done and the drifted-screenshot hazard is gone with it — #3 cannot be
-merged first because it cannot be merged at all.
+**Step 1 landed 2026-09-28.** The nineteen commits that had accumulated on
+`lexicon/proper-noun-notes` since 2026-09-27 — everything from `/privacy` and
+`/support` through the curly-quote unification — are on `main` in one merge.
+Only #1 had ever reached `main`; #2 through #21 merged into each other's heads,
+so no commit on `main` carried any of it. `main` now does.
 
-**What replaced that hazard is a merge conflict, and it is the thing to plan
-for.** #1 was *squash*-merged, so `main` carries a new commit holding #1's
-content while the stack still carries #1's original `ee277d2`. The merge base
-is therefore `3060d93`, behind both, and git sees two independent creations of
-the same files. Trial-merged in memory with
-`git merge-tree --write-tree origin/main HEAD` — **four conflicts**:
+**The four conflicts were real, entirely squash artefact, and the resolution
+was provable.** This is worth keeping, because the same shape will recur the
+next time a stack's bottom PR is squash-merged. `main` held one squash commit
+containing #1 *and* #2 — #2 went into #1's branch nine seconds before #1 went
+to `main`, which is why `main`'s `CLAUDE.md` was *not* the first draft the
+earlier text called it. The stack still carried their originals `ee277d2` and
+`02fc7d8`, so the merge base was `3060d93`, behind both, and git reported
+`add/add` on `CLAUDE.md` and `TODO.md` plus content conflicts in
+`.github/workflows/site.yml` and `tools/build-site.mjs`.
 
-    .github/workflows/site.yml   (content)
-    CLAUDE.md                    (add/add)
-    TODO.md                      (add/add)
-    tools/build-site.mjs         (content)
+The earlier instruction was to take the two documents from the stack side and
+*read* the two code hunks. Right under uncertainty, but the uncertainty was
+removable: **`git rev-parse origin/main^{tree}` returned `cbf3f4ae`, identical
+to `02fc7d8`'s tree**, and `02fc7d8` is an ancestor of the stack. So `main`
+contributed nothing to any path, the correct result was the stack's tree
+exactly, and resolving all four to `--ours` and checking
+`git write-tree` against `f4e4753`'s tree (`02c281a4`, equal) *proved* it
+rather than arguing it. **The general form: before hand-resolving a conflicted
+merge, compare tree SHAs — if one side's tree equals an ancestor of the other,
+every conflict on it is artefact and the resolution is mechanical.**
 
-`CLAUDE.md` and `TODO.md` resolve to **the stack's side wholesale** — `main`'s
-copies are #1's first drafts and every later session rewrote them. The two
-code conflicts are narrower and want reading: `site.yml` is #6's
-`fetch-depth: 0` against #1's version of the same job, and `build-site.mjs` is
-eight sessions of edits against #1's. Neither is a semantic disagreement; both
-are the same squash artefact.
+Remaining, in order:
 
-So the stack is still **one** merge to `main`, but it is a conflicted one
-rather than the clean fast-forward the old text implied. Merging is a human
-step here, as is committing to `main`. In order:
-
-1. Merge **#14** into `tools/reproducible-lexicon-packs`. It is the only open
-   PR: **#15, #16, #17, #18 and #19** were each squash-merged into #14's head
-   on 2026-09-28 with CI green, so #14 carries all of them and there is
-   nothing stacked above it. Then open one PR from that branch to `main` and
-   resolve the four conflicts above. Taking `CLAUDE.md` and `TODO.md` from the
-   stack side is safe; read the two code hunks. The conflict list was
-   re-measured after #17 and #19, both of which edit `tools/build-site.mjs`
-   again: still exactly those four files, same reasons.
-2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
-   runs the tests first, bumps `VERSION`, keeps `package.json` in step,
-   rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
-   stops before committing and prints the `git tag` / `git push --tags` lines.
-3. Re-run the whole gate on the bumped tree: `npm run test:all`, **plus**
+1. **Cut 1.0.1.** `npm run release -- --version=1.0.1` refuses a dirty tree,
+   runs the tests first, bumps `VERSION` in `manifest.config.mjs`, keeps
+   `package.json` in step, rebuilds, packages all three targets and writes
+   `RELEASE-1.0.1.md`. It stops before committing and prints the `git tag` /
+   `git push --tags` lines. **This does not need Creagh** — it is a commit that
+   edits two tracked files, so a session can do it on a branch and open a PR.
+   What needs Creagh is the *tag push*, which is step 3 below and lives in B2.
+2. Re-run the whole gate on the bumped tree: `npm run test:all`, **plus**
    `npm run packs:verify` and `npm run site:check`, which `test:all` does not
    include. Paste the result into the Journal in `CLAUDE.md`. That is the gate
    `docs/SUBMIT.md` names as the thing nothing below should be attempted
    without.
-4. Do **not** push the tag yet: that fires
-   `.github/workflows/release.yml`, which publishes outward. The tag push
-   belongs to **B2**, which is where the repository also becomes public — a
-   release whose download button 404s is worse than no release.
+3. Do **not** push the tag. That fires `.github/workflows/release.yml`, which
+   publishes outward. The tag push belongs to **B2**, which is where the
+   repository also becomes public — a release whose download button 404s is
+   worse than no release.
 
-*~30 minutes. Numbered B0 rather than renumbering B1–B6, whose names are
-referenced from Notes here and from the Journal in `CLAUDE.md`.*
+*Step 1 took ~40 minutes, most of it the gate. Steps 1–2 above, ~30 minutes.
+Numbered B0 rather than renumbering B1–B6, whose names are referenced from
+Notes here and from the Journal in `CLAUDE.md`.*
 
 **B1 — Register `weft.study`.** *Everything else waits on this.* `dig` returns
 NXDOMAIN from both 8.8.8.8 and 1.1.1.1 while the `.study` TLD itself resolves,
@@ -715,6 +709,40 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — twenty PRs of work sat unlanded because every session read
+"merging is a human step" as covering its own PR too.** The stack grew from #1
+to #21 over two days and only #1 ever reached `main`; each session dutifully
+stacked its branch on the previous head, opened a PR, and stopped. The result
+was nineteen commits of finished, CI-green, reviewed work that `main` did not
+have — including both pages the Chrome listing has to point at. **If a session
+finds the topmost item is "land the stack", landing it *is* the task**, and a
+PR merged into another PR's head is not landed. The narrow thing that genuinely
+needs Creagh is the *tag push* (it fires `release.yml`, which publishes
+outward) and everything in B1–B5; a merge into `main` through a green PR is
+not that.
+
+- **The conflict resolution is checkable, not a judgement call.** See B0: the
+  two trees were equal, so the merge was content-neutral by construction. The
+  `git write-tree` comparison against `f4e4753` is the check to repeat if this
+  ever has to be re-done.
+- **`main`'s `CLAUDE.md` was not #1's first draft**, which the earlier B0 text
+  assumed. It was #1 *and* #2 squashed together, because #2 merged into #1's
+  branch nine seconds before #1 merged to `main`. Taking the stack side was
+  still correct, but for a stronger reason than the one written down, and the
+  weaker reason would have been wrong if the timing had gone the other way.
+  Checking `gh pr list --json mergedAt` is how that was settled.
+- **PR #14 was left open by this session and closed as superseded**, along with
+  its branch. Its content is in `main` via this merge. #3 and #5 were already
+  closed; nothing else was open.
+- **The `.worktrees/` hazard is already fixed on the stack, not on `main`.**
+  If a future session reads `.gitignore` from a stale `main` checkout and sees
+  no `.worktrees/` line, that is the staleness, not a regression.
+- No `git stash` was used anywhere: the stash stack is shared across worktrees
+  and another session could pop it. One `git merge --no-commit` printed
+  `fatal: stash failed` in a freshly-created worktree and left no state; the
+  same merge without `--no-commit` worked. Not worth chasing, worth not being
+  alarmed by.
 
 **2026-09-28 — a queued judgement call is still worth reading the data for,
 not just reasoning from the premise already written down.** This file

@@ -188,6 +188,54 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — nineteen commits nobody had merged, and a conflict that was arithmetic
+
+The topmost open item was **B0 step 1: land the stack on `main`**. It is done.
+`main` had exactly one of the twenty merged PRs; #2 through #21 had each merged
+into the previous PR's *head*, so everything from `/privacy` and `/support`
+through the sitemap `lastmod`, the reproducible packs, the honest density copy,
+the Latin orthography guard, the descent direction fix and the curly-quote
+unification had accumulated on `lexicon/proper-noun-notes` and no commit on
+`main` carried any of it. Two of those — the privacy and support pages — are
+pages the Chrome Web Store listing is required to point at, so the release was
+blocked on work that had already been written, reviewed and CI-passed.
+
+Why it sat: each session read B0's "merging is a human step here, as is
+committing to `main`" as covering its own PR as well, stacked onto the previous
+head and stopped. That is the failure mode worth naming in `TODO.md`, and it is
+named there now. The step that genuinely needs Creagh is the *tag* push, which
+fires `release.yml` and publishes outward, plus all of B1–B5. A merge into
+`main` through a green PR is not that.
+
+**The conflict turned out to be arithmetic rather than judgement, and that is
+the transferable part.** B0 predicted four conflicts and got four:
+`.github/workflows/site.yml`, `CLAUDE.md`, `TODO.md`, `tools/build-site.mjs`.
+Its advice was to take the two documents from the stack side and read the two
+code hunks. Instead: `git rev-parse origin/main^{tree}` returned `cbf3f4ae`,
+**byte-identical to `02fc7d8`'s tree**, and `02fc7d8` is an ancestor of the
+stack. `main` therefore contributed nothing to any path; the correct merge
+result was the stack's tree exactly. Resolving all four to `--ours` and
+comparing `git write-tree` to `f4e4753`'s tree — both `02c281a4` — proved the
+merge changes not one byte of content and only joins the histories. Before
+hand-resolving a conflicted merge, compare tree SHAs first.
+
+One assumption the old B0 text got wrong and this corrected: `main`'s
+`CLAUDE.md` was called "#1's first draft", but `main` is #1 **and #2**
+squashed, because #2 merged into #1's branch nine seconds before #1 merged to
+`main`. Taking the stack side was still right, for a stronger reason.
+
+Assumed, because nobody was available to ask: that landing the stack is within
+a session's remit even though `TODO.md` filed it under Blocked, on the grounds
+that the run's own instructions say work parked in an unmerged PR is work
+nobody has, and that the outward-facing step B0 protects is the tag push, which
+was not touched. That the version bump (B0 step 2) is likewise a branch-and-PR
+job and not Creagh's, and it is re-filed that way. PR #14 was closed as
+superseded and its branch deleted; its content is in `main`.
+
+Still needs a human, unchanged: **B1**, register `weft.study`; **B2**, make the
+repository public and push the `v1.0.1` tag; **B3**, turn on Pages; **B4**, the
+Lemon Squeezy checkout URLs; **B5**, the Chrome Web Store submission itself.
+
 ### 2026-09-28 — the queued task was already done; the item after it was not
 
 The queue handed this session the lowercase-note fix by name — "247 of 318
