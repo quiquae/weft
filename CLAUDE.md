@@ -170,6 +170,86 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-28 — the queue asked for this branch's work again, and a second pass found one screenshot that bakes in the moment it was captured
+
+An automated queue task landed asking to regenerate the five `chrome-*.png`
+and verify their dimensions, citing the same `d1d545a`/`3060d93` worry the
+entry below already closed, and asking for a branch stacked on
+`docs/test-counts-and-changelog`. It did not know `store/regenerate-
+listing-screenshots` already existed at exactly that point in the stack, with
+that exact work already done and already a draft PR. Rather than open a
+second PR next to the first, this pass checked the existing one out and
+re-verified its finding independently instead of trusting the write-up —
+which was the right call, because the independent check did not come back
+clean.
+
+**Running `WEFT_STORE=1 npx playwright test store-assets` directly, rather
+than through `npm run test:e2e`, fails — and the failure names nothing
+useful.** It timed out waiting for `weft-w` to appear on a page whose article
+text had rendered completely normally; the content script had simply never
+run. Reproduced twice (identical failure both times, so not a flake) before
+the cause became clear: `"test:e2e": "npm run build:test && playwright test
+&& npm run build"` builds a special test extension first. Run the spec
+standalone instead, and it uses whatever `dist/chrome` is already on disk —
+which, after any `npm run test:all` run, is a **production** build. A
+production build carries no `host_permissions` at all, by design (that is the
+entire "no host permissions until the user names a site" pitch), so it has no
+way to attach a content script to the test server's `http://localhost` origin
+regardless of what the RPC layer is told to configure.
+`manifest.config.mjs:107-109` adds a static
+`host_permissions: ['http://localhost/*', 'http://127.0.0.1/*']` only when
+built with `--test`, precisely so Playwright never has to simulate the real
+user gesture that `chrome.permissions.request()` requires for the optional,
+runtime-granted kind. Fix: `npm run build:test` before running any e2e spec
+directly. Filed under Notes in `TODO.md` as a trap for the next session that
+tries to run one spec in isolation, the way `docs/SUBMIT.md`'s iCloud note
+already covers a different one.
+
+**Fourteen of the fifteen shots regenerate byte-identical, confirming the
+entry below rather than merely repeating it.** Captured twice more after the
+`build:test` fix (once to get a clean run, once again to check for jitter);
+the two agree with each other on all fifteen files, and fourteen of the
+fifteen also agree with what this branch already committed hours earlier.
+
+**The fifteenth, `apple-04-progress.png`, is real and is committed here.** It
+differs from the previously-committed file by 303 bytes. The two fresh
+captures matched each other exactly, which rules out per-run rendering
+jitter, and points instead at `tests/e2e/store-assets.spec.ts`'s progress
+scene, which seeds imported review cards as `now - ago * day` relative to
+`Date.now()` at capture time rather than at a fixed instant — hours had
+passed since the version already on `docs/store` was captured. Committed the
+freshly-regenerated file: it is the verified output of the documented command
+against today's code and lexicon, and the older file is not wrong so much as
+from an earlier moment. `chrome-04-progress.png` and `edge-04-progress.png`
+render the identical scene at different frame sizes and came back
+byte-identical both times regardless — the same time-dependence is presumably
+there too, just not enough to move a pixel at those crops. Not fixed:
+choosing a fixed instant to seed from is a real design decision (which
+instant, and does a fixed date itself start to look stale in a screenshot a
+year on?), and this pass's job was verification, not redesigning a fixture.
+Noted in `TODO.md` as the same class of bug as the pack builder and the
+sitemap `lastmod` — a generated artefact that changes without its input
+changing — just lower stakes, since a listing screenshot is neither indexed
+nor a release artefact in its own right.
+
+Re-measured all fifteen with `sips -g pixelWidth -g pixelHeight` — actual
+image metadata, not Playwright's viewport config: chrome 1280×800, edge
+1366×768, apple 1440×900, exactly, on every file.
+
+Measured on Node 26.7 again, after all of the above: typecheck clean, 484
+unit / 122 suites, 97 jsdom / 22 suites, compat 56 pass / 7 degrade with a
+named fallback / 0 fail, all three packages 979 KB and passing `validate`
+(twice, once either side of `test:e2e`), and 36 e2e passed / 3 skipped in
+1.9 min — including `licensing.spec.ts`'s "a fresh install is Free, and Free
+weaves", which is the same content-script-attaches-and-weaves path the
+standalone `store-assets` run was failing on, now green through the correct
+`build:test` route. `npm run test:all` exit 0. Did not separately run
+`packs:verify` or `site:check`: nothing in this pass touched a lexicon seed or
+the site, only a generated screenshot and this pair of documents, so neither
+check is informative here. No new branch or PR: the change is a fast-forward
+push onto the existing draft, no force, no rebase. Nothing new needs a human;
+B1 in `TODO.md` is still the critical path.
+
 ### 2026-09-28 — the listing screenshots were already right
 
 `WEFT_STORE=1 npx playwright test store-assets` rewrote all fifteen store
