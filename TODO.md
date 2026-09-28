@@ -4,13 +4,18 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-09-27:** every automatable check is green — typecheck clean,
+**State on 2026-09-28:** every automatable check is green — typecheck clean,
 484 unit, 97 jsdom, 36 e2e passing (3 asset-generator specs skipped by
 design), compat clean, all three packages built at 979 KB and passing
-`npm run validate`, **711** site pages with **16 087** links all resolving.
-The code is not what is holding the release up. The critical path runs through
-**B1 — the domain `weft.study` is not registered**, which only Creagh can fix.
-Everything in Now is work that can land before that and does not depend on it.
+`npm run validate`, `packs:verify` 0 errors / 4 warnings, **711** site pages
+with **16 087** links all resolving. The fifteen store screenshots were
+regenerated on 2026-09-28, twice over — fourteen come back byte-identical
+every time, confirming the listing art shows the lexicon that ships. The
+fifteenth, the progress dashboard, bakes in its capture time and so is never
+byte-stable; that is a property of that one scene, not a sign anything is
+wrong. The code is not what is holding the release up. The critical path runs through **B1 — the domain `weft.study` is
+not registered**, which only Creagh can fix. Everything in Now is work that
+can land before that and does not depend on it.
 
 ## Now
 
@@ -35,24 +40,30 @@ Everything in Now is work that can land before that and does not depend on it.
       `/privacy` and `/support` change where a *shipped* button lands and so
       belong in the release notes a user reads.
 
+- [x] **Regenerate the five `docs/store/chrome-*.png`.** Done 2026-09-28,
+      redone independently later the same day when a queued task re-requested
+      it without knowing this branch already existed. Fourteen of fifteen
+      shots are byte-identical again; the fifteenth, `apple-04-progress.png`,
+      genuinely differs and the regenerated file is committed here. Re-measured
+      with `sips` (actual pixel metadata, not the viewport config): chrome
+      1280×800, edge 1366×768, apple 1440×900, tiles 440×280 and 1400×560,
+      logo 300×300 — all exact. The premise of the original item was half
+      wrong and the worry behind it was sound; both write-ups are in Notes.
+
 ## Next
 
-- [ ] **Regenerate the five `docs/store/chrome-*.png`.** *Topmost unchecked
-      item as of 2026-09-27.* They were captured in
-      `d1d545a`, one commit before `3060d93` changed `tools/seed/lex-fr.tsv`
-      and `fr-cousins.tsv` and rebuilt `en-fr.json` — so the French words in
-      the listing screenshots are not guaranteed to be the ones that ship.
-      `WEFT_STORE=1 npx playwright test store-assets` rewrites all fifteen
-      (chrome, edge, apple). Re-measure afterwards: Chrome requires exactly
-      1280×800 and the store rejects anything else. *~10 minutes.*
-
-- [ ] **Cut 1.0.1.** `npm run release -- --version=1.0.1` bumps `VERSION` in
+- [ ] **Cut 1.0.1.** *Topmost unchecked item as of 2026-09-28.*
+      `npm run release -- --version=1.0.1` bumps `VERSION` in
       `manifest.config.mjs`, keeps `package.json` in step, rebuilds, packages
       all three targets and writes `RELEASE-1.0.1.md`. It refuses a dirty tree
       and runs the tests first, so land everything above first. It stops
       before committing and prints the `git tag` / `git push --tags` lines —
       pushing the tag fires `.github/workflows/release.yml`, which is an
       outward-facing publish, so that is **B2**, not this. *~20 minutes.*
+      **Not from a feature branch.** Four documentation branches are stacked
+      and unmerged as of 2026-09-28 — PRs #1, #2, #3 and the screenshot
+      verification on top of them — and a version bump belongs on `main`
+      once they land, or `VERSION` moves on a branch that may never merge.
 
 - [ ] **Re-run `npm run test:all` on the bumped tree**, plus
       `npm run packs:verify` and `npm run site:check`, and paste the result
@@ -115,7 +126,9 @@ been checked. The remaining steps, in order:
 3. Publish the privacy policy at `https://<domain>/privacy` and confirm it
    loads in a logged-out browser. Have the support URL ready too.
 4. Run `npm run test:all`, then `npm run zip`, then `npm run validate`. All
-   three must be green on the exact bytes you are about to upload.
+   three must be green on the exact bytes you are about to upload. If
+   `validate` dies with `Unknown system error -11`, that is iCloud conflict
+   copies inside `dist/`, not the package — see the 2026-09-28 note below.
 5. Upload **`weft-chrome-1.0.1.zip`** — the plain one. The `-folder.zip` is
    for humans loading unpacked; the store rejects an archive with
    `manifest.json` inside a directory.
@@ -159,6 +172,111 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — a queued task re-requested this branch's work, and a second
+look found one screenshot that is not byte-stable.** An automated queue asked,
+independently of this branch, to regenerate the five `chrome-*.png` and verify
+their dimensions, citing the same `d1d545a`/`3060d93` lexicon concern the entry
+below already closed. It did not know `store/regenerate-listing-screenshots`
+existed. Rather than open a second PR stacked on the same base, this pass
+checked out this branch and re-verified its finding independently instead of
+trusting the write-up.
+
+- **Running the spec directly instead of through `npm run test:e2e` fails, and
+  the error names nothing useful.** `WEFT_STORE=1 npx playwright test
+  store-assets`, run standalone, timed out waiting for `weft-w` to appear on a
+  page whose article text had rendered completely fine — the content script
+  never ran at all. `"test:e2e": "npm run build:test && playwright test &&
+  npm run build"` — run standalone, the spec used whatever `dist/chrome`
+  happened to be on disk, which after any `npm run test:all` run is a
+  **production** build. Production builds intentionally carry no
+  `host_permissions` — that is the entire point of the runtime-permission
+  design — so a production `dist/chrome` has no way to attach a content script
+  to the test server's `http://localhost` origin. `manifest.config.mjs:107-109`
+  adds a static `host_permissions: ['http://localhost/*', 'http://127.0.0.1/*']`
+  only when built with `--test`, for exactly this reason. Fix: `npm run
+  build:test` before running any e2e spec directly; `npm run test:e2e` already
+  does this for the whole suite. Reproduced twice before finding this (same
+  failure both times, ruling out a flake), then confirmed the rebuild fixed it.
+- **Re-verified by regenerating four times, not by re-reading the claim
+  below.** Two runs failed for the reason above; the two that followed, after
+  `npm run build:test`, agree byte-for-byte with each other on all fifteen
+  files, and fourteen of the fifteen also agree with what this branch already
+  committed — independent confirmation, not repetition.
+- **The fifteenth, `apple-04-progress.png`, is genuinely not byte-stable, and
+  it is not the lexicon.** It differs from the committed version by 303 bytes,
+  despite two fresh captures a minute apart matching each other exactly —
+  which rules out per-run animation jitter and points instead at
+  `tests/e2e/store-assets.spec.ts`'s progress scene, which seeds imported
+  review cards as `now - ago * day` relative to `Date.now()` at capture time
+  rather than a fixed instant. The freshly-regenerated file is committed here
+  rather than the older one, since it is the verified output of the documented
+  command against the code and lexicon as they stand today.
+  `chrome-04-progress.png` and `edge-04-progress.png` render the identical
+  scene at different frame sizes and came back byte-identical both times — the
+  same time-dependence is presumably present in them too, just not enough to
+  move a pixel at those crops. Not fixed here: pinning the seed to a fixed
+  instant is a real design decision (which instant, and does a fixed date
+  itself start to read as stale?), and this pass's job was regenerating and
+  verifying, not redesigning a fixture. Worth folding into whichever session
+  next touches the "check the remaining artefact generators for byte-stability"
+  work, wherever that lands once this stack is reconciled — this is the same
+  class of bug as the pack builder and the sitemap `lastmod`, just lower
+  stakes, since a screenshot is neither indexed content nor a release artefact.
+- No new branch or PR: the change lives on this branch, where the work already
+  belonged. Pushed as a fast-forward — no force, no rebase, no new commits from
+  anyone else on this branch to lose.
+
+**2026-09-28 — the store screenshots already ship the current lexicon.** All
+fifteen regenerate byte-for-byte, so there was nothing to commit.
+
+- **The item's premise was half wrong.** It said all five were captured at
+  `d1d545a`. `git log -1 -- <file>` says `chrome-03/04/05` were, but
+  `chrome-01-woven.png` and `chrome-02-reveal.png` had not changed since
+  `144cb30` on 2026-09-15 — eleven days and twenty-two commits earlier,
+  across the toolbar-icon redraw and the help/diagnostics work among others.
+  Both are current anyway.
+- **Which is the interesting part: the capture is deterministic.** The same
+  lexicon and the same page give the same woven words, so a regeneration that
+  returns identical bytes is a result rather than an absence of one. Checked
+  that the files really were rewritten by looking at mtimes — all fifteen at
+  00:24 on 2026-09-28 — because an empty diff otherwise cannot be told apart
+  from a capture that never ran, and the two look the same in `git status`.
+- **Do not turn this into a pixel-equality gate.** It is the obvious next
+  thought now that determinism is established, and it would fail in CI for a
+  reason that has nothing to do with the lexicon: these were captured on
+  macOS/arm64 and CI runs the same suite on `ubuntu-latest`, where the font
+  stack and text antialiasing differ. The portable version of that check
+  already exists
+  inside the spec — `expect(hovered, 'no word with an etymology was woven
+  into this page')` — and it catches the failure that actually matters, a
+  lexicon edit emptying the tooltip that scene exists to demonstrate.
+- **`npm run packs` is not idempotent.** It stamps `builtAt` with *today's*
+  date, so it modifies all eight files in `src/lexicon/packs/` on every run
+  even when no lexicon has changed. Diffed field by field: 1 of 66 fields in
+  `index.json`, and the seven packs differ in that date and nothing else, so
+  the committed packs are semantically current with `tools/seed/*.tsv`. It
+  was reverted here rather than committed — a stamp saying when the content
+  was built is the honest value, and 186 KB of date churn on the eve of a
+  release is not. Worth knowing twice over: `CLAUDE.md` tells a new
+  contributor to run `npm run packs` "before a first build", which leaves a
+  fresh clone dirty, and `npm run release` **refuses a dirty tree**.
+- **`playwright.config.ts` described a CI that does not exist**, found while
+  checking the claim above. Its header said extension service workers are
+  "more reliable headed, so CI runs headed under xvfb"; `fixtures.ts:76` sets
+  `headless: true` unconditionally and `.github/workflows/ci.yml` has no xvfb
+  step and no headed path. Comment corrected — it is the only change to a
+  non-Markdown file in this pass, and it changes no behaviour.
+- **iCloud can make `npm run validate` crash, and the error says nothing.**
+  This checkout lives under `~/Documents`, which iCloud syncs, and iCloud
+  drops conflict copies (`manifest 2.json`, `dashboard 2.html`, `_locales 2/`)
+  into `dist/` while a build is running — 61 of them here. `validate` reads
+  every `.html` in the package directory, hits a duplicate that is still a
+  placeholder, and dies with `Error: Unknown system error -11 ... syscall:
+  'read'` and no filename. It is not a packaging fault: `rm -rf dist/chrome
+  dist/firefox dist/safari && npm run build:all` takes under a second and
+  `validate` then passes all three. Worth knowing at **B5 step 4**, which is
+  where someone runs `validate` on the exact bytes they are about to upload.
 
 **2026-09-27 — every count in the repository is now a measured one.** The three
 documents named in the item were four, and `git grep -nE '427|449|379|664 KB'`
