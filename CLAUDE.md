@@ -267,9 +267,24 @@ copy on 99 pages — and `packs:verify` not re-run, because no pack moved and no
 set on `dist/` and the full gate created **zero** iCloud conflict copies for the
 fifth session running.
 
+**Measuring the corpus found the next item, as rendering it has every session
+this week.** The notes disagree with themselves about quote marks and the split
+is exactly along pack lines: **59** distinct notes use straight `"` (en-ang 47
+of 72, en-la 12 of 28), **84** use curly `“ ”` (all of en-fr), and **zero mix
+the two**. So it is two conventions rather than 59 typos — and the site's own
+prose is curly-only, 24 to nothing in `site/index.html`. It lands hardest on
+the deep packs, because they are the ones with word pages, so all 59 are on a
+published page *and* in the tooltip *and* in the hub's note column. Queued with
+the judgement stated rather than decided: Latin and Old English quote
+*target-language citation forms*, where straight quotes are a linguistic
+convention, and French quotes *English words* in prose, where curly is simply
+correct — so "unify on curly" and "two different jobs, leave both" are both
+defensible, and it is a seed edit either way, which rebuilds two packs and
+redates ~637 sitemap entries.
+
 What needs a human: **B0**, unchanged from the last two sessions — one
-conflicted merge into `main`, four files named there. `Now` and `Next` are both
-empty; nothing here is agent-actionable until B0 or B1 move.
+conflicted merge into `main`, four files named there. `Now` is empty; `Next`
+has the quote-mark item above, which is agent-shaped and does not wait on B0.
 
 ### 2026-09-28 — the queued item named the fix, and the fix was one word wrong
 

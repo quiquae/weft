@@ -50,7 +50,11 @@ than a fragment after it, as of 2026-09-28** — 55 pages opened a second
 sentence in lower case ("…was borrowed from. a mile was mīlle passūs"), and
 the note is now dash-joined into the one sentence; a render-time capital was
 measured and rejected, because it is a no-op on the 44 of 99 notes that open
-with a quotation mark or a proper noun. **Now and Next are both empty.** The
+with a quotation mark or a proper noun. **Now is empty; Next has one item**,
+found while measuring that fix — 59 of the 100 Latin and Old English notes
+quote with straight `"` where the French pack and all the site's own prose use
+curly, and zero notes mix the two, so it is two conventions rather than 59
+typos; see Next. The
 code is not what is holding the release
 up. The critical
 path runs through two things only Creagh can do: **B0 — one conflicted merge
@@ -491,8 +495,48 @@ domain `weft.study` is not registered**.
 
 ## Next
 
-Next is empty as of 2026-09-28. Everything else remaining lives in Blocked,
-and all of it needs Creagh: B0 first, then B1.
+- [ ] **The note corpus disagrees with itself about quote marks, and the split
+      is exactly along pack lines.** Found 2026-09-28 while measuring the note
+      corpus for the dash fix above, so the numbers below are measured rather
+      than estimated. Of the **185** distinct notes across the seven packs:
+
+          straight " only   59   (en-ang 47 of 72, en-la 12 of 28)
+          curly “ ” only    84   (en-fr 85 of 85, less one with no quotes)
+          both               0
+          no double quotes  42
+
+      **Zero notes mix the two**, so this is not 59 typos — it is two packs
+      written to one convention and one pack written to the other. And the
+      convention the site's own prose uses is curly: `site/index.html` has 24
+      curly quotes and no straight ones in running text. So on `/old-english/mann`
+      a straight-quoted `"mann"` sits inside a page whose surrounding prose is
+      curly-quoted, and `esc()` renders it as `&quot;`, which displays straight.
+
+      **The two deep packs are the visible ones**, which is why this matters
+      more than the count suggests: `DEEP = ['la','ang']` means only Latin and
+      Old English get word pages, so all **59** straight-quoted notes are on a
+      published page *and* in the tooltip *and* in the descent hub's note
+      column, while the 84 curly French ones are tooltip-only.
+
+      **The judgement to make first, because it decides the direction.** The
+      two packs are not quoting the same kind of thing. Latin and Old English
+      quote *target-language citation forms* — `"mann"`, `"mālum"`, `"ne ǣfre"`
+      — where straight quotes or italics are the linguistic convention. French
+      quotes *English words* in ordinary prose — `“amiable”` — where curly is
+      simply correct typography. So "make them all curly" is one answer and
+      "these are two different jobs, leave both" is a defensible other one. A
+      third: use `<em>` for cited forms on the word page, which is what
+      `/latin/paene`'s own heading already does with *peninsula*.
+
+      Whichever way: it is a `tools/seed/*.tsv` edit, so it **rebuilds two
+      packs, advances their `builtAt`, and redates ~637 sitemap entries** — the
+      pack-granular coarseness this file already records. ~30 minutes for the
+      unify-on-curly version, plus `npm run packs`, `packs:verify`, `site`
+      and `site:check`. Guard it in `tests/tools/lexicon-orthography.test.ts`,
+      which is already the suite that polices how the packs spell things.
+
+Everything else remaining lives in Blocked, and all of it needs Creagh: B0
+first, then B1.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
