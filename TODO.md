@@ -6,17 +6,18 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **97** jsdom / 22
-suites, **3** tool tests / 1 suite (new today), **36** e2e passing in 2.5 min
+suites, **16** tool tests / 4 suites, **36** e2e passing in 2.5 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
 `npm run test:all` exits 0 end to end. The fifteen store screenshots were
 regenerated on 2026-09-28 and came back **byte-identical**, so the listing art
-already shows the lexicon that ships, and `npm run packs` is now idempotent, so
-running the whole gate leaves the tracked tree clean. The code is not what is
-holding the release up. The critical path runs through two things only Creagh
-can do: **B0 — five stacked PRs have to be merged into `main`** before the
-version can be bumped, and then **B1 — the domain `weft.study` is not
+already shows the lexicon that ships; `npm run packs` is idempotent, so running
+the whole gate leaves the tracked tree clean; and `npm run site` is now
+byte-stable too, so a second build of the site changes nothing. The code is not
+what is holding the release up. The critical path runs through two things only
+Creagh can do: **B0 — six stacked PRs have to be merged into `main`** before
+the version can be bumped, and then **B1 — the domain `weft.study` is not
 registered**. Everything in Now can land before either and depends on
 neither.
 
@@ -66,32 +67,27 @@ neither.
       rebuilt; and five documents' counts moved 617 → 620. See the note at the
       top of Notes.
 
-- [ ] **Give the sitemap a `lastmod` that means something.** *Topmost unchecked
-      item as of 2026-09-28.* `tools/build-site.mjs:1237` stamps `new Date()`
-      on **all 711** `<url>` entries, so every deploy tells search engines that
-      all ~700 word pages changed today. `.github/workflows/site.yml` rebuilds
-      on every push, so the claim is made repeatedly and is false every time.
-      Google's sitemap documentation says it uses `lastmod` only when the value
-      is consistently and verifiably accurate, and may ignore it otherwise —
-      so the effect is to throw away the signal the 711-page asset exists to
-      earn. Worth re-reading that page rather than trusting this sentence.
-      It is the same bug just fixed in the pack builder, in the one place it
-      is awkward to undo: once URLs are indexed with bad dates, the correction
-      has to be crawled. Cheap now that
-      the packs carry an honest date — the ~700 word pages are generated from
-      `src/lexicon/packs/en-*.json`, so that pack's `builtAt` *is* their
-      content date, and the five hand-written pages can take the commit date
-      of the Markdown behind them. If a per-file git date is used instead,
-      `site.yml`'s checkout needs `fetch-depth: 0`: at the default depth of 1
-      every file reports HEAD's date, which is this bug again with more steps.
-      Do it before **B3**, not after. *~1 hour.*
+- [x] **Give the sitemap a `lastmod` that means something.** Done 2026-09-28,
+      before **B3** as the item asked. Every page is now dated by the content
+      behind it — word pages by the `builtAt` of the pack they are generated
+      from, the five hand-written pages by the commit date of the document
+      that holds their prose — and where no date can be established the
+      element is left out, because `<lastmod>` is optional and an absent date
+      is honest where today's is not. The shallow-checkout trap the item
+      warned about is handled twice over: `.github/workflows/site.yml` now
+      checks out with `fetch-depth: 0`, and `tools/sitemap.ts` detects a
+      shallow clone and emits nothing rather than HEAD's date. Measured after:
+      708 URLs at 2026-09-26, three at 09-27, one at 09-22, one at 09-28;
+      before, 713 at today. See the note at the top of Notes.
 
-- [ ] **Re-sweep every factual claim in `docs/LAUNCH.md`.** It is the only file
+- [ ] **Re-sweep every factual claim in `docs/LAUNCH.md`.** *Topmost unchecked
+      item as of 2026-09-28.* It is the only file
       in the repository whose errors leave it — the drafts are copy a human
-      posts to Hacker News, Reddit and the language forums — and it has now
-      been wrong twice about the same sentence: "449 tests" on 2026-09-27 and
-      "617 tests" today, both inside the HN comment draft. Both were caught by
-      grepping for a number, which only finds the claims that *are* numbers.
+      posts to Hacker News, Reddit and the language forums — and the same
+      sentence in the HN comment draft has now been wrong three times: "449
+      tests", then "617", then "620", each corrected only because a later
+      session grepped for a number. Grepping only finds the claims that *are*
+      numbers.
       Read it end to end against the code instead: the permission list, the
       lexicon sizes, what is Free versus Pro, the renderer claim, the
       licence-revocation honesty, and every URL. Nothing here posts anything —
@@ -100,32 +96,34 @@ neither.
 
 ## Next
 
-- [ ] **Check the remaining artefact generators for byte-stability.** The date
-      half of this is already done: `grep -n 'new Date()' tools/*.mjs build.mjs`
-      found exactly three sites on 2026-09-28 — the pack builder (fixed), the
-      sitemap (first item in Now), and `tools/make-licence.mjs`, where `issued`
-      and `expires` are genuinely wall-clock and correct. `build.mjs`'s two are
-      timing output. What is *not* checked is whether `npm run og` and
-      `npm run site` are otherwise byte-stable for unchanged input, which
-      matters for the same reason: a generated artefact that changes without
-      its input changing cannot be reviewed, and both write into gitignored
-      `dist/`, so nothing would notice. Low priority — nothing is known to be
-      wrong, unlike the two items above.
+- [ ] **Check `npm run og` for byte-stability.** The rest of this item is
+      done. `grep -n 'new Date()' tools/*.mjs build.mjs` found exactly three
+      sites on 2026-09-28 — the pack builder (fixed), the sitemap (fixed), and
+      `tools/make-licence.mjs`, where `issued` and `expires` are genuinely
+      wall-clock and correct; `build.mjs`'s two are timing output. And
+      `npm run site` is now *measured* byte-stable: two builds into separate
+      temporary directories (`node tools/build-site.mjs --out=<dir>`) diff
+      identical. That leaves `npm run og`, which is different in kind from the
+      other two — it writes `site/og.png`, a **tracked** file, not into
+      gitignored `dist/`, so a wobble there dirties the tree the way the packs
+      used to. Same check: run it twice, diff. Low priority; nothing is known
+      to be wrong.
 
 ## Blocked
 
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Merge the five stacked PRs, then cut 1.0.1.** *Blocks the version bump,
-and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 are stacked in that order,
-all five are drafts, so `main` is seven commits behind and `VERSION` in
+**B0 — Merge the six stacked PRs, then cut 1.0.1.** *Blocks the version bump,
+and nothing else in Now.* PRs #1 → #2 → #3 → #4 → #5 → #6 are stacked in that
+order, all six are drafts, so `main` is nine commits behind and `VERSION` in
 `manifest.config.mjs` is still 1.0.0. Four are documentation; #5 is the pack
-builder. Two steps here belong to a human rather than an agent, by the rules
-agents run under here: merging, and committing to `main`. In order:
+builder and #6 the sitemap dates. Two steps here belong to a human rather than
+an agent, by the rules agents run under here: merging, and committing to
+`main`. In order:
 
-1. Merge #1, #2, #3, #4, #5 bottom-up — each targets the branch below it, so
-   GitHub retargets the next as each lands.
+1. Merge #1, #2, #3, #4, #5, #6 bottom-up — each targets the branch below it,
+   so GitHub retargets the next as each lands.
 2. On `main`: `npm run release -- --version=1.0.1`. It refuses a dirty tree,
    runs the tests first, bumps `VERSION`, keeps `package.json` in step,
    rebuilds, packages all three targets and writes `RELEASE-1.0.1.md`. It
@@ -236,6 +234,48 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the sitemap dates pages by their content now, and omits the
+date it cannot establish.** 713 URLs shared one `new Date()`; they now carry
+four different dates, each read out of a file.
+
+- **What each page is dated by.** Word pages: the newer of the two deep packs'
+  `builtAt`, because every Latin page links to its Old English counterpart and
+  back, so both lexicons are content for both sets of pages. Language indexes,
+  descent hubs and the modern cognate hubs: their own pack. `/`:
+  `site/index.html`. `/privacy`, `/support`: the Markdown behind them.
+  `/pricing`: `src/core/pricing.ts` + `src/core/entitlements.ts`. `/install`:
+  `tools/build-site.mjs` + `package.json` — the one page that names the
+  generator, because its prose genuinely lives in `installPage()` rather than
+  in a document of its own. An edit to a Latin gloss must not tell a crawler
+  the privacy policy changed.
+- **An unknown date is written as no `<lastmod>` at all.** The element is
+  optional in the protocol, so absence is legal where today's date is a lie.
+- **The shallow-clone trap is guarded twice.** `actions/checkout` fetches
+  depth 1 by default and there every file's last commit *is* HEAD, so
+  `git log` returns the same date for all of them — this bug with more steps.
+  `site.yml` now sets `fetch-depth: 0`, and `tools/sitemap.ts` refuses to
+  answer in a shallow clone (`git rev-parse --is-shallow-repository`). Note
+  the failure mode if that line is ever removed: the five dates go *missing*,
+  they do not come back wrong.
+- **`tools/sitemap.ts` is TypeScript on purpose**, the only non-`.mjs` tool.
+  `tsc` rejects a `.mjs` import from a `.ts` test with TS7016 — verified, not
+  assumed — so a `.mjs` module could only have been tested through a whole
+  site build. Node strips the types at run time, as it already does for
+  `src/core/pricing.ts`, which `tools/build-site.mjs` imports.
+- **`--out=<dir>` was added to the site builder first and alone**, the same
+  seam as `build-pack.mjs`: without it, testing this tool means deleting and
+  rewriting the `dist/site` that `npm run site:check` reads.
+- **Considered and rejected: a `check-links.mjs` gate** failing when every URL
+  shares one date. It would run in the site workflow, where the test suite
+  does not — but in a shallow checkout it fires for an unrelated reason (doc
+  dates absent, all packs built the same day), and a gate that means two
+  things gets ignored. `tests/tools/build-site.test.ts` holds the guard, and
+  CI runs it on the same push. Do not re-litigate without a reason that
+  covers the shallow case.
+- **The iCloud trap hit `npm run site` this time**, not `npm run validate`: a
+  conflict copy of `dist/site/old-english 2/` killed the build with `Unknown
+  system error -11 ... syscall: 'scandir'`. `rm -rf dist/site` first.
 
 **2026-09-28 — `npm run packs` is reproducible, so CI can police the
 lexicons now.** The stamp is kept when the content has not changed. A

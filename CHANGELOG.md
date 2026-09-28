@@ -60,6 +60,17 @@ command last ran. That makes the generator reproducible, which in turn lets CI
 rebuild the packs and diff them: a `tools/seed/*.tsv` edit that was never
 rebuilt used to ship the old words with every check green.
 
+**The sitemap dated all 711 pages by the clock.** `<lastmod>` was `new Date()`
+for every URL, so each deploy announced that all ~700 word pages had changed
+that morning — and the site workflow rebuilds on every push. Search engines
+use the field only while it is verifiably accurate and otherwise ignore it, so
+the effect was to throw away the signal the 711-page lexicon exists to earn.
+Each page is now dated by the content behind it: the word pages by the
+`builtAt` of the lexicon pack they are generated from, the five hand-written
+pages by the commit date of the document holding their prose. Where no date
+can be established the element is left out rather than filled in, because
+`<lastmod>` is optional and an absent date is honest where today's is not.
+
 **Two more fixes to the tools rather than the product.** The lexicon verifier
 had destructured six of its eight columns, so Old English's 544 etymons and 126
 notes had never been checked by anything at all. And `npm run verify:release`
@@ -67,7 +78,7 @@ downloads what GitHub actually serves, loads it in a real browser, and checks
 the first-run page renders, the worker answers and no test seam shipped —
 everything else in the repository tests what the build produces.
 
-**Built with** 620 tests: 484 unit, 97 in jsdom, 3 over the build tools, and
+**Built with** 633 tests: 484 unit, 97 in jsdom, 16 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

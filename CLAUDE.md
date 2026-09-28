@@ -53,7 +53,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **3 pass**, 1 suite, ~1 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **16 pass**, 4 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -187,6 +187,77 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — the sitemap said 711 pages changed today, and said it daily
+
+Same bug class as the pack builder, one file along and with worse
+consequences, so it was the top item in `TODO.md`. `tools/build-site.mjs`
+computed one `new Date()` and wrote it into the `<lastmod>` of all 713 `<url>`
+entries. `.github/workflows/site.yml` rebuilds on every push to `main`, so the
+claim would have been made repeatedly and been false every time — and search
+engines use `lastmod` only while it is verifiably accurate, which means the
+one field the 711-page asset has for saying *this page is new* would have been
+discarded for the whole domain.
+
+**The replacement rule is: a page is dated by the content behind it.** Word
+pages take the `builtAt` of the pack they are generated from — which is only
+an honest date because of the previous session's fix, so this item was cheap
+by construction. The language indexes and descent hubs take their own pack's
+date; the word pages take the newer of the two deep packs, because every Latin
+page links to its Old English counterpart and back, so both lexicons really
+are content for both sets of pages. The five hand-written pages take the
+commit date of the document that holds *their* prose: `site/index.html`,
+`docs/PRIVACY.md`, `docs/SUPPORT.md`, `src/core/pricing.ts` +
+`src/core/entitlements.ts` for pricing, and — the one that names the generator
+— `tools/build-site.mjs` + `package.json` for install, whose text genuinely
+lives in `installPage()` rather than in a document of its own. Measured after
+the change: 708 URLs at 2026-09-26, three at 09-27, one at 09-22, one at
+09-28. Before it, 713 at today's date.
+
+**Where no date can be established, the element is left out.** `<lastmod>` is
+optional in the sitemap protocol, so absence is a legal answer and today's
+date is a false one. The case that matters is a shallow clone: `actions/
+checkout` fetches depth 1 by default, and there every file's last commit *is*
+HEAD, so `git log` hands back the same recent date for all of them — this bug
+again, wearing a disguise. `tools/sitemap.ts` detects that with `git rev-parse
+--is-shallow-repository` and declines to answer, and `site.yml` now checks out
+with `fetch-depth: 0`. Note the failure mode of removing that line again: the
+dates go quietly missing, they do not come back wrong.
+
+The new module is **TypeScript, not another `tools/*.mjs`**, for one reason
+worth recording because it is not obvious: `tsc` rejects a `.mjs` import from
+a `.ts` test with TS7016, so a `.mjs` module here could only have been tested
+through a whole site build. Verified by trying it. Node strips the types at
+run time exactly as `tools/build-site.mjs` already does when it imports
+`src/core/pricing.ts`.
+
+Done test-first, and the failing run named the bug better than this entry
+does: `all 711 URLs share one <lastmod> (2026-09-28), which is the wall clock,
+not their content`. `--out=<dir>` was added to the site builder first and
+alone, the same seam as `build-pack.mjs` and for the same reason — otherwise
+testing this tool means deleting and rewriting the `dist/site` that
+`npm run site:check` reads. Counts moved 620 → 633 in five documents again.
+
+**A second result, free:** `npm run site` is now byte-stable. Two builds into
+separate temporary directories diff identical, where before the sitemap
+differed whenever the clock crossed midnight. That was the open question in
+`TODO.md`'s Next item; `npm run og` is the one still unchecked.
+
+Considered and rejected: a `check-links.mjs` gate that fails when every URL in
+the sitemap shares one date. It runs in the site workflow, where the test
+suite does not — but in a shallow checkout it would fire for a reason
+unrelated to this bug (the doc dates are absent and all packs were built the
+same day), and a gate whose failure means two different things gets ignored.
+The guard is `tests/tools/build-site.test.ts` instead, which CI runs on the
+same push via `npm run test:tools`.
+
+One more sighting of the iCloud trap, this time on `npm run site` rather than
+`npm run validate`: a conflict copy of the `old-english/` directory inside
+`dist/site` killed the build with `Unknown system error -11 ... syscall:
+'scandir'`. Same fix, `rm -rf dist/site` first.
+
+What needs a human: **B0** is now *six* stacked PRs, this one being #6.
+Nothing else moved.
 
 ### 2026-09-28 — a generator that was not reproducible, and the guard it buys
 
