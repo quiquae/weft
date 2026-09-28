@@ -24,9 +24,9 @@
 # once vowel length is marked. Values are the standard classical
 # reconstruction.
 #
-man	noun	vir	virī	m	/ˈwɪr/	virile	third-person plural "virī" also means "men" collectively
+man	noun	vir	virī	m	/ˈwɪr/	virile	third-person plural “virī” also means “men” collectively
 woman	noun	fēmina	fēminae	f	/ˈfeːmɪna/	feminine	
-child	noun	puer	puerī	m	/ˈpʊɛr/	puerile	"puer" covers boy and child alike
+child	noun	puer	puerī	m	/ˈpʊɛr/	puerile	“puer” covers boy and child alike
 boy	noun	puer	puerī	m	/ˈpʊɛr/	puerile	
 girl	noun	puella	puellae	f	/pʊˈɛlːa/		
 person	noun	persōna	persōnae	f	/pɛˈrsoːna/	person	originally an actor’s mask
@@ -40,7 +40,7 @@ son	noun	fīlius	fīliī	m	/ˈfiːlɪʊs/	filial
 daughter	noun	fīlia	fīliae	f	/ˈfiːlɪa/	filial	
 wife	noun	uxor	uxōrēs	f	/ˈʊksɔr/	uxorious	
 husband	noun	marītus	marītī	m	/maˈriːtʊs/	marital	
-baby	noun	īnfāns	īnfantēs	m	/ˈiːnfaːns/	infant	literally "not speaking"
+baby	noun	īnfāns	īnfantēs	m	/ˈiːnfaːns/	infant	literally “not speaking”
 king	noun	rēx	rēgēs	m	/ˈreːks/	regal	
 queen	noun	rēgīna	rēgīnae	f	/reːˈɡiːna/	regina	
 lord	noun	dominus	dominī	m	/ˈdɔmɪnʊs/	dominate	
@@ -62,7 +62,7 @@ tooth	noun	dēns	dentēs	m	/ˈdeːns/	dental
 hair	noun	capillus	capillī	m	/kaˈpɪlːʊs/	capillary	
 heart	noun	cor	corda	n	/ˈkɔr/	cordial	
 blood	noun	sanguis		m	/ˈsaŋɡʷɪs/	sanguine	
-bone	noun	os	ossa	n	/ˈɔs/	ossify	distinct from "ōs", mouth, only by vowel length
+bone	noun	os	ossa	n	/ˈɔs/	ossify	distinct from “ōs”, mouth, only by vowel length
 arm	noun	bracchium	bracchia	n	/ˈbrakkʰɪʊm/	brachial	
 leg	noun	crūs	crūra	n	/ˈkruːs/	crural	
 foot	noun	pēs	pedēs	m	/ˈpeːs/	pedal	
@@ -82,7 +82,7 @@ pig	noun	porcus	porcī	m	/ˈpɔrkʊs/	pork
 wolf	noun	lupus	lupī	m	/ˈlʊpʊs/	lupine	
 bear	noun	ursus	ursī	m	/ˈʊrsʊs/	ursine	
 lion	noun	leō	leōnēs	m	/ˈlɛoː/	lion	
-mouse	noun	mūs	mūrēs	m	/ˈmuːs/	muscle	"muscle" is a little mouse, from the shape
+mouse	noun	mūs	mūrēs	m	/ˈmuːs/	muscle	“muscle” is a little mouse, from the shape
 snake	noun	serpēns	serpentēs	f	/ˈsɛrpeːns/	serpent	
 bee	noun	apis	apēs	f	/ˈapɪs/	apiary	
 worm	noun	vermis	vermēs	m	/ˈwɛrmɪs/	vermin	
@@ -97,7 +97,7 @@ wine	noun	vīnum	vīna	n	/ˈwiːnʊm/	vine
 milk	noun	lac		n	/ˈlak/	lactose	
 meat	noun	carō	carnēs	f	/ˈkaroː/	carnivore	
 fruit	noun	frūctus	frūctūs	m	/ˈfruːktʊs/	fruit	
-apple	noun	mālum	māla	n	/ˈmaːlʊm/	malic acid	"mālum" apple and "malum" evil differ only in vowel length
+apple	noun	mālum	māla	n	/ˈmaːlʊm/	malic acid	“mālum” apple and “malum” evil differ only in vowel length
 salt	noun	sāl		m	/ˈsaːl/	saline	
 honey	noun	mel		n	/ˈmɛl/	mellifluous	
 cheese	noun	cāseus	cāseī	m	/ˈkaːseu̯s/	casein	
@@ -187,7 +187,7 @@ peace	noun	pāx	pācēs	f	/ˈpaːks/	pacify
 truth	noun	vēritās	vēritātēs	f	/ˈweːrɪtaːs/	verity	
 law	noun	lēx	lēgēs	f	/ˈleːks/	legal	
 work	noun	labor	labōrēs	m	/ˈlabɔr/	labour	
-money	noun	pecūnia	pecūniae	f	/pɛˈkuːnɪa/	pecuniary	from "pecus", cattle: the original wealth
+money	noun	pecūnia	pecūniae	f	/pɛˈkuːnɪa/	pecuniary	from “pecus”, cattle: the original wealth
 price	noun	pretium	pretia	n	/ˈprɛtɪʊm/	precious	
 question	noun	quaestiō	quaestiōnēs	f	/kʷae̯ˈstɪoː/	question	
 answer	noun	respōnsum	respōnsa	n	/rɛˈspoːnsʊm/	response	
@@ -197,7 +197,7 @@ music	noun	mūsica		f	/ˈmuːsɪka/	music	the art of the Muses
 game	noun	lūdus	lūdī	m	/ˈluːdʊs/	ludicrous	
 dream	noun	somnium	somnia	n	/ˈsɔmnɪʊm/	somnolent	
 fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timid	
-hope	noun	spēs	spēs	f	/ˈspeːs/	despair	"despair" is to be out of spēs
+hope	noun	spēs	spēs	f	/ˈspeːs/	despair	“despair” is to be out of spēs
 joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	gaudy	
 anger	noun	īra	īrae	f	/ˈiːra/	irate	
 oath	noun	iūsiūrandum	iūsiūranda	n	/juːsɪuːˈrandʊm/	jurisdiction	
@@ -359,7 +359,7 @@ everywhere	adv	ubīque			/ʊˈbiːkʷɛ/	ubiquitous
 nowhere	adv	nusquam			/ˈnʊskʷam/		
 slowly	adv	lentē			/ˈlɛnteː/	lento	
 quickly	adv	celeriter			/kɛˈlɛrɪtɛr/	accelerate	
-truly	adv	vērē			/ˈweːreː/	very	"very" descends from vērus, true
+truly	adv	vērē			/ˈweːreː/	very	“very” descends from vērus, true
 perhaps	adv	forsitan			/ˈfɔrsɪtan/		
 very	adv	valdē			/ˈwaldeː/		
 one	num	ūnus			/ˈuːnʊs/	unit	
@@ -375,8 +375,8 @@ ten	num	decem			/ˈdɛkɛm/	decimal
 hundred	num	centum			/ˈkɛntʊm/	century	
 thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mīlle passūs, a thousand paces
 first	num	prīmus			/ˈpriːmʊs/	primary	
-yes	intj	ita			/ˈɪta/	ita vero	classical Latin has no bare word for yes; "ita" means "thus"
-hello	intj	salvē			/ˈsalweː/	salvation	literally "be well"
-goodbye	intj	valē			/ˈwaleː/	valediction	literally "be strong"
+yes	intj	ita			/ˈɪta/	ita vero	classical Latin has no bare word for yes; “ita” means “thus”
+hello	intj	salvē			/ˈsalweː/	salvation	literally “be well”
+goodbye	intj	valē			/ˈwaleː/	valediction	literally “be strong”
 please	intj	quaesō			/kʷae̯ˈsoː/		
 sorry	intj	ignōsce			/ɪˈɡnoːskɛ/		
