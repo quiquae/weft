@@ -331,6 +331,39 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-09-28 — a queue entry asked for the macron fix `1fc81be` had already
+shipped, same day.** The task named the same three sites `1fc81be` corrected
+that morning, down to the line number: `tools/build-site.mjs:442`,
+`docs/PEDAGOGY.md:116`, `tools/seed/lex-la.tsv:376`. All three still read
+`mīlle passūs`. `git grep -n mille` across the three files returns nothing;
+`git grep -n mīlle` finds exactly the three corrected spellings plus the
+seed's own header-comment mention; `git blame -L 376,376 tools/seed/lex-la.tsv`
+names `1fc81be` as line 376's last author. No edit was made.
+
+- **Run anyway, since the task asked for it: `npm run packs` against an
+  already-correct seed.** The tree came back completely clean — not the two
+  files the task predicted (`en-la.json` + `index.json`), but zero, because an
+  unchanged seed produces an unchanged pack once `writeStamped()` (PR #5) is
+  doing its job. `npm run typecheck`, `npm run test:tools` (21/21, both
+  `lexicon-orthography.test.ts` cases included) and `npm run packs:verify` (0
+  errors, 4 warnings — the same four Old English interjections lacking IPA)
+  all pass against the untouched tree.
+- **The task's own prediction was also wrong, independent of whether the bug
+  still existed.** "Only `en-la.json` + `index.json` should move" restates
+  exactly what `1fc81be`'s own note already corrected: `index.json` records
+  `entryCount`/`lemmaCount`/`bands` per pack, none of which a note's spelling
+  touches, so it rightly does not move for this class of fix at all — only
+  `en-la.json` does, and only when there is a real change to make. Worth
+  restating since a new queue entry asserted the opposite.
+- **Same shape as the duplicate `npm run og` queue entries two notes below.**
+  Left the queue alone rather than prune it, same reasoning as then: pruning
+  is outside what any one task asked for, and the queue already tolerates
+  redundant re-verification by design. No code changed in this pass; this
+  note is the only diff, and only `TODO.md` carries it — `CLAUDE.md`'s Journal
+  stayed untouched here for the same reason it stayed untouched for the last
+  bookkeeping-only pass (PR #10, immediately below): nothing about the shipped
+  product moved.
+
 **2026-09-28 — the launch drafts held up on a second, independent read; the
 OG card is the third thing now confirmed byte-stable.** This session's task
 named `docs/LAUNCH.md` as the item to work and pointed at "TODO.md > Now,
