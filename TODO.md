@@ -350,8 +350,10 @@ not registered**.
       and it shows.** `septem` → September now reads "September was the
       seventh month of the old Roman year"; the `novem` row of
       `latin-words-in-everyday-english` renders an empty note cell directly
-      below it, and `/latin/novem` gets no `Where November comes from`
-      prose at all beyond the one-line descent sentence. One seed field,
+      below it, and `/latin/novem` renders its `Where November comes from`
+      heading over a single bare sentence — "This is the Latin word your
+      English borrowed from November." — where `/latin/septem` now has two
+      (checked in `dist/site`, not assumed). One seed field,
       `tools/seed/lex-la.tsv:373`, then `npm run packs`. The obvious parallel
       — "November was the ninth month of the old Roman year" — is true and
       would pass the new guard, but writing lexicon *content* is a different
