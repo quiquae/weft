@@ -264,12 +264,13 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 520 unit + 98 jsdom + 35 over the build tools
+npm test               # 520 unit + 98 jsdom + 48 over the build tools
 npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest
 npm run packs:verify   # sanity-check the lexicons
+npm run artefacts:check # which committed generated files the tree has moved past
 npm run build:all      # chrome + firefox + safari
 npm run zip            # per target: a flat archive for the store, a -folder one for humans
 npm run safari         # wrap the Safari build in an Xcode project

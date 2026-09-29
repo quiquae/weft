@@ -9,7 +9,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 520 unit tests, 98 jsdom tests, 35 tool tests, the
+runs typecheck, 520 unit tests, 98 jsdom tests, 48 tool tests, the
 compatibility audit, all three builds, the package validator, and 36 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -19,11 +19,14 @@ generate assets rather than assert anything, and run only behind
 `WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "36 passed, 3
 skipped" is the green result, not a partial one.
 
-`test:all` does **not** include `npm run packs:verify` or `npm run site:check`.
-Run both as well before a submission. `packs:verify` is the only thing that
-reads the lexicons, and `site:check` is the only thing that proves the privacy
-policy URL Chrome requires — and the support URL compiled into the shipped
-extension — has a page behind it.
+`test:all` does **not** include `npm run packs:verify`, `npm run site:check`
+or `npm run artefacts:check`. Run all three as well before a submission.
+`packs:verify` is the only thing that reads the lexicons; `site:check` is the
+only thing that proves the privacy policy URL Chrome requires — and the
+support URL compiled into the shipped extension — has a page behind it; and
+`artefacts:check` is the only thing that looks at the generated files this
+runbook tells you to upload, which go stale whenever `src/` moves and do not
+change when they do.
 
 After tagging a release, check what GitHub actually serves:
 
@@ -104,9 +107,18 @@ These block each other, so the order matters.
 
 ```bash
 npm run test:all          # must be green
+npm run artefacts:check   # what the tree has moved past since it was generated
 npm run zip               # writes two archives per target
 npm run validate          # re-check the exact bytes being uploaded
 ```
+
+`artefacts:check` is the one of those four that is about *this document*.
+The screenshots below and the release notes are generated files, and an
+ordinary change to `src/` invalidates them without changing them — so they
+go stale silently, and a version bump invalidates filenames the same way.
+It lists what is behind, names the commits that did it, and prints the
+command that regenerates each. It exits 1 whenever anything is stale, which
+before a first submission it will be; read the list rather than the code.
 
 **Upload the plain `weft-chrome-1.0.1.zip`, not the `-folder` one.** The
 store requires `manifest.json` at the root of the archive and rejects one
@@ -126,6 +138,12 @@ folder to point "Load unpacked" at.
    - Screenshots: the five `docs/store/chrome-*.png`, in numbered order
    - Small tile: `docs/store/tile-small-440x280.png`
    - Marquee: `docs/store/tile-marquee-1400x560.png`
+
+   If `artefacts:check` above called the listing screenshots stale, run
+   `npm run build:test && WEFT_STORE=1 npx playwright test store-assets`
+   and commit what moves, *before* uploading. The generator is
+   reproducible — identical sources give identical bytes — so anything that
+   does move is a real difference between the art and the product.
 5. **Privacy practices** — this is the tab that gets submissions rejected.
    Paste the per-permission justifications from `STORE-LISTING.md`
    individually; reviewers read each one and reject vague answers. Then the

@@ -57,14 +57,15 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **520 pass**, 129 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **35 pass**, 11 suites, ~2 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **48 pass**, 15 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 982 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 all 4 stale, 2 of them unknown until it existed |
+| `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
 store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
@@ -191,6 +192,128 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — three sessions had named the class and none had built the sweep
+
+The queue sent this session at the store-asset generator, "broken, dies at
+`:88` in 28 s". It was fixed two sessions ago, ticked in `TODO.md`, and
+`TODO.md` had **zero** unchecked items — the seventh completed item the queue
+has handed over in nine sessions. Confirmed in a minute: the `requireTestBuild`
+guard is at `tests/e2e/fixtures.ts:92`, and `WEFT_STORE=1 npx playwright test
+store-assets` passes in **31.3 s**.
+
+**Verifying it is what found the next thing, and the previous session's own
+rule is why it was worth verifying at all.** Three of the fifteen shots no
+longer matched what the generator produces — one commit after a session
+regenerated them and wrote "byte-identical" into three documents.
+`git status` after a run is the whole check here, and nobody had run one
+since `6425461`.
+
+**One variable at a time, because "the shots differ" is not a result.** Run
+to run: identical, twice. Against committed: three differ. Then, a build and
+a 30 s run per hypothesis — reverting `src/ui/options/data.tsx`, the *only*
+copy change in `6425461`, did **not** restore them; `VERSION` back to 1.0.0
+did **not** either; `git checkout 06cd2e9 -- src/` **did**, byte for byte,
+all fifteen. Two things follow, and the second is the one that was in doubt:
+the cause is in `src/`, and **the generator is deterministic across
+sessions**, not merely within one.
+
+**What the difference is, and the honest end of it.** The canvas-diff method
+this file recorded two sessions ago — no image tooling on this machine, so
+the Chromium the e2e suite already installs is the decoder — says 19 368
+pixels differ and, extended to test for a shift, that **149 of the 156
+differing rows are reproduced exactly by moving one row**; the remaining 7
+are 1-pixel slider ticks. The page is one pixel lower and no text changed.
+Then two independent measurements of the options page under the full scene
+sequence — `scrollY` 1774, every `.section` box identical to two decimal
+places, in both builds — found **no layout difference that explains it**.
+That is written down as unexplained rather than given a plausible cause,
+which is the difference between this entry and the one that blamed a day
+rollover for an unstable sort. It does not block anything: content identical,
+determinism proved. The case that would matter is the shots differing
+*between runs*, and they do not.
+
+**The transferable half is the class, and this is its third sighting in
+three sessions.** 1.0.1 found `docs/SUBMIT.md` naming five zip filenames a
+bump had deleted. The session below found `RELEASE-1.0.1.md` going stale on
+its own and filed it as B2a. This one found the listing art stale. Each was
+found by a person noticing, and the reason is structural: **the count sweep
+this file has done for seven sessions greps for test totals, so it cannot
+see an artefact at all**, and CI's one artefact check rebuilds the lexicon
+packs and diffs them — right for the only artefact that is
+platform-independent, and available for none of these.
+
+So `npm run artefacts:check` (`tools/artefacts.ts`, `tools/check-artefacts.mjs`)
+is that sweep. **It asks provenance, not content: has anything this was
+generated from been committed since it was last written.** The content
+question cannot be asked here and that is the whole design constraint — PNGs
+rendered on macOS will not byte-match `ubuntu-latest`, which is the reason
+this file already records for refusing a pixel-equality gate; and release
+notes listing a `git log` can **never** match their own tree, because the
+squash commit that lands them does not exist until after the merge. Asking
+git instead costs milliseconds and is platform-independent.
+
+**On a fresh `main` it reported four stale groups and two were unknown.**
+The listing art (1 commit), the release notes (1, which is B2a), and then
+`docs/screens/` **5 commits behind `src/`** and `docs/firstrun/` **8** —
+both embedded in documentation a stranger reads, neither of which any
+session had looked at. Queued rather than regenerated, and the reason is a
+decision already on record rather than the cost: five `dashboard*.png`
+render an absolute date from `Date.now()`, so they churn on every capture
+whatever the code does, and PR #12's session reverted exactly those five for
+exactly that reason. Twenty binaries of which five carry known churn, in a
+session where nobody looks at them, is not an improvement.
+
+**Deliberately not in `test:all`.** Almost every PR touches `src/`, so it
+would be red almost always, and this file already records that a gate firing
+for more than one reason gets ignored — the argument that kept the
+sitemap-date check out of `check-links.mjs`. It is wired into
+`docs/SUBMIT.md`'s pre-flight block and into `TODO.md`'s B2a and B5 step 7,
+which are the two moments before something irreversible. `release.yml` was
+**left alone on purpose**: it is the one workflow that publishes outward, it
+fires once, and it cannot be rehearsed — changing it unattended is the wrong
+risk, and it would need `fetch-depth: 0` first, because `actions/checkout`
+is shallow and the module correctly answers `unknown` there rather than
+calling everything fresh.
+
+Done test-first: 13 tests in a new `tests/tools/artefacts.test.ts`, red on
+`ERR_MODULE_NOT_FOUND` before anything existed, against throwaway git
+repositories the way `sitemap.test.ts` already does. Three are worth naming.
+"A commit touching neither the artefact nor its sources leaves it fresh" is
+the non-vacuity floor — without it the check is "has anything happened
+lately", which fires on every commit and so is ignored on every commit.
+"An artefact nobody has committed is **missing**, not fresh" pins the
+failure a typo'd pathspec produces, which is silent success forever; two
+further tests assert every pathspec in the real list actually matches
+something in this repository, so the guard cannot go quietly vacuous. And
+the shallow-clone case clones itself at `--depth=1` rather than mocking the
+condition.
+
+Counts moved 689 → 702 and tools 35 → 48 / 11 → 15 suites in six documents,
+with `docs/LAUNCH.md:221` swept **by name and first** for the sixth session
+running. Unit, jsdom and e2e did not move.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's — and re-run from scratch after a
+thirteenth test was added late, because the first green run had predated it:
+`npm run test:all` **exit 0** — typecheck clean, **520** unit / 129 suites,
+**98** jsdom / 22 suites, **48 tools / 15 suites**, compat 21 dependencies ×
+3 browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **982 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 2.0 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**,
+unchanged and expected — nothing here touched a seed — and `site:check`
+**711 pages / 16 087 links** all resolving. The store generator itself was
+run **five** times across the session, and the three `*-05-settings.png` it
+writes are the only binaries in the diff. Zero iCloud conflict copies in
+`dist/`, `src/` or `test-results/`, which is the attribute working for the
+second session running.
+
+What needs a human: unchanged, and it is still everything. **B1**, register
+`weft.study`, is the critical path. Then **B2**, make the repository public
+and push the `v1.0.1` tag — with **B2a** immediately before it, which
+`artefacts:check` now names for you; **B3**, Pages; **B4**, the Lemon
+Squeezy URLs; **B5**, the store submission. `Next` has one agent-shaped
+item, the two stale screenshot sets above.
 
 ### 2026-09-29 — the item's open judgement was already decided, and the real hole was one line up
 

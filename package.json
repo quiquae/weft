@@ -30,6 +30,7 @@
     "og": "node tools/make-og.mjs",
     "licence": "node tools/make-licence.mjs",
     "site:check": "node tools/check-links.mjs",
+    "artefacts:check": "node tools/check-artefacts.mjs",
     "build:safari": "node build.mjs --target=safari",
     "compat": "node tools/compat-audit.mjs",
     "safari": "node tools/safari.mjs",
