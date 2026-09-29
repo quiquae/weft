@@ -154,7 +154,49 @@ accurate verb for a learned borrowing where *became* is not. A guard reads all
 637 rendered word pages and fails on any frame that hands the English word to
 "from".
 
-**Built with** 649 tests: 484 unit, 98 in jsdom, 31 over the build tools, and
+**Three listing screenshots showed copy that does not ship.** The
+`*-05-settings.png` the store submission uploads still read "60% — 1 word in
+2", the unqualified phrasing "Two more surfaces said '1 word in N'" above
+replaced; the options page a visitor installs says "60% of content words — 1
+word in 2". That change regenerated the documentation screenshots and not the
+store ones, and the check that would have caught it was itself broken: the
+generator had been recorded as failing, so its report that four of the fifteen
+shots were stale was never read. It was not failing. Run by hand rather than
+through `npm run test:e2e`, it drove a *production* build of the extension —
+which grants no localhost origin, so no content script registers and nothing
+is ever woven — and spent twenty seconds waiting for a woven word before
+blaming the renderer. The fixtures now refuse a production build in five
+milliseconds and name `npm run build:test`, which is the whole of the fix for
+all three hand-run generator specs.
+
+**The progress screenshot was photographing the clock.** Four of its five
+tiles are seeded through the real import path; "taxed attention today" was
+not, and read whatever attention the run itself accrued — `9s` once and `6s`
+another time, two legitimate outputs of the same code 303 bytes apart. So
+"the shots came back byte-identical" could not mean anything for that scene,
+and a stray 126 711-byte `apple-04-progress.png` on an abandoned branch had
+been written up as work nobody could account for when it was simply the `6s`
+render. Attention is now seeded at thirty minutes — the figure the listing's
+own copy uses for half an hour on a feed — which `formatDuration` prints as
+whole minutes, so anything the run adds on top is absorbed.
+
+**The discoveries feed reshuffled itself between renders.** Seeding the clock
+was not enough, and the claim that followed it — two consecutive runs produce
+all fifteen shots byte-identical — was not true when it was made. Re-measured,
+all three `*-04-progress.png` still differed run to run: 4416 pixels, in which
+*montagne* and *forêt* had swapped places. `buildDiscoveries` sorted by kind
+and then by recency, and words first met in the same millisecond — which is
+what a bulk import gives, and what two words woven into one render give — tie
+on both, so the order fell through to however the storage round-trip happened
+to hand the cards back. One vocabulary could render twice and disagree with
+itself. The feed already refused to reshuffle its *wording* between visits;
+the sort now finishes with the word itself, compared with accents folded away
+so that *père* sorts before *pierre* without asking the runtime's locale data
+what it thinks. Measured after the fix: two consecutive runs produce all
+fifteen shots byte-identical, which is the first time that sentence has been
+true.
+
+**Built with** 655 tests: 486 unit, 98 in jsdom, 35 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

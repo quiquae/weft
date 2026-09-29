@@ -4,15 +4,27 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-09-28:** every automatable check is green, measured at the end
-of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **31** tool tests / 10 suites, **36** e2e passing in 3.4 min
+**State on 2026-09-29:** every automatable check is green, measured at the end
+of this session — typecheck clean, **486** unit / 122 suites, **98** jsdom / 22
+suites, **35** tool tests / 11 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
-`npm run test:all` exits 0 end to end. The fifteen store screenshots were
-regenerated on 2026-09-28 and came back **byte-identical**, so the listing art
-already shows the lexicon that ships; `npm run packs` is idempotent, so running
+`npm run test:all` exits 0 end to end. **The store-asset generator was never
+broken and the listing art was stale, as of 2026-09-29** — the recorded
+failure was a *production* `dist/chrome` on disk, the generator passes in
+~45 s, and run by hand it reported that three of the fifteen shots showed
+pre-PR-#12 copy that does not ship; those three are regenerated and the
+fixtures now refuse a production build in 5 ms rather than blaming the
+renderer for 20 s. **And as of 2026-09-29 the generator is genuinely
+reproducible** — two consecutive runs produce all **18** files in
+`docs/store/` byte-identical, hashed and diffed. That sentence was in this
+file yesterday and was not true: scene 4 still drifted, because
+`buildDiscoveries` sorted on kind and recency only and nineteen cards
+imported in one millisecond tie on both, so the feed's order came from
+whatever the storage round-trip handed back. Fixed in `src/core/`, not in the
+spec, because a real user's feed could reshuffle the same way — see the note
+at the top of Notes. `npm run packs` is idempotent, so running
 the whole gate leaves the tracked tree clean; and `npm run site` is now
 byte-stable too, so a second build of the site changes nothing. The copy is
 honest about the shipped default as of 2026-09-28, which it had not been: see
@@ -99,6 +111,14 @@ which only Creagh can do.
       1440×900, tiles 440×280 and 1400×560, logo 300×300. The premise of the
       item was half wrong and the worry behind it was sound; both are written
       up at the top of Notes.
+
+      **Superseded 2026-09-29, and the dates are the whole explanation.** That
+      run was real and "byte-identical" was true when measured — but it
+      predates PR #12 the same day, which changed the options page's density
+      copy and regenerated only the `docs/` screenshots. The three
+      `*-05-settings.png` were stale from that moment until 2026-09-29. The
+      lesson is not that the measurement was wrong; it is that a regeneration
+      is only evidence about the tree it ran on, and nothing re-ran it.
 
 - [x] **Make `npm run packs` reproducible.** Done 2026-09-28. It stamped
       `builtAt` with today's date, so every run rewrote all eight files under
@@ -544,10 +564,79 @@ which only Creagh can do.
       squash-merged into it after CI passed, the same pattern PRs #15–19
       used. Not touched: `main`, or any part of B0.
 
+- [x] **Run down the store-asset generator failure.** Done 2026-09-29, and
+      the generator was never broken: the recorded 28-second failure was a
+      **production** `dist/chrome` on disk, left there by the trailing
+      `npm run build` in `test:e2e` (and by `build:all` at the end of
+      `test:all`), which grants no localhost origin and so registers no
+      content script. Confirmed both ways — production build reproduces
+      `:88` "element(s) not found" in 22.1 s, test build passes in 35 s. The
+      queued next step, bisecting #5–#21, would have found nothing, because
+      no commit in that range is responsible.
+
+      `tests/e2e/fixtures.ts` now refuses a production build in **5 ms** with
+      a message naming `npm run build:test`, which covers all three hand-run
+      generator specs rather than just this one.
+
+      **Believing the generator is what found the defect underneath it:**
+      four of the fifteen shots were stale. Three `*-05-settings.png` showed
+      "60% — 1 word in 2", the copy PR #12 replaced — listing art misquoting
+      the product, and B5 step 7 uploads it. The fourth was scene 4's
+      "taxed attention today" tile reading the wall clock; attention is now
+      seeded at 1800 s so `formatDuration` prints a stable "30 min".
+      Guarded by `tests/tools/store-assets.test.ts`, 4 tests in a new suite,
+      written test-first. **Two consecutive runs now produce all fifteen
+      shots byte-identical** — the claim `TODO.md` had been making since
+      2026-09-28 and could not support. See the two notes at the top of
+      Notes, which replace the entries they contradict.
+
 ## Next
 
-Empty. Everything remaining lives in Blocked, and all of it needs Creagh: B0
-first, then B1.
+- [ ] **An export carries three stores that an import silently drops.**
+      Found 2026-09-29 while looking for a way to seed attention for the
+      progress screenshot, which is how the asymmetry surfaced: there is no
+      way. `exportAll()` (`src/background/storage.ts:322`) writes `settings`,
+      `cards`, **`attention`**, **`introduced`** and **`lock`**.
+      `importAll()` (`:359`) reads `settings` and `cards` and ignores the
+      other three without comment or warning — it returns
+      `{ ok: true, message: 'Imported settings and N vocabulary records.' }`,
+      which is true about what it did and silent about what it discarded.
+
+      Why it matters beyond tidiness: data export is on the never-gated list
+      (`tests/core/entitlements.test.ts`), and the reason that list exists is
+      that a user must always be able to leave with their data. Someone
+      moving machines gets their vocabulary and settings and loses their
+      whole attention history, their streak, and the cooldown state — and
+      the last of those is the interesting one, because `lock` is what makes
+      a commitment stick. Restoring it is not obviously right (importing a
+      *shorter* cooldown would be a difficulty reduction, which the lock
+      path exists to refuse) and neither is dropping it in silence.
+
+      Three shapes, no preference recorded because this is a judgement about
+      what an import *means*: (1) import `attention` and `introduced`, leave
+      `lock` alone, and say so in the result message; (2) import all three,
+      running `lock` through the same cooldown path as any other change so a
+      forged easier state cannot land — `importAll`'s own doc comment
+      already claims this is how settings work, so the machinery exists;
+      (3) keep the behaviour and make `exportAll` stop writing fields
+      nothing reads. Shape 3 is the cheapest and the worst — the export is
+      also what a user attaches to a bug report, and attention history is
+      the most diagnostic thing in it. Guard belongs in `tests/core/`, which
+      can round-trip `exportAll` → `importAll` with no browser.
+
+      **Check the existing coverage before assuming it is uncovered by
+      accident.** `tests/e2e/friction.spec.ts:344`, "a round trip keeps the
+      vocabulary and re-signs it", is under the heading *taking your data
+      with you* and looks like the test that would catch this. It seeds two
+      cards, exports, and asserts the **cards** survive and are re-signed.
+      It never writes attention, `introduced` or `lock` before exporting, so
+      the three fields that get dropped are never in the payload it checks —
+      the same shape as PR #14's guard, which could not see `novem` because
+      it filtered on notes that exist. The name is the only thing that
+      overpromises; widen the seed, not the heading.
+
+Otherwise empty. Everything remaining lives in Blocked: B0 step 2 does not
+need Creagh and is the next thing any session should pick up; B1 onwards do.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
@@ -712,6 +801,174 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-09-29 — "byte-identical" was wrong, and the culprit was an unstable
+sort, not the clock.** The note below this one ends by claiming two
+consecutive runs of the store generator produce all fifteen shots
+byte-identical, with a caveat about the day rollover. Both halves were wrong.
+Two runs a minute apart, at 00:35 on one day, moved all three
+`*-04-progress.png` — including `chrome-04` and `edge-04`, which that note
+correctly says *cannot* drift from the attention tile, because the tile is
+cropped out below 1440 px. That contradiction is what made them worth
+diffing.
+
+- **How the diff was done, because there is no image tooling on this
+  machine** (no ImageMagick, no PIL, no `pngjs`): a scratch script driving
+  the Chromium that Playwright already installs, loading both PNGs into a
+  canvas and printing the bounding box of differing pixels. 4416 pixels at
+  x 389–703, y 135–185; cropped and rendered, two lines of the discoveries
+  feed with *montagne* and *forêt* swapped. Four minutes, and it turned "the
+  shots differ" into a finding. Reuse the method; the script was scratch and
+  is not committed.
+
+- **The cause.** `buildDiscoveries` (`src/core/discoveries.ts`) sorted on
+  kind, then `b.metAt - a.metAt`, and stopped. The nineteen cards the spec
+  seeds all carry `firstSeen: now - 30 * day`, so same-kind pairs tie on both
+  keys, the comparator returns 0, and `Array.sort`'s stability defers to
+  input order — which is whatever the storage round-trip produced. **A
+  comparator that returns 0 for two distinct items has not defined an order,
+  it has delegated one.**
+
+- **Fixed in `src/core/`, not in the spec, and that was deliberate.** A bulk
+  import ties, and so do two words woven into one render, so a real user's
+  feed could reshuffle between visits — and `discoveries.ts:118` had already
+  ruled that out for the feed's *wording* ("not random … so the feed does not
+  reshuffle its own wording between visits"). Third sort key, not a new
+  policy.
+
+- **Why `fold(id)` and not the two obvious options.** Raw code units are
+  deterministic and put *pierre* before *père* (`i` = U+0069, `è` = U+00E8),
+  which reads like a bug in a feed of French. `localeCompare` reads correctly
+  and depends on the runtime's ICU data, so this machine and CI could
+  disagree — the same defect one layer down. `fold()` was already in the
+  file. Raw id is the final key so the order stays total.
+
+- **The guard that should have caught it, and why it could not.** The test
+  three lines above the new one — "descent phrasing varies but is stable per
+  word" — calls `buildDiscoveries` twice **on the same array**, so input
+  order is identical both times and only the wording can drift. Same shape as
+  PR #14's guard that could not see `novem`. The new test permutes the input.
+
+- **Environment, fourth sighting.** The iCloud conflict copy killed a run as
+  `test-results/.playwright-artifacts-0 2` / `Unknown system error -11`. The
+  `com.apple.fileprovider.ignore#P` attribute was set on `dist/` three
+  sessions ago and never on `test-results/`. Set it there too:
+  `rm -rf test-results && mkdir test-results && xattr -w
+  'com.apple.fileprovider.ignore#P' 1 test-results`. Deleting the directory
+  between runs is *not* sufficient — the copy appears mid-run.
+
+**2026-09-29 — the queued quote-convention item was already done.** The queue
+handed this session the two-quote-conventions measurement with the direction
+left open. PR #20 closed it on 2026-09-28: all 59 notes are curly, the guard
+is `tests/tools/lexicon-orthography.test.ts:185`, and the only straight `"`
+left in `tools/seed/*.tsv` are inside the `#` header comments, which the
+guard does not scan and should not. **Five of the last six sessions have been
+handed a completed item.** Checking costs a minute if `TODO.md` is read
+first, which is what it is for.
+
+**2026-09-29 — the store-asset generator was never broken; `dist/chrome` was.**
+The entry this replaces recorded `WEFT_STORE=1 npx playwright test
+store-assets` as failing reproducibly in 28 s at `store-assets.spec.ts:88`,
+waiting for `weft-w`, writing nothing. All of that was accurately observed and
+the conclusion was wrong. The generator passes in ~35 s and writes all fifteen
+files.
+
+**The variable was which build of the extension was on disk, which is why
+three hypotheses about the extension's own code all came back clean.**
+`npm run test:e2e` is `build:test && playwright test && build`. That trailing
+`build` is deliberate — it stops a test-seamed extension lingering, and
+`tools/validate-package.mjs` already fails any package whose manifest carries
+`host_permissions` or whose name still says "test build". The cost is that
+`dist/chrome` is a **production** build once the suite finishes, and also
+after `npm run test:all`, which ends in `build:all`. A production manifest
+grants no localhost origin (`manifest.config.mjs:107` adds it only under
+`opts.test`), so `configure()`'s `origins: []` leaves the content script
+unregistered, nothing is woven, and the spec waits 20 s for a word that can
+never appear. Confirmed both ways rather than argued: production build →
+the recorded failure exactly, `:88`, "element(s) not found", 22.1 s; test
+build → pass.
+
+**The general form, and it is the reusable part: when a failure's three most
+likely causes all read clean in `src/`, the next question is not a fourth
+hypothesis about `src/`. It is what artefact on disk the test is actually
+running against.** Every eliminated hypothesis here — the wrapped renderer,
+a renamed settings key, the cooldown layer — was a question about source that
+no amount of reading source could answer.
+
+Fixed so it cannot cost a session again: `tests/e2e/fixtures.ts` reads
+`dist/chrome/manifest.json` before launching and throws in **5 ms** with a
+message naming the cause and `npm run build:test`. It sits in the fixture
+rather than in any one spec because it is the three hand-run generator specs
+(`WEFT_STORE`, `WEFT_SCREENS`, `WEFT_FIRSTRUN`) that meet it — they are the
+ones a human runs directly instead of through `npm run test:e2e`.
+
+**What the working generator then reported is the substantive half: four of
+the fifteen shots were stale.** Three are `*-05-settings.png`, in all three
+frames, and they show **"60% — 1 word in 2"** — the unqualified phrasing PR
+#12 replaced. The options page a visitor installs says "60% of content words
+— 1 word in 2". #12 regenerated the `docs/` screenshots and not the store
+ones, and the check that would have caught it was the one written off as
+broken. Regenerated and committed. **B5 step 7 uploads these**, so this was
+listing art misquoting the product.
+
+**The fourth was the progress shot, and it was photographing the clock.**
+Four of scene 4's five tiles come from cards seeded through the real import
+path and are reproducible; "taxed attention today" was not seeded at all and
+read whatever attention scenes 1-3 accrued — `9s` on one run, `6s` on
+another. Attention is now seeded at **1800 s** before scene 4 via
+`record-attention`, which `formatDuration` prints as "30 min", so the run's
+own few seconds are absorbed below the next minute boundary. Thirty minutes
+is also the figure the listing copy itself uses for half an hour on a feed,
+so the tile no longer undercuts a progress panel with six seconds.
+`tests/tools/store-assets.test.ts` guards it (4 tests, 1 new suite, written
+test-first, red on a missing constant): it re-derives the rendered string
+across the whole 0-59 s accrual range rather than trusting the two clauses
+that make it work, and includes a non-vacuity case that fails for `9s`.
+
+**Measured, and this is the claim that could not previously be made:** two
+consecutive runs produce **all fifteen shots byte-identical**. One caveat,
+recorded rather than gated — a run that crosses the day rollover *mid-run*
+still differs, because the seeded plan is `Date.now()`-relative and the
+dashboard renders a per-day chart. That is the same class as the five
+`dashboard*.png` PR #12 declined to build a determinism gate around, and the
+same decision applies. Runs on either side of midnight agree; only a run
+straddling it does not.
+
+**One frame-geometry fact worth knowing before re-reading any of this:** the
+tiles are only in shot at 1440×900. The chrome (800 px) and edge (768 px)
+frames scroll them off, which is why only `apple-04-progress.png` ever
+drifted, and why `chrome-04` and `edge-04` came back byte-identical to `main`
+even after the seeding changed the tile.
+
+**2026-09-29 — the "abandoned" store screenshot was the generator's own
+output.** The entry this replaces said `docs/store/apple-04-progress.png` is
+**126 408** bytes "on `main`, on the whole stack, and as the generator
+produces it", called the **126 711**-byte variant on
+`origin/docs/test-counts-and-changelog` a stray, and said **do not "restore"
+it**. The premise was wrong: run here before the seeding fix, the generator
+produced blob `9a935872` — **exactly** the 126 711-byte variant, bit for bit.
+Both blobs are legitimate output of the same code, one with the attention
+tile reading `6s` and one `9s`. Nothing was ever abandoned and nothing needed
+restoring; the scene was simply not reproducible, which it now is. The branch
+fact still holds — `docs/test-counts-and-changelog` is the one ref that is
+not an ancestor of `main` — and its single unique commit carries nothing else
+that `main` lacks.
+
+**2026-09-29 — there are no open pull requests, and the three closed ones
+lost nothing.** Checked because a queued task asked for "the remaining open
+PRs, three of them blocked by real merge conflicts" to be landed: `gh pr list
+--state open` returns `[]`. All 23 are merged (20) or closed (3: #3, #5,
+#14), and the premise describes the state before #22 and #23 landed the
+stack. Proved rather than assumed, and the check is cheap to repeat:
+`tools/reproducible-lexicon-packs` (#5's head, `0e41950`) and
+`lexicon/proper-noun-notes` (#14's head, `f4e4753`) are both **ancestors of
+`main`** by `git merge-base --is-ancestor`, so every commit on them is
+landed. `docs/test-counts-and-changelog` (#3's head, `51503a7`) is not, and
+carries exactly one commit `main` cannot reach; of the four paths it touches,
+`playwright.config.ts` is byte-identical to `main`, `CLAUDE.md` and `TODO.md`
+are superseded many times over, and `docs/store/apple-04-progress.png` is the
+generator output described above. **Nothing is waiting to be merged.** The
+critical path is B0 step 2.
+
 **2026-09-28 — the tool-test count was right in two documents and stale in
 three.** Measured on the merged tree: **484** unit / 122 suites, **98** jsdom /
 22 suites, **31** tools / 10 suites, **36** e2e + 3 skipped. `CHANGELOG.md`
@@ -731,81 +988,6 @@ green, so a wrong count there is read as a failing gate. The cheap check after
 adding or removing any test is `git grep -n` for the *old* number across
 `README.md`, `CHANGELOG.md`, `TODO.md`, `CLAUDE.md` and `docs/`, which is five
 files and finds all of them.
-
-**2026-09-28 — the store-asset generator is broken, reproducibly, and it is
-the only thing that could vouch for the listing screenshots.**
-`WEFT_STORE=1 npx playwright test store-assets` **fails in 28 seconds** on a
-clean serial run with nothing else on the machine. An earlier run in this
-session took 35 minutes; that was contention, and **contention is not the
-cause of the failure** — it reproduces immediately when idle. It writes
-**nothing**: all eighteen files in `docs/store/` still carry their checkout
-mtime afterwards.
-
-The failure, exactly:
-
-    tests/e2e/store-assets.spec.ts:88
-    expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 })
-      → element(s) not found, after 20 s, on ${origin}/showcase.html
-
-preceded by `configure({ 'weave.baseRatio': 0.3, 'weave.ceilingRatio': 0.6,
-'weave.renderMode': 'wrapped', 'reveal.hoverDelayMs': 0 })`. `weft-w` is the
-wrapped renderer's per-word element (`src/content/render-wrapped.ts:7`); the
-default highlight renderer creates no elements at all, so its absence means
-the page is not in wrapped mode, or is not woven.
-
-**Three hypotheses already eliminated — do not re-spend time on them:**
-
-1. **Not contention.** 28 s idle, same failure. Ruled out by re-running.
-2. **The wrapped renderer is not broken.** `tests/e2e/friction.spec.ts:28,75`
-   assert `weft-w` is visible in wrapped mode and **pass** in the full gate, as
-   do the wrapped-mode cases in `weaving.spec.ts:87,250,289` and
-   `privacy.spec.ts:62,117`. This was the alarming hypothesis — that the
-   screen-reader path and the Safari 16.4–17.1 path had silently regressed with
-   no coverage — and it is wrong. Coverage exists and is green.
-3. **No settings key was renamed.** All four paths the spec writes still exist
-   in `src/`, and `weft-w` is still the tag.
-
-**And one that looks promising but does not survive reading `lock.ts`:**
-`weave.baseRatio` and `weave.ceilingRatio` are both governed paths
-(`src/core/lock.ts:34–35`), so a change to either can be *queued* rather than
-applied — but for both, `easier: 'lower'`, and this spec raises them (0.06 →
-0.3, 0.35 → 0.6). Raising is the *harder* direction, which the design applies
-at once. `weave.renderMode` is not a governed path at all. So the cooldown
-layer should not be holding this back, and if it is, that is itself the bug.
-
-**What is actually at stake, and it is not a screenshot.** `TODO.md` and the
-journal both record that on 2026-09-28 all fifteen shots were regenerated and
-"came back byte-identical", which is what retired the worry that the listing
-art might show a pre-`3060d93` French lexicon. **That evidence is no longer
-evidence.** A failing generator writes nothing, and "no file changed" is
-exactly what this session observed from a run that never reached its writes —
-indistinguishable, from the outside, from a successful idempotent run. So the
-claim that the listing art shows the lexicon that ships is currently
-unverified, whatever the earlier "1 passed, 31 s" recorded. **B5 step 7 still
-uploads the committed files and is not blocked** — they exist and are at the
-exact required sizes — but nobody should repeat the "byte-identical"
-reassurance until the generator runs.
-
-Next step: it is 28 s per run, so `git bisect` across the nineteen stack
-commits is about five builds. The earlier measurement puts a working generator
-at `2c21615` (#4), so the break is somewhere in #5–#21. The trace is at
-`test-results/store-assets-*/trace.zip`; `npx playwright show-trace` on it
-shows what the page actually contained. Queued.
-
-**2026-09-28 — one abandoned store screenshot exists on exactly one ref, and
-it is the *wrong* one.** `docs/store/apple-04-progress.png` is **126 408**
-bytes on `main`, on the whole stack, and as the generator produces it. A
-**126 711**-byte variant exists only on `origin/docs/test-counts-and-changelog`
-at `51503a7`, the squash of #4 onto closed PR #3's branch — the one commit
-reachable from nowhere else. It is **not** lost work: the canonical bytes are
-what the generator reproduces, so committing the 126 711 variant would mean
-shipping an apple (B6, Safari) screenshot nothing can regenerate, which is the
-opposite of what is wanted. **Do not "restore" it.** Recorded because
-`docs/test-counts-and-changelog` is therefore the one branch that is *not* an
-ancestor of `main`, and a future session tidying branches will notice that and
-wonder. The other two stack branches, `lexicon/proper-noun-notes` and
-`tools/reproducible-lexicon-packs`, are ancestors and carry nothing unique.
-All three were left in place: `TODO.md` and the journal name them.
 
 **2026-09-28 — twenty PRs of work sat unlanded because every session read
 "merging is a human step" as covering its own PR too.** The stack grew from #1

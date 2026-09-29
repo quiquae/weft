@@ -210,6 +210,36 @@ test.describe('store assets', () => {
     });
 
     /*
+     * Seed the one tile that was reading the wall clock.
+     *
+     * Four of the five progress tiles come from the cards imported above and
+     * are reproducible. "Taxed attention today" did not: it counted whatever
+     * attention scenes 1-3 accrued hovering and scrolling a real page, which
+     * came out `9s` on one run and `6s` on another. Two legitimate outputs of
+     * the same code, 303 bytes apart — so "the shots came back
+     * byte-identical" could never mean anything for this scene, and the only
+     * check that could vouch for the listing art was reporting noise.
+     *
+     * Seeding does not freeze the clock; the run still adds its own seconds
+     * on top. It does not have to be frozen, because `formatDuration` prints
+     * whole minutes above 60s, so a minute-aligned seed absorbs anything the
+     * run accrues below the next boundary. `tests/tools/store-assets.test.ts`
+     * re-derives that across the whole range rather than trusting it.
+     *
+     * Thirty minutes is also the figure the listing's own copy uses — density
+     * climbing towards a third of the content words "after half an hour on a
+     * feed" — so the tile now agrees with the sentence beside it instead of
+     * undercutting a progress panel with six seconds.
+     */
+    const SEEDED_ATTENTION_SECONDS = 1800;
+    await rpc({
+      type: 'record-attention',
+      host: new URL(origin).hostname,
+      seconds: SEEDED_ATTENTION_SECONDS,
+      url: `${origin}/showcase.html`,
+    });
+
+    /*
      * 4. Progress, and the etymologies that make it worth reading.
      *
      * Scrolled, because a viewport capture of an 800px frame otherwise shows
