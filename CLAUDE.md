@@ -55,13 +55,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **486 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **520 pass**, 129 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **35 pass**, 11 suites, ~2 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 979 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 982 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
@@ -191,6 +191,181 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — the item's open judgement was already decided, and the real hole was one line up
+
+The queue sent this session at **B0 step 2**, which is done: `main` is
+`d2e834f`, `VERSION` is 1.0.1, `package.json` is in step, `RELEASE-1.0.1.md`
+exists, and `git ls-remote --tags` shows only `v1.0.0`, so the tag is
+correctly unpushed. Verified in a minute rather than believed; the queue has
+now handed a completed item to six of the last eight sessions. So the work
+was `TODO.md`'s only unchecked item, **the three stores an export writes and
+an import dropped**.
+
+**The judgement the item deliberately left open had already been taken, in a
+test the item had not read.** It offered three shapes and recorded no
+preference, on the grounds that importing `lock` "is not obviously right".
+But `tests/e2e/friction.spec.ts:407` — "importing a file cannot clear a
+cooldown" — already answers it, and in as many words: importing lock means
+"export before requesting an easier setting, wait nothing, import the old
+file, and the pending change and its clock are gone", and the test exists
+"to fail when" a future change tidies export/import into a full round trip.
+Shape 2 was not an open option; it was a guarded-against regression, and
+building it would have turned that test red. **The transferable form: before
+costing out the options a queued item lists, grep the suite for a test that
+has already decided one of them.** This is the third session running where
+what settled a queued item was reading something already in the repository
+rather than reasoning about the code.
+
+**The reason to refuse `lock` is also stronger than the item recorded, and
+it is the design rule rather than a preference: every field of the lock
+state is a difficulty reduction when it arrives from a file.** A `pending`
+change whose `unlocksAt` has already passed is a reduction that applies on
+arrival; a `panic` day with `used: 0` refills a spent budget; a lower
+`tamperCount` launders a history; an older `lastSeenAt` re-arms the
+clock-rewind trick `noteClock` exists to catch. There is no harder direction
+to take safely. And the one field with genuine user value, the audit `log`,
+is **already truncated to the last 50 entries on the way out** — which says
+what the export thinks `lock` is for: diagnosis, not restoration.
+
+Attention is the mirror image, which is why it can come in at once and
+needs no gate. `weaveRatio` is monotone increasing in `attentionSeconds`, so
+more attention is a *harder* page, and "anything that makes Weft harder
+applies at once" is already this file's rule. **`mergeCards` had also
+already written down the merge rule, for the other half of the same export.**
+Its comment on `exposures` reads: "Max rather than sum: the same word read
+on two machines is not twice as familiar, and summing would let a round trip
+through export inflate it." Attention seconds are the identical kind of
+quantity and nothing merged them — the unguarded half of a decision already
+taken, the same shape as PR #14's guard that could not see `novem`. So
+`mergeAttention` folds both machines into a day → seconds map and takes the
+max per day. Max is also what makes the import idempotent, which matters
+because nothing stops anyone importing the same file twice and the dashboard
+calls that panel "facts about reading you have actually done".
+
+**The bigger defect was one line above the one the item named, and its doc
+comment claimed it was already fixed.** `importAll` promised that an import
+"is not a way to install a forged difficulty setting", because "any
+reduction in difficulty relative to the current state still has to pass the
+cooldown, because settings are applied through the same lock path as any
+other change". It never went near that path — it called `saveSettings`
+directly. The governed path is `requestChange`, reached only from the
+`request-change` handler (`src/background/index.ts:329`). So while the
+queued item was weighing whether importing `lock` might hand someone an
+easier state, **settings — the thing cooldowns actually govern — walked
+straight past**, and one edited number in an exported JSON file disabled the
+attention tax, dropped the ceiling, or shortened the cooldown that governs
+the cooldown. This is scope this session added rather than found queued, and
+the case for adding it is that the behaviour was already specified *in the
+codebase*: the comment states it as fact. Fixing it closes a gap between a
+written decision and the code, and the alternative was to rewrite that
+comment into a description of a hole in the commitment layer.
+
+`splitImportedSettings` (`src/core/lock.ts`) now splits an imported file the
+way the rest of the product already works: harder and cosmetic values land
+at once, anything easier becomes a patch handed to `requestChange`, which
+queues it against the user's own cooldown. An import is then exactly as
+fast, and exactly as slow, as making the same change by hand on the options
+page. **Direction comes from `assessPatch` rather than `directionOf`**, and
+that is not interchangeable: `learning.activeTarget` scores `neutral` on
+direction because it is non-numeric, and only `assessPatch` knows to treat a
+target switch as easier because it resets vocabulary exposure. One test
+pins exactly that, with the `directionOf` call in it so the distinction
+cannot be optimised away by someone who does not know why it is there.
+
+**The round-trip guard is the first test anywhere to import
+`src/background/storage.ts`**, and where it went was decided by the seam
+rather than the directory name. `tests/core/` is documented as pure and no
+browser; a Map-backed `chrome.storage.local` is neither I/O nor a browser,
+and `tests/core/providers.test.ts` already imports a `src/background/`
+module and stubs a global to do it. The one thing worth copying: **each
+machine is a separate module instance**, imported through a cache-busting
+query string, so each mints its own install id and an import genuinely
+crosses between installs rather than meeting the key that signed it.
+
+Done test-first throughout, and the guards were **checked for vacuity rather
+than assumed non-vacuous**. Restoring the old direct write turns 4 of the 6
+settings-bypass tests red; the 2 that stay green are the over-correction
+guards — a *harder* setting and a contrast setting must still land at once —
+which is what they are for. The three attention/introduced/message tests
+were red before the merge was written.
+
+One thing found and left alone as correct: `validateSettings` clamps
+`ceilingRatio` up to `baseRatio` (`src/core/settings.ts:277`), so a test
+expecting a forged `0.01` ceiling to reach the lock was wrong about the
+code, not the other way round. The two gates compose — validation fixes the
+range, the lock judges the direction — and the test now says so.
+
+**Found on the way, and it is a standing trap rather than an incident:
+`RELEASE-1.0.1.md` goes stale on its own.** It is *generated* — a
+`Changes since v1.0.0` list from `git log`, plus six package sizes — and B0
+step 2 generated it on a tree that is no longer the tree the tag will point
+at, because the version was cut days before the tag can be pushed (that
+waits on B2). Every commit landing on `main` in between makes the release
+notes wronger, and nothing detects it: the file is not derived at tag time.
+It is already one commit out of date, from this session. **The fix cannot go
+in the PR that causes it** — the squash-merge hash does not exist until
+after the merge, so regenerating inside the branch writes a list that is
+wrong the moment it lands. Filed as **B2a**, a step immediately before
+`git push origin v1.0.1`. Same class as the 1.0.1 session's finding that
+`docs/SUBMIT.md` named five zip filenames that no longer existed: a cut
+invalidates *artefacts*, and no count sweep looks at artefacts.
+
+**The iCloud trap has a fourth location, and it is the dangerous one:
+`src/`.** This file records it in `dist/`, `dist/site` and `test-results/`,
+all three of them gitignored, which is why the standing advice has been
+`rm -rf` and an xattr. Here it landed on **tracked source** — `storage 2.ts`,
+`escalation 2.ts`, `lock 2.ts`, `data 2.tsx`, one per file this session
+edited, all four unreadable stubs that answer `Resource deadlock avoided` to
+`md5` and make `tsc` fail with `TS6053: File ... not found. The file is in
+the program because: Matched by include pattern 'src/**/*'`. They appeared
+during a `git stash push -- src/` / `git stash pop` round-trip, which
+rewrites several watched files in seconds. **`src/` is not gitignored, so
+`git add -A` would have committed four duplicate modules** — a far worse
+outcome than a broken build, and the reason this is worth its own note. The
+give-away that they are not real content is that `diff` reports them as
+differing from the originals while `ls` shows identical byte counts: the
+tool cannot read them, not the bytes disagreeing. `com.apple.fileprovider.ignore#P`
+is now set on `src/` as well as `dist/` and `test-results/`.
+
+**One count that no test-count sweep would have looked at: the package grew.**
+`npm run build:all` has reported 979 KB per target for eight sessions and now
+reports **982**. Verified rather than assumed to be this change — `git stash
+push -- src/`, rebuild, 979 KB; restore, rebuild, 982 KB — so the +3 KB is
+exactly this work. Two live mentions swept (`CLAUDE.md`'s command table and
+`TODO.md`'s state line); the sixteen others are journal history and stay.
+Worth naming alongside the 1.0.1 entry's finding about stale *artefact
+names*: a change to `src/` invalidates **sizes**, which the count sweep this
+file has done for six sessions running looks straight past because it greps
+for test totals.
+
+Counts moved 655 → 689 and unit 486 → 520 / 122 → 129 suites in five
+documents, with `docs/LAUNCH.md:221` swept **by name and first** for the
+fifth session running. jsdom and tools did not move.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's — and re-run clean after a late
+code-move in `lock.ts`, because the first run had partly predated it:
+`npm run test:all` **exit 0** — typecheck clean, **520** unit / **129**
+suites, 98 jsdom / 22 suites, 35 tools / 11 suites, compat 21 dependencies ×
+3 browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **982 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 3.0 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**,
+unchanged and expected — nothing here touched a seed, so no pack moved and no
+`builtAt` advanced — and `site:check` **711 pages / 16 087 links** all
+resolving, run because `src/core/` moved and the site imports from it. Three
+full gates created **zero** iCloud conflict copies in `dist/` and
+`test-results/`, which is the attribute working; the four that did appear
+came from a `git stash` round-trip in `src/`, which had never been guarded
+and now is. The fast suites were re-run after clearing them — 520 / 98 / 35,
+0 failures — to prove the stash had restored the tree exactly.
+
+What needs a human: unchanged, and now it is everything. **B1**, register
+`weft.study`, is the critical path and the first thing no session can do.
+Then **B2**, make the repository public and push the `v1.0.1` tag; **B3**,
+Pages; **B4**, the Lemon Squeezy URLs; **B5**, the store submission. `Now`
+and `Next` are both empty and there is no agent-shaped work left in
+`TODO.md`.
 
 ### 2026-09-29 — 1.0.1 is cut, and the runbook named five files that would not exist
 

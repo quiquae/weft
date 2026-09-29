@@ -202,7 +202,9 @@ function DataRow() {
     anchor.download = `weft-${new Date().toISOString().slice(0, 10)}.json`;
     anchor.click();
     URL.revokeObjectURL(url);
-    setMessage('Exported. The file contains your settings and vocabulary, and no keys.');
+    setMessage(
+      'Exported. The file contains your settings, vocabulary and reading history, and no keys.',
+    );
   }
 
   async function importData(file: File) {
