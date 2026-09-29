@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **29** tool tests / 9 suites, **36** e2e passing in 2.9 min
+suites, **31** tool tests / 10 suites, **36** e2e passing in 3.4 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -56,7 +56,8 @@ of 185 distinct notes quoted with straight `"` while French and the site quote
 with curly `“ ”`; the recorded argument for leaving both stood on a premise
 that reading all 59 disproved. **And as of 2026-09-28 all of it is on
 `main`** — the nineteen-commit stack that had accumulated since 2026-09-27 was
-merged in one PR, which is **B0 step 1, now done**. The four conflicts B0
+merged in one PR (#22), which is **B0 step 1, now done**: `main` is `e01ce27`
+and its tree is `028bdec8`. The four conflicts B0
 predicted were all squash artefact and the resolution was *proved* rather than
 judged: `main`'s tree SHA was byte-identical to `02fc7d8`'s, an ancestor of the
 stack, so `main` contributed nothing to any path and the merge changed not one
@@ -562,9 +563,10 @@ Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
 **B0 — Step 1 is done: the stack is on `main`. Step 2, cut 1.0.1, is not.**
-*Blocks the version bump, and nothing else.*
+*Blocks the version bump, and nothing else.* **Step 2 does not need Creagh and
+is the next thing any session should pick up.**
 
-**Step 1 landed 2026-09-28.** The nineteen commits that had accumulated on
+**Step 1 landed 2026-09-28 as #22.** `main` is `e01ce27`, tree `028bdec8`. The nineteen commits that had accumulated on
 `lexicon/proper-noun-notes` since 2026-09-27 — everything from `/privacy` and
 `/support` through the curly-quote unification — are on `main` in one merge.
 Only #1 had ever reached `main`; #2 through #21 merged into each other's heads,
@@ -709,6 +711,101 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the tool-test count was right in two documents and stale in
+three.** Measured on the merged tree: **484** unit / 122 suites, **98** jsdom /
+22 suites, **31** tools / 10 suites, **36** e2e + 3 skipped. `CHANGELOG.md`
+(649 = 484 + 98 + 31 + 36) and `CLAUDE.md`'s command table already said 31;
+`TODO.md`'s own State line, `docs/SUBMIT.md:12` and `README.md:267` still said
+**29 / 9 suites**. The +2 is PR #20's curly-quote guard — "no pack note
+contains a straight double quote" and "the guard has something to police" — in
+one new suite. All five now agree; the only surviving mention of the old
+number is this note, which is why the check below greps for it rather than
+asserting it is gone.
+
+This is the same defect PR #3 and #4 were about, recurring in a smaller way,
+and the pattern is worth naming: **the session that adds a test updates the
+count where it is looking, and misses the documents it is not.** `docs/SUBMIT.md`
+is the expensive one — it is the runbook that tells a human which numbers mean
+green, so a wrong count there is read as a failing gate. The cheap check after
+adding or removing any test is `git grep -n` for the *old* number across
+`README.md`, `CHANGELOG.md`, `TODO.md`, `CLAUDE.md` and `docs/`, which is five
+files and finds all of them.
+
+**2026-09-28 — the store-asset generator is broken, reproducibly, and it is
+the only thing that could vouch for the listing screenshots.**
+`WEFT_STORE=1 npx playwright test store-assets` **fails in 28 seconds** on a
+clean serial run with nothing else on the machine. An earlier run in this
+session took 35 minutes; that was contention, and **contention is not the
+cause of the failure** — it reproduces immediately when idle. It writes
+**nothing**: all eighteen files in `docs/store/` still carry their checkout
+mtime afterwards.
+
+The failure, exactly:
+
+    tests/e2e/store-assets.spec.ts:88
+    expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 })
+      → element(s) not found, after 20 s, on ${origin}/showcase.html
+
+preceded by `configure({ 'weave.baseRatio': 0.3, 'weave.ceilingRatio': 0.6,
+'weave.renderMode': 'wrapped', 'reveal.hoverDelayMs': 0 })`. `weft-w` is the
+wrapped renderer's per-word element (`src/content/render-wrapped.ts:7`); the
+default highlight renderer creates no elements at all, so its absence means
+the page is not in wrapped mode, or is not woven.
+
+**Three hypotheses already eliminated — do not re-spend time on them:**
+
+1. **Not contention.** 28 s idle, same failure. Ruled out by re-running.
+2. **The wrapped renderer is not broken.** `tests/e2e/friction.spec.ts:28,75`
+   assert `weft-w` is visible in wrapped mode and **pass** in the full gate, as
+   do the wrapped-mode cases in `weaving.spec.ts:87,250,289` and
+   `privacy.spec.ts:62,117`. This was the alarming hypothesis — that the
+   screen-reader path and the Safari 16.4–17.1 path had silently regressed with
+   no coverage — and it is wrong. Coverage exists and is green.
+3. **No settings key was renamed.** All four paths the spec writes still exist
+   in `src/`, and `weft-w` is still the tag.
+
+**And one that looks promising but does not survive reading `lock.ts`:**
+`weave.baseRatio` and `weave.ceilingRatio` are both governed paths
+(`src/core/lock.ts:34–35`), so a change to either can be *queued* rather than
+applied — but for both, `easier: 'lower'`, and this spec raises them (0.06 →
+0.3, 0.35 → 0.6). Raising is the *harder* direction, which the design applies
+at once. `weave.renderMode` is not a governed path at all. So the cooldown
+layer should not be holding this back, and if it is, that is itself the bug.
+
+**What is actually at stake, and it is not a screenshot.** `TODO.md` and the
+journal both record that on 2026-09-28 all fifteen shots were regenerated and
+"came back byte-identical", which is what retired the worry that the listing
+art might show a pre-`3060d93` French lexicon. **That evidence is no longer
+evidence.** A failing generator writes nothing, and "no file changed" is
+exactly what this session observed from a run that never reached its writes —
+indistinguishable, from the outside, from a successful idempotent run. So the
+claim that the listing art shows the lexicon that ships is currently
+unverified, whatever the earlier "1 passed, 31 s" recorded. **B5 step 7 still
+uploads the committed files and is not blocked** — they exist and are at the
+exact required sizes — but nobody should repeat the "byte-identical"
+reassurance until the generator runs.
+
+Next step: it is 28 s per run, so `git bisect` across the nineteen stack
+commits is about five builds. The earlier measurement puts a working generator
+at `2c21615` (#4), so the break is somewhere in #5–#21. The trace is at
+`test-results/store-assets-*/trace.zip`; `npx playwright show-trace` on it
+shows what the page actually contained. Queued.
+
+**2026-09-28 — one abandoned store screenshot exists on exactly one ref, and
+it is the *wrong* one.** `docs/store/apple-04-progress.png` is **126 408**
+bytes on `main`, on the whole stack, and as the generator produces it. A
+**126 711**-byte variant exists only on `origin/docs/test-counts-and-changelog`
+at `51503a7`, the squash of #4 onto closed PR #3's branch — the one commit
+reachable from nowhere else. It is **not** lost work: the canonical bytes are
+what the generator reproduces, so committing the 126 711 variant would mean
+shipping an apple (B6, Safari) screenshot nothing can regenerate, which is the
+opposite of what is wanted. **Do not "restore" it.** Recorded because
+`docs/test-counts-and-changelog` is therefore the one branch that is *not* an
+ancestor of `main`, and a future session tidying branches will notice that and
+wonder. The other two stack branches, `lexicon/proper-noun-notes` and
+`tools/reproducible-lexicon-packs`, are ancestors and carry nothing unique.
+All three were left in place: `TODO.md` and the journal name them.
 
 **2026-09-28 — twenty PRs of work sat unlanded because every session read
 "merging is a human step" as covering its own PR too.** The stack grew from #1

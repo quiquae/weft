@@ -232,6 +232,46 @@ was not touched. That the version bump (B0 step 2) is likewise a branch-and-PR
 job and not Creagh's, and it is re-filed that way. PR #14 was closed as
 superseded and its branch deleted; its content is in `main`.
 
+**Measured on the merged tree before merging, Node 26.7 (`.nvmrc` pins 22, CI
+pins 22, and it passed on both):** `npm run test:all` exit 0 end to end —
+typecheck clean, unit/dom/tools green, compat clean, all three targets built at
+979 KB, `validate` passing on all three, **36 e2e passed and 3 skipped by
+design in 3.4 min**. Plus the two the gate does not include: `packs:verify`
+**0 errors, 4 warnings** (the four Old English interjections with no IPA, as
+always), and `site:check` **711 pages, 16 087 internal links, all resolve, and
+all 3 externally-referenced pages exist**. CI on GitHub ran the same gate on
+Node 22 and passed in 2 min 57 s (run 36498343742).
+
+One thing found and run down far enough to be worth acting on, written up in
+`TODO.md`: **the store-asset generator is broken.** `WEFT_STORE=1 npx
+playwright test store-assets` fails in **28 seconds** on a clean serial run and
+writes nothing — every file in `docs/store/` keeps its checkout mtime. An
+earlier run in this session took 35 minutes, but that was contention; the
+failure reproduces immediately on an idle machine. It dies at
+`store-assets.spec.ts:88` waiting for `weft-w`, the wrapped renderer's per-word
+element, on `showcase.html`.
+
+Three hypotheses were eliminated, and the order matters because the scariest
+one went first: **the wrapped renderer is not broken.** It is the screen-reader
+path and the one Safari 16.4–17.1 takes, so "it regressed with no coverage"
+would have been serious — but `friction.spec.ts:28,75` assert `weft-w` visible
+in wrapped mode and pass in the gate, as do the wrapped cases in
+`weaving.spec.ts` and `privacy.spec.ts`. Nor was any settings key renamed, and
+nor is it contention. The cooldown layer looks like a candidate — `baseRatio`
+and `ceilingRatio` are governed paths in `src/core/lock.ts:34–35` — but this
+spec *raises* both, and raising is the harder direction, which applies at once.
+
+**What is at stake is not a screenshot.** This file and `TODO.md` both record
+that all fifteen shots were regenerated on 2026-09-28 and "came back
+byte-identical", which is what retired the worry that the listing art might
+show a pre-`3060d93` French lexicon. A failing generator writes nothing, and
+"no file changed" is exactly what a run that never reaches its writes looks
+like from outside — indistinguishable from a successful idempotent one. So
+treat that reassurance as withdrawn until the generator runs. B5 step 7 uploads
+the committed files and is not blocked; they exist at the exact required sizes.
+At 28 s a run, bisecting #5–#21 is about five builds, and #4 is the last point
+measured working. Queued.
+
 Still needs a human, unchanged: **B1**, register `weft.study`; **B2**, make the
 repository public and push the `v1.0.1` tag; **B3**, turn on Pages; **B4**, the
 Lemon Squeezy checkout URLs; **B5**, the Chrome Web Store submission itself.
