@@ -65,6 +65,11 @@ function fold(word: string): string {
     .replace(/[^a-z]/g, '');
 }
 
+/** Code-unit order, which is the same on every runtime. */
+function cmp(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 function classify(entry: LexEntry): DiscoveryKind | null {
   const note = entry.note ?? '';
   if (LITERAL.test(note)) return 'literal';
@@ -223,11 +228,34 @@ export function buildDiscoveries(opts: BuildDiscoveriesOptions): Discovery[] {
     out.push(discovery);
   }
 
-  // Most interesting kind first, then most recently met within a kind.
+  /*
+   * Most interesting kind first, then most recently met within a kind, then
+   * by id so the order is total.
+   *
+   * The third key is not decoration. Cards first met in the same millisecond
+   * — which is what a bulk import produces, and what two words woven into
+   * one render produce — tie on both of the first two, and a comparator that
+   * returns 0 leaves the result at the mercy of input order. That is
+   * whatever the storage round-trip handed back, so one vocabulary rendered
+   * twice could disagree with itself. The feed already refuses to reshuffle
+   * its *wording* between visits (see the stable hash above); this is the
+   * same promise about its order.
+   *
+   * Folded before comparing, and not with `localeCompare`. Raw code units
+   * put "pierre" before "père", because `i` sorts below `è` — correct, and
+   * it reads like a bug in a feed of French. `localeCompare` reads correctly
+   * and is the determinism bug one layer down: it depends on the ICU data
+   * the runtime was built with, so a contributor's machine and CI can
+   * disagree. `fold` is already here, is pure string work, and gives
+   * "pere" < "pierre". The raw id breaks the rare tie where two ids fold
+   * alike, so the order is total either way.
+   */
   out.sort(
     (a, b) =>
       interestOf(a.kind, opts.historical) - interestOf(b.kind, opts.historical) ||
-      b.metAt - a.metAt,
+      b.metAt - a.metAt ||
+      cmp(fold(a.id), fold(b.id)) ||
+      cmp(a.id, b.id),
   );
   return out.slice(0, opts.limit ?? 40);
 }

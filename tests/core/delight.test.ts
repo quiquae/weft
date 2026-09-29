@@ -230,6 +230,72 @@ describe('buildDiscoveries', () => {
     assert.ok(new Set(first.map((d) => d.text.replace(/[a-zāēīōūǣþðæġ]+/gi, 'X'))).size > 1, 'must vary');
   });
 
+  test('the order is stable when kind and metAt both tie', () => {
+    /*
+     * The sibling test above re-sorts the *same array* twice, so it can only
+     * ever see the wording drift, never the order. The comparator's two keys
+     * are the kind and the recency, and cards first met in the same
+     * millisecond tie on both — so the result fell through to input order,
+     * which is whatever the storage round-trip happened to hand back.
+     *
+     * That is not hypothetical. `docs/store/*-04-progress.png` is listing
+     * art generated from nineteen cards that all carry
+     * `firstSeen: now - 30 * day`, and two consecutive runs of the generator
+     * swapped `montagne` and `forêt` in the feed — 4416 pixels, and the one
+     * check that could vouch for the art reporting noise again.
+     *
+     * The file already committed to this rule for the *wording* four
+     * paragraphs up: varied by a stable hash, "not random", so the feed does
+     * not reshuffle itself between visits. An order that depends on map
+     * iteration reshuffles it just as visibly.
+     */
+    const tied = new Map<string, LexEntry>();
+    const cards = [];
+    for (const [t, e] of [
+      ['montagne', 'mountain'], ['forêt', 'forest'], ['rivière', 'river'],
+      ['pierre', 'stone'], ['fenêtre', 'window'],
+    ] as Array<[string, string]>) {
+      tied.set(t, entry({ src: e, lemma: e, tgt: t, tgtLemma: t, etymonOf: e }));
+      // Every card met in the same millisecond, as a bulk import produces.
+      cards.push(card({ lemma: t, target: 'fr', exposures: 3, firstSeen: NOW - 1000 }));
+    }
+    const forwards = buildDiscoveries({ cards, entriesByLemma: tied, historical: false });
+    const backwards = buildDiscoveries({
+      cards: [...cards].reverse(),
+      entriesByLemma: tied,
+      historical: false,
+    });
+    assert.ok(forwards.length > 1, 'nothing to order, so this proves nothing');
+    assert.deepEqual(
+      backwards.map((d) => d.id),
+      forwards.map((d) => d.id),
+      'permuting the input reorders the feed, so two renders of one vocabulary disagree',
+    );
+  });
+
+  test('the tiebreak ignores accents rather than sorting on their code points', () => {
+    /*
+     * A raw code-unit tiebreak is stable and reads like a bug: `i` is U+0069
+     * and `è` is U+00E8, so "pierre" lands before "père" in a feed of French.
+     * `localeCompare` reads correctly and reintroduces the problem it is
+     * fixing, since its answer depends on the runtime's ICU data. Folding is
+     * the third option and the one this asserts.
+     */
+    const accented = new Map<string, LexEntry>([
+      ['père', entry({ src: 'father', lemma: 'father', tgt: 'père', tgtLemma: 'père', note: 'shares a root with English "paternal"' })],
+      ['pierre', entry({ src: 'stone', lemma: 'stone', tgt: 'pierre', tgtLemma: 'pierre', note: 'shares a root with English "petrify"' })],
+    ]);
+    const found = buildDiscoveries({
+      cards: [
+        card({ lemma: 'pierre', target: 'fr', exposures: 3, firstSeen: NOW - 1000 }),
+        card({ lemma: 'père', target: 'fr', exposures: 3, firstSeen: NOW - 1000 }),
+      ],
+      entriesByLemma: accented,
+      historical: false,
+    });
+    assert.deepEqual(found.map((d) => d.target), ['père', 'pierre']);
+  });
+
   test('a living language is never described as having died', () => {
     /*
      * This asserted the literal string "came from", which was a proxy for

@@ -64,8 +64,55 @@ export interface WeftFixtures {
   rpc<T = unknown>(request: Record<string, unknown>): Promise<T>;
 }
 
+/**
+ * Refuse to run against a production build, and say so in one line.
+ *
+ * `npm run test:e2e` is `build:test && playwright test && build`. That
+ * trailing `build` is deliberate — it stops a test-seamed extension lingering
+ * on disk, and `tools/validate-package.mjs` fails a package whose manifest
+ * carries `host_permissions` or whose name still says "test build". The cost
+ * is that `dist/chrome` is a *production* build once the suite finishes, and
+ * so also after `npm run test:all`, which ends in `build:all`.
+ *
+ * A production manifest grants no localhost origin, so `configure()`'s
+ * `origins: []` leaves the content script unregistered and nothing is ever
+ * woven. Every spec then fails on whatever it waits for first: the three
+ * generator specs behind `WEFT_STORE` / `WEFT_SCREENS` / `WEFT_FIRSTRUN` are
+ * the ones that meet it, because they are the ones a human runs by hand
+ * rather than through `npm run test:e2e`.
+ *
+ * That cost a session. `WEFT_STORE=1 npx playwright test store-assets` was
+ * diagnosed as a broken generator and written up as one — 20 seconds of
+ * "element(s) not found: locator('weft-w')" names the renderer, the lexicon
+ * and the settings before it names the build, and three hypotheses about the
+ * extension's own code were eliminated before anyone looked at the manifest
+ * on disk. So the check is here rather than in any one spec, and it names the
+ * command that fixes it.
+ */
+async function requireTestBuild(): Promise<void> {
+  const manifest = join(EXTENSION, 'manifest.json');
+  let m: { host_permissions?: string[] };
+  try {
+    m = JSON.parse(await readFile(manifest, 'utf8'));
+  } catch {
+    throw new Error(
+      `No extension at ${EXTENSION}. Run \`npm run build:test\` first, or use \`npm run test:e2e\`.`,
+    );
+  }
+  const granted = m.host_permissions ?? [];
+  if (!granted.some((p) => p.includes('localhost'))) {
+    throw new Error(
+      `${manifest} is a production build: it declares no localhost host permission, so the ` +
+        'fixtures cannot grant the test origin and nothing will ever be woven. Run ' +
+        '`npm run build:test` first, or run the whole suite with `npm run test:e2e`, which ' +
+        'builds the test extension and restores the production one afterwards.',
+    );
+  }
+}
+
 export const test = base.extend<WeftFixtures>({
   context: async ({}, use) => {
+    await requireTestBuild();
     const userDataDir = await mkdtemp(join(tmpdir(), 'weft-e2e-'));
     // `channel: 'chromium'` selects the full Chromium build rather than the
     // headless shell, which has no extension support at all. Extensions also
