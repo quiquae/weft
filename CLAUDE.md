@@ -232,6 +232,27 @@ was not touched. That the version bump (B0 step 2) is likewise a branch-and-PR
 job and not Creagh's, and it is re-filed that way. PR #14 was closed as
 superseded and its branch deleted; its content is in `main`.
 
+**Measured on the merged tree before merging, Node 26.7 (`.nvmrc` pins 22, CI
+pins 22, and it passed on both):** `npm run test:all` exit 0 end to end —
+typecheck clean, unit/dom/tools green, compat clean, all three targets built at
+979 KB, `validate` passing on all three, **36 e2e passed and 3 skipped by
+design in 3.4 min**. Plus the two the gate does not include: `packs:verify`
+**0 errors, 4 warnings** (the four Old English interjections with no IPA, as
+always), and `site:check` **711 pages, 16 087 internal links, all resolve, and
+all 3 externally-referenced pages exist**. CI on GitHub ran the same gate on
+Node 22 and passed in 2 min 57 s (run 36498343742).
+
+One thing found and not chased, written up in `TODO.md`: **the store-asset
+generator wrote nothing.** `WEFT_STORE=1 npx playwright test store-assets`
+failed after 35 minutes — a previous session logged the same command at 31
+seconds — and every file in `docs/store/` still carried its checkout mtime
+afterwards, so it never reached its writes. It blocks nothing (the committed
+assets are intact and verified at exact sizes, and B5 uploads them rather than
+regenerating), it was run concurrently with two other builds so contention is
+the first hypothesis, and a clean serial re-run is the first step. What it
+costs meanwhile is that `store-assets` is now the one generator with no live
+byte-stability check, unlike `packs`, `site` and `og`.
+
 Still needs a human, unchanged: **B1**, register `weft.study`; **B2**, make the
 repository public and push the `v1.0.1` tag; **B3**, turn on Pages; **B4**, the
 Lemon Squeezy checkout URLs; **B5**, the Chrome Web Store submission itself.

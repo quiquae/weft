@@ -6,7 +6,7 @@
 
 **State on 2026-09-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **484** unit / 122 suites, **98** jsdom / 22
-suites, **29** tool tests / 9 suites, **36** e2e passing in 2.9 min
+suites, **31** tool tests / 10 suites, **36** e2e passing in 3.4 min
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -56,7 +56,8 @@ of 185 distinct notes quoted with straight `"` while French and the site quote
 with curly `“ ”`; the recorded argument for leaving both stood on a premise
 that reading all 59 disproved. **And as of 2026-09-28 all of it is on
 `main`** — the nineteen-commit stack that had accumulated since 2026-09-27 was
-merged in one PR, which is **B0 step 1, now done**. The four conflicts B0
+merged in one PR (#22), which is **B0 step 1, now done**: `main` is `e01ce27`
+and its tree is `028bdec8`. The four conflicts B0
 predicted were all squash artefact and the resolution was *proved* rather than
 judged: `main`'s tree SHA was byte-identical to `02fc7d8`'s, an ancestor of the
 stack, so `main` contributed nothing to any path and the merge changed not one
@@ -562,9 +563,10 @@ Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
 **B0 — Step 1 is done: the stack is on `main`. Step 2, cut 1.0.1, is not.**
-*Blocks the version bump, and nothing else.*
+*Blocks the version bump, and nothing else.* **Step 2 does not need Creagh and
+is the next thing any session should pick up.**
 
-**Step 1 landed 2026-09-28.** The nineteen commits that had accumulated on
+**Step 1 landed 2026-09-28 as #22.** `main` is `e01ce27`, tree `028bdec8`. The nineteen commits that had accumulated on
 `lexicon/proper-noun-notes` since 2026-09-27 — everything from `/privacy` and
 `/support` through the curly-quote unification — are on `main` in one merge.
 Only #1 had ever reached `main`; #2 through #21 merged into each other's heads,
@@ -709,6 +711,68 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-28 — the tool-test count was right in two documents and stale in
+three.** Measured on the merged tree: **484** unit / 122 suites, **98** jsdom /
+22 suites, **31** tools / 10 suites, **36** e2e + 3 skipped. `CHANGELOG.md`
+(649 = 484 + 98 + 31 + 36) and `CLAUDE.md`'s command table already said 31;
+`TODO.md`'s own State line, `docs/SUBMIT.md:12` and `README.md:267` still said
+**29 / 9 suites**. The +2 is PR #20's curly-quote guard — "no pack note
+contains a straight double quote" and "the guard has something to police" — in
+one new suite. All five now agree; the only surviving mention of the old
+number is this note, which is why the check below greps for it rather than
+asserting it is gone.
+
+This is the same defect PR #3 and #4 were about, recurring in a smaller way,
+and the pattern is worth naming: **the session that adds a test updates the
+count where it is looking, and misses the documents it is not.** `docs/SUBMIT.md`
+is the expensive one — it is the runbook that tells a human which numbers mean
+green, so a wrong count there is read as a failing gate. The cheap check after
+adding or removing any test is `git grep -n` for the *old* number across
+`README.md`, `CHANGELOG.md`, `TODO.md`, `CLAUDE.md` and `docs/`, which is five
+files and finds all of them.
+
+**2026-09-28 — the store-asset generator did not write a single file, and took
+35 minutes to say so.** `WEFT_STORE=1 npx playwright test store-assets` was run
+on the merged tree to settle a question about one PNG (below) and **failed**.
+The tell is not the failure, it is the mtimes: all eighteen files in
+`docs/store/` still carried the worktree's own creation timestamp afterwards,
+so the spec never reached its writes. A previous session recorded this same
+command as *"1 passed, 31 s"* on 2026-09-28, so 35 minutes is a 70× blow-out,
+not a slow machine.
+
+- **Not diagnosed, and deliberately not chased here**, because it blocks
+  nothing: the committed assets are intact, unchanged, and already verified at
+  the exact sizes the stores demand (chrome 1280×800, edge 1366×768, apple
+  1440×900, tiles 440×280 and 1400×560, logo 300×300). The spec is skipped by
+  default, is outside both CI and `npm run test:all`, and **B5 step 7 uploads
+  the committed files rather than regenerating them.**
+- **It was run concurrently** with `npm run site` and `npm run site:check` on a
+  machine that had just finished the full e2e gate, so contention is the first
+  hypothesis and a clean serial re-run is the first step. Do that before
+  concluding anything is broken. The trace is in
+  `test-results/store-assets-*/trace.zip`; `npx playwright show-trace` on it
+  is the second step.
+- **What it costs while it stands:** the claim "all fifteen came back
+  byte-identical" cannot be re-verified, so the byte-stability property the
+  repository now guards for `packs`, `site` and `og` has no live check for
+  `store-assets`. If the listing art ever needs regenerating — a redrawn icon,
+  a lexicon change visible in a screenshot — this is in the way.
+
+**2026-09-28 — one abandoned store screenshot exists on exactly one ref, and
+it is the *wrong* one.** `docs/store/apple-04-progress.png` is **126 408**
+bytes on `main`, on the whole stack, and as the generator produces it. A
+**126 711**-byte variant exists only on `origin/docs/test-counts-and-changelog`
+at `51503a7`, the squash of #4 onto closed PR #3's branch — the one commit
+reachable from nowhere else. It is **not** lost work: the canonical bytes are
+what the generator reproduces, so committing the 126 711 variant would mean
+shipping an apple (B6, Safari) screenshot nothing can regenerate, which is the
+opposite of what is wanted. **Do not "restore" it.** Recorded because
+`docs/test-counts-and-changelog` is therefore the one branch that is *not* an
+ancestor of `main`, and a future session tidying branches will notice that and
+wonder. The other two stack branches, `lexicon/proper-noun-notes` and
+`tools/reproducible-lexicon-packs`, are ancestors and carry nothing unique.
+All three were left in place: `TODO.md` and the journal name them.
 
 **2026-09-28 — twenty PRs of work sat unlanded because every session read
 "merging is a human step" as covering its own PR too.** The stack grew from #1
