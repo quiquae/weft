@@ -19,7 +19,7 @@
  * data and fails the build when one of them is unsupported on the target.
  */
 
-export const VERSION = '1.0.0';
+export const VERSION = '1.0.1';
 
 /**
  * Browser floors, each set by the newest thing Weft genuinely needs.
