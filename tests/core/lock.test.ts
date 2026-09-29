@@ -15,6 +15,7 @@ import {
   assessPatch,
   directionOf,
   describeWait,
+  splitImportedSettings,
 } from '../../src/core/lock.ts';
 import { settings, NOW } from '../helpers.ts';
 
@@ -434,5 +435,117 @@ describe('the clock attack, end to end', () => {
     const later = noteClock(lock, base, NOW + day + 60_000);
     assert.equal(later.rewound, false);
     assert.equal(later.state.tamperCount, 0);
+  });
+});
+
+/**
+ * What an imported settings file is allowed to do at once.
+ *
+ * `importAll`'s doc comment has always promised that an import "is not a way
+ * to install a forged difficulty setting", because "any reduction in
+ * difficulty relative to the current state still has to pass the cooldown".
+ * It did not: the import wrote the whole settings object straight to storage
+ * and never touched the lock, so a file was a complete bypass of every
+ * cooldown in `GOVERNED_PATHS` — the one path the commitment layer exists to
+ * hold shut. Exporting on a fresh install, or editing one number in a JSON
+ * file, applied instantly.
+ *
+ * The split is the same rule the rest of the product follows: harder now,
+ * easier waits. Everything ungoverned — themes, tooltip contents,
+ * accessibility — is not difficulty and is never held.
+ */
+describe('splitImportedSettings', () => {
+  const base = settings();
+
+  test('an import identical to what is here defers nothing', () => {
+    const { immediate, deferred } = splitImportedSettings(base, settings());
+    assert.deepEqual(deferred, {});
+    assert.deepEqual(immediate, base);
+  });
+
+  test('a harder setting lands at once, like every other harder change', () => {
+    const incoming = settings({ 'weave.ceilingRatio': 0.6 });
+    const { immediate, deferred } = splitImportedSettings(base, incoming);
+    assert.deepEqual(deferred, {});
+    assert.equal(immediate.weave.ceilingRatio, 0.6);
+  });
+
+  test('an easier setting is held back, and the current value stays', () => {
+    const incoming = settings({ 'weave.ceilingRatio': 0.01 });
+    const { immediate, deferred } = splitImportedSettings(base, incoming);
+    assert.deepEqual(deferred, { 'weave.ceilingRatio': 0.01 });
+    assert.equal(
+      immediate.weave.ceilingRatio,
+      base.weave.ceilingRatio,
+      'the easier value was written anyway',
+    );
+  });
+
+  test('turning the attention tax off is held back', () => {
+    const { deferred } = splitImportedSettings(base, settings({ 'attention.enabled': false }));
+    assert.deepEqual(deferred, { 'attention.enabled': false });
+  });
+
+  test('a longer never-weave list is held back, a shorter one is not', () => {
+    const longer = settings({ 'sites.excluded': [...base.sites.excluded, 'extra.test'] });
+    assert.deepEqual(splitImportedSettings(base, longer).deferred, {
+      'sites.excluded': longer.sites.excluded,
+    });
+
+    const shorter = settings({ 'sites.excluded': base.sites.excluded.slice(1) });
+    assert.deepEqual(splitImportedSettings(base, shorter).deferred, {});
+  });
+
+  test('settings that are not difficulty are never held', () => {
+    const incoming = settings({
+      'reveal.showIpa': false,
+      'a11y.highContrast': true,
+      'weave.style.tint': '#ff0000',
+    });
+    const { immediate, deferred } = splitImportedSettings(base, incoming);
+    assert.deepEqual(deferred, {}, 'a cosmetic setting was put behind a cooldown');
+    assert.equal(immediate.reveal.showIpa, false);
+    assert.equal(immediate.a11y.highContrast, true);
+    assert.equal(immediate.weave.style.tint, '#ff0000');
+  });
+
+  test('a mixed file is split rather than taken or refused whole', () => {
+    const incoming = settings({
+      'weave.baseRatio': 0.2, // harder
+      'friction.cooldownMinutes': 1, // easier
+      'reveal.showIpa': false, // neither
+    });
+    const { immediate, deferred } = splitImportedSettings(base, incoming);
+    assert.equal(immediate.weave.baseRatio, 0.2, 'the harder half was held back');
+    assert.equal(immediate.reveal.showIpa, false, 'the cosmetic half was held back');
+    assert.equal(
+      immediate.friction.cooldownMinutes,
+      base.friction.cooldownMinutes,
+      'the easier half landed anyway',
+    );
+    assert.deepEqual(deferred, { 'friction.cooldownMinutes': 1 });
+  });
+
+  test('the deferred half is a patch requestChange can actually take', () => {
+    const incoming = settings({ 'weave.ceilingRatio': 0.01 });
+    const { immediate, deferred } = splitImportedSettings(base, incoming);
+    const result = requestChange(emptyLockState(NOW), immediate, deferred, NOW, () => 'id');
+    assert.equal(result.applied, false, 'the reduction applied without waiting');
+    assert.equal(result.state.pending.length, 1);
+    assert.match(result.message, /Queued/);
+  });
+});
+
+describe('splitImportedSettings and the target language', () => {
+  test('switching target language is held back, though its direction is neutral', () => {
+    // directionOf scores a non-numeric governed path 'neutral'; assessPatch
+    // knows that switching target resets vocabulary exposure and treats it
+    // as easier. The split has to agree with assessPatch, not directionOf.
+    const base = settings({ 'learning.targetLangs': ['fr', 'es'] });
+    const incoming = settings({ 'learning.targetLangs': ['fr', 'es'], 'learning.activeTarget': 'es' });
+    assert.equal(directionOf('learning.activeTarget', 'fr', 'es'), 'neutral');
+    assert.deepEqual(splitImportedSettings(base, incoming).deferred, {
+      'learning.activeTarget': 'es',
+    });
   });
 });

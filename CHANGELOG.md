@@ -9,6 +9,27 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**An import kept half of what an export carried, and let the other half
+through a door that was supposed to be locked.** `exportAll` writes settings,
+vocabulary, attention, today's introduced words and the cooldown state;
+`importAll` read the first two, discarded the rest without a word, and
+reported success. Moving to a new machine therefore cost you your whole
+reading history, your streak and every progress tile, and nothing said so.
+Attention now merges in — by the larger of each day rather than the sum, so
+importing the same file twice is importing it once — along with today's
+introduced words. Cooldowns, panic passes and tamper history deliberately do
+not travel: every one of them is a difficulty *reduction* when it arrives
+from a file you can edit. The import now says which of those it did.
+
+The larger fix is in the same function. Imported settings were written
+straight to storage, though the code claimed in writing that they "still
+[had] to pass the cooldown". They did not, so an exported JSON file with one
+number changed could switch the attention tax off, drop the maximum density
+or shorten the cooldown that governs both — a complete bypass of the
+commitment layer. An imported file is now split the way the options page
+already splits a change: harder and cosmetic settings apply at once, anything
+easier waits out the cooldown you configured.
+
 **Silence was the failure state.** `boot()` has six early returns and three
 of them were failures a reader could not see: the worker did not answer, the
 page was already in the language they are learning, or the lexicon would not
@@ -199,7 +220,7 @@ what it thinks. Measured after the fix: two consecutive runs produce all
 fifteen shots byte-identical, which is the first time that sentence has been
 true.
 
-**Built with** 655 tests: 486 unit, 98 in jsdom, 35 over the build tools, and
+**Built with** 689 tests: 520 unit, 98 in jsdom, 35 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

@@ -183,6 +183,104 @@ export function currentAttentionSeconds(
   return decayAttention(prev.seconds, hoursAway, cfg.decayPerHourAway);
 }
 
+/**
+ * Merge two machines' attention records, for an import.
+ *
+ * An export carries `attention` and the import used to discard it, so moving
+ * machines silently cost a user their whole history, their streak and every
+ * progress tile that reads from it.
+ *
+ * Restoring it is a merge, not a replace, and the direction is what makes it
+ * safe to apply at once. `weaveRatio` is monotone increasing in attention, so
+ * *more* attention is a harder page — and this merge can only ever add. An
+ * import that carries less than this machine already has changes nothing, so
+ * there is no way to spend an export file on an easier page. That is why
+ * `attention` can come in where `lock` cannot: every field of the lock state
+ * moves the other way.
+ *
+ * **Max per day, never sum.** `mergeCards` already gives the reason for
+ * exposures and it is the same reason here: the same hour read on two
+ * machines is not two hours, and summing would let a round trip through
+ * export inflate the number every time it happened. Max also makes the
+ * operation idempotent, which matters because nothing stops a user importing
+ * the same file twice — and the dashboard calls this panel "facts about
+ * reading you have actually done".
+ *
+ * Pure, and takes `now`, like everything else here.
+ */
+export function mergeAttention(
+  mine: Record<string, SiteAttention>,
+  theirs: Record<string, SiteAttention>,
+  now: number,
+): Record<string, SiteAttention> {
+  const out: Record<string, SiteAttention> = { ...mine };
+
+  for (const [host, incoming] of Object.entries(theirs)) {
+    if (!incoming || typeof incoming !== 'object') continue;
+    const current = out[host];
+    out[host] = current ? mergeOneHost(current, incoming, host, now) : sanitiseSite(incoming, host, now);
+  }
+
+  return out;
+}
+
+/** Fold a record's current day and its history into one day -> seconds map. */
+function daySeconds(site: SiteAttention, into: Map<string, number>): Map<string, number> {
+  const add = (day: unknown, seconds: unknown) => {
+    if (typeof day !== 'string' || !day) return;
+    const s = typeof seconds === 'number' && Number.isFinite(seconds) ? Math.max(0, Math.round(seconds)) : 0;
+    into.set(day, Math.max(into.get(day) ?? 0, s));
+  };
+  add(site.day, site.seconds);
+  for (const h of Array.isArray(site.history) ? site.history : []) add(h?.day, h?.seconds);
+  return into;
+}
+
+/**
+ * Rebuild a record from a day map.
+ *
+ * The later of the two current days stays current; the other machine's
+ * current day is not lost, it becomes history, which is exactly what it is.
+ * Day keys are `YYYY-MM-DD`, so a lexicographic compare is a date compare.
+ */
+function fromDays(days: Map<string, number>, host: string, day: string, lastTick: number): SiteAttention {
+  const history = [...days.entries()]
+    .filter(([d]) => d !== day)
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+    .map(([d, seconds]) => ({ day: d, seconds }))
+    .slice(-MAX_HISTORY);
+  return { host, seconds: days.get(day) ?? 0, lastTick, day, history };
+}
+
+function mergeOneHost(
+  mine: SiteAttention,
+  theirs: SiteAttention,
+  host: string,
+  now: number,
+): SiteAttention {
+  const days = daySeconds(theirs, daySeconds(mine, new Map()));
+  const day = (theirs.day ?? '') > (mine.day ?? '') ? theirs.day : mine.day;
+  return fromDays(days, mine.host || host, day, laterTick(mine.lastTick, theirs.lastTick, now));
+}
+
+function sanitiseSite(incoming: SiteAttention, host: string, now: number): SiteAttention {
+  const days = daySeconds(incoming, new Map());
+  return fromDays(days, incoming.host || host, incoming.day, laterTick(0, incoming.lastTick, now));
+}
+
+/**
+ * The more recent tick wins, but never a future one.
+ *
+ * `lastTick` is what away-decay is measured from, so a tick in the future is
+ * a record that never decays. Clamping to `now` costs a legitimate import
+ * nothing and closes the one field here that could be edited into an
+ * advantage.
+ */
+function laterTick(a: number, b: number, now: number): number {
+  const best = Math.max(Number.isFinite(a) ? a : 0, Number.isFinite(b) ? b : 0);
+  return Math.min(best, now);
+}
+
 function clamp01(n: number): number {
   return n < 0 ? 0 : n > 1 ? 1 : n;
 }

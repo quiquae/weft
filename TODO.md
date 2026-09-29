@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
-of this session — typecheck clean, **486** unit / 122 suites, **98** jsdom / 22
+of this session — typecheck clean, **520** unit / 129 suites, **98** jsdom / 22
 suites, **35** tool tests / 11 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 979 KB and passing `npm run validate`, `packs:verify` 0
+packages built at 982 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
 `npm run test:all` exits 0 end to end. **The store-asset generator was never
 broken and the listing art was stale, as of 2026-09-29** — the recorded
@@ -79,12 +79,24 @@ six packages are built, and the whole gate plus `packs:verify` and
 `site:check` re-ran green on the bumped tree. The tag is deliberately **not**
 pushed; that is outward-facing and belongs to B2.
 
-**So the whole of B0 is closed, and `Now` is empty.** The code is not what is
-holding the release up, and neither is the version any more. **Every
-remaining item needs Creagh.** The critical path is **B1 — the domain
-`weft.study` is not registered**, and nothing below it can move until it is.
-The one agent-shaped item left anywhere is the export/import asymmetry in
-`Next`, which is a real defect and is not on the release path.
+**And as of 2026-09-29 an import keeps what an export carried.** `exportAll`
+wrote five stores and `importAll` read two, dropping `attention`,
+`introduced` and `lock` while reporting `ok: true` — so moving machines cost
+a user their whole history, their streak and every progress tile, silently.
+Attention and today's introduced words now merge in; `lock` deliberately
+does not, and the message says so. **The larger find was one line above it**:
+`importAll` wrote the imported *settings* object straight to storage while
+its own doc comment promised they went "through the same lock path as any
+other change". They did not, so an exported JSON file with one number edited
+was a complete bypass of every cooldown in `GOVERNED_PATHS` — the commitment
+layer the product is built around. Both are fixed and guarded; see the note
+at the top of Notes.
+
+**So the whole of B0 is closed, and `Now` and `Next` are both empty.** The
+code is not what is holding the release up, and neither is the version any
+more. **Every remaining item needs Creagh.** The critical path is **B1 — the
+domain `weft.study` is not registered**, and nothing below it can move until
+it is. There is no agent-shaped work left in this file.
 
 ## Now
 
@@ -599,54 +611,93 @@ The one agent-shaped item left anywhere is the export/import asymmetry in
 
 ## Next
 
-- [ ] **An export carries three stores that an import silently drops.**
-      Found 2026-09-29 while looking for a way to seed attention for the
-      progress screenshot, which is how the asymmetry surfaced: there is no
-      way. `exportAll()` (`src/background/storage.ts:322`) writes `settings`,
-      `cards`, **`attention`**, **`introduced`** and **`lock`**.
-      `importAll()` (`:359`) reads `settings` and `cards` and ignores the
-      other three without comment or warning — it returns
-      `{ ok: true, message: 'Imported settings and N vocabulary records.' }`,
-      which is true about what it did and silent about what it discarded.
+- [x] **An export carries three stores that an import silently drops.**
+      Done 2026-09-29, as shape 1 — `attention` and `introduced` merge in,
+      `lock` does not, and the result message names both halves instead of
+      being silent about the second.
 
-      Why it matters beyond tidiness: data export is on the never-gated list
-      (`tests/core/entitlements.test.ts`), and the reason that list exists is
-      that a user must always be able to leave with their data. Someone
-      moving machines gets their vocabulary and settings and loses their
-      whole attention history, their streak, and the cooldown state — and
-      the last of those is the interesting one, because `lock` is what makes
-      a commitment stick. Restoring it is not obviously right (importing a
-      *shorter* cooldown would be a difficulty reduction, which the lock
-      path exists to refuse) and neither is dropping it in silence.
+      **The judgement the item left open had already been taken, in a test
+      the item had not read.** It offered shape 2, "import all three,
+      running `lock` through the same cooldown path", and recorded no
+      preference. But `tests/e2e/friction.spec.ts:407`, "importing a file
+      cannot clear a cooldown", already spells the answer out: importing
+      lock means "export before requesting an easier setting, wait nothing,
+      import the old file, and the pending change and its clock are gone",
+      and that test says in as many words that it exists "to fail when" a
+      future change tidies export/import into a full round trip. Shape 2 was
+      not an open option; it was a guarded-against regression. **Before
+      costing out the options a queued item lists, grep the suite for a test
+      that already decided one of them.**
 
-      Three shapes, no preference recorded because this is a judgement about
-      what an import *means*: (1) import `attention` and `introduced`, leave
-      `lock` alone, and say so in the result message; (2) import all three,
-      running `lock` through the same cooldown path as any other change so a
-      forged easier state cannot land — `importAll`'s own doc comment
-      already claims this is how settings work, so the machinery exists;
-      (3) keep the behaviour and make `exportAll` stop writing fields
-      nothing reads. Shape 3 is the cheapest and the worst — the export is
-      also what a user attaches to a bug report, and attention history is
-      the most diagnostic thing in it. Guard belongs in `tests/core/`, which
-      can round-trip `exportAll` → `importAll` with no browser.
+      The reason to refuse `lock` is also stronger than "not obviously
+      right", and it is worth keeping because it is the whole design rule:
+      **every field of the lock state is a difficulty reduction when it
+      comes from a file.** A `pending` change whose `unlocksAt` has already
+      passed arrives ready to apply; a `panic` day with `used: 0` refills a
+      spent budget; a lower `tamperCount` launders a history; an older
+      `lastSeenAt` re-arms the clock-rewind trick `noteClock` exists to
+      catch. The one field with genuine user value, the audit `log`, is
+      already truncated to 50 entries on the way out — which tells you what
+      the export thinks `lock` is for: diagnosis, not restoration.
 
-      **Check the existing coverage before assuming it is uncovered by
-      accident.** `tests/e2e/friction.spec.ts:344`, "a round trip keeps the
-      vocabulary and re-signs it", is under the heading *taking your data
-      with you* and looks like the test that would catch this. It seeds two
-      cards, exports, and asserts the **cards** survive and are re-signed.
-      It never writes attention, `introduced` or `lock` before exporting, so
-      the three fields that get dropped are never in the payload it checks —
-      the same shape as PR #14's guard, which could not see `novem` because
-      it filtered on notes that exist. The name is the only thing that
-      overpromises; widen the seed, not the heading.
+      Attention is the mirror image and that is why it can come in at once.
+      `weaveRatio` is monotone increasing in attention, so more of it is a
+      *harder* page, and "anything that makes Weft harder applies at once"
+      is already the rule. `mergeAttention` (`src/core/escalation.ts`) folds
+      both machines into a day → seconds map and takes the **max per day,
+      never the sum** — the reason `mergeCards` already gives for
+      `exposures`, one line of which could have been written for this:
+      "the same word read on two machines is not twice as familiar, and
+      summing would let a round trip through export inflate it." Max also
+      makes the import idempotent, which matters because nothing stops
+      anyone importing the same file twice and the dashboard calls that
+      panel "facts about reading you have actually done".
 
-Otherwise empty, and the item above is now **the only agent-shaped work left
-in this file.** B0 closed on 2026-09-29, so everything else in Blocked needs
-Creagh: B1 an identity and a payment method, B2 onwards a decision that is
-not reversible the way a commit is. A session picking this file up should
-work the export/import item and expect to find nothing else.
+      **The bigger defect was one line above the one the item named.**
+      `importAll`'s doc comment promised that an import "is not a way to
+      install a forged difficulty setting", because "any reduction in
+      difficulty relative to the current state still has to pass the
+      cooldown, because settings are applied through the same lock path as
+      any other change". It never went near that path: it called
+      `saveSettings` directly. So while the item was weighing whether
+      importing `lock` might hand someone an easier state, *settings* — the
+      thing cooldowns actually govern — walked straight past, and one edited
+      number in an exported JSON file disabled the attention tax, dropped
+      the ceiling or shortened the cooldown that governs the cooldown.
+      `splitImportedSettings` (`src/core/lock.ts`) now splits an imported
+      file the way the rest of the product already works: harder and
+      cosmetic values land at once, anything easier becomes a patch for
+      `requestChange` and waits out the user's own cooldown. Direction comes
+      from `assessPatch` rather than `directionOf`, which is the difference
+      that matters for `learning.activeTarget` — it scores `neutral` on
+      direction but resets vocabulary exposure, and only `assessPatch` knows
+      that.
+
+      Done test-first throughout, and the guards were checked for vacuity
+      rather than assumed non-vacuous: restoring the old direct write turns
+      4 of the 6 settings-bypass tests red, and the 2 that stay green are
+      the over-correction guards (a *harder* setting, and a contrast
+      setting, must still land at once). 34 tests in three files —
+      `tests/core/escalation.test.ts` (9, `mergeAttention`),
+      `tests/core/lock.test.ts` (9, `splitImportedSettings`) and a new
+      `tests/core/storage-export.test.ts` (16, the round trip). The last is
+      the first test anywhere to import `src/background/storage.ts`: it runs
+      against a Map-backed `chrome.storage.local`, no browser and no I/O,
+      the same bargain `providers.test.ts` makes when it stubs `fetch`, and
+      each machine is a separate module instance with its own install id so
+      an import really does cross between installs. The e2e test the item
+      named was widened rather than renamed, as it asked.
+
+      One thing found and left as correct: `validateSettings` clamps
+      `ceilingRatio` up to `baseRatio` (`src/core/settings.ts:277`), so the
+      two gates compose — validation fixes the range before the lock judges
+      the direction. A test expecting `0.01` to survive was wrong about the
+      code, not the other way round.
+
+Empty. There is no agent-shaped work left in this file: everything in
+Blocked needs Creagh — B1 an identity and a payment method, B2 onwards a
+decision that is not reversible the way a commit is. A session picking this
+file up should read the Blocked section, confirm B1 has not moved, and stop.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
@@ -750,6 +801,25 @@ repo is private. `gh repo edit quiquae/weft --visibility public`, or host the
 zips elsewhere and set `WEFT_REPO`. Then push the `v1.0.1` tag so the release
 workflow attaches the packages. *Needs: B1 decided, and B0 done — the tag
 cannot be pushed before it exists.*
+
+**B2a — regenerate `RELEASE-1.0.1.md` immediately before pushing the tag.**
+Found 2026-09-29, and it is structural rather than a one-off. `RELEASE-X.Y.Z.md`
+is *generated*: it carries a `Changes since v1.0.0` list built from `git log`
+and the six package sizes. B0 step 2 generated it on 2026-09-29 and **the
+version was cut before the tag was pushed**, so every commit that lands on
+`main` in between makes it staler, silently — the file is not derived at tag
+time and nothing checks it. It is already one commit and ~1 KB of package
+size out of date, from the export/import fix that landed the same day.
+
+The fix cannot be done in the PR that causes it: the squash-merge hash does
+not exist until after the merge, so regenerating inside the branch would
+write a list that is wrong the moment it lands. So it belongs here, as the
+step before `git push origin v1.0.1`: run `npm run release --
+--version=1.0.1` on a clean `main`, confirm only `RELEASE-1.0.1.md` and the
+gitignored zips moved, commit that through a PR, *then* tag. Same class as
+the 1.0.1 session's finding that `docs/SUBMIT.md` named five zip filenames
+that no longer existed — a version bump invalidates artefacts, and no count
+sweep looks at artefacts.
 
 **B3 — Turn on Pages and set `WEFT_PAGES=true`.** Settings → Pages → Source:
 GitHub Actions, then `gh variable set WEFT_PAGES --body true`. Deliberately

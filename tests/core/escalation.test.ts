@@ -8,7 +8,10 @@ import {
   recordAttention,
   currentAttentionSeconds,
   formatDuration,
+  mergeAttention,
 } from '../../src/core/escalation.ts';
+import type { SiteAttention } from '../../src/core/types.ts';
+import { NOW } from '../helpers.ts';
 
 const CURVE = { baseRatio: 0.06, ceilingRatio: 0.35, gainPerMinute: 0.02, escalate: true };
 
@@ -188,4 +191,138 @@ describe('formatDuration', () => {
     assert.equal(formatDuration(3900), '1h 5m');
     assert.equal(formatDuration(-5), '0s');
   });
+});
+
+/**
+ * Merging two machines' attention.
+ *
+ * An export carries `attention` and an import has always thrown it away, so
+ * a user moving machines lost their whole history in silence. Restoring it
+ * is a merge rather than a replace, and the merge has exactly two jobs:
+ * never lose a day, and never invent one.
+ *
+ * Max per day rather than sum, for the reason `mergeCards` already gives
+ * about exposures — a round trip through export must not inflate the
+ * number, and the dashboard calls this panel "facts about reading you have
+ * actually done". Summing would also make importing the same file twice
+ * different from importing it once.
+ */
+describe('mergeAttention', () => {
+  const day = (d: number) => `2026-09-${String(d).padStart(2, '0')}`;
+  const site = (over: Partial<SiteAttention> = {}): SiteAttention => ({
+    host: 'example.test',
+    seconds: 0,
+    lastTick: NOW,
+    day: day(29),
+    history: [],
+    ...over,
+  });
+
+  test('brings over a host this machine has never seen', () => {
+    const merged = mergeAttention({}, { 'news.test': site({ host: 'news.test', seconds: 600 }) }, NOW);
+    assert.equal(merged['news.test']?.seconds, 600);
+  });
+
+  test('leaves a host the import does not mention alone', () => {
+    const mine = { 'a.test': site({ host: 'a.test', seconds: 120 }) };
+    const merged = mergeAttention(mine, {}, NOW);
+    assert.deepEqual(merged['a.test'], mine['a.test']);
+  });
+
+  test('takes the larger of the two same-day figures, never the sum', () => {
+    const merged = mergeAttention(
+      { 'a.test': site({ host: 'a.test', seconds: 600 }) },
+      { 'a.test': site({ host: 'a.test', seconds: 900 }) },
+      NOW,
+    );
+    assert.equal(merged['a.test']?.seconds, 900, 'the larger day should win');
+  });
+
+  test('never lowers a figure this machine already has', () => {
+    const merged = mergeAttention(
+      { 'a.test': site({ host: 'a.test', seconds: 900 }) },
+      { 'a.test': site({ host: 'a.test', seconds: 10 }) },
+      NOW,
+    );
+    assert.equal(merged['a.test']?.seconds, 900);
+  });
+
+  test('is idempotent: importing the same file twice is importing it once', () => {
+    const theirs = { 'a.test': site({ host: 'a.test', seconds: 900, history: [{ day: day(28), seconds: 300 }] }) };
+    const once = mergeAttention({ 'a.test': site({ host: 'a.test', seconds: 120 }) }, theirs, NOW);
+    const twice = mergeAttention(once, theirs, NOW);
+    assert.deepEqual(twice, once, 'a second import of the same export changed the totals');
+  });
+
+  test('merges history day by day, keeping the larger of each', () => {
+    const merged = mergeAttention(
+      {
+        'a.test': site({
+          host: 'a.test',
+          seconds: 100,
+          history: [
+            { day: day(26), seconds: 500 },
+            { day: day(27), seconds: 60 },
+          ],
+        }),
+      },
+      {
+        'a.test': site({
+          host: 'a.test',
+          seconds: 100,
+          history: [
+            { day: day(27), seconds: 800 },
+            { day: day(28), seconds: 400 },
+          ],
+        }),
+      },
+      NOW,
+    );
+    assert.deepEqual(merged['a.test']?.history, [
+      { day: day(26), seconds: 500 },
+      { day: day(27), seconds: 800 },
+      { day: day(28), seconds: 400 },
+    ]);
+  });
+
+  test("the older machine's current day becomes history rather than being lost", () => {
+    const merged = mergeAttention(
+      { 'a.test': site({ host: 'a.test', seconds: 700, day: day(29) }) },
+      { 'a.test': site({ host: 'a.test', seconds: 400, day: day(27) }) },
+      NOW,
+    );
+    assert.equal(merged['a.test']?.day, day(29), 'the later day is the current one');
+    assert.equal(merged['a.test']?.seconds, 700);
+    assert.deepEqual(merged['a.test']?.history, [{ day: day(27), seconds: 400 }]);
+  });
+
+  test('clamps a forged future lastTick to now, so decay cannot be dodged', () => {
+    const merged = mergeAttention(
+      { 'a.test': site({ host: 'a.test', seconds: 10 }) },
+      { 'a.test': site({ host: 'a.test', seconds: 10, lastTick: NOW + 30 * 86_400_000 }) },
+      NOW,
+    );
+    assert.equal(merged['a.test']?.lastTick, NOW);
+  });
+
+  test('caps merged history at sixty days, keeping the most recent', () => {
+    const many = (from: number, count: number) =>
+      Array.from({ length: count }, (_, i) => ({ day: `2026-01-${String(from + i).padStart(2, '0')}`, seconds: 60 }));
+    const merged = mergeAttention(
+      { 'a.test': site({ host: 'a.test', history: many(1, 20) }) },
+      { 'a.test': site({ host: 'a.test', history: [...many(1, 20), ...manyMonths()] }) },
+      NOW,
+    );
+    const history = merged['a.test']?.history ?? [];
+    assert.ok(history.length <= 60, `history grew to ${history.length} days`);
+    assert.equal(history.at(-1)?.day, '2026-03-30', 'the cap dropped the newest days instead of the oldest');
+  });
+
+  function manyMonths(): Array<{ day: string; seconds: number }> {
+    const out: Array<{ day: string; seconds: number }> = [];
+    for (const [month, days] of [['02', 28], ['03', 30]] as Array<[string, number]>) {
+      for (let d = 1; d <= days; d++) out.push({ day: `2026-${month}-${String(d).padStart(2, '0')}`, seconds: 30 });
+    }
+    return out;
+  }
 });

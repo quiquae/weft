@@ -340,6 +340,13 @@ test.describe('taking your data with you', () => {
    * the path, which the unit tests cannot reach: exportAll, the settings
    * validation on the way in, and the re-signing of imported state with THIS
    * install's key.
+   *
+   * The seed carries attention as well as cards, and that is deliberate.
+   * For a long time it did not, and the heading promised more than the body
+   * delivered: `attention`, `introduced` and `lock` were all written by
+   * exportAll and all silently dropped by importAll, and this test could
+   * not see it because it never put them in the payload it checked. Widen
+   * the seed rather than narrowing the heading.
    */
   test('a round trip keeps the vocabulary and re-signs it', async ({ rpc }) => {
     const day = 86_400_000;
@@ -373,7 +380,25 @@ test.describe('taking your data with you', () => {
       },
     };
 
-    await rpc({ type: 'import-data', payload: { format: 'weft-export/1', settings: {}, cards: seeded } });
+    const seededAttention = {
+      'news.test': {
+        host: 'news.test',
+        seconds: 1800,
+        lastTick: now,
+        day: new Date(now).toISOString().slice(0, 10),
+        history: [{ day: new Date(now - day).toISOString().slice(0, 10), seconds: 900 }],
+      },
+    };
+
+    await rpc({
+      type: 'import-data',
+      payload: {
+        format: 'weft-export/1',
+        settings: {},
+        cards: seeded,
+        attention: seededAttention,
+      },
+    });
 
     const exported = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
     const payload = exported.payload;
@@ -402,6 +427,11 @@ test.describe('taking your data with you', () => {
     expect(after['fr:maison']?.reps, 'a round trip lost reviews').toBe(9);
     expect(after['fr:maison']?.exposures, 'a round trip inflated exposures').toBe(61);
     expect(after['fr:riviere']?.reps).toBe(2);
+
+    // Attention is the store the heading always implied and the body never
+    // checked. Max-merged, so the second import must not double it.
+    const attnOut = again.payload['attention'] as Record<string, { seconds: number }>;
+    expect(attnOut['news.test']?.seconds, 'attention did not survive the round trip').toBe(1800);
   });
 
   test('importing a file cannot clear a cooldown', async ({ rpc }) => {

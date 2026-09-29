@@ -1,8 +1,16 @@
 import type { MemoryCard, Settings, SiteAttention } from '../core/types.ts';
 import { migrateSettings, validateSettings } from '../core/settings.ts';
-import { emptyLockState, noteClock, recordTamper, type LockState } from '../core/lock.ts';
+import {
+  emptyLockState,
+  noteClock,
+  recordTamper,
+  requestChange,
+  splitImportedSettings,
+  type LockState,
+} from '../core/lock.ts';
+import type { Patch } from '../core/patch.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
-import { dayKey } from '../core/escalation.ts';
+import { dayKey, mergeAttention } from '../core/escalation.ts';
 import { mergeCards } from '../core/fsrs.ts';
 import { pruneAttention, pruneByAge } from '../core/prune.ts';
 import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
@@ -190,11 +198,16 @@ export async function saveLock(lock: LockState): Promise<void> {
  * be guaranteed. An alarm leaves the size unbounded between firings, which is
  * precisely the window a quota error happens in.
  */
-export async function saveAttention(attention: Record<string, SiteAttention>): Promise<void> {
+export async function saveAttention(
+  attention: Record<string, SiteAttention>,
+): Promise<Record<string, SiteAttention>> {
   const meta = await getMeta();
   const { kept } = pruneAttention(attention, Date.now());
   await put(KEYS.attention, await seal(meta.installId, kept));
   if (cache) cache.attention = kept;
+  // Returned rather than void so an importer can say how many sites actually
+  // landed instead of how many the file offered.
+  return kept;
 }
 
 /** Store a licence key and return what it turned out to be. */
@@ -348,13 +361,38 @@ export interface ImportResult {
 /**
  * Import a previously exported file.
  *
- * Imported settings go through the same validation as anything read from
- * storage, and are then re-signed with THIS install's key. An import is
- * therefore a legitimate way to move a configuration between machines, and
- * not a way to install a forged difficulty setting: the values are clamped on
- * the way in, and any reduction in difficulty relative to the current state
- * still has to pass the cooldown, because settings are applied through the
- * same lock path as any other change.
+ * An import is a merge into a live install, not a restore over a blank one,
+ * and the file is plain JSON the user can edit. Both facts drive every rule
+ * below: nothing may arrive that makes Weft easier without passing the same
+ * gate it would have passed on the options page, and nothing already here
+ * may be lost to a file that knows less than this machine does.
+ *
+ * **Settings** are split by `splitImportedSettings`. Harder and cosmetic
+ * values land at once; anything easier becomes a patch for `requestChange`
+ * and queues against the user's own cooldown. This is what the previous
+ * version of this comment claimed already happened and what the code did
+ * not do — it wrote the whole object straight through, which made an export
+ * file a complete bypass of the commitment layer.
+ *
+ * **Cards** merge through `mergeCards`, which moves the FSRS state as a unit
+ * rather than taking field-wise maxima of a history that never happened.
+ *
+ * **Attention** merges through `mergeAttention`, max per day. It can only
+ * ever raise the number, and a higher number is a harder page, so it needs
+ * no gate — and a second import of the same file changes nothing.
+ *
+ * **Introduced** words come in only when the file is from today, which is
+ * the one case they mean anything: `load()` discards any other day's.
+ *
+ * **Lock state is never imported**, and that is a decision rather than the
+ * omission it used to be. Every field of it moves difficulty *down* when it
+ * comes from a file — a pending change whose `unlocksAt` has already passed
+ * is a reduction that applies on arrival, a `panic` day with `used: 0`
+ * refills a spent budget, a lower `tamperCount` launders a history, and an
+ * older `lastSeenAt` re-arms the clock-rewind trick `noteClock` exists to
+ * catch. There is no field worth the hole, so the lock stays with the
+ * machine that earned it and the result message says so instead of being
+ * silent about it.
  */
 export async function importAll(payload: unknown): Promise<ImportResult> {
   if (!payload || typeof payload !== 'object') {
@@ -367,39 +405,174 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
 
   const meta = await getMeta();
   const now = Date.now();
-  const settings = validateSettings(data['settings'], now, meta.installId);
-  await saveSettings(settings);
+  const snapshot = await load();
+  const { settings: before, lock, attention: mine, introduced } = snapshot;
 
-  if (data['cards'] && typeof data['cards'] === 'object') {
-    const incoming = data['cards'] as Record<string, MemoryCard>;
-    const existing = await loadCards();
-    const merged: Record<string, MemoryCard> = { ...existing };
-    let added = 0;
-    for (const [id, card] of Object.entries(incoming)) {
-      if (!card || typeof card !== 'object' || typeof card.lemma !== 'string') continue;
-      const current = merged[id];
-      if (!current) {
-        merged[id] = { ...card, id };
-        added++;
-        continue;
-      }
-      // mergeCards keeps the FSRS state as one unit and merges only the
-      // genuinely additive counters. The version of this loop that compared
-      // reps OR exposures and replaced the whole record could drop nine
-      // reviews to gain an exposure count — see the note on mergeCards.
-      const next = mergeCards(current, { ...card, id });
-      if (next !== current) {
-        merged[id] = next;
-        added++;
-      }
-    }
-    await replaceCards(merged);
-    invalidate();
-    return { ok: true, message: `Imported settings and ${added} vocabulary records.` };
-  }
+  const incoming = validateSettings(data['settings'], now, meta.installId);
+  const { immediate, deferred } = splitImportedSettings(before, incoming);
+  await saveSettings(immediate);
+  const queued = await queueEasierSettings(lock, immediate, deferred, now, meta.installId);
+
+  const cards = await importCards(data['cards']);
+  const hosts = await importAttention(data['attention'], mine, now);
+  await importIntroduced(data['introduced'], introduced, immediate.attention.rolloverHour, now);
 
   invalidate();
-  return { ok: true, message: 'Imported settings.' };
+  return {
+    ok: true,
+    message: importMessage(cards, hosts, queued, carriesLockState(data['lock'])),
+  };
+}
+
+/**
+ * Hand the easier half of an import to the cooldown.
+ *
+ * `requestChange` applies it itself when no cooldown is configured, which is
+ * the user's own setting and not something to second-guess here. Returns how
+ * many paths are actually waiting, so the message can be true.
+ */
+async function queueEasierSettings(
+  lock: LockState,
+  settings: Settings,
+  deferred: Patch,
+  now: number,
+  installId: string,
+): Promise<number> {
+  const paths = Object.keys(deferred);
+  if (!paths.length) return 0;
+
+  const result = requestChange(lock, settings, deferred, now, () => newInstallId().slice(0, 12));
+  await saveLock(result.state);
+  if (result.applied) {
+    await saveSettings(validateSettings(result.settings, now, installId));
+    return 0;
+  }
+  return paths.length;
+}
+
+/** Merge incoming cards, returning how many records the file contributed. */
+async function importCards(incoming: unknown): Promise<number> {
+  if (!incoming || typeof incoming !== 'object') return 0;
+  const existing = await loadCards();
+  const merged: Record<string, MemoryCard> = { ...existing };
+  let added = 0;
+
+  for (const [id, card] of Object.entries(incoming as Record<string, MemoryCard>)) {
+    if (!card || typeof card !== 'object' || typeof card.lemma !== 'string') continue;
+    const current = merged[id];
+    if (!current) {
+      merged[id] = { ...card, id };
+      added++;
+      continue;
+    }
+    // mergeCards keeps the FSRS state as one unit and merges only the
+    // genuinely additive counters. The version of this loop that compared
+    // reps OR exposures and replaced the whole record could drop nine
+    // reviews to gain an exposure count — see the note on mergeCards.
+    const next = mergeCards(current, { ...card, id });
+    if (next !== current) {
+      merged[id] = next;
+      added++;
+    }
+  }
+
+  await replaceCards(merged);
+  return added;
+}
+
+/** Merge incoming attention, returning how many of its hosts landed. */
+async function importAttention(
+  incoming: unknown,
+  mine: Record<string, SiteAttention>,
+  now: number,
+): Promise<number> {
+  if (!incoming || typeof incoming !== 'object') return 0;
+  const theirs = incoming as Record<string, SiteAttention>;
+  const offered = Object.entries(theirs)
+    .filter(([, site]) => site && typeof site === 'object')
+    .map(([host]) => host);
+  if (!offered.length) return 0;
+
+  // Counted against what survived the write rather than what the file
+  // offered, because saveAttention prunes to MAX_HOSTS.
+  const kept = await saveAttention(mergeAttention(mine, theirs, now));
+  return offered.filter((host) => host in kept).length;
+}
+
+/**
+ * Today's introduced words, and only today's.
+ *
+ * Any other day is a no-op by construction — `load()` throws away an
+ * `introduced` whose day is not today — so the only case this changes
+ * anything is the same-day machine move it exists for, where dropping it
+ * means meeting the same new words twice in one afternoon. Unioned rather
+ * than replaced, and capped at the 500 `validateSettings` clamps
+ * `introduceNewPerDay` to, because a list read out of a file is otherwise
+ * unbounded and this store has no pruner of its own.
+ */
+const MAX_INTRODUCED = 500;
+
+async function importIntroduced(
+  incoming: unknown,
+  current: Introduced,
+  rolloverHour: number,
+  now: number,
+): Promise<boolean> {
+  if (!incoming || typeof incoming !== 'object') return false;
+  const { day, lemmas } = incoming as { day?: unknown; lemmas?: unknown };
+  if (typeof day !== 'string' || day !== dayKey(now, rolloverHour)) return false;
+  if (!Array.isArray(lemmas)) return false;
+
+  const merged = new Set(current.day === day ? current.lemmas : []);
+  const sizeBefore = merged.size;
+  for (const lemma of lemmas) {
+    if (merged.size >= MAX_INTRODUCED) break;
+    if (typeof lemma === 'string' && lemma) merged.add(lemma);
+  }
+  if (merged.size === sizeBefore) return false;
+
+  await saveIntroduced({ day, lemmas: [...merged] });
+  return true;
+}
+
+/** True when the file carries lock state a user would notice the absence of. */
+function carriesLockState(incoming: unknown): boolean {
+  if (!incoming || typeof incoming !== 'object') return false;
+  const lock = incoming as Partial<LockState>;
+  return Boolean(
+    (Array.isArray(lock.pending) && lock.pending.length) ||
+      (lock.panic && lock.panic.used > 0) ||
+      lock.tamperCount,
+  );
+}
+
+function plural(n: number, word: string): string {
+  return `${n} ${word}${n === 1 ? '' : 's'}`;
+}
+
+/**
+ * Say what happened, including the parts that did not.
+ *
+ * The old message was `Imported settings and N vocabulary records.`, which
+ * was true about what it did and silent about the three stores it threw
+ * away. Silence is the part that made it a bug rather than a limitation: a
+ * user cannot notice a history they were never told was dropped.
+ */
+function importMessage(cards: number, hosts: number, queued: number, heldLock: boolean): string {
+  const landed = ['settings'];
+  if (cards) landed.push(plural(cards, 'vocabulary record'));
+  if (hosts) landed.push(`attention for ${plural(hosts, 'site')}`);
+  const list =
+    landed.length > 1 ? `${landed.slice(0, -1).join(', ')} and ${landed.at(-1)}` : landed[0];
+
+  const out = [`Imported ${list}.`];
+  if (queued) {
+    out.push(
+      `${plural(queued, 'setting')} that would make Weft easier ${queued === 1 ? 'is' : 'are'} waiting out the cooldown.`,
+    );
+  }
+  if (heldLock) out.push('Cooldowns and panic passes stay with this machine.');
+  return out.join(' ');
 }
 
 export async function resetVocabulary(): Promise<void> {

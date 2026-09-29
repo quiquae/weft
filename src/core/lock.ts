@@ -1,5 +1,5 @@
 import type { PanicState, PendingChange, PendingChangeKind, Settings } from './types.ts';
-import { applyPatch, getPath, patchKey, type Patch } from './patch.ts';
+import { applyPatch, diffPaths, getPath, patchKey, setPath, type Patch } from './patch.ts';
 import { dayKey } from './escalation.ts';
 
 /**
@@ -217,6 +217,56 @@ export interface RequestResult {
   pending?: PendingChange;
   /** Explanation for the UI. */
   message: string;
+}
+
+/**
+ * Split an imported settings file into what may land now and what must wait.
+ *
+ * `importAll` used to write an imported settings object straight to storage,
+ * while its own doc comment promised that "any reduction in difficulty
+ * relative to the current state still has to pass the cooldown, because
+ * settings are applied through the same lock path as any other change". It
+ * did not go through that path at all, so an export file was a complete
+ * bypass of every cooldown here: the one door the commitment layer exists to
+ * hold shut had a second entrance next to it, and moving a single number in
+ * a JSON file was enough to use it.
+ *
+ * The split applies the rule the rest of the product already follows rather
+ * than inventing one. Anything harder lands at once, because that is what
+ * happens everywhere else and holding it would be friction on the way *into*
+ * a commitment. Anything easier becomes a patch for `requestChange`, which
+ * queues it against the cooldown the user configured — an import is then
+ * exactly as fast, and exactly as slow, as making the same change by hand on
+ * the options page.
+ *
+ * Everything outside `GOVERNED_PATHS` is untouched. Themes, tooltip
+ * contents and accessibility are not difficulty, and putting a contrast
+ * setting behind a cooldown would be the kind of blanket friction that gets
+ * a tool uninstalled.
+ *
+ * Direction comes from `assessPatch` rather than `directionOf`, which is the
+ * difference that matters for `learning.activeTarget`: switching target
+ * language scores `neutral` on direction but resets your vocabulary
+ * exposure, and `assessPatch` is the one that already knows to treat it as
+ * easier.
+ */
+export function splitImportedSettings(
+  current: Settings,
+  incoming: Settings,
+): { immediate: Settings; deferred: Patch } {
+  const deferred: Patch = {};
+  let immediate = incoming;
+
+  for (const path of diffPaths(current, incoming, GOVERNED_PATHS.map((g) => g.path))) {
+    const to = getPath(incoming, path);
+    if (assessPatch(current, { [path]: to }).direction !== 'easier') continue;
+    deferred[path] = to;
+    // Held back means held back: the machine keeps the value it has until
+    // the cooldown says otherwise.
+    immediate = setPath(immediate, path, getPath(current, path));
+  }
+
+  return { immediate, deferred };
 }
 
 /**
