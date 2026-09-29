@@ -824,7 +824,24 @@ move until it is.
       **Left stale on purpose, as real follow-up now that there is somewhere
       to record it:** regenerate and actually diff `store listing
       screenshots` and `first-run walkthrough shots`, then
-      `artefacts:verify` whichever come back byte-identical. Queued.
+      `artefacts:verify` whichever come back byte-identical. Queued as the
+      item directly below.
+
+- [ ] **Two of the four real artefact groups are genuinely stale, and now
+      there is somewhere to record checking them.** `store listing
+      screenshots` (2 commits since `8d2cbbb` as last measured) and
+      `first-run walkthrough shots` (9 since `7f7faaa`) both read STALE
+      under `npm run artefacts:check` while the manifest mechanism above was
+      being built, and neither was regenerated as part of that work —
+      building a tool to record a check and actually performing the check
+      are different tasks, and stamping either speculatively would have been
+      the exact false "fresh" the tool exists to prevent. Regenerate both
+      (`npm run build:test && WEFT_STORE=1 npx playwright test store-assets`,
+      then the `WEFT_FIRSTRUN=1 npx playwright test firstrun` equivalent),
+      **read** what changed rather than trusting `git status` — the house
+      rule this file has paid for repeatedly — and for whichever comes back
+      byte-identical, run `npm run artefacts:verify -- "<name>"` and commit
+      the stamp. For whichever does not, commit the real change. ~20–30 min.
 
 - [ ] **The onboarding preview writes to the learner's real vocabulary.**
       Found 2026-09-29 while probing why the seeded vocabulary list held 26
