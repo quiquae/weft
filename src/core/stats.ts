@@ -1,6 +1,7 @@
 import type { MemoryCard, Settings, SiteAttention } from './types.ts';
 import { cardRetrievability, daysUntilDue, isRetirable } from './fsrs.ts';
 import { dayKey } from './escalation.ts';
+import { orderKey } from './similarity.ts';
 
 /**
  * Aggregations for the dashboard.
@@ -203,4 +204,57 @@ export function wordsRead(cards: MemoryCard[]): number {
   let total = 0;
   for (const card of cards) total += card.exposures;
   return total;
+}
+
+/** Which column the vocabulary list is ordered by. */
+export type VocabSort = 'seen' | 'alpha' | 'stable' | 'urgent';
+
+function cmp(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+/**
+ * Order the vocabulary list, totally.
+ *
+ * Three of the four columns tie constantly in real data: everything unseen
+ * has `exposures` equal, everything unreviewed has `stability` 0, and every
+ * brand-new card has the same retrievability. A comparator that returns 0 for
+ * two distinct cards has not defined an order — it has delegated one to
+ * whatever order the storage round-trip happened to return, which is why two
+ * runs of the screenshot generator a minute apart produced
+ * `docs/screens/dashboard-vocabulary.png` with the rows shuffled. A real
+ * learner sees the same thing between two visits to the page.
+ *
+ * So every column falls through to the same total tiebreak, the one
+ * `buildDiscoveries` already uses: the folded lemma, so accents file where a
+ * reader expects them, then the raw lemma and the id for the rare pair that
+ * folds alike. `alpha` never reaches it, and that is fine — a tiebreak that
+ * cannot fire costs nothing and means nobody has to remember which columns
+ * were the unsafe ones.
+ */
+export function sortVocabulary(
+  cards: MemoryCard[],
+  by: VocabSort,
+  now: number,
+): MemoryCard[] {
+  const primary = (a: MemoryCard, b: MemoryCard): number => {
+    switch (by) {
+      case 'seen':
+        return b.exposures - a.exposures;
+      case 'alpha':
+        return cmp(orderKey(a.lemma), orderKey(b.lemma));
+      case 'stable':
+        return b.stability - a.stability;
+      case 'urgent':
+      default:
+        return cardRetrievability(a, now) - cardRetrievability(b, now);
+    }
+  };
+  return [...cards].sort(
+    (a, b) =>
+      primary(a, b) ||
+      cmp(orderKey(a.lemma), orderKey(b.lemma)) ||
+      cmp(a.lemma, b.lemma) ||
+      cmp(a.id, b.id),
+  );
 }

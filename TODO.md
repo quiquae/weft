@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
-of this session — typecheck clean, **520** unit / 129 suites, **98** jsdom / 22
-suites, **48** tool tests / 15 suites, **36** e2e passing
+of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
+suites, **55** tool tests / 16 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 982 KB and passing `npm run validate`, `packs:verify` 0
+packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
 `npm run test:all` exits 0 end to end. **The store-asset generator was never
 broken and the listing art was stale, as of 2026-09-29** — the recorded
@@ -24,7 +24,15 @@ stale again within one commit, and now something looks, as of 2026-09-29** —
 what the generator produces; they are regenerated, and `npm run
 artefacts:check` reports every committed generated file the tree has moved
 past, which on a fresh `main` is four groups and two of them nobody knew
-about. See the note at the top of Notes. That sentence was in this
+about. **Both stale documentation sets are regenerated and the screens set
+is now reproducible, as of 2026-09-29** — `docs/firstrun/` came back
+byte-identical to what was committed, and `docs/screens/` needed three
+separate fixes before two consecutive runs agreed. The cause was *not* the
+absolute calendar date this file recorded: it was an unstable sort in the
+product, attention accrued by the run, and a cooldown banner the harness
+queued for itself. 18 of the 19 screens shots are byte-identical run to run;
+`options-density.png` alternates between two variants that differ by 17
+pixels of slider-track antialiasing. See the note at the top of Notes. That sentence was in this
 file yesterday and was not true: scene 4 still drifted, because
 `buildDiscoveries` sorted on kind and recency only and nineteen cards
 imported in one millisecond tie on both, so the feed's order came from
@@ -700,8 +708,24 @@ it is. There is no agent-shaped work left in this file.
       the direction. A test expecting `0.01` to survive was wrong about the
       code, not the other way round.
 
-- [ ] **Two committed screenshot sets are stale against `src/`, and the
-      amount is now measurable.** Found 2026-09-29 by the new
+- [x] **Two committed screenshot sets are stale against `src/`, and the
+      amount is now measurable.** Done 2026-09-29. Both regenerated, every
+      changed shot read rather than trusted, and `docs/screens/` made
+      reproducible — which took three fixes, none of them the one this item
+      predicted. `docs/firstrun/` came back **byte-identical** to what was
+      committed: stale by provenance, unchanged in content, which is the
+      tool's own "stale does not mean wrong" caveat earning its keep. See the
+      note at the top of Notes for the three causes and the one residue left.
+
+      **The recorded cause was wrong.** This item said five `dashboard*.png`
+      render an absolute calendar date from `Date.now()`. Measured, the churn
+      set was `dashboard.png`, `dashboard-dark.png`,
+      `dashboard-milestones.png`, `dashboard-vocabulary.png` and
+      `popup.png` — `popup.png` is not a `dashboard*.png` at all, and
+      `dashboard-transparency.png`, which holds the only visible rendered
+      date on the page, was stable throughout. No date was involved.
+      `src/ui/dashboard/index.tsx:299,429` are still the two date sites and
+      still not a problem. Found 2026-09-29 by the new
       `npm run artefacts:check`, which is the first thing in this repository
       that looks at generated artefacts at all. `docs/screens/` was last
       written at `0e41950` and `src/` has moved **5 commits** since;
@@ -733,6 +757,61 @@ it is. There is no agent-shaped work left in this file.
       the same way would make the whole of `docs/screens/` reproducible and
       would let `artefacts:check` mean something stronger for it. That is a
       change to a spec's seeding, not to the product.
+
+- [ ] **`artefacts:check` can never report a byte-identical regeneration as
+      fresh.** Found 2026-09-29, the first time the tool was acted on. It
+      measures freshness by commit provenance: `lastWrote` is the last commit
+      touching the artefact's `paths`, compared against commits touching its
+      `inputs`. Regenerating `docs/firstrun/` produced **byte-identical**
+      output, so nothing was committed, `lastWrote` did not move, and the
+      group still reports "8 commits since" on a tree where somebody has just
+      checked it. The next run will regenerate it, get identical bytes, and
+      hit the same dead end.
+
+      **The fix that fits the existing design:** a committed manifest — say
+      `docs/artefacts.json` — mapping each group to the commit it was last
+      verified at, with that file added to each group's own `paths`. Writing
+      it is then a commit, which is exactly the signal the tool already
+      understands, and "verified identical at `abc1234`" becomes as legible as
+      "rewritten at `abc1234`". `tools/artefacts.ts` already returns a
+      `missing` state for a pathspec that matches nothing, so the manifest
+      being absent has a defined answer rather than a crash.
+
+      Worth doing test-first against throwaway git repositories the way
+      `tests/tools/artefacts.test.ts` already does — in particular a test that
+      a verify-stamp with no content change *does* flip a group from stale to
+      fresh, which is the whole point and the one thing that cannot be
+      asserted today.
+
+- [ ] **The onboarding preview writes to the learner's real vocabulary.**
+      Found 2026-09-29 while probing why the seeded vocabulary list held 26
+      words instead of the 19 in the plan. The extra seven — `route`,
+      `jeune`, `eau`, `vivant`, `un`, `soir`, `encore` — are created when
+      `onboarding.html` is merely *opened*: its live preview weaves a real
+      passage through the real selector and records real exposures, so they
+      arrive as ordinary `MemoryCard`s with `exposures: 1`. Pinned by
+      probing `get-stats` at each step: 19 cards after the seeding import,
+      26 after the shots loop, and the loop's only non-extension page is the
+      onboarding one.
+
+      **This is a judgement, not a defect, which is why it is queued rather
+      than fixed.** The dashboard calls that panel "Every word Weft has put
+      in front of you", and the preview did put them in front of you — so
+      counting them is arguably correct. Against that: the milestones panel
+      says "Facts about reading you have actually done. Nothing here decays",
+      and a user who installs Weft, reads the onboarding page and closes it
+      has done no reading at all, yet starts with seven words met and a
+      non-zero "words read" total. It also means re-opening onboarding
+      inflates the count again.
+
+      Three shapes, no preference recorded. (1) Leave it — the preview is
+      real exposure to real words. (2) Have the preview render without
+      recording, which needs the onboarding page to pass something like
+      `record: false` through the selector path. (3) Let it record
+      `exposures` but not count toward `wordsRead`/milestones, which splits
+      "met" from "read" and may be the honest distinction. Whichever way it
+      goes, `tests/e2e/screenshots.spec.ts` currently documents the
+      behaviour in a comment and will need that comment corrected.
 
 Otherwise empty. Everything in Blocked needs Creagh — B1 an identity and a
 payment method, B2 onwards a decision that is not reversible the way a commit
@@ -943,6 +1022,113 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — the documentation shots were not photographing a date, and
+the first thing that made them diffable was a product fix.** The queued item
+named the cause — five `dashboard*.png` rendering an absolute calendar date
+from `Date.now()` — and named the wrong one. Measured before touching
+anything, two runs a minute apart moved `dashboard.png`, `dashboard-dark.png`,
+`dashboard-milestones.png`, `dashboard-vocabulary.png` and **`popup.png`**,
+which is not a `dashboard*.png`; and `dashboard-transparency.png`, the one
+panel that renders a date a reader can see, never moved at all. **The churn
+set was not even stable between checks** — `dashboard.png` and `popup.png`
+took turns — which is the signature of a counter accruing across a format
+boundary, not of a clock. Three causes, in the order they were found:
+
+1. **An unstable sort, in the product.** `dashboard-vocabulary.png` showed
+   the same rows in a different order, and cropping the differing region
+   (5305 pixels, 286 rows) showed why: every card tied on the sort key.
+   Three of the four columns in `src/ui/dashboard/index.tsx:137` returned 0
+   for distinct cards — `exposures` ties for everything unseen, `stability`
+   for everything unreviewed, `cardRetrievability` for every new card — so
+   `Array.sort`'s stability handed the order to the storage round-trip.
+   Exactly `buildDiscoveries` before `06cd2e9`, and **the unguarded sibling
+   of a decision already taken**: that fix is four weeks old and this
+   comparator sat three files away. Not a test concern — a real learner's
+   list reshuffles between visits. Moved into `src/core/stats.ts` as
+   `sortVocabulary` so it is unit-testable at all, with the tiebreak
+   `buildDiscoveries` already uses. `orderKey` is new in `similarity.ts` and
+   is deliberately *not* the existing `fold`, which collapses doubled
+   consonants and would file "pomme" and "pome" together.
+2. **Attention accrued by the run itself.** The popup's attention line and
+   the milestone bars read whatever the run earned while weaving a real page.
+   Fixed with the idiom `store-assets.spec.ts` already proved: seed 1800s,
+   which `formatDuration` floors to a stable "30 min".
+3. **A cooldown banner the harness queued for itself.** Since
+   `splitImportedSettings` landed in `6425461`, importing a payload with no
+   settings means `validateSettings` supplies the shipped defaults, and those
+   are *easier* than the density this spec configures — so the seeding import
+   queued "starting density → 6%; maximum density → 35%" and both options
+   shots grew a red "One change is waiting" banner about 200px tall. The
+   commitment layer working exactly as designed, on a payload only the
+   harness would ever send. Cancelled by id rather than by matching
+   settings, so it stays correct whichever field a future default makes
+   easier.
+
+**Two things that made it worse before they made it better, both worth not
+repeating.** Resetting the vocabulary store is necessary — probed, 12 cards
+before, 0 after, 19 after the import — but `reset-vocabulary` alone is not
+enough while a taxed page is still open, because the content script keeps
+writing. Closing those pages *without* waiting was worse than leaving them
+open: the close flushes pending exposures asynchronously, the flush raced the
+reset, and **five** shots drifted where one had before, including
+`dashboard-transparency.png`, which had been stable all session. A 2500 ms
+settle between the closes and the reset is what actually fixed it.
+
+**The list still holds 26 words, not the 19 in the plan, and that is
+expected.** Probing each step pinned the extra seven to the *shots loop*:
+the onboarding page's own live preview weaves a real passage through the real
+selector and records real exposures. Deterministic, so it costs nothing here
+— but it means a preview writes to the learner's vocabulary, which is queued
+in `Next` as a judgement rather than fixed as a defect.
+
+**What is left, measured rather than waved at.** 18 of 19 shots are
+byte-identical across consecutive runs. `options-density.png` is *bistable*:
+run 1 and run 3 agreed exactly and run 2 differed, by **17 pixels across 4
+rows** (y 275, 278, 418, 421) in the two density slider tracks — the same
+"1-pixel slider ticks" residue this file already records for the store
+shots, and not a shift, not a clip offset, and not reachable by seeding
+anything. `page-woven.png` drifted once in five checks and is captured at
+line 59, before any edit in this work, so that drift is pre-existing
+renderer nondeterminism rather than anything queued here.
+
+**Reading the images is what found the one real cost, and `git status` could
+never have.** Seeding half an hour saturates the site ceiling, so the popup
+now prints "You have reached the ceiling for this site" where the committed
+shot printed "40% after another 7 min" — the sentence that actually shows
+escalation happening. That cannot be had *and* reproducibility:
+`formatDuration` floors to whole minutes and the projection counts **down**
+by exactly the seconds the run accrues, so it is stable only in the
+knife-edge case where the value sits 59s above a boundary. Recorded in the
+spec beside the constant, because that is where someone would go to lower it.
+Two shots got *better* from being read: `options-dark.png` matches its
+committed bytes again once the banner is gone, and
+`dashboard-transparency.png` no longer has a half-cropped "Settings" link
+bleeding into the bottom of the clip.
+
+**`artefacts:check` cannot ever call `docs/firstrun/` fresh, and that is a
+real limitation rather than a bug in this work.** It asks provenance — "has
+anything this was generated from been committed since the artefact was last
+written" — and the firstrun set regenerated **byte-identically**, so there is
+nothing to commit and no commit to move its `lastWrote`. It will therefore
+report stale on every future run until some unrelated change to those eight
+files happens to land, and the next session will regenerate it, get identical
+bytes again, and be puzzled. Verified, not assumed: `git status docs/firstrun/`
+was empty after two full regenerations, and `artefacts:check` still listed the
+group as 8 commits stale afterwards. Queued in `Next` as a fixable design gap:
+a committed per-group manifest recording the commit an artefact was last
+*verified* at, included in that group's own `paths`, would turn "I checked and
+it was identical" into something the tool can see. `docs/screens/` does not
+have this problem this time only because its bytes really did change.
+
+**One methodological note.** A run of the generator that *fails* writes
+nothing, and "no file changed" is indistinguishable from a clean idempotent
+run — this file already records that, and it nearly cost this session a false
+result: a 16-minute run failed under contention while other work ran
+alongside it, and the drift check it fed reported zero drift. Every
+reproducibility claim above comes from a check that captured npm's own exit
+status per run and was read before its diff was believed. Do not run anything
+else heavy alongside the generator.
 
 **2026-09-29 — the listing art went stale one commit after it was declared
 current, and the check that would notice did not exist.** The queued item

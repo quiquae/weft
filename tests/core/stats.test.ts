@@ -2,10 +2,12 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   stageOf, vocabStats, studyQueue, attentionSummary, upcoming, retirementSeries, wordsRead,
+  sortVocabulary, type VocabSort,
 } from '../../src/core/stats.ts';
+import { cardRetrievability } from '../../src/core/fsrs.ts';
 import { recordAttention, dayKey } from '../../src/core/escalation.ts';
 import { card, settings, NOW } from '../helpers.ts';
-import type { SiteAttention } from '../../src/core/types.ts';
+import type { MemoryCard, SiteAttention } from '../../src/core/types.ts';
 
 const DAY = 86_400_000;
 const S = settings();
@@ -165,5 +167,63 @@ describe('wordsRead', () => {
   test('sums exposures', () => {
     assert.equal(wordsRead([card({ exposures: 10 }), card({ exposures: 5 })]), 15);
     assert.equal(wordsRead([]), 0);
+  });
+});
+
+describe('sortVocabulary', () => {
+  /*
+   * The defect this pins was found in a screenshot, not in a test: two runs of
+   * `WEFT_SCREENS=1 npx playwright test screenshots` a minute apart produced
+   * `docs/screens/dashboard-vocabulary.png` with the rows in a different
+   * order, because every card tied on the sort key and `Array.sort`'s
+   * stability handed the order over to whatever the storage round-trip
+   * returned. Same class as `buildDiscoveries` before `06cd2e9`: a comparator
+   * that can return 0 for two distinct items has not defined an order, it has
+   * delegated one. It is not a test-only concern — a real learner's list
+   * reshuffles between visits.
+   */
+  const tied = [
+    card({ lemma: 'route', exposures: 2 }),
+    card({ lemma: 'jeune', exposures: 2 }),
+    card({ lemma: 'eau', exposures: 2 }),
+    card({ lemma: 'père', exposures: 2 }),
+    card({ lemma: 'pierre', exposures: 2 }),
+    card({ lemma: 'ami', exposures: 2 }),
+  ];
+
+  const order = (cards: MemoryCard[], by: VocabSort) =>
+    sortVocabulary(cards, by, NOW).map((c) => c.lemma);
+
+  // Reversal alone is the permutation the old comparator could not survive:
+  // with every key equal, a stable sort returns the input untouched.
+  for (const by of ['seen', 'stable', 'urgent', 'alpha'] as VocabSort[]) {
+    test(`orders cards that tie on "${by}" the same way whatever order they arrive in`, () => {
+      const forwards = order(tied, by);
+      const backwards = order([...tied].reverse(), by);
+      assert.deepEqual(backwards, forwards);
+    });
+  }
+
+  test('the fixture really does tie, so the tests above are not vacuous', () => {
+    // If a future edit gives these cards distinct keys, the permutation tests
+    // pass for the wrong reason and stop guarding anything.
+    assert.equal(new Set(tied.map((c) => c.exposures)).size, 1);
+    assert.equal(new Set(tied.map((c) => c.stability)).size, 1);
+    assert.equal(new Set(tied.map((c) => cardRetrievability(c, NOW))).size, 1);
+  });
+
+  test('ties break on the folded lemma, so accents sort where a reader expects', () => {
+    // "père" before "pierre": raw code units put it after, because `i` (U+0069)
+    // sorts below `è` (U+00E8). Folding is pure string work, where
+    // `localeCompare` would depend on the runtime's ICU data.
+    // Fed in reversed, so that "pierre" arrives first and input order would
+    // put it first: the assertion can only pass if the tiebreak really ran.
+    const seen = order([...tied].reverse(), 'seen');
+    assert.ok(seen.indexOf('père') < seen.indexOf('pierre'));
+  });
+
+  test('the primary key still wins: more exposures first', () => {
+    const cards = [card({ lemma: 'zèbre', exposures: 9 }), ...tied];
+    assert.equal(order(cards, 'seen')[0], 'zèbre');
   });
 });

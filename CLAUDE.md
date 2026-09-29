@@ -55,13 +55,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **520 pass**, 129 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **48 pass**, 15 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **55 pass**, 16 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 982 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 all 4 stale, 2 of them unknown until it existed |
@@ -192,6 +192,175 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — the item named a date, and none of the three causes was one
+
+The queue sent this session at `TODO.md`'s only unchecked item, the two
+screenshot sets `artefacts:check` had reported stale the session before.
+Premise confirmed in a minute — `docs/screens/` 5 commits behind `src/`,
+`docs/firstrun/` 8 — and then the diagnosis in it turned out to be wrong,
+which is the fourth session running where what settled a queued item was
+measuring rather than reasoning.
+
+**`docs/firstrun/` came back byte-identical.** All eight files, unchanged
+against what was committed, twice in a row. Stale by provenance and current
+in content, which is `artefacts:check`'s own "stale does not mean wrong"
+caveat earning its keep on its first real use. Reading the spec first is what
+predicted it: `firstrun.spec.ts` has no `Date.now()`, no seeding and no
+import — it captures a fresh install, so there is nothing for a clock to get
+into. Two of its eight files, `07-help.png` and `icons.png`, are written by
+**no generator at all**; they sit inside the tracked pathspec as orphans of a
+manual capture, so a regeneration will never touch them and nobody should
+expect it to.
+
+**The item said the cause was five `dashboard*.png` rendering an absolute
+calendar date from `Date.now()`. It was none of that.** Measured first: two
+runs a minute apart moved `dashboard.png`, `dashboard-dark.png`,
+`dashboard-milestones.png`, `dashboard-vocabulary.png` and **`popup.png`** —
+which is not a `dashboard*.png` — while `dashboard-transparency.png`, the one
+panel that renders a date a reader can see, never moved at all. The churn set
+was not even stable between checks; `dashboard.png` and `popup.png` took
+turns. A set that changes membership is a counter crossing a format boundary,
+not a clock. Three real causes:
+
+**One was in the product, and it is the unguarded sibling of a fix already
+made.** Cropping `dashboard-vocabulary.png`'s differing region — 5305 pixels,
+286 rows — showed the same rows in a different order. Three of the four
+columns at `src/ui/dashboard/index.tsx:137` returned 0 for distinct cards:
+`exposures` ties for everything unseen, `stability` for everything
+unreviewed, `cardRetrievability` for every new card. So `Array.sort`'s
+stability handed the order to whatever the storage round-trip returned.
+**This is `buildDiscoveries` before `06cd2e9`, three files away and four
+weeks later** — the same comparator-returns-0 defect, and this file already
+records the rule it breaks in as many words. Not a test concern: a real
+learner's list reshuffles between visits. Extracted to `src/core/stats.ts`
+as `sortVocabulary`, which is what makes it unit-testable at all, with the
+tiebreak `buildDiscoveries` already uses. `orderKey` is new in
+`similarity.ts` and is deliberately *not* the exported `fold` beside it —
+`fold` collapses doubled consonants, which is right for "are these the same
+word?" and would file "pomme" and "pome" at one key for sorting.
+
+**One was the run's own attention**, fixed with the idiom
+`store-assets.spec.ts` already proved: seed 1800 s, which `formatDuration`
+floors to a stable "30 min".
+
+**One was a cooldown banner the harness queued for itself, and it is
+`6425461` biting the session after it landed.** `splitImportedSettings` means
+an import no longer overwrites settings: anything *easier* becomes a pending
+change. The spec's payload carries no settings, `validateSettings` supplies
+the shipped defaults, and those are easier than the density this spec
+configures — so the seeding queued "starting density → 6%; maximum density →
+35%" and both options shots grew a red "One change is waiting" banner about
+200 px tall. The commitment layer working correctly on a payload only the
+harness would ever send. Cancelled by **id** rather than by matching
+settings, so it survives a future default changing which field is the easier
+one.
+
+**Two attempts made it worse first, and the order is the lesson.**
+`reset-vocabulary` is necessary — probed, 12 cards before, 0 after, 19 after
+the import — but it is not sufficient while a taxed page is open, because the
+content script keeps writing. Closing those pages *without* waiting was
+worse than leaving them open: a close flushes pending exposures
+asynchronously, that flush raced the reset, and **five** shots drifted where
+one had, including `dashboard-transparency.png`, stable until then. A 2500 ms
+settle between the closes and the reset is what actually worked.
+
+**Reading the images found the one real cost, and `git status` could not
+have.** Half an hour saturates the site ceiling, so the popup now prints "You
+have reached the ceiling for this site" where the committed shot printed "40%
+after another 7 min" — the sentence that shows escalation happening. It
+cannot be had *and* reproducibility, and the reason is arithmetic rather than
+taste: `formatDuration` floors to whole minutes and the projection counts
+**down** by exactly the seconds the run accrues, so it is stable only where
+the value sits 59 s above a boundary. Written beside the constant, because
+that is where someone goes to lower it. Two shots got better from being read:
+`options-dark.png` matches its committed bytes again once the banner is gone,
+and `dashboard-transparency.png` no longer has a half-cropped "Settings" link
+bleeding into the bottom of its clip. And `options.png` was carrying "Weft
+1.0.0" in its version line — the bump's stale artefact, caught only because
+the shot was opened.
+
+**What is left is measured, not waved at.** 18 of 19 shots byte-identical
+across consecutive runs. `options-density.png` is *bistable* — run 1 and run
+3 agreed exactly, run 2 differed by **17 pixels across 4 rows** (y 275, 278,
+418, 421) in the two density slider tracks. Not a shift, not a clip offset,
+the same "1-pixel slider ticks" residue this file already records for the
+store shots, and not reachable by seeding anything. `page-woven.png` drifted
+once in five checks; it is captured at line 59, before every edit in this
+work, so that is pre-existing renderer nondeterminism.
+
+**One methodological trap, nearly paid for twice.** A failing generator
+writes nothing, and "no file changed" looks exactly like a clean idempotent
+run — this file records that already, and it still nearly produced a false
+result here: a 16-minute run failed under contention because other work was
+running alongside it, and the drift check it fed reported zero drift. Every
+claim above comes from a check that captured npm's own exit status *per run*
+and was read before its diff was believed. Do not run anything heavy
+alongside the generator.
+
+Done test-first: 7 tests in a new `sortVocabulary` describe in
+`tests/core/stats.test.ts`, red on `does not provide an export named
+'sortVocabulary'` before anything existed, and 6 in a new
+`tests/tools/screenshots.test.ts`. Both checked for vacuity rather than
+assumed: restoring the old comparator turns 4 of the 7 red and the 3 that
+stay green are the right 3 (`alpha`, which is already total on distinct
+lemmas, plus the non-vacuity and primary-key assertions); removing both
+halves of the spec fix turns 3 of the guard's tests red. One guard was
+**brittle on its first write** and worth naming — it anchored on the string
+`onboarding.png`, which matches a comment 60 lines above the code, so it
+failed for the wrong reason; it now anchors on `['onboarding.html'`, which
+only the shots table contains.
+
+Counts moved 702 → 716, unit 520 → 527 / 129 → 130 suites and tools 48 → 55 /
+15 → 16 in six documents, with `docs/LAUNCH.md:221` swept **by name and
+first** for the seventh session running. jsdom and e2e did not move.
+
+One environment finding: `.worktrees/lexicon-curly-note-quotes/` is still on
+disk from the 2026-09-28 session and is full of iCloud conflict copies
+(`dist/chrome/popup 2.html` and dozens more). It is gitignored and harmless,
+but it is dead weight and `git worktree list` will show it as stale.
+
+**`artefacts:check` cannot ever call `docs/firstrun/` fresh, and finding that
+out is the first real use of the tool built last session.** It asks
+provenance, and a byte-identical regeneration commits nothing, so `lastWrote`
+never moves: the group reports "8 commits since" on a tree where somebody has
+just checked it, and it will do so forever. Verified rather than assumed —
+`git status docs/firstrun/` empty after two full regenerations, and the group
+still listed as stale afterwards. Queued in `TODO.md` with the fix that fits
+the design: a committed per-group manifest recording the commit an artefact
+was last *verified* at, included in that group's own `paths`, so "I checked
+and it was identical" becomes a commit the tool can see.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, **527** unit / **130** suites, **98** jsdom / 22 suites,
+**55 tools / 16 suites**, compat 21 dependencies × 3 browsers, 56 pass / 7
+degrade / 0 fail / 0 without data, **983 KB × 3** passing `validate`, **36
+e2e passed and 3 skipped in 1.8 min**, then build and validate again.
+Separately `packs:verify` **0 errors / 4 warnings**, unchanged and expected —
+nothing here touched a seed — and `site:check` **711 pages / 16 087 links**
+all resolving, run because `src/core/` moved and the site imports from it.
+
+**The package grew 982 → 983 KB and that is this change**, `sortVocabulary`
+and `orderKey` being the only additions to shipped code. Two live mentions
+swept (`CLAUDE.md`'s command table and `TODO.md`'s state line); the four
+others are journal history and stay. Worth naming for the second session
+running: a `src/` edit invalidates **sizes**, which the count sweep greps
+straight past.
+
+The screenshot generator was run **eleven** times across the session, in
+checks that each captured npm's exit status per run. Zero iCloud conflict
+copies appeared in `dist/`, `src/` or `test-results/`, which is the xattr
+working for the third session running.
+
+What needs a human: unchanged, and it is still everything. **B1**, register
+`weft.study`, is the critical path. Then **B2**, make the repository public
+and push the `v1.0.1` tag — with **B2a** immediately before it, which
+`artefacts:check` still names correctly; **B3**, Pages; **B4**, the Lemon
+Squeezy URLs; **B5**, the store submission. `Next` has two agent-shaped
+items, both found by this work: the `artefacts:check` provenance gap above,
+and whether the onboarding preview should be writing to the learner's real
+vocabulary at all.
 
 ### 2026-09-29 — three sessions had named the class and none had built the sweep
 
