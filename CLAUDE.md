@@ -57,14 +57,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **55 pass**, 16 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **61 pass**, 18 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 all 4 stale, 2 of them unknown until it existed |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 (latest) 3 stale, 1 fresh — each can now be marked verified with `npm run artefacts:verify` once actually checked |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -192,6 +192,81 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — the queued task was already merged; the real gap was two items down
+
+The queue named the exportAll/importAll gap directly, line numbers and all —
+`src/background/storage.ts:322` and `:359`. Already done: `6425461`, three
+commits back on `main`, had built `splitImportedSettings` and `mergeAttention`
+and made the lock state's refusal deliberate, and TODO.md's own Next section
+already showed the item checked off. The line numbers were the tell before
+either check ran — `exportAll` is at line 336 in the current file, not 322 —
+which is this session's own version of a pattern this file's Journal already
+names in five of the last eight entries: the queue can hand over completed
+work, and a minute of reading settles it before any code moves.
+
+So the real work was `TODO.md`'s next unchecked item: `artefacts:check`
+cannot tell a byte-identical regeneration from silence, first hit for real
+two sessions ago on `docs/firstrun/`, with a fix already sketched in the same
+file — one shared manifest, `docs/artefacts.json`, added to every group's
+`paths`.
+
+**The sketched fix had a bug, and it is the shape this tool's own tests
+already refuse for the missing/fresh case.** `checkArtefacts` reads *paths*,
+never content, so a change to one group's entry in a shared file touches a
+path every other group also declares — verifying the store screenshots would
+have silently moved `lastWrote` for the documentation screenshots too, on a
+commit that never looked at them. Not a hypothetical: a new test constructs
+exactly that scene, commits a verify stamp for one of two groups, and asserts
+the other is exactly as stale as before. Built instead as one file per group,
+`docs/artefacts/<slug>.json`, with a new `artefactManifestPath()` deriving the
+slug from the artefact's own name. This needed **zero** changes to
+`checkArtefacts` itself — `paths` already unions several pathspecs, so a
+per-group manifest just gives that union a second way to move forward.
+
+**The four real manifest files are not pre-seeded, on purpose.** An early
+version of the "every declared path has history" test would have forced
+creating all four right now — but two of the four groups were genuinely
+stale at that moment (`store listing screenshots`, 1 commit since `8d2cbbb`,
+`first-run walkthrough shots`, 9 since `7f7faaa`, both measured live before
+writing this), and `checkArtefacts` cannot distinguish an honest "I checked"
+from a fabricated one; only the person running it can. Stamping them
+speculatively would have been the exact false "fresh" this fix exists to
+prevent. The test now exempts the manifest path by name — it is derived, not
+hand-typed, so it cannot be the typo that test exists to catch — and the path
+earns real history the first time `npm run artefacts:verify -- "<name>"`
+(`tools/verify-artefact.mjs`, new) actually runs for that group. The CLI's
+argument-handling paths were smoke-tested directly; its write path was run
+once by hand against `documentation screenshots` (the one group already
+fresh, so no claim was at stake) and the scratch output deleted before
+anything was committed, rather than left standing as an unearned stamp.
+
+Done test-first: 6 new tests in `tests/tools/artefacts.test.ts`, red on
+`does not provide an export named 'artefactManifestPath'` before anything
+existed — 13 → 19 tests, 6 → 8 suites in that file. One process note: the
+edits were made directly on `main` before a branch existed, caught before
+anything was committed by checking `git status` — `git fetch` confirmed
+`origin/main` had not moved, so `git checkout -b` carried the uncommitted
+work over cleanly rather than needing a stash.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 527 unit /
+130 suites, 98 jsdom / 22 suites, **61 tools / 18 suites** (55 / 16 before),
+compat 56 pass / 7 degrade / 0 fail / 0 without data, 983 KB × 3 passing
+`validate` (unchanged — this change touches no shipped code), 36 e2e passed
+and 3 skipped in 1.9 min, then build and validate again. `npm run
+artefacts:check` itself still reports the same three groups stale that it
+reported before this session touched anything: this gives the tool a way to
+*record* a check, it does not perform one.
+
+What needs a human: unchanged, still everything below B1. `TODO.md`'s Next
+now holds exactly one item, the onboarding-preview judgement call, queued for
+a future run via `cq add` rather than attempted here. Also queued: actually
+regenerating and diffing `store listing screenshots` and `first-run
+walkthrough shots`, and running `artefacts:verify` for real on whichever come
+back byte-identical — genuine follow-up, not attempted this session because
+verifying content neither generator was asked to touch is a different task
+from the tool that now lets someone record having done it.
 
 ### 2026-09-29 — the item named a date, and none of the three causes was one
 

@@ -106,11 +106,28 @@ was a complete bypass of every cooldown in `GOVERNED_PATHS` — the commitment
 layer the product is built around. Both are fixed and guarded; see the note
 at the top of Notes.
 
-**So the whole of B0 is closed, and `Now` and `Next` are both empty.** The
-code is not what is holding the release up, and neither is the version any
-more. **Every remaining item needs Creagh.** The critical path is **B1 — the
-domain `weft.study` is not registered**, and nothing below it can move until
-it is. There is no agent-shaped work left in this file.
+**And as of 2026-09-29 a byte-identical regeneration can be recorded as
+checked instead of read as silence forever.** `artefacts:check` dated a
+group by the last commit touching its own committed paths, so a
+regeneration reproducing the same bytes — which had already happened once,
+for `docs/firstrun/` — committed nothing and left the group reporting the
+same staleness on every future run, however many times it was confirmed
+correct. Each group now also carries its own manifest path,
+`docs/artefacts/<slug>.json` — one file per group, not the single shared
+file this section first sketched, which would have let verifying one group
+silently freshen another nobody had checked. `npm run artefacts:verify --
+"<name>"` writes the stamp; none was written speculatively, because two of
+the four real groups were genuinely stale at the moment this landed and the
+tool cannot tell an honest stamp from a fabricated one. See `Next` and the
+note at the top of Notes.
+
+**So the whole of B0 is closed and `Now` is empty. This paragraph used to say
+`Next` was empty too — it was not, by two sessions' worth of findings this
+text had not caught up to, which is now down to one.** The code is not what
+is holding the release up, and neither is the version any more. **Every
+remaining item besides that one needs Creagh.** The critical path is
+**B1 — the domain `weft.study` is not registered**, and nothing below it can
+move until it is.
 
 ## Now
 
@@ -762,30 +779,69 @@ it is. There is no agent-shaped work left in this file.
       `options-density.png`, is bistable by 17 pixels of slider-track
       antialiasing, which no amount of seeding reaches.
 
-- [ ] **`artefacts:check` can never report a byte-identical regeneration as
-      fresh.** Found 2026-09-29, the first time the tool was acted on. It
-      measures freshness by commit provenance: `lastWrote` is the last commit
-      touching the artefact's `paths`, compared against commits touching its
-      `inputs`. Regenerating `docs/firstrun/` produced **byte-identical**
-      output, so nothing was committed, `lastWrote` did not move, and the
-      group still reports "8 commits since" on a tree where somebody has just
-      checked it. The next run will regenerate it, get identical bytes, and
-      hit the same dead end.
+- [x] **`artefacts:check` can never report a byte-identical regeneration as
+      fresh.** Done 2026-09-29. `lastWrote` dates a group by the last commit
+      touching its own committed paths, so a regeneration reproducing the
+      same bytes commits nothing and that date never moves — a group already
+      confirmed correct reports the same staleness forever, which is exactly
+      what happened to `docs/firstrun/` the session before this one.
 
-      **The fix that fits the existing design:** a committed manifest — say
-      `docs/artefacts.json` — mapping each group to the commit it was last
-      verified at, with that file added to each group's own `paths`. Writing
-      it is then a commit, which is exactly the signal the tool already
-      understands, and "verified identical at `abc1234`" becomes as legible as
-      "rewritten at `abc1234`". `tools/artefacts.ts` already returns a
-      `missing` state for a pathspec that matches nothing, so the manifest
-      being absent has a defined answer rather than a crash.
+      **The fix this file had already sketched had a bug, and it is the same
+      shape this tool's own tests already refuse for the missing/fresh
+      case.** The plan was one shared manifest, `docs/artefacts.json`, added
+      to every group's `paths`. `checkArtefacts` reads paths, not JSON
+      content, so committing a change to *one* group's entry in a shared
+      file touches a path every *other* group also declares — silently
+      moving their `lastWrote` too, on a commit that never looked at them.
+      Built instead as one file per group, `docs/artefacts/<slug>.json` via
+      a new `artefactManifestPath()`, which needed zero changes to
+      `checkArtefacts` itself: `paths` already unions multiple pathspecs, so
+      a per-group manifest just gives that union a second way to move
+      forward. Proven rather than assumed: a new test verifies one of two
+      groups and asserts the other is exactly as stale as before.
 
-      Worth doing test-first against throwaway git repositories the way
-      `tests/tools/artefacts.test.ts` already does — in particular a test that
-      a verify-stamp with no content change *does* flip a group from stale to
-      fresh, which is the whole point and the one thing that cannot be
-      asserted today.
+      **Not pre-seeded.** Creating all four real manifest files now, so an
+      existing test could assert they have history, would have stamped
+      "somebody checked" on two groups nobody had actually re-checked this
+      session — `store listing screenshots` (2 commits since `8d2cbbb` by
+      the time this landed) and `first-run walkthrough shots` (9 since
+      `7f7faaa`), both genuinely stale as this was written. The tool cannot
+      tell an honest stamp from a fabricated one, only the person running it
+      can, so the manifest path is declared in every group's `paths` but the
+      file itself is written lazily: `npm run artefacts:verify --
+      "<name>"` (`tools/verify-artefact.mjs`) writes the stamp and says to
+      commit it, and checks nothing itself. The pre-existing "every declared
+      path has history" test now exempts the manifest path by name — it is
+      derived, not hand-typed, so it cannot be the typo that test exists to
+      catch.
+
+      Done test-first: 6 new tests in `tests/tools/artefacts.test.ts`
+      (13 → 19 tests, 6 → 8 suites; repo-wide tools total 55 → 61 / 16 → 18),
+      red on the missing `artefactManifestPath` export before anything
+      existed. `npm run test:all` exit 0 on the combined tree — see the
+      measurement at the top of Notes.
+
+      **Left stale on purpose, as real follow-up now that there is somewhere
+      to record it:** regenerate and actually diff `store listing
+      screenshots` and `first-run walkthrough shots`, then
+      `artefacts:verify` whichever come back byte-identical. Queued as the
+      item directly below.
+
+- [ ] **Two of the four real artefact groups are genuinely stale, and now
+      there is somewhere to record checking them.** `store listing
+      screenshots` (2 commits since `8d2cbbb` as last measured) and
+      `first-run walkthrough shots` (9 since `7f7faaa`) both read STALE
+      under `npm run artefacts:check` while the manifest mechanism above was
+      being built, and neither was regenerated as part of that work —
+      building a tool to record a check and actually performing the check
+      are different tasks, and stamping either speculatively would have been
+      the exact false "fresh" the tool exists to prevent. Regenerate both
+      (`npm run build:test && WEFT_STORE=1 npx playwright test store-assets`,
+      then the `WEFT_FIRSTRUN=1 npx playwright test firstrun` equivalent),
+      **read** what changed rather than trusting `git status` — the house
+      rule this file has paid for repeatedly — and for whichever comes back
+      byte-identical, run `npm run artefacts:verify -- "<name>"` and commit
+      the stamp. For whichever does not, commit the real change. ~20–30 min.
 
 - [ ] **The onboarding preview writes to the learner's real vocabulary.**
       Found 2026-09-29 while probing why the seeded vocabulary list held 26
@@ -1026,6 +1082,44 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — the manifest had to be one file per group, not the one this
+file named.** Closing the `artefacts:check` item above found a bug in the fix
+this file had already specified: a single shared `docs/artefacts.json`,
+added to every group's `paths`, would let a verify commit for one group
+silently move `lastWrote` for every other group too, since `checkArtefacts`
+reads paths rather than content and a shared file is a path every group
+would then share. Caught by a test before it was ever generalised into the
+real artefact list: verify one of two groups, assert the other stays
+exactly as stale as before. Built as `docs/artefacts/<slug>.json` instead,
+one file per group, which needed no change to `checkArtefacts` at all —
+`paths` already unions several pathspecs, so a per-group manifest just gives
+that union a second way to move forward.
+
+Also decided against pre-seeding the four real manifest files, though an
+earlier draft of the "every declared path has history" test would have
+forced exactly that. Two of the four groups were genuinely stale when this
+landed (`store listing screenshots`, `first-run walkthrough shots`), and
+`checkArtefacts` cannot distinguish an honest verify stamp from a fabricated
+one — only the person writing it can — so stamping them now would have been
+the identical false "fresh" this fix exists to prevent. The test now exempts
+the manifest path by name instead: it is derived from the artefact's own
+name, so it cannot be the typo that test exists to catch, and it earns real
+history the first time `npm run artefacts:verify` actually runs for that
+group.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured
+rather than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 527
+unit / 130 suites, 98 jsdom / 22 suites, **61 tools / 18 suites** (55 / 16
+before this work), compat 56 pass / 7 degrade / 0 fail / 0 without data,
+983 KB × 3 passing `validate`, 36 e2e passed and 3 skipped in 1.9 min, then
+build and validate again — every figure unchanged from the last measurement
+except the tools count, which is exactly this change: nothing here touches
+`src/`. `npm run artefacts:check` itself still reports the same three groups
+stale it reported before this work started (`store listing screenshots`,
+`first-run walkthrough shots`, `release notes for 1.0.1`) — this gives the
+tool a way to *record* a check, it does not perform one, and none was
+performed here.
 
 **2026-09-29 — the documentation shots were not photographing a date, and
 the first thing that made them diffable was a product fix.** The queued item

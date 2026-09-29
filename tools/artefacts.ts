@@ -86,6 +86,30 @@ export interface ArtefactReport {
   results: ArtefactResult[];
 }
 
+/**
+ * Where a verify stamp for `name` lives.
+ *
+ * A regeneration that reproduces the same bytes commits nothing, so the last
+ * commit touching an artefact's real content never moves — a group already
+ * confirmed correct reports exactly the same staleness forever. This path is
+ * folded into that artefact's own `paths` in `artefactsFor`, so committing a
+ * stamp here is a real change `checkArtefacts` already knows how to read; no
+ * change to that function was needed.
+ *
+ * One file per artefact, not one shared file for all of them. A shared file
+ * would make verifying artefact A touch a path also declared for artefact B,
+ * moving B's `lastWrote` on a commit that never looked at B — silently
+ * reporting it fresh, which this module's own tests already call "the worst
+ * possible answer" for the analogous missing-vs-fresh case.
+ */
+export function artefactManifestPath(name: string): string {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return `docs/artefacts/${slug}.json`;
+}
+
 /** Run git in `root`; null if it fails for any reason, including no git. */
 function git(root: string, args: string[]): string | null {
   try {
@@ -212,7 +236,7 @@ export function formatReport(report: ArtefactReport): string {
  * I/O and lets a test ask for a version that does not exist.
  */
 export function artefactsFor(version: string): Artefact[] {
-  return [
+  const groups: Array<Omit<Artefact, 'paths'> & { paths: string[] }> = [
     {
       name: 'store listing screenshots',
       // Only the fifteen captures. The three tiles and the logo beside them
@@ -242,4 +266,7 @@ export function artefactsFor(version: string): Artefact[] {
       regenerate: `npm run release -- --version=${version}`,
     },
   ];
+  // Every group carries its own verify-stamp path, so a byte-identical
+  // regeneration has somewhere to record that a human checked.
+  return groups.map((g) => ({ ...g, paths: [...g.paths, artefactManifestPath(g.name)] }));
 }
