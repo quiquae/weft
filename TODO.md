@@ -750,13 +750,17 @@ it is. There is no agent-shaped work left in this file.
       changed shot** rather than trusting `git status`, the way the store
       shots were handled on 2026-09-29.
 
-      The deeper question underneath it, which is a judgement and not a
-      defect: the dashboard's date rendering makes five documentation shots
-      permanently unreproducible, the same class scene 4's attention tile
-      was in before it was seeded at 1800 s. Seeding the dashboard's clock
-      the same way would make the whole of `docs/screens/` reproducible and
-      would let `artefacts:check` mean something stronger for it. That is a
-      change to a spec's seeding, not to the product.
+      ~~The deeper question underneath it: the dashboard's date rendering
+      makes five documentation shots permanently unreproducible, and seeding
+      the dashboard's clock would fix it.~~ **Resolved, and the premise was
+      wrong on both counts.** No date was involved, and the fix was not
+      confined to the spec: one of the three causes was an unstable
+      comparator in `src/ui/dashboard/index.tsx`, which is why
+      `sortVocabulary` now lives in `src/core/stats.ts`. The two date sites
+      (`:299`, `:429`) were measured and are stable. `docs/screens/` is now
+      reproducible for 18 of its 19 files; the nineteenth,
+      `options-density.png`, is bistable by 17 pixels of slider-track
+      antialiasing, which no amount of seeding reaches.
 
 - [ ] **`artefacts:check` can never report a byte-identical regeneration as
       fresh.** Found 2026-09-29, the first time the tool was acted on. It
