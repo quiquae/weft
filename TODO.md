@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **520** unit / 129 suites, **98** jsdom / 22
-suites, **35** tool tests / 11 suites, **36** e2e passing
+suites, **48** tool tests / 15 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 982 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -18,7 +18,13 @@ pre-PR-#12 copy that does not ship; those three are regenerated and the
 fixtures now refuse a production build in 5 ms rather than blaming the
 renderer for 20 s. **And as of 2026-09-29 the generator is genuinely
 reproducible** — two consecutive runs produce all **18** files in
-`docs/store/` byte-identical, hashed and diffed. That sentence was in this
+`docs/store/` byte-identical, hashed and diffed. **The listing art then went
+stale again within one commit, and now something looks, as of 2026-09-29** —
+`6425461` moved `src/` and the three `*-05-settings.png` stopped matching
+what the generator produces; they are regenerated, and `npm run
+artefacts:check` reports every committed generated file the tree has moved
+past, which on a fresh `main` is four groups and two of them nobody knew
+about. See the note at the top of Notes. That sentence was in this
 file yesterday and was not true: scene 4 still drifted, because
 `buildDiscoveries` sorted on kind and recency only and nineteen cards
 imported in one millisecond tie on both, so the feed's order came from
@@ -694,10 +700,44 @@ it is. There is no agent-shaped work left in this file.
       the direction. A test expecting `0.01` to survive was wrong about the
       code, not the other way round.
 
-Empty. There is no agent-shaped work left in this file: everything in
-Blocked needs Creagh — B1 an identity and a payment method, B2 onwards a
-decision that is not reversible the way a commit is. A session picking this
-file up should read the Blocked section, confirm B1 has not moved, and stop.
+- [ ] **Two committed screenshot sets are stale against `src/`, and the
+      amount is now measurable.** Found 2026-09-29 by the new
+      `npm run artefacts:check`, which is the first thing in this repository
+      that looks at generated artefacts at all. `docs/screens/` was last
+      written at `0e41950` and `src/` has moved **5 commits** since;
+      `docs/firstrun/` was last written at `7f7faaa` and `src/` has moved
+      **8**. Both are embedded in documentation a stranger reads —
+      `README.md` uses `docs/screens/options-density.png`, and the first-run
+      set is the walkthrough. Regenerate with
+      `npm run build:test && WEFT_SCREENS=1 npx playwright test screenshots`
+      and the `WEFT_FIRSTRUN=1` equivalent.
+
+      **Not done in the session that found it, deliberately, and the reason
+      is a decision already on record rather than the cost.** Regenerating
+      `docs/screens/` rewrites five `dashboard*.png` that render an absolute
+      calendar date computed from `Date.now()`
+      (`src/ui/dashboard/index.tsx:299,429` against the seeding in
+      `tests/e2e/screenshots.spec.ts`), so every future capture of those
+      five differs from today's by a few bytes of date text whatever the
+      code does — PR #12's session reverted exactly those five for exactly
+      that reason. So this is ~20 binaries of which 5 carry known churn, in
+      an unattended session where nobody looks at them. Worth doing, worth
+      doing with someone reading the images: regenerate, then **read each
+      changed shot** rather than trusting `git status`, the way the store
+      shots were handled on 2026-09-29.
+
+      The deeper question underneath it, which is a judgement and not a
+      defect: the dashboard's date rendering makes five documentation shots
+      permanently unreproducible, the same class scene 4's attention tile
+      was in before it was seeded at 1800 s. Seeding the dashboard's clock
+      the same way would make the whole of `docs/screens/` reproducible and
+      would let `artefacts:check` mean something stronger for it. That is a
+      change to a spec's seeding, not to the product.
+
+Otherwise empty. Everything in Blocked needs Creagh — B1 an identity and a
+payment method, B2 onwards a decision that is not reversible the way a commit
+is. A session picking this file up should work the item above, then read the
+Blocked section, confirm B1 has not moved, and stop.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
@@ -803,6 +843,10 @@ workflow attaches the packages. *Needs: B1 decided, and B0 done — the tag
 cannot be pushed before it exists.*
 
 **B2a — regenerate `RELEASE-1.0.1.md` immediately before pushing the tag.**
+*Detected automatically since 2026-09-29: `npm run artefacts:check` names this
+one, with the commits that made it stale and the command that fixes it, so it
+can no longer depend on somebody remembering it. It is still a human step,
+because the regeneration has to happen on a clean `main` after the last merge.*
 Found 2026-09-29, and it is structural rather than a one-off. `RELEASE-X.Y.Z.md`
 is *generated*: it carries a `Changes since v1.0.0` list built from `git log`
 and the six package sizes. B0 step 2 generated it on 2026-09-29 and **the
@@ -858,7 +902,12 @@ been checked. The remaining steps, in order:
    short description, the detailed description, category **Education**,
    language English.
 7. Upload the graphics, all already at the exact required sizes and verified
-   by measurement: icon `assets/icon-128.png` (128×128); the five
+   by measurement. **Run `npm run artefacts:check` first**: the fifteen shots
+   are generated from `src/`, so an ordinary extension change makes them
+   stale without changing them, and that has now happened twice. If it names
+   them, run `npm run build:test && WEFT_STORE=1 npx playwright test
+   store-assets` and commit what moves. Then: icon `assets/icon-128.png`
+   (128×128); the five
    `docs/store/chrome-*.png` in numbered order (1280×800);
    `docs/store/tile-small-440x280.png` (440×280, required);
    `docs/store/tile-marquee-1400x560.png` (1400×560, optional but required to
@@ -894,6 +943,56 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — the listing art went stale one commit after it was declared
+current, and the check that would notice did not exist.** The queued item
+asked for the store-asset generator to be diagnosed and fixed. It was
+already done, ticked, and correct: the generator runs in ~30 s and is
+reproducible. Verifying that is what found the next thing — three of the
+fifteen shots no longer matched what it produces, one commit after a session
+had regenerated them and written "byte-identical" into this file.
+
+**The evidence standard mattered more than the finding.** "The shots differ"
+is not a result; the previous session's own note says so. Hashed run to run:
+identical. Hashed against committed: three differ. Then, one variable at a
+time, with a build and a 30 s generator run each: reverting
+`src/ui/options/data.tsx` alone — the only *copy* change in `6425461` — did
+not restore them; setting `VERSION` back to 1.0.0 alone did not either;
+`git checkout 06cd2e9 -- src/` **did**, byte for byte, all fifteen. So the
+cause is in `src/` and the generator is deterministic across sessions, which
+is the claim that was actually in doubt.
+
+**What the difference is, and what it is not.** A scratch canvas diff in the
+Chromium the e2e suite already installs (no image tooling on this machine —
+the method is in `CLAUDE.md`'s 2026-09-29 entry) says 19 368 pixels differ,
+and that **149 of the 156 differing rows are reproduced exactly by shifting
+one row**; the other 7 are 1-pixel slider ticks. The page is one pixel lower
+and no text changed. Two independent measurements of the options page under
+the full scene sequence — `scrollY` 1774, every `.section` box identical to
+two decimal places, in both builds — found **no layout difference to
+explain it**, and that is recorded as unexplained rather than given a
+plausible-sounding cause. It does not matter for the listing: content is
+identical and determinism is proved. Do not spend another session on the
+mechanism unless the shots start differing *between runs*, which is the case
+that would matter.
+
+**The transferable half is the class, and this is its third sighting.** A
+change to `src/` invalidates *artefacts*, and nothing looked at artefacts:
+not the count sweep (it greps test totals), not CI (it rebuilds the packs
+and diffs them, which is the right check for the one artefact that is
+platform-independent). `npm run artefacts:check` is now that sweep. It asks
+**provenance, not content** — has anything this was generated from been
+committed since it was last written — because the content question cannot be
+asked here: PNGs rendered on macOS will not byte-match `ubuntu-latest`, and
+release notes listing a `git log` can never match their own tree, since the
+squash commit that lands them does not exist yet. On a fresh `main` it
+reported four stale groups, and **two of them nobody knew about**:
+`docs/screens/` 5 commits behind and `docs/firstrun/` 8. It is deliberately
+not in `test:all` — almost every PR touches `src/`, so it would be red
+almost always, and this file already records that a gate which fires for
+more than one reason gets ignored. It is wired into `docs/SUBMIT.md`'s
+pre-flight and into B2a and B5 step 7, which are the two moments it has
+teeth.
 
 **2026-09-29 — "byte-identical" was wrong, and the culprit was an unstable
 sort, not the clock.** The note below this one ends by claiming two

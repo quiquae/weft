@@ -220,7 +220,27 @@ what it thinks. Measured after the fix: two consecutive runs produce all
 fifteen shots byte-identical, which is the first time that sentence has been
 true.
 
-**Built with** 689 tests: 520 unit, 98 in jsdom, 35 over the build tools, and
+**Nothing looked at generated artefacts, so they went stale in silence.**
+Three times running, a session found a committed generated file the tree had
+moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
+that no longer existed, `RELEASE-1.0.1.md` lists a `git log` that every later
+commit makes wronger, and the listing screenshots stopped matching the
+options page one commit after being declared current. Each was found by
+somebody noticing, because the sweep this repository does every session
+greps for test totals and an artefact has no total. `npm run artefacts:check`
+is that sweep. It asks provenance rather than content — has anything this was
+generated from been committed since it was last written — because the content
+question is unanswerable here: screenshots rendered on macOS will not
+byte-match ones rendered on `ubuntu-latest`, and release notes listing a
+`git log` cannot match their own tree, since the commit that lands them does
+not exist until after the merge. It found four stale groups on a clean
+`main`, two of which nobody knew about: the documentation screenshots were
+five commits behind `src/` and the first-run walkthrough eight. Deliberately
+outside `test:all`, because nearly every change touches `src/` and a gate
+that is usually red is a gate nobody reads; it is wired into the submission
+runbook instead, at the two steps before something irreversible.
+
+**Built with** 702 tests: 520 unit, 98 in jsdom, 48 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
