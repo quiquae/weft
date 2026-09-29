@@ -253,7 +253,10 @@ export function artefactsFor(version: string): Artefact[] {
     },
     {
       name: 'first-run walkthrough shots',
-      paths: ['docs/firstrun'],
+      // The numbered captures only. `icons.png` beside them is a magnified
+      // icon comparison sheet drawn by hand, generated from nothing and so
+      // never stale — the same line the store group draws for its tiles.
+      paths: ['docs/firstrun/0*.png'],
       inputs: ['src', 'tests/e2e/firstrun.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_FIRSTRUN=1 npx playwright test firstrun',
     },
