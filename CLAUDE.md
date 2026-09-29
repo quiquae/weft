@@ -27,15 +27,19 @@ unchanged), `firefox`, `safari`. The pedagogical method is the diglot weave
 and scheduling with FSRS-6. `docs/PEDAGOGY.md` separates the cited research
 from the judgement calls.
 
-**What "done" looks like:** the code is done. `git log` shows 29 commits
-ending in a green `v1.0.0` tag, five more on `main` after it, and an unmerged
-documentation stack on top of that (**B0** in `TODO.md`), which is why `VERSION`
-has not moved. "Done" now means *released* — a Chrome Web Store listing that a
-stranger can install from. That is a submission Creagh performs by hand with
-her own developer account, so this repository's job is to be release-ready and
-to keep the remaining human steps written down. `TODO.md` is that list;
-`docs/SUBMIT.md` is the long-form runbook and `docs/STORE-LISTING.md` holds
-every field's copy.
+**What "done" looks like:** the code is done and, as of 2026-09-29, so is the
+version. `VERSION` is **1.0.1**, `RELEASE-1.0.1.md` is written and the six
+packages build; the whole documentation stack that used to sit unmerged is on
+`main`. The `v1.0.1` **tag is deliberately not pushed** — that fires
+`.github/workflows/release.yml` and publishes outward, and it waits on the
+repository becoming public (**B2** in `TODO.md`), because a release whose
+download button 404s is worse than no release. "Done" now means *released* —
+a Chrome Web Store listing that a stranger can install from. That is a
+submission Creagh performs by hand with her own developer account, so this
+repository's job is to be release-ready and to keep the remaining human steps
+written down. Every one of those steps now needs her: `TODO.md` is that list,
+headed by **B1**, registering `weft.study`. `docs/SUBMIT.md` is the long-form
+runbook and `docs/STORE-LISTING.md` holds every field's copy.
 
 ## How to work here
 
@@ -187,6 +191,56 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — 1.0.1 is cut, and the runbook named five files that would not exist
+
+**B0 step 2 is done.** `npm run release -- --version=1.0.1` on a branch,
+merged through a green PR. `VERSION` in `manifest.config.mjs` is 1.0.1,
+`package.json` is in step, `RELEASE-1.0.1.md` is written, and six packages
+built at 213/215 KB. The tag is **not** pushed and must not be: that fires
+`.github/workflows/release.yml`, which publishes outward, and it waits on
+**B2**, where the repository also becomes public — a release whose download
+button 404s is worse than no release.
+
+Three files is what the bump itself touched, exactly as B0 predicted, and the
+zips are gitignored. The rest of this entry is the two documents that went
+stale the moment it landed, neither of which the release script knows about.
+
+**`docs/SUBMIT.md` named `weft-chrome-1.0.0.zip` in five places, and it is
+the runbook a human follows by hand at a store console.** Not a stale count
+this time — a stale *filename*, and after the bump there is no such file in
+the tree, so step 2 of the Chrome submission would have asked Creagh to
+upload something that does not exist while six 1.0.1 zips sat beside it.
+Worth naming as its own class: this repository has been careful about
+numbers in prose for five sessions running, and a version bump invalidates
+**artefact names**, which no count sweep looks at. `git grep '1\.0\.0'`
+across the documents, and read each hit for whether it means "the release
+that shipped in September" (leave it) or "the file you are about to upload"
+(bump it).
+
+**`CHANGELOG.md`'s 1.0.1 entry opened "Not cut yet — `VERSION` … is still
+1.0.0", which the commit that cut it made false.** Now says cut, dated, and
+explicitly not tagged, with the reason and the blocking item. That sentence
+existed because a previous session was careful enough to write down that the
+entry described an uncut release; the same care is what makes it wrong now.
+
+Measured on the bumped tree, on Node 26.7, with npm's own exit status
+captured rather than a pipe's: `npm run test:all` **exit 0** — typecheck
+clean, 486 unit / 122 suites, 98 jsdom / 22 suites, 35 tools / 11 suites,
+compat 56 pass / 7 degrade / 0 fail / 0 without data, 979 KB × 3 passing
+`validate`, **36 e2e passed and 3 skipped in 2.8 min**, then build and
+validate again. Plus the two `test:all` leaves out, which B0 step 2 asks for
+by name: `packs:verify` **0 errors / 4 warnings** and `site:check` **711
+pages / 16 087 links** all resolving. The packaged `weft-chrome-1.0.1.zip`
+was opened and its `manifest.json` read rather than assumed: `"version":
+"1.0.1"`, at the root of a flat archive, which is the shape the store
+requires.
+
+What needs a human: **B1**, register `weft.study` — now the head of the
+critical path, and the first item on the list that genuinely cannot be done
+by a session. Then **B2**, make the repository public and push the `v1.0.1`
+tag; **B3**, Pages; **B4**, the Lemon Squeezy URLs; **B5**, the store
+submission.
 
 ### 2026-09-29 — the seeded clock was not the drift, and re-measuring is what said so
 

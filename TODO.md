@@ -73,11 +73,18 @@ and its tree is `028bdec8`. The four conflicts B0
 predicted were all squash artefact and the resolution was *proved* rather than
 judged: `main`'s tree SHA was byte-identical to `02fc7d8`'s, an ancestor of the
 stack, so `main` contributed nothing to any path and the merge changed not one
-byte of content. **Now and Next are both empty.** The code is not what is
-holding the release up. The critical path is now **B0 step 2 — cut 1.0.1** (a
-version bump, landable by any session on a branch; the *tag push* is B2 and is
-outward-facing), and then **B1 — the domain `weft.study` is not registered**,
-which only Creagh can do.
+byte of content. **And B0 step 2 is done as of 2026-09-29: 1.0.1 is cut.**
+`VERSION` is 1.0.1, `package.json` is in step, `RELEASE-1.0.1.md` is written,
+six packages are built, and the whole gate plus `packs:verify` and
+`site:check` re-ran green on the bumped tree. The tag is deliberately **not**
+pushed; that is outward-facing and belongs to B2.
+
+**So the whole of B0 is closed, and `Now` is empty.** The code is not what is
+holding the release up, and neither is the version any more. **Every
+remaining item needs Creagh.** The critical path is **B1 — the domain
+`weft.study` is not registered**, and nothing below it can move until it is.
+The one agent-shaped item left anywhere is the export/import asymmetry in
+`Next`, which is a real defect and is not on the release path.
 
 ## Now
 
@@ -635,8 +642,11 @@ which only Creagh can do.
       it filtered on notes that exist. The name is the only thing that
       overpromises; widen the seed, not the heading.
 
-Otherwise empty. Everything remaining lives in Blocked: B0 step 2 does not
-need Creagh and is the next thing any session should pick up; B1 onwards do.
+Otherwise empty, and the item above is now **the only agent-shaped work left
+in this file.** B0 closed on 2026-09-29, so everything else in Blocked needs
+Creagh: B1 an identity and a payment method, B2 onwards a decision that is
+not reversible the way a commit is. A session picking this file up should
+work the export/import item and expect to find nothing else.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
@@ -651,9 +661,25 @@ and the tooltip would get worse, not better.
 Each of these needs Creagh: an identity, a payment method, or a decision that
 is not reversible the way a commit is. Ordered by what blocks what.
 
-**B0 — Step 1 is done: the stack is on `main`. Step 2, cut 1.0.1, is not.**
-*Blocks the version bump, and nothing else.* **Step 2 does not need Creagh and
-is the next thing any session should pick up.**
+**B0 — DONE 2026-09-29. Both steps. Nothing here blocks anything any more.**
+*Kept because the conflict-resolution finding below recurs, and because step 3
+is a standing prohibition rather than a task.*
+
+**Step 2 landed 2026-09-29.** `npm run release -- --version=1.0.1` on a
+branch, merged through a green PR. `VERSION` in `manifest.config.mjs` is
+1.0.1, `package.json` is in step, `RELEASE-1.0.1.md` is written, six packages
+built at 213/215 KB, and the whole gate plus `packs:verify` and `site:check`
+re-run on the bumped tree. **The tag is not pushed and must not be** — that is
+step 3, it fires `.github/workflows/release.yml`, and it belongs to B2.
+
+Two documents went stale the moment the bump landed and were swept with it.
+`docs/SUBMIT.md` named `weft-chrome-1.0.0.zip` in **five** places — the
+runbook Creagh follows by hand, asking her to upload a file the tree no
+longer contains. `CHANGELOG.md`'s 1.0.1 entry opened "Not cut yet". **A
+version bump invalidates artefact *names*, which no test-count sweep looks
+at**; `git grep '1\.0\.0'` over the documents and read each hit for whether
+it means "the release that shipped in September" or "the file you are about
+to upload".
 
 **Step 1 landed 2026-09-28 as #22.** `main` is `e01ce27`, tree `028bdec8`. The nineteen commits that had accumulated on
 `lexicon/proper-noun-notes` since 2026-09-27 — everything from `/privacy` and
@@ -682,26 +708,24 @@ rather than arguing it. **The general form: before hand-resolving a conflicted
 merge, compare tree SHAs — if one side's tree equals an ancestor of the other,
 every conflict on it is artefact and the resolution is mechanical.**
 
-Remaining, in order:
+Steps, all three now settled:
 
-1. **Cut 1.0.1.** `npm run release -- --version=1.0.1` refuses a dirty tree,
-   runs the tests first, bumps `VERSION` in `manifest.config.mjs`, keeps
-   `package.json` in step, rebuilds, packages all three targets and writes
-   `RELEASE-1.0.1.md`. It stops before committing and prints the `git tag` /
-   `git push --tags` lines. **This does not need Creagh** — it is a commit that
-   edits two tracked files, so a session can do it on a branch and open a PR.
-   What needs Creagh is the *tag push*, which is step 3 below and lives in B2.
-2. Re-run the whole gate on the bumped tree: `npm run test:all`, **plus**
-   `npm run packs:verify` and `npm run site:check`, which `test:all` does not
-   include. Paste the result into the Journal in `CLAUDE.md`. That is the gate
-   `docs/SUBMIT.md` names as the thing nothing below should be attempted
-   without.
-3. Do **not** push the tag. That fires `.github/workflows/release.yml`, which
-   publishes outward. The tag push belongs to **B2**, which is where the
-   repository also becomes public — a release whose download button 404s is
-   worse than no release.
+1. [x] **Cut 1.0.1.** Done 2026-09-29. `npm run release -- --version=1.0.1`
+   refuses a dirty tree, runs the tests first, bumps `VERSION` in
+   `manifest.config.mjs`, keeps `package.json` in step, rebuilds, packages all
+   three targets and writes `RELEASE-1.0.1.md`. It stops before committing and
+   only *prints* the `git tag` / `git push --tags` lines — it never runs them,
+   which is what made this safe for a session to do unattended.
+2. [x] **Re-run the whole gate on the bumped tree**, including the two
+   `test:all` leaves out. Done; the figures are in the Journal entry in
+   `CLAUDE.md`.
+3. [ ] **Do not push the tag.** Standing prohibition, not a task. It fires
+   `.github/workflows/release.yml`, which publishes outward. The tag push
+   belongs to **B2**, which is where the repository also becomes public — a
+   release whose download button 404s is worse than no release.
 
-*Step 1 took ~40 minutes, most of it the gate. Steps 1–2 above, ~30 minutes.
+*Step 1 of B0 took ~40 minutes. Step 2 took ~35, most of it the gate, plus
+the document sweep above that the release script does not do for you.
 Numbered B0 rather than renumbering B1–B6, whose names are referenced from
 Notes here and from the Journal in `CLAUDE.md`.*
 
@@ -1839,10 +1863,14 @@ now returns nothing.
   the byte size: `3060d93` added etymons and notes to existing French
   entries rather than new entries. So 584–588 / 579–583 is correct in both
   changelog entries and only the KB differs.
-- **The 1.0.1 entry says out loud that it is not cut.** `VERSION` in
-  `manifest.config.mjs` is still 1.0.0 and `tools/release.mjs` does not touch
-  `CHANGELOG.md` — it writes `RELEASE-X.Y.Z.md` — so the two will not fight
-  when the bump happens.
+- **The 1.0.1 entry said out loud that it was not cut**, because `VERSION`
+  was still 1.0.0 and `tools/release.mjs` does not touch `CHANGELOG.md` — it
+  writes `RELEASE-X.Y.Z.md` — so the two could not fight when the bump
+  happened. ~~Still 1.0.0.~~ **Superseded 2026-09-29: the bump landed, and
+  the sentence written to be honest then was false the moment it did.** The
+  entry now reads "cut, not tagged". Worth keeping as a shape: a caveat that
+  records a temporary state is a thing to go back and delete, and the commit
+  that makes it false is the one that has to.
 
 **2026-09-27 — `/privacy` and `/support` now exist.** `npm run site` writes
 711 pages; `npm run site:check` reports 16 087 links, all resolving.

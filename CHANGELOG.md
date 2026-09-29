@@ -2,9 +2,12 @@
 
 ## 1.0.1
 
-Not cut yet — `VERSION` in `manifest.config.mjs` is still 1.0.0. This is
-everything on `main` after the `v1.0.0` tag of 2026-09-19, which the
-published release does not contain.
+Cut 2026-09-29: `VERSION` in `manifest.config.mjs` is 1.0.1 and `package.json`
+is in step. **Not tagged and not published** — pushing `v1.0.1` fires
+`.github/workflows/release.yml`, which publishes outward, and it waits on the
+repository becoming public (B2 in `TODO.md`), because a release whose download
+button 404s is worse than no release. This is everything on `main` after the
+`v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
 **Silence was the failure state.** `boot()` has six early returns and three
 of them were failures a reader could not see: the worker did not answer, the
