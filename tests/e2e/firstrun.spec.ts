@@ -82,6 +82,33 @@ test.describe('first run', () => {
     await opt.screenshot({ path: join(OUT, '06-options-top.png') });
     await opt.close();
 
+    /*
+     * 6. The help surface, with the diagnostic block built.
+     *
+     * Captured because this shot carries the version number, and a shot that
+     * carries the version number goes stale at every bump. It was a manual
+     * capture until 2026-09-29 and had been reading "Weft 1.0.0" since the
+     * bump to 1.0.1 — an orphan inside the `first-run walkthrough shots`
+     * pathspec that `npm run artefacts:check` reported stale and no
+     * regeneration could ever correct, because nothing regenerated it.
+     * `tests/tools/artefacts.test.ts` now fails if a file in that pathspec
+     * has no generator, so this cannot silently happen again.
+     *
+     * The details have to be gathered first: the block does not exist until
+     * the button is pressed, which is the point of the surface — nothing is
+     * assembled, let alone sent, until a person asks for it.
+     */
+    const help = await context.newPage();
+    await help.setViewportSize({ width: 1000, height: 900 });
+    await help.goto(`chrome-extension://${extensionId}/options.html`);
+    await help.waitForTimeout(1200);
+    await help.getByRole('button', { name: 'Gather the details' }).click();
+    await help.waitForTimeout(600);
+    await help.locator('.section:has(.help__report)').first().scrollIntoViewIfNeeded();
+    await help.waitForTimeout(400);
+    await help.screenshot({ path: join(OUT, '07-help.png') });
+    await help.close();
+
     await page.close();
     expect(true).toBe(true);
   });

@@ -57,14 +57,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **61 pass**, 18 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **63 pass**, 18 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 (latest) 3 stale, 1 fresh — each can now be marked verified with `npm run artefacts:verify` once actually checked |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 (latest) **1 stale, 3 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -192,6 +192,122 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — both sets reproduced exactly, and the defect was in the file neither run touched
+
+The queue asked for `docs/screens/` and `docs/firstrun/` to be regenerated,
+named the five `dashboard*.png` date churn as the known caveat, and offered
+seeding the dashboard clock as the better item. **All three were settled
+already**, one session back in `d0b2263`: `artefacts:check` reports
+`documentation screenshots` **ok**, no date was ever involved (the churn was
+an unstable comparator, the run's own attention, and a cooldown banner the
+harness queued for itself), and the two date sites at
+`src/ui/dashboard/index.tsx:299,429` were measured stable. Sixth of the last
+nine sessions handed a completed item; a minute of `artefacts:check` settled
+it before anything moved.
+
+**PR #29 was open, mergeable and unmerged**, carrying the topmost unchecked
+item — the manifest mechanism. Merged first rather than stacked on, because
+the remaining work is *stamping*, which is not expressible until
+`artefacts:verify` is on `main`.
+
+So the real work was the item below it: regenerate the two genuinely stale
+groups, read them, stamp whichever reproduce. Both did. `store listing
+screenshots`, all 15 captures, and `first-run walkthrough shots`, all 6
+generated ones, byte-identical across **two consecutive runs each**, hashed
+rather than eyeballed, with npm's exit status captured per run and the mtimes
+checked every time — a generator that dies early writes nothing, and "no file
+changed" is indistinguishable from a clean idempotent run from outside.
+
+**Then reading the images found the one thing two clean regenerations could
+not.** `docs/firstrun/07-help.png` renders the diagnostic block, the block
+carries the version, and it read **`Weft 1.0.0`** on a tree at 1.0.1. It is
+written by **no generator** — a manual capture orphaned inside the group's
+pathspec — so both runs left it untouched, `git status` stayed clean, and the
+STALE report was pointing at a real defect that no amount of regenerating
+could ever clear. Same class as `options.png` carrying 1.0.0 two sessions ago,
+and the same reason: a bump invalidates *artefacts*, and the count sweep greps
+past them.
+
+**The transferable half is the pathspec, not the shot.** `paths:
+['docs/firstrun']` claims everything in that directory is generated. Two files
+there are not. The precedent for the fix was **one group above in the same
+file** — `store listing screenshots` already declares `docs/store/*-0*.png`
+rather than `docs/store`, in as many words, "because the tiles beside the
+captures are drawn by hand and are not generated from anything." The first-run
+group simply had not had that line drawn for it. Now `docs/firstrun/0*.png`,
+with `icons.png` outside it, `07-help.png` generated for real by a new spec
+step that presses "Gather the details" first, and a guard that fails if any
+file in the pathspec has no generator writing it. Only this group can be
+guarded that way and the test says so: `store-assets.spec.ts` composes
+filenames from a frame × slug template, so no literal name exists to search
+for.
+
+**Writing the first real verify stamp turned an existing test red, and that
+is the more useful finding.** `the store pathspec takes the fifteen captures`
+counts `git ls-files` over `paths`; `artefactsFor` folds the manifest into
+`paths`; so it matched 15 for exactly as long as nobody had ever run
+`artefacts:verify`, and 16 the moment somebody did. **A guard that passes
+because the feature it guards is unused, and fails on first use, is the
+vacuity this suite polices everywhere else** — PR #14's note guard skipping
+`novem` for the same shape. Both pathspec tests now share a `captures()`
+helper that excludes the stamp. Expect the same from the other three
+manifests the first time each is written.
+
+Done test-first: the red run named both defects separately and by filename,
+`docs/firstrun/icons.png is not a generated shot` and `docs/firstrun/07-help.png
+is inside the artefact pathspec but no generator writes it`, before anything
+was edited. 61 → 63 tests, 18 suites unchanged (both went into an existing
+`describe`).
+
+**Byte-equality proves reproducibility and not correctness, which is the
+argument for opening the files at all.** A regeneration reproduces a wrong
+committed image exactly as faithfully as a right one — which is literally how
+the listing art carried pre-PR-#12 copy for a month while every run agreed
+with itself. What reading confirmed: scene 5 states "28% of content words —
+1 word in 4", the qualified phrasing that ships; scene 4's feed is in stable
+folded-alphabetical order with `père` before `pierre`, PR #24's `orderKey`
+visible in the art; the first-run set states the honest "a third of the
+content words" and the no-host-permissions story. All 26 files were opened,
+including the two orphans, which is how the 1.0.0 was found.
+
+**One thing found by reading and deliberately not fixed**, queued instead:
+`apple-04-progress.png` cuts the tops off all four tile digits and
+`apple-05-settings.png` halves the preset button row, a byproduct of
+`scrollIntoViewIfNeeded` scrolling minimally so whatever sits just above the
+target section bleeds in. Cosmetic, pre-existing, byte-stable — and B5 step 7
+uploads these. Not folded in here because **changing bytes in the same commit
+that stamps them unchanged is the one thing the stamp must never mean.**
+
+`artefacts:check` went from 3 stale to **1**, and the one left is the release
+notes, which is B2a and cannot be fresh before the tag: its `inputs` are `.`,
+so any commit stales it by design. The first-run stamp was **deleted** rather
+than kept — that group earned a real content change, so the stamp's own note,
+"no change to commit", would have been false.
+
+Counts moved 716 → **724** and tools 55 → **63** in five documents, with
+`docs/LAUNCH.md:221` swept **by name and first** for the eighth session
+running. Worth naming: PR #29 moved tools 55 → 61 and swept **only its own
+journal** — `README.md`, `CHANGELOG.md`, `docs/SUBMIT.md` and `docs/LAUNCH.md`
+were all two sessions stale, so this sweep covers both sessions' drift.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **63 tools / 18
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged — nothing here
+touches shipped code), **36 e2e passed and 3 skipped in 1.8 min**, then build
+and validate again. `site:check` and `packs:verify` were **not** re-run and
+the reason is the rule this file already states: no pack moved, no seed moved,
+and `src/` was not touched at all. The two generators were run **five** times
+across the session, each with its exit status captured and its hashes diffed
+before anything was believed. Zero iCloud conflict copies in `dist/`, `src/`
+or `test-results/`, the xattr working for the fourth session running — it had
+to be re-set on `test-results/`, which does not survive being deleted.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Next` holds two agent-shaped items: the onboarding
+preview judgement call, and the clipped-row framing above.
 
 ### 2026-09-29 — the queued task was already merged; the real gap was two items down
 

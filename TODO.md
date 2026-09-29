@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **55** tool tests / 16 suites, **36** e2e passing
+suites, **63** tool tests / 18 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -24,7 +24,18 @@ stale again within one commit, and now something looks, as of 2026-09-29** —
 what the generator produces; they are regenerated, and `npm run
 artefacts:check` reports every committed generated file the tree has moved
 past, which on a fresh `main` is four groups and two of them nobody knew
-about. **Both stale documentation sets are regenerated and the screens set
+about. **And all three screenshot groups now report `ok`, as of 2026-09-29** —
+`store listing screenshots` and `first-run walkthrough shots` were each
+regenerated twice, every one of the 26 files was opened and read, and the
+generated ones all reproduced byte-identically; the store set is stamped via
+`npm run artefacts:verify`. Reading them found what two clean regenerations
+could not: `docs/firstrun/07-help.png` said **`Weft 1.0.0`** on a tree at
+1.0.1, because no generator wrote it — a manual capture orphaned inside a
+pathspec declared as a whole directory. It is generated now, the pathspec is
+narrowed to `docs/firstrun/0*.png`, and a guard fails if any file in it has
+no generator. **`artefacts:check` is down to 1 stale from 4**, and the one
+left is the release notes, which is B2a and cannot be fresh before the tag.
+**Both stale documentation sets are regenerated and the screens set
 is now reproducible, as of 2026-09-29** — `docs/firstrun/` came back
 byte-identical to what was committed, and `docs/screens/` needed three
 separate fixes before two consecutive runs agreed. The cause was *not* the
@@ -827,21 +838,52 @@ move until it is.
       `artefacts:verify` whichever come back byte-identical. Queued as the
       item directly below.
 
-- [ ] **Two of the four real artefact groups are genuinely stale, and now
-      there is somewhere to record checking them.** `store listing
-      screenshots` (2 commits since `8d2cbbb` as last measured) and
-      `first-run walkthrough shots` (9 since `7f7faaa`) both read STALE
-      under `npm run artefacts:check` while the manifest mechanism above was
-      being built, and neither was regenerated as part of that work —
-      building a tool to record a check and actually performing the check
-      are different tasks, and stamping either speculatively would have been
-      the exact false "fresh" the tool exists to prevent. Regenerate both
-      (`npm run build:test && WEFT_STORE=1 npx playwright test store-assets`,
-      then the `WEFT_FIRSTRUN=1 npx playwright test firstrun` equivalent),
-      **read** what changed rather than trusting `git status` — the house
-      rule this file has paid for repeatedly — and for whichever comes back
-      byte-identical, run `npm run artefacts:verify -- "<name>"` and commit
-      the stamp. For whichever does not, commit the real change. ~20–30 min.
+- [x] **Two of the four real artefact groups are genuinely stale, and now
+      there is somewhere to record checking them.** Done 2026-09-29. Both
+      regenerated **twice each**, every image read rather than trusted, and
+      `npm run artefacts:check` now reports all three screenshot groups
+      `ok`. The store set came back byte-identical in all 15 captures and is
+      stamped; the first-run set came back byte-identical in its 6 generated
+      shots and then reading found a seventh that no generator writes at
+      all. See the note at the top of Notes.
+
+      **The stamp mechanism works, and this was its first real use.** Three
+      groups went STALE → ok. Only `release notes for 1.0.1` is left, which
+      is **B2a** and cannot be made fresh before the tag: its `inputs` are
+      `.`, so any commit stales it, which is the design.
+
+      **Byte-equality proves reproducibility, not correctness, and that is
+      why the images had to be opened.** A regeneration reproduces a wrong
+      committed image exactly as faithfully as a right one — which is
+      literally how the listing art carried pre-PR-#12 copy for a month
+      while every run agreed with itself. What reading confirmed: scene 5
+      states "28% of content words — 1 word in 4", the qualified phrasing
+      that ships; scene 4's feed is in stable folded-alphabetical order with
+      `père` before `pierre`, which is PR #24's `orderKey` visible in the
+      art; the first-run set states the honest "a third of the content
+      words" and the no-host-permissions story.
+
+      **And reading is the only thing that could have found the real
+      defect.** `docs/firstrun/07-help.png` renders the diagnostic block,
+      the block carries the version, and it had read `Weft 1.0.0` since the
+      bump. It was written by **no generator** — an orphan of a manual
+      capture inside the group's pathspec — so both regenerations left it
+      untouched and `git status` stayed clean over a file the STALE report
+      was correctly complaining about. Fixed three ways: the pathspec
+      narrowed to `docs/firstrun/0*.png` (the precedent is one group above,
+      where `store listing screenshots` already excludes the hand-drawn
+      tiles); `07-help.png` generated for real by a new step in
+      `firstrun.spec.ts`; and a guard that fails if any file in that
+      pathspec has no generator writing it.
+
+      **Writing the first verify stamp turned an existing test red**, and
+      that is worth keeping: `the store pathspec takes the fifteen captures`
+      counts `git ls-files` over `paths`, and `artefactsFor` folds the
+      manifest into `paths` — so it matched 15 for exactly as long as the
+      mechanism went unused. A guard that passes because its feature has
+      never been exercised is the vacuity this suite polices elsewhere.
+      Both pathspec tests now share a `captures()` helper that excludes the
+      stamp.
 
 - [ ] **The onboarding preview writes to the learner's real vocabulary.**
       Found 2026-09-29 while probing why the seeded vocabulary list held 26
@@ -872,6 +914,31 @@ move until it is.
       "met" from "read" and may be the honest distinction. Whichever way it
       goes, `tests/e2e/screenshots.spec.ts` currently documents the
       behaviour in a comment and will need that comment corrected.
+
+- [ ] **Two listing screenshots clip a row of content at the top edge.**
+      Found 2026-09-29 by opening them, which is the only way it could have
+      been found: the files are byte-stable and byte-identical to what is
+      committed, so every automated check in the repository is happy with
+      them. `apple-04-progress.png` cuts the tops off the digits of all four
+      progress tiles (`20`, `5`, `97%`, `30 min`), and
+      `apple-05-settings.png` cuts the preset button row (`Taster`,
+      `Standard`, `Committed`, `Monastic`) in half. It is a byproduct of
+      `scrollIntoViewIfNeeded()` in `tests/e2e/store-assets.spec.ts:250,259`
+      — the scroll is minimal, so whatever sits just above the target
+      section bleeds in partially rather than being either fully in shot or
+      fully out.
+
+      Cosmetic, pre-existing, and **not** a staleness: these are the bytes
+      that were committed and they reproduce exactly. But B5 step 7 uploads
+      them to the Chrome Web Store, where a half-row of clipped text is the
+      kind of thing a reviewer reads as unfinished. The fix is a deliberate
+      scroll offset rather than `scrollIntoViewIfNeeded` — scroll the
+      section to the top of the viewport, or far enough that the row above
+      is cleanly excluded. Doing it rewrites 6 binaries and invalidates the
+      verify stamp written on 2026-09-29, so it wants its own pass with the
+      images read afterwards. ~20 min. Deliberately not folded into the
+      session that found it: changing bytes in the same commit that claims
+      they did not change is the one thing the stamp must never mean.
 
 Otherwise empty. Everything in Blocked needs Creagh — B1 an identity and a
 payment method, B2 onwards a decision that is not reversible the way a commit
@@ -1082,6 +1149,39 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — both groups reproduced exactly, and the defect was in the file
+neither run touched.** `store listing screenshots` and `first-run walkthrough
+shots` were each regenerated twice, hashed rather than eyeballed, and every
+generated file came back byte-identical to what was committed. The mtimes
+were checked on every run, because a generator that dies early writes nothing
+and "no file changed" looks identical to a clean idempotent run from outside —
+this file has nearly paid for that twice.
+
+Then reading the images found `docs/firstrun/07-help.png` saying **`Weft
+1.0.0`** on a tree at 1.0.1. It is written by no generator: a manual capture
+sitting inside the group's pathspec, so regenerating could never correct it,
+and the group's STALE report was pointing at a real defect that no amount of
+regenerating would have cleared. Three fixes — pathspec narrowed to
+`docs/firstrun/0*.png` (`icons.png`, a hand-drawn icon comparison sheet, is
+now outside it, matching what `store listing screenshots` already does for
+its tiles), a real generator step for the help shot, and a guard that fails
+if any file in that pathspec has no generator writing it. Only that group can
+be guarded that way and the test says so: `store-assets.spec.ts` composes
+filenames from a frame × slug template, so no literal name appears in it.
+
+**The transferable half: a pathspec that names a directory claims everything
+in it was generated.** Both hand-made files in `docs/firstrun/` got swept into
+a generated-artefact group by a pathspec written as `docs/firstrun`, and one
+of them was wrong for a week with a tool pointed straight at it.
+
+**And the first real verify stamp turned an existing test red.** `the store
+pathspec takes the fifteen captures` counted `git ls-files` over `paths`, and
+`artefactsFor` folds the manifest path into `paths` — so it matched 15 for as
+long as nobody ran `artefacts:verify`, and 16 the moment somebody did. Passing
+because the feature is unused, failing on first use. Both pathspec tests now
+share a `captures()` helper that excludes the stamp. Worth expecting the same
+shape from the other three manifests the first time each is written.
 
 **2026-09-29 — the manifest had to be one file per group, not the one this
 file named.** Closing the `artefacts:check` item above found a bug in the fix

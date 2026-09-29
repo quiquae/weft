@@ -25,7 +25,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { checkArtefacts, formatReport, artefactsFor, artefactManifestPath } from '../../tools/artefacts.ts';
@@ -316,6 +316,25 @@ describe('artefactManifestPath', () => {
 describe("the real artefact list points at things that are actually there", () => {
   const ROOT = join(import.meta.dirname, '../..');
 
+  /**
+   * The committed files a group's pathspec matches, minus its verify stamp.
+   *
+   * `artefactsFor` folds `artefactManifestPath(name)` into every group's
+   * `paths`, which is what lets a stamp move `lastWrote`. It also means
+   * `git ls-files` over those paths returns one extra entry — but only once
+   * somebody has actually run `artefacts:verify` for that group and
+   * committed the result. Counting it made the store-pathspec test below
+   * pass for as long as the mechanism went unused and fail on its first
+   * real use, which is the worst moment for a guard to turn red.
+   */
+  const captures = (artefact: { name: string; paths: string[] }): string[] => {
+    const manifest = artefactManifestPath(artefact.name);
+    return git(ROOT, ['ls-files', ...artefact.paths])
+      .split('\n')
+      .filter(Boolean)
+      .filter((f) => f !== manifest);
+  };
+
   test('every declared source path exists in this repository', () => {
     // The failure this catches is silent: a pathspec matching nothing makes
     // `git log` return nothing, which reads as "fresh" forever.
@@ -345,13 +364,56 @@ describe("the real artefact list points at things that are actually there", () =
   test('the store pathspec takes the fifteen captures and not the hand-drawn tiles', () => {
     const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('store listing'));
     assert.ok(shots);
-    const matched = git(ROOT, ['ls-files', ...shots.paths]).split('\n').filter(Boolean);
+    const matched = captures(shots);
     // The tiles and the Edge logo sit in the same directory and are drawn by
     // hand, so they are generated from nothing and can never be stale. A
     // pathspec that swept them in would report the whole group stale for a
     // reason no regeneration could fix.
     assert.equal(matched.length, 15, `matched:\n${matched.join('\n')}`);
     for (const file of matched) assert.match(file, /-0\d-/);
+  });
+
+  test('the first-run pathspec takes the generated shots and not the hand-made icon sheet', () => {
+    const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('first-run'));
+    assert.ok(shots);
+    const matched = captures(shots);
+    // `icons.png` is a magnified icon comparison sheet drawn by hand, and it
+    // sits in this directory because that is where the first-run material
+    // was collected, not because any generator writes it. The store group
+    // above already draws exactly this line for the tiles beside it; this
+    // group was declared as the whole directory and so swept the sheet in.
+    assert.ok(matched.length > 0, 'the first-run pathspec matches nothing');
+    for (const file of matched) {
+      assert.match(file, /docs\/firstrun\/\d\d-[a-z-]+\.png$/, `${file} is not a generated shot`);
+    }
+  });
+
+  test('every file in the first-run pathspec is written by the first-run spec', () => {
+    // The defect this exists for was silent and cost a wrong version number
+    // in documentation a stranger reads. `07-help.png` sat inside this
+    // group's pathspec while being written by no generator at all, so every
+    // regeneration left it untouched, `git status` stayed clean, and the
+    // shot went on saying "Weft 1.0.0" after the bump to 1.0.1. A stamp
+    // from `artefacts:verify` then claimed the whole pathspec had been
+    // checked, which for that file nothing could make true.
+    //
+    // Only the first-run group can be checked this way, and that is worth
+    // knowing before anyone generalises it: `store-assets.spec.ts` composes
+    // its filenames from a frame × slug template, so no literal name
+    // appears in it to search for. This spec names each file outright.
+    const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('first-run'));
+    assert.ok(shots);
+    const spec = readFileSync(join(ROOT, 'tests/e2e/firstrun.spec.ts'), 'utf8');
+    const matched = captures(shots);
+    assert.ok(matched.length > 0, 'the first-run pathspec matches nothing');
+    for (const file of matched) {
+      const name = file.slice(file.lastIndexOf('/') + 1);
+      assert.ok(
+        spec.includes(`'${name}'`),
+        `${file} is inside the artefact pathspec but no generator writes it, ` +
+          'so regenerating the group can never correct it',
+      );
+    }
   });
 
   test('the release notes are named after the version they belong to', () => {
