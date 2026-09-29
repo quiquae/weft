@@ -732,32 +732,65 @@ adding or removing any test is `git grep -n` for the *old* number across
 `README.md`, `CHANGELOG.md`, `TODO.md`, `CLAUDE.md` and `docs/`, which is five
 files and finds all of them.
 
-**2026-09-28 — the store-asset generator did not write a single file, and took
-35 minutes to say so.** `WEFT_STORE=1 npx playwright test store-assets` was run
-on the merged tree to settle a question about one PNG (below) and **failed**.
-The tell is not the failure, it is the mtimes: all eighteen files in
-`docs/store/` still carried the worktree's own creation timestamp afterwards,
-so the spec never reached its writes. A previous session recorded this same
-command as *"1 passed, 31 s"* on 2026-09-28, so 35 minutes is a 70× blow-out,
-not a slow machine.
+**2026-09-28 — the store-asset generator is broken, reproducibly, and it is
+the only thing that could vouch for the listing screenshots.**
+`WEFT_STORE=1 npx playwright test store-assets` **fails in 28 seconds** on a
+clean serial run with nothing else on the machine. An earlier run in this
+session took 35 minutes; that was contention, and **contention is not the
+cause of the failure** — it reproduces immediately when idle. It writes
+**nothing**: all eighteen files in `docs/store/` still carry their checkout
+mtime afterwards.
 
-- **Not diagnosed, and deliberately not chased here**, because it blocks
-  nothing: the committed assets are intact, unchanged, and already verified at
-  the exact sizes the stores demand (chrome 1280×800, edge 1366×768, apple
-  1440×900, tiles 440×280 and 1400×560, logo 300×300). The spec is skipped by
-  default, is outside both CI and `npm run test:all`, and **B5 step 7 uploads
-  the committed files rather than regenerating them.**
-- **It was run concurrently** with `npm run site` and `npm run site:check` on a
-  machine that had just finished the full e2e gate, so contention is the first
-  hypothesis and a clean serial re-run is the first step. Do that before
-  concluding anything is broken. The trace is in
-  `test-results/store-assets-*/trace.zip`; `npx playwright show-trace` on it
-  is the second step.
-- **What it costs while it stands:** the claim "all fifteen came back
-  byte-identical" cannot be re-verified, so the byte-stability property the
-  repository now guards for `packs`, `site` and `og` has no live check for
-  `store-assets`. If the listing art ever needs regenerating — a redrawn icon,
-  a lexicon change visible in a screenshot — this is in the way.
+The failure, exactly:
+
+    tests/e2e/store-assets.spec.ts:88
+    expect(page.locator('weft-w').first()).toBeVisible({ timeout: 20_000 })
+      → element(s) not found, after 20 s, on ${origin}/showcase.html
+
+preceded by `configure({ 'weave.baseRatio': 0.3, 'weave.ceilingRatio': 0.6,
+'weave.renderMode': 'wrapped', 'reveal.hoverDelayMs': 0 })`. `weft-w` is the
+wrapped renderer's per-word element (`src/content/render-wrapped.ts:7`); the
+default highlight renderer creates no elements at all, so its absence means
+the page is not in wrapped mode, or is not woven.
+
+**Three hypotheses already eliminated — do not re-spend time on them:**
+
+1. **Not contention.** 28 s idle, same failure. Ruled out by re-running.
+2. **The wrapped renderer is not broken.** `tests/e2e/friction.spec.ts:28,75`
+   assert `weft-w` is visible in wrapped mode and **pass** in the full gate, as
+   do the wrapped-mode cases in `weaving.spec.ts:87,250,289` and
+   `privacy.spec.ts:62,117`. This was the alarming hypothesis — that the
+   screen-reader path and the Safari 16.4–17.1 path had silently regressed with
+   no coverage — and it is wrong. Coverage exists and is green.
+3. **No settings key was renamed.** All four paths the spec writes still exist
+   in `src/`, and `weft-w` is still the tag.
+
+**And one that looks promising but does not survive reading `lock.ts`:**
+`weave.baseRatio` and `weave.ceilingRatio` are both governed paths
+(`src/core/lock.ts:34–35`), so a change to either can be *queued* rather than
+applied — but for both, `easier: 'lower'`, and this spec raises them (0.06 →
+0.3, 0.35 → 0.6). Raising is the *harder* direction, which the design applies
+at once. `weave.renderMode` is not a governed path at all. So the cooldown
+layer should not be holding this back, and if it is, that is itself the bug.
+
+**What is actually at stake, and it is not a screenshot.** `TODO.md` and the
+journal both record that on 2026-09-28 all fifteen shots were regenerated and
+"came back byte-identical", which is what retired the worry that the listing
+art might show a pre-`3060d93` French lexicon. **That evidence is no longer
+evidence.** A failing generator writes nothing, and "no file changed" is
+exactly what this session observed from a run that never reached its writes —
+indistinguishable, from the outside, from a successful idempotent run. So the
+claim that the listing art shows the lexicon that ships is currently
+unverified, whatever the earlier "1 passed, 31 s" recorded. **B5 step 7 still
+uploads the committed files and is not blocked** — they exist and are at the
+exact required sizes — but nobody should repeat the "byte-identical"
+reassurance until the generator runs.
+
+Next step: it is 28 s per run, so `git bisect` across the nineteen stack
+commits is about five builds. The earlier measurement puts a working generator
+at `2c21615` (#4), so the break is somewhere in #5–#21. The trace is at
+`test-results/store-assets-*/trace.zip`; `npx playwright show-trace` on it
+shows what the page actually contained. Queued.
 
 **2026-09-28 — one abandoned store screenshot exists on exactly one ref, and
 it is the *wrong* one.** `docs/store/apple-04-progress.png` is **126 408**
