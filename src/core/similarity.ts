@@ -33,6 +33,22 @@ export function fold(s: string): string {
   return collapseDoubles(letters);
 }
 
+/**
+ * Fold a word for *ordering*: lowercase, diacritics removed, nothing else.
+ *
+ * Deliberately not `fold`. That one collapses doubled consonants, which is
+ * right for asking "are these the same word?" and wrong for sorting, where it
+ * would file "pomme" and "pome" at the same key. And deliberately not
+ * `localeCompare`, which reads correctly but depends on the ICU data the
+ * runtime was built with, so a contributor's machine and CI can disagree —
+ * the determinism bug one layer down. Plain code units are deterministic
+ * everywhere and put "pierre" before "père", because `i` (U+0069) sorts below
+ * `è` (U+00E8): correct, and it reads like a bug in a list of French.
+ */
+export function orderKey(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(COMBINING, '');
+}
+
 export function collapseDoubles(s: string): string {
   let out = '';
   for (let i = 0; i < s.length; i++) {

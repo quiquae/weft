@@ -12,6 +12,26 @@ import { fileURLToPath } from 'node:url';
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../../docs/screens');
 
+/**
+ * Attention seeded before the dashboard and popup shots, in seconds.
+ *
+ * Minute-aligned on purpose: `formatDuration` prints whole minutes above 60s,
+ * so the seconds a run accrues for itself vanish below the next boundary and
+ * the rendered string is the same every time.
+ *
+ * Half an hour also saturates the site's ceiling, and that is a deliberate
+ * cost rather than an accident. Below the ceiling the popup prints a
+ * projection instead — "40% after another 7 min", which is the sentence that
+ * shows escalation happening, and the committed shot used to carry it. It
+ * cannot be made reproducible: the projection is
+ * `formatDuration(remaining * 60)` and `remaining` counts *down* by exactly
+ * the seconds the run accrues, so `Math.floor(s / 60)` crosses a boundary for
+ * every accrual except the knife-edge case where the value sits 59s above
+ * one. Saturation is what makes this shot diffable at all. Lower the
+ * constant to get the projection back and `popup.png` starts churning again.
+ */
+export const SEEDED_ATTENTION_SECONDS = 1800;
+
 test.describe('screenshots', () => {
   test.skip(({}) => process.env['WEFT_SCREENS'] !== '1', 'set WEFT_SCREENS=1');
 
@@ -69,6 +89,29 @@ test.describe('screenshots', () => {
     await oe.waitForTimeout(500);
     await oe.screenshot({ path: join(OUT, 'page-old-english.png') });
 
+    /*
+     * Close both woven pages before touching the store.
+     *
+     * They are taxed pages running the content script, and while they are
+     * open they keep reporting exposures — so the vocabulary list held six
+     * words read off `article.html` (`eau`, `jeune`, `route`, `soir`, `un`,
+     * `vivant`) on top of the seeded plan, with counts that moved run to run.
+     * Resetting the store is not enough on its own if something is still
+     * writing to it.
+     */
+    await reader.close();
+    await oe.close();
+    /*
+     * And let their last writes land before resetting.
+     *
+     * Closing a taxed page flushes whatever exposures it had pending, which
+     * is asynchronous: without this wait the flush races the reset below and
+     * lands on either side of it, which is *worse* than leaving the pages
+     * open — it drifted five shots rather than one, including
+     * `dashboard-transparency.png`, which had been stable throughout.
+     */
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+
     // Seed a plausible vocabulary through the real import path, so the
     // progress page shows all three stages rather than a single flat band.
     const day = 86_400_000;
@@ -108,6 +151,30 @@ test.describe('screenshots', () => {
         ...(stability >= 60 && reps >= 6 ? { retiredAt: now - ago * day } : {}),
       };
     }
+    /*
+     * Wipe the cards the weaving above just created, so the plan is the store.
+     *
+     * Measured: 12 cards exist here, picked up from `article.html`, with
+     * exposure counts that moved run to run — one word was "seen 1x" in one
+     * run and "seen 2x" a minute later. That crossed a row in and out of the
+     * visible list, which is why `dashboard.png` changed *height* (4145px
+     * against 4199px) between two runs of a generator nothing in the product
+     * had changed. `import-data` cannot fix it on its own: `mergeCards` takes
+     * the max of `exposures` by design, so an import only ever adds to what
+     * is already there.
+     *
+     * Probed rather than assumed: 12 cards before, 0 after, 19 after the
+     * import, and those 19 are exactly the plan below.
+     *
+     * The list in the finished shot holds 26, not 19, and that is expected.
+     * The seven extra — `route`, `jeune`, `eau`, `vivant`, `un`, `soir`,
+     * `encore` — are written later, by the onboarding page's own live preview
+     * when `onboarding.png` is captured: that preview weaves a real passage
+     * through the real selector and records real exposures. They are
+     * identical every run, so they cost nothing here, but they are a
+     * reminder that a preview writes to the learner's vocabulary.
+     */
+    await rpc({ type: 'reset-vocabulary' });
     await rpc({
       type: 'import-data',
       payload: { format: 'weft-export/1', settings: {}, cards: seeded },
@@ -119,6 +186,49 @@ test.describe('screenshots', () => {
       'learning.targetLangs': ['fr'],
       'weave.baseRatio': 0.28,
       'weave.ceilingRatio': 0.6,
+    });
+
+    /*
+     * Clear the cooldown the seeding itself queued.
+     *
+     * Since `splitImportedSettings` landed, an import no longer overwrites
+     * settings outright: anything *easier* than the current state becomes a
+     * pending change waiting out the user's cooldown. The payload above
+     * carries no settings, `validateSettings` fills in the shipped defaults,
+     * and those are easier than the density this spec configures — so the
+     * import queued "starting density -> 6%; maximum density -> 35%; new
+     * words per day -> 12" and both options shots grew a red "One change is
+     * waiting" banner ~200px tall. That is the commitment layer working
+     * correctly on a payload only the harness would ever send, and it has no
+     * place in documentation art.
+     *
+     * Cancelled by id rather than by matching the settings, so it stays
+     * correct whichever field a future default makes easier. Cancelling is
+     * instant and free by design, which is the one reason this is safe to do
+     * without waiting.
+     */
+    const queued = await rpc<{ lock: { pending: Array<{ id: string }> } }>({ type: 'get-stats' });
+    for (const change of queued.lock.pending) {
+      await rpc({ type: 'cancel-pending', id: change.id });
+    }
+
+    /*
+     * Seed attention to a whole half hour, the same trick and the same figure
+     * `store-assets.spec.ts` uses for its progress tile.
+     *
+     * The popup's attention line and the dashboard's milestone bars are both
+     * read off accrued attention, so before this they photographed the clock:
+     * a few seconds of real reading, differing every run. It does not need a
+     * frozen clock, because `formatDuration` prints whole minutes above 60s,
+     * so a minute-aligned seed absorbs whatever the run adds underneath the
+     * next boundary. `tests/tools/screenshots.test.ts` re-derives that across
+     * the accrual range rather than trusting this comment.
+     */
+    await rpc({
+      type: 'record-attention',
+      host: new URL(origin).hostname,
+      seconds: SEEDED_ATTENTION_SECONDS,
+      url: `${origin}/article.html`,
     });
 
     // --- extension surfaces ---

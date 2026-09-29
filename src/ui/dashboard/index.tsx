@@ -2,7 +2,9 @@ import { render } from 'preact';
 import { useMemo, useState } from 'preact/hooks';
 import type { LexEntry, MemoryCard } from '../../core/types.ts';
 import { getLanguage } from '../../core/languages.ts';
-import { attentionSummary, stageOf, vocabStats, wordsRead } from '../../core/stats.ts';
+import {
+  attentionSummary, sortVocabulary, stageOf, vocabStats, wordsRead, type VocabSort,
+} from '../../core/stats.ts';
 import { cardRetrievability, daysUntilDue } from '../../core/fsrs.ts';
 import { formatDuration } from '../../core/escalation.ts';
 import { buildDiscoveries } from '../../core/discoveries.ts';
@@ -32,7 +34,7 @@ const STAGE_LABELS = {
 
 function Dashboard() {
   const stats = useRequest({ type: 'get-stats' });
-  const [sort, setSort] = useState<'urgent' | 'seen' | 'alpha' | 'stable'>('urgent');
+  const [sort, setSort] = useState<VocabSort>('urgent');
   const [showTable, setShowTable] = useState(false);
   const [filter, setFilter] = useState('');
   const now = Date.now();
@@ -128,25 +130,19 @@ function Dashboard() {
     },
   ];
 
-  const visible = mine
-    .filter((c) => {
+  // Ordered in core, where the comparator is total. Sorting here with a
+  // switch was how the list came to reshuffle between visits: every column
+  // but `alpha` ties constantly, and a tie left the order to the storage
+  // round-trip. See `sortVocabulary`.
+  const visible = sortVocabulary(
+    mine.filter((c) => {
       if (!filter.trim()) return true;
       const q = filter.trim().toLowerCase();
       return c.lemma.toLowerCase().includes(q) || (glosses.get(c.lemma)?.lemma ?? '').includes(q);
-    })
-    .sort((a, b) => {
-      switch (sort) {
-        case 'seen':
-          return b.exposures - a.exposures;
-        case 'alpha':
-          return a.lemma.localeCompare(b.lemma);
-        case 'stable':
-          return b.stability - a.stability;
-        case 'urgent':
-        default:
-          return cardRetrievability(a, now) - cardRetrievability(b, now);
-      }
-    });
+    }),
+    sort,
+    now,
+  );
 
   return (
     <main class="page">
