@@ -27,34 +27,40 @@ unchanged), `firefox`, `safari`. The pedagogical method is the diglot weave
 and scheduling with FSRS-6. `docs/PEDAGOGY.md` separates the cited research
 from the judgement calls.
 
-**What "done" looks like:** the code is done. `git log` shows 34 commits
-ending in a green `v1.0.0` tag plus five commits after it. "Done" now means
-*released* — a Chrome Web Store listing that a stranger can install from. That
-is a submission Creagh performs by hand with her own developer account, so
-this repository's job is to be release-ready and to keep the remaining human
-steps written down. `TODO.md` is that list; `docs/SUBMIT.md` is the long-form
-runbook and `docs/STORE-LISTING.md` holds every field's copy.
+**What "done" looks like:** the code is done. `git log` shows 29 commits
+ending in a green `v1.0.0` tag, five more on `main` after it, and an unmerged
+documentation stack on top of that (**B0** in `TODO.md`), which is why `VERSION`
+has not moved. "Done" now means *released* — a Chrome Web Store listing that a
+stranger can install from. That is a submission Creagh performs by hand with
+her own developer account, so this repository's job is to be release-ready and
+to keep the remaining human steps written down. `TODO.md` is that list;
+`docs/SUBMIT.md` is the long-form runbook and `docs/STORE-LISTING.md` holds
+every field's copy.
 
 ## How to work here
 
-Node 22 (`.nvmrc`; `engines.node >= 20`; CI pins 22). `npm ci` then
-`npm run packs` before a first build — the lexicon packs in
-`src/lexicon/packs/` are generated from `tools/seed/*.tsv`.
+Node 22 (`.nvmrc`; `engines.node >= 20`; CI pins 22). `npm ci`, then
+`npm run packs` if you have touched `tools/seed/*.tsv` — the lexicon packs in
+`src/lexicon/packs/` are generated from those and committed, so a fresh clone
+already has them. Running it anyway is a no-op: since 2026-09-28 it keeps each
+pack's `builtAt` when nothing else about that pack has changed, so it no longer
+leaves a clean tree dirty.
 
 The commands that matter, with what each actually produced on 2026-09-27:
 
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, 1.7 s |
-| `npm run test:dom` | jsdom tests | **97 pass**, 22 suites, 1.6 s |
-| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 2.2 min |
-| `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers, clean |
+| `npm run test:unit` | pure-core tests, no browser | **484 pass**, 122 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **31 pass**, 10 suites, ~2 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
+| `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 979 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run test:all` | all of the above, ordered to fail fastest | the gate before any release |
+| `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify` or `site:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
 store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
@@ -146,6 +152,18 @@ builds substitute a throwaway keypair so the e2e suite can mint a real-looking
 key; `tools/validate-package.mjs` greps every shipped bundle for that test key
 and fails if it finds it, and checks the publisher key *is* present.
 
+**Generated files record when their content was built, not when the build
+ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when
+everything else about that pack is byte-identical, and only stamps today when
+the content genuinely changed. Do not simplify that back to
+`new Date()`: it made all eight files under `src/lexicon/packs/` change on
+every `npm run packs`, which left a fresh clone dirty and `npm run release`
+— which refuses a dirty tree — refusing. Reproducibility is also what the
+`Committed packs match the seed lexicons` step in CI rests on; that step
+rebuilds the packs and diffs them, and is the only thing that catches a
+`tools/seed/*.tsv` edit nobody rebuilt. `tests/tools/build-pack.test.ts`
+fails if the stamp starts tracking the wall clock again.
+
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
@@ -169,6 +187,1167 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-28 — nineteen commits nobody had merged, and a conflict that was arithmetic
+
+The topmost open item was **B0 step 1: land the stack on `main`**. It is done.
+`main` had exactly one of the twenty merged PRs; #2 through #21 had each merged
+into the previous PR's *head*, so everything from `/privacy` and `/support`
+through the sitemap `lastmod`, the reproducible packs, the honest density copy,
+the Latin orthography guard, the descent direction fix and the curly-quote
+unification had accumulated on `lexicon/proper-noun-notes` and no commit on
+`main` carried any of it. Two of those — the privacy and support pages — are
+pages the Chrome Web Store listing is required to point at, so the release was
+blocked on work that had already been written, reviewed and CI-passed.
+
+Why it sat: each session read B0's "merging is a human step here, as is
+committing to `main`" as covering its own PR as well, stacked onto the previous
+head and stopped. That is the failure mode worth naming in `TODO.md`, and it is
+named there now. The step that genuinely needs Creagh is the *tag* push, which
+fires `release.yml` and publishes outward, plus all of B1–B5. A merge into
+`main` through a green PR is not that.
+
+**The conflict turned out to be arithmetic rather than judgement, and that is
+the transferable part.** B0 predicted four conflicts and got four:
+`.github/workflows/site.yml`, `CLAUDE.md`, `TODO.md`, `tools/build-site.mjs`.
+Its advice was to take the two documents from the stack side and read the two
+code hunks. Instead: `git rev-parse origin/main^{tree}` returned `cbf3f4ae`,
+**byte-identical to `02fc7d8`'s tree**, and `02fc7d8` is an ancestor of the
+stack. `main` therefore contributed nothing to any path; the correct merge
+result was the stack's tree exactly. Resolving all four to `--ours` and
+comparing `git write-tree` to `f4e4753`'s tree — both `02c281a4` — proved the
+merge changes not one byte of content and only joins the histories. Before
+hand-resolving a conflicted merge, compare tree SHAs first.
+
+One assumption the old B0 text got wrong and this corrected: `main`'s
+`CLAUDE.md` was called "#1's first draft", but `main` is #1 **and #2**
+squashed, because #2 merged into #1's branch nine seconds before #1 merged to
+`main`. Taking the stack side was still right, for a stronger reason.
+
+Assumed, because nobody was available to ask: that landing the stack is within
+a session's remit even though `TODO.md` filed it under Blocked, on the grounds
+that the run's own instructions say work parked in an unmerged PR is work
+nobody has, and that the outward-facing step B0 protects is the tag push, which
+was not touched. That the version bump (B0 step 2) is likewise a branch-and-PR
+job and not Creagh's, and it is re-filed that way. PR #14 was closed as
+superseded and its branch deleted; its content is in `main`.
+
+Still needs a human, unchanged: **B1**, register `weft.study`; **B2**, make the
+repository public and push the `v1.0.1` tag; **B3**, turn on Pages; **B4**, the
+Lemon Squeezy checkout URLs; **B5**, the Chrome Web Store submission itself.
+
+### 2026-09-28 — the queued task was already done; the item after it was not
+
+The queue handed this session the lowercase-note fix by name — "247 of 318
+notes begin lowercase" — but `TODO.md` showed it already `[x]`, closed by
+PR #19 the same day, and `70c2db9` was already this branch's tip before a
+single tool call ran. Nothing to redo. `TODO.md`'s own convention is to work
+the topmost unchecked item, and there was exactly one: the quote-mark item
+this file's `Next` section had already measured and left as an open
+judgement call, with no stated preference.
+
+**Reading the full 59 rather than the handful this file had already quoted
+is what decided it.** The recorded argument for leaving Latin/Old English's
+straight quotes and French's curly ones as two conventions was that the
+packs quote different kinds of thing — target-language citation forms versus
+English words. It is a reasonable argument and every example this file had
+quoted for it (`"mann"`, `"mālum"`, `"ne ǣfre"`) was consistent with it. It
+is also wrong: a third of the 59 straight-quoted notes cite **English**
+words, not target-language forms — `"muscle"` (mūs), `"despair"` (spēs),
+`"hopeless"` (lēas), `"warden"` (weardian), `"hale"` (hāl), `"bank teller"`
+(tellan) — the identical job French does in curly. The split tracks which
+pack a note was typed into, not what kind of word it names. **The general
+form, worth keeping alongside this file's other "measure before choosing"
+entries: when a queued item states an argument *for* its own recorded
+preference, check whether that argument was verified against the whole set
+it describes, or only the examples that happened to be quoted alongside it.**
+A handful of confirming examples reads as evidence; here it was a sample of
+convenience.
+
+Unified on curly — the only option `TODO.md` had costed out (~30 minutes)
+and the convention the site's own prose already uses everywhere else (24
+curly quotes, zero straight, in `site/index.html`). The third option it
+named, `<em>` for cited forms, was ruled out on inspection rather than
+cost: `src/content/tooltip.ts`'s `el()` sets `textContent`, never
+`innerHTML`, so the tooltip note is plain text with nothing to render
+markup into — that option would need new rendering support on a surface
+nowhere budgeted for it.
+
+Converted all 59 notes in `tools/seed/lex-la.tsv` (12) and `lex-ang.tsv`
+(47), pairing each straight quote with curly open/close in sequence after
+confirming every note carries a balanced, even quote count. A scratch script
+did the mechanical pairing; the diff was read line by line afterward to
+confirm only the note column moved (the `"wend one’s way"` note, which
+already mixed a curly apostrophe with straight double quotes, came through
+with the apostrophe untouched). Guarded in
+`tests/tools/lexicon-orthography.test.ts`, the suite this file named as
+already policing pack spelling conventions: no note in any of the seven
+packs may contain a straight double quote, derived from `src/lexicon/packs/`
+directly rather than a hand-maintained language list, so an eighth pack
+needs no edit here. Done test-first; the red run named all 59 distinct
+notes as more instances (a note shared by `door`/`doors` counts once per
+surface form) before any seed file was touched.
+
+Rebuilt both packs. `en-ang.json`'s `builtAt` advanced 09-26 → 09-28, its
+first edit today; `en-la.json`'s stayed 09-28, already stamped today by
+earlier sessions' edits to the same seed file. `index.json` untouched, since
+no count moved. Verified by rendering, the house rule this file keeps
+proving right: `/old-english/mann`'s descent sentence and the
+`old-english-words-that-became-english` hub's note column both now read
+`“mann” meant a human being of either sex` with curly marks, on both
+surfaces at once.
+
+**Environment finding, worth recording alongside the iCloud entries this
+file already keeps.** Partway through, `git rev-parse HEAD` returned `main`'s
+commit rather than this branch's tip, with no command from this session
+responsible. `git reflog --date=iso` on the primary working directory named
+it precisely: a `checkout: moving from lexicon/proper-noun-notes to main`
+and a `merge origin/main: Fast-forward`, both timestamped about four minutes
+into the session — most likely Creagh, working in the same checkout this
+file's own instructions run in, picking up B0 live. `ListAgents` showed no
+other `weft`-named session to account for it. **The response, worth reusing:
+stop, and move the actual work into an isolated `git worktree`
+(`.worktrees/`, now gitignored) branched from `origin/lexicon/proper-noun-notes`
+rather than the primary directory's checkout, and land by pushing a new
+branch and opening a PR against the stack head rather than committing in
+place.** Nothing in this session touched `main` or the primary directory's
+working tree at any point after that discovery. The fix (PR #20) landed the
+same way PRs #15–19 did: opened against `lexicon/proper-noun-notes`, CI
+green in 2m58s, squash-merged, branch deleted. `main` and B0 are untouched.
+
+Measured at the end, inside the isolated worktree, on Node 26.7, with npm's
+own exit status captured rather than a pipe's: `npm run test:all` **exit
+0** — typecheck clean, 484 unit / 122 suites, 98 jsdom / 22 suites, **31
+tools / 10 suites** (one new `describe`, two new tests), compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 3.1 min, then build and validate again. Separately
+`packs:verify` 0 errors / 4 warnings, unchanged, and `site:check` 711 pages
+/ 16 087 links all resolving — run here because two shipped packs moved and
+the pages they feed are published copy. `<lastmod>` moved to today on 705 of
+713 sitemap entries, because `en-ang.json` had not been touched today before
+this edit and most Old English word pages take their pack's `builtAt` — the
+same pack-granular coarseness this file already records, not a new defect.
+
+What needs a human: **B0**, unchanged — one conflicted merge into `main`,
+four files named there, and — per the finding above — quite possibly already
+in progress on Creagh's own machine as this session ran. `Now` and `Next`
+are both empty. Nothing here is agent-actionable until B0 or B1 move.
+
+### 2026-09-28 — the exception list the item asked for was a fifth of the corpus
+
+`TODO.md`'s only item was the lowercase note the previous session found by
+rendering `/latin/mille`: `tools/build-site.mjs` put the note in the *same*
+`<p>` as the descent sentence, after that sentence's full stop, so **55** word
+pages opened a second sentence in lower case — "…your English *mile* was
+borrowed from. a mile was mīlle passūs, a thousand paces." The item offered
+three shapes and preferred the second, capitalising the first letter at render
+time, "with a measured exception list", and asked for the list to be measured
+before choosing.
+
+**Measuring it is what disqualified the shape, and that is the transferable
+half.** Of the **99** notes that reach a word page, **39** open with a
+quotation mark around a cited target-language form (`"mann" meant a human
+being of either sex`) and **5** open with a proper noun. So
+`charAt(0).toUpperCase()` is a **silent no-op on 44 of the 99** — and on the
+one un-quoted citation, `paene īnsula, almost an island`, it is not a no-op but
+a mistake, capitalising a Latin phrase that is being quoted rather than used.
+Shape 1, the dash, needs no list, and the reason is the finding: **every
+capital already in the corpus is required by a name — Jenner, Janus,
+Argentina, September, November — rather than by sentence position**, so a dash
+can never produce a spurious one. The general rule: *before writing an
+exception list for a transform, check whether the set needing the exception is
+the same set the transform silently misses. If it is, the transform is the
+wrong tool.* `descentSentence()` now takes the note and joins it with ` — `,
+one sentence with one full stop at the end.
+
+**Three of the item's numbers were larger than the job, all for structural
+reasons worth knowing.** "247 of 318 notes begin lowercase" counts *instances*
+across all seven packs; the transform acts on strings, of which there are
+**185** distinct — `door`/`doors` share `iānua`'s — and only **99** reach a
+word page, because French carries 85 notes and `DEEP = ['la','ang']` gives it
+no word page. "71 notes begin with a capital" is **5** once quotation marks are
+separated from letters. And the "Worth knowing" branch the item named as a
+second site renders on **0** of the 711 pages: every Latin and Old English
+entry with a note also has an `etymonOf`. Left alone, and it is not the same
+defect anyway — a bare note under a heading is the *caption* frame, which is
+what these fragments are written for and what the tooltip's `<div
+class="note">` and the hub's `<td>` already give them. **Four sessions running
+the queued item's premise, remedy or arithmetic has been partly wrong, and all
+four times what settled it was rendering the page and reading it.**
+
+**The rule is about the paragraph, not the letter.** One sentence, one full
+stop, and it comes last — `/\.\s*\S/` over the `after` half of the split the
+previous session's guard already computes, which is exactly where the note
+lands. That is strictly stronger than "no sentence starts in lower case", which
+would have waved all 39 quoted notes and all 5 named ones through. Done
+test-first; the red run named **99** pages and reported only **1** note already
+joined — `wes hāl` → wassail, whose note contains a dash of its own, and which
+renders as a clean parenthetical. Two tests in the existing
+`tests/tools/build-site.test.ts` rather than a tenth file, same seam argument as
+last session: it already renders every word page into `mktemp -d`. Nine pages
+read one per class: `mille`, `paene`, `vacca`, `novem`, `mann`, `wes-hal`,
+`micel`, `vir`, `malum`.
+
+One thing to know before touching this again: **the diff is six times wider
+than the fix and that is correct.** Dropping the note's own interpolation
+removed a blank line inside the descent `<p>`, so **637** word pages changed
+bytes where only the **99** changed visibly; HTML whitespace collapse makes the
+rest invisible. `sitemap.xml` is byte-identical, so nothing was redated. And
+**shape 3 is now strictly worse than it was**: capitalising the seed notes would
+make three surfaces worse and none better, since the word page no longer needs
+the capital. Recorded in `TODO.md` Notes so it is not revisited.
+
+Counts moved 645 → 647 and tool suites 8 → 9 in **six** documents, with
+`docs/LAUNCH.md:221` swept **by name and first** for the second session
+running — the cheap fix for the structural reason it kept being missed.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **29 tools / 9 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e passed
+and 3 skipped in 1.9 min, then build and validate again. Separately
+`site:check` 711 pages / 16 087 links all resolving — run here because the
+change is *to* published
+copy on 99 pages — and `packs:verify` not re-run, because no pack moved and no
+`builtAt` advanced. The `com.apple.fileprovider.ignore#P` attribute is still
+set on `dist/` and the full gate created **zero** iCloud conflict copies for the
+fifth session running.
+
+**Measuring the corpus found the next item, as rendering it has every session
+this week.** The notes disagree with themselves about quote marks and the split
+is exactly along pack lines: **59** distinct notes use straight `"` (en-ang 47
+of 72, en-la 12 of 28), **84** use curly `“ ”` (all of en-fr), and **zero mix
+the two**. So it is two conventions rather than 59 typos — and the site's own
+prose is curly-only, 24 to nothing in `site/index.html`. It lands hardest on
+the deep packs, because they are the ones with word pages, so all 59 are on a
+published page *and* in the tooltip *and* in the hub's note column. Queued with
+the judgement stated rather than decided: Latin and Old English quote
+*target-language citation forms*, where straight quotes are a linguistic
+convention, and French quotes *English words* in prose, where curly is simply
+correct — so "unify on curly" and "two different jobs, leave both" are both
+defensible, and it is a seed edit either way, which rebuilds two packs and
+redates ~637 sitemap entries.
+
+What needs a human: **B0**, unchanged from the last two sessions — one
+conflicted merge into `main`, four files named there. `Now` is empty; `Next`
+has the quote-mark item above, which is agent-shaped and does not wait on B0.
+
+### 2026-09-28 — the queued item named the fix, and the fix was one word wrong
+
+`TODO.md`'s only item was the backwards Latin descent sentence the previous
+session found by rendering `/latin/novem`: `META.la.descent`
+(`tools/build-site.mjs:62`) ended in a preposition and `:286` appended the
+descendant after it, so **312** published pages read "This is the Latin word
+your English borrowed from **November**" — English took *novem* **from**
+*November*, the descent stated backwards. The item offered two shapes and
+preferred the second, a prefix/suffix split keeping *borrowed*, because
+*borrowed* is accurate for a learned borrowing where the Old English sibling's
+*became* is not: `vaccine` did not become anything.
+
+**The split is right and the sentence it proposed is not, which is the
+transferable half.** "The Latin word your English *November* borrowed from"
+puts *November* in the subject slot of *borrowed* and so makes the English
+word the **borrower**. The borrower is English the language, and the codebase
+already had the idiom written down — `src/core/discoveries.ts:145`, "English
+borrowed ${descendant} from ${target}". One word of passive settles it:
+`{ before: 'This is the Latin word your English', after: 'was borrowed from' }`,
+rendering **"This is the Latin word your English *November* was borrowed
+from."** Old English keeps an empty `after` and its 325 pages came out
+byte-identical. **Two sessions running found the queued *premise* wrong
+(`iānua`, then `/latin/novem`'s heading); this one found the queued *remedy*
+wrong. In all three the thing that settled it was building the page and
+reading it** — a queued item that names its own fix has usually had that fix
+reasoned about rather than rendered.
+
+**The guard is one word, chosen by measurement.** The general rule — a
+descendant must not be the object of a preposition — is wrong, because most
+prepositions take it correctly ("the ancestor **of** November"). *From* is the
+one that cannot: in a descent sentence it names the source, and the source is
+the page's own headword. `/\bfrom$/` over the text preceding the `<strong>`
+fired on **312** Latin pages and **zero** of the 325 Old English ones, so the
+rule separates the two frames with no curated exclusion list — the same
+derive-it-from-the-data move PR #14 made with capitalisation. Done test-first;
+the red run named all 312 before anything was edited.
+
+**It went into `tests/tools/build-site.test.ts` rather than an eighth file,
+and the reason is the seam rather than the clock.** A test of this tool must
+render into `mktemp -d` and never into `dist/site`, which `npm run site:check`
+reads; a second suite would duplicate that setup to re-derive the same 711
+pages. The build is **0.6 s**, so cost was not what decided it. Three tests:
+the rule, a check that the descendant is actually in the sentence (the cheap
+way out of the rule is to delete it rather than move it), and a non-vacuity
+floor. Note for the next count sweep: **`suites` counts `describe` blocks, not
+files** — one new `describe` in an existing file moved `test:tools` from 7
+suites to 8 across the same six files.
+
+**Rendering the fix found the next item, as it has every session this week.**
+`/latin/mille` now reads "…your English *mile* was borrowed from. a mile was
+mīlle passūs" — the note joins the descent sentence's full stop in lowercase.
+That is not this fix's doing and it is not rare: **247 of the 318** notes
+across the seven packs begin lowercase, because they are written as appositive
+fragments for the tooltip, where `src/content/tooltip.ts` gives each one its
+own `<div class="note">` and it lands correctly as a caption. The word page is
+the only surface that joins a note to a finished sentence. Queued as the one
+item in `Next` with three candidate shapes and a preference, because which
+corpus to move — 1 template, 1 render-time transform, or 247 seed rows — is a
+judgement about the note corpus rather than a defect with one answer.
+
+Counts moved 642 → 645 and suites 7 → 8 in **six** documents, with
+`docs/LAUNCH.md:221` swept **by name and first** — the Journal entry below
+records it being missed three times, always because it is the only count
+sitting inside a blockquote of copy rather than a command table. Taking it
+first rather than last is the cheap fix for that.
+
+One small thing worth knowing rather than fixing: the install page's
+`<lastmod>` will now say today, because `tools/build-site.mjs` is one of the
+two files `contentDate()` reads for it — that page's prose lives in
+`installPage()` — so editing the *word-page* template in the same file redates
+a page whose text did not change. Same coarseness class as the pack-granular
+dates, and nothing is indexed yet (B3).
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **27 tools / 8 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.9 min, then build and validate again. Separately
+`site:check` 711 pages / 16 087 links all resolving — run here because the
+change is *to* published copy on 312 pages — and `packs:verify` 0 errors / 4
+warnings, unchanged, since no pack moved and no `builtAt` advanced. The
+`com.apple.fileprovider.ignore#P` attribute is still set on `dist/` and the
+full gate created **zero** iCloud conflict copies for the fourth session
+running.
+
+What needs a human: **B0**, unchanged from the last session — one conflicted
+merge into `main`, four files named there. `Now` is empty; `Next` has the
+lowercase-note item above, which is agent-shaped and does not wait on B0.
+Nothing else moved.
+
+### 2026-09-28 — the guard could not see the gap the same session left
+
+`TODO.md`'s top item was one seed field: give `novem` → November the note
+`septem` → September had just gained. The last run had written the note out
+in full and then declined to apply it, on the grounds that writing lexicon
+*content* is a different decision from fixing a defect. The queue asked for it
+in as many words, so that reservation is lifted and the proposed sentence went
+in unchanged — `tools/seed/lex-la.tsv:373`, "November was the ninth month of
+the old Roman year". Both surfaces were checked **by rendering**, which is the
+house rule for this file and which the previous two sessions also paid for:
+`/latin/novem` and `/latin/septem` are now the same shape sentence for
+sentence, and the hub table's note column is full where it rendered empty
+directly under September's.
+
+**The transferable half is why PR #14's guard was silent on a defect PR #14's
+own session had found.** `tests/tools/lexicon-notes.test.ts` derives a rule
+from the data — a note whose descendant is a proper noun must *name* it,
+because a proper noun cannot be alluded to — and its loop opens
+`if (!note || !etymonOf || !isProperNoun(etymonOf)) continue`. `novem` had no
+note, so it was skipped, correctly and uselessly. **The general form is worth
+keeping: a guard that filters on the presence of a field can never police that
+field's absence, so absence has to be asked about separately.** Here it was
+also a defect, and the answer is one more test in the same file rather than a
+new suite — an eighth suite would have implied a new rule where this is the
+unguarded half of an existing one, exactly as #14's note-versus-badge finding
+was the unguarded half of `tooltip.ts:320`.
+
+**Narrow for a measured reason.** The obvious rule — an entry with an
+`etymonOf` should explain it — is wrong **962 times out of 1131** across the
+seven packs, and rightly: an ordinary descendant is inferable from the
+headword printed beside it, *octō* under "Ancestor of English octave"
+explaining itself. A name is not; *novem* under "Ancestor of English November"
+tells the reader nothing about why nine became a month. Capitalisation
+separates the two — the same derivation #14 used, and the same reason it beats
+the curated `UNDEFINED` list PR #13 needed — leaving **5 rows** to police, four
+distinct entries because `door`/`doors` share `iānua`'s note. Done test-first;
+the red run named exactly one offender,
+`en-la nine → novem: nothing says why it became "November"`, with no false
+positives.
+
+The rebuild behaved as the reproducibility fix promises: **1 field of 7088**
+in `en-la.json`, `index.json` untouched because a note is not a count
+(`packs:verify` still reports en-la at 584 entries / 579 surface forms), and
+`builtAt` stayed 2026-09-28, so **zero** sitemap entries were redated.
+
+**The count sweep found the public document stale again, and that is now a
+pattern rather than an incident.** Counts moved 641 → 642 in **six**
+documents, one more than the usual five, because `docs/LAUNCH.md:221` still
+said "638 tests" inside the Show HN draft — precisely the pre-#14 total
+(484 + 97 + 21 + 36). #14 added one jsdom test and two tool tests, moved five
+documents to 641, and missed that one. This file's Journal already records
+"449 tests" in the same draft on 2026-09-27 and the same draft wrong again at
+the 617 → 620 sweep. The reason it keeps being missed looks structural: it is
+the only count that sits inside a blockquote of copy rather than in a command
+table or a test-count sentence, so a reader sweeping "the documents that state
+test counts" does not see it as one. Re-sweep it by name.
+
+**B0 was re-measured and is stale in the one way that matters: `main` has
+moved.** Its text says "`main` did not move", which was true when written.
+Creagh merged **#1 into `main`** at 15:26:13 UTC and #2 into #1's branch at
+15:26:04, after the nine top-down merges at 15:18–15:19. `main` is `f6733af`;
+#3 and #5 are **closed**, #1/#2/#4 merged, and #14 was the only open PR before
+this session's. So B0's "close #1, #2 and #3 as superseded" step is already
+done and the drifted-screenshot hazard it warned about is gone — #3 cannot be
+merged first because it cannot be merged at all. **What replaced it is a
+conflict.** #1 was *squash*-merged, so `main` holds a new commit carrying #1's
+content while the stack still carries #1's original `ee277d2`; the merge base
+falls back to `3060d93` and git sees two independent creations of the same
+files. Trial-merged in memory with `git merge-tree --write-tree origin/main
+HEAD`: **four conflicts** — `.github/workflows/site.yml`, `CLAUDE.md`,
+`TODO.md`, `tools/build-site.mjs`. The two Markdown ones take the stack's side
+wholesale; the two code ones are #6's `fetch-depth: 0` and eight sessions of
+site-builder edits against #1's copies, which is the same squash artefact
+rather than a disagreement. Written into B0.
+
+**Rendering the fix found a bigger defect than the fix, which is the argument
+for the house rule.** `/latin/novem` reads "This is the Latin word your
+English borrowed from **November**." Subject "your English", verb "borrowed",
+"from November" the source — it states the descent **backwards**, that English
+took *novem* from *November*. `META.la.descent`
+(`tools/build-site.mjs:62`) ends in the preposition and `:286` appends
+`<strong>${entry.etymonOf}</strong>` after it, so the construction the wording
+was written for — "the Latin word your English *November* borrowed from",
+descendant before the preposition, "word" elided — is broken by where the
+builder puts the descendant. Its sibling four lines down,
+`META.ang.descent` = "This is the Old English word that became", takes its
+object at the end and is correct on all **325** Old English pages. The Latin
+sentence is on **312**. Queued as the only item in `Next`, with the two
+candidate shapes and a preference, because *borrowed* is the accurate verb for
+a learned borrowing and *became* is not — `vaccine` did not become anything.
+Not a lexicon edit and no pack rebuild.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 98 jsdom / 22 suites, **24 tools / 7 suites**, compat 56 pass / 7
+degrade / 0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.2 min, then build and validate again. Separately
+`packs:verify` 0 errors / 4 warnings and `site:check` 711 pages / 16 087 links
+all resolving — both run here because a shipped pack moved and the two pages
+it feeds are published copy. The `com.apple.fileprovider.ignore#P` attribute
+is still set on `dist/` and the full gate created **zero** iCloud conflict
+copies for the third session running.
+
+This session's own PR was **#15**, and it is merged: squashed into #14's head
+(`lexicon/proper-noun-notes`) at 18:54 UTC with CI green end to end, including
+the `Committed packs match the seed lexicons` step that rebuilds the packs on
+Node 22 and diffs them. So the stack is back to a single open PR, #14, now
+carrying both.
+
+What needs a human: **B0**, rewritten again this session — still one merge to
+`main`, but a conflicted one, with the four files named. `Now` is empty;
+`Next` has the backwards Latin descent sentence above, which is agent-shaped
+and does not wait on B0. Nothing else moved.
+
+### 2026-09-28 — the note leaned on a line the reader can switch off
+
+`TODO.md`'s queued item said the tooltip under `iānua` "never says *which*
+month". It does, on every surface the item named: the tooltip prints
+`Ancestor of English **January**` immediately above the note
+(`src/content/tooltip.ts:327`), `/latin/ianua` makes it the `<h2>`, and the
+descent hub puts it in the adjacent `<td>`. So the premise was wrong and the
+proposed edit was redundant — but only because of a **default**.
+
+`reveal.showEtymon` is a user switch (`src/ui/options/sections.tsx:463`,
+default true at `src/core/settings.ts:196`). Turn it off and the badge goes;
+the note does not, because `tooltip.ts:336` appends it unconditionally. "Gave
+the month its name" then has no antecedent anywhere on the card. **The file
+had already written the rule down for the note's sibling** — the "why"
+sentence is handed `allowEtymon: reveal.showEtymon` with the comment "must not
+reinstate a fact they hid" (`tooltip.ts:320`) — so this was an unguarded half
+of an existing decision rather than a new one.
+
+**The class is derivable, and that is the transferable part.** Sweeping for
+"notes that never name their etymon" fires **62 times of 99** and is almost
+all false positives: `persōna`'s "originally an actor's mask" and `bōc`'s "a
+beech-wood tablet" describe the *target* and read perfectly alone. What
+separates the real cases is that their descendant is a **proper noun**, and a
+proper noun cannot be alluded to, only named — "the month" and "the country"
+are placeholders, not descriptions. Every `etymonOf` across all seven packs is
+an ordinary English word stored lowercase except four, so capitalisation
+derives the rule straight from the data, with **zero** false positives. No
+hand-curated table, unlike the `UNDEFINED` list PR #13 had to fall back on
+when its own derivation could not see `īnsula`.
+
+Three offenders, all Latin, all fixed in `tools/seed/lex-la.tsv`:
+`iānua` → January, `argentum` → Argentina, and `septem` → September. The last
+is the worst: with the badge off, "the seventh month of the old Roman year"
+does not merely dangle, it reads as a *gloss*, and *septem* means seven. The
+fourth capitalised etymon, `novem` → November, carries no note at all, which
+the rule correctly skips — and which is now the top item in `TODO.md`, because
+the hub table renders its empty note cell directly under September's full one.
+
+Done test-first; the red run named all three before anything was edited (four
+lines, because `door` and `doors` share one note). Two guards, because the
+finding has two halves. `tests/tools/lexicon-notes.test.ts` is the rule, a
+**seventh** tools suite; it also asserts the rule has something to police, so
+it cannot go quietly vacuous the way a scan over an empty set does. And one
+jsdom test pins the premise — that the note survives when the badge is hidden
+— which nothing asserted before, so if the note ever becomes conditional too
+the guard will be policing a problem that no longer exists and the test says
+so.
+
+The repetition the fix creates on the word page ("Where *January* comes from
+… borrowed from **January**. … gave January its name") was **checked by
+rendering, not reasoned about**: it is the house pattern already shipping
+under `mīlle` ("Where *mile* comes from … A mile was mīlle passūs") and
+`vacca`. Rebuilt: **4 fields of 7087** in `en-la.json`, `index.json` untouched
+because no count moved, and `builtAt` stayed 2026-09-28 — so unlike PR #9 this
+edit redated **zero** sitemap entries.
+
+**The stack is not thirteen PRs any more, and `TODO.md`'s B0 would have done
+the wrong thing.** Creagh merged nine of them at 15:18–15:19 UTC, top-down,
+each squash cascading the accumulated work one step further down and GitHub
+deleting the head branch behind it. `main` never moved. #5 was *closed* rather
+than merged, which broke the chain and left **all** the work on its head
+branch, `tools/reproducible-lexicon-packs`. #1 and #2 are strict ancestors of
+it; #3's head moved to `51503a7` and is not, but the only thing it carries
+that the stack lacks is `docs/store/apple-04-progress.png` — the date-drifted
+dashboard capture PR #12 reverted five siblings of. So B0 is now one merge,
+and merging #3 first would reintroduce exactly what #12 removed.
+
+One environment note, confirming the last session's fix: the
+`com.apple.fileprovider.ignore#P` attribute is still set on `dist/`, and the
+full gate created **zero** iCloud conflict copies again. `rm -rf test-results`
+beforehand is still worth it.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 484 unit / 122 suites, **98** jsdom / 22 suites, **23 tools /
+7 suites**, compat 56 pass / 7 degrade / 0 fail / 0 without data, 979 KB × 3
+passing `validate`, 36 e2e passed and 3 skipped in 2.5 min, then build and
+validate again. Separately `packs:verify` 0 errors / 4 warnings and
+`site:check` 711 pages / 16 087 links all resolving — both run here because a
+shipped pack moved and the three word pages it feeds are published copy. Counts
+moved in five documents; `README.md` was the odd one out, see `TODO.md` Notes.
+
+What needs a human: **B0**, rewritten this session — it is one merge now, not
+thirteen, and this session's PR is #14 on top of the same branch. `Now` is
+empty; `Next` has the `novem` note. Nothing else moved.
+
+### 2026-09-28 — the card was stable; the guard could not see the word it was missing
+
+`TODO.md`'s queued item was `npm run og` byte-stability, and it had already
+been closed by PR #10 earlier the same day. So this pass reproduced it instead
+of believing it: three fresh runs wrote `6f2ef13f…eb6f3e66`, byte-identical to
+the committed `site/og.png`, to each other and to PR #10's recorded hash, with
+`git status` clean each time. Worth recording *why*, because it is not the
+pack builder's reason or the sitemap's: **`tools/make-og.mjs` has no
+`new Date()` in it at all.** It screenshots a static HTML string, so there was
+never a logical clock to remove and the only wobble available to it was the
+renderer's own — font fallback, Chromium's PNG encoder, antialiasing. On this
+machine there is none. That closes the trio: `packs`, `site` and `og` are all
+measured byte-stable, and nothing in either pipeline can hand `npm run release`
+the dirty tree it refuses.
+
+**The substantive half is what the re-check found on the way, and PR #10 had
+already found it and declined to fix it as out of scope for a docs sweep.** Its
+commit message calls it "one adjacent pack-note inconsistency": `paene`'s note
+spells `insula` bare. It is **six** sites, and three of them are copy a
+stranger reads — the tooltip that ships in the extension, the "Where
+*peninsula* comes from" section of `/latin/paene`, and the note column of
+`latin-words-in-everyday-english`, which is the descent hub `docs/LAUNCH.md`'s
+r/latin draft exists to link to. The rest: `README.md:93`,
+`docs/PEDAGOGY.md:117`, and the seed comment at `tools/seed/lex-la.tsv:21`.
+Four files to edit rather than six, because the first three are one pack note
+rendered three ways.
+Two places already had `īnsula` (`docs/LAUNCH.md:140`, `site/index.html:222`),
+so this was the repository disagreeing with itself rather than a call about how
+to spell a word — and `īnsula` is what vowel-lengthening before `ns` gives
+anyway, the rule behind `cōnsul` and `mēnsa`.
+
+**Why PR #9's guard could not see any of it is structural, not an oversight.**
+`tests/tools/lexicon-orthography.test.ts` builds its vocabulary by walking
+`tgtLemma` across the packs, so every word it can police is a word the lexicon
+*defines*. Prose is under no such limit — it explains `peninsula` with a Latin
+word the lexicon never glosses — and `īnsula` was therefore invisible by
+construction, including inside the two documents the guard was already
+scanning. The fix is a second, hand-curated vocabulary, `UNDEFINED`: the Latin
+Weft writes down but does not carry. It is checked against *every* note in both
+packs, where the headword rule is deliberately narrowed to the entry that owns
+it, and that asymmetry is the point — the headword list contains English
+homographs nobody chose (`an`, `is`, `dead`, `ham`, the 14 false positives #9
+measured), and this one contains only words somebody checked.
+
+**Two more documents joined the prose guard, and finding them is the
+transferable part.** #9 excluded `docs/LAUNCH.md` and `docs/PRIVACY.md` for
+named homographs and stopped at three files, which had quietly come to read as
+"every other document is excluded". Only those two had ever been measured.
+Adding `site/index.html`, `docs/STORE-LISTING.md` and `docs/LAUNCH.md` together
+fires **exactly one** offender — the known `dies`/`diēs` — so the first two are
+clean and are now in `PROSE`. The landing page and the copy that goes to Google
+were the last two places a misspelling should have been able to survive. The
+rule: when a gate excludes something, check whether the exclusion was measured
+or inherited.
+
+**Read, not grepped, and grep could not have worked.** 27 distinct Latin notes
+and 72 Old English, 99 in all, read in full — a grep needs a pattern and the
+pattern here is "a Latin word that should carry a macron", which is undecidable
+without a macronizer. **Old English came back clean**, which is worth recording
+so nobody pays for it twice: every OE word quoted in a note already carries its
+macrons and palatal diacritics. Latin had exactly the one defect. Left alone on
+purpose: the note under `iānua` says "Janus, god of doorways" — the English
+name of the god in English prose, the same register as the adjacent note's
+"Jenner", not a failure to write `Iānus`.
+
+**The audit covers all seven packs, which was checked rather than assumed.**
+`es`, `de`, `it` and `pt` carry **no notes at all**; French carries 85, and
+every one of them is one of two templates — "shares a root with English *X*"
+and "the root of English *X*" — which quote an **English** word, never a French
+one. Not one French note contains an accented character, and that is the
+templates working, not a defect hiding. The class is structurally absent
+outside Latin and Old English, and would only appear if a note began quoting
+the target language.
+
+Done test-first, and the red run named all three scanned sites at once
+(`en-la almost → paene`, `README.md`, `docs/PEDAGOGY.md`) before anything was
+edited. The rebuild then demonstrated PR #5's fix again: **1 field changed out
+of 7087**, `index.json` did not move because no count did, and `builtAt` stayed
+2026-09-28 — so unlike #9 this edit redated **no** sitemap entries.
+
+**Two environment findings, and the first one invalidated this session's own
+first two measurements.** `npm run test:all | grep ...` reports **grep's** exit
+code, not npm's — so a run that died reads as `[exited with code 0]`, and the
+journal's convention is to quote exactly that. Two runs here looked green that
+way; run with `> log 2>&1; echo $?` instead, and one of them turns out to have
+exited **1**. Anything claiming `test:all` passed should have captured npm's
+own status. Second: the iCloud trap this file records three times is worse than
+recorded. Cleaning `dist/` beforehand is **necessary but not sufficient** —
+both failures here were conflict copies that appeared *during* the run
+(`dist/chrome/_locales 2` at `validate`, `dist/chrome/assets 2` at the rebuild
+after e2e), as unreadable directories with 65535 links. What actually holds is
+telling macOS File Provider to leave the directory alone, once:
+`rm -rf dist && mkdir dist && xattr -w 'com.apple.fileprovider.ignore#P' 1 dist`.
+Done on this machine; the next full run created **zero** conflict copies and
+exited 0. It is local, gitignored and reversible with `xattr -d`.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 484 unit / 122
+suites, 97 jsdom / 22 suites, 21 tools / 6 suites, compat 56 pass / 7 degrade /
+0 fail / 0 without data, 979 KB × 3 passing `validate`, 36 e2e passed and 3
+skipped in 1.8 min, then build and validate again. Separately `packs:verify` 0 errors /
+4 warnings and `site:check` 711 pages / 16 087 links all resolving — run here
+because a shipped pack and published copy both moved. Tool-test counts did not
+change (the guard was widened, not added to), so no count sweep across the five
+documents was needed this time.
+
+What needs a human: **B0** is now *thirteen* stacked PRs, this being #13, and
+it is the second of the thirteen to rebuild a shipped pack. `Now` and `Next`
+are both empty again; nothing here is agent-actionable until B0 or B1 move.
+
+### 2026-09-28 — the demo learned to say "content words"; two more surfaces had not
+
+`TODO.md`'s top item asked only whether the popup's density line wanted the
+qualifier the demo gained back in PR #8. It did, and so did a surface the
+item never named: `oneWordIn()` (`src/ui/components/pieces.tsx:277`) has four
+call sites, and two of them — the popup and the two options-page density rows
+— built the exact unqualified `"1 word in N"` string the demo used to.
+
+The argument the item recorded against changing it was the demo's own
+argument, aimed at the wrong target. "The user watching their own page can
+see the density directly, which a visitor to the landing page cannot" is
+true, but the demo visitor could see the passage directly too, and a number
+that did not match what was visibly on screen is exactly what made the old
+demo readout "read as a broken counter" back then. Being able to check
+a claim against reality does not make an unqualified claim safe — it is what
+turns a mismatch into a noticed one. Fixed: the popup
+(`src/ui/popup/index.tsx:261`, "...you could read is in French" → "...of the
+content words is in French") and the options page's Resting-density and
+Ceiling rows (`src/ui/options/sections.tsx:276,294`, "6% — 1 word in 16" →
+"6% of content words — 1 word in 16"). Left alone: onboarding's two call
+sites (`src/ui/onboarding/index.tsx:219,227`), which already say "of the
+words Weft knows" — a different, already-adequate framing of the same
+*eligible* set (lexicon coverage rather than part of speech), not a gap.
+
+Verified in a real Chromium build rather than assumed safe. `.row__value` is
+`white-space: nowrap` (`src/ui/theme.css:311`) and the popup is a genuine
+340×330px surface, so a scratch Playwright script (not committed) built
+`dist/chrome` in test mode, drove both surfaces, and compared `scrollWidth`
+to `clientWidth` on the affected rows at ratios from 6% to 60%. No overflow
+anywhere; the popup's longer sentence wraps the way the original did.
+
+Regenerating the screenshots that show the new text
+(`WEFT_SCREENS=1 npx playwright test screenshots`) surfaced an unrelated kind
+of drift: it also rewrote five `dashboard*.png` files that render nothing
+this session touched, because `tests/e2e/screenshots.spec.ts` seeds
+vocabulary progress relative to `Date.now()` and
+`src/ui/dashboard/index.tsx:299,429` renders that as an absolute calendar
+date. Every future capture of those five will differ from today's by a few
+bytes of date text regardless of what changed in the code — not a
+regression, and not something to build a determinism gate around the way
+`docs/store/*` earned one. Reverted those five with `git checkout --` and
+kept only the three whose diff is real: `options-density.png` (embedded in
+`README.md`) and `popup.png` (tracked but unreferenced), plus `options.png`,
+the full-page shot containing the same rows.
+
+`TODO.md`'s own PR count had drifted before this session added to it: B0 said
+"ten stacked PRs" and an instruction to merge only "#1 … #9", but PR #11 — a
+same-day bookkeeping commit with no code, unlisted — was already open.
+Corrected to twelve, covering this session's own PR as #12, and the merge
+instruction now covers the full range instead of stopping two short of it.
+
+Measured at the end, on Node 26.7: `npm run test:all` **exit 0**, run twice —
+typecheck clean, 484 unit / 122 suites, 97 jsdom / 22 suites, 21 tools / 6
+suites, compat 56 pass / 7 degrade / 0 fail, 979 KB × 3 passing `validate`,
+36 e2e passed and 3 skipped in 1.8 min, then build and validate again.
+Separately `packs:verify` 0 errors / 4 warnings and `site:check` 711 pages /
+16 087 links all resolving — both unchanged from the last measurement, as
+expected, since nothing here touched a lexicon or the site generator.
+
+What needs a human: **B0** is now *twelve* stacked PRs, this being #12.
+`Now` and `Next` are both empty; nothing here is agent-actionable until B0
+or B1 move. Nothing else moved.
+
+### 2026-09-28 — the item named one misspelling; writing the check found three
+
+`TODO.md`'s top item was "spell `mīlle` with its macron in the three places
+that do not" — a fifteen-minute copy fix, and the cheapest item on the list.
+It was six places, and **two of them were a different word**, which is the
+whole argument for writing the guard before the fix: a grep for *mille* cannot
+find `spēs`.
+
+What the guard found beyond the item: **`spēs` in shipped tooltip copy** — the
+note under *hope* read `"despair" is to be out of spes`, the identical defect
+in the identical place; **`rēx` and `rēgis` at `docs/PEDAGOGY.md:100`**, in the
+sentence arguing that a nominative headword drops cleanly into an English
+frame, which is the paragraph explaining why the pack is spelled the way it is;
+and **`README.md:92`**, a fourth site of *mille* the item had not listed. Eight
+edits in five files, each verified to match exactly once before it was applied.
+
+**The two clauses that keep `tests/tools/lexicon-orthography.test.ts` from
+being noise were measured, not guessed.** The obvious rule — no note may spell
+any macron-bearing headword bare — **fires 14 times on Old English**, because
+headwords collide with ordinary English words the notes legitimately use
+(`an`, `is`, `dead`, `ham`). So the rule checks only the entry's **own**
+`tgtLemma` (not `tgt`: the inflected form is often the macron-bearing one,
+`manus` → `manūs`, and the singular in the note is then right), and allows the
+bare form when the note also shows the macron form. That second clause is not
+a loophole — it is the `mālum` apple / `malum` evil note, whose entire subject
+is that the two differ only in vowel length. Saying that requires writing both.
+
+The prose half stops at the three documents that quote headwords at a reader
+for the same reason, also measured: sweeping every document was tried and
+rejected because `docs/LAUNCH.md` says a Show HN post "dies" and
+`docs/PRIVACY.md` says "your OS", which collide with `diēs` and `ōs`. Latin
+and English share too many homographs, and a gate that fires for two different
+reasons gets ignored — the reasoning this file already records against the
+sitemap-date gate. The seed TSV is out for a third reason: scanned as text it
+hits its own singular/plural pairs (`manus`/`manūs`, `domus`/`domūs`).
+
+**The reproducibility fix held, and beat the item's own prediction.** The item
+warned that more than two files moving meant a regression. **One** moved:
+`en-la.json`, `builtAt` 2026-09-26 → 09-28, and a field-level diff puts the
+whole change at **4 fields out of 7087** — the stamp and the three notes.
+`index.json` did not move and should not have: it records `entryCount`,
+`lemmaCount` and `bands` per pack, none of which a prose edit touches, so
+`writeStamped()` rightly kept its 2026-09-26 date. The previous session's
+`lion` experiment moved it because changing a mapping changes a count.
+
+Two things worth knowing before touching this again. `npm run site` still
+writes the slug `/latin/mille`, and a grep of `dist/site` finds four pages
+with a bare *mille* in them — **all four are the URL**, and the visible link
+text is `mīlle` in every one. Leave them: 16 087 internal links resolve
+against that address. And `<lastmod>` is pack-granular, so three edited notes
+redated **703 of 711** pages to 09-28. That is PR #6's rule working as
+designed rather than its bug returning — a page may say it changed today when
+its pack really did — but it is coarse, and this is the first edit to exercise
+it.
+
+One environment note: **the iCloud trap has a third location.** `test:all`
+exited 1 before a single e2e test ran, with `Unknown system error -11 ...
+scandir 'test-results/.playwright-artifacts-0'`; `ls` on that directory says
+`fts_read: Resource deadlock avoided`. `test-results/` is gitignored and
+Playwright regenerates it, so `rm -rf test-results` alongside the `dist/`
+clean is free. Worth doing before every `test:all` on this machine.
+
+Measured at the end, on Node 26.7: `npm run test:all` **exit 0** — typecheck
+clean, 484 unit / 122 suites, 97 jsdom / 22 suites, **21 tools / 6 suites**,
+compat 56 pass / 7 degrade / 0 fail, 979 KB × 3 passing `validate`, 36 e2e
+passed and 3 skipped in 2.0 min, then build and validate again. Separately
+`packs:verify` 0 errors and the same 4 IPA warnings, and `site:check` 711
+pages / 16 087 links all resolving — run here because the change is to a
+published meta description and to a shipped pack. Packs still 653 KB; counts
+moved 636 → 638 in five documents.
+
+What needs a human: **B0** is now *nine* stacked PRs, this being #9, and it is
+the only one of the nine that rebuilds a shipped lexicon pack. `TODO.md`'s Now
+section has one item left, `npm run og` byte-stability, promoted from Next.
+Nothing else moved.
+
+### 2026-09-28 — the demo was not a product decision, it was a misdiagnosis
+
+`TODO.md`'s top item reserved this one for a human: the live demo reached
+59.7% at forty minutes where the shipped default ceilings at 35%, and turning
+the demo down, turning the default up, or labelling the demo were offered as
+three options for Creagh to choose between. It stopped being a choice once the
+one recorded argument for keeping the demo high was measured.
+
+That argument is the comment at `site/index.html:343`, which records that the
+demo had been tuned *up* because an earlier version "saturated at 35% and
+stopped responding". The item read the 35% as the escalation ceiling. **It was
+`MIN_APART`.** With candidates at nearly every word, a two-word minimum gap
+admits at most every third one — about 33%, which reads as 35% and is
+indistinguishable from the ceiling unless you go looking. The repair applied at
+the time was two changes at once: the passage was rewritten so the candidates
+are spread out, which removed the real cap, *and* the constants were raised,
+which was unnecessary. On the passage as it stands, **20 of 23 candidates are
+takeable under `MIN_APART`** — 87% headroom, so spacing cannot be mistaken for
+a 35% ceiling any more. So turning the constants back down to the Standard
+preset changes no shipped behaviour, forecloses nothing, and was done:
+`BASE = 0.06, CEILING = 0.35, GAIN = 0.02`, reading 13% at five minutes and
+35% at forty. Eight distinct readings across the drag; the old constants gave
+fourteen and Taster gives three, which is what a dead slider looks like.
+
+Done test-first, and TDD paid for itself twice. The red run printed the whole
+curve side by side — `4 min: demo says 22%, the default gives 13%` and so on —
+which exposed that **the test's own arithmetic was wrong**: it counted
+candidates across the whole file, and the doc comment above `PASSAGE` writes
+`{english|french}` to explain the notation, so it found 24 where the demo uses
+23. Every expected percentage was one step out. A test written after the fix
+would have been calibrated against the fixed page and would have agreed with
+itself. Second, the saturation assertion passes on the current page, so it
+proves nothing until you watch it fail: set the constants to Taster's and it
+says `only 3 distinct readouts, so the demo has saturated and stopped
+responding`, which is the failure the comment describes and which had never
+been checked.
+
+The guard is a **fourth thing in `tests/tools/`** rather than `tests/dom/`,
+although it uses jsdom: it reads a shipped artefact off disk, which
+`tests/core/` forbids outright and which no `tests/dom/` test does — those
+build their HTML in memory. `runScripts: 'dangerously'` is safe on this page
+because every other `<script>` in it is `application/ld+json`, which jsdom
+does not execute. Counts moved 633 → 636 in five documents; the three
+remaining mentions of 633 are journal and Notes history and were left, on the
+same reasoning that corrected the 1.0.0 changelog entry to 1.0.0.
+
+Two things were folded in on the assumption they were in scope. The readout
+said `35% — 1 word in 3`, but the denominator is *candidates* — the same units
+the extension's own ratio uses (`selector.ts:38`, "proportion of *eligible*
+words") — so next to a passage visibly showing 8 French words in 148 it read
+as a broken counter, and turning the demo down makes that starker rather than
+better. It now says `35% of content words — 1 in 3`, which is the phrase
+`src/core/settings.ts:64` was already using. And the caption names the preset
+on show, which is the "label the demo" option and true whichever way the
+numbers later go.
+
+Measured at the end, on Node 26.7: `npm run test:all` exit 0 — typecheck
+clean, 484 unit / 122 suites, 97 jsdom / 22 suites, **19 tools / 5 suites**,
+compat clean, 979 KB × 3 passing `validate`, 36 e2e passed and 3 skipped in
+3.9 min, then build and validate again. Separately `packs:verify` 0 errors and
+the same 4 IPA warnings, and `site:check` 711 pages / 16 087 links all
+resolving — worth running here because the change is *to* the site, and the
+one page it touches is the one every other page links back to.
+
+What needs a human: **B0** is now *eight* stacked PRs, this being #8. Whether
+the *default* should be higher is still entirely open and nothing here argues
+it either way — but it is no longer urgent, because no surface now promises a
+number the default cannot reach. If it is ever raised, `demo-curve.test.ts`
+fails and names the new figures, so the demo follows for free.
+
+### 2026-09-28 — the marketing promised half and the default ships a third
+
+`TODO.md` asked for a read-through of `docs/LAUNCH.md` rather than a grep,
+on the reasoning that the same sentence had been wrong three times and each
+correction had come from grepping for a number. The reasoning was right in a
+way that is worth recording: **not one of the six errors found was a number,
+and the single number in the file — "633 tests" — was correct.** A grep-shaped
+pass would have returned clean.
+
+The one that matters is the product's headline promise. "Forty minutes on an
+infinite feed and you are reading half in French" is false on the extension
+people will install. `weaveRatio` is an exponential approach to a ceiling, and
+the shipped default is the **Standard** preset: base 0.06, ceiling **0.35**,
+gain 0.02. That is 14.5% at five minutes and **33.2% at forty**, and because
+the ceiling is 0.35 the page cannot reach half at any attention whatsoever.
+Half needs **Committed** (53% at forty), which is opt-in. The sentence had
+spread from the doc comment at `src/core/escalation.ts:8` into `README.md`,
+`docs/STORE-LISTING.md` and twice into `docs/LAUNCH.md`, so it was corrected
+in all four — the store listing because that copy goes to Google, and the
+comment because it is where the other three were copied from and would have
+re-seeded them.
+
+**Where "half" actually comes from is the demo, and that is now the top item in
+`TODO.md`.** `site/index.html:404` runs `BASE = 0.06, CEILING = 0.62, GAIN =
+0.045`, which is not any shipped preset; it reaches 59.7% at forty minutes. So
+a visitor drags the slider, watches the passage go 60% French, installs, and
+gets a third. The copy is now honest about the default, so nothing *claims*
+half any more — but demo and default still disagree, and which one should move
+is a product decision, not an agent's. The comment at `site/index.html:342`
+is the piece of evidence to read first: it records that the demo was tuned
+*up* once already because an earlier version "saturated at 35% and stopped
+responding", which is the same 35% ceiling, and suggests the constants were
+chosen for slider feel and never reconciled with the preset.
+
+Second, and cheaper to fix than to find: `[latin-words-in-everyday-english]`
+was an **undefined Markdown reference**. There is no link definition anywhere
+in the file, so the r/latin draft's one pointer to the resource the whole post
+exists to share would have pasted into Reddit as literal brackets. The general
+rule this file needed and now follows: **reference-style links are wrong in a
+document of copy-paste drafts**, because the definition stays behind when the
+blockquote is copied out. Inline only, as the Christensen citation already
+was.
+
+Then the r/latin draft, which is the one aimed at readers who check. Two
+grammar claims were contradicted by the lexicon it describes. "Nouns are woven
+in the nominative singular" — 149 of 327 noun surface forms are nominative
+*plural*; nominative singular is the **headword** convention
+(`morphology: 'citation'`), not what lands on the page, and
+`tools/seed/lex-la.tsv:12` says "nominative singular and plural" outright.
+"Inflected English forms are skipped entirely rather than guessed" — 86 of 160
+verb forms are present participles matched to English *-ing* (*going* →
+*iēns*, *giving* → *dāns*); what is genuinely absent is past tense and third
+person. And `pecus` → pecuniary skips a link: the pack has *pecūnia* →
+pecuniary, *pecus* is not in it, and *pecuniary* descends from *pecūnia* which
+descends from *pecus*. `mille` gained the macron the pack's headword carries,
+in the draft whose own preamble says the macrons will be checked.
+
+The ~30 claims that were **right** are listed in `TODO.md`'s Notes rather than
+here, because that is the expensive half of a pass like this and it should
+only be paid for once: every Old English example and its gloss, all six cited
+dictionaries and grammars, the Christensen finding, *v* as /w/ and *c* always
+hard (148 Latin *c*-words, zero palatal), the 78 surface forms with palatal
+diacritics, the letterform switch, the retirement-is-free rule at
+`selector.ts:82`, the reconciler page, and the permission story.
+
+What needs a human: **B0** is now *seven* stacked PRs, this being #7. The new
+top item in `TODO.md` is the demo-versus-default decision above. Nothing else
+moved.
+
+### 2026-09-28 — the sitemap said 711 pages changed today, and said it daily
+
+Same bug class as the pack builder, one file along and with worse
+consequences, so it was the top item in `TODO.md`. `tools/build-site.mjs`
+computed one `new Date()` and wrote it into the `<lastmod>` of all 713 `<url>`
+entries. `.github/workflows/site.yml` rebuilds on every push to `main`, so the
+claim would have been made repeatedly and been false every time — and search
+engines use `lastmod` only while it is verifiably accurate, which means the
+one field the 711-page asset has for saying *this page is new* would have been
+discarded for the whole domain.
+
+**The replacement rule is: a page is dated by the content behind it.** Word
+pages take the `builtAt` of the pack they are generated from — which is only
+an honest date because of the previous session's fix, so this item was cheap
+by construction. The language indexes and descent hubs take their own pack's
+date; the word pages take the newer of the two deep packs, because every Latin
+page links to its Old English counterpart and back, so both lexicons really
+are content for both sets of pages. The five hand-written pages take the
+commit date of the document that holds *their* prose: `site/index.html`,
+`docs/PRIVACY.md`, `docs/SUPPORT.md`, `src/core/pricing.ts` +
+`src/core/entitlements.ts` for pricing, and — the one that names the generator
+— `tools/build-site.mjs` + `package.json` for install, whose text genuinely
+lives in `installPage()` rather than in a document of its own. Measured after
+the change: 708 URLs at 2026-09-26, three at 09-27, one at 09-22, one at
+09-28. Before it, 713 at today's date.
+
+**Where no date can be established, the element is left out.** `<lastmod>` is
+optional in the sitemap protocol, so absence is a legal answer and today's
+date is a false one. The case that matters is a shallow clone: `actions/
+checkout` fetches depth 1 by default, and there every file's last commit *is*
+HEAD, so `git log` hands back the same recent date for all of them — this bug
+again, wearing a disguise. `tools/sitemap.ts` detects that with `git rev-parse
+--is-shallow-repository` and declines to answer, and `site.yml` now checks out
+with `fetch-depth: 0`. Note the failure mode of removing that line again: the
+dates go quietly missing, they do not come back wrong.
+
+The new module is **TypeScript, not another `tools/*.mjs`**, for one reason
+worth recording because it is not obvious: `tsc` rejects a `.mjs` import from
+a `.ts` test with TS7016, so a `.mjs` module here could only have been tested
+through a whole site build. Verified by trying it. Node strips the types at
+run time exactly as `tools/build-site.mjs` already does when it imports
+`src/core/pricing.ts`.
+
+Done test-first, and the failing run named the bug better than this entry
+does: `all 711 URLs share one <lastmod> (2026-09-28), which is the wall clock,
+not their content`. `--out=<dir>` was added to the site builder first and
+alone, the same seam as `build-pack.mjs` and for the same reason — otherwise
+testing this tool means deleting and rewriting the `dist/site` that
+`npm run site:check` reads. Counts moved 620 → 633 in five documents again.
+
+**A second result, free:** `npm run site` is now byte-stable. Two builds into
+separate temporary directories diff identical, where before the sitemap
+differed whenever the clock crossed midnight. That was the open question in
+`TODO.md`'s Next item; `npm run og` is the one still unchecked.
+
+Considered and rejected: a `check-links.mjs` gate that fails when every URL in
+the sitemap shares one date. It runs in the site workflow, where the test
+suite does not — but in a shallow checkout it would fire for a reason
+unrelated to this bug (the doc dates are absent and all packs were built the
+same day), and a gate whose failure means two different things gets ignored.
+The guard is `tests/tools/build-site.test.ts` instead, which CI runs on the
+same push via `npm run test:tools`.
+
+One more sighting of the iCloud trap, this time on `npm run site` rather than
+`npm run validate`: a conflict copy of the `old-english/` directory inside
+`dist/site` killed the build with `Unknown system error -11 ... syscall:
+'scandir'`. Same fix, `rm -rf dist/site` first.
+
+What needs a human: **B0** is now *six* stacked PRs, this one being #6.
+Nothing else moved.
+
+### 2026-09-28 — a generator that was not reproducible, and the guard it buys
+
+`npm run packs` stamped `builtAt` with today's date, so it rewrote all eight
+files under `src/lexicon/packs/` on every run whether or not a seed lexicon had
+moved. The previous session found that and reverted the churn; this one fixed
+it. `writeStamped()` in `tools/build-pack.mjs` compares the pack it is about to
+write against the one already on disk, ignoring the stamp, and keeps the old
+date when the rest is byte-identical. `builtAt` therefore now says what it
+always claimed to: when the *content* was built.
+
+The reason to care is not tidiness. `npm run release` refuses a dirty tree, and
+the setup line in this file told a new contributor to run `npm run packs`
+before a first build — so following the documented setup produced a tree the
+documented release command would not accept. That line now says the packs are
+committed and the command is a no-op unless `tools/seed/*.tsv` has changed.
+
+**What reproducibility buys, and is the point of the change:** CI can now
+rebuild the packs and diff them. The new `Committed packs match the seed
+lexicons` step is the only thing in the repository that catches a
+`tools/seed/*.tsv` edit nobody rebuilt — which until today would have shipped
+the old words with every other check green, because nothing else reads the
+seeds. Verified the way a guard has to be: changed `lion` in `lex-fr.tsv`, ran
+the build, watched `git diff --exit-code` exit 1. It touched `en-fr.json` and
+`index.json` only, leaving the other six packs' dates alone, which is what
+makes the CI diff legible rather than eight files wide.
+
+Done test-first. The test has to simulate a day boundary — two runs on the same
+day cannot expose a wall-clock stamp, since they agree — so it builds, rewrites
+the stamp to `2020-01-01` as though committed then, builds again, and asserts
+the date and the bytes survived. It failed with `actual: '2026-09-28', expected:
+'2020-01-01'` before the fix. `--out=<dir>` was added first and alone, as a
+seam: without it any test of this tool would have written into the tracked
+packs, which is the bug under test.
+
+That test is a **third suite**, `npm run test:tools`, not a file in
+`tests/core/`. The core glob would have picked it up with no wiring, and that is
+the reason to keep it out: that suite's documented virtue is no I/O and no
+browser, and this one spawns a child process. `npm test` runs all three, so the
+gate picks it up without `test:all` changing. Counts moved 617 → 620 in five
+documents, `docs/LAUNCH.md:215` among them — the Hacker News draft, wrong about
+the same sentence for the second session running. Both times a grep for a
+number found it, which is why `TODO.md` now asks for a read-through instead.
+
+Found and deliberately left: `tools/build-site.mjs:1237` stamps today on all
+711 sitemap `<lastmod>` entries, so every deploy claims ~700 word pages changed
+today. Same bug class, and worse, because a wrong date that has been indexed
+has to be re-crawled to correct. It is the top item in `TODO.md` rather than
+fixed here, because the fix wants a decision — the pack's honest `builtAt` is
+the right date for the word pages, but a per-file git date would need
+`fetch-depth: 0` in `site.yml` — and the site is not published yet (B3), so
+nothing is indexed and there is no hurry that justifies guessing.
+
+Measured at the end, on Node 26.7: `npm run test:all` exit 0 — typecheck clean,
+484 unit / 122 suites, 97 jsdom / 22 suites, 3 tools / 1 suite, compat clean,
+979 KB × 3 passing `validate`, 36 e2e passed and 3 skipped in 2.5 min, then
+build and validate again. Separately `packs:verify` 0 errors and the same 4 IPA
+warnings, `site:check` 711 pages and 16 087 links all resolving. The tracked
+tree was clean of `src/lexicon/packs/` after all of it, which is the fix
+demonstrating itself.
+
+What needs a human: **B0** in `TODO.md` is new — five stacked PRs
+(#1 → #2 → #3 → #4 → #5, this one being #5) have to be merged before `VERSION`
+can move, since a version bump on a branch that may never merge is worse than
+no bump. Then B1,
+the unregistered domain, as before.
+
+### 2026-09-28 — the listing screenshots were already right
+
+`WEFT_STORE=1 npx playwright test store-assets` rewrote all fifteen store
+shots and all fifteen came back byte-identical, so the worry that `3060d93`
+had invalidated the French words in the listing art is answered: it had not.
+Nothing was committed under `docs/store/`. The regeneration was real rather
+than skipped — every file's mtime moved to 00:24 — and that is the check that
+separates "reproduced exactly" from "never ran", because `git status` shows
+the same nothing for both.
+
+`TODO.md` had the provenance half wrong. `chrome-03/04/05` were captured at
+`d1d545a`, but `01` and `02` had not changed since `144cb30` on 2026-09-15,
+twenty-two commits earlier. They are current regardless, and that is the useful
+finding: **the capture is deterministic**, so identical bytes are a result.
+The temptation that follows is a pixel-equality gate. Resist it — these were
+taken on macOS/arm64 and CI runs the same suite on `ubuntu-latest`, where the
+font stack and text antialiasing differ, so the gate would fail for a reason
+unrelated to the lexicon. The spec already carries the portable form of it,
+`expect(hovered, 'no word with an etymology was woven into this page')`,
+which fails exactly when a lexicon edit empties the tooltip scene 3 exists to
+show.
+
+One thing found on the way: **`npm run packs` is not idempotent.** It writes
+`builtAt` as today's date, so it modifies all eight files under
+`src/lexicon/packs/` whenever it runs. A field-by-field diff puts the whole
+difference at 1 of 66 fields in `index.json` plus that one date in each pack,
+so the committed packs are semantically current with `tools/seed/*.tsv`; the
+churn was reverted, not committed. It matters because the setup line above
+the command table tells a new contributor to run `npm run packs` before a
+first build, which leaves a fresh clone dirty, and because `npm run release`
+refuses a dirty tree.
+
+Checking that antialiasing claim turned up a second stale document:
+`playwright.config.ts` said extension service workers are "more reliable
+headed, so CI runs headed under xvfb". `tests/e2e/fixtures.ts:76` sets
+`headless: true` unconditionally and `.github/workflows/ci.yml` installs
+Chromium and runs `npm run test:e2e` with no xvfb anywhere. The comment now
+says what the code does. That is the only non-Markdown change in this pass.
+
+One environment trap, because it wastes an hour and the error names nothing:
+iCloud drops conflict copies into `dist/` while a build runs — 61 of them
+here, `manifest 2.json`, `dashboard 2.html`, `_locales 2/`. `validate` reads
+every `.html` in the package directory, hits one that is still a placeholder,
+and dies with `Error: Unknown system error -11 ... syscall: 'read'` and no
+filename. `rm -rf dist/chrome dist/firefox dist/safari && npm run build:all`
+fixes it in under a second. It matters at `docs/SUBMIT.md` time, when
+`validate` is being run on the exact bytes about to be uploaded.
+
+Measured today, on Node 26.7 again: typecheck clean, `npm run test:all` green
+end to end (36 e2e passed, 3 skipped, 3.7 min; all three packages 979 KB and
+passing `validate`), `packs:verify` 0 errors and the same 4 IPA warnings,
+`site:check` 711 pages and 16 087 links all resolving. Nothing needs a human
+here; the release is still waiting on B1 in `TODO.md`.
+
+### 2026-09-27 — the numbers in the documents were fiction
+
+Four documents stated test counts. All four were wrong, none agreed with any
+other, and `CHANGELOG.md`'s did not add up — "449 tests: 379 unit, 71 in
+jsdom, 24 end-to-end" is 474. Every count in the repository is now one this
+session measured: **484 unit / 122 suites**, **97 jsdom / 22 suites**, **39
+e2e defined in 7 files of which 36 run**, **584–588 entries across 579–583
+surface forms**, and **653 KB** of packs — 668 270 bytes at the `size / 1024`
+convention `tools/validate-package.mjs` already uses. Nothing in the tracked
+tree matches `427|449|379|664 KB|709` any more.
+
+The fourth document is the one worth remembering: `docs/LAUNCH.md:215` had
+"449 tests" inside the Hacker News comment draft. Every other stale count was
+wrong where only a contributor would read it; that one is copy a human sends
+out in public, and `docs/LAUNCH.md` is the only file here whose errors leave
+the repository. Re-sweep it before anything is posted.
+
+The judgement call: `CHANGELOG.md`'s 1.0.0 entry was corrected **to 1.0.0**,
+not to today. A changelog entry for a shipped release that describes the
+current tree is a different kind of wrong, so the real 1.0.0 numbers were
+measured in a throwaway worktree at `ef97167` — 470 unit, 97 jsdom, 35 of 38
+e2e, 602 in total, packs 644 KB — and today's went into a new `1.0.1` entry.
+That entry says out loud that it is not cut yet, because `VERSION` is still
+1.0.0; `tools/release.mjs` writes `RELEASE-X.Y.Z.md` and never touches
+`CHANGELOG.md`, so the two cannot disagree when the bump happens.
+
+The lexicon *entry* counts turned out not to have moved since `v1.0.0` — only
+the byte size. `3060d93` added etymons and notes to existing French entries
+rather than adding entries, which is why 584–588 / 579–583 is right in both
+changelog entries and only the KB differs. Worth knowing before assuming a
+lexicon change implies a count change.
+
+Then the command table in this file turned out to be the fifth wrong document,
+which is the sort of thing that happens once you go looking. **`npm run
+test:all` does not run `packs:verify` or `site:check`** — it is typecheck,
+test, compat, build:all, validate, e2e, build:all, validate — so the row
+claiming "all of the above" was inviting a release to be cut without the
+lexicons or the 711 pages ever being checked. `compat` reports 56 pass / 7
+degrade with a named fallback rather than "clean", and the two fast suites take
+about 9 s each here, not the 1.7 s and 1.6 s claimed. Wall-clock figures are
+now marked as this machine's; the counts are the part to trust.
+
+Also verified, rather than assumed, that the previous session's `/privacy` and
+`/support` work is real: `npm run site:check` reports 711 pages and 16 087
+links, all resolving, plus "all 3 externally-referenced pages exist", and
+`docs/PRIVACY.md` mentions `idle` and `unlimitedStorage` only to explain their
+removal.
 
 ### 2026-09-27 — the two pages the outside world points at
 

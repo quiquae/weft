@@ -17,12 +17,26 @@ jobs:
       - run: npm ci
       - name: Typecheck
         run: npm run typecheck
+      # src/lexicon/packs/ is generated from tools/seed/*.tsv and committed,
+      # because the extension loads the packs at runtime and the build does not
+      # regenerate them. Rebuilding here catches a seed lexicon edited without
+      # `npm run packs`, which would ship the old words while every other check
+      # passed. Only possible because the builder is reproducible: it keeps the
+      # previous `builtAt` when nothing else about a pack has changed.
+      - name: Committed packs match the seed lexicons
+        run: |
+          npm run packs
+          git diff --exit-code -- src/lexicon/packs
       - name: Verify lexicon packs
         run: npm run packs:verify
       - name: Unit tests
         run: npm run test:unit
       - name: DOM tests
         run: npm run test:dom
+      # Covers the generators that produce shipped artefacts, in a temporary
+      # directory rather than the tracked packs.
+      - name: Tool tests
+        run: npm run test:tools
       # Asks MDN's compatibility data whether every browser we claim to
       # support actually implements what we use. Fails on anything
       # unsupported that has no named fallback. Runs before the build

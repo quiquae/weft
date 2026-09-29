@@ -5,8 +5,10 @@ import { defineConfig } from '@playwright/test';
  *
  * MV3 extensions cannot be loaded into an incognito/ephemeral context, so every
  * test uses a persistent context created per worker in tests/e2e/fixtures.ts.
- * Running headless is possible in new Chromium builds, but extension service
- * workers are noticeably more reliable headed, so CI runs headed under xvfb.
+ * That context runs headless on `channel: 'chromium'` — the full build, not
+ * the headless shell, which cannot load an extension at all. CI runs the same
+ * way: no xvfb, no headed path, nothing that differs from a local run except
+ * the operating system underneath it.
  */
 export default defineConfig({
   testDir: './tests/e2e',

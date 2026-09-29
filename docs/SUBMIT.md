@@ -9,9 +9,21 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 427 unit tests, 81 jsdom tests, the compatibility audit, all
-three builds, the package validator, and 24 end-to-end tests in real
-Chromium. Nothing below should be attempted until that is green.
+runs typecheck, 484 unit tests, 98 jsdom tests, 29 tool tests, the
+compatibility audit, all three builds, the package validator, and 36 end-to-end
+tests in real Chromium. Nothing below should be attempted until that is
+green.
+
+Three further end-to-end specs are defined and deliberately skipped — they
+generate assets rather than assert anything, and run only behind
+`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "36 passed, 3
+skipped" is the green result, not a partial one.
+
+`test:all` does **not** include `npm run packs:verify` or `npm run site:check`.
+Run both as well before a submission. `packs:verify` is the only thing that
+reads the lexicons, and `site:check` is the only thing that proves the privacy
+policy URL Chrome requires — and the support URL compiled into the shipped
+extension — has a page behind it.
 
 After tagging a release, check what GitHub actually serves:
 

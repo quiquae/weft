@@ -23,10 +23,11 @@
  */
 import { readFile, writeFile, mkdir, readdir, rm, cp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
 import { FEATURES } from '../src/core/entitlements.ts';
+import { contentDate, sitemapXml } from './sitemap.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PACKS = join(ROOT, 'src/lexicon/packs');
@@ -38,8 +39,13 @@ const SRC = join(ROOT, 'site');
  * Keeps 700 generated files out of the repository — they are derived from the
  * lexicon and would otherwise churn every time a word changed — while making
  * the deployable artefact a single directory.
+ *
+ * Overridable with `--out=<dir>` so a test can build somewhere disposable.
+ * Without it, testing this tool means deleting and rewriting the directory
+ * `npm run site:check` reads, which is rude at best and misleading at worst.
  */
-const OUT = join(ROOT, 'dist/site');
+const outArg = process.argv.slice(2).find((a) => a.startsWith('--out='));
+const OUT = outArg ? resolve(outArg.slice('--out='.length)) : join(ROOT, 'dist/site');
 
 /** Change this to the domain you publish on. Everything canonical derives from it. */
 const SITE = process.env.WEFT_SITE_URL ?? 'https://weft.study';
@@ -47,13 +53,23 @@ const SITE = process.env.WEFT_SITE_URL ?? 'https://weft.study';
 /** Languages rich enough to justify a page per word. */
 const DEEP = ['la', 'ang'];
 
+/**
+ * `descent` is a pair rather than a string because the two languages put the
+ * English descendant in different places, and a template that always appends
+ * gets one of them backwards. Old English's frame takes its object at the end
+ * ("…that became **abide**"); Latin's needs it before the preposition, since
+ * "borrowed **from** X" makes X the *source*, and the source is this page's
+ * own headword. Latin keeps *borrowed* rather than borrowing the sibling's
+ * *became* because a learned borrowing is what it is: `vaccine` did not become
+ * anything, it was coined from `vacca`.
+ */
 const META = {
   la: {
     name: 'Latin',
     endonym: 'Latina',
     era: 'Classical, c. 75 BC – AD 200',
     slug: 'latin',
-    descent: 'This is the Latin word your English borrowed from',
+    descent: { before: 'This is the Latin word your English', after: 'was borrowed from' },
     note: 'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard.',
   },
   ang: {
@@ -61,7 +77,7 @@ const META = {
     endonym: 'Englisc',
     era: 'West Saxon, c. 900–1050',
     slug: 'old-english',
-    descent: 'This is the Old English word that became',
+    descent: { before: 'This is the Old English word that became', after: '' },
     note: 'þ and ð are both "th"; c before a front vowel is "ch"; sc is "sh". A macron marks a long vowel.',
   },
 };
@@ -87,6 +103,32 @@ const esc = (s) =>
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+
+/**
+ * The descent sentence, with the English descendant set inside the frame
+ * rather than appended to it. See the note above `META`: appending is what
+ * put the descendant after Latin's "from" and so named it as the source.
+ *
+ * The lexicon note, where there is one, is joined into the same sentence with
+ * a dash rather than following its full stop. A note is written as an
+ * appositive fragment — 141 of the 185 distinct notes across the packs open in
+ * lower case — because the surfaces it was written for give it its own block:
+ * `src/content/tooltip.ts` a `<div class="note">`, the descent hub a `<td>`.
+ * This is the one place a note abuts a finished sentence, so this is the one
+ * place it has to be joined to it.
+ *
+ * A dash rather than a render-time capital, which was measured: of the 99
+ * notes that reach a word page, 39 open with a quotation mark around a cited
+ * form and 5 with a proper noun, so capitalising would be a no-op on 44 of
+ * them and would capitalise the cited Latin of "paene īnsula, almost an
+ * island". Every capital already in the corpus is required by a name rather
+ * than by sentence position, so a dash needs no exception list.
+ */
+function descentSentence(meta, etymonOf, note) {
+  const tail = meta.descent.after ? ` ${esc(meta.descent.after)}` : '';
+  const aside = note ? ` — ${esc(note)}` : '';
+  return `${esc(meta.descent.before)} <strong>${esc(etymonOf)}</strong>${tail}${aside}.`;
+}
 
 /**
  * URL slug for a target word.
@@ -277,8 +319,7 @@ function wordPage(entry, lang, index) {
         ? `<section class="word__descent">
       <h2>Where <em>${esc(entry.etymonOf)}</em> comes from</h2>
       <p>
-        ${esc(meta.descent)} <strong>${esc(entry.etymonOf)}</strong>.
-        ${entry.note ? esc(entry.note) + '.' : ''}
+        ${descentSentence(meta, entry.etymonOf, entry.note)}
       </p>
     </section>`
         : entry.note
@@ -433,7 +474,7 @@ function descentHub(lang, entries) {
   const description =
     lang === 'ang'
       ? `${withEtymon.length} Old English words and the modern English words they became, from hūs to house and cyning to king — with pronunciation and the false friends.`
-      : `${withEtymon.length} Latin words and the English words they gave us, from vacca to vaccine and mille passūs to mile — with classical pronunciation.`;
+      : `${withEtymon.length} Latin words and the English words they gave us, from vacca to vaccine and mīlle passūs to mile — with classical pronunciation.`;
 
   const intro =
     lang === 'ang'
@@ -1122,10 +1163,17 @@ async function main() {
   const files = (await readdir(PACKS)).filter((f) => /^en-[a-z]{2,3}\.json$/.test(f));
   const byLang = {};
   const byLangByLemma = {};
+  /**
+   * When each pack's *content* was last built — which is the date the pages
+   * generated from it last changed, and so the only honest `<lastmod>` for
+   * them. `tools/build-pack.mjs` keeps this stamp unless the lexicon moved.
+   */
+  const packDate = {};
 
   for (const file of files) {
     const lang = file.slice(3, -5);
     const pack = JSON.parse(await readFile(join(PACKS, file), 'utf8'));
+    packDate[lang] = pack.meta?.builtAt ?? null;
     // One entry per headword: the packs carry a row per surface form.
     const seen = new Map();
     for (const list of Object.values(pack.entries)) {
@@ -1149,6 +1197,15 @@ async function main() {
   const index = { byLang, byLangByLemma };
   const written = [];
 
+  /** The newest of several content dates, ignoring the ones we do not have. */
+  const newest = (...dates) => dates.filter(Boolean).sort().at(-1) ?? null;
+  /**
+   * Every word page in one deep language links to its counterpart in the
+   * other, so both lexicons are content for both sets of pages. The index and
+   * descent hubs list one language only and take that language's date.
+   */
+  const deepDate = newest(...DEEP.map((l) => packDate[l]));
+
   // A clean build every time: a word removed from the lexicon must not leave
   // an orphaned page behind to be indexed.
   if (existsSync(OUT)) await rm(OUT, { recursive: true, force: true });
@@ -1168,15 +1225,15 @@ async function main() {
     for (const entry of entries) {
       const built = wordPage(entry, lang, index);
       await writeFile(join(OUT, built.path), built.html);
-      written.push({ url: built.url, priority: '0.6' });
+      written.push({ url: built.url, priority: '0.6', lastmod: deepDate });
     }
     const idx = languageIndex(lang, entries);
     await writeFile(join(OUT, idx.path), idx.html);
-    written.push({ url: idx.url, priority: '0.8' });
+    written.push({ url: idx.url, priority: '0.8', lastmod: packDate[lang] });
 
     const hub = descentHub(lang, entries);
     await writeFile(join(OUT, hub.path), hub.html);
-    written.push({ url: hub.url, priority: '0.9' });
+    written.push({ url: hub.url, priority: '0.9', lastmod: packDate[lang] });
 
     console.log(`  ${META[lang].slug}: ${entries.length} word pages + index + descent hub`);
   }
@@ -1186,7 +1243,7 @@ async function main() {
     if (!byLang[lang]) continue;
     const hub = cognateHub(lang, name, byLang[lang]);
     await writeFile(join(OUT, hub.path), hub.html);
-    written.push({ url: hub.url, priority: '0.8' });
+    written.push({ url: hub.url, priority: '0.8', lastmod: packDate[lang] });
     console.log(`  ${name.toLowerCase()}-words-you-already-know`);
   }
 
@@ -1233,27 +1290,32 @@ async function main() {
     console.log(`  ${doc.path.replace('.html', '')}`);
   }
 
-  // Sitemap and robots.
-  const today = new Date().toISOString().slice(0, 10);
+  /*
+   * Sitemap and robots.
+   *
+   * Each hand-written page is dated by the source that holds *its* words, not
+   * by the generator or by the clock — an edit to a Latin gloss must not tell
+   * search engines the privacy policy changed. The install page is the one
+   * that names this file, because its prose genuinely lives in installPage()
+   * rather than in a document of its own.
+   */
   const urls = [
-    { url: `${SITE}/`, priority: '1.0' },
-    { url: `${SITE}/install`, priority: '0.95' },
-    { url: `${SITE}/pricing`, priority: '0.9' },
-    { url: `${SITE}/support`, priority: '0.6' },
-    { url: `${SITE}/privacy`, priority: '0.5' },
+    { url: `${SITE}/`, priority: '1.0', lastmod: contentDate(ROOT, ['site/index.html']) },
+    {
+      url: `${SITE}/install`,
+      priority: '0.95',
+      lastmod: contentDate(ROOT, ['tools/build-site.mjs', 'package.json']),
+    },
+    {
+      url: `${SITE}/pricing`,
+      priority: '0.9',
+      lastmod: contentDate(ROOT, ['src/core/pricing.ts', 'src/core/entitlements.ts']),
+    },
+    { url: `${SITE}/support`, priority: '0.6', lastmod: contentDate(ROOT, ['docs/SUPPORT.md']) },
+    { url: `${SITE}/privacy`, priority: '0.5', lastmod: contentDate(ROOT, ['docs/PRIVACY.md']) },
     ...written,
   ];
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls
-  .map(
-    (u) =>
-      `  <url><loc>${u.url}</loc><lastmod>${today}</lastmod><priority>${u.priority}</priority></url>`,
-  )
-  .join('\n')}
-</urlset>
-`;
-  await writeFile(join(OUT, 'sitemap.xml'), sitemap);
+  await writeFile(join(OUT, 'sitemap.xml'), sitemapXml(urls));
   await writeFile(
     join(OUT, 'robots.txt'),
     `User-agent: *\nAllow: /\n\nSitemap: ${SITE}/sitemap.xml\n`,

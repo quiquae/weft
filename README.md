@@ -6,8 +6,8 @@ you stay on a page, the more of them there are.**
 Weft is a browser extension that weaves a proportion of the words on a page
 into a language you are learning, and raises that proportion with the time you
 actually spend looking at the page. Five minutes on a news article costs you
-almost nothing. Forty minutes on an infinite feed and you are reading half in
-French.
+almost nothing. Forty minutes on an infinite feed and you are reading a third
+in French, and more than half of it if you raise the ceiling.
 
 Point at a word and it gives you the English back.
 
@@ -89,8 +89,8 @@ In Old English the word Weft puts on the page is usually the **literal
 ancestor** of the word it replaced — `hūs` for house, `stān` for stone,
 `cyning` for king — and the tooltip tells you so. You are not memorising a
 foreign word; you are being shown where your own word came from. In Latin it
-is the word your English borrowed from: `vacca` gave us *vaccine*, `mille
-passūs` gave us *mile*, `paene insula` gave us *peninsula*.
+is the word your English borrowed from: `vacca` gave us *vaccine*, `mīlle
+passūs` gave us *mile*, `paene īnsula` gave us *peninsula*.
 
 The false friends are marked, because they are the most memorable thing in the
 language. Old English `drēam` means joy and music, not a sleeping vision.
@@ -115,7 +115,7 @@ impossible on day one.
 | | |
 |---|---|
 | **Languages** | French, Spanish, German, Italian, Portuguese, Latin, Old English |
-| **Lexicon** | 356 checked English lemmas per language, 584–588 surface forms, 664 KB for all seven |
+| **Lexicon** | 356 checked English lemmas per language, 584–588 entries across 579–583 surface forms, 653 KB for all seven |
 | **Network** | None. No account, no telemetry, no server. Works offline. |
 | **Optional** | Bring-your-own-key DeepL, Google or any OpenAI-compatible endpoint, for words beyond the packs |
 | **Install warning** | None of the scary ones — Weft asks for no site access until you name the sites |
@@ -264,8 +264,8 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 427 unit + 81 jsdom
-npm run test:e2e       # 24 tests in a real Chromium with the extension loaded
+npm test               # 484 unit + 98 jsdom + 29 over the build tools
+npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest
@@ -273,11 +273,16 @@ npm run packs:verify   # sanity-check the lexicons
 npm run build:all      # chrome + firefox + safari
 npm run zip            # per target: a flat archive for the store, a -folder one for humans
 npm run safari         # wrap the Safari build in an Xcode project
-npm run site           # generate the 700-page content site from the lexicon
+npm run site           # generate the 711-page content site from the lexicon
 npm run og             # render the social card
 npm run release -- --version=X.Y.Z           # version, build, package, notes
 npm run licence -- --name="..." --tier=pro   # issue a licence key
 ```
+
+`npm run test:e2e` reports "36 passed, 3 skipped". The three skipped ones
+are asset generators rather than assertions — `WEFT_STORE=1`,
+`WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1` turn them on when the store
+screenshots need redrawing.
 
 `src/core/` is pure: no DOM, no `chrome.*`, no I/O. Every interesting decision
 — which word to swap, how hard the page should get, whether a settings change

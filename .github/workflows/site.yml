@@ -28,6 +28,7 @@ on:
     paths:
       - 'site/**'
       - 'tools/build-site.mjs'
+      - 'tools/sitemap.ts'
       - 'tools/check-links.mjs'
       - 'tools/make-og.mjs'
       - 'tools/seed/**'
@@ -55,6 +56,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The sitemap dates each hand-written page by the commit that last
+          # changed the document behind it. At the default depth of 1 every
+          # file's last commit is HEAD, so every page would claim to have
+          # changed on the day of the deploy — which is the bug this replaced.
+          # tools/sitemap.ts detects a shallow clone and emits no <lastmod>
+          # at all rather than a wrong one, so removing this line loses the
+          # dates silently; it does not fail the build.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22

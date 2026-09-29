@@ -25,7 +25,7 @@ you stay on a page, the more of them there are.**
 Weft weaves a proportion of the words on a page into a language you are
 learning, and raises that proportion with the time you actually spend looking
 at the page. Five minutes on a news article costs you almost nothing. Forty
-minutes on an infinite feed and you are reading half in French.
+minutes on an infinite feed and you are reading a third in French.
 
 Point at a word and it gives you the English back.
 
