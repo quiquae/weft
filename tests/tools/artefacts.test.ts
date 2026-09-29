@@ -28,7 +28,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
-import { checkArtefacts, formatReport, artefactsFor } from '../../tools/artefacts.ts';
+import { checkArtefacts, formatReport, artefactsFor, artefactManifestPath } from '../../tools/artefacts.ts';
 
 function git(root: string, args: string[]): string {
   return execFileSync(
@@ -207,6 +207,112 @@ describe('the report tells you what to do about it', () => {
   });
 });
 
+describe('a verified stamp records a human check, not just a regeneration', () => {
+  // A regeneration that reproduces the same bytes commits nothing, so
+  // lastWrote never moves and a group already confirmed correct reports the
+  // same staleness forever. The fix: each artefact carries its own manifest
+  // path, alongside its real content, in the same `paths` array. Committing
+  // *that* is a real change git can see, which checkArtefacts already knows
+  // how to read — no change to checkArtefacts itself.
+  const shotsWithManifest = {
+    name: 'listing screenshots',
+    paths: ['docs/store', artefactManifestPath('listing screenshots')],
+    inputs: ['src'],
+    regenerate: 'WEFT_STORE=1 npx playwright test store-assets',
+  };
+
+  test('a verify commit with no content change flips a stale artefact to fresh', () => {
+    withRepo((root) => {
+      commit(root, { 'src/a.ts': 'one\n' }, 'the source');
+      commit(root, { 'docs/store/chrome-01.png': 'shot\n' }, 'capture the shots');
+      commit(root, { 'src/a.ts': 'two\n' }, 'change the source again');
+
+      // Genuinely stale before anyone has looked.
+      assert.equal(only(root, shotsWithManifest).state, 'stale');
+
+      // Regenerated, diffed, found byte-identical — nothing under docs/store
+      // changes, only the manifest records that somebody checked.
+      commit(
+        root,
+        { [shotsWithManifest.paths[1]!]: '{"verifiedAt":"now"}\n' },
+        'confirm the shots are still correct',
+      );
+
+      assert.equal(only(root, shotsWithManifest).state, 'fresh');
+    });
+  });
+
+  test('a later source change stales it again, even after a verify commit', () => {
+    withRepo((root) => {
+      commit(root, { 'src/a.ts': 'one\n' }, 'the source');
+      commit(root, { 'docs/store/chrome-01.png': 'shot\n' }, 'capture the shots');
+      commit(root, { 'src/a.ts': 'two\n' }, 'change the source again');
+      commit(
+        root,
+        { [shotsWithManifest.paths[1]!]: '{"verifiedAt":"now"}\n' },
+        'confirm the shots are still correct',
+      );
+      commit(root, { 'src/a.ts': 'three\n' }, 'change the source a third time');
+
+      // A verify stamp pins one moment; it is not a standing exemption.
+      assert.equal(only(root, shotsWithManifest).state, 'stale');
+    });
+  });
+
+  test('verifying one artefact does not freshen an unrelated stale one', () => {
+    withRepo((root) => {
+      commit(root, { 'src/a.ts': 'one\n' }, 'the source');
+      commit(
+        root,
+        { 'docs/store/chrome-01.png': 'shot\n', 'docs/screens/x.png': 'shot\n' },
+        'capture both sets',
+      );
+      commit(root, { 'src/a.ts': 'two\n' }, 'change the source again');
+
+      const screensWithManifest = {
+        name: 'documentation screenshots',
+        paths: ['docs/screens', artefactManifestPath('documentation screenshots')],
+        inputs: ['src'],
+        regenerate: 'npx playwright test screenshots',
+      };
+
+      // Only the store shots get a verify commit.
+      commit(
+        root,
+        { [shotsWithManifest.paths[1]!]: '{"verifiedAt":"now"}\n' },
+        'confirm the store shots only',
+      );
+
+      const report = checkArtefacts(root, [shotsWithManifest, screensWithManifest]);
+      assert.equal(report.results[0]!.state, 'fresh');
+      // A shared manifest file would have freshened this too, on a commit
+      // that never touched it. That is the false "fresh" this tool's own
+      // "missing, not fresh" test already refuses to give.
+      assert.equal(report.results[1]!.state, 'stale');
+    });
+  });
+});
+
+describe('artefactManifestPath', () => {
+  test('derives a filesystem-safe, distinct path per artefact name', () => {
+    assert.equal(
+      artefactManifestPath('store listing screenshots'),
+      'docs/artefacts/store-listing-screenshots.json',
+    );
+    assert.notEqual(
+      artefactManifestPath('documentation screenshots'),
+      artefactManifestPath('first-run walkthrough shots'),
+    );
+  });
+
+  test('punctuation collapses rather than producing adjacent dashes', () => {
+    assert.equal(
+      artefactManifestPath("release notes for 1.0.1"),
+      'docs/artefacts/release-notes-for-1-0-1.json',
+    );
+  });
+});
+
 describe("the real artefact list points at things that are actually there", () => {
   const ROOT = join(import.meta.dirname, '../..');
 
@@ -224,7 +330,12 @@ describe("the real artefact list points at things that are actually there", () =
 
   test('every declared artefact path has been committed at least once', () => {
     for (const artefact of artefactsFor('1.0.1')) {
+      // The verify-manifest path is exempt: it is derived, not hand-typed,
+      // so it cannot be a typo, and it legitimately has no history until
+      // `artefacts:verify` runs for that group for the first time.
+      const manifest = artefactManifestPath(artefact.name);
       for (const path of artefact.paths) {
+        if (path === manifest) continue;
         const seen = git(ROOT, ['log', '-1', '--format=%H', '--', path]);
         assert.notEqual(seen, '', `no commit has ever written the artefact "${path}"`);
       }
@@ -246,6 +357,21 @@ describe("the real artefact list points at things that are actually there", () =
   test('the release notes are named after the version they belong to', () => {
     const notes = artefactsFor('9.9.9').find((a) => a.paths.some((p) => p.startsWith('RELEASE-')));
     assert.ok(notes, 'no artefact covers the release notes');
-    assert.deepEqual(notes.paths, ['RELEASE-9.9.9.md']);
+    assert.deepEqual(notes.paths, ['RELEASE-9.9.9.md', artefactManifestPath(notes.name)]);
+  });
+
+  test('every real artefact declares its own manifest path', () => {
+    // Not required to be committed yet: unlike the hand-typed paths above,
+    // this one is derived, so it cannot be a typo, and requiring history
+    // before it is ever used would mean fabricating a verify commit — the
+    // exact false "somebody checked" this mechanism exists to prevent —
+    // just to satisfy this test. It becomes real the first time
+    // `artefacts:verify` actually runs for that group.
+    for (const artefact of artefactsFor('1.0.1')) {
+      assert.ok(
+        artefact.paths.includes(artefactManifestPath(artefact.name)),
+        `${artefact.name} does not declare its manifest path in paths`,
+      );
+    }
   });
 });
