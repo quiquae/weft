@@ -165,10 +165,11 @@ const HTML = `<!doctype html>
   .label { margin-bottom: 10px; }
   .bands { display: grid; gap: 12px; margin-bottom: 34px; }
   /*
-   * The bands are one row each, and the icons sit on the baseline of a
-   * fixed-height strip rather than being centred: a 16px icon centred in a
-   * 160px band floats in the middle of nothing, where sitting level with
-   * the 128px one beside it is how a toolbar actually stacks them.
+   * Centred, because that is what a toolbar does: a browser gives every
+   * action the same square and centres the icon in it, so the 16px mark and
+   * the 128px one share a midline rather than a baseline. Aligning them on
+   * their bottom edges instead would put the small icon where no toolbar
+   * ever puts it, which is the opposite of what this half is for.
    */
   .band {
     display: flex; align-items: center; gap: 28px;
