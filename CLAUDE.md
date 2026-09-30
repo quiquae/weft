@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **66 pass**, 19 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **71 pass**, 21 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -192,6 +192,145 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — the fix was one-sided across files, and the guard was hand-picking the file
+
+The queue sent this session at the two clipped listing screenshots. That is
+`b5f0686`, **HEAD**, merged as PR #32 the same day: `frameOn` replaces both
+`scrollIntoViewIfNeeded` calls, `artefacts:check` reports all three
+screenshot groups `ok`, and `docs/STORE-LISTING.md:180` already says
+"scrolled to the discoveries feed". Tenth completed item the queue has handed
+over in twelve sessions. Verified by **opening all six scrolled captures**
+rather than by trusting the commit subject — which is the only check that
+can speak here, and the one that found the defect in the first place. All six
+read clean: the 05 shots open on the Density title with the whole
+`Taster Standard Committed Monastic` row intact, the 04 shots on "What you
+have found out" with the 19-row feed in folded-alphabetical order, `père`
+before `pierre`.
+
+**So the work was the half of PR #32 that PR #32 could not see.**
+`firstrun.spec.ts:107` had the identical `scrollIntoViewIfNeeded()` call on
+the identical kind of selector, `.section:has(.help__report)`, and it was
+never touched — PR #30 *added* that line two commits before PR #32 proved the
+call unsafe. `screenshots.spec.ts` does no scrolling at all, which was
+checked rather than assumed.
+
+**Its shot happens to land correctly at 1000x900, and that is the trap
+rather than a reprieve.** The four clipped store captures were byte-stable
+too; `artefacts:check` called that group `ok`, and two consecutive
+regenerations agreed with themselves, for the whole month they were wrong.
+A call whose correctness is a coincidence of the viewport height — Blink
+picks the landing point from the element's position and the frame height, so
+the *sign* of the error is not a property of the call — is one options-page
+edit away from being silently wrong in documentation a stranger reads.
+
+**The reason it was missed is the guard, not the reviewer, and that is the
+transferable half.** `tests/tools/store-assets.test.ts` already derives its
+selector list from the spec rather than typing it out, and says why in as
+many words: "a hand-written list of the things to check cannot police the
+thing that was forgotten." But the *file* it reads is hand-picked. The
+derivation was **within-file**, and the thing forgotten was a different
+file — the same lesson one level up. Third sighting of this shape in three
+sessions, after PR #31's mislabelled `oe.close()` and PR #30's pathspec
+claiming a whole directory was generated.
+
+So `frameOn` moved to `tests/e2e/fixtures.ts` and is exported: one
+implementation, so the two-sided assertion cannot be present in one generator
+and absent in another. The two-sidedness test moved out of
+`store-assets.test.ts` rather than being duplicated there. The new guard,
+`tests/tools/shot-framing.test.ts`, **derives the spec list too** — from the
+one thing every generator has and no other e2e spec does, `const OUT = … '../../docs/…'`.
+A fourth generator is covered without an edit. It is a fourth `tests/tools/`
+suite rather than a third `describe` in `store-assets.test.ts`, on the seam
+argument this file already uses for `build-site.test.ts`: the rule is not a
+property of the store listing, and a file named for one spec policing three
+is how the blind spot got built.
+
+The rule is "framed by `frameOn` and nothing else" rather than "not
+`scrollIntoViewIfNeeded`": naming the one mechanism already known to have
+gone wrong is the same one-sidedness one more level down, and would leave
+`scrollIntoView({ block: 'start' })` and a raw `scrollTo` silently skipped.
+Proved by injecting exactly that and watching the guard fire.
+
+**Zero committed bytes changed, measured rather than assumed.**
+`scrollIntoViewIfNeeded` happened to land exactly where `frameOn` computes.
+All three groups were regenerated **twice each**, with npm's own exit status
+captured per run and the mtimes checked every time: **45 files** — 8
+first-run, 18 store, 19 screens — byte-identical run to run *and* to what was
+committed. The store set is the free control: relocating `frameOn` was shown
+not to move a byte rather than argued to be safe.
+
+**The runtime assertion was proved live in the new spec, not merely
+satisfied**, which is the difference between "the generator passed" and "the
+generator would have caught it". Injecting a 40px mis-landing makes it fail
+with `.section:has(.help__report) sits 40px below the top of the viewport`
+and write nothing. The three static guards were each shown to fail too:
+reverting the fix names the selector, dropping the lower bound names the
+`edge-05` class, and renaming `OUT` makes the store-assets test **vanish
+from the run entirely** — caught only by the non-vacuity floor, which is
+exactly the silent skip a derived list invites. Probed by copying backups
+back and checking md5, not by asking git.
+
+**All three verify stamps were written this time rather than deleted, and
+the distinction is the whole point of the stamp.** Its note reads "no change
+to commit"; PRs #30, #31 and #32 each changed real content, so for them it
+would have been false and each correctly deleted it. Here nothing changed and
+it is true. `artefacts:check` stays at 1 stale — the release notes, B2a,
+whose `inputs` are `.` — with all three screenshot groups `ok`. Note for the
+next session: all three groups declare `tests/e2e/fixtures.ts` as an input, so
+**any** edit to the fixtures stales all three at once.
+
+**Verifying the third group found the next defect, and mtimes are what
+found it.** `documentation screenshots` declares `paths: ['docs/screens']`,
+a whole directory — the exact shape PR #30 found wrong for `docs/firstrun`
+and narrowed, with the precedent sitting one group above it in
+`tools/artefacts.ts`. `screenshots.spec.ts` writes **14** of the 19; the
+other five are captures of the **content site**, which no spec can produce
+because nothing serves `dist/site`. All five were last committed 2026-09-15
+and none is referenced anywhere. **`landing.png` reads "48% — 1 word in 2"**
+— the unqualified phrasing PR #8 replaced everywhere, at a reading the demo
+can no longer produce, since PR #8 turned its ceiling down to 35%. So it
+shows a number nobody gets, which is the thing PR #8 existed to remove.
+Queued rather than fixed: the honest options include deleting five
+unreferenced committed binaries, which wants a human's assent. `git status`
+could not have found this and neither could `artefacts:check`, which asks
+provenance rather than content; **comparing mtimes after a regeneration is
+what separates "reproduced exactly" from "never written"**, and this file
+already records that the two look identical from outside.
+
+One process note worth keeping: a probe run exited 1 with
+`Unknown system error -11 … scandir 'test-results/.playwright-artifacts-0'`
+— the iCloud trap, not the assertion — and was nearly read as the guard
+firing. **A generator's exit 1 has to be read before it is believed, in both
+directions**, the mirror of this file's existing note that exit 0 with no
+changed file is indistinguishable from a run that died early.
+
+Counts moved 727 → **732** and tools 66 → **71** / 19 → **21 suites** in six
+documents, with `docs/LAUNCH.md:221` swept **by name and first** for the
+eleventh session running. Worth naming: **`README.md:267` was two sessions
+stale at `64`** — PR #32 moved tools 64 → 66 across "five documents" and
+missed it, the same class as the CLAUDE.md command table PR #32 itself caught
+at 63. Unit, jsdom and e2e did not move, `src/` was not touched at all, so
+sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **71 tools / 21
+suites**, compat 21 dependencies x 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB x 3** passing `validate` (unchanged, and it has to
+be — nothing here touches shipped code), **36 e2e passed and 3 skipped in
+2.0 min**, then build and validate again. `packs:verify` and `site:check`
+were **not** re-run, for the reason this file already states: no pack moved,
+no seed moved, and `src/` was not touched. The three generators were run
+**nine** times across the session in total, each with its exit status
+captured and its hashes diffed before anything was believed. Zero iCloud
+conflict copies in `dist/`, `src/` or `test-results/`, the xattr working for
+the seventh session running — re-set on `test-results/` again, which does not
+survive being deleted.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` and `Next` are both **empty** and there is no
+agent-shaped work left in the file.
 
 ### 2026-09-29 — the item named two clipped shots; it was four, and two failed the other way
 

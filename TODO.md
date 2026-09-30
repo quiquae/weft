@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **66** tool tests / 19 suites, **36** e2e passing
+suites, **71** tool tests / 21 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -43,6 +43,14 @@ heading gone entirely. `scrollIntoViewIfNeeded` states no alignment, so the
 landing point was a function of the viewport height. The two scenes are now
 framed on the section's own top edge and the capture *asserts* it landed
 there, two-sided, so the generator fails rather than writing a clipped shot.
+**And the same call was live in a second generator, as of 2026-09-29** —
+`firstrun.spec.ts` framed `.section:has(.help__report)` the same unsafe way
+and the guard could not see it, because it derived its selectors from one
+hand-picked file. `frameOn` is now exported from `tests/e2e/fixtures.ts` so
+there is one implementation, and `tests/tools/shot-framing.test.ts` derives
+the *spec list* from the `OUT` directory every generator has. No committed
+byte moved: all 45 files across the three groups came back byte-identical
+twice, and all three groups now carry a verify stamp that is true.
 **Both stale documentation sets are regenerated and the screens set
 is now reproducible, as of 2026-09-29** — `docs/firstrun/` came back
 byte-identical to what was committed, and `docs/screens/` needed three
@@ -1069,7 +1077,138 @@ move until it is.
       from PR #31, where a `git checkout` of one file reverted the fix along
       with the probe.
 
-`Next` is now **empty**, and so is `Now`. Everything in Blocked needs
+- [x] **The same framing defect was live in a second generator, and the
+      guard could not see it.** Done 2026-09-29. The item above fixed
+      `store-assets.spec.ts`; `firstrun.spec.ts:107` had the identical
+      `scrollIntoViewIfNeeded()` call on the identical kind of selector,
+      `.section:has(.help__report)`, and nothing caught it. **Its shot
+      happens to land correctly at 1000x900, which is the trap rather than a
+      reprieve** — the four clipped store captures were byte-stable too, and
+      `artefacts:check` called that group `ok` for as long as they were
+      wrong. A call whose correctness is a coincidence of the viewport height
+      is one options-page edit away from being silently wrong in
+      documentation a stranger reads.
+
+      **The reason it was missed is the guard, not the reviewer.**
+      `tests/tools/store-assets.test.ts` already derives its selector list
+      from the spec rather than typing it out, and says why in as many words:
+      "a hand-written list of the things to check cannot police the thing
+      that was forgotten." But the *file* it reads is hand-picked. The
+      derivation was within-file and the thing forgotten was a different
+      file — the same lesson one level up, and the third sighting of this
+      shape in three sessions (PR #31's mislabelled `oe.close()`, PR #30's
+      pathspec claiming a whole directory).
+
+      `frameOn` now lives in `tests/e2e/fixtures.ts` and is exported, so
+      there is one implementation and the two-sided assertion cannot be
+      present in one generator and absent in another. The new guard,
+      `tests/tools/shot-framing.test.ts`, **derives the spec list too** —
+      from the one thing every generator has and no other e2e spec does, an
+      `OUT` directory under `docs/`. A fourth generator is covered without an
+      edit. The two-sidedness assertion moved out of
+      `store-assets.test.ts` rather than being duplicated there.
+
+      The guard matches **any** scroll call on a `.section`, not
+      `scrollIntoViewIfNeeded` by name — naming the one mechanism that has
+      already gone wrong is the same one-sidedness, and leaves
+      `scrollIntoView({ block: 'start' })` silently skipped. Proved by
+      injecting exactly that and watching it fire.
+
+      **Zero committed bytes changed, and that is measured rather than
+      assumed.** `scrollIntoViewIfNeeded` happened to land exactly where
+      `frameOn` computes, so all 8 first-run files came back byte-identical.
+      All three groups were regenerated **twice each** with npm's exit status
+      captured per run and the mtimes checked every time: **45 files** (8
+      first-run, 18 store, 19 screens) byte-identical run-to-run *and* to
+      what was committed. Relocating `frameOn` was confirmed not to move a
+      store byte, rather than argued to be safe.
+
+      **The runtime assertion was proved live in the new spec, not merely
+      satisfied.** Injecting a 40px mis-landing makes the generator *fail*
+      with `.section:has(.help__report) sits 40px below the top of the
+      viewport` and write nothing, which is the difference between "the
+      generator passed" and "the generator would have caught it". The three
+      static guards were each shown to fail too: reverting the fix names the
+      selector, dropping the lower bound names the `edge-05` class, and
+      renaming `OUT` makes the store-assets test *vanish from the run
+      entirely* and is caught only by the non-vacuity floor.
+
+      All three verify stamps were **written** this time, not deleted, and
+      the distinction is the whole point of the stamp: PRs #30-#32 each
+      changed real content, so their stamps' note ("no change to commit")
+      would have been false. Here nothing changed and it is true. One process
+      note: a probe run failed with `Unknown system error -11 ... scandir
+      'test-results/.playwright-artifacts-0'` — the iCloud trap, not the
+      assertion — so **exit 1 from a generator has to be read before it is
+      believed**, in both directions.
+
+- [ ] **`docs/screens/` declares 19 files generated and 5 of them have no
+      generator, and one is stale in the way PR #8 spent a session fixing.**
+      Found 2026-09-29 while verifying the group, by comparing mtimes after a
+      regeneration rather than by reading `git status` — which shows the same
+      nothing for "reproduced exactly" and "never written".
+
+      **The pathspec is `paths: ['docs/screens']`, a whole directory.** That
+      is the exact shape PR #30 found wrong for `docs/firstrun` and narrowed
+      to `docs/firstrun/0*.png`, and the precedent for the fix is one group
+      above it in `tools/artefacts.ts`: `store listing screenshots` declares
+      `docs/store/*-0*.png` "because the tiles beside the captures are drawn
+      by hand and are not generated from anything." `documentation
+      screenshots` is the last group that never had that line drawn for it.
+
+      `screenshots.spec.ts` writes **14** of the 19. The five it does not are
+      screenshots of the **content site**, not the extension —
+      `landing.png`, `pricing.png`, `word-latin.png`, `word-page.png`,
+      `hub-descent.png` — so no spec could write them: they would need
+      `dist/site` served and driven, which nothing does. All five were last
+      committed **2026-09-15** and **none of them is referenced anywhere**,
+      in any document or page (`git grep` for each filename returns
+      nothing).
+
+      **`landing.png` is stale, and in the two ways PR #8 fixed.** It reads
+      **"48% — 1 word in 2"** — the unqualified phrasing, which PR #8
+      replaced with "of content words" everywhere, and which is the
+      identical defect PR #27 found in three `*-05-settings.png`. Worse, 48%
+      is a reading the demo can no longer produce at all: PR #8 turned it
+      down to the Standard preset, ceiling 35%. Its caption is pre-#8 too.
+      So the file shows a number nobody gets, which is the exact thing PR #8
+      exists to have removed from the product.
+
+      **Not folded into the PR that found it, for the reason that PR's own
+      finding gives**: the honest fix is a decision about five unreferenced
+      files, and three shapes are defensible.
+
+      1. **Narrow the pathspec to the 14 and delete the five.** Cheapest,
+         and defensible precisely because nothing references them — an
+         unreferenced stale screenshot is a liability with no reader. Also
+         removes the thing that makes `landing.png` look current.
+      2. **Narrow the pathspec, keep the five, and recapture by hand.** Keeps
+         them available for a blog post or README, at the cost of five
+         binaries that go stale again on the next site edit with nothing to
+         detect it.
+      3. **Write a site-screenshot generator** so all 19 are generated and
+         the pathspec is honest as it stands. The most work by far, and it
+         needs `npm run site` built and served first; it is the only shape
+         that makes the group self-correcting.
+
+      Preference: **1**, on the grounds that nothing links to them and the
+      repository already refuses to keep artefacts nothing can check — but
+      it is a deletion of committed files, so it wants a human's assent
+      rather than an agent's. PR #30's guard (a file in the pathspec with no
+      generator writing it) should be **generalised to every group** once
+      the pathspec is narrowed; it currently applies only to the first-run
+      group, which is why this went unseen for two weeks.
+
+      Note that `artefacts:check` could never have caught this: it asks
+      provenance, not content, and `tools/artefacts.ts:22` says so. The
+      verify stamp written for this group on 2026-09-29 is literally true —
+      all 19 files were regenerated twice and compared, with no change to
+      commit — but the regeneration is a no-op for five of them, so "no
+      change" vouches for nothing there. **That is the sense in which a
+      whole-directory pathspec launders a hand-made file into a generated
+      one.**
+
+`Next` has the one item above. `Now` is empty. Everything in Blocked needs
 Creagh — B1 an identity and a payment method, B2 onwards a decision that is
 not reversible the way a commit is. A session picking this file up should read
 the Blocked section, confirm B1 has not moved, and stop. There is no
