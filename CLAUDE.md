@@ -193,6 +193,133 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-09-29 — the guard named two pages, mislabelled one, and could not see the third
+
+The queue asked for `artefacts:check` to gain a verify stamp —
+`docs/artefacts.json`, per group, so `docs/firstrun/` could stop reporting
+stale forever, test-first, including a test that a stamp with no content
+change flips a group from stale to fresh. **All of it exists**, two sessions
+back in `e02b915`, and built better than asked: per-group
+`docs/artefacts/<slug>.json` rather than one shared file, because a shared
+file's `paths` entry is declared by every group and verifying one would have
+silently freshened the rest. The test the queue specified is in the tree
+verbatim — `a verify commit with no content change flips a stale artefact to
+fresh` — and `artefacts:check` now reports `first-run walkthrough shots`
+**ok**. Ninth of the last eleven sessions handed a completed item; a minute
+of `grep` and one `artefacts:check` settled it.
+
+So the work was `TODO.md`'s topmost unchecked item, **the onboarding preview
+writing to the learner's real vocabulary**. It does not. It never did, and
+the three shapes the item offered needed no choosing.
+
+**The premise is refutable by reading two files.**
+`src/ui/onboarding/preview.tsx` sends no message at all — `selectSwaps`
+inside a `useMemo` against `cards: new Map()`, rendered into spans. The whole
+onboarding page sends exactly two message types: `get-pack`, which
+`src/background/index.ts:179` answers by `fetch`ing a JSON file off disk, and
+`complete-onboarding`, which only `finish()` sends and which the screenshot
+loop never reaches — it opens the page, waits 1200 ms, shoots and closes
+without pressing anything. The page is structurally incapable of creating a
+card.
+
+**The real cause was a page the harness left open, and the evidence was
+already in the file that got it wrong.** `screenshots.spec.ts` opens three
+taxed pages on `${origin}/article.html`. `reader` and `oe` are closed before
+the vocabulary reset; `wrapped`, opened for `page-tooltip.png`, never is — so
+it kept weaving and reporting exposures through the reset and every shot after
+it. A comment forty lines above the wrong one already lists six words read off
+`article.html`, and **six of the seven residuals are exactly those six**. The
+transferable form: when two comments in one file disagree about a cause,
+prefer the one that names a mechanism over the one that names a culprit.
+
+**The more useful finding is where the guard admitted its own gap.**
+`tests/tools/screenshots.test.ts` had
+`assert.notEqual(spec.indexOf('oe.close()'), -1, 'the wrapped-mode page is
+never closed')` — but `oe` is the *Old English* page, and the wrapped-mode
+page is the variable literally named `wrapped`, the one it had missed. **A
+guard's mislabelled failure message is the fingerprint of the case that was
+overlooked when it was written**, and it is cheaper to read than the code it
+guards. Same class as PR #14's note guard skipping `novem` and PR #30's
+pathspec claiming a whole directory was generated: a hand-typed list of the
+things to check cannot police the thing that was forgotten.
+
+**So the fix is the derivation, not the close.** The guard now finds every
+`const X = await context.newPage()` whose block contains
+`await X.goto(`${origin}` and requires each closed before
+`reset-vocabulary`, so a fourth page added later is covered for free.
+Anchored on `.goto(` rather than on `${origin}` appearing in the block,
+because the popup passes `${origin}/article.html` into an init script as a
+stubbed tab URL while navigating to `popup.html` — a block-level match would
+have called it taxed. A second test cross-counts the `${origin}` navigations
+against what the derivation found, which is the failure the loop invites:
+rename `context.newPage()` and it runs over an empty list and passes.
+`chrome-extension://` pages are deliberately not matched — the content script
+is registered per granted origin, so an extension surface cannot weave.
+
+Done test-first: red on `` `wrapped` loads a taxed page over HTTP and is never
+closed `` before anything was edited. Both guards were shown to fail rather
+than assumed non-vacuous — removing the close names `wrapped`, renaming
+`newPage` names the silent skip. 63 → 64 tools, 18 suites unchanged (one
+hand-listed test replaced by two derived ones). One process note: a
+`git checkout tests/e2e/screenshots.spec.ts` used to undo a vacuity probe
+reverted the *whole* file including the fix; caught by `git diff --stat`
+immediately after, and re-applied from the same deterministic script. Probe
+by writing a backup and copying it back, not by asking git.
+
+**`docs/screens/` regenerated, and the arithmetic is the receipt rather than
+the hashes.** Six shots changed, all six opened and read.
+`dashboard-vocabulary.png` holds exactly the 19 seeded rows with no `seen 1×`
+strays; the progress tiles read 19 met and **393** read, and 393 is exactly
+the sum of the plan's own `exposures` column (61 + 54 + 48 + … + 3 + 2), so
+the store is the plan and nothing else; the band reads Learning 8 + Familiar
+3 + Known 5 against "3 seen but not yet reviewed", which is 19.
+`dashboard-transparency.png` still reads "0 network requests, ever" and has
+lost the half-cropped "Settings" link it used to bleed. All **19** files
+byte-identical across two consecutive runs, npm's exit status captured per
+run and mtimes checked every time — 14 of the 19 are written by this spec and
+all 14 moved, which is what distinguishes a clean idempotent run from a
+generator that died early and wrote nothing.
+
+**No verify stamp was written and that is deliberate.** This group earned a
+real content change, so its `lastWrote` moves on its own and a stamp meaning
+"checked, nothing to commit" would have been false — the same call PR #30
+made for the first-run group, and the one thing the stamp must never mean.
+
+**The product was telling the truth the whole time**, which is the part to
+keep. The item's objection — that a user who only reads the onboarding page
+"starts with seven words met and a non-zero words-read total" — described a
+harness artefact. Those 26 words really had been read, off `article.html`, by
+a page nobody closed. Nothing in `src/` was touched, which is also why the
+package size is unchanged.
+
+Counts moved 724 → **725** and tools 63 → **64** in five documents, with
+`docs/LAUNCH.md:221` swept **by name and first** for the ninth session
+running. Unit, jsdom and e2e did not move, and `src/` was not touched at all,
+so sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **64 tools / 18
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged, and it has to be
+— nothing here touches shipped code), **36 e2e passed and 3 skipped in 2.0
+min**, then build and validate again. `packs:verify` and `site:check` were
+**not** re-run, and the reason is the rule this file already states: no pack
+moved, no seed moved, and `src/` was not touched at all. Separately
+`artefacts:check` reports the same 1 stale group it did before — the release
+notes, B2a, whose `inputs` are `.` — with all three screenshot groups `ok`.
+The screens generator was run **twice**, each with npm's exit status captured
+and all 19 hashes diffed before anything was believed, and the gate was
+confirmed not to have moved a byte of `docs/screens/` afterwards. Zero iCloud
+conflict copies in `dist/`, `src/` or `test-results/`, the xattr working for
+the fifth session running — it had to be re-set on `test-results/`, which
+does not survive being deleted.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Next` now holds exactly one item, the two listing
+screenshots that clip a row at the top edge — which does want its own pass,
+because it rewrites 6 binaries and invalidates the store group's verify stamp.
+
 ### 2026-09-29 — both sets reproduced exactly, and the defect was in the file neither run touched
 
 The queue asked for `docs/screens/` and `docs/firstrun/` to be regenerated,

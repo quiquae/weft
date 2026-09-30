@@ -56,6 +56,42 @@ const MAX_ACCRUAL_SECONDS = 59;
 
 const spec = readFileSync(SPEC, 'utf8');
 
+/**
+ * Every page the spec opens that loads a page over HTTP, and where it closes.
+ *
+ * Derived from the source rather than listed by hand, and that is the whole
+ * point. The guard this replaces named `reader` and `oe` as literals, so it
+ * could not see the third page — and its own failure message called
+ * `oe.close()` "the wrapped-mode page", which is the variable named
+ * `wrapped`, the one it had missed. A hand-typed list of the things to check
+ * cannot police the thing that was forgotten; the same shape as the note
+ * guard that skipped `novem` for having no note.
+ *
+ * A `chrome-extension://` page is not taxed and is deliberately not matched:
+ * the content script is registered per granted origin, so an extension
+ * surface cannot weave and cannot record an exposure. Anchored on `.goto(`
+ * rather than on `${origin}` appearing anywhere in the block, because the
+ * popup passes `${origin}/article.html` into an init script as a stubbed tab
+ * URL while navigating to `popup.html`.
+ */
+function taxedPages(): Array<{ name: string; opened: number; closed: number }> {
+  const opens = [...spec.matchAll(/const (\w+) = await context\.newPage\(\)/g)];
+  return opens
+    .map((m, i) => {
+      const opened = m.index ?? 0;
+      const end = i + 1 < opens.length ? (opens[i + 1]!.index ?? spec.length) : spec.length;
+      return { name: m[1]!, opened, block: spec.slice(opened, end) };
+    })
+    .filter(({ name, block }) =>
+      new RegExp(String.raw`await ${name}\.goto\(\`\$\{origin\}`).test(block),
+    )
+    .map(({ name, opened }) => ({
+      name,
+      opened,
+      closed: spec.indexOf(`${name}.close()`, opened),
+    }));
+}
+
 describe('the documentation screenshots are reproducible', () => {
   const seeded = (): number => {
     const m = /SEEDED_ATTENTION_SECONDS\s*=\s*(\d+)/.exec(spec);
@@ -104,18 +140,41 @@ describe('the documentation screenshots are reproducible', () => {
     );
   });
 
-  test('the woven pages are closed before the store is seeded', () => {
+  test('every page that weaves is closed before the store is seeded', () => {
     // A taxed page with the content script running keeps writing exposures,
     // so resetting the store while one is open leaves the run's own reading
     // in the list. Closing them is what makes the seeded plan authoritative.
-    const closed = Math.max(spec.indexOf('reader.close()'), spec.indexOf('oe.close()'));
     const reset = spec.indexOf("type: 'reset-vocabulary'");
-    assert.notEqual(spec.indexOf('reader.close()'), -1, 'the woven reader page is never closed');
-    assert.notEqual(spec.indexOf('oe.close()'), -1, 'the wrapped-mode page is never closed');
-    assert.ok(
-      closed < reset,
-      'a page that weaves is still open when the store is seeded, so it can add words to the ' +
-        'vocabulary list after the reset',
+    assert.notEqual(reset, -1, 'nothing resets the vocabulary — has the message been renamed?');
+    for (const page of taxedPages()) {
+      assert.notEqual(
+        page.closed,
+        -1,
+        `\`${page.name}\` loads a taxed page over HTTP and is never closed, so it goes on ` +
+          'recording exposures for the whole run',
+      );
+      assert.ok(
+        page.closed < reset,
+        `\`${page.name}\` is still open when reset-vocabulary runs, so the words it reads land ` +
+          'in the vocabulary list after the reset and the seeded plan is not the whole store',
+      );
+    }
+  });
+
+  test('the derivation sees every HTTP navigation in the spec', () => {
+    // Non-vacuity, and the failure the loop above invites: if
+    // `context.newPage()` is ever renamed or wrapped in a helper, the
+    // derivation matches nothing and the loop passes over an empty list.
+    // Counting the navigations independently is what makes that loud.
+    const navigated = [...spec.matchAll(/await (\w+)\.goto\(`\$\{origin\}/g)].map((m) => m[1]!);
+    assert.ok(navigated.length > 0, 'no page in the spec navigates to the local server any more');
+    assert.deepEqual(
+      [...new Set(navigated)].sort(),
+      taxedPages()
+        .map((p) => p.name)
+        .sort(),
+      'a page navigates to the local server but the newPage() derivation did not find it, so ' +
+        'the close-before-reset guard above is silently skipping it',
     );
   });
 
