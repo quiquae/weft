@@ -306,6 +306,20 @@ count is how a broken pattern announces itself as broken** rather than as an
 empty world, which is the same argument this file already makes for
 non-vacuity floors.
 
+**And a third, which is this session's own defect class landing on this
+session's own guard.** `MAX_BLANK` in the new test was 60, with a comment
+claiming it sat "three times above the widest legitimate gap", measured at
+10 to 21 rows. True of the **old** 1180×700 sheet and false of the one
+replacing it: the new layout's widest real gap is **42** rows, between the
+first grid row's caption and the second row's artwork. So a number
+describing a sheet that no longer existed had been written into the file
+whose entire purpose is to stop that — on its first pass. Now 90, with both
+bounds measured and stated: 48 clear of the widest real gap, 44 clear of the
+134-row hole, which keeps it a regression test against the sheet that
+actually shipped rather than only a hypothetical future one. Found by
+measuring the generated sheet's gaps instead of trusting a comment written
+against its predecessor.
+
 **Three process notes, each of which nearly produced a false result.** A
 `sed` probe mangled a regex literal and the whole test file failed to parse —
 and `pass 0 / fail 1` reads at a glance exactly like the guard firing. It was

@@ -1769,6 +1769,16 @@ generators" rather than "the pattern is broken". Both regexes now exclude
 newlines and the spec one is lazy. **A floor that prints a count is how a
 broken pattern announces itself as broken** rather than as an empty world.
 
+**And the same class landed on this session's own guard, which is worth
+knowing before editing the threshold.** `MAX_BLANK` was first written as 60
+with a comment saying the sheet's real gaps measured 10 to 21 rows — true of
+the **old** layout, false of the new one, whose widest legitimate gap is
+**42** rows. It is now 90, and the honest window is (42, 134): above the
+widest real gap, below the historical hole, so the test still fires on
+`3ef9d63:docs/firstrun/icons.png`. **Re-measure both bounds if the layout
+changes**, rather than trusting the comment; that is precisely the number
+that went quietly wrong here.
+
 **Process notes, both of which nearly produced a false result.** A `sed` probe
 that mangled a regex literal made the whole test file fail to parse, and
 `pass 0 / fail 1` reads at a glance exactly like the guard firing — it was a

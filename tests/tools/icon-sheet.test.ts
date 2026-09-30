@@ -190,13 +190,25 @@ function blankRuns(rows: number[]): [number, number, number][] {
 
 describe('the icon comparison sheet', () => {
   /*
-   * 60 rows. The sheet's real gaps — the margin above the first label and
-   * the rules between the three toolbar bands — measured 10 to 21 rows, so
-   * the threshold sits three times above the widest legitimate gap and far
-   * below the 134-row hole that prompted this file. A section that rendered
-   * nothing cannot be narrower than the artwork it was supposed to hold.
+   * 90 rows, and both bounds are measured rather than picked.
+   *
+   * The widest *legitimate* gap in the sheet is **42** rows — between the
+   * first grid row's caption and the second row's artwork, which is `GAP`
+   * plus the caption's own leading. The hole that prompted this file was
+   * **134** rows. So the honest window is (42, 134) and 90 sits near its
+   * middle: 48 clear of the widest real gap, 44 clear of the defect, which
+   * keeps this a regression test against the sheet that actually shipped.
+   *
+   * Re-measure both if the layout changes. A gap of 42 was 10 to 21 in the
+   * old 1180×700 sheet, so this is exactly the kind of number that goes
+   * quietly wrong when the thing it describes is redrawn — which is what it
+   * did here, on the first pass of this very file.
+   *
+   * There is far more room than the window suggests, for what it is worth:
+   * in the current layout the smallest thing that could render as nothing is
+   * one 384px cell.
    */
-  const MAX_BLANK = 60;
+  const MAX_BLANK = 90;
 
   test('no band of the sheet is blank enough to be a section that rendered nothing', () => {
     const sheet = decode(SHEET);
