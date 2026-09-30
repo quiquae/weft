@@ -267,12 +267,85 @@ export function artefactsFor(version: string): Artefact[] {
     },
     {
       name: 'first-run walkthrough shots',
-      // The numbered captures only. `icons.png` beside them is a magnified
-      // icon comparison sheet drawn by hand, generated from nothing and so
-      // never stale — the same line the store group draws for its tiles.
+      // The numbered captures only, because these come from the e2e spec and
+      // `icons.png` beside them comes from a tool — different inputs and a
+      // different command, so they cannot share a group.
+      //
+      // This comment used to say `icons.png` was "drawn by hand, generated
+      // from nothing and so never stale". That was true when written and it
+      // was also the sentence that let the file rot: its lower half sat
+      // blank for eight days behind a label promising a magnified
+      // comparison, and every check in the repository was structurally
+      // unable to see it. It has a generator now, one group down.
       paths: ['docs/firstrun/0*.png'],
       inputs: ['src', 'tests/e2e/firstrun.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_FIRSTRUN=1 npx playwright test firstrun',
+    },
+    {
+      name: 'icon comparison sheet',
+      // `inputs` is the four rasters and the tool, and nothing else.
+      //
+      // Not `assets`, which would sweep in `icon.svg`: the sheet
+      // deliberately does not use it — the SVG carries four warp threads at
+      // every size where the 16px raster carries two — so a change to it
+      // cannot invalidate the sheet, and declaring it would report a
+      // staleness that is not one. Same argument the tiles group makes for
+      // refusing to declare `src`.
+      //
+      // Not `tools/make-icons.mjs` either, one level further back: it
+      // reaches the sheet only through the rasters, which are themselves an
+      // artefact group below, so an edit nobody rebuilt is reported there
+      // rather than twice.
+      paths: ['docs/firstrun/icons.png'],
+      inputs: ['assets/icon-*.png', 'tools/make-icon-sheet.mjs'],
+      regenerate: 'npm run icons:sheet',
+    },
+    {
+      name: 'shipped extension icons',
+      // The toolbar icon and its siblings, which were in no group at all
+      // until the sheet above needed to declare them as an input.
+      //
+      // They were invisible for a precise reason worth keeping: the guard
+      // in `tests/tools/artefacts.test.ts` that finds a generator whose
+      // output sits outside every pathspec derived generators from tools
+      // declaring an `OUT` inside `docs/` — and `make-icons.mjs` writes
+      // into `assets/`. So the check built to catch exactly this class had
+      // the class's own blind spot compiled into its predicate. That
+      // predicate is now any `OUT`, wherever it points.
+      //
+      // Unlike every other group here, these are reproducible byte for byte
+      // — a pure Node PNG encoder, no browser, no fonts, no clock — so CI
+      // could rebuild and diff them the way it does the lexicon packs,
+      // which is the stronger check. That is `Next` in `TODO.md`; this is
+      // the weaker check that exists today.
+      //
+      // `site/icon.svg` is in here rather than with the site because it is
+      // the same string from the same generator: it was a hand-made copy of
+      // `assets/icon.svg`, byte-identical when found, and `make-icons.mjs`
+      // now writes both.
+      paths: ['assets/icon-*.png', 'assets/icon.svg', 'site/icon.svg'],
+      inputs: ['tools/make-icons.mjs'],
+      regenerate: 'npm run icons',
+    },
+    {
+      name: 'social card',
+      // The Open Graph card, which is what a link to weft.study renders as
+      // in every chat window and timeline that unfurls it — so it is read
+      // by more people than any screenshot here, and it was in no group.
+      //
+      // It was invisible for a second reason on top of the `docs/` one:
+      // `tools/make-og.mjs` declares no `const OUT` at all, it writes
+      // `join(ROOT, 'site/og.png')` inline. So the derivation could not
+      // have found it however the directory predicate was written, which is
+      // why the guard beside this file now enumerates committed images from
+      // git rather than trying to recognise a generator.
+      //
+      // Measured byte-stable across three runs on 2026-09-28, and the
+      // reason is structural: the card has no `new Date()` in it. So this
+      // group can always be cleared by regenerating.
+      paths: ['site/og.png'],
+      inputs: ['tools/make-og.mjs'],
+      regenerate: 'npm run og',
     },
     {
       name: 'store promo tiles',

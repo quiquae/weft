@@ -29,6 +29,8 @@
     "site": "node tools/build-site.mjs",
     "og": "node tools/make-og.mjs",
     "tiles": "node tools/make-store-tiles.mjs",
+    "icons": "node tools/make-icons.mjs",
+    "icons:sheet": "node tools/make-icon-sheet.mjs",
     "licence": "node tools/make-licence.mjs",
     "site:check": "node tools/check-links.mjs",
     "artefacts:check": "node tools/check-artefacts.mjs",
