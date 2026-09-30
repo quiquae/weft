@@ -57,13 +57,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **73 pass**, 21 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **78 pass**, 22 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 711 pages, 16 087 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 713 pages, 16 129 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 (latest) **1 stale, 3 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -174,7 +174,7 @@ package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
-builds and link-checks all 709 pages on every push but the deploy job is
+builds and link-checks all 713 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
@@ -192,6 +192,166 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-30 — the gate's doc comment named the bug it could not see, and a collision is not a 404
+
+The queue asked for the three gates `test:all` leaves out to be re-measured
+and the real numbers written into `TODO.md`'s state line, with an explicit
+instruction: regenerate nothing unless a measurement says it is wrong. It
+also said `Now` and `Next` were both empty. **`Next` had one item**, queued
+by PR #35, which is `HEAD` — so the premise was one commit stale rather than
+wrong, and both pieces of work got done.
+
+**All three gates confirm the recorded numbers, and one of them exits 1 on a
+correct tree.** `packs:verify` 0 errors / 4 warnings. `site:check` needs
+`npm run site` first, which nothing said — it reads `dist/site` and does not
+build it. `artefacts:check` **exits 1**, and that is its normal state: the
+release-notes group declares `inputs: ['.']`, so every commit stales it until
+B2a. Nothing in the repository recorded that a healthy tree returns non-zero
+from it, which would stop any `&&` chain dead. Written into `TODO.md` as a
+table with the exit status beside each result.
+
+**Then `site:check` turned out to be wrong in the one way it cannot report,
+and the file's own doc comment had named the failure four weeks ago.**
+`check-links.mjs` opens: "a slug is derived from a word with diacritics
+stripped. **One collision** or one stale reference and a reader hits a 404."
+The threat model was right and the check built from it was the wrong check,
+because **a collision does not produce a 404 — it produces the opposite.**
+The second page written overwrites the first and is a perfectly valid file,
+so every link to either still resolves. Hence 16 087 links all resolving
+while two Latin words had no page at all.
+
+**What found it was arithmetic, not link-following.** The builder declared
+**713** sitemap URLs and left **711** HTML files on disk. Latin is where it
+bites, because vowel length is the entire distinction between two words and
+a macron is exactly what gets stripped: `ōs` (mouth → *oral*) and `os` (bone
+→ *ossify*) both became `/latin/os`; `liber` (book → *library*) and `līber`
+(free → *liberty*) both became `/latin/liber`. **The lexicon knew** — the
+note on `os` reads "distinct from “ōs”, mouth, only by vowel length", which
+is the seed author telling a future reader about precisely this pair.
+
+**The consequence was worse than the 404 the gate was built to prevent.**
+Both hub pages printed two rows, one labelled `os` and one `ōs`, linking to
+one URL — so a reader clicking "ōs — mouth" read *"This is the Latin word
+your English **ossify** was borrowed from"*. A false etymology on published
+copy, which is the exact defect class PR #17 existed to remove from 312
+pages. And it was invisible to everything: `git status` clean, `artefacts:check`
+`ok`, `site:check` green, and `sitemap.test.ts`'s own `lastmods()` returns a
+**`Map` keyed by URL**, so it silently deduplicated the two and its floor is
+`dates.size > 700`.
+
+**The fix moved where the slug is decided.** `slugify(word)` is handed one
+word, so it cannot see a collision however carefully written — uniqueness is
+a property of the *set*, and the set exists only in `main()`. `assignSlugs()`
+runs once per language over the completed entry list, writes `e.slug`, and
+the six call sites read it; `slugify` now has one caller. **Every member of a
+collision takes a suffix and none keeps the bare slug** — `os-mouth`,
+`os-bone`, `liber-book`, `liber-free` — because whichever kept the bare slug
+would be chosen by pack order, which is `buildDiscoveries` before `06cd2e9`
+and the vocabulary list before `sortVocabulary`, the same defect a third
+time; and because a bare `/latin/os` claims to be the only `os`.
+
+Two recorded decisions were checked rather than assumed. `TODO.md` says
+"**The URL slugs stay ASCII, and must**" and warns that changing an address
+after **B3** strands indexed URLs: `os-mouth` is ASCII, and B3 has not
+happened, so this is the moment the change is free. `git grep` found no
+hardcoded reference to either old URL before anything moved. Verified by
+rendering and reading all four pages, not by the test going green:
+`/latin/os-bone` now carries its disambiguating note on the page it was
+written for rather than on the page that *was* the `ōs` page.
+
+**`check-links.mjs` was deliberately not widened**, on a decision already in
+this file: a gate whose failure means two different things gets ignored, the
+argument that kept the sitemap-date check out of it. The guard went into
+`tests/tools/build-site.test.ts`, which CI runs on the same push, and which
+already renders every page into `mktemp -d`. `check-links.mjs` also has no
+test harness, so widening it would have been untested production code.
+
+**The second half of the session was `TODO.md`'s one open item, and three of
+its four assets were not hand-made.** `tools/make-store-tiles.mjs` renders
+all three promotional tiles from HTML exactly as `make-og.mjs` renders the
+social card. The item said "there is no spec to re-run" and that
+"`artefacts:check` can never answer this"; the answer took forty seconds. All
+three came back **byte-identical** to what was committed, mtimes moved so the
+run is known to have written. Read anyway, because byte-equality proves
+reproducibility and not correctness: neither tile states a density number at
+all — the class that killed `landing.png` — and all four marquee word pairs
+are in the packs with exactly those forms.
+
+**Why nobody found the generator is the fifth sighting of one shape in five
+sessions.** `tools/artefacts.ts` asserted it as fact — "the three tiles and
+the logo beside them are drawn by hand and are not generated from anything" —
+and the test beside it repeated the claim. The pathspec guard asks **one
+direction**: every file *inside* a pathspec must be written by a generator,
+which is how `07-help.png` and `landing.png` were caught. The converse —
+output sitting *outside* every pathspec, and so in no group to be reported on
+— it cannot ask. Worse, its generator list was a hand-typed table of three
+**specs**, and the fifth generator is not a spec; PR #33 generalised that
+table from one spec to all specs and stopped at the directory. The new guard
+derives generators from anything under `tools/` or `tests/e2e/` declaring an
+`OUT` inside `docs/`, so a sixth needs no edit. `ls tools/*.mjs` against
+`package.json` found **three** unlisted tools in one command.
+
+**And the sharpest version of it: `docs/STORE-LISTING.md:205` had documented
+the generator the whole time** — "`node tools/make-store-tiles.mjs` writes,
+into `docs/store/`" — in the document `docs/SUBMIT.md` sends a human to for
+the listing copy. So the repository disagreed with itself and the guard
+believed the wrong half. The check that settles this class is
+`git grep <tool-name>` before writing "generated from nothing" about
+anything, and it costs one command. Same shape as the 2026-09-28 finding that
+two places already spelled `īnsula` correctly while four did not: this
+project's stale claims are usually contradicted *somewhere inside it*.
+
+Done test-first throughout. Red first on `[ 'ōs', 'liber' ]` and on
+`2 pages are advertised under more than one URL` before the builder was
+touched, and on `tools/make-store-tiles.mjs writes tile-small-440x280.png,
+which sits outside every artefact pathspec` before the group existed. The
+Old English half of the headword guard **passes** while Latin fails, which is
+what shows it discriminates rather than just failing. Two floors on the new
+guard, and the one that matters was proved by breaking the tool derivation:
+it fires with `only 3 generators were derived`, which is the exact regression
+that would restore the blind spot. Probed by copying a backup back and
+checking md5, not by asking git.
+
+**One thing found by opening a file and deliberately not fixed.**
+`docs/firstrun/icons.png` is the one asset of the four that really is
+hand-made — confirmed by derivation, `make-icons.mjs` writes `assets/icon-*.png`
+and nothing writes the sheet — and its lower half is broken. It labels a
+section "Magnified 8× (nearest neighbour)" and then, measured by counting
+non-background pixels per row, **rows y 530–663 are entirely blank**: 134
+consecutive rows, 19% of the image, with the only ink below them a fragment
+running off the bottom edge at y=699. Same class as the clipped listing shots
+PRs #32 and #33 fixed, and not fixable the same way, because no generator
+writes it. Queued with three shapes and no preference: redraw, write a
+generator, or delete. Not deleted — that would be the second unrequested
+deletion in two sessions, the file is referenced by nothing but its top half
+is correct, and somebody updated it deliberately eight days ago.
+
+Counts moved 734 → **739** and tools 73 → **78** / 21 → **22 suites** in six
+documents, with `docs/LAUNCH.md:221` swept **by name and first** for the
+thirteenth session running. Site counts moved too and that is a class the
+test sweep walks past: **711 → 713 pages and 16 087 → 16 129 links**, live in
+`CLAUDE.md`'s command table, `docs/SUBMIT.md` and the state line — and
+`CLAUDE.md:177` was found **two sessions stale at 709**. Unit, jsdom and e2e
+did not move, and `src/` was not touched at all, so sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **78 tools / 22
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged, and it has to
+be — nothing here touches shipped code), **36 e2e passed and 3 skipped**,
+then build and validate again. Separately, and this time they are the point
+rather than an afterthought: `packs:verify` **0 errors / 4 warnings** exit 0,
+`site:check` **713 pages / 16 129 links** exit 0, `artefacts:check` **5
+groups, 1 stale** exit 1 — the release notes, B2a. The tile generator was run
+once and its three outputs hashed against the committed bytes before anything
+was believed. Zero iCloud conflict copies in `dist/`, `src/` or
+`test-results/`, the xattr working for the ninth session running.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` is **empty** and `Next` holds exactly one
+item, the broken half of `docs/firstrun/icons.png` above.
 
 ### 2026-09-30 — the item named one stale shot among five orphans; three of them were stale
 

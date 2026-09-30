@@ -136,6 +136,8 @@ function descentSentence(meta, etymonOf, note) {
  * Strips diacritics and the historical letterforms so that URLs stay ASCII
  * and typeable, while the page itself shows the word properly spelled. A URL
  * containing þ and a macron is a URL nobody can share by voice.
+ *
+ * Not unique on its own, and it cannot be: see `assignSlugs()` below.
  */
 function slugify(word) {
   return word
@@ -150,6 +152,39 @@ function slugify(word) {
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+/**
+ * Give every entry in one language a slug no other entry in it shares.
+ *
+ * `slugify()` is handed one word, so it cannot see a collision however
+ * carefully it is written — uniqueness is a property of the whole set, and
+ * the set is only known here. Stripping a macron is exactly what collides
+ * in Latin, where vowel length is the entire distinction between two words:
+ * `ōs` (mouth) and `os` (bone) both reduce to `os`, as do `liber` (book) and
+ * `līber` (free). The second page written then silently overwrote the first,
+ * and because the survivor is a valid file every link to either still
+ * resolved — so `npm run site:check` passed while two words had no page.
+ *
+ * Where a base slug is shared, *every* member takes the English word it
+ * glosses as a suffix — `os-mouth` and `os-bone` — rather than one keeping
+ * the bare slug. Two reasons: whichever kept it would be decided by pack
+ * order, which is the unstable-ordering defect this project has already
+ * fixed twice; and a bare `/latin/os` is a claim to be the only `os`, which
+ * is the thing that is not true.
+ */
+function assignSlugs(entries) {
+  const shared = new Map();
+  for (const e of entries) {
+    const base = slugify(e.tgtLemma);
+    if (!shared.has(base)) shared.set(base, []);
+    shared.get(base).push(e);
+  }
+  for (const [base, group] of shared) {
+    for (const e of group) {
+      e.slug = group.length === 1 ? base : `${base}-${slugify(e.lemma)}`;
+    }
+  }
 }
 
 function page({ title, description, canonical, jsonLd, body, breadcrumbs }) {
@@ -238,7 +273,7 @@ function wordPage(entry, lang, index) {
   const target = entry.tgt;
   const english = entry.lemma;
   const pos = POS_LABEL[entry.pos] ?? entry.pos;
-  const slug = slugify(entry.tgtLemma);
+  const slug = entry.slug;
   const url = `${SITE}/${meta.slug}/${slug}`;
 
   const bits = [];
@@ -343,7 +378,7 @@ function wordPage(entry, lang, index) {
       <h2>The same idea in ${esc(META[other].name)}</h2>
       <p>
         ${esc(META[other].name)} says
-        <a href="/${META[other].slug}/${slugify(counterpart.tgtLemma)}" lang="${other}">${esc(counterpart.tgt)}</a>
+        <a href="/${META[other].slug}/${counterpart.slug}" lang="${other}">${esc(counterpart.tgt)}</a>
         for “${esc(english)}”.
       </p>
     </section>`
@@ -358,7 +393,7 @@ function wordPage(entry, lang, index) {
         ${related
           .map(
             (e) =>
-              `<li><a href="/${meta.slug}/${slugify(e.tgtLemma)}" lang="${lang}">${esc(e.tgt)}</a> <span>${esc(e.lemma)}</span></li>`,
+              `<li><a href="/${meta.slug}/${e.slug}" lang="${lang}">${esc(e.tgt)}</a> <span>${esc(e.lemma)}</span></li>`,
           )
           .join('\n        ')}
       </ul>
@@ -412,7 +447,7 @@ function languageIndex(lang, entries) {
           .sort((a, b) => a.lemma.localeCompare(b.lemma))
           .map(
             (e) =>
-              `<li><a href="/${meta.slug}/${slugify(e.tgtLemma)}" lang="${lang}">${esc(e.tgt)}</a> <span>${esc(e.lemma)}</span></li>`,
+              `<li><a href="/${meta.slug}/${e.slug}" lang="${lang}">${esc(e.tgt)}</a> <span>${esc(e.lemma)}</span></li>`,
           )
           .join('\n        ')}
       </ul>
@@ -440,7 +475,7 @@ function languageIndex(lang, entries) {
         hasDefinedTerm: entries.slice(0, 50).map((e) => ({
           '@type': 'DefinedTerm',
           name: e.tgt,
-          url: `${SITE}/${meta.slug}/${slugify(e.tgtLemma)}`,
+          url: `${SITE}/${meta.slug}/${e.slug}`,
         })),
       },
       breadcrumbs: [{ href: '/', label: 'Weft' }, { label: meta.name }],
@@ -500,7 +535,7 @@ function descentHub(lang, entries) {
   const rows = withEtymon
     .map(
       (e) => `        <tr>
-          <td><a href="/${meta.slug}/${slugify(e.tgtLemma)}" lang="${lang}">${esc(e.tgt)}</a></td>
+          <td><a href="/${meta.slug}/${e.slug}" lang="${lang}">${esc(e.tgt)}</a></td>
           <td class="arrow" aria-hidden="true">→</td>
           <td>${esc(e.etymonOf)}</td>
           <td class="worddata__note">${esc(e.note ?? '')}</td>
@@ -1191,6 +1226,7 @@ async function main() {
       }
     }
     byLang[lang] = [...seen.values()];
+    assignSlugs(byLang[lang]);
     byLangByLemma[lang] = new Map(byLang[lang].map((e) => [e.lemma, e]));
   }
 

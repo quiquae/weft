@@ -25,7 +25,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { checkArtefacts, formatReport, artefactsFor, artefactManifestPath } from '../../tools/artefacts.ts';
@@ -361,14 +361,14 @@ describe("the real artefact list points at things that are actually there", () =
     }
   });
 
-  test('the store pathspec takes the fifteen captures and not the hand-drawn tiles', () => {
+  test('the store pathspec takes the fifteen captures and not the tiles', () => {
     const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('store listing'));
     assert.ok(shots);
     const matched = captures(shots);
-    // The tiles and the Edge logo sit in the same directory and are drawn by
-    // hand, so they are generated from nothing and can never be stale. A
-    // pathspec that swept them in would report the whole group stale for a
-    // reason no regeneration could fix.
+    // The tiles and the Edge logo sit in the same directory but have their
+    // own generator and their own group: a tool that renders HTML, owing
+    // nothing to `src/`. Sweeping them in here would report them stale on
+    // every commit that touches shipped code and cannot reach them.
     assert.equal(matched.length, 15, `matched:\n${matched.join('\n')}`);
     for (const file of matched) assert.match(file, /-0\d-/);
   });
@@ -379,9 +379,10 @@ describe("the real artefact list points at things that are actually there", () =
     const matched = captures(shots);
     // `icons.png` is a magnified icon comparison sheet drawn by hand, and it
     // sits in this directory because that is where the first-run material
-    // was collected, not because any generator writes it. The store group
-    // above already draws exactly this line for the tiles beside it; this
-    // group was declared as the whole directory and so swept the sheet in.
+    // was collected, not because any generator writes it. Unlike the tiles
+    // beside the store captures — which turned out to have a generator all
+    // along — this one really is hand-made: `tools/make-icons.mjs` writes
+    // `assets/icon-*.png`, the shipped icons, and nothing writes the sheet.
     assert.ok(matched.length > 0, 'the first-run pathspec matches nothing');
     for (const file of matched) {
       assert.match(file, /docs\/firstrun\/\d\d-[a-z-]+\.png$/, `${file} is not a generated shot`);
@@ -456,6 +457,70 @@ describe("the real artefact list points at things that are actually there", () =
       }
     });
   }
+
+  /**
+   * The converse direction, which is the one that finds a whole generator.
+   *
+   * The three tests above ask "is every file *in* a pathspec written by a
+   * generator", and that is how `07-help.png` and `landing.png` were found.
+   * It cannot find the opposite failure: a generator whose output sits
+   * *outside* every pathspec, which is silent in a worse way — nothing
+   * reports the group stale, because the files are in no group at all.
+   *
+   * That is what happened to `tools/make-store-tiles.mjs`. It renders the
+   * three promotional tiles the same way `tools/make-og.mjs` renders the
+   * social card, and the store group's own comment asserted the opposite in
+   * as many words: "the three tiles and the logo beside them are drawn by
+   * hand and are not generated from anything." So nobody checked them for
+   * two weeks on the grounds that checking was impossible, and the check
+   * takes forty seconds.
+   *
+   * The generator list is derived twice over rather than typed, because the
+   * previous version of it was a three-row table of *specs* — and the fifth
+   * generator is not a spec. Any file under `tools/` or `tests/e2e/` that
+   * declares an `OUT` inside `docs/` is a generator here, so a sixth needs
+   * no edit to this file.
+   */
+  test('every image a generator writes is inside an artefact pathspec', () => {
+    const declared = new Set(
+      artefactsFor('1.0.1').flatMap((a) => captures(a).map((f) => f.slice(f.lastIndexOf('/') + 1))),
+    );
+    const generators: { by: string; names: Set<string> }[] = [];
+    for (const file of readdirSync(join(ROOT, 'tests/e2e'))) {
+      if (!file.endsWith('.spec.ts')) continue;
+      const src = readFileSync(join(ROOT, 'tests/e2e', file), 'utf8');
+      if (!/const OUT = .*'\.\.\/\.\.\/docs\//.test(src)) continue;
+      generators.push({
+        by: `tests/e2e/${file}`,
+        names: new Set([...literalShots(src), ...composedShots(src)]),
+      });
+    }
+    for (const file of readdirSync(join(ROOT, 'tools'))) {
+      if (!file.endsWith('.mjs')) continue;
+      const src = readFileSync(join(ROOT, 'tools', file), 'utf8');
+      if (!/const OUT = join\(ROOT, 'docs\//.test(src)) continue;
+      generators.push({ by: `tools/${file}`, names: literalShots(src) });
+    }
+
+    // Two floors rather than one. The first catches the derivation silently
+    // matching nothing; the second catches it matching only the specs again,
+    // which is the exact regression that would restore the blind spot.
+    assert.ok(generators.length >= 4, `only ${generators.length} generators were derived`);
+    assert.ok(
+      generators.some((g) => g.by.startsWith('tools/')),
+      'no generator outside tests/e2e was derived, so this is a test of the specs again',
+    );
+    for (const { by, names } of generators) {
+      assert.ok(names.size > 0, `${by} declares an OUT under docs/ but names no image`);
+      for (const name of names) {
+        assert.ok(
+          declared.has(name),
+          `${by} writes ${name}, which sits outside every artefact pathspec — ` +
+            'so nothing can ever report it stale',
+        );
+      }
+    }
+  });
 
   test('the release notes are named after the version they belong to', () => {
     const notes = artefactsFor('9.9.9').find((a) => a.paths.some((p) => p.startsWith('RELEASE-')));

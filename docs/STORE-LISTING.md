@@ -204,12 +204,18 @@ listing text states the default is gentler, so nothing is overstated.
 
 ### Promo tiles
 
-`node tools/make-store-tiles.mjs` writes, into `docs/store/`:
+`npm run tiles` (`tools/make-store-tiles.mjs`) writes, into `docs/store/`:
 
 - `tile-small-440x280.png` — Chrome small tile, **required**
 - `tile-marquee-1400x560.png` — Chrome marquee; optional, but an extension
   cannot be featured without one
 - `logo-edge-300x300.png` — Edge store logo, **required** there
+
+These are an artefact group — `store promo tiles` — so `npm run
+artefacts:check` reports them stale if the generator moves after they were
+last written. It did not report them at all until 2026-09-30, because
+`tools/artefacts.ts` claimed they were drawn by hand while this page said
+otherwise three lines up. All three reproduce byte-identically.
 
 ## Support and privacy policy URLs
 

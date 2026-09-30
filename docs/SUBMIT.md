@@ -9,7 +9,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 527 unit tests, 98 jsdom tests, 73 tool tests, the
+runs typecheck, 527 unit tests, 98 jsdom tests, 78 tool tests, the
 compatibility audit, all three builds, the package validator, and 36 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -68,7 +68,7 @@ These block each other, so the order matters.
    button to. `npm run site:check` fails if either page is missing.
 
    This means putting the site up, which is deliberately **not** automatic.
-   The `Site` workflow builds and link-checks all 711 pages on every push,
+   The `Site` workflow builds and link-checks all 713 pages on every push,
    but only deploys when told:
 
    ```bash
