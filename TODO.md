@@ -6,7 +6,7 @@
 
 **State on 2026-09-30:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **83** tool tests / 23 suites, **36** e2e passing
+suites, **94** tool tests / 25 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`.
 `npm run test:all` exits 0 end to end.
@@ -202,13 +202,24 @@ the four real groups were genuinely stale at the moment this landed and the
 tool cannot tell an honest stamp from a fabricated one. See `Next` and the
 note at the top of Notes.
 
-**So the whole of B0 is closed and `Now` is empty. This paragraph used to say
-`Next` was empty too — it was not, by two sessions' worth of findings this
-text had not caught up to, which is now down to one.** The code is not what
-is holding the release up, and neither is the version any more. **Every
-remaining item besides that one needs Creagh.** The critical path is
-**B1 — the domain `weft.study` is not registered**, and nothing below it can
-move until it is.
+**And as of 2026-09-30 an edit to the French etymology file cannot fail to
+reach the pack in silence.** `merge-cousins.mjs` printed the same line and
+exited 0 whether a corrected claim had landed or not, and a deleted claim
+kept shipping; the merge now names every field that is not what
+`fr-cousins.tsv` says, and a test fails if the committed lexicon is not a
+fixed point of it. **Reading that file whole to guard it found eighteen of
+its 116 claims false** — eleven "English borrowed X from Y" descents where
+the English word came from a different French word or was never French,
+and seven cousin notes naming the wrong Latin root. That is the first item
+in `Next`, with every row's source.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds two
+agent-shaped items, and the first — the false French etymologies — is
+shipped copy that should land before B2 pushes the tag.** The code is not
+otherwise what is holding the release up, and neither is the version any
+more. **Every remaining item besides those two needs Creagh.** The critical
+path is **B1 — the domain `weft.study` is not registered**, and nothing
+below it can move until it is.
 
 ## Now
 
@@ -1438,42 +1449,147 @@ move until it is.
       exception list.
 
 
-- [ ] **`tools/seed/lex-fr.tsv` is partly generated and nothing says so.**
-      Found 2026-09-30 while checking a claim in this session's own draft
-      journal entry, which said `merge-cousins.mjs` "writes no committed
-      artefact". It writes `tools/seed/lex-fr.tsv` from
-      `tools/seed/fr-cousins.tsv`, and **both are tracked.**
+- [x] **`tools/seed/lex-fr.tsv` is partly generated and nothing said so.**
+      Found 2026-09-30 while checking a claim in a draft journal entry;
+      done the same day. `merge-cousins.mjs` writes the `etymon` and `note`
+      columns of `lex-fr.tsv` from `fr-cousins.tsv`, and both are tracked.
+      Measured before anything moved: all **118** values in those two
+      columns came from the 116 claims (`love` and `work` each have a noun
+      row and a verb row), **none** was written by hand, and the two files
+      agreed exactly. So nothing was wrong *yet* — the defect was that the
+      tool could not have told anyone if it had been.
 
-      The gap is real and the tool's own doc comment describes it: it
-      refuses to overwrite an existing value, so editing `fr-cousins.tsv` to
-      *correct* an etymology and re-running "does nothing at all, silently,
-      and the correction appears to have been applied" unless `--force` is
-      passed. So the failure mode is a checked claim that never landed, in
-      the file whose whole purpose is that etymology review does not have to
-      read 356 rows of vocabulary.
+      **It had three silent failures, not the one the item named**, each an
+      edit to the review file that never reaches the pack. Run against temp
+      copies with node's own exit status captured:
 
-      Not covered by anything today. The new `every committed image is
-      inside an artefact pathspec` guard correctly does not reach it — it is
-      a TSV. CI's `Committed packs match the seed lexicons` step rebuilds
-      the *packs from* the seeds, one layer downstream, so a stale
-      `lex-fr.tsv` passes it with everything green.
+      1. **A correction** printed `118 left alone (already had a value)` and
+         exited 0 — byte-identical to an untouched tree — and the old value
+         kept shipping. The item's case.
+      2. **A retraction** — deleting a claim — printed `117 left alone`,
+         exited 0, and the deleted etymology stayed in the pack. The merge
+         only ever wrote. This is the one that matters most right now: see
+         the item below, which needs eighteen corrections and retractions.
+      3. **A line that cannot ship as written** was skipped (a space for a
+         tab), never applied and never reported (a misspelt kind), or
+         silently replaced (a second claim for one word).
 
-      Two shapes, no strong preference:
+      Neither shape the item offered, and the reason is the cause: the tool
+      counted *in step* and *disagrees* together, so no exit code could
+      separate them — shape 2's `--dry` would have exited 0 on a correction
+      too. The merge is now a pure function, `tools/cousins.ts`, that sorts
+      every field into in step, added, disagree or unclaimed; the CLI names
+      every field in the last two with both values and exits 1, `--force`
+      settles them in `fr-cousins.tsv`'s favour and lists what it changed,
+      and `--dry` exits 1 on anything a merge would change. Only lines that
+      change are rewritten. `npm run cousins` is new, which closes the last
+      of the three unlisted tools.
 
-      1. **An artefact group**, `paths: ['tools/seed/lex-fr.tsv']`,
-         `inputs: ['tools/seed/fr-cousins.tsv', 'tools/merge-cousins.mjs']`,
-         `regenerate: 'node tools/merge-cousins.mjs --force'`. Cheap, and it
-         makes the dependency visible where the other eight are. Note it
-         would report stale on a gloss edit too, which is a legitimate
-         reason for `lex-fr.tsv` to move and has nothing to do with
-         cousins — so the group would be noisier than the rest.
-      2. **A CI step running `--dry`** and failing if it reports pending
-         merges. Narrower and quieter, and it answers content rather than
-         provenance. Needs `--dry` to exit non-zero on pending work, which
-         it may not do today; check before costing it.
+      Guarded in a new `tests/tools/cousins.test.ts`, 11 tests in 2 suites.
+      Nine pin the merge against hand-written fixtures and the CLI against
+      a copy of itself in a temp directory, so no run can reach the tracked
+      lexicon. Two check the **committed** lexicon is a fixed point of the
+      merge — the packs step's rebuild-and-compare one layer upstream, and
+      a content check rather than a provenance one, because this is text.
+      Red first against a no-op stub, and against the *old* CLI, which
+      failed with `a dry run called a lexicon that disagrees with its claims
+      in step`. Six probes each shown to fire, restored by md5: the old
+      counting (3 tests red, the right 3), rewriting unchanged lines (7), a
+      real correction to `die` (names `lex-fr.tsv:279`), a real retraction,
+      a space for a tab (names `fr-cousins.tsv:164`), and exit code 0
+      forced.
 
-      Shape 2 looks better for the noise reason, but it wants the `--dry`
-      exit code read first. Worth ~20 minutes either way.
+- [ ] **Eighteen of the 116 French etymology claims are false, and the
+      discoveries feed states them as fact.** Found 2026-09-30 by reading
+      `fr-cousins.tsv` whole while guarding its merge (item above). **This
+      is shipped copy in the flagship language** — `src/core/discoveries.ts`
+      renders a French descent as "English borrowed *answer* from
+      *réponse*" — and it should land before **B2** pushes the tag.
+
+      The file's header says "Nothing here is a guess" and "a charming
+      etymology that turns out to be false costs more trust than a blank
+      field". The pattern behind most of them: claims are keyed by English
+      lemma, so a descent pairs an English word with its French
+      *translation* and asserts the translation is its ancestor. That holds
+      only when the translation happens to be the cognate.
+
+      **Descents that are false — 11 of 30.** Each English word came from a
+      different French word than the one Weft teaches. Checked against
+      etymonline 2026-09-30:
+
+      | Row | Claim | English actually came from |
+      |---|---|---|
+      | money | from `argent` | OF *monoie* (modern *monnaie*) |
+      | city | from `ville` | OF *cite* (modern *cité*) |
+      | country | from `pays` | OF *contree* |
+      | answer | from `réponse` | Old English *andswaru* — not French at all |
+      | gift | from `cadeau` | Old Norse *gift* — not French at all |
+      | face | from `visage` | OF *face*; English *visage* is from `visage` |
+      | carry | from `porter` | Anglo-French *carier*; English *porter* is from `porter` |
+      | close | from `fermer` | OF *clos-*, from *claudere*; *firm* is from `fermer`'s root |
+      | catch | from `attraper` | Old North French *cachier* |
+      | easy | from `facile` | OF *aisie*; English *facile* is from `facile` |
+      | soldier | from `soldat` | OF *soudier*; `soldat` came from Italian in the 16th c. |
+
+      **Cousin notes that are false — 7 of 86.** Checked against
+      Wiktionary's French entries and etymonline 2026-09-30:
+
+      | Row | Note says it shares a root with | French word is actually from |
+      |---|---|---|
+      | head (`tête`) | *chief*, *captain* (*caput*) | *testa*, "pot" — *test* is a true cousin |
+      | black (`noir`) | *nocturne* (*nox*) | *niger* — *denigrate* is a true cousin |
+      | heavy (`lourd`) | *pendant* (*pendere*) | *lūridus*, "sallow" — *lurid* |
+      | weak (`faible`) | *fragile* (*frangere*) | *flēbilis* — English *feeble* and *foible* **descend** from it |
+      | hear (`entendre`) | *audience* (*audire*) | *intendere* — *intend* |
+      | cry (`pleurer`) | *plaintive* (*plangere*) | *plōrāre* — *deplore*, *implore* |
+      | die (`mourir`) | *mourn* | *morī*; *mourn* is Germanic, and etymonline links it to "die" only as an alternative to *(s)mer-* "remember" — *moribund* is uncontested |
+
+      One more that is **false in the sense used**: tree (`arbre`) →
+      *arbour*. The bower sense of *arbour* is from *herba* via OF *erbier*
+      (etymonline); only the machine-part *arbor* is from *arbor*.
+      *Arboreal* is safe.
+
+      Not counted, but worth fixing in the same pass: several notes say "the
+      root of" where "shares a root with" is what is true — `chien` is not
+      the root of *canine*, `main` not of *manual*, `roi` not of *royal*,
+      `terre` not of *terrain*; and walk (`marcher`) → *marching* is a
+      descent written as a cousin. Borderline descents that are defensible
+      and should stay: war/`guerre` (Old North French *werre*), chair/
+      `chaise`, story/`histoire`, rich/`riche`, false/`faux`.
+
+      **How to land it**, with the tool from the item above:
+
+      1. Edit `tools/seed/fr-cousins.tsv`. For each row decide: correct it
+         to a true relative (the right-hand columns above are candidates,
+         to be checked again rather than trusted), move a descent to
+         `cousin` where the relation is real but not a borrowing, or delete
+         the line. Deleting is always safe; the file's header says so.
+      2. `npm run cousins -- --force` — without `--force` every correction
+         and deletion is left alone and named, which is the point. Read the
+         list it prints: it should be exactly the rows you edited.
+      3. `npm run packs`, then `npm test`.
+      4. `CHANGELOG.md`'s 1.0.1 paragraph "**French has etymologies.**" says
+         the descent/cousin split exists "rather than letting the feed state
+         falsehoods", and quotes 30 descents and 88 notes. Both need to
+         change with the data.
+      5. The public copy is already clear of them, checked 2026-09-30:
+         `git grep -w` for the nineteen French words, and for *plaintive*,
+         *nocturne*, *pendant*, *fragile*, *audience*, *mourn* and *arbour*,
+         across `site/index.html`, `docs/STORE-LISTING.md`,
+         `README.md`, `docs/LAUNCH.md`, `docs/PEDAGOGY.md` and
+         `CHANGELOG.md` finds none. The listing's scene 3,
+         `chrome-03-cousins.png`, hovers `pain` → *pantry* and *companion*,
+         which is true. Its hover list (`tests/e2e/store-assets.spec.ts`,
+         `withEtymology`) names none of the nineteen, but does include
+         `main`, `roi` and `chien` from the "the root of" wording list —
+         so rewording those can move the art only if a regeneration lands
+         the hover on one of them.
+
+      Only 19 of the 116 were checked against a source here — the eighteen
+      and `arbre`. The borderline five and the other 92 read as correct
+      from general knowledge, which is not the standard the file sets. A
+      full pass would open a source for every line. About an hour for the
+      nineteen, two for all 116.
 
 - [ ] **CI can rebuild the four shipped icons and diff them, which is a
       stronger check than the provenance group they just got.**
@@ -1511,13 +1627,14 @@ move until it is.
       it is not byte-reproducible cross-platform and must stay on
       provenance. Same for `site/og.png`.
 
-`Now` is **empty** and `Next` holds the **two** items above, as of
-2026-09-30. Both came out of the same session and both are agent-shaped.
+`Now` is **empty** and `Next` holds **two** unchecked items above, as of
+2026-09-30, both agent-shaped and neither waiting on B1: the eighteen false
+French etymologies, which is first because it is shipped copy and should
+land before B2 pushes the tag, and the CI diff of the shipped icons.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
-read the Blocked section and confirm B1 has not moved. The one item above is
-agent-shaped and does not wait on B1. Beyond it, the three gates `test:all`
+read the Blocked section and confirm B1 has not moved. Beyond the two items, the three gates `test:all`
 leaves out were all re-measured on 2026-09-30 and the numbers are in the
 state line at the top — so that particular piece of honest work is spent for
 now. It was not idle: `site:check` was the one that found the slug collision,
@@ -1743,6 +1860,35 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-30 — the guard proves two files agree; it cannot prove either is
+true.** The item was `merge-cousins.mjs`, which could not report a corrected
+claim, a deleted one, or a malformed line. That is fixed and guarded (see the
+ticked item in `Next`). Three things a later run would be sorry not to know:
+
+1. **When a report counts two outcomes as one, no exit code can separate
+   them.** The old tool's "left alone (already had a value)" held both "in
+   step" and "disagrees", so the `--dry` exit code the item proposed as
+   shape 2 would have exited 0 on a correction too. Fix the counting first;
+   the exit code falls out of it.
+
+2. **The fixed-point test passes on eighteen false etymologies**, because
+   `fr-cousins.tsv` and `lex-fr.tsv` agree on every one of them. A
+   consistency guard is necessary and says nothing about truth. What found
+   the falsehoods was reading the file whole against a source, which no
+   check in this repository does. Most of them share one cause worth knowing
+   before any other language gets a cousins file: claims are keyed by
+   **English** lemma, so a descent pairs an English word with its
+   *translation* and asserts the translation is its ancestor. Check each
+   descent against the English word's own etymology, not the French one's.
+
+3. **To test a CLI without a test-only flag, copy it.** The CLI test copies
+   `merge-cousins.mjs` and `cousins.ts` into a temp directory beside two
+   fixture files, so the tool's own `ROOT` resolves there and no run can
+   reach the tracked lexicon, even the red runs against the old tool,
+   which ignores flags. It needed no `--lex=` seam in shipped tooling. If
+   the tool ever imports a third module, the copy fails loudly with a
+   missing module rather than quietly.
 
 **2026-09-30 — the predicate was hand-drawn around the directory somebody
 remembered, and that is the sixth sighting in six sessions.** The item was

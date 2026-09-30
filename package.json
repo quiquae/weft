@@ -22,6 +22,7 @@
     "test:all": "npm run typecheck && npm run test && npm run compat && npm run build:all && npm run validate && npm run test:e2e && npm run build:all && npm run validate",
     "packs": "node tools/build-pack.mjs --all",
     "packs:verify": "node tools/verify-packs.mjs",
+    "cousins": "node tools/merge-cousins.mjs",
     "zip": "node build.mjs --target=chrome --zip && node build.mjs --target=firefox --zip && node build.mjs --target=safari --zip",
     "lint": "tsc --noEmit",
     "build:test": "node build.mjs --target=chrome --test",

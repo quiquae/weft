@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **83 pass**, 23 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **94 pass**, 25 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -69,7 +69,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
 store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
-`npm run site` / `npm run og` (content site, social card), `npm run safari`
+`npm run cousins` (fold `tools/seed/fr-cousins.tsv` into `lex-fr.tsv`;
+`-- --force` to land a corrected or deleted claim, `-- --dry` to check),
+`npm run site` / `npm run og` (content site, social card), `npm run tiles` /
+`npm run icons` / `npm run icons:sheet` (store tiles, shipped icons, the
+first-run icon comparison), `npm run safari`
 (wrap in an Xcode project — needs full Xcode, not the CLT),
 `npm run release -- --version=X.Y.Z` (bump, rebuild, package, write notes),
 `npm run verify:release` (download what GitHub actually serves and load it in
@@ -192,6 +196,129 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-30 — the merge could not say a claim had not landed, and the file it merged was wrong in eighteen places
+
+The queue sent this session at the five `docs/screens` captures with no
+generator. That is PR #34, `f0d78cd`: `git ls-files docs/screens` returns
+14, none of the five named files exists, and the pathspec guard derives its
+filenames for all three image groups. Settled in one command. So the work
+was `TODO.md`'s topmost unchecked item: **`tools/seed/lex-fr.tsv` is partly
+generated and nothing says so.**
+
+**Measured before anything moved, and nothing was wrong yet.** All 118
+values in `lex-fr.tsv`'s `etymon` and `note` columns came from the 116
+claims in `fr-cousins.tsv` — `love` and `work` each have a noun row and a
+verb row — none was written by hand, and the two files agreed exactly. The
+defect was that `merge-cousins.mjs` could not have said so if they had not.
+
+**It had three silent failures, and the item named one.** Run against temp
+copies with node's own exit status captured, not a pipe's (the first
+attempt reported grep's `0`, the trap this file already records):
+
+- **A correction** printed `0 etymons, 0 notes added / 118 left alone
+  (already had a value)` and exited 0, **byte-identical** to an untouched
+  tree, and the old value kept shipping.
+- **A retraction** printed `117 left alone` and exited 0, and the deleted
+  etymology stayed in the pack. The merge only ever wrote, so the file's own
+  rule — a false etymology "costs more trust than a blank field" — could not
+  be carried out through it.
+- **A line that cannot ship as written** — a space for a tab, a misspelt
+  kind, a second claim for one word — was skipped, never applied and never
+  reported, or silently replaced.
+
+**Neither shape the item offered, and the reason is the cause.** Shape 2
+was a CI step on `--dry`'s exit code — but the tool counted "in step" and
+"disagrees" into one number, so `--dry` would have exited 0 on a
+correction too. No exit code can separate two outcomes a report has already
+merged. So the merge is a pure function now, `tools/cousins.ts`, sorting
+every field into in step, added, disagree or unclaimed; the CLI names each
+field in the last two with both values and exits 1; `--force` settles them
+in `fr-cousins.tsv`'s favour and lists what it changed; `--dry` exits 1 on
+anything a merge would change. Only lines that change are rewritten, and it
+sets `process.exitCode` rather than calling `exit()`, which can cut off
+output still queued for a pipe. `npm run cousins` is new, closing the last
+of the three unlisted tools; `CLAUDE.md`'s "Also:" list also gained
+`tiles`, `icons` and `icons:sheet`, which the sessions that added them had
+put in `package.json` and not here.
+
+Done test-first: 11 tests in 2 suites in a new
+`tests/tools/cousins.test.ts`, red against a no-op stub (10 of 11, the
+eleventh being the unclaimed guard, which a stub cannot fail) and — the one
+that matters — against the **old** CLI, which failed with `a dry run called
+a lexicon that disagrees with its claims in step`. The CLI test copies the
+tool and its module into a temp directory beside fixture files, so its own
+`ROOT` resolves there: no test-only flag in shipped tooling, and even the
+red runs against the old tool, which ignores flags, could not reach the
+tracked lexicon. Two tests check the **committed** lexicon is a fixed point
+of the merge, which is the packs step's rebuild-and-compare one layer
+upstream, and a content check rather than a provenance one because this is
+text. Six probes, each shown to fire and each restored by md5: the old
+counting (3 red, the right 3); rewriting unchanged lines (7); a real
+correction to `die`, named as `lex-fr.tsv:279` with both values, refused
+without `--force` and landed with it; a real retraction; a space for a tab,
+named as `fr-cousins.tsv:164`; and the exit code forced to 0.
+
+**Then reading the file whole, to know what the guard was guarding, found
+that eighteen of its 116 claims are false.** Its header says "Nothing here
+is a guess". Eleven of the 30 descents, which `src/core/discoveries.ts`
+renders as "English borrowed *answer* from *réponse*": *answer* is Old
+English and *gift* Old Norse, and *money*, *city*, *country*, *face*,
+*carry*, *close*, *catch*, *easy* and *soldier* came from a different French
+word than the one Weft teaches (*monoie*, *cite*, *contree*, *face*,
+*carier*, *clos-*, *cachier*, *aisie*, *soudier*). Seven of the 86 cousin
+notes name the wrong Latin root: `tête` is *testa*, not *caput*; `noir` is
+*niger*, not *nox*; `lourd` is *lūridus*, not *pendere*; `faible` is
+*flēbilis*, not *frangere*, and English *feeble* descends from its Old
+French form; `entendre`
+is *intendere*, not *audire*; `pleurer` is *plōrāre*, not *plangere*; and
+`mourir` → *mourn* rests on etymonline's secondary etymology. Every one was
+checked against etymonline or Wiktionary this session, not remembered. The
+cause of most is structural: claims are keyed by **English** lemma, so a
+descent pairs an English word with its *translation* and asserts the
+translation is its ancestor, which holds only when the two happen to be
+cognate.
+
+**Queued rather than fixed**, as the first item in `Next`, with a table of
+every row and its source. Three reasons. It is a content decision per row
+— correct, demote to a cousin, or delete — and a different change from the
+tooling. The fix goes through the tool this session built, and it is the
+first real test of the retraction path, which would have silently failed
+yesterday. And nothing is published: the tag waits on B2, so it lands
+before anyone reads it provided it lands before the tag, which the item
+says in its first paragraph. `CHANGELOG.md`'s 1.0.1 paragraph claims the
+descent/cousin split exists "rather than letting the feed state
+falsehoods"; the item names that too.
+
+**The transferable half: the fixed-point guard passes on all eighteen**,
+because the two files agree on every false claim. A consistency check proves
+two files say the same thing and nothing about whether it is true, and
+nothing in this repository checks etymology against a source. The same
+shape as `site:check` passing on a slug collision because every URL still
+resolved: the check was right about the question it asked.
+
+Counts moved 744 → **755** and tools 83 → **94** / 23 → **25 suites** in six
+documents, with `docs/LAUNCH.md:221` swept **by name and first**. Unit, jsdom
+and e2e did not move, and `src/` was not touched, so sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **94 tools / 25
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged, and it has to
+be — nothing here touches shipped code), **36 e2e passed and 3 skipped in
+1.7 min**, then build and validate again. Separately, because three of the six
+probes edited the real seed files and restored them by md5: `npm run packs`
+left `src/lexicon/packs/` and `tools/seed/` clean, and `packs:verify` **0
+errors / 4 warnings**. `site:check` was not re-run: no pack moved and `src/`
+was not touched. Zero iCloud conflict copies in `dist/`, `src/` or
+`test-results/` — one from an earlier session was sitting in `test-results/`,
+whose xattr does not survive deletion, and it has been re-set.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` is empty; `Next` holds two agent-shaped
+items, the false French etymologies first because they should land before
+the tag.
 
 ### 2026-09-30 — the sheet's own label was the spec, and the guard's predicate was drawn round the directory somebody remembered
 
