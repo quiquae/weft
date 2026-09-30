@@ -23,6 +23,17 @@
  * rendered string across the whole plausible accrual range rather than
  * trusting the two clauses that make it work.
  *
+ * **Since 2026-09-29 the tile is no longer in shot, and this guard is kept
+ * anyway.** `frameOn` in the spec aligns scene 4 on the discoveries feed,
+ * which scrolls the tile row out of all three frames — measured, by running
+ * the generator at 60s instead of 1800s and finding all fifteen hashes
+ * unmoved. So these tests defend a property of the seeding rather than a
+ * committed byte. That is a weaker claim than they were written to make and
+ * is worth stating, but it is not the vacuity this suite polices elsewhere:
+ * `formatDuration` and the constant both exist and are both exercised, and
+ * the drift comes straight back if anyone reframes the scene to put the
+ * tiles in shot.
+ *
  * It lives in `tests/tools/` for the reason `demo-curve.test.ts` does: it
  * reads a file off disk, which `tests/core/`'s no-I/O rule forbids, and the
  * constant it polices lives outside the test suite, where it is free to
@@ -107,6 +118,92 @@ describe('the store progress shot is reproducible', () => {
       src,
       /value=\{formatDuration\(attn\.todaySeconds\)\}\s*\n\s*label="taxed attention today"/,
       'the "taxed attention today" tile no longer reads formatDuration(attn.todaySeconds)',
+    );
+  });
+});
+
+/**
+ * The listing shots must be framed on a section boundary, not nudged.
+ *
+ * Four of the six scrolled captures were cut across a row of content, and
+ * every automated check in the repository was happy with them: the files are
+ * byte-stable and byte-identical to what is committed, so `artefacts:check`
+ * called the group `ok` and the reproducibility diff agreed with itself.
+ * They were found by opening them.
+ *
+ * `apple-04-progress.png` cut the tops off the digits of all four progress
+ * tiles; `apple-05-settings.png` halved the preset button row. Both are the
+ * row *above* the target bleeding in. But `chrome-05-settings.png` halved
+ * the "Resting density" heading and `edge-05-settings.png` lost it
+ * altogether, opening mid-sentence — the row the scene exists to show, with
+ * its head cut off.
+ *
+ * So the diagnosis "the scroll is minimal, so whatever sits above bleeds in"
+ * described only half the cases. `scrollIntoViewIfNeeded` states no
+ * alignment at all: Blink chooses one from the element's position and the
+ * viewport height, so the landing point is a function of the frame size and
+ * can err in *either* direction. A guard that only asked "is anything above
+ * in shot" would have passed `edge-05`, which is the worst of the four.
+ * Hence a two-sided assertion, and hence this file asserting it is two-sided.
+ *
+ * The selector list below is derived from the spec rather than typed out,
+ * for the reason `screenshots.test.ts` records: a hand-written list of the
+ * things to check cannot police the thing that was forgotten, so a fourth
+ * framed scene added later is covered without an edit here.
+ */
+describe('the store shots are framed on a section boundary', () => {
+  /** Every `.section` selector the spec frames a capture on. */
+  const framed = (): string[] => {
+    const found = [...spec.matchAll(/'(\.section[^']*)'/g)].map((m) => m[1] as string);
+    return [...new Set(found)];
+  };
+
+  test('every section a scene frames is framed deterministically', () => {
+    const selectors = framed();
+    /*
+     * Non-vacuity. Rename the locator call and the loop below runs over an
+     * empty list and passes — the silent skip this suite polices elsewhere.
+     */
+    assert.ok(
+      selectors.length >= 2,
+      `found ${selectors.length} framed sections in store-assets.spec.ts, expected at least 2 ` +
+        '(04-progress and 05-settings) — has the selector or the locator call been renamed?',
+    );
+    for (const selector of selectors) {
+      assert.ok(
+        spec.includes(`frameOn(page, '${selector}')`),
+        `'${selector}' is scrolled into shot by something other than frameOn(), so its ` +
+          'framing is whatever Blink picks for that viewport height — which cut a row of ' +
+          'content in four of the six committed captures',
+      );
+      assert.ok(
+        !new RegExp(`locator\\('${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'\\)[^\\n]*scrollIntoViewIfNeeded`).test(spec),
+        `'${selector}' still uses scrollIntoViewIfNeeded, which states no alignment`,
+      );
+    }
+  });
+
+  /*
+   * The two-sidedness is the finding, so it is the thing asserted. A shot
+   * whose target section sits below the top of the viewport has the row above
+   * it half in shot; one whose section sits above the top has its own heading
+   * cut off. Both happened, in different frames, from the same call.
+   */
+  test('the framing assertion is two-sided, because two shots erred each way', () => {
+    const body = /const frameOn =[\s\S]*?\n {4}\};/.exec(spec);
+    assert.ok(body, 'no frameOn helper in store-assets.spec.ts — has it been renamed?');
+    const src = body[0];
+    assert.match(
+      src,
+      /toBeLessThanOrEqual/,
+      'frameOn does not bound the section from above, so the row above it can bleed in — ' +
+        'the defect in apple-04-progress.png and apple-05-settings.png',
+    );
+    assert.match(
+      src,
+      /toBeGreaterThanOrEqual/,
+      'frameOn does not bound the section from below, so the scene can behead the very row ' +
+        'it exists to show — the defect in chrome-05 and edge-05-settings.png',
     );
   });
 });
