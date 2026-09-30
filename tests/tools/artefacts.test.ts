@@ -388,33 +388,74 @@ describe("the real artefact list points at things that are actually there", () =
     }
   });
 
-  test('every file in the first-run pathspec is written by the first-run spec', () => {
-    // The defect this exists for was silent and cost a wrong version number
-    // in documentation a stranger reads. `07-help.png` sat inside this
-    // group's pathspec while being written by no generator at all, so every
-    // regeneration left it untouched, `git status` stayed clean, and the
-    // shot went on saying "Weft 1.0.0" after the bump to 1.0.1. A stamp
-    // from `artefacts:verify` then claimed the whole pathspec had been
-    // checked, which for that file nothing could make true.
-    //
-    // Only the first-run group can be checked this way, and that is worth
-    // knowing before anyone generalises it: `store-assets.spec.ts` composes
-    // its filenames from a frame × slug template, so no literal name
-    // appears in it to search for. This spec names each file outright.
-    const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('first-run'));
-    assert.ok(shots);
-    const spec = readFileSync(join(ROOT, 'tests/e2e/firstrun.spec.ts'), 'utf8');
-    const matched = captures(shots);
-    assert.ok(matched.length > 0, 'the first-run pathspec matches nothing');
-    for (const file of matched) {
-      const name = file.slice(file.lastIndexOf('/') + 1);
-      assert.ok(
-        spec.includes(`'${name}'`),
-        `${file} is inside the artefact pathspec but no generator writes it, ` +
-          'so regenerating the group can never correct it',
-      );
-    }
-  });
+  /**
+   * The basenames a generator writes, read out of the generator itself.
+   *
+   * Two shapes, because the three specs name their files two ways — and
+   * neither list may be typed out here, which is the whole point. A
+   * hand-written list of the files to check cannot police the file that was
+   * forgotten; that is how `07-help.png` sat inside a pathspec for two
+   * weeks saying "Weft 1.0.0", and how five hand-made captures of the
+   * *content site* sat inside `docs/screens` being counted as generated.
+   *
+   * `firstrun.spec.ts` and `screenshots.spec.ts` name each file as a
+   * single-quoted literal. `store-assets.spec.ts` composes
+   * `${frame}-${slug}.png` from a frame table and the slug it is called
+   * with, so none of its fifteen names exists anywhere in the file as a
+   * whole string and they have to be multiplied out. That composition is
+   * the reason this guard was left applying to one group only when it was
+   * written, and the reason the other two went unchecked.
+   *
+   * Single quotes rather than any quote: this repository writes filenames
+   * in prose inside backticks, and a comment naming a file is not a
+   * generator writing it.
+   */
+  const literalShots = (spec: string): Set<string> =>
+    new Set(Array.from(spec.matchAll(/'([a-z0-9-]+\.png)'/g), (m) => m[1]!));
+
+  const composedShots = (spec: string): Set<string> => {
+    const frames = Array.from(spec.matchAll(/\{ name: '([a-z]+)',/g), (m) => m[1]!);
+    const slugs = Array.from(spec.matchAll(/\bcapture\('([a-z0-9-]+)'/g), (m) => m[1]!);
+    return new Set(frames.flatMap((f) => slugs.map((s) => `${f}-${s}.png`)));
+  };
+
+  /** Which spec writes each image group, and how that spec spells a name. */
+  const GENERATORS = [
+    { group: 'first-run', spec: 'tests/e2e/firstrun.spec.ts', shots: literalShots },
+    { group: 'documentation', spec: 'tests/e2e/screenshots.spec.ts', shots: literalShots },
+    { group: 'store listing', spec: 'tests/e2e/store-assets.spec.ts', shots: composedShots },
+  ];
+
+  for (const { group, spec: specPath, shots } of GENERATORS) {
+    test(`every file in the ${group} pathspec is written by its generator`, () => {
+      // The failure this catches is silent in both directions. A file that
+      // no generator writes is never touched by a regeneration, so
+      // `git status` stays clean, `artefacts:check` reports the group fresh
+      // from its provenance, and a verify stamp then claims the whole
+      // pathspec was checked — which for that file nothing can make true.
+      // Two have already been found this way: `07-help.png` carrying a
+      // superseded version number, and `landing.png` advertising "48% —
+      // 1 word in 2", a phrasing PR #8 removed at a density the demo can no
+      // longer reach.
+      const artefact = artefactsFor('1.0.1').find((a) => a.name.startsWith(group));
+      assert.ok(artefact, `no artefact group is named for "${group}"`);
+      const written = shots(readFileSync(join(ROOT, specPath), 'utf8'));
+      const matched = captures(artefact);
+      // Non-vacuity floor: a pathspec that matches nothing runs this loop
+      // over an empty list and passes, which is the silent skip a derived
+      // list invites. A derivation that has stopped matching needs no floor
+      // — it makes every file below fail by name.
+      assert.ok(matched.length > 0, `the ${group} pathspec matches nothing`);
+      for (const file of matched) {
+        const name = file.slice(file.lastIndexOf('/') + 1);
+        assert.ok(
+          written.has(name),
+          `${file} is inside the artefact pathspec but ${specPath} does not write it, ` +
+            'so regenerating the group can never correct it',
+        );
+      }
+    });
+  }
 
   test('the release notes are named after the version they belong to', () => {
     const notes = artefactsFor('9.9.9').find((a) => a.paths.some((p) => p.startsWith('RELEASE-')));

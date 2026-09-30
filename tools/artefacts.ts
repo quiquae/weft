@@ -247,6 +247,19 @@ export function artefactsFor(version: string): Artefact[] {
     },
     {
       name: 'documentation screenshots',
+      // The whole directory — and unlike the two groups either side of it,
+      // that is now the accurate declaration rather than a line nobody drew.
+      // Every file in here is written by the spec below. It was not always:
+      // five hand-made captures of the *content site* sat in this directory
+      // being counted as generated, so a regeneration was a no-op for them,
+      // `git status` stayed clean, and the group's verify stamp vouched for
+      // bytes no regeneration could ever correct. Three of the five were
+      // stale — the density copy PR #8 removed, the backwards Latin descent
+      // sentence PR #17 fixed, and the straight quotes PR #20 unified — and
+      // all five are deleted. No glob can pick out the fourteen that remain,
+      // so what keeps this pathspec honest is a test rather than a pattern:
+      // `tests/tools/artefacts.test.ts` fails if any file matched here is
+      // one the generator does not write, for all three groups.
       paths: ['docs/screens'],
       inputs: ['src', 'tests/e2e/screenshots.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_SCREENS=1 npx playwright test screenshots',

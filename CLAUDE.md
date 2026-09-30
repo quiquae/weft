@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **71 pass**, 21 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **73 pass**, 21 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -192,6 +192,132 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-30 — the item named one stale shot among five orphans; three of them were stale
+
+The queue sent this session at the two clipped listing screenshots again —
+the same text, verbatim, that PR #32 landed and PR #33 extended. Done twice
+over: `store-assets.spec.ts` calls `frameOn` at `:263` and `:271`, the only
+`scrollIntoViewIfNeeded` left in it is scene 3's word-level call that is
+deliberately untouched, and `tests/tools/shot-framing.test.ts` has been
+policing the rule since `20acde9`, **HEAD**. Eleventh completed item the
+queue has handed over in thirteen sessions; a minute of `grep` settled it.
+
+So the work was `TODO.md`'s one remaining unchecked item, **five files inside
+`docs/screens/` that no generator writes**. The premise was exact and the
+staleness was three times what it recorded.
+
+**The census is derivable, and deriving it is what made it exact.** Reading
+`screenshots.spec.ts` for single-quoted `*.png` literals returns **14**
+names; `git ls-files docs/screens` returns **19**; and the set difference is
+**zero in the other direction** — every derived name has a committed file. So
+the two sets line up exactly and the five offenders are precisely the ones
+the item named, rather than a superset a looser match would have produced.
+All five are captures of the **content site**, which no spec can make because
+nothing serves `dist/site`, and `git grep` finds no document or page
+referencing any of them.
+
+**Reading all five found two more stale shots than the item knew about, and
+each is a copy fix a previous session spent a whole PR making.** The item had
+`landing.png`: "48% — 1 word in 2", the unqualified phrasing **PR #8**
+replaced with "of content words", at a density the demo can no longer reach
+since #8 turned its ceiling to 35% — and its caption predates #8 too, naming
+no preset. Opening the rest added `word-latin.png`, which renders
+`/latin/vacca` as "This is the Latin word your English borrowed from
+**vaccine**" — the **backwards descent sentence PR #17 fixed on 312 published
+pages**; and `hub-descent.png`, whose note column reads `"gangende" survives
+in "gangway"` in straight quotes, which **PR #20** unified to curly across all
+59 Latin and Old English notes. Verified against the seed rather than
+remembered: `lex-ang.tsv:263` now carries the curly form.
+`word-page.png` and `pricing.png` read current — the Old English descent
+sentence was never backwards, and the three prices still match
+`src/core/pricing.ts`.
+
+**Three of five, and that is the argument for the shape taken.** Shape 1,
+delete them. `TODO.md` had recorded that preference and also recorded that a
+deletion of committed files "wants a human's assent rather than an agent's";
+the run's own instructions say to assume the answer is yes and record it, so
+that is what happened, with the restore command written into `TODO.md` beside
+the item. The grounds got stronger between the queuing and the doing: an
+unreferenced screenshot is merely unread, but an unreferenced screenshot
+displaying copy the product deliberately removed is a liability. Shape 3, a
+site-screenshot generator, was refused on cost against value — it needs
+`dist/site` built and served, and it would be new machinery maintained for
+five binaries no reader has.
+
+**The pathspec stays `docs/screens`, and that is the opposite of the call PR
+#30 made for `docs/firstrun`.** The reason is that the two cases differ:
+`docs/firstrun` and `docs/store` legitimately contain hand-made files that
+must stay — the icon sheet, the tiles — so a glob has something to exclude.
+Once the five are gone `docs/screens` has nothing to exclude, and no glob
+could pick out the fourteen anyway, since they share no prefix. **A whole-
+directory pathspec is the accurate declaration exactly when every file in the
+directory is generated, and what keeps that true is a test rather than a
+pattern.**
+
+**So PR #30's guard is generalised to all three groups, which is what
+`TODO.md` asked for and what the guard's own comment said could not be
+done.** That comment was right about the obstacle and wrong about it being
+fatal: `store-assets.spec.ts` composes `${frame}-${slug}.png` from a frame
+table and the slug it is called with, so none of its fifteen names exists in
+the file as a whole string — but multiplying the frames by the slugs, both
+read out of the spec by regex, reconstructs all fifteen. Two derivations
+rather than one hand-typed list, because the three specs name files two ways.
+Single quotes rather than any quote, because this repository writes filenames
+in prose inside backticks and **a comment naming a file is not a generator
+writing it**. This is the fourth sighting in four sessions of the same shape:
+a guard whose coverage was hand-picked, policing the file somebody remembered.
+
+Done test-first: red on `docs/screens/hub-descent.png is inside the artefact
+pathspec but tests/e2e/screenshots.spec.ts does not write it` before anything
+was deleted. 71 → **73** tools tests, 21 suites unchanged — one hand-picked
+test replaced by three derived ones.
+
+**Three vacuity probes, each shown to fire rather than assumed, and the
+middle one is the one that mattered.** A hand-made file copied into
+`docs/screens` and staged names itself. A pathspec typo'd to
+`docs/screens-typo` hits the `matches nothing` floor. And **breaking the
+composed derivation turns the *store* group red**, naming
+`docs/store/apple-01-woven.png` — which is what proves the store test was not
+passing vacuously on an empty derived set, the exact silent skip a derived
+list invites. Each probe was undone by copying a backup back and checking
+md5, not by asking git.
+
+**The verify stamp for this group was deleted rather than rewritten.** Its
+note read "no change to commit" and this commit changes the group's file set,
+so `artefacts:check` dates the group from this commit on its own. Same call
+PRs #30, #31 and #32 each made, and the one thing the stamp must never mean.
+The store and first-run stamps are untouched and still true — nothing here
+moves a byte in either group.
+
+Counts moved 732 → **734** and tools 71 → **73** in six documents, with
+`docs/LAUNCH.md:221` swept **by name and first** for the twelfth session
+running. Unit, jsdom and e2e did not move, and `src/` was not touched at all,
+so sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **73 tools / 21
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged, and it has to
+be — nothing here touches shipped code), **36 e2e passed and 3 skipped in
+2.5 min**, then build and validate again. `packs:verify` and `site:check`
+were **not** re-run, for the reason this file already states: no pack moved,
+no seed moved, and `src/` was not touched. `artefacts:check` reports the same
+1 stale group — the release notes, B2a, whose `inputs` are `.` — with all
+three screenshot groups `ok`. No generator was run at all this session, which
+is itself the point: the five files were unreachable by any of them. Zero
+iCloud conflict copies in `dist/`, `src/` or `test-results/`, the xattr
+working for the eighth session running — re-set on `test-results/` again.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` and `Next` are both **empty** and there is no
+agent-shaped work left in the file. One thing a human may want to look at
+rather than do: this session deleted five committed binaries, which is the
+only removal in this repository nobody asked for in person. The restore
+command is written into `TODO.md` beside the item, and the guard will name
+any file put back until either a generator writes it or the pathspec says it
+is hand-made.
 
 ### 2026-09-29 — the fix was one-sided across files, and the guard was hand-picking the file
 
