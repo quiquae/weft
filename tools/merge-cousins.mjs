@@ -3,8 +3,9 @@
  * Fold tools/seed/fr-cousins.tsv into the etymon and note columns of
  * tools/seed/lex-fr.tsv.
  *
- *   node tools/merge-cousins.mjs           # write
- *   node tools/merge-cousins.mjs --dry     # report only
+ *   npm run cousins                  # fill empty fields; name everything else
+ *   npm run cousins -- --force       # make lex-fr.tsv say what fr-cousins.tsv says
+ *   npm run cousins -- --dry         # report only; exit 1 if anything would change
  *
  * Kept as a merge step rather than hand-editing the lexicon because the two
  * files answer different questions. lex-fr.tsv is the translation table and
@@ -12,18 +13,28 @@
  * when someone checks a claim. Mixing them means every etymology review has
  * to read 356 rows of vocabulary to find the nine that matter.
  *
- * Refuses to overwrite an existing value: if a row already carries an etymon
- * or a note, whoever wrote it there knew something this file does not.
+ * Without --force it only fills empty fields. A field holding something
+ * other than its claim, or a value fr-cousins.tsv no longer claims, is left
+ * alone — which of the two files is right is a question for a person — but
+ * it is named, and the run exits 1, because each is an edit to the review
+ * file that has not reached the pack.
  *
- * Which makes the tool non-idempotent in one specific and predictable case —
- * correcting a claim. Once the merged values are committed, editing
- * fr-cousins.tsv and re-running does nothing at all, silently, and the
- * correction appears to have been applied. --force exists for that, and only
- * that: it overwrites values that this file is the source of.
+ * That used to be silent, and the old version of this comment said so: a
+ * corrected claim was counted with the untouched ones as "left alone
+ * (already had a value)", and a deleted claim was not looked for at all, so
+ * both printed exactly what an in-step tree prints and exited 0. --force
+ * settles every such field in fr-cousins.tsv's favour, overwriting and
+ * clearing, and lists each one it changed.
+ *
+ * tests/tools/cousins.test.ts checks that the committed lexicon is a fixed
+ * point of this merge, which is what turns a forgotten run into a red CI
+ * rather than a claim that silently never ships. How each field is sorted is
+ * in tools/cousins.ts.
  */
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { mergeCousins } from './cousins.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LEX = join(ROOT, 'tools/seed/lex-fr.tsv');
@@ -31,57 +42,33 @@ const COUSINS = join(ROOT, 'tools/seed/fr-cousins.tsv');
 const dry = process.argv.includes('--dry');
 const force = process.argv.includes('--force');
 
-/** lemma -> { descent?: string, cousin?: string } */
-const wanted = new Map();
-for (const line of (await readFile(COUSINS, 'utf8')).split('\n')) {
-  if (!line.trim() || line.startsWith('#')) continue;
-  const [lemma, kind, value] = line.split('\t');
-  if (!lemma || !kind || !value) continue;
-  const entry = wanted.get(lemma) ?? {};
-  entry[kind.trim()] = value.trim();
-  wanted.set(lemma.trim(), entry);
+const before = await readFile(LEX, 'utf8');
+const r = mergeCousins(before, await readFile(COUSINS, 'utf8'), { force });
+
+const column = (d) => (d.kind === 'descent' ? 'etymon' : 'note');
+function list(drifts) {
+  for (const d of drifts) {
+    console.error(`  lex-fr.tsv:${d.line}  ${d.lemma} (${column(d)})`);
+    console.error(`    lex-fr.tsv      ${d.lexicon || '(empty)'}`);
+    console.error(`    fr-cousins.tsv  ${d.claim || '(no claim)'}`);
+  }
 }
 
-const lines = (await readFile(LEX, 'utf8')).split('\n');
-const out = [];
-let etymonsAdded = 0;
-let notesAdded = 0;
-let skippedExisting = 0;
-const matched = new Set();
+const added = (kind) => r.added.filter((d) => d.kind === kind).length;
+console.log(`${added('descent')} etymons, ${added('cousin')} notes added`);
+console.log(`${r.inStep} already in step`);
 
-for (const line of lines) {
-  if (!line.trim() || line.startsWith('#')) {
-    out.push(line);
-    continue;
-  }
-  const cols = line.split('\t');
-  // lemma | pos | tgt | tgt2 | gender | ipa | etymon | note
-  while (cols.length < 8) cols.push('');
-  const lemma = (cols[0] ?? '').trim();
-  const want = wanted.get(lemma);
-  if (!want) {
-    out.push(cols.join('\t'));
-    continue;
-  }
-  matched.add(lemma);
-
-  if (want.descent) {
-    if (cols[6] && !force) skippedExisting++;
-    else {
-      const changed = cols[6] !== want.descent;
-      cols[6] = want.descent;
-      if (changed) etymonsAdded++;
-    }
-  }
-  if (want.cousin) {
-    if (cols[7] && !force) skippedExisting++;
-    else {
-      const changed = cols[7] !== want.cousin;
-      cols[7] = want.cousin;
-      if (changed) notesAdded++;
-    }
-  }
-  out.push(cols.join('\t'));
+if (r.disagree.length) {
+  console.error(`\n${r.disagree.length} disagree with fr-cousins.tsv, ${force ? 'overwritten' : 'left alone'}:`);
+  list(r.disagree);
+}
+if (r.unclaimed.length) {
+  console.error(`\n${r.unclaimed.length} no longer claimed by fr-cousins.tsv, ${force ? 'cleared' : 'left alone'}:`);
+  list(r.unclaimed);
+}
+if (!force && (r.disagree.length || r.unclaimed.length)) {
+  console.error('\nEach is an edit to fr-cousins.tsv that has not reached the pack. If fr-cousins.tsv is');
+  console.error('right, re-run with --force. If lex-fr.tsv is, move the value into fr-cousins.tsv.');
 }
 
 /*
@@ -89,21 +76,29 @@ for (const line of lines) {
  * not a no-op. Silently dropping it is how half the etymology quietly fails
  * to ship while the file looks complete.
  */
-const unmatched = [...wanted.keys()].filter((l) => !matched.has(l));
-
-console.log(`${etymonsAdded} etymons, ${notesAdded} notes added`);
-if (skippedExisting) console.log(`${skippedExisting} left alone (already had a value)`);
-if (unmatched.length) {
-  console.error(`\n${unmatched.length} lemma(s) in fr-cousins.tsv match no row in lex-fr.tsv:`);
-  for (const l of unmatched) console.error(`  ${l}`);
+if (r.unmatched.length) {
+  console.error(`\n${r.unmatched.length} lemma(s) in fr-cousins.tsv match no row in lex-fr.tsv:`);
+  for (const c of r.unmatched) console.error(`  fr-cousins.tsv:${c.line}  ${c.lemma}`);
   console.error('\nEach is a claim that will not ship. Fix the spelling or remove the line.');
 }
-
-if (!dry) {
-  await writeFile(LEX, out.join('\n'));
-  console.log(`\nwrote ${LEX.replace(ROOT + '/', '')}`);
-} else {
-  console.log('\n(dry run — nothing written)');
+if (r.malformed.length) {
+  console.error(`\n${r.malformed.length} line(s) in fr-cousins.tsv cannot ship as written:`);
+  for (const m of r.malformed) console.error(`  fr-cousins.tsv:${m.line}  ${m.reason}`);
 }
 
-process.exit(unmatched.length ? 1 : 0);
+if (dry) {
+  console.log('\n(dry run — nothing written)');
+} else if (r.text !== before) {
+  await writeFile(LEX, r.text);
+  console.log('\nwrote tools/seed/lex-fr.tsv — now run npm run packs');
+} else {
+  console.log('\nlex-fr.tsv unchanged');
+}
+
+// A dry run fails on anything a merge would change. A real run fails on
+// anything it was not allowed to settle, so a claim that did not land can
+// never exit 0. exitCode rather than exit(), which can cut off output still
+// queued for a pipe.
+const refused = r.unmatched.length + r.malformed.length + (force ? 0 : r.disagree.length + r.unclaimed.length);
+const pending = r.added.length + r.disagree.length + r.unclaimed.length + r.unmatched.length + r.malformed.length;
+process.exitCode = (dry ? pending : refused) ? 1 : 0;
