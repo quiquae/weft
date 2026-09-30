@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **63 pass**, 18 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **66 pass**, 19 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -192,6 +192,120 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-29 — the item named two clipped shots; it was four, and two failed the other way
+
+The queue sent this session at `TODO.md`'s only unchecked item, the two
+listing screenshots that clip a row at the top edge. **The premise was true
+and the census was half of it.** `apple-04-progress.png` really does cut the
+tops off all four progress tiles' digits and `apple-05-settings.png` really
+does halve the preset row, exactly as described. Opening the other four found
+two more — and neither is the defect the item diagnosed.
+`chrome-05-settings.png` sliced the "Resting density" heading through the
+middle, and `edge-05-settings.png` lost it altogether, opening mid-sentence
+on "What a page looks like the moment you arrive". That is not the row above
+bleeding in. It is the scene cutting the head off the row it exists to show,
+which is the worse of the two and the one a reviewer reads as a broken upload.
+Four of six, and the errors point in opposite directions.
+
+**So the mechanism is not "the scroll is minimal".** It is that
+`scrollIntoViewIfNeeded` states no alignment at all: Blink picks one from the
+element's position and the viewport height, so the landing point was a
+function of the frame size and the *sign* of the error was not a property of
+the call. The 04 scene erred only at 900 px; the 05 scene erred in all three
+frames, both ways. **The transferable half: a "make it visible" call is not a
+framing operation, and a fix derived only from the cases somebody happened to
+open comes out one-sided.** A guard asserting just "nothing above the target
+is in shot" passes `edge-05`, the worst of the four. Same class as PR #31's
+mislabelled `oe.close()` message one step earlier — there the guard named the
+wrong variable, here the item named the wrong half of the census.
+
+`frameOn(page, selector)` replaces both calls. It puts the section's own top
+edge at the top of the shot with an integer `window.scrollTo` and then
+**asserts two-sidedly** that it landed there, so the generator fails rather
+than writing a clipped shot. Integer because a fractional scroll offset
+shifts subpixel text rendering in files diffed byte for byte; `Math.ceil`
+rather than `Math.round` so the rounding error is spent on the section's own
+top padding rather than on a sliver of the row above. Scene 3's word-level
+`scrollIntoViewIfNeeded()` is deliberately untouched: it makes a word
+hoverable rather than framing a shot, and a partly visible line of prose at
+the top of an article screenshot is what reading an article looks like.
+
+**The result is better than "not clipped", and the reason is a DOM fact worth
+knowing: `.section:has(.band)` is the whole Density section, not one row.**
+All three 05 shots now open on its title — "Density / How much of a page is
+woven, and how fast that rises while you stay on it" — followed by the
+complete `Taster Standard Committed Monastic` preset row, which no committed
+shot had ever shown intact. All three 04 shots open on "What you have found
+out" with the whole 19-row feed. Each scene is one composition in all three
+frames now, differing only in how much fits below the fold.
+`docs/STORE-LISTING.md` records the framing rule beside the table a human
+uploads from.
+
+**Measured: all 15 files byte-identical across two consecutive runs**, hashed,
+with npm's exit status captured per run and all 15 mtimes checked each time —
+a generator that dies early writes nothing, and this file already records
+that "no file changed" is indistinguishable from a clean idempotent run from
+outside. The nine unscrolled 01/02/03 captures came back byte-identical to
+what was committed, which is a free control: the change is confined to the two
+framed scenes. All six changed files were opened and read.
+
+**One consequence measured rather than reasoned: the seeded attention no
+longer affects a single committed byte.** Aligning scene 4 on the feed scrolls
+the tile row out of every frame, so `SEEDED_ATTENTION_SECONDS` and the four
+tests guarding it now defend a property of the seeding rather than a shipped
+pixel — proved by generating at 60 s instead of 1800 s and finding all fifteen
+hashes unmoved. **Kept rather than deleted**, with the spec and
+`tests/tools/store-assets.test.ts` both saying plainly that it is insurance
+now: the drift returns the moment anyone reframes the scene to include the
+tiles, and that is a reasonable thing to want, since those four tiles are the
+only place scene 4 shows a number. Deleting a reproducibility seed because
+the current crop happens to hide it is how a session pays twice for the same
+finding.
+
+Done test-first: 2 tests in a new `describe`, red on `'.section:has(.finds)'
+is scrolled into shot by something other than frameOn()` before anything was
+edited. The selector list is **derived** from the spec rather than typed out,
+so a fourth framed scene is covered without an edit there. All three guards
+were shown to fail rather than assumed: reverting one call names that
+selector, dropping the lower bound names the `edge-05` class by filename, and
+renaming the selector literals fires the non-vacuity floor at "found 0 framed
+sections". Probed by copying a backup file back and checking its md5
+afterwards, not by asking git — the process note PR #31 paid for.
+
+**The verify stamp was deleted rather than rewritten.** Its note read "no
+change to commit", and this commit changes six of the fifteen files;
+`artefacts:check` dates the group from this commit on its own. Same call PR
+#30 and PR #31 each made for the group they genuinely changed, and the one
+thing the stamp must never mean.
+
+Counts moved 725 → **727** and tools 64 → **66** / 18 → **19 suites** in five
+documents, with `docs/LAUNCH.md:221` swept **by name and first** for the tenth
+session running. Worth naming: **this file's own command table was stale at
+`63 pass, 18 suites`** — PR #31 moved tools 63 → 64 and swept its journal
+line, `TODO.md`, `CHANGELOG.md` and `docs/SUBMIT.md`, but not the table eight
+lines below the setup paragraph. Unit, jsdom and e2e did not move, and `src/`
+was not touched at all, so sizes could not.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's: `npm run test:all` **exit 0** —
+typecheck clean, 527 unit / 130 suites, 98 jsdom / 22 suites, **66 tools / 19
+suites**, compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail /
+0 without data, **983 KB × 3** passing `validate` (unchanged, and it has to
+be — nothing here touches shipped code), **36 e2e passed and 3 skipped in
+2.0 min**, then build and validate again. `packs:verify` and `site:check` were
+**not** re-run, for the reason this file already states: no pack moved, no
+seed moved, and `src/` was not touched. `artefacts:check` reports the same 1
+stale group — the release notes, B2a, whose `inputs` are `.` — with all three
+screenshot groups `ok`. The store generator was run **four** times across the
+session, each with its exit status captured and its hashes diffed before
+anything was believed. Zero iCloud conflict copies in `dist/`, `src/` or
+`test-results/`, the xattr working for the sixth session running — it had to
+be re-set on `test-results/` again, which does not survive being deleted.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` and `Next` are both **empty** and there is no
+agent-shaped work left in the file.
 
 ### 2026-09-29 — the guard named two pages, mislabelled one, and could not see the third
 

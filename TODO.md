@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **64** tool tests / 18 suites, **36** e2e passing
+suites, **66** tool tests / 19 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -35,6 +35,14 @@ pathspec declared as a whole directory. It is generated now, the pathspec is
 narrowed to `docs/firstrun/0*.png`, and a guard fails if any file in it has
 no generator. **`artefacts:check` is down to 1 stale from 4**, and the one
 left is the release notes, which is B2a and cannot be fresh before the tag.
+**And the listing art no longer cuts across a row of content, as of
+2026-09-29** — it was **four** of the six scrolled captures, not the two this
+file recorded, and two of the four erred the opposite way from the recorded
+diagnosis: `edge-05-settings.png` opened mid-sentence with the target row's
+heading gone entirely. `scrollIntoViewIfNeeded` states no alignment, so the
+landing point was a function of the viewport height. The two scenes are now
+framed on the section's own top edge and the capture *asserts* it landed
+there, two-sided, so the generator fails rather than writing a clipped shot.
 **Both stale documentation sets are regenerated and the screens set
 is now reproducible, as of 2026-09-29** — `docs/firstrun/` came back
 byte-identical to what was committed, and `docs/screens/` needed three
@@ -953,7 +961,7 @@ move until it is.
       `src/` to change and the milestones panel's "facts about reading you
       have actually done" was never overstating anything.
 
-- [ ] **Two listing screenshots clip a row of content at the top edge.**
+- [x] **Two listing screenshots clip a row of content at the top edge.**
       Found 2026-09-29 by opening them, which is the only way it could have
       been found: the files are byte-stable and byte-identical to what is
       committed, so every automated check in the repository is happy with
@@ -978,11 +986,97 @@ move until it is.
       session that found it: changing bytes in the same commit that claims
       they did not change is the one thing the stamp must never mean.
 
-One item left in `Next`, the clipped listing screenshots above, and it is
-agent-shaped. Everything in Blocked needs Creagh — B1 an identity and a
-payment method, B2 onwards a decision that is not reversible the way a commit
-is. A session picking this file up should work the item above, then read the
-Blocked section, confirm B1 has not moved, and stop.
+      **Done 2026-09-29, and it was four captures rather than two — with two
+      of the four wrong in the opposite direction from the diagnosis above.**
+      The item's account of `apple-04-progress.png` and
+      `apple-05-settings.png` is exactly right: the row above the target
+      bleeds in, the tiles' digits are topless and the preset row is halved.
+      But opening the other four found `chrome-05-settings.png` with the
+      "Resting density" heading sliced through the middle and
+      `edge-05-settings.png` with it **gone altogether**, the shot opening
+      mid-sentence on "What a page looks like the moment you arrive". That is
+      not the row above bleeding in; it is the scene cutting the head off the
+      row it exists to show, which is the worse of the two and the one a
+      reviewer would read as a broken upload.
+
+      **So the cause is not that the scroll is minimal. It is that
+      `scrollIntoViewIfNeeded` states no alignment at all**, and Blink
+      chooses one from the element's position and the viewport height — so
+      the landing point was a function of the frame size and could err either
+      way. The `04` scene erred only in the 900px apple frame; the `05` scene
+      erred in all three, in both directions. **The transferable form: a
+      "make it visible" call is not a framing operation, and a fix derived
+      from only the cases somebody happened to open will be one-sided.** A
+      guard asking only "is anything above the target in shot" would have
+      passed `edge-05`, the worst of the four.
+
+      `frameOn(page, selector)` (`tests/e2e/store-assets.spec.ts`) replaces
+      both calls: it puts the section's own top edge at the top of the shot
+      with an integer `window.scrollTo` — `Math.ceil`, so the rounding error
+      is spent on the section's top padding rather than a sliver of the row
+      above, and integer because a fractional scroll shifts subpixel text
+      rendering in files that are diffed byte for byte — and then **asserts
+      two-sidedly** that it landed there, so the generator fails rather than
+      writing a clipped shot. The word-level `scrollIntoViewIfNeeded()` in
+      scene 3 is deliberately untouched: it makes a word hoverable rather
+      than framing a shot, and a partly visible line of prose at the top of
+      an article screenshot is what reading an article looks like.
+
+      **The result is better than "not clipped", because `.section:has(.band)`
+      turned out to be the whole Density section rather than one row.** All
+      three `05` shots now open on its title — "Density / How much of a page
+      is woven, and how fast that rises while you stay on it" — followed by
+      the complete preset row, `Taster Standard Committed Monastic`, which no
+      committed shot had ever shown intact. All three `04` shots open on
+      "What you have found out" and carry the whole 19-row feed. Each scene
+      is now the same composition in all three frames, differing only in how
+      much fits below the fold.
+
+      Measured: **all 15 files byte-identical across two consecutive runs**,
+      hashed, with npm's exit status captured per run and all 15 mtimes
+      checked each time — and the nine unscrolled `01`/`02`/`03` captures
+      came back byte-identical to what was committed, which is a free control
+      showing the change is confined to the two framed scenes. All six
+      changed files were opened and read.
+
+      **One consequence, measured rather than reasoned: the seeded attention
+      no longer affects a single committed byte.** Aligning scene 4 on the
+      feed scrolls the tile row out of all three frames, so
+      `SEEDED_ATTENTION_SECONDS` and the four tests guarding it now defend a
+      property of the seeding rather than a shipped pixel — proved by running
+      the generator at 60s instead of 1800s and finding all fifteen hashes
+      unmoved. Both the spec comment and `tests/tools/store-assets.test.ts`
+      now say so in as many words. **Kept, not deleted**: the drift returns
+      the moment anyone reframes this scene to include the tiles, which is a
+      plausible thing to want, and rediscovering why `9s` and `6s` were both
+      legitimate output of the same code cost a session once already.
+
+      The verify stamp was **deleted** rather than rewritten, for the reason
+      the item itself gives: its note read "no change to commit", and this
+      commit changes six of the fifteen files. `artefacts:check` will date the
+      group from this commit on its own.
+
+      Done test-first: 2 tests in a new `describe` in
+      `tests/tools/store-assets.test.ts`, red on `'.section:has(.finds)' is
+      scrolled into shot by something other than frameOn()` before anything
+      was edited. The selector list is **derived** from the spec rather than
+      typed out, so a fourth framed scene is covered without an edit there,
+      and all three guards were shown to fail rather than assumed: reverting
+      one call names that selector, dropping the lower bound names the
+      `edge-05` class by filename, and renaming the selector literals fires
+      the non-vacuity floor at "found 0 framed sections". The probes were run
+      by copying a backup file back, not by asking git — the process note
+      from PR #31, where a `git checkout` of one file reverted the fix along
+      with the probe.
+
+`Next` is now **empty**, and so is `Now`. Everything in Blocked needs
+Creagh — B1 an identity and a payment method, B2 onwards a decision that is
+not reversible the way a commit is. A session picking this file up should read
+the Blocked section, confirm B1 has not moved, and stop. There is no
+agent-shaped work left in this file; if a session wants one, `npm run
+artefacts:check`, `npm run packs:verify` and `npm run site:check` are the
+three gates `test:all` leaves out, and re-measuring one of them is honest
+work that cannot break anything.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
@@ -1188,6 +1282,44 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — the queued item described half the cases, and the other half
+was wrong in the opposite direction.** It named two clipped listing shots and
+one mechanism: `scrollIntoViewIfNeeded` scrolls minimally, so the row above
+the target bleeds in. Both halves held for the two files it named, and both
+were incomplete. Opening the other four found `chrome-05-settings.png` with
+its target row's heading sliced through and `edge-05-settings.png` with the
+heading gone, the shot opening mid-sentence. Four of six, erring both ways.
+
+Three things worth keeping.
+
+**The mechanism is "no stated alignment", not "minimal scroll".** Blink picks
+an alignment from the element's position and the viewport height, so the same
+call landed differently in 800, 768 and 900 pixels — and the direction of the
+error is not a property of the call. **A fix derived only from the cases
+somebody happened to open would have been one-sided, and a guard asserting
+only "nothing above the target is in shot" passes `edge-05`, the worst of the
+four.** Hence the two-sided assertion, and hence a tools test that asserts it
+is two-sided. Same class as the mislabelled `oe.close()` guard from PR #31,
+one step earlier: the census, not the fix, is where the omission lives.
+
+**`artefacts:check` said `ok` about all of this, and was right to.** These
+files were byte-stable, byte-identical to what was committed, and carried a
+verify stamp. The group's whole question is provenance, and provenance was
+sound; the defect was composition. **Byte-equality and freshness together
+still do not add up to "the image is any good" — only opening it does.**
+That is now three sessions running where reading the art found what no check
+could.
+
+**One measured side effect.** Aligning scene 4 on the discoveries feed
+scrolls the progress tiles out of every frame, so `SEEDED_ATTENTION_SECONDS`
+— the constant added to stop the shot photographing the clock — no longer
+affects a committed byte. Proved by generating at 60s instead of 1800s and
+finding all fifteen hashes unmoved, not by reasoning about the crop. Kept
+rather than deleted, with both the spec and its guard file saying plainly
+that it is insurance now: the drift comes straight back if anyone reframes
+the scene to show the tiles, and that reframing is a reasonable thing to
+want, since the four tiles are the only place scene 4 shows a number.
 
 **2026-09-29 — a hand-written guard cannot police the case it forgot, and its
 own error message said so.** The queued item blamed the onboarding page's

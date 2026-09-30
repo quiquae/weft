@@ -183,6 +183,16 @@ comes out 1280x3000 and is rejected.
 `edge-*` (1366x768) and `apple-*` (1440x900) are the same five scenes at
 those stores' sizes.
 
+Scenes 4 and 5 are scrolled, and the scroll is **framed on a section
+boundary** rather than nudged by `scrollIntoViewIfNeeded` — the section's top
+edge is put at the top of the shot, and the capture asserts it landed there.
+`scrollIntoViewIfNeeded` states no alignment, so Blink chose one from the
+viewport height and cut across a row of content in four of the six scrolled
+captures: two bled the row above in (clipped progress tiles, a halved preset
+row) and two cut the head off the target row itself, one of them opening
+mid-sentence. All three frames of a scene now show the same content boundary,
+so the three listings differ only in how much fits below it.
+
 The screenshots use `tests/e2e/pages/showcase.html`, not the test fixture.
 `article.html` deliberately displays the things Weft must *not* touch — a
 button, a code block, a three-word sentence — because those elements are its

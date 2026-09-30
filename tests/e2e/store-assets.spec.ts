@@ -69,6 +69,65 @@ test.describe('store assets', () => {
       }
     };
 
+    /**
+     * Frame a viewport capture on one section, with its top edge at the top
+     * of the shot and nothing above it in view.
+     *
+     * This replaces `scrollIntoViewIfNeeded()`, which states no alignment:
+     * Blink picks one from the element's position and the viewport height, so
+     * the landing point was a function of the frame size and erred in both
+     * directions. Four of the six scrolled captures were cut across a row of
+     * content, and it took someone opening the files to notice — they are
+     * byte-stable, so the reproducibility diff and `artefacts:check` were
+     * both satisfied. `apple-04-progress.png` cut the tops off all four
+     * progress tiles' digits and `apple-05-settings.png` halved the preset
+     * button row, which is the row *above* the target bleeding in; but
+     * `chrome-05-settings.png` halved the "Resting density" heading and
+     * `edge-05-settings.png` lost it altogether and opened mid-sentence,
+     * which is the target section's own head cut off.
+     *
+     * Integer `scrollTo`, not `scrollIntoView({ block: 'start' })`: a
+     * fractional scroll offset shifts subpixel text rendering, and these
+     * fifteen files are compared byte for byte. `Math.ceil` rather than
+     * `Math.round` so the rounding error is spent on the section's own top
+     * padding rather than on a sliver of the row above it.
+     *
+     * The word-level `scrollIntoViewIfNeeded()` in scene 3 is deliberately
+     * left alone: it makes a word hoverable rather than framing a shot, and
+     * a partly visible line of prose at the top of an article screenshot is
+     * what reading an article looks like.
+     */
+    const frameOn = async (page: import('@playwright/test').Page, selector: string) => {
+      const section = page.locator(selector).first();
+      await section.evaluate((el) => {
+        window.scrollTo(0, Math.ceil(el.getBoundingClientRect().top + window.scrollY));
+      });
+      await page.waitForTimeout(400);
+      const box = await section.boundingBox();
+      expect(box, `${selector} is not in the layout, so the scene has nothing to frame on`)
+        .not.toBeNull();
+      const y = box?.y ?? 0;
+      /*
+       * Two-sided on purpose, and that is the whole finding. A section
+       * sitting below the top of the viewport leaves the row above it half
+       * in shot; one sitting above the top has its own heading cut off. Both
+       * shipped, in different frames, from the same call. The upper bound
+       * also catches the case a deliberate offset cannot fix on its own — a
+       * scroll clamped by the end of the document, which leaves the row
+       * above in shot however precisely the target was computed.
+       */
+      expect(
+        y,
+        `${selector} sits ${Math.round(y)}px below the top of the viewport, so whatever is ` +
+          'above it is half in shot',
+      ).toBeLessThanOrEqual(0.5);
+      expect(
+        y,
+        `${selector} sits ${Math.round(-y)}px above the top of the viewport, so the scene is ` +
+          'cutting the head off the row it exists to show',
+      ).toBeGreaterThanOrEqual(-1.5);
+    };
+
     /*
      * A high ratio on purpose. The shipped default starts at 6% and climbs,
      * which is right for a reader and useless in a screenshot — one changed
@@ -230,6 +289,16 @@ test.describe('store assets', () => {
      * climbing towards a third of the content words "after half an hour on a
      * feed" — so the tile now agrees with the sentence beside it instead of
      * undercutting a progress panel with six seconds.
+     *
+     * **This seed no longer affects a single committed byte, and it is kept
+     * anyway.** `frameOn` below aligns scene 4 on the discoveries feed, which
+     * scrolls the tile row out of all three frames; measured rather than
+     * reasoned, by running the generator at 60s instead of 1800s and diffing
+     * all fifteen hashes — nothing moved. It stays because the drift returns
+     * the moment anybody reframes this scene to include the tiles, which is
+     * a plausible thing to want, and because rediscovering why `9s` and `6s`
+     * were both legitimate output cost a session once already. Insurance,
+     * not load-bearing; `tests/tools/store-assets.test.ts` says the same.
      */
     const SEEDED_ATTENTION_SECONDS = 1800;
     await rpc({
@@ -250,8 +319,7 @@ test.describe('store assets', () => {
     await capture('04-progress', async (page) => {
       await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
       await page.waitForTimeout(1800);
-      await page.locator('.section:has(.finds)').first().scrollIntoViewIfNeeded();
-      await page.waitForTimeout(400);
+      await frameOn(page, '.section:has(.finds)');
     });
 
     // 5. The friction, stated plainly. This is the screen-time claim, and
@@ -259,8 +327,7 @@ test.describe('store assets', () => {
     await capture('05-settings', async (page) => {
       await page.goto(`chrome-extension://${extensionId}/options.html`);
       await page.waitForTimeout(1800);
-      await page.locator('.section:has(.band)').first().scrollIntoViewIfNeeded();
-      await page.waitForTimeout(400);
+      await frameOn(page, '.section:has(.band)');
     });
   });
 });
