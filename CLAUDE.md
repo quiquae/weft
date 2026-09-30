@@ -292,6 +292,16 @@ derives generators from anything under `tools/` or `tests/e2e/` declaring an
 `OUT` inside `docs/`, so a sixth needs no edit. `ls tools/*.mjs` against
 `package.json` found **three** unlisted tools in one command.
 
+**And the sharpest version of it: `docs/STORE-LISTING.md:205` had documented
+the generator the whole time** — "`node tools/make-store-tiles.mjs` writes,
+into `docs/store/`" — in the document `docs/SUBMIT.md` sends a human to for
+the listing copy. So the repository disagreed with itself and the guard
+believed the wrong half. The check that settles this class is
+`git grep <tool-name>` before writing "generated from nothing" about
+anything, and it costs one command. Same shape as the 2026-09-28 finding that
+two places already spelled `īnsula` correctly while four did not: this
+project's stale claims are usually contradicted *somewhere inside it*.
+
 Done test-first throughout. Red first on `[ 'ōs', 'liber' ]` and on
 `2 pages are advertised under more than one URL` before the builder was
 touched, and on `tools/make-store-tiles.mjs writes tile-small-440x280.png,

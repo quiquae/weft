@@ -1333,6 +1333,14 @@ move until it is.
       in one command: `make-store-tiles.mjs`, `make-icons.mjs` and
       `merge-cousins.mjs`. Only the first writes a committed artefact.
 
+      **And `docs/STORE-LISTING.md:205` had named the generator the whole
+      time** — "`node tools/make-store-tiles.mjs` writes, into `docs/store/`"
+      — in the document `docs/SUBMIT.md` sends a human to for the listing
+      copy. The repository disagreed with itself and the guard believed the
+      wrong half. Before writing "generated from nothing" about any file,
+      `git grep` the tool name; it costs one command. That page now names
+      `npm run tiles` and the artefact group.
+
 - [ ] **`docs/firstrun/icons.png` has 134 blank rows where its own label
       promises the magnified comparison, and no generator can fix it.**
       Found 2026-09-30 by opening it, which is the only check available.
