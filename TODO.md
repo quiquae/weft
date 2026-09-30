@@ -923,7 +923,7 @@ move until it is.
       Fixed by closing it alongside the other two, before the 2500 ms settle
       the spec already waits for its flushes. The guard is now **derived**:
       it finds every `const X = await context.newPage()` whose block contains
-      `await X.goto(`${origin}` and requires each to be closed before
+      ``await X.goto(`${origin}`` and requires each to be closed before
       `reset-vocabulary`, so a fourth page added later is covered for free.
       A second test cross-counts the `${origin}` navigations against the
       pages the derivation found, which is what fires if `context.newPage()`
@@ -1210,7 +1210,7 @@ being overlooked when the guard was written, and it sat in the suite for a
 commit. **Third, the fix is the derivation, not the close.** Naming the
 pages is what failed; the guard now finds every
 `const X = await context.newPage()` whose block holds
-`await X.goto(`${origin}` and requires it closed before `reset-vocabulary`,
+``await X.goto(`${origin}`` and requires it closed before `reset-vocabulary`,
 with a second test cross-counting the `${origin}` navigations so a renamed
 `newPage()` cannot leave the loop running over an empty list. Same move as
 deriving proper nouns from capitalisation rather than curating a list.

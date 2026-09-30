@@ -245,7 +245,7 @@ things to check cannot police the thing that was forgotten.
 
 **So the fix is the derivation, not the close.** The guard now finds every
 `const X = await context.newPage()` whose block contains
-`await X.goto(`${origin}` and requires each closed before
+``await X.goto(`${origin}`` and requires each closed before
 `reset-vocabulary`, so a fourth page added later is covered for free.
 Anchored on `.goto(` rather than on `${origin}` appearing in the block,
 because the popup passes `${origin}/article.html` into an init script as a
