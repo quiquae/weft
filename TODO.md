@@ -1180,6 +1180,16 @@ move until it is.
          curly across all 59 Latin and Old English notes. The seed now reads
          `“gangende” survives in “gangway”`.
 
+      A fourth staleness in `word-latin.png` was chased down rather than
+      assumed, because it could have been a live defect: its "Other Latin
+      nouns" list shows `miles` bare beside `rēx` and `dēns`, and
+      `tools/build-site.mjs:358` renders that list from `e.tgt`, the
+      inflected surface form, so a missing macron there would be on every
+      Latin word page. It is not. `git log -L` on the seed row shows `mīles`
+      has carried its macron since `89cdfda`, and the built pack reads
+      `"tgt": "mīles"` today. **A stale screenshot showing a defect is not
+      evidence the defect exists.**
+
       `word-page.png` (`/old-english/hūs`) and `pricing.png` read current —
       the OE descent sentence was never backwards, and the three prices
       still match `src/core/pricing.ts`. So three of five, not one.

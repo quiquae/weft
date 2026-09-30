@@ -229,6 +229,22 @@ pages**; and `hub-descent.png`, whose note column reads `"gangende" survives
 in "gangway"` in straight quotes, which **PR #20** unified to curly across all
 59 Latin and Old English notes. Verified against the seed rather than
 remembered: `lex-ang.tsv:263` now carries the curly form.
+
+**A fourth staleness in the same shot was chased down rather than assumed,
+and it is the one that could have been a live defect.** `word-latin.png`'s
+"Other Latin nouns" list renders `miles` bare where `rēx`, `rēgīna`,
+`vīcīnus` and `dēns` beside it all carry macrons — and
+`tools/build-site.mjs:358` renders that list from `e.tgt`, the inflected
+*surface form*, not from `tgtLemma`, so a surface form missing a macron
+would be published on every Latin word page. It is not: `git log -L` on the
+seed row shows `mīles` has carried its macron since `89cdfda`, the original
+lexicon commit, and the built pack has `"tgt": "mīles"` today. So the shot
+was rendered by a site builder old enough to predate that, and the product
+has been right throughout. Recorded so nobody re-opens it: **a stale
+screenshot showing a defect is not evidence the defect exists**, and the
+cheap way to tell is `git log -L` on the seed row rather than reading the
+renderer.
+
 `word-page.png` and `pricing.png` read current — the Old English descent
 sentence was never backwards, and the three prices still match
 `src/core/pricing.ts`.
