@@ -4,13 +4,18 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-09-29:** every automatable check is green, measured at the end
+**State on 2026-09-30:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **71** tool tests / 21 suites, **36** e2e passing
+suites, **73** tool tests / 21 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
-`npm run test:all` exits 0 end to end. **The store-asset generator was never
+`npm run test:all` exits 0 end to end. **`docs/screens/` holds 14 files and
+all 14 are generated, as of 2026-09-30** — five captures of the content site
+that no generator wrote were deleted, three of them displaying copy PRs #8,
+#17 and #20 had each removed from the product, and the pathspec guard that
+catches this now derives its filenames for all three image groups instead of
+one. **The store-asset generator was never
 broken and the listing art was stale, as of 2026-09-29** — the recorded
 failure was a *production* `dist/chrome` on disk, the generator passes in
 ~45 s, and run by hand it reported that three of the fifteen shots showed
@@ -1142,80 +1147,128 @@ move until it is.
       assertion — so **exit 1 from a generator has to be read before it is
       believed**, in both directions.
 
-- [ ] **`docs/screens/` declares 19 files generated and 5 of them have no
-      generator, and one is stale in the way PR #8 spent a session fixing.**
-      Found 2026-09-29 while verifying the group, by comparing mtimes after a
-      regeneration rather than by reading `git status` — which shows the same
-      nothing for "reproduced exactly" and "never written".
+- [x] **`docs/screens/` declared 19 files generated and 5 of them had no
+      generator, and three of the five were stale.** Done 2026-09-30, as
+      **shape 1**: the five are deleted and the guard is generalised to all
+      three image groups. The premise was exact and the staleness was worse
+      than recorded.
 
-      **The pathspec is `paths: ['docs/screens']`, a whole directory.** That
-      is the exact shape PR #30 found wrong for `docs/firstrun` and narrowed
-      to `docs/firstrun/0*.png`, and the precedent for the fix is one group
-      above it in `tools/artefacts.ts`: `store listing screenshots` declares
-      `docs/store/*-0*.png` "because the tiles beside the captures are drawn
-      by hand and are not generated from anything." `documentation
-      screenshots` is the last group that never had that line drawn for it.
+      **The census, measured rather than trusted.** 19 committed, and the
+      derivation of what `screenshots.spec.ts` actually writes returns
+      **14** — with **zero** derived names that have no committed file, so
+      the two sets line up exactly and the five offenders are precisely the
+      ones the item named: `landing.png`, `pricing.png`, `word-latin.png`,
+      `word-page.png`, `hub-descent.png`. All five were captures of the
+      **content site**, which no spec can produce because nothing serves
+      `dist/site`, and none was referenced by any document or page.
 
-      `screenshots.spec.ts` writes **14** of the 19. The five it does not are
-      screenshots of the **content site**, not the extension —
-      `landing.png`, `pricing.png`, `word-latin.png`, `word-page.png`,
-      `hub-descent.png` — so no spec could write them: they would need
-      `dist/site` served and driven, which nothing does. All five were last
-      committed **2026-09-15** and **none of them is referenced anywhere**,
-      in any document or page (`git grep` for each filename returns
-      nothing).
+      **All five were opened and read, and that found two more stale shots
+      the item had not.** Each is a copy fix a previous session spent a
+      whole PR making, still on display in a committed binary that
+      `artefacts:check` reported fresh:
 
-      **`landing.png` is stale, and in the two ways PR #8 fixed.** It reads
-      **"48% — 1 word in 2"** — the unqualified phrasing, which PR #8
-      replaced with "of content words" everywhere, and which is the
-      identical defect PR #27 found in three `*-05-settings.png`. Worse, 48%
-      is a reading the demo can no longer produce at all: PR #8 turned it
-      down to the Standard preset, ceiling 35%. Its caption is pre-#8 too.
-      So the file shows a number nobody gets, which is the exact thing PR #8
-      exists to have removed from the product.
+      1. `landing.png` — "48% — 1 word in 2", the unqualified phrasing
+         **PR #8** replaced with "of content words", at a density the demo
+         can no longer reach since #8 turned its ceiling to 35%. Its caption
+         predates #8 too: it does not name the preset on show.
+      2. `word-latin.png` (`/latin/vacca`) — "This is the Latin word your
+         English borrowed from **vaccine**", the **backwards descent
+         sentence PR #17 fixed on 312 published pages**. The site now reads
+         "your English *vaccine* was borrowed from".
+      3. `hub-descent.png` — the note column in **straight** double quotes,
+         `"gangende" survives in "gangway"`, which **PR #20** unified to
+         curly across all 59 Latin and Old English notes. The seed now reads
+         `“gangende” survives in “gangway”`.
 
-      **Not folded into the PR that found it, for the reason that PR's own
-      finding gives**: the honest fix is a decision about five unreferenced
-      files, and three shapes are defensible.
+      A fourth staleness in `word-latin.png` was chased down rather than
+      assumed, because it could have been a live defect: its "Other Latin
+      nouns" list shows `miles` bare beside `rēx` and `dēns`, and
+      `tools/build-site.mjs:358` renders that list from `e.tgt`, the
+      inflected surface form, so a missing macron there would be on every
+      Latin word page. It is not. `git log -L` on the seed row shows `mīles`
+      has carried its macron since `89cdfda`, and the built pack reads
+      `"tgt": "mīles"` today. **A stale screenshot showing a defect is not
+      evidence the defect exists.**
 
-      1. **Narrow the pathspec to the 14 and delete the five.** Cheapest,
-         and defensible precisely because nothing references them — an
-         unreferenced stale screenshot is a liability with no reader. Also
-         removes the thing that makes `landing.png` look current.
-      2. **Narrow the pathspec, keep the five, and recapture by hand.** Keeps
-         them available for a blog post or README, at the cost of five
-         binaries that go stale again on the next site edit with nothing to
-         detect it.
-      3. **Write a site-screenshot generator** so all 19 are generated and
-         the pathspec is honest as it stands. The most work by far, and it
-         needs `npm run site` built and served first; it is the only shape
-         that makes the group self-correcting.
+      `word-page.png` (`/old-english/hūs`) and `pricing.png` read current —
+      the OE descent sentence was never backwards, and the three prices
+      still match `src/core/pricing.ts`. So three of five, not one.
 
-      Preference: **1**, on the grounds that nothing links to them and the
-      repository already refuses to keep artefacts nothing can check — but
-      it is a deletion of committed files, so it wants a human's assent
-      rather than an agent's. PR #30's guard (a file in the pathspec with no
-      generator writing it) should be **generalised to every group** once
-      the pathspec is narrowed; it currently applies only to the first-run
-      group, which is why this went unseen for two weeks.
+      **Shape 1 was taken and the deletion is the part a human may want to
+      reverse.** It is recoverable: `git show <sha>^:docs/screens/landing.png`
+      restores any of them. The grounds are the ones this file recorded —
+      nothing links to them, and the repository refuses to keep artefacts
+      nothing can check — strengthened by the three stale ones above, which
+      make them a liability rather than merely unread. Shape 3, a
+      site-screenshot generator, was rejected on cost against value: it
+      needs `dist/site` built and served, and it would be new machinery
+      maintained for five binaries no reader has.
 
-      Note that `artefacts:check` could never have caught this: it asks
-      provenance, not content, and `tools/artefacts.ts:22` says so. The
-      verify stamp written for this group on 2026-09-29 is literally true —
+      **The pathspec stays `docs/screens`, and that is now the accurate
+      declaration rather than a line nobody drew.** Every remaining file is
+      generated, so there is nothing to exclude; and no glob can pick out
+      the fourteen anyway, since they share no prefix. What keeps it honest
+      is a test rather than a pattern.
+
+      **PR #30's guard is generalised to all three groups, and the names are
+      derived in both shapes.** `firstrun.spec.ts` and `screenshots.spec.ts`
+      name each file as a single-quoted literal; `store-assets.spec.ts`
+      composes `${frame}-${slug}.png` from a frame table and the slug it is
+      called with, so none of its fifteen names exists in the file as a
+      whole string — which is exactly the reason the guard had been left
+      applying to one group only, and the reason the other two went
+      unchecked for two weeks. Multiplying the frames by the slugs covers
+      it. Single quotes rather than any quote, because this repository
+      writes filenames in prose inside backticks and a comment naming a file
+      is not a generator writing it.
+
+      Done test-first: red on
+      `docs/screens/hub-descent.png is inside the artefact pathspec but
+      tests/e2e/screenshots.spec.ts does not write it` before anything was
+      deleted. 71 → **73** tools tests, 21 suites unchanged (one hand-picked
+      test replaced by three derived ones). Three vacuity probes, each shown
+      to fire rather than assumed, and restored by copying a backup back and
+      checking md5: a hand-made file added inside `docs/screens` names it;
+      **breaking the composed derivation turns the *store* group red**,
+      which is what proves that group was not passing vacuously; and a
+      pathspec matching nothing hits the `matches nothing` floor.
+
+      **The verify stamp for this group was deleted rather than rewritten.**
+      Its note read "no change to commit" and this commit changes the
+      group's file set, so `artefacts:check` dates the group from this
+      commit on its own. Same call PRs #30, #31 and #32 each made for the
+      group they genuinely changed, and the one thing the stamp must never
+      mean. `artefacts:check` still reports **1 stale** — the release notes,
+      B2a, whose `inputs` are `.` — with all three screenshot groups `ok`.
+
+      Note that `artefacts:check` could never have caught any of this: it
+      asks provenance, not content, and `tools/artefacts.ts:22` says so.
+      The stamp written for this group on 2026-09-29 was literally true —
       all 19 files were regenerated twice and compared, with no change to
-      commit — but the regeneration is a no-op for five of them, so "no
-      change" vouches for nothing there. **That is the sense in which a
+      commit — but the regeneration was a no-op for five of them, so "no
+      change" vouched for nothing there. **That is the sense in which a
       whole-directory pathspec launders a hand-made file into a generated
-      one.**
+      one**, and it is now a test failure rather than a thing somebody has
+      to notice.
 
-`Next` has the one item above. `Now` is empty. Everything in Blocked needs
-Creagh — B1 an identity and a payment method, B2 onwards a decision that is
-not reversible the way a commit is. A session picking this file up should read
-the Blocked section, confirm B1 has not moved, and stop. There is no
+`Next` and `Now` are both **empty** as of 2026-09-30. Everything in Blocked
+needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
+is not reversible the way a commit is. A session picking this file up should
+read the Blocked section, confirm B1 has not moved, and stop. There is no
 agent-shaped work left in this file; if a session wants one, `npm run
 artefacts:check`, `npm run packs:verify` and `npm run site:check` are the
 three gates `test:all` leaves out, and re-measuring one of them is honest
 work that cannot break anything.
+
+**One deletion a human may want to look at**, recorded here because it is the
+only thing this repository has removed that nobody asked for in person: five
+committed PNGs under `docs/screens/` went on 2026-09-30, listed in the item
+above with the commit that removed them. They were captures of the content
+site, no generator wrote them, nothing referenced them, and three of the five
+were displaying copy the product had deliberately changed. If any is wanted
+back, `git show <sha>^:docs/screens/<name>.png > docs/screens/<name>.png` —
+but the guard added alongside will then fail by name until either a generator
+writes it or the pathspec says it is hand-made, which is the point.
 
 One thing found and deliberately not queued, because it is a judgement about
 the note corpus rather than a defect: **the descent hub's note column and the
