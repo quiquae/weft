@@ -1,5 +1,5 @@
 /**
- * No generator may frame a committed shot with `scrollIntoViewIfNeeded`.
+ * No generator may frame a committed shot with anything but `frameOn`.
  *
  * This is PR #32's finding, applied to the specs it did not look at. That
  * session fixed `store-assets.spec.ts`, where four of the six scrolled
@@ -66,11 +66,20 @@ const generators = (): { name: string; src: string }[] =>
     .map((name) => ({ name, src: readFileSync(join(E2E, name), 'utf8') }))
     .filter(({ src }) => /const OUT\s*=\s*join\([^;]*['"][^'"]*\.\.\/docs\//.test(src));
 
-/** Every `.section` selector a spec scrolls to, with how it scrolls there. */
+/**
+ * Every `.section` selector a spec scrolls to, with how it scrolls there.
+ *
+ * Matched on **any** scroll call rather than on `scrollIntoViewIfNeeded` by
+ * name, which is the same one-sidedness this file exists to complain about:
+ * naming the one mechanism that has already gone wrong leaves
+ * `scrollIntoView({ block: 'start' })` and a raw `scrollTo` silently
+ * skipped, and either would reintroduce a fractional or unasserted landing
+ * point. The rule is that a section is framed by `frameOn` and nothing else.
+ */
 const framedSections = (src: string): { selector: string; line: string }[] =>
   src
     .split('\n')
-    .filter((line) => /\.section[^'"]*/.test(line) && /scrollIntoViewIfNeeded|frameOn/.test(line))
+    .filter((line) => /\.section[^'"]*/.test(line) && /scroll|frameOn/i.test(line))
     .map((line) => ({
       selector: (/['"](\.section[^'"]*)['"]/.exec(line)?.[1] ?? '').trim(),
       line: line.trim(),

@@ -1108,6 +1108,12 @@ move until it is.
       edit. The two-sidedness assertion moved out of
       `store-assets.test.ts` rather than being duplicated there.
 
+      The guard matches **any** scroll call on a `.section`, not
+      `scrollIntoViewIfNeeded` by name — naming the one mechanism that has
+      already gone wrong is the same one-sidedness, and leaves
+      `scrollIntoView({ block: 'start' })` silently skipped. Proved by
+      injecting exactly that and watching it fire.
+
       **Zero committed bytes changed, and that is measured rather than
       assumed.** `scrollIntoViewIfNeeded` happened to land exactly where
       `frameOn` computes, so all 8 first-run files came back byte-identical.

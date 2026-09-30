@@ -246,6 +246,12 @@ argument this file already uses for `build-site.test.ts`: the rule is not a
 property of the store listing, and a file named for one spec policing three
 is how the blind spot got built.
 
+The rule is "framed by `frameOn` and nothing else" rather than "not
+`scrollIntoViewIfNeeded`": naming the one mechanism already known to have
+gone wrong is the same one-sidedness one more level down, and would leave
+`scrollIntoView({ block: 'start' })` and a raw `scrollTo` silently skipped.
+Proved by injecting exactly that and watching the guard fire.
+
 **Zero committed bytes changed, measured rather than assumed.**
 `scrollIntoViewIfNeeded` happened to land exactly where `frameOn` computes.
 All three groups were regenerated **twice each**, with npm's own exit status
