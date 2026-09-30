@@ -184,26 +184,14 @@ describe('the store shots are framed on a section boundary', () => {
   });
 
   /*
-   * The two-sidedness is the finding, so it is the thing asserted. A shot
-   * whose target section sits below the top of the viewport has the row above
-   * it half in shot; one whose section sits above the top has its own heading
-   * cut off. Both happened, in different frames, from the same call.
+   * The two-sidedness of `frameOn` itself is asserted in
+   * `tests/tools/shot-framing.test.ts`, not here, and the move is the point.
+   * `frameOn` used to be a local helper in this one spec; it is now exported
+   * from `tests/e2e/fixtures.ts`, because this spec was never the only
+   * generator scrolling a section into shot — `firstrun.spec.ts` had the
+   * same `scrollIntoViewIfNeeded` call on `.section:has(.help__report)` and
+   * this file could not see it. A guard that derives its selectors from one
+   * hand-picked file has exactly that blind spot, so the cross-cutting rule
+   * is stated once, over every spec with an `OUT` directory under `docs/`.
    */
-  test('the framing assertion is two-sided, because two shots erred each way', () => {
-    const body = /const frameOn =[\s\S]*?\n {4}\};/.exec(spec);
-    assert.ok(body, 'no frameOn helper in store-assets.spec.ts — has it been renamed?');
-    const src = body[0];
-    assert.match(
-      src,
-      /toBeLessThanOrEqual/,
-      'frameOn does not bound the section from above, so the row above it can bleed in — ' +
-        'the defect in apple-04-progress.png and apple-05-settings.png',
-    );
-    assert.match(
-      src,
-      /toBeGreaterThanOrEqual/,
-      'frameOn does not bound the section from below, so the scene can behead the very row ' +
-        'it exists to show — the defect in chrome-05 and edge-05-settings.png',
-    );
-  });
 });

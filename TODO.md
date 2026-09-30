@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **66** tool tests / 19 suites, **36** e2e passing
+suites, **71** tool tests / 21 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -43,6 +43,14 @@ heading gone entirely. `scrollIntoViewIfNeeded` states no alignment, so the
 landing point was a function of the viewport height. The two scenes are now
 framed on the section's own top edge and the capture *asserts* it landed
 there, two-sided, so the generator fails rather than writing a clipped shot.
+**And the same call was live in a second generator, as of 2026-09-29** —
+`firstrun.spec.ts` framed `.section:has(.help__report)` the same unsafe way
+and the guard could not see it, because it derived its selectors from one
+hand-picked file. `frameOn` is now exported from `tests/e2e/fixtures.ts` so
+there is one implementation, and `tests/tools/shot-framing.test.ts` derives
+the *spec list* from the `OUT` directory every generator has. No committed
+byte moved: all 45 files across the three groups came back byte-identical
+twice, and all three groups now carry a verify stamp that is true.
 **Both stale documentation sets are regenerated and the screens set
 is now reproducible, as of 2026-09-29** — `docs/firstrun/` came back
 byte-identical to what was committed, and `docs/screens/` needed three
@@ -1068,6 +1076,65 @@ move until it is.
       by copying a backup file back, not by asking git — the process note
       from PR #31, where a `git checkout` of one file reverted the fix along
       with the probe.
+
+- [x] **The same framing defect was live in a second generator, and the
+      guard could not see it.** Done 2026-09-29. The item above fixed
+      `store-assets.spec.ts`; `firstrun.spec.ts:107` had the identical
+      `scrollIntoViewIfNeeded()` call on the identical kind of selector,
+      `.section:has(.help__report)`, and nothing caught it. **Its shot
+      happens to land correctly at 1000x900, which is the trap rather than a
+      reprieve** — the four clipped store captures were byte-stable too, and
+      `artefacts:check` called that group `ok` for as long as they were
+      wrong. A call whose correctness is a coincidence of the viewport height
+      is one options-page edit away from being silently wrong in
+      documentation a stranger reads.
+
+      **The reason it was missed is the guard, not the reviewer.**
+      `tests/tools/store-assets.test.ts` already derives its selector list
+      from the spec rather than typing it out, and says why in as many words:
+      "a hand-written list of the things to check cannot police the thing
+      that was forgotten." But the *file* it reads is hand-picked. The
+      derivation was within-file and the thing forgotten was a different
+      file — the same lesson one level up, and the third sighting of this
+      shape in three sessions (PR #31's mislabelled `oe.close()`, PR #30's
+      pathspec claiming a whole directory).
+
+      `frameOn` now lives in `tests/e2e/fixtures.ts` and is exported, so
+      there is one implementation and the two-sided assertion cannot be
+      present in one generator and absent in another. The new guard,
+      `tests/tools/shot-framing.test.ts`, **derives the spec list too** —
+      from the one thing every generator has and no other e2e spec does, an
+      `OUT` directory under `docs/`. A fourth generator is covered without an
+      edit. The two-sidedness assertion moved out of
+      `store-assets.test.ts` rather than being duplicated there.
+
+      **Zero committed bytes changed, and that is measured rather than
+      assumed.** `scrollIntoViewIfNeeded` happened to land exactly where
+      `frameOn` computes, so all 8 first-run files came back byte-identical.
+      All three groups were regenerated **twice each** with npm's exit status
+      captured per run and the mtimes checked every time: **45 files** (8
+      first-run, 18 store, 19 screens) byte-identical run-to-run *and* to
+      what was committed. Relocating `frameOn` was confirmed not to move a
+      store byte, rather than argued to be safe.
+
+      **The runtime assertion was proved live in the new spec, not merely
+      satisfied.** Injecting a 40px mis-landing makes the generator *fail*
+      with `.section:has(.help__report) sits 40px below the top of the
+      viewport` and write nothing, which is the difference between "the
+      generator passed" and "the generator would have caught it". The three
+      static guards were each shown to fail too: reverting the fix names the
+      selector, dropping the lower bound names the `edge-05` class, and
+      renaming `OUT` makes the store-assets test *vanish from the run
+      entirely* and is caught only by the non-vacuity floor.
+
+      All three verify stamps were **written** this time, not deleted, and
+      the distinction is the whole point of the stamp: PRs #30-#32 each
+      changed real content, so their stamps' note ("no change to commit")
+      would have been false. Here nothing changed and it is true. One process
+      note: a probe run failed with `Unknown system error -11 ... scandir
+      'test-results/.playwright-artifacts-0'` — the iCloud trap, not the
+      assertion — so **exit 1 from a generator has to be read before it is
+      believed**, in both directions.
 
 `Next` is now **empty**, and so is `Now`. Everything in Blocked needs
 Creagh — B1 an identity and a payment method, B2 onwards a decision that is

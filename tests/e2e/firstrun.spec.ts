@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.ts';
+import { test, expect, frameOn } from './fixtures.ts';
 import { mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -97,6 +97,21 @@ test.describe('first run', () => {
      * The details have to be gathered first: the block does not exist until
      * the button is pressed, which is the point of the surface — nothing is
      * assembled, let alone sent, until a person asks for it.
+     *
+     * Framed with `frameOn` rather than `scrollIntoViewIfNeeded`, which is
+     * what this used until 2026-09-29. That call states no alignment, so
+     * Blink picks the landing point from the element's position and the
+     * viewport height — and it cut across a row of content in four of the
+     * six scrolled store captures, erring in *both* directions. This shot
+     * happened to land correctly at 1000x900, which is not a reprieve: the
+     * store shots were byte-stable while they were clipped, so every
+     * automated check called them fine. `frameOn` asserts two-sidedly where
+     * it landed, so the generator fails rather than writing a clipped shot.
+     *
+     * `.section:has(.help__report)` is the whole Help section, not the
+     * report row — `:has()` matches every `.section` ancestor and `.first()`
+     * takes the outermost. That is deliberate: the shot opens on the Help
+     * heading, which is what gives the diagnostic block its context.
      */
     const help = await context.newPage();
     await help.setViewportSize({ width: 1000, height: 900 });
@@ -104,7 +119,7 @@ test.describe('first run', () => {
     await help.waitForTimeout(1200);
     await help.getByRole('button', { name: 'Gather the details' }).click();
     await help.waitForTimeout(600);
-    await help.locator('.section:has(.help__report)').first().scrollIntoViewIfNeeded();
+    await frameOn(help, '.section:has(.help__report)');
     await help.waitForTimeout(400);
     await help.screenshot({ path: join(OUT, '07-help.png') });
     await help.close();

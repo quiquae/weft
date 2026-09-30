@@ -1,4 +1,11 @@
-import { test as base, chromium, type BrowserContext, type Worker } from '@playwright/test';
+import {
+  test as base,
+  chromium,
+  expect,
+  type BrowserContext,
+  type Page,
+  type Worker,
+} from '@playwright/test';
 import { createHash } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -209,7 +216,7 @@ export const test = base.extend<WeftFixtures>({
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect };
 
 /** Text of an element with whitespace collapsed, for stable comparison. */
 export const squash = (s: string | null): string => (s ?? '').replace(/\s+/g, ' ').trim();
@@ -222,3 +229,73 @@ export function changedWordCount(original: string, text: string): number {
   for (let i = 0; i < Math.min(a.length, b.length); i++) if (a[i] !== b[i]) n++;
   return n;
 }
+
+/**
+ * Frame a viewport capture on one section, with its top edge at the top
+ * of the shot and nothing above it in view.
+ *
+ * This replaces `scrollIntoViewIfNeeded()`, which states no alignment:
+ * Blink picks one from the element's position and the viewport height, so
+ * the landing point was a function of the frame size and erred in both
+ * directions. Four of the six scrolled captures were cut across a row of
+ * content, and it took someone opening the files to notice — they are
+ * byte-stable, so the reproducibility diff and `artefacts:check` were
+ * both satisfied. `apple-04-progress.png` cut the tops off all four
+ * progress tiles' digits and `apple-05-settings.png` halved the preset
+ * button row, which is the row *above* the target bleeding in; but
+ * `chrome-05-settings.png` halved the "Resting density" heading and
+ * `edge-05-settings.png` lost it altogether and opened mid-sentence,
+ * which is the target section's own head cut off.
+ *
+ * Integer `scrollTo`, not `scrollIntoView({ block: 'start' })`: a
+ * fractional scroll offset shifts subpixel text rendering, and these
+ * fifteen files are compared byte for byte. `Math.ceil` rather than
+ * `Math.round` so the rounding error is spent on the section's own top
+ * padding rather than on a sliver of the row above it.
+ *
+ * The word-level `scrollIntoViewIfNeeded()` in scene 3 is deliberately
+ * left alone: it makes a word hoverable rather than framing a shot, and
+ * a partly visible line of prose at the top of an article screenshot is
+ * what reading an article looks like.
+ *
+ * **It lives in the fixtures rather than in `store-assets.spec.ts` because
+ * that spec was not the only generator doing this.** `firstrun.spec.ts` had
+ * the same call on the same kind of selector, `.section:has(.help__report)`,
+ * and the session that fixed the four store captures never looked at it. Its
+ * shot happened to land correctly at 1000x900, which is the trap rather than
+ * a reprieve: the four store shots were byte-stable too, and
+ * `artefacts:check` called that group `ok` for as long as they were clipped.
+ * One implementation means the two-sided assertion cannot be present in one
+ * generator and absent in another, and `tests/tools/shot-framing.test.ts`
+ * fails if any generator frames a section some other way.
+ */
+export const frameOn = async (page: Page, selector: string) => {
+  const section = page.locator(selector).first();
+  await section.evaluate((el) => {
+    window.scrollTo(0, Math.ceil(el.getBoundingClientRect().top + window.scrollY));
+  });
+  await page.waitForTimeout(400);
+  const box = await section.boundingBox();
+  expect(box, `${selector} is not in the layout, so the scene has nothing to frame on`)
+    .not.toBeNull();
+  const y = box?.y ?? 0;
+  /*
+   * Two-sided on purpose, and that is the whole finding. A section
+   * sitting below the top of the viewport leaves the row above it half
+   * in shot; one sitting above the top has its own heading cut off. Both
+   * shipped, in different frames, from the same call. The upper bound
+   * also catches the case a deliberate offset cannot fix on its own — a
+   * scroll clamped by the end of the document, which leaves the row
+   * above in shot however precisely the target was computed.
+   */
+  expect(
+    y,
+    `${selector} sits ${Math.round(y)}px below the top of the viewport, so whatever is ` +
+      'above it is half in shot',
+  ).toBeLessThanOrEqual(0.5);
+  expect(
+    y,
+    `${selector} sits ${Math.round(-y)}px above the top of the viewport, so the scene is ` +
+      'cutting the head off the row it exists to show',
+  ).toBeGreaterThanOrEqual(-1.5);
+};
