@@ -1438,6 +1438,43 @@ move until it is.
       exception list.
 
 
+- [ ] **`tools/seed/lex-fr.tsv` is partly generated and nothing says so.**
+      Found 2026-09-30 while checking a claim in this session's own draft
+      journal entry, which said `merge-cousins.mjs` "writes no committed
+      artefact". It writes `tools/seed/lex-fr.tsv` from
+      `tools/seed/fr-cousins.tsv`, and **both are tracked.**
+
+      The gap is real and the tool's own doc comment describes it: it
+      refuses to overwrite an existing value, so editing `fr-cousins.tsv` to
+      *correct* an etymology and re-running "does nothing at all, silently,
+      and the correction appears to have been applied" unless `--force` is
+      passed. So the failure mode is a checked claim that never landed, in
+      the file whose whole purpose is that etymology review does not have to
+      read 356 rows of vocabulary.
+
+      Not covered by anything today. The new `every committed image is
+      inside an artefact pathspec` guard correctly does not reach it — it is
+      a TSV. CI's `Committed packs match the seed lexicons` step rebuilds
+      the *packs from* the seeds, one layer downstream, so a stale
+      `lex-fr.tsv` passes it with everything green.
+
+      Two shapes, no strong preference:
+
+      1. **An artefact group**, `paths: ['tools/seed/lex-fr.tsv']`,
+         `inputs: ['tools/seed/fr-cousins.tsv', 'tools/merge-cousins.mjs']`,
+         `regenerate: 'node tools/merge-cousins.mjs --force'`. Cheap, and it
+         makes the dependency visible where the other eight are. Note it
+         would report stale on a gloss edit too, which is a legitimate
+         reason for `lex-fr.tsv` to move and has nothing to do with
+         cousins — so the group would be noisier than the rest.
+      2. **A CI step running `--dry`** and failing if it reports pending
+         merges. Narrower and quieter, and it answers content rather than
+         provenance. Needs `--dry` to exit non-zero on pending work, which
+         it may not do today; check before costing it.
+
+      Shape 2 looks better for the noise reason, but it wants the `--dry`
+      exit code read first. Worth ~20 minutes either way.
+
 - [ ] **CI can rebuild the four shipped icons and diff them, which is a
       stronger check than the provenance group they just got.**
       Queued 2026-09-30 by the session that added the group, and the comment
@@ -1474,8 +1511,9 @@ move until it is.
       it is not byte-reproducible cross-platform and must stay on
       provenance. Same for `site/og.png`.
 
-`Now` and `Next` are both empty apart from the item above, as of
-2026-09-30. Everything in Blocked
+`Now` is **empty** and `Next` holds the **two** items above, as of
+2026-09-30. Both came out of the same session and both are agent-shaped.
+Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
 read the Blocked section and confirm B1 has not moved. The one item above is

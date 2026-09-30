@@ -342,8 +342,21 @@ a correct tree. Unit, jsdom and e2e did not move, and `src/` was not touched
 at all, so sizes could not.
 
 `npm run icons` and `npm run icons:sheet` are new, which also closes two of
-the three unlisted tools `ls tools/*.mjs` found last session. `merge-cousins.mjs`
-is the third and stays unlisted; it writes no committed artefact.
+the three unlisted tools `ls tools/*.mjs` found last session.
+`merge-cousins.mjs` is the third and stays unlisted — **and the claim last
+session recorded about it, "only the first writes a committed artefact", is
+wrong.** It writes `tools/seed/lex-fr.tsv` from `tools/seed/fr-cousins.tsv`
+and both are tracked. Not an image, so the new guard correctly does not
+reach it; but its own doc comment records a silent failure mode — it refuses
+to overwrite an existing value, so correcting a claim in `fr-cousins.tsv`
+and re-running "does nothing at all, silently, and the correction appears to
+have been applied" unless `--force` is passed. Left alone here and noted in
+`TODO.md`, because it is a text artefact and this session's business was
+closing the image gap. Recorded chiefly as the seventh instance of the
+pattern: **before writing "writes no committed artefact" about anything,
+`git ls-files` what it writes.** That is the same one-command check this
+file already prescribes for "generated from nothing", and it caught this in
+the draft of this very entry.
 
 What needs a human: unchanged, still everything below **B1**, register
 `weft.study`. `TODO.md`'s `Now` is **empty**; `Next` holds one item, queued
