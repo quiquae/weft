@@ -1142,7 +1142,73 @@ move until it is.
       assertion — so **exit 1 from a generator has to be read before it is
       believed**, in both directions.
 
-`Next` is now **empty**, and so is `Now`. Everything in Blocked needs
+- [ ] **`docs/screens/` declares 19 files generated and 5 of them have no
+      generator, and one is stale in the way PR #8 spent a session fixing.**
+      Found 2026-09-29 while verifying the group, by comparing mtimes after a
+      regeneration rather than by reading `git status` — which shows the same
+      nothing for "reproduced exactly" and "never written".
+
+      **The pathspec is `paths: ['docs/screens']`, a whole directory.** That
+      is the exact shape PR #30 found wrong for `docs/firstrun` and narrowed
+      to `docs/firstrun/0*.png`, and the precedent for the fix is one group
+      above it in `tools/artefacts.ts`: `store listing screenshots` declares
+      `docs/store/*-0*.png` "because the tiles beside the captures are drawn
+      by hand and are not generated from anything." `documentation
+      screenshots` is the last group that never had that line drawn for it.
+
+      `screenshots.spec.ts` writes **14** of the 19. The five it does not are
+      screenshots of the **content site**, not the extension —
+      `landing.png`, `pricing.png`, `word-latin.png`, `word-page.png`,
+      `hub-descent.png` — so no spec could write them: they would need
+      `dist/site` served and driven, which nothing does. All five were last
+      committed **2026-09-15** and **none of them is referenced anywhere**,
+      in any document or page (`git grep` for each filename returns
+      nothing).
+
+      **`landing.png` is stale, and in the two ways PR #8 fixed.** It reads
+      **"48% — 1 word in 2"** — the unqualified phrasing, which PR #8
+      replaced with "of content words" everywhere, and which is the
+      identical defect PR #27 found in three `*-05-settings.png`. Worse, 48%
+      is a reading the demo can no longer produce at all: PR #8 turned it
+      down to the Standard preset, ceiling 35%. Its caption is pre-#8 too.
+      So the file shows a number nobody gets, which is the exact thing PR #8
+      exists to have removed from the product.
+
+      **Not folded into the PR that found it, for the reason that PR's own
+      finding gives**: the honest fix is a decision about five unreferenced
+      files, and three shapes are defensible.
+
+      1. **Narrow the pathspec to the 14 and delete the five.** Cheapest,
+         and defensible precisely because nothing references them — an
+         unreferenced stale screenshot is a liability with no reader. Also
+         removes the thing that makes `landing.png` look current.
+      2. **Narrow the pathspec, keep the five, and recapture by hand.** Keeps
+         them available for a blog post or README, at the cost of five
+         binaries that go stale again on the next site edit with nothing to
+         detect it.
+      3. **Write a site-screenshot generator** so all 19 are generated and
+         the pathspec is honest as it stands. The most work by far, and it
+         needs `npm run site` built and served first; it is the only shape
+         that makes the group self-correcting.
+
+      Preference: **1**, on the grounds that nothing links to them and the
+      repository already refuses to keep artefacts nothing can check — but
+      it is a deletion of committed files, so it wants a human's assent
+      rather than an agent's. PR #30's guard (a file in the pathspec with no
+      generator writing it) should be **generalised to every group** once
+      the pathspec is narrowed; it currently applies only to the first-run
+      group, which is why this went unseen for two weeks.
+
+      Note that `artefacts:check` could never have caught this: it asks
+      provenance, not content, and `tools/artefacts.ts:22` says so. The
+      verify stamp written for this group on 2026-09-29 is literally true —
+      all 19 files were regenerated twice and compared, with no change to
+      commit — but the regeneration is a no-op for five of them, so "no
+      change" vouches for nothing there. **That is the sense in which a
+      whole-directory pathspec launders a hand-made file into a generated
+      one.**
+
+`Next` has the one item above. `Now` is empty. Everything in Blocked needs
 Creagh — B1 an identity and a payment method, B2 onwards a decision that is
 not reversible the way a commit is. A session picking this file up should read
 the Blocked section, confirm B1 has not moved, and stop. There is no

@@ -280,6 +280,24 @@ whose `inputs` are `.` — with all three screenshot groups `ok`. Note for the
 next session: all three groups declare `tests/e2e/fixtures.ts` as an input, so
 **any** edit to the fixtures stales all three at once.
 
+**Verifying the third group found the next defect, and mtimes are what
+found it.** `documentation screenshots` declares `paths: ['docs/screens']`,
+a whole directory — the exact shape PR #30 found wrong for `docs/firstrun`
+and narrowed, with the precedent sitting one group above it in
+`tools/artefacts.ts`. `screenshots.spec.ts` writes **14** of the 19; the
+other five are captures of the **content site**, which no spec can produce
+because nothing serves `dist/site`. All five were last committed 2026-09-15
+and none is referenced anywhere. **`landing.png` reads "48% — 1 word in 2"**
+— the unqualified phrasing PR #8 replaced everywhere, at a reading the demo
+can no longer produce, since PR #8 turned its ceiling down to 35%. So it
+shows a number nobody gets, which is the thing PR #8 existed to remove.
+Queued rather than fixed: the honest options include deleting five
+unreferenced committed binaries, which wants a human's assent. `git status`
+could not have found this and neither could `artefacts:check`, which asks
+provenance rather than content; **comparing mtimes after a regeneration is
+what separates "reproduced exactly" from "never written"**, and this file
+already records that the two look identical from outside.
+
 One process note worth keeping: a probe run exited 1 with
 `Unknown system error -11 … scandir 'test-results/.playwright-artifacts-0'`
 — the iCloud trap, not the assertion — and was nearly read as the guard
