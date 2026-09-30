@@ -284,18 +284,32 @@ Done test-first. Four tests in a new `tests/tools/icon-sheet.test.ts`, all
 four red against the committed sheet before anything was written — the first
 naming `a labelled section of the sheet delivered no artwork`, the second
 `artwork runs off the frame` with `['the bottom edge']`. Two read the pixels
-and two are derived. **Five probes, each shown to fire**: the in-generator
+and two are derived. **Six probes, each shown to fire**: the in-generator
 assertion; the edge test's *side* branches, proved separately by removing the
 body padding and getting `['the left edge', 'the right edge']`, which is what
 shows it discriminates rather than just failing; the inverted image test,
 against a staged orphan; the widened predicate narrowed back to `docs/`,
 which fires `only 5 generators were derived`; and the `sizedShots` derivation,
-which fires by name on `tools/make-icons.mjs`.
+which fires by name on `tools/make-icons.mjs`; and the same
+narrowing re-run after the two halves were unified, which still fires.
 
-**Two process notes, both of which nearly produced a false result.** A `sed`
-probe mangled a regex literal and the whole test file failed to parse — and
-`pass 0 / fail 1` reads at a glance exactly like the guard firing. It was a
-syntax error. Read a probe's message, never just its status; this file
+**And the derivation had a real defect of its own, found by making the two
+halves symmetric: in JavaScript `.` does not match a newline but a negated
+character class does.** The spec half's `[^']*` ran straight past the end of
+the `const OUT` line and captured up to the next quote *anywhere later in the
+file* — `docs/firstrun` came back as `");\n\ntest.describe("`. The symptom
+was `only 3 generators were derived`, which reads as "there are no
+generators" rather than as "the pattern is broken", and it was caught only
+because the floor put a number on it. Both regexes now exclude newlines
+explicitly and the spec one is lazy. Worth keeping: **a floor that prints a
+count is how a broken pattern announces itself as broken** rather than as an
+empty world, which is the same argument this file already makes for
+non-vacuity floors.
+
+**Three process notes, each of which nearly produced a false result.** A
+`sed` probe mangled a regex literal and the whole test file failed to parse —
+and `pass 0 / fail 1` reads at a glance exactly like the guard firing. It was
+a syntax error. Read a probe's message, never just its status; this file
 already records the rule for generators, in both directions, and it applies
 to tests too. Second, and worth naming because it is this repository's own
 signature defect turned on its author: probe G fired with `declares an OUT

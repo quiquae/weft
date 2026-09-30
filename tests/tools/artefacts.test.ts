@@ -522,11 +522,34 @@ describe("the real artefact list points at things that are actually there", () =
     const declared = new Set(
       artefactsFor('1.0.1').flatMap((a) => captures(a).map((f) => f.slice(f.lastIndexOf('/') + 1))),
     );
+    /*
+     * One predicate for both halves: a generator is a file declaring an
+     * `OUT` that points somewhere committed images actually live.
+     *
+     * The directory test is what replaces the old `docs/` in the pattern,
+     * and it is derived rather than listed. Widening to any `OUT` correctly
+     * picked up `make-icons.mjs` and also picked up `check-links.mjs` and
+     * `build-pack.mjs`, which declare an `OUT` and write no image — one into
+     * gitignored `dist/site`, one into JSON that CI already rebuilds and
+     * diffs. **A tool writing where nothing is committed produces nothing
+     * that can go stale in git**, which is the honest reason to skip it, and
+     * it needs no knowledge of which tools those happen to be.
+     *
+     * Applied to the specs too, though all three currently write into
+     * `docs/`: leaving that half on "declares an `OUT`" would let a future
+     * spec pointing at a temp directory fail the floor below for no reason.
+     */
     const generators: { by: string; names: Set<string> }[] = [];
     for (const file of readdirSync(join(ROOT, 'tests/e2e'))) {
       if (!file.endsWith('.spec.ts')) continue;
       const src = readFileSync(join(ROOT, 'tests/e2e', file), 'utf8');
-      if (!/const OUT = /.test(src)) continue;
+      // `[^\n]` and a lazy quantifier, both deliberately: `.` does not match
+      // a newline in JavaScript but a negated character class does, so
+      // `[^']*` here ran straight past the end of the OUT line and captured
+      // up to the next quote *anywhere later in the file* — which read as
+      // "no generator found" rather than as a broken pattern.
+      const out = src.match(/const OUT = [^\n]*?'(?:\.\.\/)*([^'\n]+)'/)?.[1];
+      if (!out || !images(out).length) continue;
       generators.push({
         by: `tests/e2e/${file}`,
         names: new Set([...literalShots(src), ...composedShots(src)]),
@@ -535,28 +558,23 @@ describe("the real artefact list points at things that are actually there", () =
     for (const file of readdirSync(join(ROOT, 'tools'))) {
       if (!file.endsWith('.mjs')) continue;
       const src = readFileSync(join(ROOT, 'tools', file), 'utf8');
-      const out = src.match(/const OUT = join\(ROOT, '([^']+)'\)/)?.[1];
-      if (!out) continue;
-      // The OUT has to be somewhere committed images actually live, and that
-      // filter is derived too. Widening the predicate from `docs/` to any
-      // directory correctly picked up `make-icons.mjs` and also picked up
-      // `check-links.mjs` and `build-pack.mjs`, which declare an OUT and
-      // write no image — the first into `dist/site`, which is gitignored,
-      // the second into `src/lexicon/packs`, which is JSON and is covered by
-      // CI's stronger rebuild-and-diff. A tool writing where nothing is
-      // committed produces nothing that can go stale in git.
-      if (!images(out).length) continue;
+      const out = src.match(/const OUT = join\(ROOT, '([^'\n]+)'\)/)?.[1];
+      if (!out || !images(out).length) continue;
       generators.push({
         by: `tools/${file}`,
         names: new Set([...literalShots(src), ...sizedShots(src)]),
       });
     }
 
-    // Three floors rather than two. The first catches the derivation
-    // silently matching nothing; the second catches it matching only the
-    // specs again; the third catches the predicate narrowing back to
-    // `docs/`, which is the regression that hid `assets/` and which the two
-    // above cannot see, because `make-store-tiles.mjs` satisfies both.
+    // Three floors. The first catches the derivation silently matching
+    // nothing; the second catches it matching only the specs again.
+    //
+    // The third names the specific regression that hid `assets/` — the
+    // predicate narrowing back to `docs/`. Today the count floor happens to
+    // catch that too, since dropping `make-icons.mjs` takes 6 to 5; but that
+    // is arithmetic coincidence, not coverage. Add a seventh generator under
+    // `docs/` and the count stays at 6 while the blind spot is fully back.
+    // The third floor is the one that still fires then.
     assert.ok(generators.length >= 6, `only ${generators.length} generators were derived`);
     assert.ok(
       generators.some((g) => g.by.startsWith('tools/')),

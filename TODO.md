@@ -1758,6 +1758,17 @@ derivation. The version that settles it asks from the other end —
 is no list to forget to extend. **Measured gap is now zero: 47 committed
 images, 47 declared, and the exception list is empty on purpose.**
 
+**One defect the fix introduced and the floor caught, worth knowing before
+touching any of these derivations: in JavaScript `.` does not match a newline
+but a negated character class does.** Unifying the two halves of the
+generator derivation on one predicate put `[^']*` in the spec half, and it
+ran past the end of the `const OUT` line to the next quote anywhere later in
+the file — `docs/firstrun` came back as `");\n\ntest.describe("`. The
+symptom was `only 3 generators were derived`, which reads as "there are no
+generators" rather than "the pattern is broken". Both regexes now exclude
+newlines and the spec one is lazy. **A floor that prints a count is how a
+broken pattern announces itself as broken** rather than as an empty world.
+
 **Process notes, both of which nearly produced a false result.** A `sed` probe
 that mangled a regex literal made the whole test file fail to parse, and
 `pass 0 / fail 1` reads at a glance exactly like the guard firing — it was a
