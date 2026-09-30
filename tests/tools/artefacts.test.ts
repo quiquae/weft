@@ -327,6 +327,12 @@ describe("the real artefact list points at things that are actually there", () =
    * pass for as long as the mechanism went unused and fail on its first
    * real use, which is the worst moment for a guard to turn red.
    */
+  /** Committed image files under `paths`, whatever the pathspecs are. */
+  const images = (...paths: string[]): string[] =>
+    git(ROOT, ['ls-files', ...paths])
+      .split('\n')
+      .filter((f) => /\.(png|svg|jpg|jpeg|webp)$/.test(f));
+
   const captures = (artefact: { name: string; paths: string[] }): string[] => {
     const manifest = artefactManifestPath(artefact.name);
     return git(ROOT, ['ls-files', ...artefact.paths])
@@ -373,16 +379,18 @@ describe("the real artefact list points at things that are actually there", () =
     for (const file of matched) assert.match(file, /-0\d-/);
   });
 
-  test('the first-run pathspec takes the generated shots and not the hand-made icon sheet', () => {
+  test('the first-run pathspec takes the walkthrough shots and not the icon sheet', () => {
     const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('first-run'));
     assert.ok(shots);
     const matched = captures(shots);
-    // `icons.png` is a magnified icon comparison sheet drawn by hand, and it
-    // sits in this directory because that is where the first-run material
-    // was collected, not because any generator writes it. Unlike the tiles
-    // beside the store captures — which turned out to have a generator all
-    // along — this one really is hand-made: `tools/make-icons.mjs` writes
-    // `assets/icon-*.png`, the shipped icons, and nothing writes the sheet.
+    // `icons.png` sits in this directory and is not one of these. The
+    // separation is no longer about hand-made versus generated — this test
+    // used to say the sheet was "drawn by hand" and nothing wrote it, which
+    // was true and was also what let its lower half sit blank for eight
+    // days. It has `tools/make-icon-sheet.mjs` now. It stays out of this
+    // group because it has different inputs and a different command: these
+    // come from an e2e spec against a built extension, that one from a tool
+    // against `assets/`.
     assert.ok(matched.length > 0, 'the first-run pathspec matches nothing');
     for (const file of matched) {
       assert.match(file, /docs\/firstrun\/\d\d-[a-z-]+\.png$/, `${file} is not a generated shot`);
@@ -418,6 +426,24 @@ describe("the real artefact list points at things that are actually there", () =
     const frames = Array.from(spec.matchAll(/\{ name: '([a-z]+)',/g), (m) => m[1]!);
     const slugs = Array.from(spec.matchAll(/\bcapture\('([a-z0-9-]+)'/g), (m) => m[1]!);
     return new Set(frames.flatMap((f) => slugs.map((s) => `${f}-${s}.png`)));
+  };
+
+  /**
+   * A third shape, because `tools/make-icons.mjs` spells its four outputs a
+   * third way: one template, `icon-${size}.png`, multiplied by a `sizes`
+   * array. Neither of the two above can see it — the name exists nowhere in
+   * the file as a whole string and there is no frame table to multiply.
+   *
+   * That is not a curiosity. It is half of why the four shipped icons sat
+   * outside every artefact pathspec: the derivation below could not name
+   * them even once it was pointed at the right file.
+   */
+  const sizedShots = (src: string): Set<string> => {
+    const list = src.match(/const sizes = \[([\d, ]+)\]/)?.[1];
+    if (!list) return new Set();
+    const sizes = list.split(',').map((n) => n.trim());
+    const stems = Array.from(src.matchAll(/`([a-z0-9-]+)\$\{size\}\.png`/g), (m) => m[1]!);
+    return new Set(stems.flatMap((stem) => sizes.map((size) => `${stem}${size}.png`)));
   };
 
   /** Which spec writes each image group, and how that spec spells a name. */
@@ -475,21 +501,55 @@ describe("the real artefact list points at things that are actually there", () =
    * two weeks on the grounds that checking was impossible, and the check
    * takes forty seconds.
    *
-   * The generator list is derived twice over rather than typed, because the
-   * previous version of it was a three-row table of *specs* — and the fifth
-   * generator is not a spec. Any file under `tools/` or `tests/e2e/` that
-   * declares an `OUT` inside `docs/` is a generator here, so a sixth needs
-   * no edit to this file.
+   * The generator list is derived rather than typed, because the version
+   * before it was a three-row table of *specs* — and the fifth generator is
+   * not a spec. Any file under `tools/` or `tests/e2e/` that declares an
+   * `OUT` at all is a generator here, so a seventh needs no edit.
+   *
+   * **`OUT` at all, and not `OUT` inside `docs/`, which is what it said
+   * until now.** That predicate was the blind spot of the very class this
+   * test exists to police, and it hid a whole generator for the sixth time
+   * in six sessions: `tools/make-icons.mjs` writes four committed PNGs and
+   * an SVG into `assets/` — the toolbar icon, the most-seen thing in the
+   * product — and because `assets/` is not `docs/`, this loop skipped the
+   * file and nothing ever reported those five stale. The lesson is the one
+   * `docs/STORE-LISTING.md:205` already taught about the tiles, one level
+   * up: it is not enough for the *list* to be derived if the predicate
+   * selecting what to derive from is still hand-drawn around the cases
+   * somebody remembered.
    */
   test('every image a generator writes is inside an artefact pathspec', () => {
     const declared = new Set(
       artefactsFor('1.0.1').flatMap((a) => captures(a).map((f) => f.slice(f.lastIndexOf('/') + 1))),
     );
+    /*
+     * One predicate for both halves: a generator is a file declaring an
+     * `OUT` that points somewhere committed images actually live.
+     *
+     * The directory test is what replaces the old `docs/` in the pattern,
+     * and it is derived rather than listed. Widening to any `OUT` correctly
+     * picked up `make-icons.mjs` and also picked up `check-links.mjs` and
+     * `build-pack.mjs`, which declare an `OUT` and write no image — one into
+     * gitignored `dist/site`, one into JSON that CI already rebuilds and
+     * diffs. **A tool writing where nothing is committed produces nothing
+     * that can go stale in git**, which is the honest reason to skip it, and
+     * it needs no knowledge of which tools those happen to be.
+     *
+     * Applied to the specs too, though all three currently write into
+     * `docs/`: leaving that half on "declares an `OUT`" would let a future
+     * spec pointing at a temp directory fail the floor below for no reason.
+     */
     const generators: { by: string; names: Set<string> }[] = [];
     for (const file of readdirSync(join(ROOT, 'tests/e2e'))) {
       if (!file.endsWith('.spec.ts')) continue;
       const src = readFileSync(join(ROOT, 'tests/e2e', file), 'utf8');
-      if (!/const OUT = .*'\.\.\/\.\.\/docs\//.test(src)) continue;
+      // `[^\n]` and a lazy quantifier, both deliberately: `.` does not match
+      // a newline in JavaScript but a negated character class does, so
+      // `[^']*` here ran straight past the end of the OUT line and captured
+      // up to the next quote *anywhere later in the file* — which read as
+      // "no generator found" rather than as a broken pattern.
+      const out = src.match(/const OUT = [^\n]*?'(?:\.\.\/)*([^'\n]+)'/)?.[1];
+      if (!out || !images(out).length) continue;
       generators.push({
         by: `tests/e2e/${file}`,
         names: new Set([...literalShots(src), ...composedShots(src)]),
@@ -498,20 +558,39 @@ describe("the real artefact list points at things that are actually there", () =
     for (const file of readdirSync(join(ROOT, 'tools'))) {
       if (!file.endsWith('.mjs')) continue;
       const src = readFileSync(join(ROOT, 'tools', file), 'utf8');
-      if (!/const OUT = join\(ROOT, 'docs\//.test(src)) continue;
-      generators.push({ by: `tools/${file}`, names: literalShots(src) });
+      const out = src.match(/const OUT = join\(ROOT, '([^'\n]+)'\)/)?.[1];
+      if (!out || !images(out).length) continue;
+      generators.push({
+        by: `tools/${file}`,
+        names: new Set([...literalShots(src), ...sizedShots(src)]),
+      });
     }
 
-    // Two floors rather than one. The first catches the derivation silently
-    // matching nothing; the second catches it matching only the specs again,
-    // which is the exact regression that would restore the blind spot.
-    assert.ok(generators.length >= 4, `only ${generators.length} generators were derived`);
+    // Three floors. The first catches the derivation silently matching
+    // nothing; the second catches it matching only the specs again.
+    //
+    // The third names the specific regression that hid `assets/` — the
+    // predicate narrowing back to `docs/`. Today the count floor happens to
+    // catch that too, since dropping `make-icons.mjs` takes 6 to 5; but that
+    // is arithmetic coincidence, not coverage. Add a seventh generator under
+    // `docs/` and the count stays at 6 while the blind spot is fully back.
+    // The third floor is the one that still fires then.
+    assert.ok(generators.length >= 6, `only ${generators.length} generators were derived`);
     assert.ok(
       generators.some((g) => g.by.startsWith('tools/')),
       'no generator outside tests/e2e was derived, so this is a test of the specs again',
     );
+    assert.ok(
+      generators.some((g) => g.by === 'tools/make-icons.mjs'),
+      'the generator that writes outside docs/ was not derived, ' +
+        'so the predicate has narrowed back to the directory somebody remembered',
+    );
     for (const { by, names } of generators) {
-      assert.ok(names.size > 0, `${by} declares an OUT under docs/ but names no image`);
+      assert.ok(
+        names.size > 0,
+        `${by} writes into a directory holding committed images but names none, ` +
+          'so the derivation that reads its filenames has stopped matching',
+      );
       for (const name of names) {
         assert.ok(
           declared.has(name),
@@ -520,6 +599,45 @@ describe("the real artefact list points at things that are actually there", () =
         );
       }
     }
+  });
+
+  /**
+   * The same question asked from the other end, where it cannot go blind.
+   *
+   * Every test above starts from something hand-drawn — a pathspec, a
+   * directory to scan, a way of spelling a filename — and each has been
+   * wrong in turn: a table of three specs that could not see a fifth
+   * generator, then a predicate scoped to `docs/` that could not see
+   * `assets/`, then a `const OUT` convention that `tools/make-og.mjs` does
+   * not follow at all, so `site/og.png` was unreachable by any of them.
+   * Three fixes to one derivation in three sessions, each of which made the
+   * derivation cleverer and left it still a derivation.
+   *
+   * This enumerates from `git ls-files` instead. Every committed image in
+   * the repository must sit inside some artefact group, full stop. There is
+   * no list to forget to extend and no convention to fall outside: a new
+   * image is covered the moment it is committed or it fails here by name.
+   *
+   * The exception list is deliberately empty, and keeping it empty is the
+   * point. Two files were outside when this was written and neither needed
+   * an exception — `site/og.png` got the group it should always have had,
+   * and `site/icon.svg` turned out to be a hand-made copy of a string a
+   * generator already produces, so `make-icons.mjs` now writes both. If a
+   * genuinely hand-made image is ever added, the honest move is a group
+   * whose `regenerate` says who to ask, not an entry here.
+   */
+  test('every committed image is inside an artefact pathspec', () => {
+    const declared = new Set(images(...artefactsFor('1.0.1').flatMap((a) => a.paths)));
+    const all = images();
+    // Non-vacuity floor: `git ls-files` with no pathspec returning nothing
+    // would pass this test silently, and it is the one derivation here that
+    // has no narrower fallback to notice.
+    assert.ok(all.length >= 40, `only ${all.length} committed images were found`);
+    assert.deepEqual(
+      all.filter((f) => !declared.has(f)),
+      [],
+      'a committed image is in no artefact group, so nothing can report it stale',
+    );
   });
 
   test('the release notes are named after the version they belong to', () => {

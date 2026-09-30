@@ -9,6 +9,13 @@
  * The mark is the product: vertical warp threads with a weft crossing only
  * part of them. A full crossing would mean a fully translated page, which is
  * exactly what Weft does not do.
+ *
+ * To see what this produces without installing anything, run
+ * `npm run icons:sheet` after it: `tools/make-icon-sheet.mjs` renders
+ * `docs/firstrun/icons.png` from these four PNGs, at actual size on the
+ * three backgrounds a toolbar has and magnified at a whole-number factor.
+ * Changing the geometry below and not re-running it leaves the sheet
+ * describing the old mark; `npm run artefacts:check` reports that.
  */
 import { deflateSync } from 'node:zlib';
 import { writeFile, mkdir } from 'node:fs/promises';
@@ -208,8 +215,23 @@ async function main() {
   <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="rgb(47 75 124)" stroke-width="20.5"/>
 </svg>
 `;
-  await writeFile(join(OUT, 'icon.svg'), svg);
-  console.log('  assets/icon.svg');
+  /*
+   * Written to both places it is served from, because it was committed in
+   * both and generated into only one.
+   *
+   * `site/icon.svg` was a hand-made copy of this exact string — byte-
+   * identical when found, which is the only reason it had not yet become a
+   * quiet lie. Nothing wrote it, so editing the mark here would have
+   * updated the extension and the store listing and left the landing page
+   * showing the old one, with `git status` clean and every check green.
+   * Same class as the four warp threads this SVG carries and the 16px
+   * raster's two: a second copy of a fact drifts, and the fix is to stop
+   * having a second copy rather than to remember to update it.
+   */
+  for (const dest of [join(OUT, 'icon.svg'), join(ROOT, 'site/icon.svg')]) {
+    await writeFile(dest, svg);
+    console.log(`  ${dest.slice(ROOT.length + 1)}`);
+  }
 }
 
 main().catch((err) => {

@@ -57,14 +57,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **78 pass**, 22 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **83 pass**, 23 suites, ~5 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 16 129 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | 4 groups; on 2026-09-29 (latest) **1 stale, 3 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-09-30 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -192,6 +192,180 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-09-30 — the sheet's own label was the spec, and the guard's predicate was drawn round the directory somebody remembered
+
+The queue sent this session at `TODO.md`'s one unchecked item, the broken
+lower half of `docs/firstrun/icons.png`. **The premise was exact and the
+diagnosis in it was incomplete in a way that mattered.** Measured before
+anything moved, by decoding the PNG and counting non-background pixels per
+row: 1180×700, rows **y 530–663 entirely blank**, 134 of them, the only ink
+below at y 664–699. All as recorded.
+
+**What the item had not named is *why*, and the fragment's position is the
+whole answer.** That surviving ink sits at **x 933–1029** — far right. So the
+magnified row was laid out at a literal 8×, which turns 16/32/48/128 into
+128/256/384/**1024** and needs 1792px of artwork inside a 1180px frame. It
+overflowed *sideways* and was then clipped from below. The item had filed it
+with the clipped listing shots of PRs #32 and #33, and a framing fix alone —
+which is what those were — would not have been enough here. The geometry had
+to change. **A fragment's position is a diagnosis**, and it cost four
+minutes.
+
+**Shape 2 of the three offered, and the argument for it is stronger than the
+item recorded.** `tools/make-icon-sheet.mjs` renders the sheet from HTML the
+way `make-store-tiles.mjs` renders the tiles. PR #34 had refused a
+site-screenshot generator as "new machinery maintained for one binary no
+reader has", and that argument does not transfer, for one reason: **this
+sheet has committed inputs.** `tools/make-icons.mjs` draws each size with its
+own geometry — two warp threads at 16px, three at 32, four at 48 and 128 —
+while `assets/icon.svg` beside them carries four at every size. So the sheet
+must load the **shipped rasters**, and a version scaled from the SVG would
+look entirely plausible while misreporting the single thing the sheet exists
+to show. Files that can move are recurring staleness, which is what a
+generator closes for good; the five deleted site captures had no committed
+input at all.
+
+**384px, and the reason is arithmetic rather than taste.** Every icon is
+magnified to one cell so the four marks can be compared at one scale, which
+is the comparison `0d9910e` was about. 384 is the least common multiple of
+the four sizes, so every factor is a whole number — 24×, 12×, 8×, 3×.
+Nearest neighbour is only truthful at an integer factor: at 5.33× some source
+columns duplicate five times and others six, so a thread of uniform width
+acquires a stagger and the sheet reports a defect the icon does not have. A
+test fails and names the factor if anyone rounds the cell to 400.
+
+**The generator asserts its content fits before writing**, the bargain
+`frameOn` makes in `tests/e2e/fixtures.ts`. Proved rather than assumed:
+narrowing the frame makes it exit 1 with `the sheet is 844px wide inside a
+456px frame` and write nothing, confirmed by md5 rather than by `git status`.
+
+**Then declaring the sheet's inputs found four committed images in no
+artefact group, and two independent reasons they were invisible.** This is
+the sixth sighting in six sessions of the shape this file keeps naming, and
+the sharpest yet, because the guard that should have caught it was built
+*last session* for exactly this class. PR #36's converse guard derives
+generators from anything under `tools/` or `tests/e2e/` declaring an `OUT`
+**inside `docs/`** — and `make-icons.mjs` writes into `assets/`. So the check
+built to find generators outside the system had the system's own blind spot
+compiled into its predicate. Underneath that, a second reason no directory
+predicate could ever have fixed: **`tools/make-og.mjs` declares no `const
+OUT` at all**, it writes `join(ROOT, 'site/og.png')` inline, so the social
+card — read by more people than any screenshot here, since it is what a link
+to weft.study unfurls as — was unreachable by any version of the rule.
+
+**So the guard that settles this class asks from the other end.** Every
+generator-coverage test in `tests/tools/artefacts.test.ts` had started from
+something hand-drawn, and each was wrong in turn: a table of three specs,
+then a predicate scoped to `docs/`, then an `OUT` convention. Three fixes to
+one derivation in three sessions, each making it cleverer and leaving it a
+derivation. `every committed image is inside an artefact pathspec` enumerates
+from `git ls-files` instead, with a floor at 40 so it cannot pass on an empty
+set. There is no list to forget to extend. **The measured gap is now zero:
+47 committed images, 47 declared**, across 5 → **8** groups.
+
+**The exception list is empty and keeping it empty is the point.** Neither
+stray needed one. `site/og.png` got the group it should always have had. And
+`site/icon.svg` turned out to be a **hand-made copy of the exact string
+`make-icons.mjs` already generates** — byte-identical when found, which is
+the only reason it was not yet a lie: editing the mark would have updated the
+extension and the store listing and left the landing page showing the old
+one, with `git status` clean and every check green. The generator writes both
+destinations now, and regenerating moved **zero bytes**, verified by md5.
+
+The converse guard was **kept** rather than replaced. It answers a different
+question — whether a file *inside* a pathspec is one its generator actually
+writes, the `07-help.png` and `landing.png` class. `check-links.mjs` and
+`build-pack.mjs` are excluded from it by a **derived** filter rather than by
+name: they declare an `OUT` and write no committed image, one into gitignored
+`dist/site`, one into JSON that CI already rebuilds and diffs.
+
+Done test-first. Four tests in a new `tests/tools/icon-sheet.test.ts`, all
+four red against the committed sheet before anything was written — the first
+naming `a labelled section of the sheet delivered no artwork`, the second
+`artwork runs off the frame` with `['the bottom edge']`. Two read the pixels
+and two are derived. **Six probes, each shown to fire**: the in-generator
+assertion; the edge test's *side* branches, proved separately by removing the
+body padding and getting `['the left edge', 'the right edge']`, which is what
+shows it discriminates rather than just failing; the inverted image test,
+against a staged orphan; the widened predicate narrowed back to `docs/`,
+which fires `only 5 generators were derived`; and the `sizedShots` derivation,
+which fires by name on `tools/make-icons.mjs`; and the same
+narrowing re-run after the two halves were unified, which still fires.
+
+**And the derivation had a real defect of its own, found by making the two
+halves symmetric: in JavaScript `.` does not match a newline but a negated
+character class does.** The spec half's `[^']*` ran straight past the end of
+the `const OUT` line and captured up to the next quote *anywhere later in the
+file* — `docs/firstrun` came back as `");\n\ntest.describe("`. The symptom
+was `only 3 generators were derived`, which reads as "there are no
+generators" rather than as "the pattern is broken", and it was caught only
+because the floor put a number on it. Both regexes now exclude newlines
+explicitly and the spec one is lazy. Worth keeping: **a floor that prints a
+count is how a broken pattern announces itself as broken** rather than as an
+empty world, which is the same argument this file already makes for
+non-vacuity floors.
+
+**And a third, which is this session's own defect class landing on this
+session's own guard.** `MAX_BLANK` in the new test was 60, with a comment
+claiming it sat "three times above the widest legitimate gap", measured at
+10 to 21 rows. True of the **old** 1180×700 sheet and false of the one
+replacing it: the new layout's widest real gap is **42** rows, between the
+first grid row's caption and the second row's artwork. So a number
+describing a sheet that no longer existed had been written into the file
+whose entire purpose is to stop that — on its first pass. Now 90, with both
+bounds measured and stated: 48 clear of the widest real gap, 44 clear of the
+134-row hole, which keeps it a regression test against the sheet that
+actually shipped rather than only a hypothetical future one. Found by
+measuring the generated sheet's gaps instead of trusting a comment written
+against its predecessor.
+
+**Three process notes, each of which nearly produced a false result.** A
+`sed` probe mangled a regex literal and the whole test file failed to parse —
+and `pass 0 / fail 1` reads at a glance exactly like the guard firing. It was
+a syntax error. Read a probe's message, never just its status; this file
+already records the rule for generators, in both directions, and it applies
+to tests too. Second, and worth naming because it is this repository's own
+signature defect turned on its author: probe G fired with `declares an OUT
+under docs/ but names no image` *after* the predicate had been widened past
+`docs/`. A mislabelled failure message is the fingerprint of the overlooked
+case — here, of the case just fixed. Corrected.
+
+Counts moved 739 → **744** and tools 78 → **83** / 22 → **23 suites** in five
+documents, with `docs/LAUNCH.md:221` swept **by name and first** for the
+fourteenth session running. Worth naming: **this file's own `artefacts:check`
+row was two sessions stale at "4 groups; 1 stale, 3 fresh"** — PR #35 took it
+to 5 and swept its journal line and `TODO.md`'s gate table but not the
+command table seven rows above, the same class as the row PR #32 was caught
+on at `63`. It now reads 8 groups and says out loud that the gate exits 1 on
+a correct tree. Unit, jsdom and e2e did not move, and `src/` was not touched
+at all, so sizes could not.
+
+`npm run icons` and `npm run icons:sheet` are new, which also closes two of
+the three unlisted tools `ls tools/*.mjs` found last session.
+`merge-cousins.mjs` is the third and stays unlisted — **and the claim last
+session recorded about it, "only the first writes a committed artefact", is
+wrong.** It writes `tools/seed/lex-fr.tsv` from `tools/seed/fr-cousins.tsv`
+and both are tracked. Not an image, so the new guard correctly does not
+reach it; but its own doc comment records a silent failure mode — it refuses
+to overwrite an existing value, so correcting a claim in `fr-cousins.tsv`
+and re-running "does nothing at all, silently, and the correction appears to
+have been applied" unless `--force` is passed. Left alone here and noted in
+`TODO.md`, because it is a text artefact and this session's business was
+closing the image gap. Recorded chiefly as the seventh instance of the
+pattern: **before writing "writes no committed artefact" about anything,
+`git ls-files` what it writes.** That is the same one-command check this
+file already prescribes for "generated from nothing", and it caught this in
+the draft of this very entry.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. `TODO.md`'s `Now` is **empty**; `Next` holds one item, queued
+by this session and pointed at by name from a comment in
+`tools/artefacts.ts`: CI can rebuild the four shipped icons and diff them,
+because `make-icons.mjs` is the one image generator here that is
+byte-reproducible on any machine — a hand-written PNG encoder over
+`node:zlib`, no browser, no fonts, no clock. That is strictly stronger than
+the provenance group they got today.
 
 ### 2026-09-30 — the gate's doc comment named the bug it could not see, and a collision is not a 404
 
