@@ -1251,11 +1251,50 @@ move until it is.
       one**, and it is now a test failure rather than a thing somebody has
       to notice.
 
-`Next` and `Now` are both **empty** as of 2026-09-30. Everything in Blocked
+- [ ] **Four hand-made assets sit outside every artefact pathspec, nothing
+      has ever checked them, and B5 step 7 uploads three of them to the
+      Chrome Web Store.** Found 2026-09-30, immediately after PR #34, by
+      asking the obvious next question: if a whole-directory pathspec
+      launders a hand-made file into a generated one, what happens to the
+      hand-made files the *narrow* pathspecs correctly exclude?
+
+      `docs/store/*-0*.png` and `docs/firstrun/0*.png` are narrowed on
+      purpose — PR #30 and its predecessor drew those lines because no
+      generator writes the tiles or the icon sheet. Correct, and the cost is
+      that those four files are outside the artefact system altogether:
+
+      | File | Last committed |
+      |---|---|
+      | `docs/store/tile-small-440x280.png` | 2026-09-15 |
+      | `docs/store/tile-marquee-1400x560.png` | 2026-09-15 |
+      | `docs/store/logo-edge-300x300.png` | 2026-09-15 |
+      | `docs/firstrun/icons.png` | 2026-09-22 |
+
+      **The date is the reason this is not hypothetical.** The three tiles
+      carry the same 2026-09-15 stamp as `landing.png`, which PR #34 deleted
+      for advertising "48% — 1 word in 2" at a density the product cannot
+      reach. Anything drawn that day predates PR #8, PR #17 and PR #20, all
+      three of which changed copy that had leaked into committed art. The
+      tiles are the listing's first impression and a reviewer sees them
+      beside the captures.
+
+      **`artefacts:check` can never answer this and that is by
+      construction**, not an oversight: it asks provenance, and a file no
+      generator writes has no sources to compare against. Nor can the new
+      pathspec guard, which polices files *inside* a group. The only check
+      available is a person opening them, which is what found three of five
+      last time.
+
+      The remedy, if any is stale, is **redrawing or a decision** — there is
+      no spec to re-run. Worth ~30 minutes to read all four; unknown beyond
+      that, because it depends on what they say.
+
+`Next` has the one item above; `Now` is **empty**, as of 2026-09-30. Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
-read the Blocked section, confirm B1 has not moved, and stop. There is no
-agent-shaped work left in this file; if a session wants one, `npm run
+read the Blocked section and confirm B1 has not moved. The one item above is
+agent-shaped and does not wait on B1; beyond it, if a session wants work,
+`npm run
 artefacts:check`, `npm run packs:verify` and `npm run site:check` are the
 three gates `test:all` leaves out, and re-measuring one of them is honest
 work that cannot break anything.
