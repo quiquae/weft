@@ -90,7 +90,7 @@ test.describe('screenshots', () => {
     await oe.screenshot({ path: join(OUT, 'page-old-english.png') });
 
     /*
-     * Close both woven pages before touching the store.
+     * Close every woven page before touching the store.
      *
      * They are taxed pages running the content script, and while they are
      * open they keep reporting exposures — so the vocabulary list held six
@@ -98,8 +98,16 @@ test.describe('screenshots', () => {
      * `vivant`) on top of the seeded plan, with counts that moved run to run.
      * Resetting the store is not enough on its own if something is still
      * writing to it.
+     *
+     * All three, and `wrapped` is the one that was missed: it is opened for
+     * `page-tooltip.png` above and was left open for the whole run, which is
+     * where the seven residual words below came from. The guard in
+     * `tests/tools/screenshots.test.ts` now derives the list of taxed pages
+     * from this file rather than naming them, because naming them is exactly
+     * how the third one went unnoticed.
      */
     await reader.close();
+    await wrapped.close();
     await oe.close();
     /*
      * And let their last writes land before resetting.
@@ -166,13 +174,20 @@ test.describe('screenshots', () => {
      * Probed rather than assumed: 12 cards before, 0 after, 19 after the
      * import, and those 19 are exactly the plan below.
      *
-     * The list in the finished shot holds 26, not 19, and that is expected.
-     * The seven extra — `route`, `jeune`, `eau`, `vivant`, `un`, `soir`,
-     * `encore` — are written later, by the onboarding page's own live preview
-     * when `onboarding.png` is captured: that preview weaves a real passage
-     * through the real selector and records real exposures. They are
-     * identical every run, so they cost nothing here, but they are a
-     * reminder that a preview writes to the learner's vocabulary.
+     * The list used to hold 26 rather than 19, and the seven extra —
+     * `route`, `jeune`, `eau`, `vivant`, `un`, `soir`, `encore` — were once
+     * written up here as the onboarding page's live preview recording real
+     * exposures. That was wrong, and provably so: `preview.tsx` sends no
+     * message at all, running the selector in a `useMemo` against
+     * `cards: new Map()`, and the onboarding page's only two messages are
+     * `get-pack`, which fetches a JSON file, and `complete-onboarding`,
+     * which this loop never reaches because it never presses the button.
+     *
+     * It was `wrapped`, the third taxed page, opened for `page-tooltip.png`
+     * and never closed — so it went on weaving `article.html` and recording
+     * exposures through the reset and every shot after it. Six of the seven
+     * are the same words the comment above already attributes to
+     * `article.html`, which was the tell.
      */
     await rpc({ type: 'reset-vocabulary' });
     await rpc({

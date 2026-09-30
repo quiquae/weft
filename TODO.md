@@ -6,7 +6,7 @@
 
 **State on 2026-09-29:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **63** tool tests / 18 suites, **36** e2e passing
+suites, **64** tool tests / 18 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
 errors / 4 warnings, **711** site pages with **16 087** links all resolving.
@@ -43,7 +43,15 @@ absolute calendar date this file recorded: it was an unstable sort in the
 product, attention accrued by the run, and a cooldown banner the harness
 queued for itself. 18 of the 19 screens shots are byte-identical run to run;
 `options-density.png` alternates between two variants that differ by 17
-pixels of slider-track antialiasing. See the note at the top of Notes. That sentence was in this
+pixels of slider-track antialiasing. See the note at the top of Notes. **And
+all 19 now agree across consecutive runs, as of 2026-09-29** — a *third*
+taxed page, `wrapped`, was opened for `page-tooltip.png` and never closed, so
+it kept weaving and recording exposures through the vocabulary reset and put
+seven words the run itself had read into art whose whole job is to show the
+seeded plan. The guard that should have caught it named `reader` and `oe` as
+literals and mislabelled `oe` as "the wrapped-mode page", which is the
+variable named `wrapped` that it had missed; it now derives the list of taxed
+pages from the spec. Six dashboard shots regenerated, all six read. That sentence was in this
 file yesterday and was not true: scene 4 still drifted, because
 `buildDiscoveries` sorted on kind and recency only and nineteen cards
 imported in one millisecond tie on both, so the feed's order came from
@@ -885,35 +893,65 @@ move until it is.
       Both pathspec tests now share a `captures()` helper that excludes the
       stamp.
 
-- [ ] **The onboarding preview writes to the learner's real vocabulary.**
-      Found 2026-09-29 while probing why the seeded vocabulary list held 26
-      words instead of the 19 in the plan. The extra seven — `route`,
-      `jeune`, `eau`, `vivant`, `un`, `soir`, `encore` — are created when
-      `onboarding.html` is merely *opened*: its live preview weaves a real
-      passage through the real selector and records real exposures, so they
-      arrive as ordinary `MemoryCard`s with `exposures: 1`. Pinned by
-      probing `get-stats` at each step: 19 cards after the seeding import,
-      26 after the shots loop, and the loop's only non-extension page is the
-      onboarding one.
+- [x] **The onboarding preview writes to the learner's real vocabulary.**
+      **It does not, and it never did.** Closed 2026-09-29 by refutation
+      rather than by the judgement it asked for. `src/ui/onboarding/preview.tsx`
+      sends no message at all: it runs `selectSwaps` inside a `useMemo`
+      against `cards: new Map()` and renders the result into spans. The whole
+      onboarding page sends exactly two message types — `get-pack`, which
+      `src/background/index.ts:179` answers by `fetch`ing a JSON file off
+      disk, and `complete-onboarding`, which only `finish()` sends and which
+      the screenshot loop never reaches because it opens the page, waits
+      1200 ms, shoots and closes without pressing a button. The page is
+      structurally incapable of creating a card, so none of the three shapes
+      needed choosing.
 
-      **This is a judgement, not a defect, which is why it is queued rather
-      than fixed.** The dashboard calls that panel "Every word Weft has put
-      in front of you", and the preview did put them in front of you — so
-      counting them is arguably correct. Against that: the milestones panel
-      says "Facts about reading you have actually done. Nothing here decays",
-      and a user who installs Weft, reads the onboarding page and closes it
-      has done no reading at all, yet starts with seven words met and a
-      non-zero "words read" total. It also means re-opening onboarding
-      inflates the count again.
+      **The seven words were a page the harness left open, and the guard that
+      should have caught it named the pages by hand.**
+      `tests/e2e/screenshots.spec.ts` opens three taxed pages on
+      `${origin}/article.html`; `reader` and `oe` were closed before the
+      vocabulary reset and `wrapped` — opened for `page-tooltip.png` — never
+      was. It went on weaving and reporting exposures through the reset and
+      every shot after it. The tell was in the spec already: six of the seven
+      residual words are exactly the six a comment forty lines above
+      attributes to `article.html`. And the tell in the guard was its own
+      failure message — `assert.notEqual(spec.indexOf('oe.close()'), -1, 'the
+      wrapped-mode page is never closed')` mislabels `oe` as the wrapped-mode
+      page, which is the variable literally named `wrapped`, the one it had
+      missed.
 
-      Three shapes, no preference recorded. (1) Leave it — the preview is
-      real exposure to real words. (2) Have the preview render without
-      recording, which needs the onboarding page to pass something like
-      `record: false` through the selector path. (3) Let it record
-      `exposures` but not count toward `wordsRead`/milestones, which splits
-      "met" from "read" and may be the honest distinction. Whichever way it
-      goes, `tests/e2e/screenshots.spec.ts` currently documents the
-      behaviour in a comment and will need that comment corrected.
+      Fixed by closing it alongside the other two, before the 2500 ms settle
+      the spec already waits for its flushes. The guard is now **derived**:
+      it finds every `const X = await context.newPage()` whose block contains
+      ``await X.goto(`${origin}`` and requires each to be closed before
+      `reset-vocabulary`, so a fourth page added later is covered for free.
+      A second test cross-counts the `${origin}` navigations against the
+      pages the derivation found, which is what fires if `context.newPage()`
+      is ever renamed or wrapped in a helper and the loop silently runs over
+      an empty list. Both were shown to fail: removing the close names
+      `wrapped`, and renaming `newPage` names the silent skip. 63 → 64 tool
+      tests, 18 suites unchanged.
+
+      **`docs/screens/` regenerated, and the arithmetic is the proof.** Six
+      shots changed, all six opened and read. `dashboard-vocabulary.png` now
+      holds exactly the 19 seeded rows and no `seen 1×` strays; the
+      milestone and progress figures read **393 / 1,000**, which is exactly
+      the sum of the plan's own `exposures` column (61 + 54 + 48 + … + 3 + 2),
+      so nothing from the run's own reading is left in the store; and the
+      band reads Learning 8 + Familiar 3 + Known 5 against "3 seen but not
+      yet reviewed", which is 19. All 19 files byte-identical across two
+      consecutive runs, each with npm's exit status captured. No verify stamp
+      was written and none should be: this group earned a real content change,
+      so a stamp reading "no change to commit" would be false — the same call
+      PR #30 made for the first-run group.
+
+      **The product was telling the truth the whole time**, which is the part
+      worth keeping. The item's objection — a user who only reads the
+      onboarding page "starts with seven words met and a non-zero words-read
+      total" — described a harness artefact. Those 26 words really had been
+      read, off `article.html`, by a page nobody closed. There is nothing in
+      `src/` to change and the milestones panel's "facts about reading you
+      have actually done" was never overstating anything.
 
 - [ ] **Two listing screenshots clip a row of content at the top edge.**
       Found 2026-09-29 by opening them, which is the only way it could have
@@ -940,7 +978,8 @@ move until it is.
       session that found it: changing bytes in the same commit that claims
       they did not change is the one thing the stamp must never mean.
 
-Otherwise empty. Everything in Blocked needs Creagh — B1 an identity and a
+One item left in `Next`, the clipped listing screenshots above, and it is
+agent-shaped. Everything in Blocked needs Creagh — B1 an identity and a
 payment method, B2 onwards a decision that is not reversible the way a commit
 is. A session picking this file up should work the item above, then read the
 Blocked section, confirm B1 has not moved, and stop.
@@ -1149,6 +1188,45 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-29 — a hand-written guard cannot police the case it forgot, and its
+own error message said so.** The queued item blamed the onboarding page's
+live preview for seven cards nobody asked for. The preview cannot write a
+card: `preview.tsx` sends nothing, and the page's only two messages are a
+`fetch` and a button handler the screenshot loop never triggers. The cause
+was `wrapped`, the third taxed page in `screenshots.spec.ts`, opened for
+`page-tooltip.png` and never closed.
+
+Three things worth keeping. **First, the evidence was already in the file:**
+a comment forty lines above the wrong one lists six words read off
+`article.html`, and six of the seven residuals are exactly those six. When
+two comments in one file disagree about a cause, the one that names a
+mechanism beats the one that names a culprit. **Second, the guard's failure
+message is where to look when a guard misses something:**
+`assert.notEqual(spec.indexOf('oe.close()'), -1, 'the wrapped-mode page is
+never closed')` — `oe` is the Old English page, and the wrapped-mode page is
+the variable named `wrapped`. The mislabel is the fingerprint of the page
+being overlooked when the guard was written, and it sat in the suite for a
+commit. **Third, the fix is the derivation, not the close.** Naming the
+pages is what failed; the guard now finds every
+`const X = await context.newPage()` whose block holds
+``await X.goto(`${origin}`` and requires it closed before `reset-vocabulary`,
+with a second test cross-counting the `${origin}` navigations so a renamed
+`newPage()` cannot leave the loop running over an empty list. Same move as
+deriving proper nouns from capitalisation rather than curating a list.
+
+Do not "simplify" the derived guard back to naming the three pages. That is
+the state it was already in when it missed one.
+
+**`docs/screens/` is regenerated and the arithmetic is the receipt.** Six
+shots changed, all six opened. The progress tiles read 19 words met and
+**393** read, and 393 is exactly the sum of the seeded plan's `exposures`
+column — so the store is the plan and nothing else. All 19 files
+byte-identical across two consecutive runs, npm's exit status captured per
+run, mtimes checked (a generator that dies early writes nothing, and that
+looks identical to a clean idempotent run from outside). No verify stamp was
+written, deliberately: this group earned a real content change, so a stamp
+meaning "checked, nothing to commit" would be false.
 
 **2026-09-29 — both groups reproduced exactly, and the defect was in the file
 neither run touched.** `store listing screenshots` and `first-run walkthrough
