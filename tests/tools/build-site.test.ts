@@ -12,11 +12,12 @@
  *      this covers whether the builder asks.
  *   2. No word page states its own descent backwards. See below.
  *   3. No word page starts a second sentence with a lexicon note. See below.
+ *   4. Every headword gets a page, and no two pages share a path. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, rmSync, readFileSync, readdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,6 +29,28 @@ const TODAY = new Date().toISOString().slice(0, 10);
 
 const builtAt = (lang: string): string =>
   JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8')).meta.builtAt;
+
+/** The two languages that get a page per word. Mirrors `DEEP` in the builder. */
+const DEEP = [
+  { lang: 'la', dir: 'latin' },
+  { lang: 'ang', dir: 'old-english' },
+];
+
+/**
+ * Every headword a pack carries, which is one page each.
+ *
+ * Read off `tgtLemma` rather than off the surface forms, because the packs
+ * hold a row per inflected form and the builder collapses them: `mouth` and
+ * `mouths` are two rows of one headword and so one page.
+ */
+function headwords(lang: string): Set<string> {
+  const pack = JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8'));
+  const found = new Set<string>();
+  for (const list of Object.values(pack.entries) as { tgtLemma: string }[][]) {
+    for (const e of list) found.add(e.tgtLemma);
+  }
+  return found;
+}
 
 /** URL → its `<lastmod>`, or null where the sitemap declines to give one. */
 function lastmods(xml: string): Map<string, string | null> {
@@ -69,22 +92,40 @@ function descentOf(page: string, html: string): Descent | null {
 
 let dates: Map<string, string | null>;
 let descents: Descent[];
+/** Which word each page is *about*, by directory — its own rendered headword. */
+let targets: Map<string, Set<string>>;
+/** Every `<loc>` the sitemap declares, **with duplicates kept**, and the file each resolves to. */
+let served: { loc: string; file: string | null }[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
   try {
     execFileSync(process.execPath, [TOOL, `--out=${out}`], { stdio: 'pipe' });
-    dates = lastmods(readFileSync(join(out, 'sitemap.xml'), 'utf8'));
+    const xml = readFileSync(join(out, 'sitemap.xml'), 'utf8');
+    dates = lastmods(xml);
     descents = [];
+    targets = new Map();
     for (const dir of ['latin', 'old-english']) {
+      targets.set(dir, new Set());
       for (const file of readdirSync(join(out, dir))) {
-        const found = descentOf(
-          `/${dir}/${file.replace(/\.html$/, '')}`,
-          readFileSync(join(out, dir, file), 'utf8'),
-        );
+        const html = readFileSync(join(out, dir, file), 'utf8');
+        const found = descentOf(`/${dir}/${file.replace(/\.html$/, '')}`, html);
         if (found) descents.push(found);
+        // The index page in the same directory carries no word heading.
+        const h1 = html.match(/<h1 class="word__target"[^>]*>([^<]+)<\/h1>/);
+        if (h1) (targets.get(dir) as Set<string>).add(h1[1] as string);
       }
     }
+    // Deliberately a list and not a Map: a duplicated <loc> is the defect, so
+    // keying by URL here would discard the very thing being counted.
+    served = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => {
+      const rel = new URL(m[1] as string).pathname.replace(/^\//, '');
+      const target = join(out, rel);
+      const file = [target, `${target}.html`, join(target, 'index.html')].find(
+        (c) => existsSync(c) && statSync(c).isFile(),
+      );
+      return { loc: m[1] as string, file: file ? file.slice(out.length) : null };
+    });
   } finally {
     rmSync(out, { recursive: true, force: true });
   }
@@ -250,5 +291,74 @@ describe('a word page joins its note to the descent sentence', () => {
       [],
       'a page renders the joining dash with nothing after it',
     );
+  });
+});
+
+/**
+ * A page per headword, and one headword per page.
+ *
+ * `slugify()` strips diacritics so URLs stay ASCII and typeable, and the
+ * doc comment on `tools/check-links.mjs` names the risk that creates in as
+ * many words — "one collision … and a reader hits a 404". A collision does
+ * not produce a 404. It produces the opposite: both links resolve, because
+ * the second page written *overwrites* the first and is a perfectly valid
+ * file. That is why `site:check` passed on 16 087 links while two Latin
+ * words had no page at all.
+ *
+ * Latin is where it bites, because vowel length is the whole distinction
+ * between two different words and a macron is exactly what gets stripped:
+ * `ōs` (mouth, → *oral*) and `os` (bone, → *ossify*) both slugged to `os`,
+ * and `liber` (book, → *library*) and `līber` (free, → *liberty*) both to
+ * `liber`. The lexicon knows: the note on `os` reads "distinct from “ōs”,
+ * mouth, only by vowel length". Both hub pages then printed two rows, one
+ * labelled `os` and one `ōs`, pointing at the same URL — so a reader
+ * clicking "ōs / mouth" arrived at a page saying English *ossify* was
+ * borrowed from it. A false etymology, which is worse than a 404.
+ *
+ * Both tests are derived rather than listed — the first from the packs, the
+ * second from the sitemap the builder just wrote — so a seed edit that
+ * introduces a third collision fails here without an edit to this file, in
+ * either language.
+ */
+describe('every headword gets its own page', () => {
+  for (const { lang, dir } of DEEP) {
+    test(`no ${dir} headword is overwritten by another that slugs the same`, () => {
+      const rendered = targets.get(dir) as Set<string>;
+      const lost = [...headwords(lang)].filter((w) => !rendered.has(w));
+
+      assert.deepEqual(
+        lost,
+        [],
+        `${lost.length} ${dir} headwords have no page of their own: ${lost.join(', ')}`,
+      );
+    });
+  }
+
+  test('no two sitemap entries serve the same page', () => {
+    const byFile = new Map<string, string[]>();
+    for (const { loc, file } of served) {
+      if (!file) continue;
+      if (!byFile.has(file)) byFile.set(file, []);
+      (byFile.get(file) as string[]).push(loc);
+    }
+    const shared = [...byFile.values()].filter((ls) => ls.length > 1);
+
+    assert.deepEqual(
+      shared,
+      [],
+      `${shared.length} pages are advertised under more than one URL, so one page overwrote another:\n  ${shared
+        .map((ls) => ls.join(' = '))
+        .join('\n  ')}`,
+    );
+  });
+
+  test('every sitemap entry has a page behind it', () => {
+    // The complement, and the one `site:check` cannot ask: it walks the HTML
+    // for href/src and never opens sitemap.xml, which is the file a crawler
+    // reads first.
+    const dead = served.filter((s) => !s.file).map((s) => s.loc);
+
+    assert.deepEqual(dead, [], `${dead.length} sitemap URLs 404`);
+    assert.ok(served.length > 700, `the sitemap came out with only ${served.length} URLs`);
   });
 });

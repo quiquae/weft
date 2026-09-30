@@ -6,11 +6,52 @@
 
 **State on 2026-09-30:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **73** tool tests / 21 suites, **36** e2e passing
+suites, **78** tool tests / 22 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 983 KB and passing `npm run validate`, `packs:verify` 0
-errors / 4 warnings, **711** site pages with **16 087** links all resolving.
-`npm run test:all` exits 0 end to end. **`docs/screens/` holds 14 files and
+packages built at 983 KB and passing `npm run validate`.
+`npm run test:all` exits 0 end to end.
+
+**The three gates `test:all` leaves out, re-measured on 2026-09-30, each with
+npm's own exit status captured rather than a pipe's:**
+
+| Gate | Exit | Result |
+|---|---|---|
+| `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
+| `npm run site:check` | **0** | **713** pages, **16 129** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run artefacts:check` | **1** | **5** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.` |
+
+**`artefacts:check` exits 1 on a correct tree and nothing said so before
+now.** The release-notes group is stale by design until B2a, so a non-zero
+exit is this tool's *normal* state, not a failure. Anything that chains it
+with `&&` — `docs/SUBMIT.md`'s pre-flight block is a numbered list, not a
+chain, so it is fine — would stop dead on a healthy repository. It is also
+the reason this gate is deliberately outside `test:all`.
+
+**And re-measuring `site:check` found a live defect in published copy: two
+Latin words had no page, and four links pointed at the wrong word.** The
+sitemap declared **713** URLs where **711** HTML files existed, and the two
+missing were an exact duplicate `<loc>` each. `slugify()` strips diacritics
+so URLs stay ASCII — and in Latin vowel length is the *whole* distinction
+between two different words, so `ōs` (mouth → *oral*) and `os` (bone →
+*ossify*) both became `/latin/os`, and `liber` (book → *library*) and `līber`
+(free → *liberty*) both became `/latin/liber`. The second page written
+overwrote the first. **The lexicon knew**: the note on `os` reads "distinct
+from “ōs”, mouth, only by vowel length". Both hub pages printed two rows, one
+labelled `os` and one `ōs`, pointing at one URL — so a reader clicking
+"ōs — mouth" read *"This is the Latin word your English **ossify** was
+borrowed from"*. A false etymology, which is worse than the 404
+`check-links.mjs` was written to prevent. Fixed by assigning slugs over the
+whole entry set instead of per word; see the note at the top of Notes.
+
+**And the four hand-made assets are three: the tiles have a generator.**
+`tools/make-store-tiles.mjs` renders all three from HTML exactly as
+`make-og.mjs` renders the social card. It was in no `npm run` and in no
+artefact group, and `tools/artefacts.ts` asserted the opposite in as many
+words — "drawn by hand and are not generated from anything" — which is what
+the item below was built on. Run on 2026-09-30, all three came back
+**byte-identical** to what was committed, mtimes moved. There is now
+`npm run tiles`, a `store promo tiles` artefact group reporting **ok**, and a
+guard that asks the converse question the other three could not. **`docs/screens/` holds 14 files and
 all 14 are generated, as of 2026-09-30** — five captures of the content site
 that no generator wrote were deleted, three of them displaying copy PRs #8,
 #17 and #20 had each removed from the product, and the pathspec guard that
@@ -1251,9 +1292,89 @@ move until it is.
       one**, and it is now a test failure rather than a thing somebody has
       to notice.
 
-- [ ] **Four hand-made assets sit outside every artefact pathspec, nothing
+- [x] **Four hand-made assets sit outside every artefact pathspec, nothing
       has ever checked them, and B5 step 7 uploads three of them to the
-      Chrome Web Store.** Found 2026-09-30, immediately after PR #34, by
+      Chrome Web Store.** Done 2026-09-30, and **three of the four were not
+      hand-made**. `tools/make-store-tiles.mjs` renders all three tiles from
+      HTML, the same way `tools/make-og.mjs` renders the social card — so the
+      remedy this item called impossible ("there is no spec to re-run") was a
+      forty-second measurement. Run on the current tree, all three came back
+      **byte-identical** to what was committed, with mtimes moved, so they are
+      current as well as reproducible. Read anyway, because byte-equality
+      proves reproducibility and not correctness: neither tile states a
+      density number at all, which is the class that killed `landing.png`, and
+      all four word pairs on the marquee — `rivière`/river, `hūs`/house,
+      `cyning`/king, `vacca`/cow — are in the packs with exactly those forms.
+      The generator is now `npm run tiles` and a `store promo tiles` artefact
+      group reporting **ok**, on `inputs: ['tools/make-store-tiles.mjs']` and
+      not `src`, because it imports nothing from `src/`.
+
+      **`docs/firstrun/icons.png` is the one that really is hand-made, and it
+      is broken.** See the new item below. Confirmed by derivation rather than
+      by the old comment: `tools/make-icons.mjs` writes `assets/icon-*.png`,
+      the shipped icons, and nothing anywhere writes the sheet.
+
+      **Why nobody found the generator is the transferable half, and it is the
+      fifth sighting of one shape in five sessions.** `tools/artefacts.ts`
+      stated it as fact — "the three tiles and the logo beside them are drawn
+      by hand and are not generated from anything" — and the test beside it
+      repeated it. The guard that should have caught it asks *one direction*:
+      every file **inside** a pathspec must be written by a generator, which
+      is how `07-help.png` and `landing.png` were found. It cannot ask the
+      converse, where output sits **outside** every pathspec and so is in no
+      group to be reported on. And its generator list was a hand-typed table
+      of three *specs*, while the fifth generator is not a spec at all — PR
+      #33 generalised that table from one spec to all specs and stopped at the
+      directory. The new guard derives generators from anything under
+      `tools/` or `tests/e2e/` that declares an `OUT` inside `docs/`, so a
+      sixth needs no edit. Two floors, because the regression that would
+      restore the blind spot is the derivation quietly matching specs only.
+      `ls tools/*.mjs` against `package.json` found **three** unlisted tools
+      in one command: `make-store-tiles.mjs`, `make-icons.mjs` and
+      `merge-cousins.mjs`. Only the first writes a committed artefact.
+
+- [ ] **`docs/firstrun/icons.png` has 134 blank rows where its own label
+      promises the magnified comparison, and no generator can fix it.**
+      Found 2026-09-30 by opening it, which is the only check available.
+
+      The sheet is 1180×700. Its top half is correct and useful — the mark at
+      actual size on light, dark and white toolbar backgrounds, which is
+      exactly what `0d9910e` ("The toolbar icon dissolved at the size it
+      actually lives at", 2026-09-22) was about. Then it labels a second half
+      **"Magnified 8× (nearest neighbour)"** and delivers nothing: measured by
+      counting non-background pixels per row, **rows y 530–663 are entirely
+      blank** — 134 consecutive rows, 19% of the image — and the only ink
+      below them is a fragment of one magnified thread running off the bottom
+      edge at y=699. So the half that carries the sheet's stated purpose is a
+      capture clipped before its content was in frame.
+
+      Same *class* as the clipped listing shots PRs #32 and #33 fixed, and the
+      reason it cannot be fixed the same way: those were generator output, and
+      this file is written by nothing. `git grep` finds **no** document or page
+      referencing it — the only mentions are `tools/artefacts.ts` and
+      `tests/tools/artefacts.test.ts`, both *excluding* it. It is uploaded to
+      no store; `docs/SUBMIT.md` names the three tiles and not this.
+
+      Three shapes, no preference recorded, because all three are judgement
+      calls a session should not take alone:
+
+      1. **Redraw it.** Needs whatever drew it, which is not in the
+         repository.
+      2. **Write a generator.** `make-store-tiles.mjs` is the template — HTML
+         plus a screenshot — and it would put the sheet inside the artefact
+         system for good. Cost against value is the same argument PR #34 used
+         to refuse a site-screenshot generator: new machinery maintained for
+         one binary no reader has.
+      3. **Delete it**, as PR #34 deleted five unreferenced captures. Weaker
+         grounds here: those three of five were displaying copy the product
+         had deliberately removed, whereas this one's *top* half is correct
+         and somebody deliberately updated it eight days ago. And it would be
+         the second unrequested deletion in two sessions.
+
+      Worth ~20 minutes for shape 2 if anyone wants it; shape 1 is not
+      agent-shaped and shape 3 wants a human's assent.
+
+      Original text of the closed item follows, for the record. Found by
       asking the obvious next question: if a whole-directory pathspec
       launders a hand-made file into a generated one, what happens to the
       hand-made files the *narrow* pathspecs correctly exclude?
@@ -1289,15 +1410,22 @@ move until it is.
       no spec to re-run. Worth ~30 minutes to read all four; unknown beyond
       that, because it depends on what they say.
 
-`Next` has the one item above; `Now` is **empty**, as of 2026-09-30. Everything in Blocked
+`Next` has the one item above — the broken half of `docs/firstrun/icons.png`
+— and `Now` is **empty**, as of 2026-09-30. Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
 read the Blocked section and confirm B1 has not moved. The one item above is
-agent-shaped and does not wait on B1; beyond it, if a session wants work,
-`npm run
-artefacts:check`, `npm run packs:verify` and `npm run site:check` are the
-three gates `test:all` leaves out, and re-measuring one of them is honest
-work that cannot break anything.
+agent-shaped and does not wait on B1. Beyond it, the three gates `test:all`
+leaves out were all re-measured on 2026-09-30 and the numbers are in the
+state line at the top — so that particular piece of honest work is spent for
+now. It was not idle: `site:check` was the one that found the slug collision,
+and what found it was **counting**, not following links. The gate walks HTML
+for `href`/`src` and never opens `sitemap.xml`, the file a crawler reads
+first; and even checking that every `<loc>` resolves would have passed, since
+a collision leaves every URL resolving. **713 declared against 711 written**
+is the whole signal. If a future session wants the same class of finding
+cheaply, compare what a generator says it produced against what it left on
+disk, rather than asking whether the output is internally consistent.
 
 **One deletion a human may want to look at**, recorded here because it is the
 only thing this repository has removed that nobody asked for in person: five
@@ -1513,6 +1641,60 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-09-30 — the gate's own doc comment named the failure, and the gate
+could not see it.** `tools/check-links.mjs` opens with "Seven hundred pages
+cross-link each other by slug, and a slug is derived from a word with
+diacritics stripped. **One collision** or one stale reference and a reader
+hits a 404." The threat model was written down correctly and the check built
+from it was the wrong check, because **a collision does not produce a 404 —
+it produces the opposite.** The second page written overwrites the first and
+is a perfectly valid file, so every link to either still resolves. That is
+how `site:check` reported 16 087 links all resolving, for a month, while two
+Latin words had no page.
+
+What found it was arithmetic: the builder declared **713** sitemap URLs and
+wrote **711** HTML files. Reuse that method rather than this instance — *what
+a generator says it produced against what it left on disk*. Note too that the
+existing sitemap test could not have found it either: `lastmods()` returns a
+`Map` keyed by URL, so it silently deduplicated the two duplicates, and its
+floor assertion is `dates.size > 700`.
+
+**The fix moved where the slug is decided, and that is the point rather than
+a detail.** `slugify(word)` is handed one word, so it cannot see a collision
+however carefully it is written — uniqueness is a property of the *set*, and
+the set is known only in `main()`. So `assignSlugs(entries)` runs once per
+language over the completed entry list and writes `e.slug`, and the six call
+sites read it. `slugify` is now called from one place.
+
+**Every member of a collision takes a suffix; none keeps the bare slug.**
+`/latin/os-mouth`, `/latin/os-bone`, `/latin/liber-book`, `/latin/liber-free`.
+Two reasons, and the first is a defect this project has already paid for
+twice: whichever member kept the bare slug would be decided by pack order,
+which is `buildDiscoveries` before `06cd2e9` and the vocabulary list before
+`sortVocabulary`. The second is that a bare `/latin/os` is a claim to be the
+only `os`, and that is the thing which is not true.
+
+**Two recorded decisions were checked rather than assumed, and both hold.**
+The Notes entry below says "**The URL slugs stay ASCII, and must**" and warns
+that changing an address after **B3** would strand indexed URLs — `os-mouth`
+is ASCII, and B3 has not happened, so this is exactly the moment the change
+is free. Nothing in the tree hardcoded either old URL; `git grep` was run
+before anything moved.
+
+**Verified by rendering and reading, not by the test passing.** All four
+pages open on the right word, and `/latin/os-bone` now carries its own note
+— "distinct from “ōs”, mouth, only by vowel length" — on the page that note
+was written for, instead of on the page that *was* the `ōs` page. Both hub
+tables now print four distinct links. `site:check` re-run: **713 pages, 16 129
+links**, exit 0.
+
+**One gate was deliberately not widened.** `check-links.mjs` gained nothing.
+The new guard is in `tests/tools/build-site.test.ts`, which CI runs on the
+same push, and the reason is a decision already in this file: a gate whose
+failure means two different things gets ignored — the argument that kept the
+sitemap-date check out of `check-links.mjs`. `check-links.mjs` also has no
+test harness at all, so widening it would have been untested production code.
 
 **2026-09-29 — the queued item described half the cases, and the other half
 was wrong in the opposite direction.** It named two clipped listing shots and

@@ -239,8 +239,9 @@ export function artefactsFor(version: string): Artefact[] {
   const groups: Array<Omit<Artefact, 'paths'> & { paths: string[] }> = [
     {
       name: 'store listing screenshots',
-      // Only the fifteen captures. The three tiles and the logo beside them
-      // are drawn by hand and are not generated from anything.
+      // Only the fifteen captures. The tiles beside them are a group of
+      // their own below, on a different input: they are rendered from HTML
+      // by a tool and owe nothing to `src/`.
       paths: ['docs/store/*-0*.png'],
       inputs: ['src', 'tests/e2e/store-assets.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_STORE=1 npx playwright test store-assets',
@@ -272,6 +273,24 @@ export function artefactsFor(version: string): Artefact[] {
       paths: ['docs/firstrun/0*.png'],
       inputs: ['src', 'tests/e2e/firstrun.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_FIRSTRUN=1 npx playwright test firstrun',
+    },
+    {
+      name: 'store promo tiles',
+      // Generated after all. This group did not exist because the comment
+      // above used to claim these three were "drawn by hand and are not
+      // generated from anything", so a `TODO.md` item was raised to open
+      // them by eye on the grounds that no other check was possible — while
+      // `tools/make-store-tiles.mjs` had been sitting beside `make-og.mjs`
+      // rendering them from HTML the whole time. It was reachable by no
+      // `npm run` either, which is most of why nobody found it.
+      //
+      // `inputs` is the tool and nothing else, deliberately: the tiles are
+      // graphics rather than screenshots and the generator imports nothing
+      // from `src/`, so declaring `src` would report them stale on every
+      // commit that cannot possibly have changed them.
+      paths: ['docs/store/tile-*.png', 'docs/store/logo-*.png'],
+      inputs: ['tools/make-store-tiles.mjs'],
+      regenerate: 'npm run tiles',
     },
     {
       name: `release notes for ${version}`,
