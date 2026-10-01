@@ -12,8 +12,17 @@ import { chromium } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { markSvg, SOLID, LEAD_PAIRS } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+/**
+ * One interlinear pair. Which four, and why all of them are French, is
+ * `LEAD_PAIRS` in `tools/brand.ts`: the store tiles show the same words,
+ * and when that list lived here the marquee did not follow it.
+ */
+const pair = ({ target, source }) =>
+  `<span class="pair"><span class="t">${target}</span><span class="s">${source}</span></span>`;
 
 const CARD = `<!doctype html>
 <html><head><meta charset="utf-8"><style>
@@ -43,29 +52,14 @@ const CARD = `<!doctype html>
   .foot { font-size: 27px; color: #4d565e; }
 </style></head><body>
   <div class="top">
-    <svg viewBox="0 0 128 128">
-      <g stroke="#7a96c0" stroke-width="11"><line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
-      <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/><line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
-      <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/></g>
-      <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="#2f4b7c" stroke-width="20.5"/>
-    </svg>
+    ${markSvg(SOLID, { indent: '    ' })}
     <span>Weft</span>
   </div>
 
   <h1>The web, partly in another language.</h1>
 
   <div class="gloss">
-    <!--
-      All four French, where they used to be one French, two Old English and
-      one Latin. The card is the first thing anyone sees of this product,
-      shared into a feed with no other context, and hūs next to cyning reads
-      as a tool for medievalists rather than as a way to learn a language
-      someone is actually planning to speak.
-    -->
-    <span class="pair"><span class="t">rivière</span><span class="s">river</span></span>
-    <span class="pair"><span class="t">cheval</span><span class="s">horse</span></span>
-    <span class="pair"><span class="t">matin</span><span class="s">morning</span></span>
-    <span class="pair"><span class="t">forêt</span><span class="s">forest</span></span>
+    ${LEAD_PAIRS.map(pair).join('\n    ')}
   </div>
 
   <p class="foot">The longer you stay on a page, the more of it you read in the language you are learning.</p>

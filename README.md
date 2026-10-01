@@ -274,7 +274,9 @@ npm run artefacts:check # which committed generated files the tree has moved pas
 npm run build:all      # chrome + firefox + safari
 npm run zip            # per target: a flat archive for the store, a -folder one for humans
 npm run safari         # wrap the Safari build in an Xcode project
-npm run site           # generate the 711-page content site from the lexicon
+npm run site           # generate the 713-page content site from the lexicon
+npm run icons          # draw the toolbar icons and the vector mark
+npm run tiles          # render the store promo tiles
 npm run og             # render the social card
 npm run release -- --version=X.Y.Z           # version, build, package, notes
 npm run licence -- --name="..." --tier=pro   # issue a licence key

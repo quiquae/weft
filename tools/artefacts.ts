@@ -323,8 +323,14 @@ export function artefactsFor(version: string): Artefact[] {
       // the same string from the same generator: it was a hand-made copy of
       // `assets/icon.svg`, byte-identical when found, and `make-icons.mjs`
       // now writes both.
+      //
+      // `tools/brand.ts` is the geometry itself — how many threads, how
+      // thick, how far the weft reaches — which `make-icons.mjs` now only
+      // fills. It is an input of all three groups that draw the mark, and
+      // `tests/tools/brand.test.ts` fails if a tool that imports it writes
+      // into a group that does not say so.
       paths: ['assets/icon-*.png', 'assets/icon.svg', 'site/icon.svg'],
-      inputs: ['tools/make-icons.mjs'],
+      inputs: ['tools/make-icons.mjs', 'tools/brand.ts'],
       regenerate: 'npm run icons',
     },
     {
@@ -343,8 +349,12 @@ export function artefactsFor(version: string): Artefact[] {
       // Measured byte-stable across three runs on 2026-09-28, and the
       // reason is structural: the card has no `new Date()` in it. So this
       // group can always be cleared by regenerating.
+      //
+      // `tools/brand.ts` because the card carries the mark and the four
+      // words the artwork leads with, and takes both from there. See the
+      // tiles below for what the missing input cost.
       paths: ['site/og.png'],
-      inputs: ['tools/make-og.mjs'],
+      inputs: ['tools/make-og.mjs', 'tools/brand.ts'],
       regenerate: 'npm run og',
     },
     {
@@ -357,12 +367,22 @@ export function artefactsFor(version: string): Artefact[] {
       // rendering them from HTML the whole time. It was reachable by no
       // `npm run` either, which is most of why nobody found it.
       //
-      // `inputs` is the tool and nothing else, deliberately: the tiles are
-      // graphics rather than screenshots and the generator imports nothing
-      // from `src/`, so declaring `src` would report them stale on every
-      // commit that cannot possibly have changed them.
+      // `inputs` is the tool and what it draws from, and nothing else,
+      // deliberately: the tiles are graphics rather than screenshots and
+      // the generator imports nothing from `src/`, so declaring `src` would
+      // report them stale on every commit that cannot possibly have changed
+      // them.
+      //
+      // It was the tool alone until 2026-10-01, and this group reported
+      // "ok" on that basis while all three files showed a mark the icon
+      // beside them had replaced nine days earlier. The declaration was
+      // accurate: the tile generator had not moved. The mark had — in
+      // `make-icons.mjs`, which this group did not name, because the
+      // generator held its own pasted copy of the mark rather than a
+      // reference to it. **Provenance cannot see a copy.** The copy is now
+      // an import of `tools/brand.ts`, so the import is now an input.
       paths: ['docs/store/tile-*.png', 'docs/store/logo-*.png'],
-      inputs: ['tools/make-store-tiles.mjs'],
+      inputs: ['tools/make-store-tiles.mjs', 'tools/brand.ts'],
       regenerate: 'npm run tiles',
     },
     {

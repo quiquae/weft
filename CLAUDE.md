@@ -185,7 +185,7 @@ pointing at nothing.
 
 **Nothing self-promotes automatically.** `docs/LAUNCH.md` holds drafts per
 community, to be sent by a human. An automated account posting self-promotion
-earns a domain-level shadowban, which would destroy the 709-page search asset.
+earns a domain-level shadowban, which would destroy the 713-page search asset.
 That was a decision, not an omission.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from

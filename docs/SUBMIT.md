@@ -263,5 +263,5 @@ precisely why that check is written down.
   not been executed and will need a look the first time it runs.
 - **Post to Reddit, Hacker News or anywhere else.** Drafts are in
   `LAUNCH.md`. An automated account posting self-promotion gets the domain
-  shadowbanned, which would cost the 711-page search asset. That was a
+  shadowbanned, which would cost the 713-page search asset. That was a
   decision, not an omission.

@@ -212,10 +212,32 @@ listing text states the default is gentler, so nothing is overstated.
 - `logo-edge-300x300.png` — Edge store logo, **required** there
 
 These are an artefact group — `store promo tiles` — so `npm run
-artefacts:check` reports them stale if the generator moves after they were
-last written. It did not report them at all until 2026-09-30, because
-`tools/artefacts.ts` claimed they were drawn by hand while this page said
-otherwise three lines up. All three reproduce byte-identically.
+artefacts:check` reports them stale if the generator, or the mark it draws,
+moves after they were last written. It did not report them at all until
+2026-09-30, because `tools/artefacts.ts` claimed they were drawn by hand
+while this page said otherwise three lines up. All three reproduce
+byte-identically.
+
+**The mark and the words on them are not the tiles' own.** Both come from
+`tools/brand.ts`, which is also what the toolbar icon, the social card and
+the header of every site page are drawn from, so the icon you upload and the
+tile you upload beside it cannot show two different marks. They did, from
+2026-09-22 to 2026-10-01: the icon was redrawn so that the weft crosses
+three of its four threads, and the tile generator kept a pasted copy of the
+old mark, which crosses two. `tests/tools/brand.test.ts` now reads the mark
+back out of the pixels of all three files and fails if that happens again.
+
+The marquee leads with the same four French pairs as the social card —
+*rivière*, *cheval*, *matin*, *forêt* — and the small tile with the first.
+Until 2026-10-01 the marquee showed *rivière*, *hūs*, *cyning*, *vacca*:
+the set the card dropped on 2026-09-26 when French was made to lead
+everywhere, on the grounds that Old English beside Latin "reads as a tool
+for medievalists". That decision never reached the marquee because nobody
+then knew the marquee had a generator. If the mixed set was in fact wanted
+here, it is one list to change, `LEAD_PAIRS`, and the card follows it.
+
+The generator checks that nothing runs off a tile's frame before it writes
+any of the three, and writes none if one does.
 
 ## Support and privacy policy URLs
 

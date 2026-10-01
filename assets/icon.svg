@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Weft">
   <title>Weft</title>
-  <g stroke="rgb(122 150 192)" stroke-width="11" opacity="0.85">
-    <line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
-    <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/>
-    <line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
-    <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/>
+  <g fill="rgb(122 150 192)" opacity="0.85">
+    <rect x="10.56" y="16" width="10.88" height="96"/>
+    <rect x="42.56" y="16" width="10.88" height="96"/>
+    <rect x="74.56" y="16" width="10.88" height="96"/>
+    <rect x="106.56" y="16" width="10.88" height="96"/>
   </g>
-  <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="rgb(47 75 124)" stroke-width="20.5"/>
+  <rect x="10.56" y="53.76" width="80" height="20.48" fill="rgb(47 75 124)"/>
 </svg>
