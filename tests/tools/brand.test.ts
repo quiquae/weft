@@ -29,7 +29,9 @@
  * the pixels and the markup, so what is compared is the drawing and not the
  * bytes — which also means none of this is the pixel-equality gate
  * `CLAUDE.md` refuses: the committed PNGs are read as committed, on any
- * platform, and never re-rendered here.
+ * platform, and nothing a browser drew is drawn again here. The four shipped
+ * icons are the one exception, and the reason they can be is that no
+ * browser drew them: see "the shipped icons are what the geometry draws".
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -41,6 +43,8 @@ import {
   WOAD,
   WOAD_LIGHT,
   markGeometry,
+  iconPixels,
+  iconSvg,
   LEAD_LANGUAGE,
   LEAD_PAIRS,
 } from '../../tools/brand.ts';
@@ -136,6 +140,125 @@ describe('the vector icon and the raster icon are one drawing', () => {
         differences(vector, raster, 1, [file, 'assets/icon-128.png']),
         [],
         `${file} is not the mark that ships as the icon`,
+      );
+    });
+  }
+});
+
+/**
+ * Where an image disagrees with the pixels that belong in it, in words — how
+ * many, the box they fall in, and the first of them — or `null` where it
+ * does not. Both are RGBA, row by row, `size` pixels square.
+ */
+function pixelDifference(actual: Uint8Array, expected: Uint8Array, size: number): string | null {
+  const rgba = (buf: Uint8Array, at: number): string =>
+    `rgba(${[...buf.subarray(at, at + 4)].join(', ')})`;
+  let count = 0;
+  let first = '';
+  let left = size;
+  let top = size;
+  let right = -1;
+  let bottom = -1;
+  for (let i = 0; i < size * size; i++) {
+    const at = i * 4;
+    if ([0, 1, 2, 3].every((c) => actual[at + c] === expected[at + c])) continue;
+    const x = i % size;
+    const y = Math.floor(i / size);
+    if (count++ === 0) first = `(${x}, ${y}), is ${rgba(actual, at)} where ${rgba(expected, at)} belongs`;
+    left = Math.min(left, x);
+    top = Math.min(top, y);
+    right = Math.max(right, x);
+    bottom = Math.max(bottom, y);
+  }
+  if (count === 0) return null;
+  return (
+    `${count} of ${size * size} pixels differ, all within x ${left}–${right} and y ${top}–${bottom}; ` +
+    `the first, ${first}`
+  );
+}
+
+/**
+ * The shipped icons are the geometry, pixel for pixel.
+ *
+ * Every other test here reads a drawing's shape — its threads, and how many
+ * the weft covers — and for the tiles and the card that is as much as can
+ * be asked: Chromium drew those, and a font stack or an antialiasing change
+ * on another machine moves an edge without anything being wrong. The four
+ * icons were drawn by arithmetic alone, `iconPixels` in `tools/brand.ts`,
+ * which is the very function `make-icons.mjs` encodes. It uses nothing but
+ * the four operations and rounding, which JavaScript specifies to the bit,
+ * so each icon can be drawn again here and the committed file required to
+ * hold exactly those pixels.
+ *
+ * Decoded and compared, rather than rebuilt and `git diff`ed in CI the way
+ * the lexicon packs are. That step was queued on 2026-09-30 on the grounds
+ * that the tool is byte-reproducible, and measured before anyone built it:
+ * the pixel data inside a PNG is `deflateSync` output, which is whatever
+ * zlib the Node binary was built with, and the 128px icon comes out at 431
+ * bytes under the Node that wrote the committed file and 432 under an
+ * official Node 22 build, the kind CI installs, with every pixel equal. The
+ * step would have failed on a correct tree. A comparison of decoded pixels
+ * cannot fail for that reason, so it fails for one reason only.
+ *
+ * That reason is the gap the shape readings leave: an edit to the geometry
+ * that nobody rebuilt. They see it only if it breaks the crossing rule, and
+ * `artefacts:check` only as "nobody has checked since"; this names the icon
+ * and where in it the pixels went wrong.
+ *
+ * The two vectors the same tool writes are held the same way, and more
+ * simply: an SVG is a string, with no encoder between the geometry and the
+ * file, so the committed text must be `iconSvg()` exactly. The shape reading
+ * above compares each vector with the committed raster, and so cannot see
+ * both of them going stale together.
+ */
+describe('the shipped icons are what the geometry draws', () => {
+  // What `make-icons.mjs` writes, read off its artefact group, so a fifth
+  // size or a third copy of the vector is held here the moment it is
+  // committed.
+  const written = tracked(
+    ...artefactsFor('0.0.0')
+      .filter((a) => a.inputs.includes('tools/make-icons.mjs'))
+      .flatMap((a) => a.paths),
+  );
+  const icons = written.filter((f) => f.endsWith('.png'));
+  const vectors = written.filter((f) => f.endsWith('.svg'));
+
+  test('there are icons to check', () => {
+    // Non-vacuity floor: the four sizes the manifest declares, and the
+    // vector in `assets/` and the favicon.
+    assert.ok(icons.length >= 4, `only ${icons.length} committed icons were found`);
+    assert.ok(vectors.length >= 2, `only ${vectors.length} committed vector icons were found`);
+  });
+
+  for (const file of vectors) {
+    test(`${file} is exactly the vector the geometry writes`, () => {
+      assert.equal(
+        readFileSync(join(ROOT, file), 'utf8'),
+        iconSvg(),
+        `${file} is not what tools/brand.ts writes. If the mark was meant to move, ` +
+          '`npm run icons` rewrites it; if it was not, find what did',
+      );
+    });
+  }
+
+  for (const file of icons) {
+    test(`${file} holds exactly the pixels the geometry draws`, () => {
+      const size = Number(/icon-(\d+)\.png$/.exec(file)?.[1]);
+      assert.ok(size > 0, `${file} does not say what size it is`);
+      const committed = decode(join(ROOT, file));
+      assert.deepEqual(
+        [committed.width, committed.height, committed.bpp],
+        [size, size, 4],
+        `${file} is not a ${size}px square RGBA image`,
+      );
+      const drawn = iconPixels(size);
+      assert.equal(drawn.length, size * size * 4, `the geometry did not draw a ${size}px square`);
+      const wrong = pixelDifference(committed.data, drawn, size);
+      assert.equal(
+        wrong,
+        null,
+        `${file} is not what tools/brand.ts draws at ${size}px: ${wrong}. If the geometry ` +
+          'was meant to move, `npm run icons` redraws it; if it was not, find what did',
       );
     });
   }

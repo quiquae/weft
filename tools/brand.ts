@@ -158,6 +158,56 @@ export function markGeometry(size: number): Mark {
   };
 }
 
+/**
+ * Fill a box into a square RGBA buffer, antialiased by coverage — a pixel
+ * the box covers by a third takes a third of the colour — and composited
+ * over whatever is already there.
+ */
+function fillRect(buf: Uint8Array, size: number, box: Rect, colour: RGB, alpha: number): void {
+  const { x0, y0, x1, y1 } = box;
+  const lo = (v: number): number => Math.max(0, Math.min(size, v));
+  for (let py = Math.floor(lo(y0)); py < Math.ceil(lo(y1)); py++) {
+    const covY = Math.min(py + 1, y1) - Math.max(py, y0);
+    if (covY <= 0) continue;
+    for (let px = Math.floor(lo(x0)); px < Math.ceil(lo(x1)); px++) {
+      const covX = Math.min(px + 1, x1) - Math.max(px, x0);
+      if (covX <= 0) continue;
+      const srcA = covX * covY * alpha;
+      const i = (py * size + px) * 4;
+      const dstA = buf[i + 3]! / 255;
+      const outA = srcA + dstA * (1 - srcA);
+      if (outA <= 0) continue;
+      for (let c = 0; c < 3; c++) {
+        const src = colour[c]! / 255;
+        const dst = buf[i + c]! / 255;
+        buf[i + c] = Math.round(((src * srcA + dst * dstA * (1 - srcA)) / outA) * 255);
+      }
+      buf[i + 3] = Math.round(outA * 255);
+    }
+  }
+}
+
+/**
+ * The icon at `size`, as pixels: the mark's boxes filled on a transparent
+ * ground, RGBA and row by row, the weft over the warp.
+ *
+ * Here rather than in `make-icons.mjs`, which now only encodes what this
+ * returns, so that a test can draw each icon exactly as the tool did and ask
+ * whether the committed file still holds it. There is nothing in it but the
+ * four operations and rounding, which JavaScript specifies to the bit — no
+ * browser, no fonts, no clock — so it draws the same pixels on any machine.
+ * The PNG those pixels are encoded as does not share that property, which
+ * `make-icons.mjs` explains.
+ */
+export function iconPixels(size: number): Uint8Array {
+  const { warps, weft, warpAlpha } = markGeometry(size);
+  const buf = new Uint8Array(size * size * 4);
+  for (const w of warps) fillRect(buf, size, w, WOAD_LIGHT, warpAlpha);
+  // Drawn after the warp, so it lies over the threads it crosses.
+  fillRect(buf, size, weft, WOAD, 1);
+  return buf;
+}
+
 /** How the mark is coloured where it is drawn as a vector. */
 export interface MarkPaint {
   /** Any CSS colour, `currentColor` included. */

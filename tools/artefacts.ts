@@ -314,15 +314,23 @@ export function artefactsFor(version: string): Artefact[] {
       // predicate is now any `OUT`, wherever it points.
       //
       // Unlike every other group here, these are drawn with no browser, no
-      // fonts and no clock — a pure Node PNG encoder — so their *pixels* are
-      // the same on any machine. Their bytes are not, and this comment used
-      // to say they were: `deflateSync` is whatever zlib the Node binary was
-      // built against, and the 128px icon comes out at 431 bytes under one
-      // and 432 under another, same pixels. So CI cannot rebuild and
-      // `git diff` them the way it does the lexicon packs; it would fail on
-      // a correct tree. What it can do is decode the committed file and
-      // compare pixels with what the geometry draws, which is `Next` in
-      // `TODO.md`; this is the weaker check that exists today.
+      // fonts and no clock — `iconPixels` in `tools/brand.ts`, then a pure
+      // Node PNG encoder — so their *pixels* are the same on any machine.
+      // Their bytes are not, and this comment used to say they were:
+      // `deflateSync` is whatever zlib the Node binary was built against,
+      // and the 128px icon comes out at 431 bytes under one and 432 under
+      // another, same pixels. So CI cannot rebuild and `git diff` them the
+      // way it does the lexicon packs; it would fail on a correct tree.
+      //
+      // What it can do instead is in `tests/tools/brand.test.ts`, under
+      // `npm test`: every file in this group is held to what the geometry
+      // draws, the rasters by their decoded pixels and the vectors as text,
+      // so an edit to `tools/brand.ts` that nobody rebuilt fails by name.
+      // That is the stronger check. This group stays anyway, because the
+      // tests find these files through it — `brand.test.ts` reads them off
+      // this group rather than off a list, and `artefacts.test.ts` requires
+      // every committed image to sit in some group — and what it reports for
+      // them is now only whether anyone has looked since an input moved.
       //
       // `site/icon.svg` is in here rather than with the site because it is
       // the same string from the same generator: it was a hand-made copy of

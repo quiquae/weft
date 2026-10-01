@@ -11,12 +11,16 @@
  * 431 bytes under a Node linked to zlib 1.2.12 and 432 under the official
  * Node 22 build, with every decoded pixel equal. So a different machine may
  * rewrite `icon-128.png` without changing it, and anything that checks
- * these files should decode them rather than diff them.
+ * these files should decode them rather than diff them — which is what
+ * `tests/tools/brand.test.ts` does, requiring each committed icon to hold
+ * exactly the pixels `iconPixels` draws. Edit the geometry without running
+ * this and `npm test` fails, naming every icon the edit moved.
  *
  * The mark is the product: vertical warp threads with a weft crossing only
  * part of them. A full crossing would mean a fully translated page, which is
- * exactly what Weft does not do. What it looks like at each size is
- * `tools/brand.ts`; this file turns that into four PNGs and one SVG.
+ * exactly what Weft does not do. What it looks like at each size, down to
+ * the pixel, is `tools/brand.ts`; this file encodes those pixels as four
+ * PNGs and writes the vector to both places it is served from.
  *
  * To see what this produces without installing anything, run
  * `npm run icons:sheet` after it: `tools/make-icon-sheet.mjs` renders
@@ -34,7 +38,7 @@ import { deflateSync } from 'node:zlib';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { WOAD, WOAD_LIGHT, markGeometry, iconSvg } from './brand.ts';
+import { iconPixels, iconSvg } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'assets');
@@ -79,7 +83,7 @@ function png(width, height, rgba) {
   const raw = Buffer.alloc((stride + 1) * height);
   for (let y = 0; y < height; y++) {
     raw[y * (stride + 1)] = 0;
-    rgba.copy(raw, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
+    raw.set(rgba.subarray(y * stride, (y + 1) * stride), y * (stride + 1) + 1);
   }
 
   return Buffer.concat([
@@ -90,53 +94,11 @@ function png(width, height, rgba) {
   ]);
 }
 
-/** Antialiased axis-aligned rectangle fill with alpha coverage. */
-function fillRect(buf, width, height, x0, y0, x1, y1, colour, alpha = 1) {
-  const lo = (v, max) => Math.max(0, Math.min(max, v));
-  for (let py = Math.floor(lo(y0, height)); py < Math.ceil(lo(y1, height)); py++) {
-    const covY = Math.min(py + 1, y1) - Math.max(py, y0);
-    if (covY <= 0) continue;
-    for (let px = Math.floor(lo(x0, width)); px < Math.ceil(lo(x1, width)); px++) {
-      const covX = Math.min(px + 1, x1) - Math.max(px, x0);
-      if (covX <= 0) continue;
-      const a = covX * covY * alpha;
-      const i = (py * width + px) * 4;
-      const srcA = a;
-      const dstA = buf[i + 3] / 255;
-      const outA = srcA + dstA * (1 - srcA);
-      if (outA <= 0) continue;
-      for (let c = 0; c < 3; c++) {
-        const src = colour[c] / 255;
-        const dst = buf[i + c] / 255;
-        buf[i + c] = Math.round(((src * srcA + dst * dstA * (1 - srcA)) / outA) * 255);
-      }
-      buf[i + 3] = Math.round(outA * 255);
-    }
-  }
-}
-
-/**
- * One icon: the mark's boxes, filled.
- *
- * What the boxes are — how many threads, how thick, how far the weft
- * reaches at each size — is `markGeometry` in `tools/brand.ts`, which is
- * also what the vector below and every other drawing of the mark is written
- * from. This file only knows how to turn boxes into a PNG.
- */
-function icon(size) {
-  const { warps, weft, warpAlpha } = markGeometry(size);
-  const buf = Buffer.alloc(size * size * 4, 0);
-  for (const w of warps) fillRect(buf, size, size, w.x0, w.y0, w.x1, w.y1, WOAD_LIGHT, warpAlpha);
-  // Drawn after the warp, so it lies over the threads it crosses.
-  fillRect(buf, size, size, weft.x0, weft.y0, weft.x1, weft.y1, WOAD, 1);
-  return png(size, size, buf);
-}
-
 async function main() {
   await mkdir(OUT, { recursive: true });
   const sizes = [16, 32, 48, 128];
   for (const size of sizes) {
-    const data = icon(size);
+    const data = png(size, size, iconPixels(size));
     await writeFile(join(OUT, `icon-${size}.png`), data);
     console.log(`  assets/icon-${size}.png  ${data.length} bytes`);
   }

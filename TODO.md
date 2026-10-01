@@ -6,7 +6,7 @@
 
 **State on 2026-10-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **117** tool tests / 33 suites, **36** e2e passing
+suites, **124** tool tests / 34 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 984 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -44,6 +44,15 @@ it still led with *hūs*, *cyning* and *vacca*, five days after French was
 made to lead everywhere — and now shares the social card's four French
 pairs. See the last ticked item in `Next`, "One decision a human may want to
 look at" below it, and the note at the top of Notes.
+
+**And as of 2026-10-01 the shipped icons are held to that geometry pixel
+for pixel.** `tests/tools/brand.test.ts` draws each icon again and requires
+the committed PNG to hold exactly those pixels, and each committed SVG to be
+exactly that text, so an edit to `tools/brand.ts` that nobody rebuilt fails
+`npm test` by name. It is a test rather than the CI rebuild-and-diff once
+queued here, because that step would have failed on a correct tree: the
+128px icon is 431 bytes under one zlib and 432 under another, every pixel
+equal. See the ticked pixel-check item in `Next`.
 
 **And re-measuring `site:check` found a live defect in published copy: two
 Latin words had no page, and four links pointed at the wrong word.** The
@@ -234,12 +243,12 @@ corrected or removed, the landing page, README and store listing with them,
 and every claim now names the entries it was checked against, so one that
 names none cannot ship. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds four
+**So the whole of B0 is closed and `Now` is empty. `Next` holds three
 agent-shaped items, and the first — the same false-descent flaw in the Old
 English pack, on published word pages — should land before B3 indexes
 them.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those two needs Creagh.** The critical
+more. **Every remaining item besides those three needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
 below it can move until it is.
 
@@ -1788,7 +1797,7 @@ below it can move until it is.
       have not been read for this. Five minutes and a pack rebuild; the
       sentence also stands on `/latin/vir`.
 
-- [ ] **Hold the committed icons to the geometry by their pixels — not by
+- [x] **Hold the committed icons to the geometry by their pixels — not by
       rebuilding and diffing them, which this item used to propose and which
       would fail on a correct tree.**
       Queued 2026-09-30 as "CI can rebuild the four shipped icons and diff
@@ -1841,6 +1850,52 @@ below it can move until it is.
       `site/og.png` and the store tiles are rendered by Chromium, so they
       stay on provenance plus the crossing-rule reading.
 
+      **Done 2026-10-01, as written, and the two vectors with it.** The queue
+      sent the session at this item in its old wording — the CI step — so
+      the premise was measured again before anything moved, with the same
+      official Node 22.23.3 binary, npx's cache of the `node` package:
+      `icon-128.png` 431 bytes here, 432 there, all 65 536 decoded bytes
+      equal, the other three sizes and both SVGs identical.
+      `iconPixels(size)` is in `tools/brand.ts` and `make-icons.mjs` keeps
+      only the encoder; all six files it writes were rewritten, mtimes
+      moved, md5-identical to what was committed. A new `describe` in
+      `tests/tools/brand.test.ts` reads the files off the icons' artefact
+      group, decodes each PNG and requires exactly the pixels `iconPixels`
+      draws, and requires each committed SVG to be `iconSvg()` exactly. The
+      vectors were not in the item. They are in because an SVG is a string,
+      with no encoder in the way, and because the existing shape comparison
+      holds each vector against the *committed* raster — so it passes when
+      both go stale together. Measured rather than argued: with
+      `CROSSING[4]` moved and nothing rebuilt, it still passed for both.
+
+      Red first, twice: `does not provide an export named 'iconPixels'`,
+      then a blank stub failing all four sizes by name, each with a pixel
+      count and the box they fall in. Then the proof the item asked for, on
+      the final test file, each probe restored by md5:
+
+      | Edit, nothing rebuilt | Fails |
+      |---|---|
+      | `GEOMETRY[48].warpFrac` 0.095 → 0.105 | `icon-48.png` alone |
+      | `CROSSING[4]` 0.72 → 0.70 | `icon-48.png`, `icon-128.png` — the two four-thread sizes — and both SVGs |
+      | `GEOMETRY[128].alpha` 0.85 → 0.86 | `icon-128.png` and both SVGs, whose warp opacity is read off it |
+      | one unit of blue in `WOAD_LIGHT` | all four icons and both SVGs; the other 17 tests pass, because a shape reading allows 6 per channel |
+      | the `<title>` in `iconSvg()` | both SVGs alone |
+      | one space appended to `site/icon.svg` | that file alone |
+
+      And the point of the item in one probe: with the 432-byte Node 22
+      encoding swapped in for the committed icon, `git diff --exit-code --
+      assets` exits 1 and the test passes, 23 of 23. The whole file passes
+      under that Node too. **No CI step was added**, and that is the
+      design, not an omission: the check runs inside `npm run test:tools`,
+      which CI already runs, and fires for one reason.
+
+      Seven tests in one new suite: tools 117 → **124**, 33 → **34**
+      suites. `tools/brand.ts` is also an input of the store tiles and the
+      social card, so both were regenerated — blob-identical to `HEAD`,
+      mtimes moved — opened and read, and stamped with `artefacts:verify`
+      beside the icons, so this commit leaves no group stale but the
+      release notes.
+
 - [ ] **The discoveries feed reads one pack entry per target word, and
       eleven true etymologies sit on the other one.** Found 2026-10-01 when
       a corrected French note would not appear in a rendered feed. Cards
@@ -1862,15 +1917,14 @@ below it can move until it is.
       a lookup bug. Measure first which surfaces besides the feed read that
       map.
 
-`Now` is **empty** and `Next` holds **four** unchecked items above, as of
+`Now` is **empty** and `Next` holds **three** unchecked items above, as of
 2026-10-01, all agent-shaped and none waiting on B1. The order is the order
 to work them. The Old English etymons first, because they are the French
 flaw again on published word pages and should land before **B3** indexes
 them; the one-line Latin note second, for the same reason and because it is
-five minutes; then the pixel check of the shipped icons, rewritten on
-2026-10-01 because the rebuild-and-diff it used to propose fails on a
-correct tree; then the feed's hidden etymologies, which are true facts out
-of sight rather than false ones in it.
+five minutes; then the feed's hidden etymologies, which are true facts out
+of sight rather than false ones in it. The pixel check of the shipped icons,
+which sat third, is done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2158,6 +2212,39 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-10-01 — the queued CI step would have failed on a correct tree, and
+the test that replaced it cannot.** The queue sent this session at the icon
+check in its 2026-09-30 wording, `npm run icons && git diff --exit-code` in
+CI. That wording was measured false earlier the same day and the item
+rewritten; this session measured it again, then built the rewrite. Four
+things a later run would be sorry not to know:
+
+1. **An official Node 22 is already on this machine**, in npx's cache of
+   the `node` package:
+   `~/.npm/_npx/52027bd8fc0022aa/node_modules/node/bin/node`, v22.23.3,
+   zlib `1.3.1-e00f703`. Homebrew's Node 26.7
+   links zlib 1.2.12, and CI installs official builds, so anything claimed
+   to be reproducible across machines can be checked against both in a
+   minute. To repeat the icon measurement, copy `tools/make-icons.mjs` and
+   `tools/brand.ts` into a scratch `tools/` and create `site/` beside it:
+   without that directory the copy writes all four PNGs and then exits 1
+   on the SVG.
+2. **A pixel-neutral edit to `tools/brand.ts` stales three artefact groups
+   at once** — the icons, the store tiles and the social card all declare
+   it. Clear them in the same PR: regenerate, compare against `HEAD`'s
+   blobs (`git hash-object <file>` against `git rev-parse HEAD:<file>`),
+   open the images, then `npm run artefacts:verify -- "<name>"` for each.
+   The squash merge puts the input change and the stamps in one commit,
+   and `checkArtefacts` reads that as fresh.
+3. **`\b` does not work in `git grep -E` here.** The first count sweep used
+   `'\b778\b|…|33 suites'` and returned only the `33 suites` lines, missing
+   four of the six live counts, including `docs/LAUNCH.md:221`. Plain
+   patterns found all six. A sweep that comes back short is a broken
+   pattern before it is a clean tree.
+4. **zsh does not split an unquoted `$VAR`.** `FILES="a b"; md5 $FILES`
+   passes one argument, so a before-hash written that way records nothing
+   while the generator after it still runs. Use an array or `${=FILES}`.
+
 **2026-10-01 — the queue's item was four PRs stale, and the item under it
 was twenty-nine claims rather than eighteen.** The queue sent this session at
 `docs/firstrun/icons.png`, which PR #37 fixed on 2026-09-30; the topmost
@@ -2263,7 +2350,8 @@ run would be sorry not to know:
    this file said on 2026-09-30. Same pixels, but `icon-128.png` is 431
    bytes under this machine's Node (zlib 1.2.12) and 432 under an official
    Node 22 build. Do not add a CI step that rebuilds and diffs it. The
-   unchecked item in `Next` is rewritten around that.
+   item in `Next` was rewritten around that, and is now done: the icons are
+   held to the geometry by a test that decodes them.
 
 **What was assumed.** That the redraw's rule — the weft reaches every thread
 but the last — covers the vector as well as the rasters, on the commit's own
