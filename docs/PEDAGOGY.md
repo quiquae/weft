@@ -122,13 +122,19 @@ thing in the language:
 
 | Old English | Means | Became |
 |---|---|---|
-| `drēam` | joy, music | *dream* (the sleeping sense is Norse) |
+| `mete` | food of any kind | *meat* |
 | `steorfan` | to die | *starve* |
 | `sellan` | to give | *sell* |
 | `wīf` | woman, and neuter | *wife* |
 | `cwic` | alive | *quick*, as in "the quick and the dead" |
 | `grēat` | thick, massive | *great* |
 | `sōþ` | true | *sooth*, as in "forsooth" |
+
+`drēam` used to head this table, as the ancestor of *dream*. It meant joy and
+music, which makes it a false friend still, but etymonline says that "much
+study has failed to prove that Old English dream is the source of the modern
+word", so Weft no longer says it became one. Every Old English etymon names
+the dictionary entry it was checked against, in `tools/seed/ang-etymons.tsv`.
 
 ### Orthography is a difficulty axis of its own
 

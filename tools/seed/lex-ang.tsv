@@ -23,10 +23,19 @@
 # "sellan" means to give. "faest" means firm, whence both "fast" and
 # "steadfast".
 #
+# The etymon column names the English word this one became, and that is a
+# claim about the English word, so the English word is where it is checked.
+# A translation is not an ancestor: "window" is Old Norse "vindauga", which
+# replaced "eagthyrel", and "egg", "gift", "weak" and "wassail" are Norse
+# too. Nor is a compound the word itself: "bishopric" contains "rice", but
+# "rice" did not become it. Every etymon names the dictionary entry it was
+# checked against in tools/seed/ang-etymons.tsv, and
+# tests/tools/ang-etymons.test.ts fails on one that names none.
+#
 man	noun	mann	menn	m	/ˈmɑnː/	man	“mann” meant a human being of either sex
 woman	noun	wīfmann	wīfmenn	f	/ˈwiːvmɑnː/	woman	literally “woman-person”
 child	noun	ċild	cildru	n	/ˈtʃild/	child	
-boy	noun	cnapa	cnapan	m	/ˈknɑpɑ/	knave	
+boy	noun	cnapa	cnapan	m	/ˈknɑpɑ/		
 girl	noun	mæġden	mæġdenu	n	/ˈmæjden/	maiden	
 person	noun	mann	menn	m	/ˈmɑnː/	man	
 friend	noun	frēond	frīend	m	/ˈfreːond/	friend	from “frēon”, to love
@@ -48,7 +57,7 @@ stranger	noun	fremde	fremdan	m	/ˈfremde/
 enemy	noun	fēond	fīend	m	/ˈfeːond/	fiend	“fēond” was any enemy before it meant a demon
 soldier	noun	ċempa	ċempan	m	/ˈtʃempɑ/		
 teacher	noun	lārēow	lārēowas	m	/ˈlɑːreːow/		
-doctor	noun	lǣċe	lǣċas	m	/ˈlæːtʃe/	leech	the healer, whence the bloodletting worm
+doctor	noun	lǣċe	lǣċas	m	/ˈlæːtʃe/	leech	the healer; the bloodsucking worm may be a different word
 farmer	noun	ierþling	ierþlingas	m	/ˈierðliŋɡ/		
 sailor	noun	sǣmann	sǣmenn	m	/ˈsæːmɑnː/	seaman	
 head	noun	hēafod	hēafodu	n	/ˈhæːɑvod/	head	
@@ -67,7 +76,7 @@ leg	noun	sċanca	sċancan	m	/ˈʃɑŋkɑ/	shank
 foot	noun	fōt	fēt	m	/ˈfoːt/	foot	
 finger	noun	finger	fingras	m	/ˈfiŋɡer/	finger	
 face	noun	onsīen	onsīene	f	/ˈonziːen/		
-body	noun	līċ	līċ	n	/ˈliːtʃ/	lychgate	the corpse-gate of a churchyard
+body	noun	līċ	līċ	n	/ˈliːtʃ/	lich	it survives in “lychgate”, the corpse-gate of a churchyard
 skin	noun	hȳd	hȳda	f	/ˈhyːd/	hide	
 voice	noun	stefn	stefna	f	/ˈstevn/		
 dog	noun	hund	hundas	m	/ˈhund/	hound	the usual word; “docga” was rare and gave “dog”
@@ -80,7 +89,7 @@ sheep	noun	sċēap	sċēap	n	/ˈʃæːɑp/	sheep
 pig	noun	swīn	swīn	n	/ˈswiːn/	swine	
 wolf	noun	wulf	wulfas	m	/ˈwulf/	wolf	
 bear	noun	bera	beran	m	/ˈberɑ/	bear	
-lion	noun	lēo	lēon	m	/ˈleːo/	lion	
+lion	noun	lēo	lēon	m	/ˈleːo/		borrowed straight from Latin; “lion” came later, from French
 mouse	noun	mūs	mȳs	f	/ˈmuːs/	mouse	
 snake	noun	nǣdre	nǣdran	f	/ˈnæːdre/	adder	“a nadder” was misheard as “an adder”
 bee	noun	bēo	bēon	f	/ˈbeːo/	bee	
@@ -100,12 +109,12 @@ apple	noun	æppel	æpplas	m	/ˈæpːel/	apple	any fruit, not only the apple
 salt	noun	sealt		n	/ˈsæɑlt/	salt	
 honey	noun	hunig		n	/ˈhuniɡ/	honey	
 cheese	noun	ċīese		m	/ˈtʃiːeze/	cheese	
-egg	noun	æġ	ǣgru	n	/ˈæj/	egg	
+egg	noun	æġ	ǣgru	n	/ˈæj/		it became Middle English “ey”, which Norse “egg” displaced
 fire	noun	fȳr	fȳr	n	/ˈfyːr/	fire	
 house	noun	hūs	hūs	n	/ˈhuːs/	house	
-home	noun	hām	hāmas	m	/ˈhɑːm/	home	survives in every English place-name in -ham
+home	noun	hām	hāmas	m	/ˈhɑːm/	home	survives in many English place-names in -ham
 door	noun	duru	dura	f	/ˈduru/	door	
-window	noun	ēagþȳrel	ēagþȳrlu	n	/ˈæːɑɡðyːrel/	window	literally “eye-hole”
+window	noun	ēagþȳrel	ēagþȳrlu	n	/ˈæːɑɡðyːrel/		literally “eye-hole”; “window”, “wind-eye”, is Norse
 wall	noun	wall	wallas	m	/ˈwɑlː/	wall	
 roof	noun	hrōf	hrōfas	m	/ˈhroːf/	roof	
 floor	noun	flōr	flōras	f	/ˈfloːr/	floor	
@@ -113,7 +122,7 @@ room	noun	rūm	rūm	n	/ˈruːm/	room
 table	noun	bēod	bēodas	m	/ˈbeːod/		
 chair	noun	setl	setl	n	/ˈsetl/	settle	the high-backed bench
 bed	noun	bedd	bedd	n	/ˈbedː/	bed	
-book	noun	bōc	bēc	f	/ˈboːk/	book	a beech-wood tablet
+book	noun	bōc	bēc	f	/ˈboːk/	book	usually traced to “beech”
 word	noun	word	word	n	/ˈword/	word	
 letter	noun	bōcstæf	bōcstafas	m	/ˈboːkstæf/		
 name	noun	nama	naman	m	/ˈnɑmɑ/	name	
@@ -153,11 +162,11 @@ grass	noun	græs		n	/ˈɡræs/	grass
 field	noun	feld	feldas	m	/ˈfeld/	field	
 road	noun	weġ	weġas	m	/ˈwej/	way	
 path	noun	pæð	paðas	m	/ˈpæθ/	path	
-city	noun	burg	byriġ	f	/ˈburɡ/	borough	survives in every -bury and -burgh
-town	noun	tūn	tūnas	m	/ˈtuːn/	town	an enclosure, whence every -ton
-village	noun	þorp	þorpas	m	/ˈθorp/	thorpe	
-world	noun	weorold	weorolde	f	/ˈweorold/	world	“wer-eld”, the age of man
-country	noun	rīċe	rīċu	n	/ˈriːtʃe/	bishopric	the -ric of a realm
+city	noun	burg	byriġ	f	/ˈburɡ/	borough	its dative, “byriġ”, survives in many place-names as -bury
+town	noun	tūn	tūnas	m	/ˈtuːn/	town	an enclosure, whence the -ton of place-names
+village	noun	þorp	þorpas	m	/ˈθorp/	thorp	
+world	noun	weorold	weorolde	f	/ˈweorold/	world	literally “age of man”; “wer”, man, survives in “werewolf”
+country	noun	rīċe	rīċu	n	/ˈriːtʃe/		a realm; it survives as the -ric of “bishopric”
 place	noun	stōw	stōwa	f	/ˈstoːw/	stow	as in Walthamstow
 rain	noun	reġn		m	/ˈrejn/	rain	
 snow	noun	snāw		m	/ˈsnɑːw/	snow	
@@ -165,15 +174,15 @@ wind	noun	wind	windas	m	/ˈwind/	wind
 cloud	noun	wolcen	wolcnu	n	/ˈwolken/	welkin	
 ice	noun	īs		n	/ˈiːs/	ice	
 light	noun	lēoht	lēoht	n	/ˈleːoxt/	light	
-shadow	noun	sċeadu	sċeadwa	f	/ˈʃæɑdu/	shade	
+shadow	noun	sċeadu	sċeadwa	f	/ˈʃæɑdu/	shadow	“shade” comes partly from it
 time	noun	tīma	tīman	m	/ˈtiːmɑ/	time	
 day	noun	dæġ	dagas	m	/ˈdæj/	day	
 night	noun	niht	niht	f	/ˈnixt/	night	
 year	noun	ġēar	ġēar	n	/ˈjæːɑr/	year	
-month	noun	mōnað	mōnðas	m	/ˈmoːnɑθ/	month	the moon-measure
+month	noun	mōnað	mōnðas	m	/ˈmoːnɑθ/	month	from one new moon to the next
 week	noun	wicu	wican	f	/ˈwiku/	week	
 hour	noun	tīd	tīde	f	/ˈtiːd/	tide	“tīd” was an hour or a season, whence Yuletide
-morning	noun	morgen	morgnas	m	/ˈmorɡen/	morning	
+morning	noun	morgen	morgnas	m	/ˈmorɡen/	morn	it gave “morn” and “morrow”, and “morning” was built on “morn”
 evening	noun	ǣfen	ǣfnas	m	/ˈæːven/	even	whence “evening” and “eve”
 summer	noun	sumor	sumoras	m	/ˈsumor/	summer	
 winter	noun	winter	wintru	m	/ˈwinter/	winter	years were counted in winters
@@ -186,24 +195,24 @@ peace	noun	friþ		m	/ˈfriθ/	frith	the peace of a place, as in Frithstool
 truth	noun	sōþ		n	/ˈsoːθ/	sooth	“forsooth” and “soothsayer” keep it
 law	noun	lagu	laga	f	/ˈlɑɣu/	law	borrowed from Old Norse
 work	noun	weorc	weorc	n	/ˈweork/	work	
-money	noun	feoh		n	/ˈfeox/	fee	“feoh” was cattle, then property, then money
+money	noun	feoh		n	/ˈfeox/		“feoh” was cattle, then property, then money; “fee” is partly this word
 price	noun	weorþ		n	/ˈweorθ/	worth	
-question	noun	āscung	āscunga	f	/ˈɑːskuŋɡ/	asking	
-answer	noun	andswaru	andswara	f	/ˈɑndzwɑru/	answer	a sworn reply
-story	noun	spell	spell	n	/ˈspelː/	gospel	“gōd spell”, the good story
+question	noun	āscung	āscunga	f	/ˈɑːskuŋɡ/		“asking”, built on “ask”, replaced it
+answer	noun	andswaru	andswara	f	/ˈɑndzwɑru/	answer	its second half comes from “swerian”, to swear
+story	noun	spell	spell	n	/ˈspelː/	spell	it meant a story; “gōd spell”, the good story, became “gospel”
 song	noun	sang	sangas	m	/ˈsɑŋɡ/	song	
-music	noun	drēam	drēamas	m	/ˈdræːɑm/	dream	“drēam” meant joy and music; the sleeping sense is Norse
+music	noun	drēam	drēamas	m	/ˈdræːɑm/		“drēam” meant joy and music; nobody has proved it became “dream”
 game	noun	gamen	gamen	n	/ˈɡɑmen/	game	
-dream	noun	swefn	swefn	n	/ˈswevn/	somnolent	the OE word for a sleeping vision
+dream	noun	swefn	swefn	n	/ˈswevn/		it shares a root with Latin “somnus”, sleep, whence “somnolent”
 fear	noun	fyrhtu		f	/ˈfyrxtu/	fright	
 hope	noun	hopa	hopan	m	/ˈhopɑ/	hope	
 joy	noun	blis		f	/ˈblis/	bliss	
-anger	noun	ierre		n	/ˈierːe/	ire	
+anger	noun	ierre		n	/ˈierːe/		“ire” is not this word: it came from French
 oath	noun	āþ	āðas	m	/ˈɑːθ/	oath	
-gift	noun	ġiefu	ġiefa	f	/ˈjievu/	gift	
+gift	noun	ġiefu	ġiefa	f	/ˈjievu/		“gift” came from its Norse cousin
 good	adj	gōd			/ˈɡoːd/	good	
 bad	adj	yfel			/ˈyvel/	evil	
-big	adj	miċel			/ˈmitʃel/	mickle	“many a mickle makes a muckle”
+big	adj	miċel			/ˈmitʃel/	mickle	“many a little makes a mickle”
 small	adj	smæl			/ˈsmæl/	small	
 great	adj	grēat			/ˈɡræːɑt/	great	“grēat” meant thick or massive
 little	adj	lȳtel			/ˈlyːtel/	little	
@@ -219,7 +228,7 @@ cold	adj	ċeald			/ˈtʃæɑld/	cold
 warm	adj	wearm			/ˈwæɑrm/	warm	
 heavy	adj	hefiġ			/ˈhevij/	heavy	
 strong	adj	strang			/ˈstrɑŋɡ/	strong	
-weak	adj	wāc			/ˈwɑːk/	weak	
+weak	adj	wāc			/ˈwɑːk/		“weak” came from its Norse cousin, “veikr”
 hard	adj	heard			/ˈhæɑrd/	hard	
 soft	adj	sōfte			/ˈsoːfte/	soft	
 quick	adj	swift			/ˈswift/	swift	“cwic” meant alive, as in “the quick and the dead”
@@ -229,7 +238,7 @@ false	adj	lēas			/ˈlæːɑs/	-less	the suffix in “hopeless” is this word
 rich	adj	rīċe			/ˈriːtʃe/	rich	it meant powerful before it meant wealthy
 poor	adj	earm			/ˈæɑrm/		
 happy	adj	ēadiġ			/ˈæːɑdij/		
-sad	adj	unrōt			/ˈunroːt/	sad	“sæd” meant sated, full
+sad	adj	unrōt			/ˈunroːt/		“sad” is another word, “sæd”, which meant sated, full
 tired	adj	wēriġ			/ˈweːrij/	weary	
 full	adj	full			/ˈfulː/	full	
 empty	adj	ǣmettiġ			/ˈæːmetːij/	empty	
@@ -242,16 +251,16 @@ difficult	adj	earfoþe			/ˈæɑrvoðe/
 free	adj	frēo			/ˈfreːo/	free	
 wise	adj	wīs			/ˈwiːs/	wise	
 brave	adj	bald			/ˈbɑld/	bold	
-holy	adj	hāliġ			/ˈhɑːlij/	holy	from “hāl”, whole: to be holy is to be whole
+holy	adj	hāliġ			/ˈhɑːlij/	holy	it shares a root with “hāl”, whole
 deep	adj	dēop			/ˈdeːop/	deep	
 wide	adj	wīd			/ˈwiːd/	wide	
 narrow	adj	nearu			/ˈnæɑru/	narrow	
 dead	adj	dēad			/ˈdæːɑd/	dead	
 alive	adj	cwic			/ˈkwik/	quick	“the quick and the dead”
 sick	adj	sēoc			/ˈseːok/	sick	
-whole	adj	hāl			/ˈhɑːl/	whole	also “hale” and “heal”
+whole	adj	hāl			/ˈhɑːl/	whole	also “hale”; and “hǣlan”, to make whole, became “heal”
 white	adj	hwīt			/ˈhwiːt/	white	
-black	adj	blæc			/ˈblæk/	black	“blāc” with a long vowel meant pale, whence “bleak”
+black	adj	blæc			/ˈblæk/	black	“blāc”, with a long vowel, meant pale; “bleak” is its Norse cousin
 red	adj	rēad			/ˈræːɑd/	red	
 green	adj	grēne			/ˈɡreːne/	green	
 blue	adj	hǣwen			/ˈhæːwen/		
@@ -260,12 +269,12 @@ grey	adj	grǣġ			/ˈɡræːj/	grey
 brown	adj	brūn			/ˈbruːn/	brown	
 have	verb	habban	hæbbende		/ˈhɑbːɑn/	have	
 say	verb	secgan	secgende		/ˈseddʒɑn/	say	
-go	verb	gān	gangende		/ˈɡɑːn/	go	“gangende” survives in “gangway”
+go	verb	gān	gangende		/ˈɡɑːn/	go	
 come	verb	cuman	cumende		/ˈkumɑn/	come	
 see	verb	sēon	sēonde		/ˈseːon/	see	
 know	verb	witan	witende		/ˈwitɑn/	wit	“to wit”, “unwittingly”
 think	verb	þencan	þencende		/ˈθeŋkɑn/	think	
-take	verb	niman	nimende		/ˈnimɑn/	nimble	“tacan” was borrowed from Norse and won
+take	verb	niman	nimende		/ˈnimɑn/	numb	“numb” was its past participle, taken or seized; “take” itself is Norse
 give	verb	ġiefan	ġiefende		/ˈjievɑn/	give	
 make	verb	macian	maciende		/ˈmɑkiɑn/	make	
 find	verb	findan	findende		/ˈfindɑn/	find	
@@ -301,12 +310,12 @@ pay	verb	ġieldan	ġieldende		/ˈjieldɑn/	yield	“ġieldan” meant to pay or 
 build	verb	timbran	timbrende		/ˈtimbrɑn/	timber	
 break	verb	brecan	brecende		/ˈbrekɑn/	break	
 open	verb	openian	openiende		/ˈopeniɑn/	open	
-close	verb	clȳsan	clȳsende		/ˈklyːzɑn/	close	
+close	verb	clȳsan	clȳsende		/ˈklyːzɑn/		“close” came from French
 begin	verb	beginnan	beginnende		/beˈɡinːɑn/	begin	
 help	verb	helpan	helpende		/ˈhelpɑn/	help	
 learn	verb	leornian	leorniende		/ˈleorniɑn/	learn	
-teach	verb	tǣcan	tǣcende		/ˈtæːkɑn/	teach	from “tācn”, a token or sign
-remember	verb	ġemunan	ġemunende		/jeˈmunɑn/	mind	
+teach	verb	tǣcan	tǣcende		/ˈtæːkɑn/	teach	related to “tācn”, a token or sign
+remember	verb	ġemunan	ġemunende		/jeˈmunɑn/		
 forget	verb	forġietan	forġietende		/forˈjietɑn/	forget	
 win	verb	winnan	winnende		/ˈwinːɑn/	win	“winnan” meant to struggle or toil
 lose	verb	losian	losiende		/ˈloziɑn/	lose	
@@ -318,7 +327,7 @@ sing	verb	singan	singende		/ˈsiŋɡɑn/	sing
 laugh	verb	hlīehhan	hlīehhende		/ˈhliːexːɑn/	laugh	
 cry	verb	wēpan	wēpende		/ˈweːpɑn/	weep	
 wait	verb	ābīdan	ābīdende		/ɑːˈbiːdɑn/	abide	
-watch	verb	weardian	weardiende		/ˈwæɑrdiɑn/	ward	whence “warden” and “guard”
+watch	verb	weardian	weardiende		/ˈwæɑrdiɑn/	ward	“warden” and “guard” are its cousins, through French
 look	verb	lōcian	lōciende		/ˈloːkiɑn/	look	
 show	verb	sċēawian	sċēawiende		/ˈʃæːɑwiɑn/	show	it meant to look at, not to display
 call	verb	clipian	clipiende		/ˈklipiɑn/		
@@ -326,7 +335,7 @@ put	verb	settan	settende		/ˈsetːɑn/	set
 keep	verb	cēpan	cēpende		/ˈkeːpɑn/	keep	
 leave	verb	lǣfan	lǣfende		/ˈlæːvɑn/	leave	
 follow	verb	folgian	folgiende		/ˈfolɡiɑn/	follow	
-seek	verb	sēcan	sēcende		/ˈseːkɑn/	seek	“sēcan” also gave “beseech”
+seek	verb	sēcan	sēcende		/ˈseːkɑn/	seek	as “besēcan” it became “beseech”
 choose	verb	ċēosan	ċēosende		/ˈtʃeːozɑn/	choose	
 change	verb	wendan	wendende		/ˈwendɑn/	wend	“wend one’s way”; its past tense “went” was captured by “go”
 grow	verb	grōwan	grōwende		/ˈɡroːwɑn/	grow	
@@ -335,7 +344,7 @@ rise	verb	rīsan	rīsende		/ˈriːzɑn/	rise
 turn	verb	tyrnan	tyrnende		/ˈtyrnɑn/	turn	
 move	verb	styrian	styriende		/ˈstyriɑn/	stir	
 throw	verb	weorpan	weorpende		/ˈweorpɑn/	warp	“weorpan” meant to throw
-catch	verb	fōn	fōnde		/ˈfoːn/	fang	
+catch	verb	fōn	fōnde		/ˈfoːn/		its past participle gave “fang”, once a seizing or taking
 cut	verb	ċeorfan	ċeorfende		/ˈtʃeorvɑn/	carve	
 wash	verb	wasċan	wasċende		/ˈwɑʃɑn/	wash	
 cook	verb	sēoþan	sēoþende		/ˈseːoðɑn/	seethe	
@@ -349,9 +358,9 @@ yesterday	adv	ġiestrandæġ			/ˈjiestrɑndæj/	yesterday
 now	adv	nū			/ˈnuː/	now	
 soon	adv	sōna			/ˈsoːnɑ/	soon	“sōna” meant immediately
 already	adv	ǣr			/ˈæːr/	ere	
-almost	adv	fulnēah			/ˈfulnæːɑx/	full nigh	
+almost	adv	fulnēah			/ˈfulnæːɑx/		“nēah”, near, became “nigh”
 together	adv	tōgædere			/ˈtoːɣædere/	together	
-alone	adv	āna			/ˈɑːnɑ/	one	
+alone	adv	āna			/ˈɑːnɑ/		“all āna” became “alone”
 again	adv	eft			/ˈeft/		
 here	adv	hēr			/ˈheːr/	here	
 everywhere	adv	ǣghwǣr			/ˈæːɡhwæːr/		
@@ -360,7 +369,7 @@ slowly	adv	slāwlīċe			/ˈslɑːwliːtʃe/	slowly
 quickly	adv	hrædlīċe			/ˈhrædliːtʃe/		
 truly	adv	sōþlīċe			/ˈsoːðliːtʃe/	soothly	
 perhaps	adv	wēnunga			/ˈweːnuŋɡɑ/		
-very	adv	swīþe			/ˈswiːðe/	swithe	
+very	adv	swīþe			/ˈswiːðe/	swith	
 one	num	ān			/ˈɑːn/	one	
 two	num	twēgen			/ˈtweːɣen/	twain	
 three	num	þrēo			/ˈθreːo/	three	
@@ -371,11 +380,11 @@ seven	num	seofon			/ˈseovon/	seven
 eight	num	eahta			/ˈæɑxtɑ/	eight	
 nine	num	nigon			/ˈniɣon/	nine	
 ten	num	tīen			/ˈtiːen/	ten	
-hundred	num	hund			/ˈhund/	hundred	
+hundred	num	hund			/ˈhund/		the usual word for it; English kept “hundred”, “a counting of 100”
 thousand	num	þūsend			/ˈθuːzend/	thousand	
-first	num	forma			/ˈformɑ/	foremost	
+first	num	forma			/ˈformɑ/	former	“former” began as its comparative
 yes	intj	ġēa			/ˈjæːɑ/	yea	
-hello	intj	wes hāl				wassail	“be whole” — the drinking toast is the same phrase
-goodbye	intj	far wel				farewell	
+hello	intj	wes hāl					literally “be whole”; “wassail” is its Norse cousin, “ves heill”
+goodbye	intj	far wel					
 please	intj	iċ bidde				bid	
 sorry	intj	mē is lāþ				loath	

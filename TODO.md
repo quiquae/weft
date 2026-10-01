@@ -6,11 +6,12 @@
 
 **State on 2026-10-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **124** tool tests / 34 suites, **36** e2e passing
+suites, **129** tool tests / 35 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 984 KB and passing `npm run validate`. The package grew
+packages built at 985 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
-crossed a rounding boundary.
+crossed a rounding boundary, and 984 → 985 KB the same evening by the Old
+English pack's 1 541, its notes having grown longer than its etymons shrank.
 `npm run test:all` exits 0 end to end.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-01, each with
@@ -19,7 +20,7 @@ npm's own exit status captured rather than a pipe's:**
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **713** pages, **16 129** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **713** pages, **16 109** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -243,12 +244,22 @@ corrected or removed, the landing page, README and store listing with them,
 and every claim now names the entries it was checked against, so one that
 names none cannot ship. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds three
-agent-shaped items, and the first — the same false-descent flaw in the Old
-English pack, on published word pages — should land before B3 indexes
-them.** The code is not
+**And as of 2026-10-01 the same is true of Old English, where it was
+twenty-seven of 330.** Sixteen descents paired the English word with its
+translation — *window* is Old Norse *vindauga*, *lion* and *ire* French,
+*sad* is *sæd* not *unrōt* — and eleven named a compound or derivative as
+the word itself, *gospel* for *spell*. 21 are gone, 6 name the real
+descendant, and the landing page no longer leads with *drēam → dream*,
+which nobody has proved. Every Old English etymon names the entry it was
+checked against in `tools/seed/ang-etymons.tsv`, and a test refuses one that
+names none. See the ticked item in `Next`.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds five
+agent-shaped items, and two of them — the Latin note on `vir` and 22 Old
+English URLs that lose a letter — should land before B3 indexes the pages
+they are on.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those three needs Creagh.** The critical
+more. **Every remaining item besides those five needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
 below it can move until it is.
 
@@ -1738,7 +1749,7 @@ below it can move until it is.
       deleted, because its note says "no change to commit". Read the
       dashboard note in Notes before trusting `dashboard.png` to reproduce.
 
-- [ ] **The Old English pack makes the claim the French one did, and on
+- [x] **The Old English pack makes the claim the French one did, and on
       published pages.** Found 2026-10-01, by asking whether the French
       flaw was particular to French. It is not. 242 of the 356 rows in
       `tools/seed/lex-ang.tsv` say their Old English word *became* the very
@@ -1789,6 +1800,73 @@ below it can move until it is.
 
       About 90 minutes for steps 1–3.
 
+      **Done 2026-10-01, all four steps, and it was twenty-seven claims, not
+      six to ten.** Every one of the 330 was read against etymonline — the 79
+      entries the French pass had already fetched and 279 more, the etymons
+      and the words their notes name — and against English Wiktionary where
+      etymonline has no entry, 24 pages in all. The sample above had found
+      three in 80, all one shape. The whole file held two:
+
+      | Shape | Count | Examples |
+      |---|---|---|
+      | The English word came from somewhere else | **16** | *window*, *egg*, *gift*, *weak*, *wassail* (Norse); *lion*, *ire*, *close* (French); *fee* ("the merger … of two words"); *sad* (from *sæd*, not *unrōt*); *asking*, which "replaced" *āscung*; *dream* ("much study has failed to prove"); *somnolent*, a Latin cousin of *swefn*; *knave*, from *cnafa* not *cnapa*; *farewell*, whose Old English form Wiktionary gives only as "possibly"; *shade*, mainly from *scead* |
+      | A compound or derivative standing in for the word | **11** | *gospel* for *spell*, *bishopric* for *rīċe*, *lychgate* for *līċ*, *hundred* for *hund*, *one* for *āna* (it is *all āna* that became *alone*), *mind* (from *gemynd*), *fang* (a noun made from *fōn*'s participle), *nimble*, *foremost*, *morning*, *full nigh* |
+
+      **Compounds count as false here and inflections do not, and the
+      product's own wording is why.** The word page says "became", its
+      description "the direct ancestor of", the feed "comes straight from".
+      *bishopric* contains *rīċe* and is not what *rīċe* became. But *shadow*
+      is the oblique case of *sċeadu*, *numb* the past participle of *niman*
+      ("literally 'taken, seized'"), *former* the comparative of *forma* —
+      the word itself, inflected — so six rows name the real descendant now:
+      *spell*, *shadow*, *morn*, *numb*, *former*, *lich*. A cognate reshaping
+      the word does not break a descent either: *sister*, *give* and *carve*
+      took a Norse form and are still the Old English words. "Partly from"
+      does, by the French file's rule. 21 removed, 6 corrected, and two
+      renamed to the headword actually read, *thorpe* → *thorp* and *swithe*
+      → *swith*. 309 claims remain.
+
+      **The notes were read against the same entries, and forty moved.**
+      Fourteen rows that lost or changed their etymon gained a true note
+      rather than a blank — *ēagþȳrel*'s is now "literally “eye-hole”;
+      “window”, “wind-eye”, is Norse". Twenty-six were rewritten, sixteen of
+      them on claims that stand, where a fetched entry contradicted, hedged or
+      did not support the wording: *weardian* "whence warden and guard" (both
+      French, cousins through Frankish); *blæc* "whence bleak" (Old Norse
+      *bleikr*); *gān* "gangende survives in gangway" (*gang* is "not
+      considered to be related to go"); *lǣċe* "whence the bloodletting worm"
+      ("according to OED … a distinct word"); *miċel*'s proverb, which
+      Wiktionary calls a corruption of "many a little makes a mickle"; and
+      "every" place-name in -ham, -bury and -ton, where the sources say
+      "many". Notes the fetched text did not address were left, and are not
+      thereby checked — Walthamstow under *stōw* is one.
+
+      **Step 4 is taken, lighter than this item imagined: a sidecar, not a
+      split.** `tools/seed/ang-etymons.tsv` holds one line per claim naming the
+      entries read, and `tests/tools/ang-etymons.test.ts` — 5 tests, a new
+      suite — fails on an etymon with no line, a line citing some other word,
+      an unreadable token, or a line outliving its claim. Not French's review
+      file and merge: French etymology was authored in a file of its own and
+      merged in, Old English's always lived in the seed, and a sidecar kept
+      the content diff of `lex-ang.tsv` to the 45 rows that changed. The
+      claims taken out are listed at the foot of the ledger with what the
+      dictionary says. Red first, naming all 309; then each rule shown to
+      fire on its own break, restored by md5. Latin is not done, and is
+      queued below.
+
+      **Public copy moved with it.** The landing page's Old English table led
+      with *drēam → dream*; it shows *sellan → sell* now, and the descent hub's
+      intro and `docs/PEDAGOGY.md`'s table use *mete → meat* where they had
+      *drēam*, which `PEDAGOGY.md` now explains. The README and the launch
+      draft only ever said what *drēam* meant, and stand.
+
+      Rendered and read: all 44 word pages that changed, the hub (325 rows →
+      305) and the index. All 36 generated screenshots regenerated
+      byte-identical — `page-old-english.png` hovers *ēa*, which carries no
+      etymon — and their three groups are stamped. `en-ang.json` moved in 46
+      `etymonOf` and 66 `note` fields and nothing else; `index.json` did not
+      move.
+
 - [ ] **One Latin note puts a verb's grammar on a noun.** `lex-la.tsv`,
       the very first row: man → `vir`, note "third-person plural “virī” also
       means “men” collectively". *virī* is the nominative plural of a noun,
@@ -1796,6 +1874,23 @@ below it can move until it is.
       the item above, and not checked further — the rest of the Latin notes
       have not been read for this. Five minutes and a pack rebuild; the
       sentence also stands on `/latin/vir`.
+
+- [ ] **Twenty-two Old English words are published at a URL that drops or
+      mangles their ǣ.** Found 2026-10-01 in the list of pages the etymon
+      pass changed: `lǣċe` is `/old-english/l-ce` and `tǣcan`
+      `/old-english/t-can`. `slugify()` (`tools/build-site.mjs`) maps `æ` to
+      `ae` *before* it normalises, so the precomposed `ǣ` (U+01E3) is not yet
+      an `æ` when that rule runs; NFD then splits it into `æ` and a macron,
+      the macron is stripped, and the bare `æ` falls to `[^a-z0-9]+` and
+      becomes a hyphen. Counted from the pack: 22 of 350 headwords, none in
+      Latin. The worst are not ugly but wrong — `sǣ`, sea, is `/old-english/s`;
+      `ǣr` is `/old-english/r`; `ǣfen`, evening, is `/old-english/fen`, which
+      is an English word for something else. Fix: normalise first, or map
+      `ǣ` explicitly, and add a test that no slug drops a letter of its
+      headword's ASCII fold. `assignSlugs()` will catch any collision the
+      change creates. Every Latin page links its Old English counterpart by
+      slug, so those links move too, and `site:check` will say so. Free before
+      **B3**, a stranded URL each after. About 30 minutes.
 
 - [x] **Hold the committed icons to the geometry by their pixels — not by
       rebuilding and diffing them, which this item used to propose and which
@@ -1917,18 +2012,56 @@ below it can move until it is.
       a lookup bug. Measure first which surfaces besides the feed read that
       map.
 
-`Now` is **empty** and `Next` holds **three** unchecked items above, as of
+- [ ] **The Latin pack's descent claims have never been checked against a
+      source either.** Found 2026-10-01, by the question that found the Old
+      English ones: was the flaw particular to the language? 312 Latin word
+      pages say "This is the Latin word your English X was borrowed from",
+      and nothing records that any X was looked up. The Latin frame is
+      looser than the Old English one, on purpose — `META.la` says
+      "borrowed", and a learned borrowing from a derivative is still a
+      borrowing: *vaccine* is from *vaccīnus*, from *vacca*. So the standard
+      is not Old English's. The English word must have come from Latin, from
+      this word or one built on it; not merely share a root with it, and not
+      have come through French from a different Latin word.
+
+      1. The fetcher is `/tmp/weft-ang/fetch.py` (see Notes, 2026-10-01). It
+         writes into `/tmp/weft-etym/cache/etym`, which held 560 English
+         entries when the Old English pass ended — but `/tmp` does not survive
+         a reboot, so check before relying on it.
+      2. Read each etymon's entry for "from Latin <word>", and for a French
+         route that names some other Latin word.
+      3. Record the sources the Old English way: a `tools/seed/la-etymons.tsv`
+         and `tests/tools/ang-etymons.test.ts` generalised over both packs.
+      4. `npm run packs`, `npm run site`, and read every word page that moved.
+
+      About two hours, and before **B3** for the same reason.
+
+- [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
+      may not be Old English.** Found 2026-10-01 while checking its etymon.
+      etymonline dates *farewell* to a Middle English phrase "attested by c.
+      1200"; English Wiktionary derives it only "possibly" from Old English
+      "*far wel!", with the asterisk that marks an unattested form. The
+      etymon is gone, but `/old-english/far-wel` still presents the phrase as
+      the Old English for goodbye. That is a question about the *target*,
+      which nothing in the pass looked at, so it is a content decision: find
+      a parting formula Bosworth–Toller attests, or mark the entry as a
+      reconstruction. Ask the same of `iċ bidde` (please) and `mē is lāþ`
+      (sorry), which are well-formed Old English but may be this lexicon's
+      own phrasings rather than attested ones.
+
+`Now` is **empty** and `Next` holds **five** unchecked items above, as of
 2026-10-01, all agent-shaped and none waiting on B1. The order is the order
-to work them. The Old English etymons first, because they are the French
-flaw again on published word pages and should land before **B3** indexes
-them; the one-line Latin note second, for the same reason and because it is
-five minutes; then the feed's hidden etymologies, which are true facts out
-of sight rather than false ones in it. The pixel check of the shipped icons,
-which sat third, is done.
+to work them. The one-line Latin note first, because it is five minutes and
+stands on a published page; the 22 mangled Old English URLs second, because
+changing them is free before **B3** and strands them after; then the feed's
+hidden etymologies, which are true facts out of sight rather than false ones
+in it; then the Latin descent pass, the longest, which also wants to land
+before B3; then `far wel`, a content question. The Old English etymons,
+which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
-read the Blocked section and confirm B1 has not moved. Beyond the four items, the three gates `test:all`
+read the Blocked section and confirm B1 has not moved. Beyond the five items, the three gates `test:all`
 leaves out were all re-measured on 2026-10-01 and the numbers are in the
 state line at the top — so that particular piece of honest work is spent for
 now. It was not idle: `site:check` was the one that found the slug collision,
@@ -1967,6 +2100,28 @@ without anyone to ask, each reversible in one line of
    descent**, rather than going blank — so a reviewer reading the diff sees
    new claims, not only removed ones. Each was checked on both sides like
    every other line; *argent* → *argentine* is the thinnest of them.
+
+**Three Old English calls a human may want to look at**, taken on
+2026-10-01 without anyone to ask, each reversible in a line:
+
+1. **The landing page's Old English table shows *sellan → sell* where it
+   showed *drēam → dream*,** and the descent hub's intro and
+   `docs/PEDAGOGY.md` use *mete → meat*. Both are false friends the product
+   already teaches, and etymonline supports each. *drēam* could have stayed
+   with a note saying nobody has proved the descent, but a row under an
+   arrow that means "became" which then denies it reads as a mistake.
+2. **The line between a descent and not is drawn at inflection.** *shadow*
+   (an oblique case of *sċeadu*), *numb* (the past participle of *niman*)
+   and *former* (the comparative of *forma*) count; *gospel*, *bishopric*
+   and *lychgate* (compounds) and *nimble* and *foremost* (derivatives) do
+   not, and say so in their notes instead. A stricter reading would drop
+   *numb* and *former* as well.
+3. **Three of the new or renamed descendants are archaic**: *lich*,
+   *thorp* and *swith*, beside the *whilom* and *welkin* already there. They
+   are true, but a reader will not recognise them — and the selector's
+   cognate floor treats any descendant as recognisable, so it will weave
+   *līċ* early on the strength of a word few readers know. That is a
+   question about the selector, not the lexicon, and is left alone.
 
 **One decision a human may want to look at**, taken on 2026-10-01 without
 anyone to ask: **the Chrome marquee now leads with four French words.** It
@@ -2211,6 +2366,56 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-01 — the Old English etymons: the sample said six to ten more
+false, and the file held twenty-seven.** The item is ticked in `Next`. Six
+things a later run would be sorry not to know:
+
+1. **Where the reading is, and that it will not last.** `/tmp/weft-etym/cache/etym`
+   holds 560 etymonline entries as plain text, one file per English word;
+   `enwikt-english/` and `enwikt-old-english/` hold the 24 Wiktionary
+   sections read. The fetchers are `/tmp/weft-ang/fetch.py` and `wikt.py`,
+   and `/tmp/weft-ang/decisions.md` is the row-by-row reading. `/tmp` does
+   not survive a reboot. The durable record is `tools/seed/ang-etymons.tsv`,
+   which names every entry read.
+2. **Three etymonline traps beyond the two the French pass found.** British
+   spellings have no entry of their own — `/word/neighbour` and `/word/grey`
+   carry navigation only, and the entries are under *neighbor* and *gray*.
+   Some pages (*wassail*) come back without their text even with
+   `?ref=etymonline_crossreference`; the text is in the page's embedded
+   payload, so search the HTML *before* stripping `<script>`. And a header
+   regex is fooled by cross-references — "fly (v.1)." appears inside the
+   noun's entry — so read the line that says "Old English", not the first
+   line that looks like a header.
+3. **Why the sample was low.** Three in 80 was measured on the entries the
+   French pass happened to have cached, which are English words a *French*
+   claim also named — a sample of one shape. And it only asked whether the
+   English word came from elsewhere. Asking what "became" and "comes
+   straight from" can survive found the second shape, eleven compounds and
+   derivatives, which no sample in the first frame could contain.
+4. **A note's wording sets the feed's kind.** `src/core/discoveries.ts`
+   classifies by regex: a note with "literally" makes the line a literal
+   gloss, one with "meant" or "not a" makes it a false friend, and either
+   outranks the etymon. So rewriting a note can move a word between kinds;
+   read the feed sentence it now produces, not only the word page.
+5. **`grep -m1 x f >> f` writes nothing, silently.** This machine's grep
+   is ugrep, which refuses to append to its own input file, so a probe built
+   that way changes nothing and the guard "passes". Write to a temp file and
+   append that. Caught because the probe that should have fired did not, and
+   the message was read before it was believed.
+6. **704 sitemap entries are dated today**, because `en-ang.json`'s
+   `builtAt` moved and every Latin and Old English word page takes the
+   newer of the two deep packs. The coarseness this file already records,
+   not a new defect; nothing is indexed before **B3**.
+
+**What was assumed, with nobody to ask.** That an inflected form of the
+word is a descent and a compound is not (see "Three Old English calls"
+above); that "partly from" drops a claim, by the French rule; that step 4
+wanted a sidecar ledger rather than French's split-and-merge, because Old
+English etymology was always authored in the seed; that the landing page
+should swap *drēam* for another true false friend rather than keep a row
+that denies its own arrow; and that `far wel`'s *target*, not only its
+etymon, is a question for later.
 
 **2026-10-01 — the queued CI step would have failed on a correct tree, and
 the test that replaced it cannot.** The queue sent this session at the icon

@@ -115,7 +115,7 @@ impossible on day one.
 | | |
 |---|---|
 | **Languages** | French, Spanish, German, Italian, Portuguese, Latin, Old English |
-| **Lexicon** | 356 checked English lemmas per language, 584–588 entries across 579–583 surface forms, 653 KB for all seven |
+| **Lexicon** | 356 checked English lemmas per language, 584–588 entries across 579–583 surface forms, 654 KB for all seven |
 | **Network** | None. No account, no telemetry, no server. Works offline. |
 | **Optional** | Bring-your-own-key DeepL, Google or any OpenAI-compatible endpoint, for words beyond the packs |
 | **Install warning** | None of the scary ones — Weft asks for no site access until you name the sites |
@@ -264,7 +264,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 527 unit + 98 jsdom + 124 over the build tools
+npm test               # 527 unit + 98 jsdom + 129 over the build tools
 npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules

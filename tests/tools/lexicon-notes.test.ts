@@ -16,8 +16,9 @@
  * The rule below is narrower than "every note must stand alone", which is not
  * decidable: most notes that never name their descendant are describing the
  * *target* and are perfectly fine read alone — `persōna`'s "originally an
- * actor's mask", `bōc`'s "a beech-wood tablet". 62 of the 99 Latin and Old
- * English notes never name their etymon and only three of them are wrong.
+ * actor's mask", `bōc`'s "usually traced to “beech”". 62 of the 99 Latin and
+ * Old English notes never named their etymon when this was written, and only
+ * three of them were wrong.
  *
  * What separates the three is that their descendant is a **proper noun**, and
  * a proper noun cannot be alluded to, only named. "the month" and "the
@@ -38,11 +39,11 @@
  * it reads as a gloss, and *septem* means seven, not September.
  *
  * Deliberately outside the rule: a handful of notes gloss a *common*-noun
- * descendant the same way — `līċ` → lychgate, "the corpse-gate of a
- * churchyard"; `setl` → settle, "the high-backed bench". Read alone these
- * still parse as a gloss of the Old English word, which is close enough to
- * true to be harmless, and drawing the line at proper nouns is what keeps this
- * guard from needing a judgement call per entry.
+ * descendant the same way — `setl` → settle, "the high-backed bench";
+ * `nēahgebūr` → neighbour, "the near-dweller". Read alone these still parse
+ * as a gloss of the Old English word, which is close enough to true to be
+ * harmless, and drawing the line at proper nouns is what keeps this guard
+ * from needing a judgement call per entry.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
