@@ -57,14 +57,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory | **94 pass**, 25 suites, ~5 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **111 pass**, 32 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 16 129 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-09-30 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-01 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -73,7 +73,9 @@ store and a `-folder` one for humans), `npm run packs` (rebuild lexicons),
 `-- --force` to land a corrected or deleted claim, `-- --dry` to check),
 `npm run site` / `npm run og` (content site, social card), `npm run tiles` /
 `npm run icons` / `npm run icons:sheet` (store tiles, shipped icons, the
-first-run icon comparison), `npm run safari`
+first-run icon comparison — the mark on all of them, and on the site and the
+social card, is `tools/brand.ts`; after changing it run `icons`,
+`icons:sheet`, `tiles` and `og`, in that order), `npm run safari`
 (wrap in an Xcode project — needs full Xcode, not the CLT),
 `npm run release -- --version=X.Y.Z` (bump, rebuild, package, write notes),
 `npm run verify:release` (download what GitHub actually serves and load it in
@@ -173,6 +175,22 @@ rebuilds the packs and diffs them, and is the only thing that catches a
 `tools/seed/*.tsv` edit nobody rebuilt. `tests/tools/build-pack.test.ts`
 fails if the stamp starts tracking the wall clock again.
 
+**The mark is drawn in one place, and a tool does not write an `<svg>`.**
+`tools/brand.ts` holds the loom mark's geometry and the four words the
+artwork leads with. `tools/make-icons.mjs` fills that geometry as the four
+rasters; everything else — the vector icon, the header of every site page,
+the social card, the store tiles and the Edge logo — embeds `markSvg()`. It
+was five hand-written copies until 2026-10-01, and when `0d9910e` redrew the
+mark only the rasters moved: the tiles bound for the Chrome Web Store went on
+showing the mark the icon beside them had replaced, with every generator
+reproducing its committed output byte for byte and `artefacts:check` calling
+them fresh. **Provenance cannot see a copy** — a fact pasted into a generator
+is an input no pathspec declares. `tests/tools/brand.test.ts` reads the mark
+back out of the pixels of every committed image drawn from it and fails if a
+tool draws an SVG of its own. One copy remains on purpose: `site/index.html`
+is hand-written and cannot import, so its header carries the markup pasted
+in, and `tests/tools/build-site.test.ts` reads it off the built page.
+
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
@@ -196,6 +214,210 @@ Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-01 — all four assets reproduced exactly, and three of them showed a mark the icon had replaced
+
+The queue sent this session at the four "hand-made" store and first-run
+assets, to be opened and read for staleness, with a note that "no
+regeneration is possible — these are hand-drawn". That is PR #35's text, and
+PRs #36 and #37 consumed it: all four have had a generator since 2026-09-30,
+and #36 read the tiles and called them current. **The premise was two PRs
+stale and the worry under it was right.** Three of the four showed a mark the
+icon replaced on 2026-09-22, and so did four other surfaces nobody had named.
+
+**Measured before anything moved.** `tiles`, `og`, `icons` and `icons:sheet`
+were each run with npm's own exit status captured: all four exit 0, all
+eleven files they write rewritten — mtimes moved — and all eleven
+byte-identical to what was committed. `artefacts:check` reported the tiles
+and the social card `ok`. So by every check this repository had, the art was
+current.
+
+**Then the images were opened, and the Edge logo's weft crosses two threads
+where `assets/icon-128.png` crosses three.** Not an impression: the mark was
+read back out of every rendering of it, counting warp threads and how many
+the weft covers edge to edge.
+
+| Rendering | Weft crosses |
+|---|---|
+| `assets/icon-16.png` | 1 of 2 |
+| `assets/icon-32.png` | 2 of 3 |
+| `assets/icon-48.png`, `icon-128.png` | 3 of 4 |
+| `docs/store/logo-edge-300x300.png` | **2 of 4** |
+| `docs/store/tile-small-440x280.png` | **2 of 4** |
+| `docs/store/tile-marquee-1400x560.png` | **2 of 4** |
+| `site/og.png` | **2 of 4** |
+| `assets/icon.svg`, `site/icon.svg` | **2 of 4** |
+| the header of all 713 site pages | **2 of 4** |
+
+Every raster is the redrawn mark and every vector is the one it replaced.
+`0d9910e` says why the old one was a fault — crossing two of four "read as an
+H with a stray stroke beside it rather than as one woven thing" — and sets
+the rule: the weft reaches every thread but the last. That commit touched the
+four PNGs, the sheet and `make-icons.mjs`. The mark was also written out by
+hand, as SVG, in **five** other places: a string in `make-icons.mjs` itself,
+a screen below the geometry being edited, which became both `icon.svg` files;
+the tile generator; the card generator; the site builder's template; and
+`site/index.html`. `git grep '76\.3'` — the old weft's end — finds all seven
+files in one command. `assets/icon.svg` is byte-identical at `0d9910e^` and
+at `HEAD`: the redraw never reached it.
+
+**Why nothing saw it, and this is the transferable half: provenance cannot
+see a copy.** The tiles' group declared `inputs: ['tools/make-store-tiles.mjs']`
+and that was accurate — the generator had not moved. The fact inside it had,
+in another file, and a pasted copy is an input no pathspec can declare. So
+"regenerated, byte-identical" was true of all eleven files and said nothing
+about the mark: **a generator that reproduces its output proves it is
+deterministic, and "the generator" includes every fact pasted into it.**
+
+**Two earlier readings each stopped one question short.** PR #36 opened the
+tiles and asked two things — do they state a density number, are the word
+pairs in the packs — and both came back clean. The queue's own text named a
+third, "a superseded wordmark", and that was the true one: **a recorded
+reading answers only the questions it asked.** PR #37 found `site/icon.svg`
+byte-identical to `assets/icon.svg` and recorded that as "the only reason it
+was not yet a lie". **Two copies agreeing is evidence about the copies.**
+Both were eight days stale against the rasters in the same directory, and
+that session had read the SVG closely enough to count its threads.
+
+**The fix is `tools/brand.ts`.** One geometry, `markGeometry(size)`, which
+`make-icons.mjs` fills as rasters and everything else embeds through
+`markSvg()`. Moving it was checked by md5, not by eye: all four PNGs are
+byte-identical before and after. The vector is rectangles now rather than
+stroked lines, for a measured reason — the hand-written one had never
+matched even the raster it was drawn beside, its weft ending at 76.3 where
+the pre-redraw raster's ended at 81, because a stroked line states a centre
+and a width and leaves the ends to be worked out. One consequence to know:
+the vector takes the 128px icon's 16px of padding, so the mark is about 6%
+smaller in every box it sits in (83.5% of the width, from 88.6%).
+
+**The marquee was stale a second way, and that one is a decision taken on
+Creagh's behalf.** `3060d93` made French lead everywhere and changed the
+social card's four pairs from *rivière, hūs, cyning, vacca* to *rivière,
+cheval, matin, forêt*, with the reason in a comment: Old English beside
+Latin "reads as a tool for medievalists rather than as a way to learn a
+language someone is actually planning to speak". The Chrome marquee kept the
+first list for five more days, because it kept a list of its own and nobody
+then knew it had a generator. Both read `LEAD_PAIRS` now. Reversible in one
+constant, and written up in `docs/STORE-LISTING.md` beside the file it
+changes.
+
+**`docs/firstrun/icons.png` is the one of the four that was current**, and
+for the reason PR #37 gave: it loads the shipped rasters. It came back
+byte-identical before the change and after.
+
+Done test-first, each red for its own reason before anything was fixed. 17
+tests: 16 in a new `tests/tools/brand.test.ts`, 1 in `build-site.test.ts`.
+
+- **The pixel property** — every committed image drawn from the mark, read
+  back: the four icons **pass** and the three tiles and the card fail by
+  name, `the weft crosses 2 of 4 threads`. That it discriminates is the
+  point. Not the pixel-equality gate this file refuses: nothing is rendered,
+  so the bytes read on `ubuntu-latest` are the bytes committed.
+- **Vector against raster** — both SVGs red, every thread and the weft
+  named with both readings.
+- **Page headers** — `713 of 713 pages carry a different mark from the
+  icon`, then `1 of 713` once the template was fixed, naming `/index.html`,
+  the hand-written page. Read off the built site, so the one page that is
+  copied in rather than rendered is checked exactly as the others.
+- **No tool writes an `<svg>`** — named `make-og.mjs` and
+  `make-store-tiles.mjs`. This is the cause policed where it lives: a pasted
+  copy is correct on the day it is pasted, so no reading of its output
+  objects until the mark next moves.
+- **Inputs** — a tool importing `brand.ts` must have its artefact group
+  declare it. Named all three groups. Derived from who imports the module.
+- **The rule itself** on `markGeometry`, and **the lead pairs** against the
+  French pack.
+
+Seven probes, each shown to fire and each restored by md5: the pre-redraw
+crossing (`the 48px mark: the weft crosses 2 of 4`), a full crossing (`4 of
+4`), a misspelt pair, a pair the pack lacks, a group dropping its input
+(which also trips the floor at `only 5 committed images`), the palette moved
+with the art left alone (all eight images, `no mark in its colours was
+found` — a finding, not a skip), and the tile generator's new fit check,
+which exits 1 on oversized pairs naming `7 element(s) run off the 1400x560
+frame`, and writes none of the three files.
+
+**Every regenerated image was opened, and a pixel diff says the change is
+where it should be and nowhere else.** The small tile differs in 394 pixels,
+all inside the mark; the Edge logo and the card likewise; the marquee in two
+regions, the mark and the column of pairs. The card's words now come from the
+shared list and not one pixel outside its mark moved, which is the free
+control on that refactor. The site header was screenshotted in light and
+dark from a built copy and read.
+
+**One process error of this session's own, caught by re-reading.** The first
+draft of three comments said the mark had "six" hand copies and that
+`artefacts:check` had called the tiles fresh "for nine days". Seven files
+held the coordinates and five were hand-written; and the tiles' group has
+existed only since 2026-09-30, so for eight of the nine days they were in no
+group at all. Both corrected before the commit. Count from the command's
+output, not from the sentence written about it a minute earlier.
+
+**And the next queued item's premise was measured false before anyone built
+on it.** `TODO.md`'s second item proposed a CI step that rebuilds the four
+icons and `git diff`s them, on the grounds — recorded in this file on
+2026-09-30 — that `make-icons.mjs` is "byte-reproducible on any machine",
+verified by two runs on one machine. Run as a copy under an official Node
+22.23.3, it writes `icon-128.png` at **432 bytes** where the committed file,
+written here under a Homebrew Node 26.7, is **431**: the IDAT is
+`deflateSync` output, this Node links zlib 1.2.12 and the official build
+carries a 1.3.1 fork. All 65 536 decoded bytes of pixel are equal, and the
+three smaller icons are identical in both. So that step would have exited 1
+on a correct tree — the pixel-equality trap this file refuses for the
+screenshots, arriving through the compressor instead of the font stack. The
+item is rewritten as what does work: decode the committed file and compare
+pixels with what the geometry draws, as a test. **"Reproducible" has to say
+on what, and two runs on one machine is one sample.**
+
+Found and left, each measured: the woad `#2f4b7c` is still typed in five
+places — both stylesheets, both art generators and `brand.ts` — and all five
+agree; and `build-site.mjs` prints `-> dist/site` even under `--out`.
+
+**The icons group's verify stamp was deleted rather than rewritten**, the
+call PRs #30 to #32 each made: its note read "no change to commit" and this
+commit changes two of that group's six files. What it had been vouching for
+is the session in miniature. Written on 2026-09-30, it was literally true —
+regenerated, compared, no change — of an `icon.svg` that had been the wrong
+mark for eight days. A stamp records that a regeneration agreed with itself.
+The sheet's stamp stays: its inputs are the rasters, which did not move.
+
+`src/` was not touched and the package still moved by one file: `build.mjs`
+copies `assets/` whole, so the corrected `icon.svg` ships, referenced by
+nothing. 983 KB unchanged.
+
+Counts moved 755 → **772** and tools 94 → **111** / 25 → **32 suites** in six
+documents, `docs/LAUNCH.md:221` swept **by name and first**. Three stale page
+counts went with them, a class the test sweep walks past: `README.md` and
+`docs/SUBMIT.md` still said 711 pages and this file's own decisions said
+709, two sessions after PR #36 made it 713.
+
+Measured at the end, on Node 26.7, on the final tree, with npm's own exit
+status captured rather than a pipe's — and run a second time from scratch
+after late edits to two tools, because the first green run predated them:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **111 tools / 32 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **983 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 2.0 min**, then build
+and validate again. All four generators were run twice on the final tools
+and all eleven files came back byte-identical both times. Separately:
+`packs:verify` **0 errors / 4 warnings**, exit 0; `site:check` **713 pages /
+16 129 links**, exit 0, run because the change is to the header of every
+page; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes,
+B2a. Zero iCloud conflict copies in `dist/`, `src/` or `test-results/`; the
+xattr was re-set on `test-results/` first.
+
+Assumed, because nobody was available to ask: that the redraw's rule covers
+the vector, on its own wording; that the vector should be the 128px geometry
+exactly rather than keep its old proportions, since one geometry cannot
+drift from itself; that "French leads everywhere" includes the marquee; and
+that each surface's *paint* — opaque on the art, the text colour on the
+site — was a choice to leave alone.
+
+What needs a human: unchanged, still everything below **B1**, register
+`weft.study`. Two things to look at rather than do: the marquee's four
+words, and the mark sitting slightly smaller beside the wordmark. `TODO.md`'s
+`Now` is empty; `Next` holds two agent-shaped items — the false French
+etymologies first, then the icon pixel check, rewritten today.
 
 ### 2026-09-30 — the merge could not say a claim had not landed, and the file it merged was wrong in eighteen places
 

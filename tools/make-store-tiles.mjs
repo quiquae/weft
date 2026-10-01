@@ -204,7 +204,7 @@ try {
         }
       }
       return found;
-    }, tile);
+    }, { width: tile.width, height: tile.height });
     if (outside.length) {
       throw new Error(
         `${tile.file}: ${outside.length} element(s) run off the ${tile.width}x${tile.height} ` +

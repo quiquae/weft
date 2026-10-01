@@ -313,11 +313,16 @@ export function artefactsFor(version: string): Artefact[] {
       // the class's own blind spot compiled into its predicate. That
       // predicate is now any `OUT`, wherever it points.
       //
-      // Unlike every other group here, these are reproducible byte for byte
-      // — a pure Node PNG encoder, no browser, no fonts, no clock — so CI
-      // could rebuild and diff them the way it does the lexicon packs,
-      // which is the stronger check. That is `Next` in `TODO.md`; this is
-      // the weaker check that exists today.
+      // Unlike every other group here, these are drawn with no browser, no
+      // fonts and no clock — a pure Node PNG encoder — so their *pixels* are
+      // the same on any machine. Their bytes are not, and this comment used
+      // to say they were: `deflateSync` is whatever zlib the Node binary was
+      // built against, and the 128px icon comes out at 431 bytes under one
+      // and 432 under another, same pixels. So CI cannot rebuild and
+      // `git diff` them the way it does the lexicon packs; it would fail on
+      // a correct tree. What it can do is decode the committed file and
+      // compare pixels with what the geometry draws, which is `Next` in
+      // `TODO.md`; this is the weaker check that exists today.
       //
       // `site/icon.svg` is in here rather than with the site because it is
       // the same string from the same generator: it was a hand-made copy of

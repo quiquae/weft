@@ -6,6 +6,13 @@
  * icons are reproducible on any machine with Node and nothing else, and so
  * they can be regenerated from the brand tokens if those change.
  *
+ * Reproducible in their pixels, that is. The bytes depend on the zlib the
+ * Node binary was built against: measured on 2026-10-01, the 128px icon is
+ * 431 bytes under a Node linked to zlib 1.2.12 and 432 under the official
+ * Node 22 build, with every decoded pixel equal. So a different machine may
+ * rewrite `icon-128.png` without changing it, and anything that checks
+ * these files should decode them rather than diff them.
+ *
  * The mark is the product: vertical warp threads with a weft crossing only
  * part of them. A full crossing would mean a fully translated page, which is
  * exactly what Weft does not do. What it looks like at each size is

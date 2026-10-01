@@ -4,14 +4,14 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-09-30:** every automatable check is green, measured at the end
+**State on 2026-10-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **94** tool tests / 25 suites, **36** e2e passing
+suites, **111** tool tests / 32 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 983 KB and passing `npm run validate`.
 `npm run test:all` exits 0 end to end.
 
-**The three gates `test:all` leaves out, re-measured on 2026-09-30, each with
+**The three gates `test:all` leaves out, re-measured on 2026-10-01, each with
 npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
@@ -26,6 +26,22 @@ exit is this tool's *normal* state, not a failure. Anything that chains it
 with `&&` — `docs/SUBMIT.md`'s pre-flight block is a numbered list, not a
 chain, so it is fine — would stop dead on a healthy repository. It is also
 the reason this gate is deliberately outside `test:all`.
+
+**And as of 2026-10-01 everything that draws the mark draws the same one.**
+The icon was redrawn on 2026-09-22 so that the weft crosses every warp
+thread but the last, and only the four rasters moved: both Chrome Web Store
+tiles, the Edge store logo, the social card, the favicon and the header of
+all 713 site pages went on drawing a weft that crosses two of four, because
+each drew the mark from its own hand-written copy. All four generators
+reproduced their committed output byte for byte and `artefacts:check` called
+the tiles and the card `ok` — the stale fact was *inside* each generator,
+and provenance cannot see a copy. The mark is `tools/brand.ts` now, the art
+is regenerated and read, and `tests/tools/brand.test.ts` reads the mark back
+out of every committed image of it. The marquee was stale a second way —
+it still led with *hūs*, *cyning* and *vacca*, five days after French was
+made to lead everywhere — and now shares the social card's four French
+pairs. See the last ticked item in `Next`, "One decision a human may want to
+look at" below it, and the note at the top of Notes.
 
 **And re-measuring `site:check` found a live defect in published copy: two
 Latin words had no page, and four links pointed at the wrong word.** The
@@ -1499,6 +1515,111 @@ below it can move until it is.
       a space for a tab (names `fr-cousins.tsv:164`), and exit code 0
       forced.
 
+- [x] **Read the four hand-made store and first-run assets for staleness.**
+      Queued by PR #35 and handed over again on 2026-10-01, by which time
+      PRs #36 and #37 had given all four a generator — so the premise ("no
+      regeneration is possible, these are hand-drawn") was two PRs stale.
+      **The worry under it was right: three of the four showed a mark the
+      icon had replaced nine days earlier**, and so did four other surfaces
+      nobody had named. `docs/firstrun/icons.png` is the one that was
+      current.
+
+      **Measured before anything moved.** All four generators were run and
+      all eleven files they write came back byte-identical to what was
+      committed, mtimes moved; `artefacts:check` said `ok` for the tiles and
+      the card. Then the images were opened, and the mark was read back out
+      of every rendering of it — warp threads counted, and how many the weft
+      covers:
+
+      | Rendering | Weft crosses |
+      |---|---|
+      | `assets/icon-16.png` / `-32` / `-48` / `-128` | 1 of 2 / 2 of 3 / 3 of 4 / 3 of 4 |
+      | `docs/store/logo-edge-300x300.png` | **2 of 4** |
+      | `docs/store/tile-small-440x280.png` | **2 of 4** |
+      | `docs/store/tile-marquee-1400x560.png` | **2 of 4** |
+      | `site/og.png` | **2 of 4** |
+      | `assets/icon.svg`, `site/icon.svg` | **2 of 4** |
+      | the header of all 713 site pages | **2 of 4** |
+
+      `0d9910e` (2026-09-22) redrew the mark because crossing two of four
+      "read as an H with a stray stroke beside it rather than as one woven
+      thing", and set the rule that the weft reaches every thread but the
+      last. It changed the rasters. The mark was also written out by hand as
+      SVG in **five** other places — a string in `make-icons.mjs` that became
+      both `icon.svg` files, the tile generator, the card generator, the
+      site builder's template and `site/index.html` — and none of them
+      moved. `git grep '76\.3'`, the old weft's end, found all seven files
+      holding it in one command.
+
+      **Why every check was green.** The generators reproduced their output
+      exactly because the stale fact was inside them. `artefacts:check`
+      called the tiles fresh because their group's one input, the tile
+      generator, had not moved; the mark had, in a file the group did not
+      name. **Provenance cannot see a copy.** And PR #36's reading of the
+      tiles asked two questions — a density number, the word pairs — and
+      not this one.
+
+      **The marquee was stale a second way.** It led with *rivière*, *hūs*,
+      *cyning*, *vacca* — the four pairs `3060d93` removed from the social
+      card on 2026-09-26, when French was made to lead everywhere, because
+      Old English beside Latin "reads as a tool for medievalists rather than
+      as a way to learn a language someone is actually planning to speak".
+      That commit could not reach the marquee: its generator was in no
+      `npm run` and nobody knew it existed. It now shows the card's four,
+      *rivière*, *cheval*, *matin*, *forêt*. **This is a decision taken on
+      Creagh's behalf** — see "One decision a human may want to look at"
+      below for how to reverse it.
+
+      **Fixed as one source rather than five corrected copies.**
+      `tools/brand.ts` holds the geometry and the four lead pairs.
+      `make-icons.mjs` fills the geometry as rasters — all four PNGs
+      byte-identical before and after, by md5 — and the vector icon, the
+      site header, the card and the tiles embed `markSvg()`. Regenerated:
+      both `icon.svg` files, all three tiles, the card. Every one was
+      opened and read, and a pixel diff against the old bytes puts each
+      change inside the mark and nowhere else — plus the column of pairs on
+      the marquee. `site/index.html` still carries the markup inline,
+      because it is hand-written and cannot import; it is read back off the
+      built page by a test.
+
+      **Guarded by reading the drawing, not the bytes.** 17 tests, 16 in a
+      new `tests/tools/brand.test.ts` and 1 in `build-site.test.ts`, each
+      red first for its own reason:
+
+      1. Every committed image drawn from the mark is decoded and the weft
+         must cross every thread but the last. Red on the three tiles and
+         the card by name, `the weft crosses 2 of 4 threads`, while the four
+         icons passed — which is what shows it discriminates.
+      2. Every committed SVG must draw what `icon-128.png` draws, within a
+         pixel. Red on both, each thread and the weft named.
+      3. The header of every rendered page must draw what `icon.svg` draws.
+         Red at `713 of 713`, then `1 of 713` — `/index.html` — once the
+         template was fixed.
+      4. No tool writes an `<svg>` of its own. Red naming `make-og.mjs` and
+         `make-store-tiles.mjs`.
+      5. A tool that imports `brand.ts` must have its artefact group declare
+         it as an input. Red naming all three groups; this is the provenance
+         hole itself.
+      6. The rule on the geometry at all four sizes, and each lead pair
+         against the French pack.
+
+      Seven probes, each shown to fire and restored by md5 — the pre-redraw
+      crossing, a full crossing, a misspelt pair, a pair the pack lacks, a
+      group dropping its input, the palette moved with the art left alone,
+      and oversized pairs against the tile generator's new fit check, which
+      exits 1 and writes none of the three files.
+
+      **One verify stamp deleted, and it is worth knowing what it had been
+      vouching for.** `docs/artefacts/shipped-extension-icons.json` read
+      "regenerated and compared against the committed files; no change to
+      commit", written 2026-09-30. True — of an `icon.svg` that had been the
+      superseded mark for eight days. This commit changes two of that
+      group's six files, so the note would now be false and
+      `artefacts:check` dates the group from this commit on its own. **A
+      stamp records that a regeneration agreed with itself**, which is all
+      it was ever defined to mean; the sheet's stamp stays, because its
+      inputs are the rasters and they did not move.
+
 - [ ] **Eighteen of the 116 French etymology claims are false, and the
       discoveries feed states them as fact.** Found 2026-09-30 by reading
       `fr-cousins.tsv` whole while guarding its merge (item above). **This
@@ -1591,51 +1712,70 @@ below it can move until it is.
       full pass would open a source for every line. About an hour for the
       nineteen, two for all 116.
 
-- [ ] **CI can rebuild the four shipped icons and diff them, which is a
-      stronger check than the provenance group they just got.**
-      Queued 2026-09-30 by the session that added the group, and the comment
-      in `tools/artefacts.ts` points here by name, so this item existing is
-      part of that comment being true.
+- [ ] **Hold the committed icons to the geometry by their pixels — not by
+      rebuilding and diffing them, which this item used to propose and which
+      would fail on a correct tree.**
+      Queued 2026-09-30 as "CI can rebuild the four shipped icons and diff
+      them". **Its premise was measured false on 2026-10-01**, before anyone
+      built on it. The comment in `tools/artefacts.ts` points here by name,
+      so this item existing is part of that comment being true.
 
-      `tools/make-icons.mjs` is the **only** image generator in this
-      repository that is byte-reproducible on any machine: a hand-written
-      PNG encoder over `node:zlib`, no browser, no font stack, no
-      `new Date()`. Verified 2026-09-30 — two runs, md5 identical, `git
-      status` clean. Every other one screenshots a page in Chromium, which
-      is exactly why `artefacts:check` asks provenance instead of content
-      and why `CLAUDE.md` refuses a pixel-equality gate.
+      The premise was that `tools/make-icons.mjs` is "byte-reproducible on
+      any machine", verified by "two runs, md5 identical" — on one machine.
+      It draws with no browser, no fonts and no clock, so its **pixels** are
+      the same everywhere. Its **bytes** are not: a PNG's IDAT is
+      `deflateSync` output, and that is whatever zlib the Node binary was
+      built against. Measured by running a copy of the tool under both:
 
-      So these five files are in the same position `src/lexicon/packs/` is,
-      and CI already has the right step for that shape:
-      `Committed packs match the seed lexicons` rebuilds and diffs. A
-      sibling step — `npm run icons && git diff --exit-code assets site/icon.svg`
-      — is the only thing that would catch an edit to `make-icons.mjs` that
-      nobody rebuilt. The provenance group added today reports that as
-      *stale*, which is weaker: it says "nobody has checked", where a diff
-      says "these bytes are wrong".
+      | Node | zlib | `icon-128.png` |
+      |---|---|---|
+      | 26.7, Homebrew — this machine, which wrote the committed file | 1.2.12 | 431 bytes, IDAT 374 |
+      | 22.23.3, official build — the kind CI installs | 1.3.1 fork | 432 bytes, IDAT 375 |
 
-      Worth ~15 minutes. Two things to get right. It must run **after** any
-      step that writes into `assets/`, and it must be a separate step from
-      the packs one, because a gate that fires for two reasons gets ignored
-      — the argument this repository already uses for keeping the
-      sitemap-date check out of `check-links.mjs`. Prove it the way the
-      packs step was proved: change a geometry constant, run the build,
-      watch `git diff --exit-code` exit 1.
+      All 65 536 decoded bytes of RGBA are equal. The 16, 32 and 48px icons
+      and `icon.svg` came out identical under both. So
+      `npm run icons && git diff --exit-code assets` in CI would exit 1 on a
+      correct tree — the pixel-equality trap `CLAUDE.md` refuses for the
+      screenshots, arriving through the compressor instead of the font
+      stack. And the obvious repair, committing CI's bytes, would leave this
+      machine rewriting the file on every `npm run icons`.
 
-      Note the one thing this does *not* cover, and deliberately:
-      `docs/firstrun/icons.png` is rendered from those PNGs by Chromium, so
-      it is not byte-reproducible cross-platform and must stay on
-      provenance. Same for `site/og.png`.
+      **The check that works is a test, not a workflow step.** Decode the
+      committed PNG and compare its pixels with what the geometry draws:
+
+      1. Move the rasteriser — `fillRect` and the body of `icon()` up to the
+         RGBA buffer — out of `make-icons.mjs` into `tools/brand.ts` as a
+         pure function, leaving the tool with only the PNG encoder. Check by
+         md5 that all four files still come out byte-identical here.
+      2. In `tests/tools/brand.test.ts`, for each size: `decode()` the
+         committed file with `tests/tools/png.ts` and assert its buffer
+         equals the function's. Exact, independent of zlib, and inside
+         `npm test`, so it needs no CI step and fires for one reason.
+      3. Prove it the way the packs step was proved: change a geometry
+         constant in `tools/brand.ts`, run the tests without regenerating,
+         watch it fail by size.
+
+      That closes the one gap left after 2026-10-01: an edit to
+      `tools/brand.ts` that nobody rebuilt. Today that is caught only if it
+      breaks the crossing rule, or by `artefacts:check` reporting the group
+      stale — "nobody has checked", where this would say "these pixels are
+      wrong". About 40 minutes.
+
+      Still not covered, and deliberately: `docs/firstrun/icons.png`,
+      `site/og.png` and the store tiles are rendered by Chromium, so they
+      stay on provenance plus the crossing-rule reading.
 
 `Now` is **empty** and `Next` holds **two** unchecked items above, as of
-2026-09-30, both agent-shaped and neither waiting on B1: the eighteen false
+2026-10-01, both agent-shaped and neither waiting on B1: the eighteen false
 French etymologies, which is first because it is shipped copy and should
-land before B2 pushes the tag, and the CI diff of the shipped icons.
+land before B2 pushes the tag, and the pixel check of the shipped icons —
+rewritten on 2026-10-01, because the rebuild-and-diff it used to propose
+fails on a correct tree.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
 read the Blocked section and confirm B1 has not moved. Beyond the two items, the three gates `test:all`
-leaves out were all re-measured on 2026-09-30 and the numbers are in the
+leaves out were all re-measured on 2026-10-01 and the numbers are in the
 state line at the top — so that particular piece of honest work is spent for
 now. It was not idle: `site:check` was the one that found the slug collision,
 and what found it was **counting**, not following links. The gate walks HTML
@@ -1645,6 +1785,31 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**One decision a human may want to look at**, taken on 2026-10-01 without
+anyone to ask: **the Chrome marquee now leads with four French words.** It
+showed *rivière*, *hūs*, *cyning*, *vacca* — French, Old English, Old
+English, Latin — and now shows *rivière*, *cheval*, *matin*, *forêt*, the
+social card's four. The grounds are the ones `3060d93` gave for the card
+when French was made to lead everywhere: Old English beside Latin "reads as a
+tool for medievalists rather than as a way to learn a language someone is
+actually planning to speak". But the listing also says "Latin and Old
+English, which nobody else offers", and a marquee that showed them was
+showing something no competitor's can. If the mixed set is wanted on the
+marquee and not the card, `LEAD_PAIRS` in `tools/brand.ts` is the one list
+both read; give `tools/make-store-tiles.mjs` a list of its own again, run
+`npm run tiles`, and expect `tests/tools/brand.test.ts` to ask that each new
+word is one a pack weaves. The old file is
+`git show 9286f91:docs/store/tile-marquee-1400x560.png`, but do not restore
+it as it stands: its mark is the superseded one.
+
+**And one visible side effect of the same change:** the mark sits about 6%
+smaller beside the wordmark on the tiles, the card and the site header. The
+vector is now the 128px icon exactly, including the 16px of padding Chrome
+asks for around a store icon, where the hand-written one had kept the older
+10%. Chosen so that one geometry cannot drift from itself; read in every
+regenerated image and it does not look wrong, but it is a change nobody
+asked for.
 
 **One deletion a human may want to look at**, recorded here because it is the
 only thing this repository has removed that nobody asked for in person: five
@@ -1828,7 +1993,11 @@ been checked. The remaining steps, in order:
    `docs/store/chrome-*.png` in numbered order (1280×800);
    `docs/store/tile-small-440x280.png` (440×280, required);
    `docs/store/tile-marquee-1400x560.png` (1400×560, optional but required to
-   ever be featured).
+   ever be featured). The icon and both tiles show one mark as of 2026-10-01
+   — `npm test` reads it out of the pixels of all three and fails if they
+   part company — and the marquee's four words changed the same day, so
+   look at it once before it goes up (see "One decision a human may want to
+   look at", above).
 8. Fill the **Privacy practices** tab. This is the one that gets submissions
    rejected. Paste the six permission justifications from
    `docs/STORE-LISTING.md` *individually* — storage, alarms, scripting, tabs,
@@ -1860,6 +2029,92 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-01 — every generator reproduced its output exactly, and the output
+was nine days stale.** The item was the four "hand-made" assets, to be opened
+and read. All four turned out to have generators already, all four
+reproduced byte for byte, and three of the four showed the mark the icon had
+replaced on 2026-09-22 — as did the social card, the favicon and the header
+of every site page. Fixed by drawing the mark in one place,
+`tools/brand.ts`; see the last ticked item in `Next`. Seven things a later
+run would be sorry not to know:
+
+1. **Provenance cannot see a copy.** `artefacts:check` called the tiles
+   fresh, correctly by its own terms: their group named the generator as its
+   only input and the generator had not moved. The mark inside it had, in
+   another file. A fact pasted into a generator is an input no pathspec
+   declares — so "regenerated, byte-identical" is evidence that a generator
+   is deterministic and nothing more. Before trusting it, ask what the
+   generator has typed into it that lives somewhere else too.
+
+2. **Find copies by grepping for a value, not a name.** Nothing called the
+   five hand-written marks by a shared name. `git grep '76\.3'` — one
+   coordinate of the old weft — found all seven files in one command. The
+   same works for a colour (`#2f4b7c`, five places, all agreeing) or a word.
+
+3. **A recorded reading answers only the questions it asked.** PR #36 opened
+   these same tiles and wrote that it had read them: no density number, word
+   pairs all in the packs. Both true. The mark was not on its list. When a
+   previous session says it read an image, find the sentence that says what
+   it read it *for*.
+
+4. **Two copies agreeing is evidence about the copies.** PR #37 found
+   `site/icon.svg` byte-identical to `assets/icon.svg` and recorded that as
+   the reason it was "not yet a lie". Both had been wrong for eight days,
+   together.
+
+5. **How to redraw the mark, now that there is one.** Edit `GEOMETRY` or
+   `CROSSING` in `tools/brand.ts`, then `npm run icons`, `icons:sheet`,
+   `tiles` and `og`, in that order — the sheet reads the rasters. Then paste
+   the header markup into `site/index.html`, which is hand-written and the
+   one place it cannot be imported:
+   `node --experimental-strip-types -e "import('./tools/brand.ts').then(b => console.log(b.markSvg({ warp: 'currentColor', weft: 'currentColor', warpOpacity: 0.45 })))"`.
+   `tests/tools/build-site.test.ts` names `/index.html` until that is done.
+   Open every regenerated image. The tile generator refuses to write if
+   anything runs off a frame, and writes none of the three in that case.
+
+6. **Reading a mark out of pixels works, and here is what it rests on.**
+   `tests/tools/mark-reading.ts` locates the mark by its warp colour, counts
+   threads in the band above the weft, and reads the weft along the middle
+   row between the mark's own edges. It needs the warp colour to appear
+   nowhere else in the image, which was checked for the tiles and the card:
+   no blend of the blue type, the ink or the grey with the paper comes within
+   the tolerance on all three channels. It cannot read
+   `docs/firstrun/icons.png`, which holds sixteen marks, and is not asked to.
+   A null reading is a failure and not a skip — art in a superseded palette
+   reads as "no mark".
+
+7. **`make-icons.mjs` is not byte-reproducible across machines**, whatever
+   this file said on 2026-09-30. Same pixels, but `icon-128.png` is 431
+   bytes under this machine's Node (zlib 1.2.12) and 432 under an official
+   Node 22 build. Do not add a CI step that rebuilds and diffs it. The
+   unchecked item in `Next` is rewritten around that.
+
+**What was assumed.** That the redraw's rule — the weft reaches every thread
+but the last — covers the vector as well as the rasters, on the commit's own
+wording and its account of the fault. That the vector should be the 128px
+icon's geometry exactly, padding included, rather than keep the hand-written
+one's proportions. That "French leads everywhere now" includes the Chrome
+marquee. And that each surface's *paint* was a choice to leave alone: opaque
+on the tiles and the card, the text colour at 45% on the site, 85% on the
+icon.
+
+**Found and left, each measured.** The woad `#2f4b7c` is typed in five
+places — `site/weft.css`, `src/ui/theme.css`, both art generators and
+`tools/brand.ts` — and all five agree, so it is not a defect; it is the next
+copy that could drift. `tools/build-site.mjs:1368` prints `-> dist/site`
+even when run with `--out`, which is only ever seen in a test's piped output.
+And there are iCloud conflict copies outside the three directories that carry
+the xattr: `.git/index 2`, and two gitignored `weft-*-1.0.0* 2.zip` at the
+repository root. None is tracked, none affects a build, and none was touched.
+
+**One process error, caught by re-reading and worth keeping.** Three comments
+in the first draft said the mark had "six" hand copies and that
+`artefacts:check` had called the tiles fresh "for nine days". Seven files
+held the old coordinates and five were written by hand; and the tiles have
+only had an artefact group since 2026-09-30, so for eight of those nine days
+they were in no group at all. Corrected before the commit. Count from the
+command's output, not from the sentence written about it a minute earlier.
 
 **2026-09-30 — the guard proves two files agree; it cannot prove either is
 true.** The item was `merge-cousins.mjs`, which could not report a corrected
