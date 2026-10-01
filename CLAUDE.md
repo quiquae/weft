@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **117 pass**, 33 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **124 pass**, 34 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -177,9 +177,10 @@ fails if the stamp starts tracking the wall clock again.
 
 **The mark is drawn in one place, and a tool does not write an `<svg>`.**
 `tools/brand.ts` holds the loom mark's geometry and the four words the
-artwork leads with. `tools/make-icons.mjs` fills that geometry as the four
-rasters; everything else — the vector icon, the header of every site page,
-the social card, the store tiles and the Edge logo — embeds `markSvg()`. It
+artwork leads with. Its `iconPixels()` fills that geometry as the four
+rasters, which `tools/make-icons.mjs` only encodes; everything else — the
+vector icon, the header of every site page, the social card, the store tiles
+and the Edge logo — embeds `markSvg()`. It
 was five hand-written copies until 2026-10-01, and when `0d9910e` redrew the
 mark only the rasters moved: the tiles bound for the Chrome Web Store went on
 showing the mark the icon beside them had replaced, with every generator
@@ -190,6 +191,22 @@ back out of the pixels of every committed image drawn from it and fails if a
 tool draws an SVG of its own. One copy remains on purpose: `site/index.html`
 is hand-written and cannot import, so its header carries the markup pasted
 in, and `tests/tools/build-site.test.ts` reads it off the built page.
+
+**The shipped icons are held to the geometry by their pixels, never by their
+bytes.** The same test draws each icon again and requires the committed PNG
+to hold exactly those pixels, and each committed vector to be exactly
+`iconSvg()`, so an edit to `tools/brand.ts` that nobody rebuilt fails
+`npm test` by name. Do not replace that with a CI step running
+`npm run icons && git diff --exit-code`: it was queued once, on the grounds
+that the tool is byte-reproducible, and measured false before anyone built
+it. A PNG's pixel data is `deflateSync` output, which is whatever zlib the
+Node binary links — the 128px icon is 431 bytes under the Homebrew Node that
+wrote it and 432 under an official Node 22 build, every pixel equal — so the
+step would fail on a correct tree. The rasteriser itself is safe to compare
+exactly because it uses nothing but arithmetic and rounding, which
+JavaScript specifies to the bit. The four icons are the only images here for
+which that is true, which is why the screenshots and the Chromium-drawn art
+stay on provenance and shape readings.
 
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
@@ -227,6 +244,88 @@ the entries cited should be the ones actually opened.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-01 — the queued CI step would have failed on a correct tree; the icons are held by their pixels instead
+
+The queue sent this session at the icon check in its 2026-09-30 wording: a
+CI step running `npm run icons && git diff --exit-code`, because
+`make-icons.mjs` is "the only byte-reproducible image generator here". The
+session before had measured that false and rewritten the item in `TODO.md`;
+the queue entry predated the rewrite. So it was measured again before
+anything moved, with the official Node 22.23.3 in npx's cache: the 128px
+icon comes out at **431 bytes** under this machine's Node 26.7 (zlib 1.2.12)
+and **432** under Node 22 (zlib 1.3.1-e00f703), all 65 536 decoded bytes
+equal; the smaller three and both SVGs identical. The step would have exited
+1 on a correct tree.
+
+**What was built is the rewritten item, plus the half of the group it left
+out.** `iconPixels(size)` moved from `make-icons.mjs` into `tools/brand.ts`
+as a pure function, and the tool keeps only the PNG encoder; all six files
+it writes were rewritten, mtimes moved, md5-identical. A new `describe` in
+`tests/tools/brand.test.ts` finds the files off the icons' artefact group,
+decodes each PNG and requires exactly the pixels `iconPixels` draws, and
+requires each committed SVG to be `iconSvg()` exactly. The vectors were not
+in the item. They are in because the existing shape test compares each
+vector with the *committed* raster, so it passes when both go stale
+together — measured, not argued: with `CROSSING[4]` moved and nothing
+rebuilt, both vector-against-raster tests stayed green.
+
+**Why exact pixel equality is safe here and nowhere else in this
+repository.** `iconPixels` uses the four operations, `Math.round`, `floor`,
+`ceil`, `min` and `max`, each of which ECMAScript specifies to the bit — no
+transcendental functions, no browser, no fonts. Its pixels are a property of
+the source rather than of the machine, which is not true of anything
+Chromium draws, so the rule against pixel gates for the screenshots stands.
+It is now written into the decisions above.
+
+Done test-first, red twice before green: `does not provide an export named
+'iconPixels'`, then a blank stub failing all four sizes by name with a count
+and a box. Then the proof the item asked for, on the final test file, each
+probe restored by md5: `GEOMETRY[48].warpFrac` fails 48 alone; `CROSSING[4]`
+fails 48 and 128 — the two four-thread sizes — and both vectors; one unit of
+blue in `WOAD_LIGHT` fails all six while the other 17 pass, because a shape
+reading allows 6 per channel; a vector-only edit fails the two SVGs alone.
+And the one that is the point: with the 432-byte Node 22 encoding swapped
+in, `git diff --exit-code -- assets` exits 1 and the test passes 23 of 23.
+The whole file passes under Node 22 too. **No workflow changed**: the check
+runs inside `npm run test:tools`, which CI already runs as its own step.
+
+`tools/brand.ts` is an input of the tiles and the social card as well, so a
+pixel-neutral edit to it stales three groups at once. All three were
+regenerated — the tiles and the card blob-identical to `HEAD`, mtimes moved
+— opened and read, and stamped with `artefacts:verify` in the same commit,
+which `checkArtefacts` reads as fresh.
+
+Counts moved 778 → **785** and tools 117 → **124** / 33 → **34 suites** in
+six places, `docs/LAUNCH.md:221` first. **The first sweep found two of the
+six**: `\b` does not work in `git grep -E` here, so `'\b778\b|…|33 suites'`
+matched only the `33 suites` lines. Plain patterns found the rest. One slip
+of the same kind: an unquoted `$FILES` in zsh is one argument, so the art's
+before-hashes were never written and the comparison was redone against
+`git rev-parse HEAD:<file>`. Both are in `TODO.md`'s Notes.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **124 tools / 34 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **984 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 1.8 min**, then build
+and validate again. Two comment-and-wrapping edits landed during that run,
+so typecheck and `test:tools` were run again on the final tree: clean, 124
+of 124. Separately: `packs:verify` **0 errors / 4 warnings**; `npm run site`
+then `site:check` **713 pages / 16 129 links**, all resolving, run because
+the site builder imports `tools/brand.ts`. Zero iCloud conflict copies in
+`dist/`, `src/` or `test-results/`, whose xattr was re-set first.
+
+Assumed, with nobody to ask: that the queue's wording yields to `TODO.md`'s
+rewrite of the same item, since the measurement that falsified it came
+after the queue entry; that this item, third in `Next`, was the one to work
+rather than the topmost, because the queue named it and it was not done;
+that the vectors belong in the same check; and that no CI step was wanted
+once the test existed.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds three agent-shaped items, the Old English etymons
+first.
 
 ### 2026-10-01 — every French claim read against a dictionary: twenty-nine false, and none may ship unsourced now
 

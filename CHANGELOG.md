@@ -91,7 +91,11 @@ logo went on showing the old one, with every generator reproducing its
 committed output exactly. All of it is drawn from one geometry now,
 `tools/brand.ts`, and `tests/tools/brand.test.ts` reads the mark back out of
 every committed image of it and fails on one whose weft crosses the wrong
-number of threads.
+number of threads. The shipped icons are held more tightly still: the test
+draws each one again and requires the committed file to hold exactly those
+pixels, and each vector exactly that text, so a geometry edit nobody rebuilt
+fails by name. Decoded rather than diffed, because a PNG's bytes depend on
+the zlib Node was built against and its pixels do not.
 
 **`/privacy` and `/support` exist.** `SUPPORT_URL` is compiled into the
 shipped extension and rendered as a button on the help page, and it pointed
@@ -270,7 +274,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 778 tests: 527 unit, 98 in jsdom, 117 over the build tools, and
+**Built with** 785 tests: 527 unit, 98 in jsdom, 124 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
