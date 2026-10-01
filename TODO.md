@@ -6,9 +6,11 @@
 
 **State on 2026-10-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **111** tool tests / 32 suites, **36** e2e passing
+suites, **117** tool tests / 33 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 983 KB and passing `npm run validate`.
+packages built at 984 KB and passing `npm run validate`. The package grew
+983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
+crossed a rounding boundary.
 `npm run test:all` exits 0 end to end.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-01, each with
@@ -226,12 +228,16 @@ kept shipping; the merge now names every field that is not what
 fixed point of it. **Reading that file whole to guard it found eighteen of
 its 116 claims false** — eleven "English borrowed X from Y" descents where
 the English word came from a different French word or was never French,
-and seven cousin notes naming the wrong Latin root. That is the first item
-in `Next`, with every row's source.
+and seven cousin notes naming the wrong Latin root. **And on 2026-10-01
+every line was checked against a dictionary, and it was twenty-nine**: all
+corrected or removed, the landing page, README and store listing with them,
+and every claim now names the entries it was checked against, so one that
+names none cannot ship. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds two
-agent-shaped items, and the first — the false French etymologies — is
-shipped copy that should land before B2 pushes the tag.** The code is not
+**So the whole of B0 is closed and `Now` is empty. `Next` holds four
+agent-shaped items, and the first — the same false-descent flaw in the Old
+English pack, on published word pages — should land before B3 indexes
+them.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining item besides those two needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
@@ -1620,97 +1626,167 @@ below it can move until it is.
       it was ever defined to mean; the sheet's stamp stays, because its
       inputs are the rasters and they did not move.
 
-- [ ] **Eighteen of the 116 French etymology claims are false, and the
-      discoveries feed states them as fact.** Found 2026-09-30 by reading
-      `fr-cousins.tsv` whole while guarding its merge (item above). **This
-      is shipped copy in the flagship language** — `src/core/discoveries.ts`
-      renders a French descent as "English borrowed *answer* from
-      *réponse*" — and it should land before **B2** pushes the tag.
+- [x] **Twenty-nine of the 116 French etymology claims were false, and the
+      discoveries feed stated them as fact.** Done 2026-10-01, by checking
+      every line against a source rather than the nineteen this item had
+      checked, and by making a claim that names no source impossible to
+      ship. Queued as eighteen; it was twenty-nine.
 
-      The file's header says "Nothing here is a guess" and "a charming
-      etymology that turns out to be false costs more trust than a blank
-      field". The pattern behind most of them: claims are keyed by English
-      lemma, so a descent pairs an English word with its French
-      *translation* and asserts the translation is its ancestor. That holds
-      only when the translation happens to be the cognate.
+      **The pass, and what it read.** Every English word a claim names was
+      looked up on etymonline (280 entries) and every French word on English
+      Wiktionary, with French Wiktionary as a second reading (155 words
+      each). Extracted by `curl` as verbatim text rather than through a
+      summarising fetch, and held outside the repository; nothing in the
+      tree depends on that cache. Every one of the 115 lines that survive
+      now carries the entries it was read against — see the fourth column
+      of `tools/seed/fr-cousins.tsv` and the header that explains it.
 
-      **Descents that are false — 11 of 30.** Each English word came from a
-      different French word than the one Weft teaches. Checked against
-      etymonline 2026-09-30:
+      **What was false, measured:**
 
-      | Row | Claim | English actually came from |
+      | Kind | Count | Examples |
       |---|---|---|
-      | money | from `argent` | OF *monoie* (modern *monnaie*) |
-      | city | from `ville` | OF *cite* (modern *cité*) |
-      | country | from `pays` | OF *contree* |
-      | answer | from `réponse` | Old English *andswaru* — not French at all |
-      | gift | from `cadeau` | Old Norse *gift* — not French at all |
-      | face | from `visage` | OF *face*; English *visage* is from `visage` |
-      | carry | from `porter` | Anglo-French *carier*; English *porter* is from `porter` |
-      | close | from `fermer` | OF *clos-*, from *claudere*; *firm* is from `fermer`'s root |
-      | catch | from `attraper` | Old North French *cachier* |
-      | easy | from `facile` | OF *aisie*; English *facile* is from `facile` |
-      | soldier | from `soldat` | OF *soudier*; `soldat` came from Italian in the 16th c. |
+      | Descents whose English word came from elsewhere | **12** of 30 | the eleven in this item's old table, and `rich`: etymonline has Old English *rīce*, whose form Old French *riche* only "influenced" — this item had filed it as "defensible and should stay" |
+      | Notes naming the wrong root or sense | **8** | the seven in the old table, and `arbre` → *arbour*, from *herba* |
+      | "the root of English X" where X came straight from Latin or Italian | **9** | `cheval` (*cavalry* is Italian, *chivalry* Medieval Latin *caballarius*), `chien`, `main`, `roi`, `terre`, `porte`, `fenêtre`, `pont`, and `jour` (*journey* yes, *journal* no) |
 
-      **Cousin notes that are false — 7 of 86.** Checked against
-      Wiktionary's French entries and etymonline 2026-09-30:
+      This item had named four of the nine. And four more were true but
+      weak, and moved for the reason the guard below exists: `queen` quoted
+      “regina”, which is not an English word (now *regal*); `walk` quoted
+      “marching”, an inflection etymonline has no entry for, and English
+      *march* descends from *marcher* (now "the root of"); `find` quoted
+      “treasure trove”, which etymonline files under *trove*; and `light`
+      shared only an Indo-European root with *lucid* (now *luminous*, from
+      *lūmen* like *lumière*).
 
-      | Row | Note says it shares a root with | French word is actually from |
+      **Each French word with a false descent got a true relative instead,
+      checked the same way**, so the twelve are notes now rather than
+      blanks: *argent* → *argentine*; *ville* → *village*, *villain*;
+      *pays* → the root of *peasant*; *réponse* → *response*; *cadeau* →
+      *cadet* (both from *capitellum*, "little head"); *visage* → *visor*;
+      *soldat* → *soldier*, both named for a gold coin; *porter* →
+      *portable*, *transport*; *fermer* → *firm*, *confirm*; *attraper* →
+      *entrap*; *facile* → *facility*; *riche* → *rich*, as a cousin. The
+      seven wrong roots are now *testy* (from Old French *teste*, which is
+      *tête*), *denigrate*, *feeble* and *foible*, *intend*, *deplore* and
+      *implore*, *moribund*, *arboreal*. **`heavy` was deleted**: Wiktionary
+      has *lourd* "probably" from *lūridus*, and the file leaves out what is
+      arguable. 18 descents and 97 notes remain, landing in 117 fields.
+
+      **Then a second reader checked the result**, independently and against
+      the same cached text: all 32 new or changed claims and all 13
+      removals. It found none false and two arguable, both taken. *terre*
+      had said "terrain and territory", and etymonline brings *territory*
+      from *territorium* only "probably" — the word that removed *lourd* —
+      so it says *terrain* alone. And *villain* was glossed "once a
+      farmhand", which is the Medieval Latin word's meaning, not the English
+      one's; it is "once a peasant" now. It also asked for *cavalier* and
+      *Regina* among the sources, so that *cavalry* reaches *caballus* and
+      *reine* reaches *rēx* in text actually read.
+
+      **The public copy was not clear of it.** This item checked the
+      nineteen French words and called the copy clean, which it was of
+      those. The "the root of" claims were the landing page's lead table —
+      `cheval`, `fenêtre`, `jour`, `main`, `chien` — its FAQ structured data,
+      the README's table and the store listing's description, each in the
+      paragraph explaining that cheval *shares a root* with cavalry. All
+      four now say "shares a root with".
+
+      **It reached more than the copy, measured with the real modules.** A
+      descent floors the selector's cognate score, so the false ones doubled
+      `argent`'s (0.411 → 0.823) and took `cadeau` and `pays` from 0 to
+      0.700; and on a first meeting the tooltip's reason line read "New to
+      you, and ancestor of English “money”". Both are gone with the claims.
+
+      **The guard, built test-first.** A claim's fourth field lists the
+      entries it was checked against — `etym:<english>`, `wikt:fr:<french>`
+      and two optional kinds — and `tools/cousins.ts` derives what it must
+      cite from the claim itself: the etymonline entry for every English
+      word it names, and the Wiktionary entry for its French word on every
+      row its lemma has (`love` and `work` each have two). A claim short of
+      any is refused before anything is applied, `--force` included,
+      because force decides which of two files is right and this is a
+      question neither can answer. Six tests in a new `describe` in
+      `tests/tools/cousins.test.ts`: five red on the first run for the
+      rule's absence, and the sixth green for the wrong reason — the old
+      parser refused every four-field line, so a test that the parser
+      refuses bad tokens passed against a parser that refused good ones. A
+      control made it fail for the right reason. The two committed-file
+      tests then went red naming all 116 lines, until the sources went in.
+
+      **The tool did what PR #38 built it to.** Without `--force` the merge
+      named exactly the 45 fields edited — 12 added, 20 disagreeing, 13
+      retracted — and exited 1; with it, it landed them and a dry run
+      reported 117 in step. `lex-fr.tsv` moved on 33 rows and in no column
+      but etymon and note; `en-fr.json` moved on 21 `etymonOf` and 59 notes
+      and nothing else, and `index.json` not at all.
+
+      **Six listing and documentation images changed, and only those.**
+      All three generators were run, twice each for the two that changed:
+      the three `*-04-progress.png` and `dashboard.png`,
+      `dashboard-dark.png`, `dashboard-discoveries.png`, every one opened
+      and read line by line; the other 30 came back byte-identical, the
+      first-run set included, whose stamp was renewed. The store stamp was
+      deleted, because its note says "no change to commit". Read the
+      dashboard note in Notes before trusting `dashboard.png` to reproduce.
+
+- [ ] **The Old English pack makes the claim the French one did, and on
+      published pages.** Found 2026-10-01, by asking whether the French
+      flaw was particular to French. It is not. 242 of the 356 rows in
+      `tools/seed/lex-ang.tsv` say their Old English word *became* the very
+      English word it translates, and that is false wherever modern English
+      took the word from somewhere else — the shape of all twelve false
+      French descents. The etymonline entries already fetched for the French
+      pass happened to cover 80 of the 242, and three of those fail:
+
+      | Row | The pack says | etymonline says |
       |---|---|---|
-      | head (`tête`) | *chief*, *captain* (*caput*) | *testa*, "pot" — *test* is a true cousin |
-      | black (`noir`) | *nocturne* (*nox*) | *niger* — *denigrate* is a true cousin |
-      | heavy (`lourd`) | *pendant* (*pendere*) | *lūridus*, "sallow" — *lurid* |
-      | weak (`faible`) | *fragile* (*frangere*) | *flēbilis* — English *feeble* and *foible* **descend** from it |
-      | hear (`entendre`) | *audience* (*audire*) | *intendere* — *intend* |
-      | cry (`pleurer`) | *plaintive* (*plangere*) | *plōrāre* — *deplore*, *implore* |
-      | die (`mourir`) | *mourn* | *morī*; *mourn* is Germanic, and etymonline links it to "die" only as an alternative to *(s)mer-* "remember" — *moribund* is uncontested |
+      | window | `ēagþȳrel` became *window* | from Old Norse *vindauga*, "wind eye"; ēagþȳrel is the word it replaced |
+      | egg | `æġ` became *egg* | from Old Norse *egg*; the Old English cognate survived as *ey* and then died out |
+      | close | `clȳsan` became *close* | from Old French *clos-*, "also partly from Old English beclysan" |
 
-      One more that is **false in the sense used**: tree (`arbre`) →
-      *arbour*. The bower sense of *arbour* is from *herba* via OF *erbier*
-      (etymonline); only the machine-part *arbor* is from *arbor*.
-      *Arboreal* is safe.
+      Likely and not yet checked: `lion` ← `lēo`, whose modern form
+      etymonline gives from Anglo-French *liun*. Three in 80 suggests six
+      to ten more among the 162 unchecked. The 88 rows whose etymon is a
+      *different* English word (`steorfan` → *starve*) have a safer shape
+      and have not been checked either.
 
-      Not counted, but worth fixing in the same pass: several notes say "the
-      root of" where "shares a root with" is what is true — `chien` is not
-      the root of *canine*, `main` not of *manual*, `roi` not of *royal*,
-      `terre` not of *terrain*; and walk (`marcher`) → *marching* is a
-      descent written as a cousin. Borderline descents that are defensible
-      and should stay: war/`guerre` (Old North French *werre*), chair/
-      `chaise`, story/`histoire`, rich/`riche`, false/`faux`.
+      **This is worse than the French case in one way: Old English has a
+      page per word.** `/old-english/eagthyrel` reads "This is the Old
+      English word that became **window** — literally “eye-hole”", and
+      `/old-english/aeg` says the same of *egg*. Nothing is indexed until
+      **B3**, so it lands free before then; after, every correction strands
+      a published sentence. The selector's cognate floor and the tooltip's
+      "ancestor of English" line apply here too.
 
-      **How to land it**, with the tool from the item above:
+      How to land it:
 
-      1. Edit `tools/seed/fr-cousins.tsv`. For each row decide: correct it
-         to a true relative (the right-hand columns above are candidates,
-         to be checked again rather than trusted), move a descent to
-         `cousin` where the relation is real but not a borrowing, or delete
-         the line. Deleting is always safe; the file's header says so.
-      2. `npm run cousins -- --force` — without `--force` every correction
-         and deletion is left alone and named, which is the point. Read the
-         list it prints: it should be exactly the rows you edited.
-      3. `npm run packs`, then `npm test`.
-      4. `CHANGELOG.md`'s 1.0.1 paragraph "**French has etymologies.**" says
-         the descent/cousin split exists "rather than letting the feed state
-         falsehoods", and quotes 30 descents and 88 notes. Both need to
-         change with the data.
-      5. The public copy is already clear of them, checked 2026-09-30:
-         `git grep -w` for the nineteen French words, and for *plaintive*,
-         *nocturne*, *pendant*, *fragile*, *audience*, *mourn* and *arbour*,
-         across `site/index.html`, `docs/STORE-LISTING.md`,
-         `README.md`, `docs/LAUNCH.md`, `docs/PEDAGOGY.md` and
-         `CHANGELOG.md` finds none. The listing's scene 3,
-         `chrome-03-cousins.png`, hovers `pain` → *pantry* and *companion*,
-         which is true. Its hover list (`tests/e2e/store-assets.spec.ts`,
-         `withEtymology`) names none of the nineteen, but does include
-         `main`, `roi` and `chien` from the "the root of" wording list —
-         so rewording those can move the art only if a regeneration lands
-         the hover on one of them.
+      1. Fetch etymonline for the 162 unchecked lemmas, and for the 88
+         differing etymons. `curl` with a User-Agent carrying no personal
+         detail; add `?ref=etymonline_crossreference` to the URL, without
+         which some entries (`march`, `argentine`) come back as an
+         unrendered React payload rather than HTML.
+      2. For each whose entry does not run back to Old English, delete the
+         etymon or replace it with a true descendant, in `lex-ang.tsv`
+         directly — Old English has no review file. Keep what etymonline
+         calls "partly from", or drop it, by the French file's rule: the
+         arguable is left out.
+      3. `npm run packs`, `npm run site`, and read every word page that
+         changed; `tests/tools/build-site.test.ts` will hold the sentence
+         shape but cannot hold the fact.
+      4. Separately, decide whether Latin and Old English etymology should
+         move into review files that carry sources, as French now does, so
+         the guard covers them. That splits two seed files and wants its own
+         pass.
 
-      Only 19 of the 116 were checked against a source here — the eighteen
-      and `arbre`. The borderline five and the other 92 read as correct
-      from general knowledge, which is not the standard the file sets. A
-      full pass would open a source for every line. About an hour for the
-      nineteen, two for all 116.
+      About 90 minutes for steps 1–3.
+
+- [ ] **One Latin note puts a verb's grammar on a noun.** `lex-la.tsv`,
+      the very first row: man → `vir`, note "third-person plural “virī” also
+      means “men” collectively". *virī* is the nominative plural of a noun,
+      and person belongs to verbs. Seen while reading the file's header for
+      the item above, and not checked further — the rest of the Latin notes
+      have not been read for this. Five minutes and a pack rebuild; the
+      sentence also stands on `/latin/vir`.
 
 - [ ] **Hold the committed icons to the geometry by their pixels — not by
       rebuilding and diffing them, which this item used to propose and which
@@ -1765,16 +1841,40 @@ below it can move until it is.
       `site/og.png` and the store tiles are rendered by Chromium, so they
       stay on provenance plus the crossing-rule reading.
 
-`Now` is **empty** and `Next` holds **two** unchecked items above, as of
-2026-10-01, both agent-shaped and neither waiting on B1: the eighteen false
-French etymologies, which is first because it is shipped copy and should
-land before B2 pushes the tag, and the pixel check of the shipped icons —
-rewritten on 2026-10-01, because the rebuild-and-diff it used to propose
-fails on a correct tree.
+- [ ] **The discoveries feed reads one pack entry per target word, and
+      eleven true etymologies sit on the other one.** Found 2026-10-01 when
+      a corrected French note would not appear in a rendered feed. Cards
+      are keyed by the target word (`fr:argent`), and the dashboard and the
+      quiz builder both build their lookup with the *first* pack entry for
+      each target word (`src/ui/dashboard/index.tsx`'s `glosses`,
+      `src/background/index.ts`'s `build-quiz`). Two English words often
+      share one: *silver* and *money* are both `argent`, *girl* and
+      *daughter* both `fille`, and when the first carries no story the feed
+      shows nothing for the word. Measured over all seven packs: French 2
+      (`fille` for daughter, `argent` for money), Latin 4 (`puer`, `domus`,
+      `terra`, `magnus`), Old English 5 (`mann`, `rīċe`, `sōþ`, and `hund`
+      twice) — and `hund` is two Old English words, "dog" and "hundred",
+      sharing one card. The tooltip is unaffected: it shows the entry
+      actually woven. Three shapes: prefer an entry that carries a story
+      when building the lookup, which is smallest; key cards by English
+      lemma as well, which `hund` argues is the honest one; or give every
+      row sharing a target word the same claim, which is a data patch over
+      a lookup bug. Measure first which surfaces besides the feed read that
+      map.
+
+`Now` is **empty** and `Next` holds **four** unchecked items above, as of
+2026-10-01, all agent-shaped and none waiting on B1. The order is the order
+to work them. The Old English etymons first, because they are the French
+flaw again on published word pages and should land before **B3** indexes
+them; the one-line Latin note second, for the same reason and because it is
+five minutes; then the pixel check of the shipped icons, rewritten on
+2026-10-01 because the rebuild-and-diff it used to propose fails on a
+correct tree; then the feed's hidden etymologies, which are true facts out
+of sight rather than false ones in it.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
-read the Blocked section and confirm B1 has not moved. Beyond the two items, the three gates `test:all`
+read the Blocked section and confirm B1 has not moved. Beyond the four items, the three gates `test:all`
 leaves out were all re-measured on 2026-10-01 and the numbers are in the
 state line at the top — so that particular piece of honest work is spent for
 now. It was not idle: `site:check` was the one that found the slug collision,
@@ -1785,6 +1885,34 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**Four etymology calls a human may want to look at**, taken on 2026-10-01
+without anyone to ask, each reversible in one line of
+`tools/seed/fr-cousins.tsv` followed by `npm run cousins -- --force` and
+`npm run packs`:
+
+1. **The landing page's lead examples are weaker copy now, and true.**
+   "cheval is the root of cavalry" became "shares a root with". If the
+   stronger phrasing is wanted, the true ones checked this session are
+   *pays* → *peasant*, *tête* → *testy*, *faible* → *feeble* and *foible*,
+   *petit* → *petty*, *travailler* → *travel* and *entendre* → *intend* —
+   English took each from that very French word. Changing the landing
+   page, README and store listing to lead with them is a copy decision,
+   and was not taken.
+2. **Three descents were kept that etymonline traces to Old French "and
+   directly from Latin"**: *person*, *music*, *story*. The file's own
+   precedent, *famille*, was left out because English took *family* from
+   Latin *alone*. Kept on the grounds that the Old French route is
+   attested first in each; a stricter reading would demote all three to
+   "shares a root with".
+3. **`heavy` lost its note rather than gaining *lurid***, because English
+   Wiktionary says "probably". French Wiktionary states it flatly, citing
+   no hedge. If one dictionary's certainty is enough, the line is in the
+   comment at the bottom of the file.
+4. **Twelve French words gained a cousin note where they lost a false
+   descent**, rather than going blank — so a reviewer reading the diff sees
+   new claims, not only removed ones. Each was checked on both sides like
+   every other line; *argent* → *argentine* is the thinnest of them.
 
 **One decision a human may want to look at**, taken on 2026-10-01 without
 anyone to ask: **the Chrome marquee now leads with four French words.** It
@@ -2029,6 +2157,53 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-01 — the queue's item was four PRs stale, and the item under it
+was twenty-nine claims rather than eighteen.** The queue sent this session at
+`docs/firstrun/icons.png`, which PR #37 fixed on 2026-09-30; the topmost
+unchecked item was the French etymologies, now ticked above. Six things a
+later run would be sorry not to know:
+
+1. **How to read a dictionary from this machine, and what does not work.**
+   etymonline serves HTML to `curl`, but some entries (`march`, `argentine`)
+   come back as an unrendered React payload unless the URL ends
+   `?ref=etymonline_crossreference`. It has no page for an inflection
+   (*marching*) and files most phrases under a headword (*treasure trove* is
+   at `/word/trove`). CNRTL, the TLFi, is a JavaScript app now and returns an
+   empty shell; French Wiktionary cites the TLFi and is the readable
+   substitute. Wikimedia throttles an anonymous client to about one request
+   per three seconds (`retry-after: 3`), and two clients at once made both
+   fail. Some English Wiktionary entries build their etymology at render
+   time from `{{etymon|…|text=++}}`, so the raw wikitext stops at Middle
+   French; `action=parse&prop=text` returns the rendered tree. And keep the
+   User-Agent free of personal detail: this session sent the account's email
+   in one, once, by reflex from Wikimedia's contact-info policy, and should
+   not have.
+2. **A translation is not an ancestor, and the risk is wherever the etymon
+   equals the lemma.** All twelve false French descents were rows whose
+   descent named the row's own English word. Old English has 242 such rows,
+   and three of the 80 checked fail — the first item in `Next`.
+3. **"the root of" against "shares a root with" is the descent/cousin line
+   again, one column over.** Nine notes had it backwards, the landing page's
+   lead example among them, in the paragraph explaining the distinction. Of
+   any "the root of English X", ask whether English took X from this French
+   word or straight from Latin.
+4. **A guard can pass because the old code refused everything.** The sixth
+   new test — bad source tokens are refused — passed against a parser that
+   refused every four-field line, good ones included. A control (the same
+   claim, cited properly, is accepted) turned it red for the right reason.
+5. **`dashboard.png` carries its capture date**, twice: the attention
+   chart's axis and the change-log row. Committed, they read "Sep 23 … Sep
+   29"; regenerated today, "Sep 25 … Oct 1". So the 2026-09-29 finding that
+   no date was involved held for two runs on one day, not across days, and
+   this shot will differ from its committed bytes every day after it is
+   taken whatever the code does. A pixel diff put every difference in those
+   two rows and the six reworded feed lines. Not fixed: a seeded clock in
+   `tests/e2e/screenshots.spec.ts` would be the fix.
+6. **`until ! pgrep -f 'fetch.py'` never exits**, because the loop's own
+   command line contains `fetch.py`. Three such waits hung before that was
+   noticed. Wait on a file the job writes last instead, or match the
+   interpreter's path.
 
 **2026-10-01 — every generator reproduced its output exactly, and the output
 was nine days stale.** The item was the four "hand-made" assets, to be opened

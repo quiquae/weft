@@ -26,6 +26,11 @@
  * settles every such field in fr-cousins.tsv's favour, overwriting and
  * clearing, and lists each one it changed.
  *
+ * A claim that does not cite the dictionary entry for every word it names
+ * is refused outright, with or without --force, and named with the entries
+ * it lacks. --force decides which of two files is right; whether a claim was
+ * ever checked is a question neither file can answer for the other.
+ *
  * tests/tools/cousins.test.ts checks that the committed lexicon is a fixed
  * point of this merge, which is what turns a forgotten run into a red CI
  * rather than a claim that silently never ships. How each field is sorted is

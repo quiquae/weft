@@ -39,8 +39,8 @@ vocabulary.
 **You already know more French than you think.** A very large part of
 English arrived from French, and most of the rest shares a Latin root with it,
 so the word on your page is often already inside an English word you use —
-and the tooltip says which. cheval is the root of "cavalry" and "chivalry".
-fenêtre is the root of "defenestration". jour is the root of "journal" and
+and the tooltip says which. cheval shares a root with "cavalry" and
+"chivalry", fenêtre with "defenestration", jour with "journal" and
 "journey". That is the difference between memorising a word and noticing you
 have known it for years.
 

@@ -22,14 +22,29 @@
 # word from French or Old French. "English forest comes from forêt" is a
 # claim about borrowing and it has to be true.
 #
-# COUSIN (the note column) is used where French and English both inherit
-# from Latin and the English relative is a different, usually more formal
-# word. cheval did not become an English word; it shares a root with
-# cavalry. Writing that as a descent would be wrong, and the discoveries
+# A descent is a claim about the English word, so that is where it is
+# checked. Twelve of the thirty this file first held were false, and all in
+# one way: each paired an English word with its French translation and
+# called the translation its source. "English money comes from argent" —
+# money is Old French monoie. "answer" is Old English and "gift" Old Norse;
+# "rich" is Old English rīce, which French riche only reshaped. Words that
+# mean the same thing are not, for that reason, related.
+#
+# COUSIN (the note column) is used where French and English share a root —
+# almost always Latin — and the English relative is a different, usually
+# more formal word. cheval did not become an English word; it shares a root
+# with cavalry. Writing that as a descent would be wrong, and the discoveries
 # feed would then state it as fact.
 #
-# Nothing here is a guess. Where the relationship was arguable — famille and
-# family both descend from Latin familia but English took it from the Latin
+# A note says "the root of English X" only where English took X from this
+# very word: petit gave petty, and pays gave peasant. Where both come down
+# from Latin it says "shares a root with". That is the descent/cousin line
+# again, one column over, and nine notes once had it backwards — "cheval,
+# the root of cavalry", when cavalry came through Italian from caballus.
+#
+# Nothing here is a guess, and every line says where it was checked: see
+# Sources below. Where the relationship was arguable — famille and family
+# both descend from Latin familia but English took it from the Latin
 # directly — it was left out rather than fudged. A charming etymology that
 # turns out to be false costs more trust than a blank field.
 #
@@ -37,8 +52,27 @@
 # "route — shares a root with English “route”" is circular and says
 # nothing. tools/verify-packs.mjs fails on it now.
 #
-# Format: lemma <TAB> kind(descent|cousin) <TAB> value
+# Format: lemma <TAB> kind(descent|cousin) <TAB> value <TAB> sources
 # For descent, value is the English word. For cousin, it is the note text.
+#
+# Sources
+# -------
+# The dictionary entries a claim was checked against, separated by spaces:
+#
+#   etym:<english>     https://www.etymonline.com/word/<english>
+#   wikt:fr:<french>   https://en.wiktionary.org/wiki/<french>#French
+#   wikt:en:<english>  https://en.wiktionary.org/wiki/<english>#English
+#   frwikt:<french>    https://fr.wiktionary.org/wiki/<french>
+#
+# A claim has to cite the etymonline entry for every English word it names
+# — a descent's word, or every word its note quotes — and the Wiktionary
+# entry for its French word, on every row its lemma has. `npm run cousins`
+# refuses a claim that does not, with or without --force. Twenty-nine of the
+# 116 claims this file once held were false, every one about a word nobody
+# had looked up, and looking up both words is the whole of the check they
+# skipped.
+#
+# All 115 lines were checked against the entries they cite on 2026-10-01.
 
 # ---------------------------------------------------------------- descent
 # English borrowed these from French or Old French.
@@ -47,122 +81,130 @@
 # The pack builder skips a translation that maps to itself, so the
 # reader never meets them woven, and a discoveries line reading
 # "fruit is simply fruit" is filler about a word that was never shown.
-river	descent	river
-mountain	descent	mountain
-forest	descent	forest
-flower	descent	flower
-person	descent	person
-money	descent	money
-peace	descent	peace
-war	descent	war
-city	descent	city
-country	descent	country
-chair	descent	chair
-music	descent	music
-answer	descent	answer
-price	descent	price
-gift	descent	gift
-letter	descent	letter
-story	descent	story
-voice	descent	voice
-face	descent	face
-soldier	descent	soldier
-enemy	descent	enemy
-change	descent	change
-carry	descent	carry
-close	descent	close
-catch	descent	catch
-pay	descent	pay
-poor	descent	poor
-rich	descent	rich
-easy	descent	easy
-false	descent	false
+river	descent	river	etym:river wikt:fr:rivière
+mountain	descent	mountain	etym:mountain wikt:fr:montagne
+forest	descent	forest	etym:forest wikt:fr:forêt
+flower	descent	flower	etym:flower wikt:fr:fleur
+person	descent	person	etym:person wikt:fr:personne
+peace	descent	peace	etym:peace wikt:fr:paix
+war	descent	war	etym:war wikt:fr:guerre
+chair	descent	chair	etym:chair wikt:fr:chaise
+music	descent	music	etym:music wikt:fr:musique
+price	descent	price	etym:price wikt:fr:prix
+letter	descent	letter	etym:letter wikt:fr:lettre
+story	descent	story	etym:story wikt:fr:histoire
+voice	descent	voice	etym:voice wikt:fr:voix
+enemy	descent	enemy	etym:enemy wikt:fr:ennemi
+change	descent	change	etym:change wikt:fr:changer
+pay	descent	pay	etym:pay wikt:fr:payer
+poor	descent	poor	etym:poor wikt:fr:pauvre
+false	descent	false	etym:false wikt:fr:faux
 
 # ----------------------------------------------------------------- cousin
-# Shared Latin root; the English relative is usually the formal word.
-horse	cousin	the root of English “cavalry” and “chivalry”
-dog	cousin	the root of English “canine”
-water	cousin	shares a root with English “aquatic”
-night	cousin	shares a root with English “nocturnal”
-hand	cousin	the root of English “manual” and “manicure”
-king	cousin	the root of English “royal”
-queen	cousin	shares a root with English “regina”
-bread	cousin	shares a root with English “pantry” and “companion”
-book	cousin	shares a root with English “library”
-bird	cousin	shares a root with English “aviary”
-fire	cousin	shares a root with English “focus”, originally a hearth
-sun	cousin	shares a root with English “solar”
-moon	cousin	shares a root with English “lunar”
-earth	cousin	the root of English “terrain” and “territory”
-sea	cousin	shares a root with English “marine”
-cold	cousin	shares a root with English “frigid”
-tooth	cousin	shares a root with English “dentist”
-eye	cousin	shares a root with English “ocular”
-heart	cousin	shares a root with English “cordial”
-blood	cousin	shares a root with English “sanguine”
-death	cousin	shares a root with English “mortal”
-life	cousin	shares a root with English “vital”
-door	cousin	the root of English “portal”
-window	cousin	the root of English “defenestration”, throwing someone out of one
-foot	cousin	shares a root with English “pedal” and “pedestrian”
-stone	cousin	shares a root with English “petrify”
-tree	cousin	shares a root with English “arbour”
-field	cousin	shares a root with English “campus” and “champion”
-bridge	cousin	the root of English “pontoon”
-name	cousin	shares a root with English “nominate”
-time	cousin	shares a root with English “temporal”
-day	cousin	the root of English “journal” and “journey”
-year	cousin	shares a root with English “annual”
-small	cousin	the root of English “petty”
-true	cousin	shares a root with English “verify”
-free	cousin	shares a root with English “liberty”
-head	cousin	shares a root with English “chief” and “captain”
-milk	cousin	shares a root with English “lactose”
-salt	cousin	shares a root with English “saline”
-egg	cousin	shares a root with English “oval”
-fish	cousin	shares a root with English “Pisces”
-green	cousin	shares a root with English “verdant”
-black	cousin	shares a root with English “nocturne”
-white	cousin	shares a root with English “blank”
-new	cousin	shares a root with English “novel”
-old	cousin	shares a root with English “veteran”
-big	cousin	shares a root with English “grandeur”
-long	cousin	shares a root with English “longitude”
-good	cousin	shares a root with English “bonus”
-bad	cousin	shares a root with English “malice”
-light	cousin	shares a root with English “lucid”
-heavy	cousin	shares a root with English “pendant”, from weighing
-strong	cousin	shares a root with English “fortify”
-weak	cousin	shares a root with English “fragile”
-mother	cousin	shares a root with English “maternal”
-father	cousin	shares a root with English “paternal”
-brother	cousin	shares a root with English “fraternal”
-sister	cousin	shares a root with English “sorority”
-son	cousin	shares a root with English “filial”
-daughter	cousin	shares a root with English “filial”
-friend	cousin	shares a root with English “amiable”
-house	cousin	shares a root with English “mansion”
-road	cousin	shares a root with English “rupture”, from a way broken through
-church	cousin	shares a root with English “ecclesiastical”
-work	cousin	the root of English “travel”, which was once an ordeal
-speak	cousin	shares a root with English “parable”
-hear	cousin	shares a root with English “audience”
-see	cousin	shares a root with English “vision”
-know	cousin	shares a root with English “savant”
-eat	cousin	the English word for a feeding trough comes from this verb
-drink	cousin	shares a root with English “bibulous”
-sleep	cousin	shares a root with English “dormitory”
-walk	cousin	shares a root with English “marching”
-run	cousin	shares a root with English “current”
-write	cousin	shares a root with English “escritoire”
-read	cousin	shares a root with English “lecture”
-give	cousin	shares a root with English “donate”
-take	cousin	shares a root with English “prehensile”
-find	cousin	shares a root with English “treasure trove”
-lose	cousin	shares a root with English “perdition”
-love	cousin	shares a root with English “amorous”
-laugh	cousin	shares a root with English “risible”
-cry	cousin	shares a root with English “plaintive”
-begin	cousin	shares a root with English “commence”
-die	cousin	shares a root with English “mourn”
-live	cousin	shares a root with English “vivid”
+# A shared root, usually Latin; the English relative is usually the formal
+# word. "the root of" where English took the word from this one.
+horse	cousin	shares a root with English “cavalry” and “chivalry”	etym:cavalry etym:chivalry etym:cavalier wikt:fr:cheval
+dog	cousin	shares a root with English “canine”	etym:canine wikt:fr:chien
+water	cousin	shares a root with English “aquatic”	etym:aquatic wikt:fr:eau
+night	cousin	shares a root with English “nocturnal”	etym:nocturnal wikt:fr:nuit
+hand	cousin	shares a root with English “manual” and “manicure”	etym:manual etym:manicure wikt:fr:main
+king	cousin	shares a root with English “royal”	etym:royal wikt:fr:roi
+queen	cousin	shares a root with English “regal”	etym:regal etym:Regina wikt:fr:reine
+bread	cousin	shares a root with English “pantry” and “companion”	etym:pantry etym:companion wikt:fr:pain
+book	cousin	shares a root with English “library”	etym:library wikt:fr:livre
+bird	cousin	shares a root with English “aviary”	etym:aviary wikt:fr:oiseau
+fire	cousin	shares a root with English “focus”, originally a hearth	etym:focus wikt:fr:feu
+sun	cousin	shares a root with English “solar”	etym:solar wikt:fr:soleil
+moon	cousin	shares a root with English “lunar”	etym:lunar wikt:fr:lune
+earth	cousin	shares a root with English “terrain”	etym:terrain wikt:fr:terre
+sea	cousin	shares a root with English “marine”	etym:marine wikt:fr:mer
+cold	cousin	shares a root with English “frigid”	etym:frigid wikt:fr:froid
+tooth	cousin	shares a root with English “dentist”	etym:dentist wikt:fr:dent
+eye	cousin	shares a root with English “ocular”	etym:ocular wikt:fr:œil
+heart	cousin	shares a root with English “cordial”	etym:cordial wikt:fr:cœur
+blood	cousin	shares a root with English “sanguine”	etym:sanguine wikt:fr:sang
+death	cousin	shares a root with English “mortal”	etym:mortal wikt:fr:mort
+life	cousin	shares a root with English “vital”	etym:vital wikt:fr:vie
+door	cousin	shares a root with English “portal”	etym:portal wikt:fr:porte
+window	cousin	shares a root with English “defenestration”, throwing someone out of one	etym:defenestration wikt:fr:fenêtre
+foot	cousin	shares a root with English “pedal” and “pedestrian”	etym:pedal etym:pedestrian wikt:fr:pied
+stone	cousin	shares a root with English “petrify”	etym:petrify wikt:fr:pierre
+tree	cousin	shares a root with English “arboreal”	etym:arboreal etym:arbor wikt:fr:arbre
+field	cousin	shares a root with English “campus” and “champion”	etym:campus etym:champion wikt:fr:champ
+bridge	cousin	shares a root with English “pontoon”	etym:pontoon wikt:fr:pont
+name	cousin	shares a root with English “nominate”	etym:nominate wikt:fr:nom
+time	cousin	shares a root with English “temporal”	etym:temporal wikt:fr:temps
+day	cousin	shares a root with English “journal” and “journey”	etym:journal etym:journey wikt:fr:jour
+year	cousin	shares a root with English “annual”	etym:annual wikt:fr:année
+small	cousin	the root of English “petty”	etym:petty wikt:fr:petit
+true	cousin	shares a root with English “verify”	etym:verify wikt:fr:vrai
+free	cousin	shares a root with English “liberty”	etym:liberty wikt:fr:libre
+head	cousin	the root of English “testy”, once headstrong	etym:testy wikt:fr:tête
+milk	cousin	shares a root with English “lactose”	etym:lactose wikt:fr:lait
+salt	cousin	shares a root with English “saline”	etym:saline wikt:fr:sel
+egg	cousin	shares a root with English “oval”	etym:oval wikt:fr:œuf
+fish	cousin	shares a root with English “Pisces”	etym:pisces wikt:fr:poisson
+green	cousin	shares a root with English “verdant”	etym:verdant wikt:fr:vert
+black	cousin	shares a root with English “denigrate”, to blacken	etym:denigrate wikt:fr:noir
+white	cousin	shares a root with English “blank”	etym:blank wikt:fr:blanc
+new	cousin	shares a root with English “novel”	etym:novel wikt:fr:nouveau
+old	cousin	shares a root with English “veteran”	etym:veteran wikt:fr:vieux
+big	cousin	shares a root with English “grandeur”	etym:grandeur wikt:fr:grand
+long	cousin	shares a root with English “longitude”	etym:longitude wikt:fr:long
+good	cousin	shares a root with English “bonus”	etym:bonus wikt:fr:bon
+bad	cousin	shares a root with English “malice”	etym:malice wikt:fr:mauvais
+light	cousin	shares a root with English “luminous”	etym:luminous wikt:fr:lumière
+strong	cousin	shares a root with English “fortify”	etym:fortify wikt:fr:fort
+weak	cousin	the root of English “feeble” and “foible”	etym:feeble etym:foible wikt:fr:faible
+mother	cousin	shares a root with English “maternal”	etym:maternal wikt:fr:mère
+father	cousin	shares a root with English “paternal”	etym:paternal wikt:fr:père
+brother	cousin	shares a root with English “fraternal”	etym:fraternal wikt:fr:frère
+sister	cousin	shares a root with English “sorority”	etym:sorority wikt:fr:sœur
+son	cousin	shares a root with English “filial”	etym:filial wikt:fr:fils
+daughter	cousin	shares a root with English “filial”	etym:filial wikt:fr:fille
+friend	cousin	shares a root with English “amiable”	etym:amiable wikt:fr:ami
+house	cousin	shares a root with English “mansion”	etym:mansion wikt:fr:maison
+road	cousin	shares a root with English “rupture”, from a way broken through	etym:rupture wikt:fr:route
+church	cousin	shares a root with English “ecclesiastical”	etym:ecclesiastical etym:ecclesiastic wikt:fr:église
+work	cousin	the root of English “travel”, which was once an ordeal	etym:travel etym:travail wikt:fr:travail wikt:fr:travailler
+speak	cousin	shares a root with English “parable”	etym:parable wikt:fr:parler
+hear	cousin	the root of English “intend”, once to pay attention	etym:intend wikt:fr:entendre
+see	cousin	shares a root with English “vision”	etym:vision wikt:fr:voir
+know	cousin	shares a root with English “savant”	etym:savant wikt:fr:savoir
+eat	cousin	the English word for a feeding trough comes from this verb	etym:manger wikt:fr:manger
+drink	cousin	shares a root with English “bibulous”	etym:bibulous wikt:fr:boire
+sleep	cousin	shares a root with English “dormitory”	etym:dormitory wikt:fr:dormir
+walk	cousin	the root of English “march”	etym:march wikt:fr:marcher
+run	cousin	shares a root with English “current”	etym:current wikt:fr:courir
+write	cousin	shares a root with English “escritoire”	etym:escritoire wikt:fr:écrire
+read	cousin	shares a root with English “lecture”	etym:lecture wikt:fr:lire
+give	cousin	shares a root with English “donate”	etym:donate etym:donation wikt:fr:donner
+take	cousin	shares a root with English “prehensile”	etym:prehensile wikt:fr:prendre
+find	cousin	the root of English “trove”, a find	etym:trove wikt:fr:trouver
+lose	cousin	shares a root with English “perdition”	etym:perdition wikt:fr:perdre
+love	cousin	shares a root with English “amorous”	etym:amorous wikt:fr:amour wikt:fr:aimer
+laugh	cousin	shares a root with English “risible”	etym:risible wikt:fr:rire
+cry	cousin	shares a root with English “deplore” and “implore”	etym:deplore etym:implore wikt:fr:pleurer
+begin	cousin	shares a root with English “commence”	etym:commence wikt:fr:commencer
+die	cousin	shares a root with English “moribund”	etym:moribund wikt:fr:mourir
+live	cousin	shares a root with English “vivid”	etym:vivid wikt:fr:vivre
+
+# Once listed above as descents. Each English word came from somewhere
+# other than the French word Weft teaches for it, and each French word has
+# a true English relative of its own.
+money	cousin	shares a root with English “argentine”, silvery	etym:argentine etym:money wikt:fr:argent
+city	cousin	shares a root with English “village” and “villain”, once a peasant	etym:village etym:villain etym:city wikt:fr:ville
+country	cousin	the root of English “peasant”	etym:peasant etym:country wikt:fr:pays
+answer	cousin	shares a root with English “response”	etym:response etym:answer wikt:fr:réponse
+gift	cousin	shares a root with English “cadet”, from a Latin word for a little head	etym:cadet etym:gift wikt:fr:cadeau
+face	cousin	shares a root with English “visor”	etym:visor etym:visage etym:face wikt:fr:visage
+soldier	cousin	shares a root with English “soldier”, from the Latin name for a gold coin	etym:soldier wikt:fr:soldat
+carry	cousin	shares a root with English “portable” and “transport”	etym:portable etym:transport etym:carry wikt:fr:porter
+close	cousin	shares a root with English “firm” and “confirm”	etym:firm etym:confirm etym:close wikt:fr:fermer
+catch	cousin	shares a root with English “entrap”	etym:entrap etym:catch wikt:fr:attraper wikt:fr:trappe
+easy	cousin	shares a root with English “facility”	etym:facility etym:easy wikt:fr:facile
+rich	cousin	shares a root with English “rich”	etym:rich wikt:fr:riche
+
+# heavy has no line. It said lourd shares a root with “pendant”, from
+# Latin pendere, and it does not: Wiktionary has lourd "probably from Latin
+# lūridus", the source of “lurid”. Probably is the word that keeps it out.

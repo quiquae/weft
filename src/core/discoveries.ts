@@ -92,8 +92,8 @@ function classify(entry: LexEntry): DiscoveryKind | null {
  * read. That is true of Old English, where 544 of 584 entries carry an
  * etymon and a descent is the default rather than a find.
  *
- * It is exactly wrong for French. There a descent is rare — 30 entries
- * against 88 notes — and "English river comes from rivière" is the
+ * It is exactly wrong for French. There a descent is rare — 18 entries
+ * against 99 notes — and "English river comes from rivière" is the
  * striking line, while "shares a root with amiable" is the common one.
  * Ranking descents last there produced a feed of two dozen identically
  * phrased notes: the same monotony, arrived at from the opposite

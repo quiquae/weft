@@ -66,10 +66,10 @@ inside an English word you use:
 
 | French | | English | related to |
 |---|---|---|---|
-| `cheval` | → | horse | the root of *cavalry* and *chivalry* |
-| `fenêtre` | → | window | the root of *defenestration* |
-| `jour` | → | day | the root of *journal* and *journey* |
-| `main` | → | hand | the root of *manual* and *manicure* |
+| `cheval` | → | horse | shares a root with *cavalry* and *chivalry* |
+| `fenêtre` | → | window | shares a root with *defenestration* |
+| `jour` | → | day | shares a root with *journal* and *journey* |
+| `main` | → | hand | shares a root with *manual* and *manicure* |
 | `rivière` | → | river | English took the word itself |
 
 Two different claims, kept apart deliberately. `rivière` **became** the
@@ -264,7 +264,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 527 unit + 98 jsdom + 111 over the build tools
+npm test               # 527 unit + 98 jsdom + 117 over the build tools
 npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules
