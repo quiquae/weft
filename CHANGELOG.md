@@ -50,9 +50,27 @@ include a key fails immediately.
 entries, against Old English's 544 and 126 — which is why the tooltip's
 "you already know this" line and the discoveries feed were blank for the
 most mass-market language in the product. `tools/seed/fr-cousins.tsv` adds
-30 descents and 88 notes, keeping descent (English took the word from
-French) apart from cousinhood (both inherit from Latin and the English
-relative is a different word) rather than letting the feed state falsehoods.
+18 descents and 99 notes, keeping descent (English took the word from
+French) apart from cousinhood (the two share a root, almost always Latin,
+and the English relative is a different word) rather than letting the feed
+state falsehoods.
+
+Its first version stated twenty-nine. Checked line by line against
+etymonline and Wiktionary, twelve of its thirty descents paired an English
+word with its French translation and called the translation its source:
+*money* is Old French *monoie*, not *argent*; *answer* is Old English and
+*gift* Old Norse; *rich* was never borrowed at all. Eight notes named the
+wrong root — *tête* is from *testa*, not *caput* — and nine said a French
+word was "the root of" an English one that English took straight from
+Latin or Italian, *cheval* and *cavalry* among them, which the landing page,
+the README and the store listing all quoted in the paragraph warning against
+exactly that confusion. A descent also tells the word selector the word is a
+cognate, so the false ones doubled *argent*'s cognate score and took
+*cadeau*'s from nothing to 0.7 — and the first time a reader met *argent*,
+the tooltip introduced it as "ancestor of English “money”". Every claim now
+names the dictionary entries it was checked against, and the merge refuses
+one that does not.
+
 French now leads the landing page, the README, the social card and the store
 listing; the Latin and Old English section stayed, reframed. The Chrome
 marquee tile kept the four words the social card had dropped — one French,
@@ -252,7 +270,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 772 tests: 527 unit, 98 in jsdom, 111 over the build tools, and
+**Built with** 778 tests: 527 unit, 98 in jsdom, 117 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

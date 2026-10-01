@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **111 pass**, 32 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **117 pass**, 33 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -210,10 +210,126 @@ That was a decision, not an omission.
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
 Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
 
+**A French etymology claim names the dictionary entries it was checked
+against, or it does not ship.** `tools/seed/fr-cousins.tsv` carries a fourth
+column of `etym:` and `wikt:fr:` references, and `tools/cousins.ts` derives
+from each claim what it must cite — etymonline for every English word it
+names, Wiktionary for its French word on every row its lemma has — and
+refuses a claim short of any, under `--force` too. Twenty-nine of the file's
+first 116 claims were false, every one about a word nobody had looked up;
+"Nothing here is a guess" had been asserted in its header and enforced
+nowhere. Do not make the column optional to land a claim quickly: the
+column is the check. It cannot tell a reference somebody read from one
+somebody typed, which is the same limit the verify stamps have, and is why
+the entries cited should be the ones actually opened.
+
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-01 — every French claim read against a dictionary: twenty-nine false, and none may ship unsourced now
+
+The queue sent this session at `docs/firstrun/icons.png` and its 134 blank
+rows. That is PR #37, four merges back: `tools/make-icon-sheet.mjs` exists
+and `tests/tools/icon-sheet.test.ts` guards it. Settled by `git log` in a
+minute. So the work was `TODO.md`'s topmost unchecked item, the eighteen false
+French etymologies — **which were twenty-nine.**
+
+**The item had checked nineteen of 116 lines against a source and asked for
+all of them, so all of them were read.** Not from memory and not through a
+summarising fetch: `curl` pulled verbatim text from etymonline for every
+English word a claim names (280 entries) and from English and French
+Wiktionary for every French word (155 each), into a cache outside the tree.
+Twelve of the thirty descents were false, all in one shape — the claim paired
+an English word with its *translation* and called the translation its
+source: *money* is Old French *monoie*, *answer* Old English, and **`rich`,
+which the item had filed as "defensible and should stay", is Old English
+*rīce*** whose form French only "influenced". Eight notes named the wrong
+root or sense. And **nine "the root of English X" notes were cousins**, X
+having come from Latin or Italian directly — *cheval* is not the root of
+*cavalry* — which the item had seen four of and called "not counted".
+
+**Those nine were the landing page's lead table.** The item said the public
+copy was clear, having grepped it for the nineteen French words; the
+"root of" phrasing was what it had not grepped for, and it sat in
+`site/index.html`'s table and FAQ data, the README and the store listing's
+description — each beside a paragraph explaining that cheval only *shares* a
+root with cavalry. All four now say "shares a root with".
+
+**And it reached the selector, measured with the real modules.** A descent
+floors `cognateScore`, so the false ones doubled *argent*'s (0.411 → 0.823)
+and lifted *cadeau* and *pays* from 0 to 0.700, and on a first meeting the
+tooltip's reason line read "New to you, and ancestor of English “money”".
+
+Every falsely-descended French word got a true relative, checked the same
+way, rather than a blank: *pays* is the root of *peasant*, *cadeau* shares
+*capitellum* with *cadet*, *tête* gave *testy* through Old French *teste*.
+*heavy* was deleted, because Wiktionary has *lourd* only "probably" from
+*lūridus*. 115 lines remain: 18 descents, 97 notes, 117 fields. A second
+reader, given the same cache and told to look for reasons each claim was
+wrong, found none false among the 32 new or changed and two arguable: a
+"probably" under *territory*, by the same rule that removed *lourd*, and a
+gloss on *villain* that described the Latin word rather than the English
+one. Both changed, and all 36 images regenerated identical afterwards.
+
+**The guard is a sources column, and the rule is derived.** Each line now
+names the entries it was checked against; `tools/cousins.ts` works out what
+a claim must cite — etymonline for each English word it names, Wiktionary
+for its French word on every row its lemma has — and refuses one short of
+any before anything is applied, `--force` included. That last part is the
+argument: force settles which of two files is right, and whether a claim
+was ever checked is a question neither file can answer for the other. Done
+test-first, six tests; one passed on its first run only because the old
+parser refused every four-field line, and a control made it fail for the
+right reason. Then the two committed-file tests went red on all 116 lines
+until the sources went in. **The merge PR #38 built did exactly its job:**
+without `--force` it named the 45 edited fields and exited 1.
+
+Six images changed, the three `*-04-progress.png` and three dashboard shots,
+all showing the feed; all opened and read, every line true. The other 30
+regenerated byte-identical, and the two generators that changed reproduced
+themselves across two runs. **`dashboard.png` carries its capture date**,
+though — "Sep 29" committed, "Oct 1" today, in the attention axis and the
+change log — so the 2026-09-29 finding that no date was involved held only
+within one day. Pixel-diffed: those two rows and six feed lines, nothing
+else.
+
+**Asking whether the flaw was French found it in Old English, on published
+pages.** 242 Old English rows claim their word became the English word it
+translates; of the 80 the cache covered, three are false, and
+`/old-english/eagthyrel` reads "the Old English word that became
+**window**", which is Old Norse. Queued first in `Next`, ahead of B3 indexing
+it, with the Latin note "third-person plural “virī”" (a noun has no person)
+and the feed lookup that hides eleven true etymologies across three packs —
+both found on the way.
+
+Counts moved 772 → **778** and tools 111 → **117** / 32 → **33 suites**, in
+`docs/LAUNCH.md` first and then the CHANGELOG, README, SUBMIT and this file's
+table. The package grew **983 → 984 KB**, exactly the French pack's 1 028
+bytes of longer notes crossing a rounding boundary.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **117 tools / 33 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **984 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 2.0 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`site:check` **713 pages / 16 129 links**, all resolving, with "root of"
+nowhere in the built site. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask, and listed in `TODO.md` for a human: that
+"shares a root with" is the right correction for the landing page's lead
+examples rather than swapping in true "root of" ones (*peasant*, *testy*,
+*feeble*); that *person*, *music* and *story*, which etymonline traces to
+Old French "and directly from Latin", stay descents; and that a "probably"
+keeps *lourd* out. One process error to own: an early fetch sent the
+account's email in a User-Agent header to Wikimedia, by reflex from its
+contact-info policy, before being corrected; nothing after it did.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. Four agent-shaped items in `Next`, the Old English etymons
+first.
 
 ### 2026-10-01 — all four assets reproduced exactly, and three of them showed a mark the icon had replaced
 

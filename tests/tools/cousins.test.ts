@@ -54,8 +54,14 @@ const row = (lemma: string, pos: string, tgt: string, tgt2: string, gender: stri
   [lemma, pos, tgt, tgt2, gender, '', etymon, note].join('\t');
 const lexicon = (...rows: string[]) =>
   ['# lemma | pos | tgt | tgt2 | gender | ipa | etymon | note', ...rows].join('\n') + '\n';
-const claim = (lemma: string, kind: string, value: string) => [lemma, kind, value].join('\t');
-const cousins = (...claims: string[]) => ['# lemma <TAB> kind <TAB> value', ...claims].join('\n') + '\n';
+const claim = (lemma: string, kind: string, value: string, sources: string) =>
+  [lemma, kind, value, sources].join('\t');
+const cousins = (...claims: string[]) => ['# lemma <TAB> kind <TAB> value <TAB> sources', ...claims].join('\n') + '\n';
+
+// Each claim cites the entry for every word it names, written out by hand
+// rather than derived, so a fixture cannot agree with the rule by construction.
+const FOREST = claim('forest', 'descent', 'forest', 'etym:forest wikt:fr:forêt');
+const LOVE = claim('love', 'cousin', AMOROUS, 'etym:amorous wikt:fr:amour wikt:fr:aimer');
 
 // Five fields rather than eight, the way a hand edit leaves a row. Nothing
 // claims `fear`, so a merge has no business rewriting it.
@@ -68,7 +74,7 @@ const UNMERGED = lexicon(
   row('forest', 'noun', 'forêt', 'forêts', 'f'),
   FEAR,
 );
-const CLAIMS = cousins(claim('forest', 'descent', 'forest'), claim('love', 'cousin', AMOROUS));
+const CLAIMS = cousins(FOREST, LOVE);
 /** CLAIMS merged into UNMERGED, written out by hand. */
 const MERGED = lexicon(
   row('love', 'noun', 'amour', 'amours', 'm', '', AMOROUS),
@@ -78,7 +84,7 @@ const MERGED = lexicon(
 );
 
 /** Somebody checked the `love` claim and corrected it. */
-const CORRECTED_CLAIMS = cousins(claim('forest', 'descent', 'forest'), claim('love', 'cousin', AMIABLE));
+const CORRECTED_CLAIMS = cousins(FOREST, claim('love', 'cousin', AMIABLE, 'etym:amiable wikt:fr:amour wikt:fr:aimer'));
 const CORRECTED = lexicon(
   row('love', 'noun', 'amour', 'amours', 'm', '', AMIABLE),
   row('love', 'verb', 'aimer', 'aimant', '', '', AMIABLE),
@@ -87,7 +93,7 @@ const CORRECTED = lexicon(
 );
 
 /** Somebody found the `forest` claim false and deleted its line. */
-const RETRACTED_CLAIMS = cousins(claim('love', 'cousin', AMOROUS));
+const RETRACTED_CLAIMS = cousins(LOVE);
 const RETRACTED = lexicon(
   row('love', 'noun', 'amour', 'amours', 'm', '', AMOROUS),
   row('love', 'verb', 'aimer', 'aimant', '', '', AMOROUS),
@@ -143,18 +149,18 @@ describe('merge-cousins says which claims did not land', () => {
   });
 
   test('a claim whose lemma matches no row is reported, not dropped', () => {
-    const result = mergeCousins(MERGED, cousins(claim('forest', 'descent', 'forest'), claim('love', 'cousin', AMOROUS), claim('lion', 'descent', 'lion')));
+    const result = mergeCousins(MERGED, cousins(FOREST, LOVE, claim('lion', 'descent', 'lion', 'etym:lion')));
     assert.deepEqual(result.unmatched.map((c) => [c.lemma, c.kind, c.line]), [['lion', 'descent', 4]]);
   });
 
   test('a line that cannot ship as written is reported, not skipped', () => {
     const cases: Array<[string, string]> = [
-      ['a space where a tab belongs', 'forest descent forest'],
-      ['a misspelt kind', claim('forest', 'decsent', 'forest')],
-      ['a second claim for one word', claim('love', 'cousin', AMIABLE)],
+      ['a space where a tab belongs', 'forest descent forest etym:forest wikt:fr:forêt'],
+      ['a misspelt kind', claim('forest', 'decsent', 'forest', 'etym:forest wikt:fr:forêt')],
+      ['a second claim for one word', claim('love', 'cousin', AMIABLE, 'etym:amiable wikt:fr:amour wikt:fr:aimer')],
     ];
     for (const [what, line] of cases) {
-      const result = mergeCousins(MERGED, cousins(claim('forest', 'descent', 'forest'), claim('love', 'cousin', AMOROUS), line));
+      const result = mergeCousins(MERGED, cousins(FOREST, LOVE, line));
       assert.deepEqual(result.malformed.map((m) => m.line), [4], `${what} was not reported`);
     }
   });
@@ -187,6 +193,102 @@ describe('merge-cousins says which claims did not land', () => {
       assert.equal(run('--dry').status, 0, 'after --force the lexicon is still reported out of step');
     } finally {
       rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+/*
+ * "Nothing here is a guess", the review file's header says, and
+ * twenty-nine of its 116 claims turned out to be false — eighteen found on
+ * 2026-09-30, eleven more when every line was checked on 2026-10-01. Every
+ * one was a claim about a word nobody had looked up: eleven descents whose
+ * English word came from somewhere else — `answer` is Old English, `gift`
+ * Old Norse — and seven cousin notes naming the wrong Latin root for the
+ * French word. So a claim now carries the entries it was checked against,
+ * and the rule is derived from the claim itself: the etymonline entry for
+ * every English word it names, and the Wiktionary entry for every French
+ * word it is about. A claim that names a word with no entry cited cannot
+ * ship, and `--force` does not change that, because force settles which of
+ * two files is right and this is a question neither file can answer.
+ */
+describe('a claim cites the entry for every word it names', () => {
+  const LOVE_ROWS = lexicon(row('love', 'noun', 'amour', 'amours', 'm'), row('love', 'verb', 'aimer', 'aimant', ''));
+  const refused = (lexiconText: string, line: string) => {
+    const result = mergeCousins(lexiconText, cousins(line), { force: true });
+    assert.equal(result.text, lexiconText, 'a claim that cannot ship reached the lexicon anyway, under --force');
+    return result.malformed.map((m) => [m.line, m.reason]);
+  };
+
+  test('a claim with no sources is refused, not shipped', () => {
+    const result = refused(UNMERGED, ['forest', 'descent', 'forest'].join('\t'));
+    assert.equal(result.length, 1, 'a claim citing nothing was accepted');
+    assert.equal(result[0]?.[0], 2);
+  });
+
+  test('a descent cites the English word it says was borrowed', () => {
+    const [[line, reason] = []] = refused(UNMERGED, claim('forest', 'descent', 'forest', 'wikt:fr:forêt'));
+    assert.equal(line, 2);
+    assert.match(String(reason), /etym:forest\b/);
+  });
+
+  test('a cousin note cites every English word it quotes, by its etymonline slug', () => {
+    const LEX = lexicon(row('fish', 'noun', 'poisson', 'poissons', 'm'), row('find', 'verb', 'trouver', 'trouvant', ''));
+    const cases: Array<[string, string, RegExp]> = [
+      ['the second of two quoted words',
+        claim('fish', 'cousin', 'shares a root with English “piscine” and “Pisces”', 'etym:piscine wikt:fr:poisson'),
+        /etym:pisces\b/],
+      ['a capitalised word, cited in capitals',
+        claim('fish', 'cousin', 'shares a root with English “Pisces”', 'etym:Pisces wikt:fr:poisson'),
+        /etym:pisces\b/],
+      ['a quoted phrase, cited with a space',
+        claim('find', 'cousin', 'shares a root with English “treasure trove”', 'etym:treasure wikt:fr:trouver'),
+        /etym:treasure-trove\b/],
+    ];
+    for (const [what, line, missing] of cases) {
+      const [[, reason] = []] = refused(LEX, line);
+      assert.match(String(reason), missing, `${what}: not refused for the entry it lacks`);
+    }
+    // And the same three, cited properly, are accepted.
+    const ok = mergeCousins(
+      LEX,
+      cousins(claim('fish', 'cousin', 'shares a root with English “piscine” and “Pisces”', 'etym:piscine etym:pisces wikt:fr:poisson'),
+        claim('find', 'cousin', 'shares a root with English “treasure trove”', 'etym:treasure-trove wikt:fr:trouver')),
+    );
+    assert.deepEqual(ok.malformed, []);
+  });
+
+  test('a claim cites the French word on every row its lemma has', () => {
+    // `love` is amour as a noun and aimer as a verb, and one claim lands on
+    // both, so it has to be true of both. `work` is the case that makes this
+    // matter: its note says travail and travailler are both the root of
+    // English travel, which holds only because etymonline traces travel to
+    // the noun as well as to the verb — a fact about the second French word
+    // that nobody reading only the first would ever have checked.
+    const [[line, reason] = []] = refused(LOVE_ROWS, claim('love', 'cousin', AMOROUS, 'etym:amorous wikt:fr:amour'));
+    assert.equal(line, 2);
+    assert.match(String(reason), /wikt:fr:aimer\b/);
+    assert.doesNotMatch(String(reason), /wikt:fr:amour\b/, 'a source that was cited is reported missing');
+  });
+
+  test('a note that quotes no English word still cites the one it means', () => {
+    // "the English word for a feeding trough comes from this verb" cannot
+    // quote “manger” — tools/verify-packs.mjs refuses a note quoting the
+    // French word back — so the word is named only by its entry.
+    const EAT = lexicon(row('eat', 'verb', 'manger', 'mangeant', ''));
+    const note = 'the English word for a feeding trough comes from this verb';
+    const [[, reason] = []] = refused(EAT, claim('eat', 'cousin', note, 'wikt:fr:manger'));
+    assert.match(String(reason), /\betym:/);
+    assert.deepEqual(mergeCousins(EAT, cousins(claim('eat', 'cousin', note, 'etym:manger wikt:fr:manger'))).malformed, []);
+  });
+
+  test('a source that is not an entry reference is refused', () => {
+    // The control: the same claim citing only what it needs is accepted, so
+    // each refusal below is about the one token added to it.
+    assert.deepEqual(mergeCousins(UNMERGED, cousins(FOREST)).malformed, []);
+    for (const source of ['https://www.etymonline.com/word/forest', 'etymonline:forest', 'wikt:forêt', 'etym:']) {
+      const result = refused(UNMERGED, claim('forest', 'descent', 'forest', `etym:forest wikt:fr:forêt ${source}`));
+      assert.equal(result.length, 1, `"${source}" was accepted as a source`);
+      assert.ok(String(result[0]?.[1]).includes(source), `the refusal does not name "${source}"`);
     }
   });
 });
