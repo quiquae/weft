@@ -2108,6 +2108,17 @@ And there are iCloud conflict copies outside the three directories that carry
 the xattr: `.git/index 2`, and two gitignored `weft-*-1.0.0* 2.zip` at the
 repository root. None is tracked, none affects a build, and none was touched.
 
+**And the favicon has the fault `0d9910e` fixed for the toolbar, at 1×.**
+`site/icon.svg` is the 128px geometry, four threads, and a browser rasterises
+it at the tab's 16 device pixels: rendered that way in Chromium, it comes out
+as four half-covered 2px threads with a grey halo round the weft, beside
+`assets/icon-16.png`'s two crisp ones. Pre-existing — the old SVG had four
+threads too — and fine at 2×, where it is 32 pixels. Not fixed here because
+the site is unpublished (B3) and the remedy is a decision about favicon
+selection rather than a geometry edit: copy the 16 and 32px rasters into
+`site/` from `make-icons.mjs`, as it already does for `icon.svg`, and link
+them with `sizes` beside the SVG. About 20 minutes plus reading it in a tab.
+
 **One process error, caught by re-reading and worth keeping.** Three comments
 in the first draft said the mark had "six" hand copies and that
 `artefacts:check` had called the tiles fresh "for nine days". Seven files

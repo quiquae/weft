@@ -371,7 +371,10 @@ on what, and two runs on one machine is one sample.**
 
 Found and left, each measured: the woad `#2f4b7c` is still typed in five
 places — both stylesheets, both art generators and `brand.ts` — and all five
-agree; and `build-site.mjs` prints `-> dist/site` even under `--out`.
+agree; `build-site.mjs` prints `-> dist/site` even under `--out`; and the SVG
+favicon, rendered at a 1× tab's 16 device pixels, dissolves exactly as the
+16px raster did before `0d9910e` — pre-existing, written up in `TODO.md`'s
+note with a fix shape.
 
 **The icons group's verify stamp was deleted rather than rewritten**, the
 call PRs #30 to #32 each made: its note read "no change to commit" and this
