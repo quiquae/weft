@@ -57,13 +57,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **124 pass**, 34 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **129 pass**, 35 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 985 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 713 pages, 16 129 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 713 pages, 16 109 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-01 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -240,10 +240,122 @@ column is the check. It cannot tell a reference somebody read from one
 somebody typed, which is the same limit the verify stamps have, and is why
 the entries cited should be the ones actually opened.
 
+**So does an Old English one, and a compound is not a descent.** Every etymon
+in `tools/seed/lex-ang.tsv` has a line in `tools/seed/ang-etymons.tsv` naming
+the English word's own entry — etymonline, or English Wiktionary where it has
+none — and `tests/tools/ang-etymons.test.ts` fails on an etymon with no line,
+a line citing some other word, or a line outliving its claim. The product
+says "became", "the direct ancestor of" and "comes straight from", so a
+descent survives a cognate reshaping the word (*sister*, *give*) and an
+inflected form becoming the English word (*shadow* from the oblique case of
+*sċeadu*, *numb* from the past participle of *niman*), and nothing else: not
+"partly from", not "probably", not a compound that merely contains the word.
+On 2026-10-01 that standard removed 21 of 330 and corrected 6. Notes are not
+held by it, because a gloss of Old English meaning wants Bosworth–Toller,
+which nothing here cites. The claims taken out are listed at the foot of the
+ledger with what the dictionary says; read that before restoring one.
+
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-01 — twenty-seven Old English descents were not true as stated, in two shapes
+
+`Now` was empty; the topmost unchecked item in `Next` was the Old English
+etymons, queued that afternoon by the French pass with three false claims in a
+sample of 80 and an estimate of "six to ten more". Confirmed open first:
+`tools/seed/lex-ang.tsv` had not moved since #20.
+
+**All 330 were read, not sampled.** etymonline for every etymon — the 79
+entries the French pass had cached and 279 fetched, with a User-Agent carrying
+no personal detail, one request a second — and English Wiktionary for the
+words etymonline lacks, 24 sections. Every claim was read beside its entry's
+opening, and every flagged one in full, with the verdicts written down row by
+row before anything was edited.
+
+**Sixteen were the French shape**: the English word paired with its Old
+English translation. *window* is Old Norse *vindauga*, which "replaced Old
+English eagþyrl"; *egg*, *gift*, *weak* and *wassail* are Norse; *lion*, *ire*
+and *close* are French; *sad* is *sæd*, "sated", which the row's own note
+said. **Eleven were a shape the sample's frame could not contain**: a compound
+or derivative standing in for the word — *gospel* for *spell*, *bishopric*
+for *rīċe*, *hundred* for *hund*, *nimble* for *niman*. The product says
+"became", "the direct ancestor of" and "comes straight from", so the line was
+drawn at inflection: *shadow* (an oblique case of *sċeadu*), *numb* (the past
+participle of *niman*, "literally 'taken, seized'") and *former* (the
+comparative of *forma*) are the word itself and now name it; compounds and
+derivatives are told in the note instead. 21 removed, 6 corrected, 2 renamed
+to the headword read (*thorp*, *swith*); 309 remain.
+
+**The landing page led with one.** *drēam → dream*, "it meant joy and music;
+the sleeping sense is Norse", sat in the Old English table under a paragraph
+warning that a shared root presented as a descent is "a nice story and a false
+one". etymonline: "much study has failed to prove that Old English dream is
+the source of the modern word", and the Norse part is a "probably". The row is
+*sellan → sell* now; the hub intro and `docs/PEDAGOGY.md` use *mete → meat*,
+and `PEDAGOGY.md` says why *drēam* left. The README and the launch draft only
+ever said what *drēam* meant, which is true, and stand.
+
+**Forty notes moved**: fourteen rows that lost or changed an etymon gained a
+true note instead of a blank, and twenty-six were rewritten, sixteen of them
+on claims that stand — "whence warden and guard" (both French), "whence
+bleak" (Norse), "gangende survives in gangway" (*gang* is "not considered to
+be related to go"), "whence the bloodletting worm" (OED: "a distinct word"),
+a proverb Wiktionary calls a corruption, and "every" place-name in -ham,
+-bury and -ton. Each new note was checked for how the feed now classifies it,
+because a note's wording, not its etymon, picks the feed's sentence.
+
+**The guard is a sidecar, `tools/seed/ang-etymons.tsv`**, one line per claim
+naming the entries read, and `tests/tools/ang-etymons.test.ts` holds the two
+files together: no etymon without a line, no line citing another word, no
+unreadable token, no line outliving its claim. A sidecar rather than French's
+review file and merge, because Old English etymology was always authored in
+the seed, and because it kept `lex-ang.tsv`'s content diff to the 45 rows
+that changed. Red first on an empty ledger, naming all 309 claims; then each
+rule shown to fire on its own break, six probes restored by md5. **One probe
+was dead and looked like a pass**: `grep -m1 x f >> f` writes nothing here,
+because this machine's grep is ugrep and refuses to append to its own input.
+Redone through a temp file, it fired. The claims taken out are kept at the
+foot of the ledger with what the dictionary says.
+
+`en-ang.json` moved in 46 `etymonOf` and 66 `note` fields and nothing else;
+`index.json` did not move. 44 word pages changed, all read, plus the hub
+(325 → 305 rows) and the index. All 36 generated screenshots came back
+byte-identical — `page-old-english.png` hovers *ēa*, which has no etymon — and
+the three groups are stamped. Counts moved 785 → **790** and tools 124 →
+**129** / 34 → **35 suites**, `docs/LAUNCH.md:221` first; the packs 653 → 654
+KB; the extension 984 → **985 KB**; site links 16 129 → **16 109**, the hub
+rows that left.
+
+Found and queued rather than fixed: **22 Old English headwords are published
+at a URL that drops their ǣ** — `slugify()` maps `æ` before normalising, so
+`sǣ` is `/old-english/s` and `ǣfen` `/old-english/fen` — free to fix before
+B3; **the Latin pack's 312 descents have never been checked either**; and
+`far wel` is taught as Old English though Wiktionary gives the Old English
+form only as "possibly" and with an asterisk.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **129 tools / 35 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **985 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 1.9 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**, the
+same fourteen Old English builder warnings as on `main`, shifted by the nine
+header lines; `npm run site` then `site:check` **713 pages / 16 109 links**,
+all resolving. Zero iCloud conflict copies in `src/`, `tools/` or `tests/`
+after a `git stash` round trip, which is where they appeared before.
+
+Assumed, with nobody to ask: that an inflection is a descent and a compound
+is not; that "partly from" drops a claim, as in French; that step 4 of the
+item wanted a sidecar rather than a split; that the landing page should swap
+*drēam* for another true false friend rather than keep a row denying its own
+arrow; and that `far wel`'s target is a question for later.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. Three calls to look at rather than do are in `TODO.md` under
+"Three Old English calls". `Next` holds five agent-shaped items, the Latin
+note on `vir` first.
 
 ### 2026-10-01 — the queued CI step would have failed on a correct tree; the icons are held by their pixels instead
 

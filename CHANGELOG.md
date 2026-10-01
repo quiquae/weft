@@ -71,6 +71,24 @@ the tooltip introduced it as "ancestor of English “money”". Every claim now
 names the dictionary entries it was checked against, and the merge refuses
 one that does not.
 
+**Twenty-seven Old English descents were not true as stated.** The word
+pages, the tooltip badge and the feed say an Old English word "became" an
+English one, and all 330 such claims were then read against etymonline.
+Sixteen paired the English word with its Old English translation: *window*
+is Old Norse *vindauga*, which replaced *ēagþȳrel*; *egg*, *gift*, *weak* and
+*wassail* are Norse too; *lion* and *ire* came from French; *sad* is *sæd*,
+"sated", not *unrōt*. Eleven named a compound or a derivative as though it
+were the word itself — *gospel* for *spell*, *bishopric* for *rīċe*,
+*hundred* for *hund*. Twenty-one are gone and six now name the real
+descendant: *spell*, *shadow*, *morn*, *numb*, *former* and *lich*. *drēam*,
+which the landing page led with, still meant joy and music, but "much study
+has failed to prove" it became *dream*, so Weft no longer says it did. Notes
+a dictionary contradicted were rewritten with them: *warden* and *guard* are
+cousins of *weardian*, not its descendants, *bleak* is Norse, and "many a
+mickle makes a muckle" is a corruption of "many a little makes a mickle".
+Every Old English etymon now names the entry it was checked against, and the
+tests refuse one that names none.
+
 French now leads the landing page, the README, the social card and the store
 listing; the Latin and Old English section stayed, reframed. The Chrome
 marquee tile kept the four words the social card had dropped — one French,
@@ -274,12 +292,12 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 785 tests: 527 unit, 98 in jsdom, 124 over the build tools, and
+**Built with** 790 tests: 527 unit, 98 in jsdom, 129 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface
-forms per language, 653 KB for all seven.
+forms per language, 654 KB for all seven.
 
 ## 1.0.0
 

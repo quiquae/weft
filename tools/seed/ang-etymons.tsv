@@ -1,0 +1,393 @@
+# Where each Old English etymon in lex-ang.tsv was checked.
+#
+# lemma | pos | tgt | etymon | sources
+#
+# The etymon column of lex-ang.tsv names the English word an Old English one
+# became, and the product states it three ways, all strong: "This is the Old
+# English word that became X" on the word page, "the direct ancestor of
+# English X" in its description, "English X comes straight from Y" in the
+# discoveries feed. So it has to be true of X, and X is where it is checked.
+#
+# On 2026-10-01 all 330 were read against etymonline, and against English
+# Wiktionary where etymonline has no entry. 27 were not true as stated.
+# Sixteen paired the English word with its Old English translation and
+# called the translation its source: window is Old Norse vindauga, which
+# replaced ēagþȳrel. Eleven named a compound or a derivative as though it
+# were the word itself: gospel for spell, bishopric for rīċe. They are listed
+# at the foot of this file with what the dictionary says, so that nobody
+# restores one in good faith.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was checked against, separated by spaces:
+#
+#   etym:<english>      https://www.etymonline.com/word/<english>
+#   wikt:en:<english>   https://en.wiktionary.org/wiki/<english>#English
+#   wikt:ang:<old>      https://en.wiktionary.org/wiki/<old>#Old_English
+#
+# tests/tools/ang-etymons.test.ts requires every etymon in lex-ang.tsv to have
+# a line here citing that English word's own entry, and no line here to
+# outlive its claim. It cannot tell an entry somebody read from one somebody
+# typed: cite the ones actually opened. etymonline files neighbour and grey
+# under neighbor and gray, and the test knows those two.
+#
+# What a descent survives, and what it does not
+# ---------------------------------------------
+# It survives a cognate reshaping the word: sister, give and carve took a
+# Norse form and are still the Old English words. It survives an inflected
+# form of the word itself becoming the English one: shadow is the oblique
+# case of sċeadu, numb the past participle of niman, former the comparative
+# of forma. It does not survive "partly from", "probably", a compound that
+# only contains the word, or an English word that only replaced it.
+#
+# Notes are not covered. Where a fetched entry contradicted or hedged a note,
+# the note was rewritten and the entry is cited on its line; the other notes
+# were read against their etymon's entry only.
+#
+man	noun	mann	man	etym:man
+woman	noun	wīfmann	woman	etym:woman
+child	noun	ċild	child	etym:child
+girl	noun	mæġden	maiden	etym:maiden
+person	noun	mann	man	etym:man
+friend	noun	frēond	friend	etym:friend
+mother	noun	mōdor	mother	etym:mother
+father	noun	fæder	father	etym:father
+brother	noun	brōðor	brother	etym:brother
+sister	noun	sweostor	sister	etym:sister
+son	noun	sunu	son	etym:son
+daughter	noun	dohtor	daughter	etym:daughter
+wife	noun	wīf	wife	etym:wife
+husband	noun	hūsbonda	husband	etym:husband
+king	noun	cyning	king	etym:king
+queen	noun	cwēn	queen	etym:queen
+lord	noun	hlāford	lord	etym:lord
+neighbour	noun	nēahgebūr	neighbour	etym:neighbor
+enemy	noun	fēond	fiend	etym:fiend
+doctor	noun	lǣċe	leech	etym:leech
+sailor	noun	sǣmann	seaman	etym:seaman
+head	noun	hēafod	head	etym:head
+hand	noun	hand	hand	etym:hand
+eye	noun	ēage	eye	etym:eye
+ear	noun	ēare	ear	etym:ear
+mouth	noun	mūð	mouth	etym:mouth
+nose	noun	nosu	nose	etym:nose
+tooth	noun	tōð	tooth	etym:tooth
+hair	noun	hǣr	hair	etym:hair
+heart	noun	heorte	heart	etym:heart
+blood	noun	blōd	blood	etym:blood
+bone	noun	bān	bone	etym:bone
+arm	noun	earm	arm	etym:arm
+leg	noun	sċanca	shank	etym:shank
+foot	noun	fōt	foot	etym:foot
+finger	noun	finger	finger	etym:finger
+body	noun	līċ	lich	etym:lich
+skin	noun	hȳd	hide	etym:hide
+dog	noun	hund	hound	etym:hound etym:dog
+cat	noun	catt	cat	etym:cat
+horse	noun	hors	horse	etym:horse
+bird	noun	fugol	fowl	etym:fowl
+fish	noun	fisc	fish	etym:fish
+cow	noun	cū	cow	etym:cow
+sheep	noun	sċēap	sheep	etym:sheep
+pig	noun	swīn	swine	etym:swine
+wolf	noun	wulf	wolf	etym:wolf
+bear	noun	bera	bear	etym:bear
+mouse	noun	mūs	mouse	etym:mouse
+snake	noun	nǣdre	adder	etym:adder
+bee	noun	bēo	bee	etym:bee
+worm	noun	wyrm	worm	etym:worm
+raven	noun	hræfn	raven	etym:raven
+hound	noun	hund	hound	etym:hound
+ox	noun	oxa	ox	etym:ox
+goat	noun	gāt	goat	etym:goat
+food	noun	mete	meat	etym:meat
+bread	noun	hlāf	loaf	etym:loaf etym:bread
+water	noun	wæter	water	etym:water
+wine	noun	wīn	wine	etym:wine
+milk	noun	meoluc	milk	etym:milk
+meat	noun	flǣsc	flesh	etym:flesh
+apple	noun	æppel	apple	etym:apple
+salt	noun	sealt	salt	etym:salt
+honey	noun	hunig	honey	etym:honey
+cheese	noun	ċīese	cheese	etym:cheese
+fire	noun	fȳr	fire	etym:fire
+house	noun	hūs	house	etym:house
+home	noun	hām	home	etym:home wikt:en:-ham
+door	noun	duru	door	etym:door
+wall	noun	wall	wall	etym:wall
+roof	noun	hrōf	roof	etym:roof
+floor	noun	flōr	floor	etym:floor
+room	noun	rūm	room	etym:room
+chair	noun	setl	settle	etym:settle
+bed	noun	bedd	bed	etym:bed
+book	noun	bōc	book	etym:book etym:beech
+word	noun	word	word	etym:word
+name	noun	nama	name	etym:name
+key	noun	ċǣġ	key	etym:key
+bridge	noun	brycg	bridge	etym:bridge
+church	noun	ċiriċe	church	etym:church
+ship	noun	sċip	ship	etym:ship
+boat	noun	bāt	boat	etym:boat
+sword	noun	sweord	sword	etym:sword
+shield	noun	sċield	shield	etym:shield
+ring	noun	hring	ring	etym:ring
+gold	noun	gold	gold	etym:gold
+silver	noun	seolfor	silver	etym:silver
+iron	noun	īren	iron	etym:iron
+stone	noun	stān	stone	etym:stone
+glass	noun	glæs	glass	etym:glass
+cloth	noun	clāð	cloth	etym:cloth
+shoe	noun	sċōh	shoe	etym:shoe
+coat	noun	mentel	mantle	etym:mantle
+hat	noun	hæt	hat	etym:hat
+sun	noun	sunne	sun	etym:sun
+moon	noun	mōna	moon	etym:moon
+star	noun	steorra	star	etym:star
+sky	noun	heofon	heaven	etym:heaven etym:sky
+earth	noun	eorðe	earth	etym:earth
+land	noun	land	land	etym:land
+sea	noun	sǣ	sea	etym:sea
+lake	noun	mere	mere	etym:mere
+mountain	noun	beorg	barrow	etym:barrow
+hill	noun	hyll	hill	etym:hill
+forest	noun	weald	weald	etym:weald
+tree	noun	trēow	tree	etym:tree
+leaf	noun	lēaf	leaf	etym:leaf
+flower	noun	blōstma	blossom	etym:blossom
+grass	noun	græs	grass	etym:grass
+field	noun	feld	field	etym:field
+road	noun	weġ	way	etym:way
+path	noun	pæð	path	etym:path
+city	noun	burg	borough	etym:borough wikt:en:-bury
+town	noun	tūn	town	etym:town wikt:en:-ton
+village	noun	þorp	thorp	etym:thorp
+world	noun	weorold	world	etym:world
+place	noun	stōw	stow	etym:stow
+rain	noun	reġn	rain	etym:rain
+snow	noun	snāw	snow	etym:snow
+wind	noun	wind	wind	etym:wind
+cloud	noun	wolcen	welkin	etym:welkin
+ice	noun	īs	ice	etym:ice
+light	noun	lēoht	light	etym:light
+shadow	noun	sċeadu	shadow	etym:shadow etym:shade
+time	noun	tīma	time	etym:time
+day	noun	dæġ	day	etym:day
+night	noun	niht	night	etym:night
+year	noun	ġēar	year	etym:year
+month	noun	mōnað	month	etym:month
+week	noun	wicu	week	etym:week
+hour	noun	tīd	tide	etym:tide etym:yuletide
+morning	noun	morgen	morn	etym:morn etym:morrow etym:morning
+evening	noun	ǣfen	even	etym:even etym:eve etym:evening
+summer	noun	sumor	summer	etym:summer
+winter	noun	winter	winter	etym:winter
+autumn	noun	hærfest	harvest	etym:harvest
+life	noun	līf	life	etym:life
+death	noun	dēað	death	etym:death
+love	noun	lufu	love	etym:love
+peace	noun	friþ	frith	wikt:en:frith wikt:en:frithstool
+truth	noun	sōþ	sooth	etym:sooth etym:forsooth etym:soothsayer
+law	noun	lagu	law	etym:law
+work	noun	weorc	work	etym:work
+price	noun	weorþ	worth	etym:worth
+answer	noun	andswaru	answer	etym:answer
+story	noun	spell	spell	etym:spell etym:gospel
+song	noun	sang	song	etym:song
+game	noun	gamen	game	etym:game
+fear	noun	fyrhtu	fright	etym:fright
+hope	noun	hopa	hope	etym:hope
+joy	noun	blis	bliss	etym:bliss
+oath	noun	āþ	oath	etym:oath
+good	adj	gōd	good	etym:good
+bad	adj	yfel	evil	etym:evil
+big	adj	miċel	mickle	etym:mickle wikt:en:many_a_mickle_makes_a_muckle
+small	adj	smæl	small	etym:small
+great	adj	grēat	great	etym:great
+little	adj	lȳtel	little	etym:little
+long	adj	lang	long	etym:long
+short	adj	sċeort	short	etym:short
+high	adj	hēah	high	etym:high
+old	adj	eald	old	etym:old
+young	adj	ġeong	young	etym:young
+new	adj	nīwe	new	etym:new
+hot	adj	hāt	hot	etym:hot
+cold	adj	ċeald	cold	etym:cold
+warm	adj	wearm	warm	etym:warm
+heavy	adj	hefiġ	heavy	etym:heavy
+strong	adj	strang	strong	etym:strong
+hard	adj	heard	hard	etym:hard
+soft	adj	sōfte	soft	etym:soft
+quick	adj	swift	swift	etym:swift
+slow	adj	slāw	slow	etym:slow
+true	adj	sōþ	sooth	etym:sooth
+false	adj	lēas	-less	etym:-less
+rich	adj	rīċe	rich	etym:rich
+tired	adj	wēriġ	weary	etym:weary
+full	adj	full	full	etym:full
+empty	adj	ǣmettiġ	empty	etym:empty
+clean	adj	clǣne	clean	etym:clean
+dirty	adj	fūl	foul	etym:foul
+free	adj	frēo	free	etym:free
+wise	adj	wīs	wise	etym:wise
+brave	adj	bald	bold	etym:bold
+holy	adj	hāliġ	holy	etym:holy
+deep	adj	dēop	deep	etym:deep
+wide	adj	wīd	wide	etym:wide
+narrow	adj	nearu	narrow	etym:narrow
+dead	adj	dēad	dead	etym:dead
+alive	adj	cwic	quick	etym:quick
+sick	adj	sēoc	sick	etym:sick
+whole	adj	hāl	whole	etym:whole etym:hale etym:heal
+white	adj	hwīt	white	etym:white
+black	adj	blæc	black	etym:black etym:bleak
+red	adj	rēad	red	etym:red
+green	adj	grēne	green	etym:green
+yellow	adj	ġeolu	yellow	etym:yellow
+grey	adj	grǣġ	grey	etym:gray
+brown	adj	brūn	brown	etym:brown
+have	verb	habban	have	etym:have
+say	verb	secgan	say	etym:say
+go	verb	gān	go	etym:go etym:gangway etym:gang
+come	verb	cuman	come	etym:come
+see	verb	sēon	see	etym:see
+know	verb	witan	wit	etym:wit
+think	verb	þencan	think	etym:think
+take	verb	niman	numb	etym:numb etym:nim etym:take etym:nimble
+give	verb	ġiefan	give	etym:give
+make	verb	macian	make	etym:make
+find	verb	findan	find	etym:find
+want	verb	willan	will	etym:will
+tell	verb	tellan	tell	etym:tell etym:teller
+ask	verb	āscian	ask	etym:ask
+work	verb	wyrcan	wrought	etym:wrought
+play	verb	plegian	play	etym:play
+run	verb	rinnan	run	etym:run
+walk	verb	wealcan	walk	etym:walk
+speak	verb	sprecan	speak	etym:speak
+read	verb	rǣdan	read	etym:read etym:unready
+write	verb	wrītan	write	etym:write
+eat	verb	etan	eat	etym:eat
+drink	verb	drincan	drink	etym:drink
+sleep	verb	slǣpan	sleep	etym:sleep
+sit	verb	sittan	sit	etym:sit
+stand	verb	standan	stand	etym:stand
+live	verb	libban	live	etym:live
+die	verb	steorfan	starve	etym:starve
+love	verb	lufian	love	etym:love
+hate	verb	hatian	hate	etym:hate
+fear	verb	ondrǣdan	dread	etym:dread
+hear	verb	hīeran	hear	etym:hear
+feel	verb	fēlan	feel	etym:feel
+hold	verb	healdan	hold	etym:hold
+carry	verb	beran	bear	etym:bear
+bring	verb	bringan	bring	etym:bring
+send	verb	sendan	send	etym:send
+buy	verb	bycgan	buy	etym:buy
+sell	verb	sellan	sell	etym:sell
+pay	verb	ġieldan	yield	etym:yield
+build	verb	timbran	timber	etym:timber
+break	verb	brecan	break	etym:break
+open	verb	openian	open	etym:open
+begin	verb	beginnan	begin	etym:begin
+help	verb	helpan	help	etym:help
+learn	verb	leornian	learn	etym:learn
+teach	verb	tǣcan	teach	etym:teach etym:token
+forget	verb	forġietan	forget	etym:forget
+win	verb	winnan	win	etym:win
+lose	verb	losian	lose	etym:lose
+fight	verb	feohtan	fight	etym:fight
+swim	verb	swimman	swim	etym:swim
+fly	verb	flēogan	fly	etym:fly
+ride	verb	rīdan	ride	etym:ride
+sing	verb	singan	sing	etym:sing
+laugh	verb	hlīehhan	laugh	etym:laugh
+cry	verb	wēpan	weep	etym:weep
+wait	verb	ābīdan	abide	etym:abide
+watch	verb	weardian	ward	etym:ward etym:warden etym:guard
+look	verb	lōcian	look	etym:look
+show	verb	sċēawian	show	etym:show
+put	verb	settan	set	etym:set
+keep	verb	cēpan	keep	etym:keep
+leave	verb	lǣfan	leave	etym:leave
+follow	verb	folgian	follow	etym:follow
+seek	verb	sēcan	seek	etym:seek etym:beseech
+choose	verb	ċēosan	choose	etym:choose
+change	verb	wendan	wend	etym:wend
+grow	verb	grōwan	grow	etym:grow
+fall	verb	feallan	fall	etym:fall
+rise	verb	rīsan	rise	etym:rise
+turn	verb	tyrnan	turn	etym:turn
+move	verb	styrian	stir	etym:stir
+throw	verb	weorpan	warp	etym:warp
+cut	verb	ċeorfan	carve	etym:carve
+wash	verb	wasċan	wash	etym:wash
+cook	verb	sēoþan	seethe	etym:seethe
+always	adv	ǣfre	ever	etym:ever
+never	adv	nǣfre	never	etym:never
+often	adv	oft	oft	etym:oft
+sometimes	adv	hwīlum	whilom	etym:whilom
+today	adv	tōdæġ	today	etym:today
+tomorrow	adv	tōmorgen	tomorrow	etym:tomorrow
+yesterday	adv	ġiestrandæġ	yesterday	etym:yesterday
+now	adv	nū	now	etym:now
+soon	adv	sōna	soon	etym:soon
+already	adv	ǣr	ere	etym:ere
+together	adv	tōgædere	together	etym:together
+here	adv	hēr	here	etym:here
+nowhere	adv	nāhwǣr	nowhere	etym:nowhere
+slowly	adv	slāwlīċe	slowly	etym:slowly
+truly	adv	sōþlīċe	soothly	wikt:en:soothly
+very	adv	swīþe	swith	wikt:en:swith
+one	num	ān	one	etym:one
+two	num	twēgen	twain	etym:twain
+three	num	þrēo	three	etym:three
+four	num	fēower	four	etym:four
+five	num	fīf	five	etym:five
+six	num	siex	six	etym:six
+seven	num	seofon	seven	etym:seven
+eight	num	eahta	eight	etym:eight
+nine	num	nigon	nine	etym:nine
+ten	num	tīen	ten	etym:ten
+thousand	num	þūsend	thousand	etym:thousand
+first	num	forma	former	etym:former etym:foremost
+yes	intj	ġēa	yea	etym:yea
+please	intj	iċ bidde	bid	etym:bid
+sorry	intj	mē is lāþ	loath	etym:loath
+#
+# Removed on 2026-10-01, with what the dictionary says
+# ----------------------------------------------------
+# Each was a claim lex-ang.tsv made; the row keeps a note where a true thing
+# could be said instead.
+#
+#   boy       cnapa      knave       etym:knave — from late Old English cnafa, "probably related to Old English cnapa"; wikt:ang:cnapa gives only Middle English knape
+#   lion      lēo        lion        etym:lion — late 12c., from Old French; "Old English had the word straight from Latin as leo"
+#   egg       æġ         egg         etym:egg — from Old Norse; Old English æg gave Middle English eye, eai, which egg displaced
+#   window    ēagþȳrel   window      etym:window — from Old Norse vindauga, "wind eye"; "It replaced Old English eagþyrl"
+#   country   rīċe       bishopric   etym:bishopric — Old English bisceoprice, bishop + rice: a compound, not this word
+#   money     feoh       fee         etym:fee — "the merger or mutual influence of two words, one from Old English, one from an Old French form"
+#   question  āscung     asking      etym:asking — c. 1200, "replacing Old English ascunge", from ask
+#   music     drēam      dream       etym:dream — "Much study has failed to prove that Old English dream is the source of the modern word"
+#   dream     swefn      somnolent   etym:somnolent — from French and Latin somnolentus; wikt:ang:swefn shares only the root with somnus
+#   anger     ierre      ire         etym:ire — c. 1300, from Old French ire, from Latin ira
+#   gift      ġiefu      gift        etym:gift — from a Scandinavian source; giefu "is related to the Old Norse word"
+#   weak      wāc        weak        etym:weak — from Old Norse veikr, "cognate with Old English wac"
+#   sad       unrōt      sad         etym:sad — from Old English sæd, "sated, full"
+#   close     clȳsan     close       etym:close — from Old French clos-; "also partly from Old English beclysan"
+#   remember  ġemunan    mind        etym:mind — from Old English gemynd, a different word
+#   catch     fōn        fang        etym:fang — Old English fang, a noun made from fon's past participle
+#   almost    fulnēah    full nigh   no dictionary has "full nigh"; etym:nigh is from Old English neah
+#   alone     āna        one         etym:one — from Old English an; etym:alone — from Old English all ana
+#   hundred   hund       hundred     etym:hundred — from Old English hundred; "The common word for the number in Old English was simple hund"
+#   hello     wes hāl    wassail     etym:wassail — "from Old Norse ves heill"; Old English wes þu hal "is not recorded as a drinking salutation"
+#   goodbye   far wel    farewell    etym:farewell — Middle English, attested c. 1200; wikt:en:farewell has Old English only as "possibly" *far wel
+#
+# Replaced on 2026-10-01: the old etymon, the new one, and why
+# ------------------------------------------------------------
+#   body      līċ        lychgate → lich      a compound of lich and gate; etym:lich is "a southern England dialectal survival of Old English lic"
+#   shadow    sċeadu     shade → shadow       etym:shade is "from late Old English scead, also partly from sceadu"; etym:shadow is from its oblique cases
+#   morning   morgen     morning → morn       etym:morning is a 13c. formation on morn; etym:morn is "from Old English … morgen"
+#   story     spell      gospel → spell       etym:gospel is Old English godspel, god + spel; etym:spell (n.1) is "from Old English spell"
+#   take      niman      nimble → numb        etym:nimble is from næmel, "related to niman"; etym:numb is "from past participle of nimen … from Old English niman"
+#   first     forma      foremost → former    etym:foremost is from formest; etym:former is the "comparative of forme … from Old English forma"
+#   village   þorp       thorpe → thorp       the headword both dictionaries use
+#   very      swīþe      swithe → swith       wikt:en:swith, which gives swithe as a variant; etymonline has neither

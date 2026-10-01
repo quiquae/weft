@@ -526,8 +526,8 @@ function descentHub(lang, entries) {
       most common first.
     </p>
     <p>
-      The false friends are the best part. <em>Drēam</em> meant joy and music, not a sleeping
-      vision. <em>Steorfan</em> meant simply to die, and became <em>starve</em>.
+      The false friends are the best part. <em>Mete</em> meant any food at all, and became
+      <em>meat</em>. <em>Steorfan</em> meant simply to die, and became <em>starve</em>.
       <em>Sellan</em> meant to give.
     </p>`
       : `<p>
