@@ -54,14 +54,26 @@ most mass-market language in the product. `tools/seed/fr-cousins.tsv` adds
 French) apart from cousinhood (both inherit from Latin and the English
 relative is a different word) rather than letting the feed state falsehoods.
 French now leads the landing page, the README, the social card and the store
-listing; the Latin and Old English section stayed, reframed.
+listing; the Latin and Old English section stayed, reframed. The Chrome
+marquee tile kept the four words the social card had dropped — one French,
+two Old English, one Latin — because it kept a list of its own; it shows the
+card's four French pairs now, and both read them from one place.
 
 **A toolbar icon drawn per size.** At 16px the warp threads were 1.36px of
 pale blue at 85% opacity on fractional coordinates, so the mark dissolved
 into four smudges and a bar at the only size it actually lives at. The
 geometry is now a function of size, and the 128px artwork sits inside the
 16px of transparent padding Chrome documents rather than bleeding to the
-edge.
+edge. The same redraw made the weft cross every warp thread but the last,
+where it had crossed two of the four — and that reached only the rasters at
+first. The mark was also written out by hand as SVG in
+four tools and the landing page, so the vector icon, the favicon, the header
+of every site page, the social card, both Chrome tiles and the Edge store
+logo went on showing the old one, with every generator reproducing its
+committed output exactly. All of it is drawn from one geometry now,
+`tools/brand.ts`, and `tests/tools/brand.test.ts` reads the mark back out of
+every committed image of it and fails on one whose weft crosses the wrong
+number of threads.
 
 **`/privacy` and `/support` exist.** `SUPPORT_URL` is compiled into the
 shipped extension and rendered as a button on the help page, and it pointed
@@ -240,7 +252,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 755 tests: 527 unit, 98 in jsdom, 94 over the build tools, and
+**Built with** 772 tests: 527 unit, 98 in jsdom, 111 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

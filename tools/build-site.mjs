@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
 import { FEATURES } from '../src/core/entitlements.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
+import { markSvg } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PACKS = join(ROOT, 'src/lexicon/packs');
@@ -187,6 +188,19 @@ function assignSlugs(entries) {
   }
 }
 
+/**
+ * How the header paints the mark: in the text colour, so it follows the
+ * theme, with the warp held back so the weft reads as lying over it.
+ *
+ * Only the paint is decided here. The shapes are `tools/brand.ts`, the same
+ * ones the toolbar icon is filled from — this template used to carry its own
+ * copy of them, which went on drawing the old mark on every page after the
+ * icon was redrawn. `site/index.html` is hand-written and still carries the
+ * markup inline; `tests/tools/build-site.test.ts` reads it back off the
+ * rendered page and fails if it is not this drawing.
+ */
+const HEADER_PAINT = { warp: 'currentColor', weft: 'currentColor', warpOpacity: 0.45 };
+
 function page({ title, description, canonical, jsonLd, body, breadcrumbs }) {
   const crumbs = breadcrumbs?.length
     ? `<nav class="crumbs" aria-label="Breadcrumb">${breadcrumbs
@@ -224,15 +238,7 @@ ${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script
 <main>
   <div class="brand">
     <a href="/" aria-label="Weft home">
-      <svg viewBox="0 0 128 128" role="img" aria-label="Weft">
-        <g stroke="currentColor" stroke-width="11" opacity="0.45">
-          <line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
-          <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/>
-          <line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
-          <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/>
-        </g>
-        <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="currentColor" stroke-width="20.5"/>
-      </svg>
+      ${markSvg(HEADER_PAINT, { indent: '      ' })}
     </a>
     <span><a href="/">Weft</a></span>
   </div>

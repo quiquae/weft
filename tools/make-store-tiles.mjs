@@ -27,6 +27,7 @@ import { chromium } from '@playwright/test';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { markSvg, SOLID, LEAD_PAIRS } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs/store');
@@ -34,26 +35,30 @@ const OUT = join(ROOT, 'docs/store');
 const PAPER = '#e9e8e3';
 const INK = '#20262b';
 const MUTED = '#4d565e';
-const WARP = '#7a96c0';
 const WEFT_BLUE = '#2f4b7c';
 const RULE = '#b9b2a2';
 
 const SERIF = '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
 
-/** The loom mark, at whatever size the caller needs. */
-const mark = (px) => `
-  <svg viewBox="0 0 128 128" style="width:${px}px;height:${px}px;flex:none" role="img" aria-label="Weft">
-    <g stroke="${WARP}" stroke-width="11">
-      <line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
-      <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/>
-      <line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
-      <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/>
-    </g>
-    <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="${WEFT_BLUE}" stroke-width="20.5"/>
-  </svg>`;
+/**
+ * The loom mark, at whatever size the caller needs.
+ *
+ * Embedded from `tools/brand.ts` rather than drawn here. It used to be
+ * drawn here, and that copy is why these tiles went on showing a weft that
+ * crosses two threads for nine days after the icon they are uploaded beside
+ * was redrawn to cross three.
+ */
+const mark = (px) => markSvg(SOLID, { style: `width:${px}px;height:${px}px;flex:none` });
 
-/** One interlinear pair. */
-const pair = (target, source, size) => `
+/**
+ * One interlinear pair.
+ *
+ * Which words is `LEAD_PAIRS` in `tools/brand.ts`, shared with the social
+ * card. The marquee used to keep four of its own — *rivière*, *hūs*,
+ * *cyning*, *vacca* — which were the card's four until `3060d93` made the
+ * card all French and, having no way to know this file existed, left these.
+ */
+const pair = ({ target, source }, size) => `
   <span class="pair">
     <span class="t" style="font-size:${size}px">${target}</span>
     <span class="s" style="font-size:${Math.round(size * 0.82)}px">${source}</span>
@@ -84,7 +89,7 @@ const SMALL = shell(
   `
   <div class="wrap">
     <div class="top">${mark(34)}<span class="name">Weft</span></div>
-    <div class="mid">${pair('rivière', 'river', 44)}</div>
+    <div class="mid">${pair(LEAD_PAIRS[0], 44)}</div>
     <p class="tag">The web, partly<br>in another language.</p>
   </div>`,
   `
@@ -113,10 +118,7 @@ const MARQUEE = shell(
       <p class="tag">The longer you stay on a page, the more of it arrives in the<br>language you are learning. Point at a word to get the English back.</p>
     </div>
     <div class="right">
-      ${pair('rivière', 'river', 40)}
-      ${pair('hūs', 'house', 40)}
-      ${pair('cyning', 'king', 40)}
-      ${pair('vacca', 'cow', 40)}
+      ${LEAD_PAIRS.map((p) => pair(p, 40)).join('')}
     </div>
   </div>`,
   `
@@ -164,20 +166,63 @@ const TILES = [
 await mkdir(OUT, { recursive: true });
 const browser = await chromium.launch({ channel: 'chromium' });
 
-for (const tile of TILES) {
-  const page = await browser.newPage({
-    viewport: { width: tile.width, height: tile.height },
-    deviceScaleFactor: 1,
-  });
-  await page.setContent(tile.html, { waitUntil: 'load' });
-  await page.waitForTimeout(200);
-  const png = await page.screenshot({ type: 'png' });
+/*
+ * Render all three, and write none until all three fit.
+ *
+ * The same bargain `make-icon-sheet.mjs` and `frameOn` make: a generator
+ * that cannot frame its subject fails, rather than writing a clipped asset
+ * that two consecutive runs will then agree with each other about. These
+ * are fixed-size frames with `overflow: hidden`, so anything that outgrows
+ * one is cut off silently — which the marquee's own stylesheet records
+ * having happened once, by two pixels, looking like a deliberate bleed. The
+ * words on these tiles come from `LEAD_PAIRS` and can change length without
+ * anyone opening this file, so the fit is checked here rather than trusted.
+ *
+ * Collected and then written, because a tile that throws after its
+ * neighbours were already saved would leave a set that is half regenerated.
+ */
+const rendered = [];
+try {
+  for (const tile of TILES) {
+    const page = await browser.newPage({
+      viewport: { width: tile.width, height: tile.height },
+      deviceScaleFactor: 1,
+    });
+    await page.setContent(tile.html, { waitUntil: 'load' });
+    await page.waitForTimeout(200);
+
+    const outside = await page.evaluate(({ width, height }) => {
+      const found = [];
+      for (const el of document.body.querySelectorAll('*')) {
+        const box = el.getBoundingClientRect();
+        if (!box.width && !box.height) continue;
+        const over = Math.max(-box.left, -box.top, box.right - width, box.bottom - height);
+        // Half a pixel of grace for layout arithmetic, none for content.
+        if (over > 0.5) {
+          const text = (el.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 28);
+          found.push(`<${el.tagName.toLowerCase()}> "${text}" by ${Math.ceil(over)}px`);
+        }
+      }
+      return found;
+    }, { width: tile.width, height: tile.height });
+    if (outside.length) {
+      throw new Error(
+        `${tile.file}: ${outside.length} element(s) run off the ${tile.width}x${tile.height} ` +
+          `frame and would be clipped, so nothing was written — ${outside.slice(0, 3).join('; ')}`,
+      );
+    }
+
+    rendered.push({ tile, png: await page.screenshot({ type: 'png' }) });
+    await page.close();
+  }
+} finally {
+  await browser.close();
+}
+
+for (const { tile, png } of rendered) {
   await writeFile(join(OUT, tile.file), png);
-  await page.close();
   console.log(
     `docs/store/${tile.file.padEnd(28)} ${tile.width}x${tile.height}`.padEnd(58) +
       `${(png.length / 1024).toFixed(0)} KB   ${tile.note}`,
   );
 }
-
-await browser.close();

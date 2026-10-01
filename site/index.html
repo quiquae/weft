@@ -84,15 +84,22 @@
 <body>
 <main>
 
+  <!--
+    The mark below is not drawn here. It is what `markSvg()` in
+    tools/brand.ts writes, pasted in because this page is hand-written and
+    cannot import it; every other page gets it from the template. If the mark
+    is ever redrawn, tests/tools/build-site.test.ts reads this copy back off
+    the built page and fails until it is the same drawing as the icon.
+  -->
   <div class="brand">
     <svg viewBox="0 0 128 128" role="img" aria-label="Weft">
-      <g stroke="currentColor" stroke-width="11" opacity="0.45">
-        <line x1="12.8" y1="12.8" x2="12.8" y2="115.2"/>
-        <line x1="46.9" y1="12.8" x2="46.9" y2="115.2"/>
-        <line x1="81.1" y1="12.8" x2="81.1" y2="115.2"/>
-        <line x1="115.2" y1="12.8" x2="115.2" y2="115.2"/>
+      <g fill="currentColor" opacity="0.45">
+        <rect x="10.56" y="16" width="10.88" height="96"/>
+        <rect x="42.56" y="16" width="10.88" height="96"/>
+        <rect x="74.56" y="16" width="10.88" height="96"/>
+        <rect x="106.56" y="16" width="10.88" height="96"/>
       </g>
-      <line x1="7.3" y1="64" x2="76.3" y2="64" stroke="currentColor" stroke-width="20.5"/>
+      <rect x="10.56" y="53.76" width="80" height="20.48" fill="currentColor"/>
     </svg>
     <span>Weft</span>
   </div>

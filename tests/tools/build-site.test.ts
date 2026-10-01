@@ -13,6 +13,7 @@
  *   2. No word page states its own descent backwards. See below.
  *   3. No word page starts a second sentence with a lexicon note. See below.
  *   4. Every headword gets a page, and no two pages share a path. See below.
+ *   5. Every page's header draws the mark that ships as the icon. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -22,6 +23,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { contentDate } from '../../tools/sitemap.ts';
+import { markInSvg, differences, type MarkReading } from './mark-reading.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const TOOL = join(ROOT, 'tools/build-site.mjs');
@@ -96,6 +98,8 @@ let descents: Descent[];
 let targets: Map<string, Set<string>>;
 /** Every `<loc>` the sitemap declares, **with duplicates kept**, and the file each resolves to. */
 let served: { loc: string; file: string | null }[];
+/** Every rendered page and the mark its header draws, or null where it draws none. */
+let headers: { page: string; mark: MarkReading | null }[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
@@ -116,6 +120,16 @@ before(() => {
         if (h1) (targets.get(dir) as Set<string>).add(h1[1] as string);
       }
     }
+    // Every page, the hand-written landing page among them: it is copied in
+    // from `site/` rather than rendered, which is exactly why it has to be
+    // read here and not assumed to follow the template.
+    headers = (readdirSync(out, { recursive: true }) as string[])
+      .filter((file) => file.endsWith('.html'))
+      .map((file) => {
+        const html = readFileSync(join(out, file), 'utf8');
+        const svg = html.match(/<div class="brand">[\s\S]*?(<svg[\s\S]*?<\/svg>)/)?.[1];
+        return { page: `/${file}`, mark: svg ? markInSvg(svg) : null };
+      });
     // Deliberately a list and not a Map: a duplicated <loc> is the defect, so
     // keying by URL here would discard the very thing being counted.
     served = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => {
@@ -360,5 +374,45 @@ describe('every headword gets its own page', () => {
 
     assert.deepEqual(dead, [], `${dead.length} sitemap URLs 404`);
     assert.ok(served.length > 700, `the sitemap came out with only ${served.length} URLs`);
+  });
+});
+
+/**
+ * The mark in the header of every page is the mark on the toolbar.
+ *
+ * It was not, for nine days. `0d9910e` redrew the mark so that the weft
+ * crosses every warp thread but the last, and it changed the rasters; the
+ * header of all 713 pages went on drawing the one it replaced, because the
+ * header's SVG was written out by hand — once in the page template and once
+ * more in `site/index.html` — and neither copy knew the geometry had moved.
+ * `site:check` passed throughout, as it should have: every link resolved.
+ *
+ * Compared against `assets/icon.svg`, which a sibling test in
+ * `brand.test.ts` holds to the 128px raster, so the chain from a page header
+ * back to the pixels a browser toolbar shows has no hand-copied link in it.
+ * Read off the rendered pages rather than out of the template, so the one
+ * page that is copied in and not rendered is checked exactly as the others.
+ */
+describe('every page carries the mark that ships as the icon', () => {
+  test('the header of every page draws what assets/icon.svg draws', () => {
+    const icon = markInSvg(readFileSync(join(ROOT, 'assets/icon.svg'), 'utf8'));
+    assert.ok(icon, 'assets/icon.svg draws no mark');
+    // Non-vacuity floor: a walk that found no pages would pass on nothing.
+    assert.ok(headers.length > 700, `only ${headers.length} pages were rendered`);
+
+    // Both come from one generator, so they agree to the last digit written.
+    const wrong = headers.filter((h) => !h.mark || differences(h.mark, icon, 0.005).length > 0);
+    const first = wrong[0];
+    const how = !first
+      ? ''
+      : first.mark
+        ? differences(first.mark, icon, 0.005, [first.page, 'assets/icon.svg']).join('; ')
+        : `${first.page} draws no mark in its header at all`;
+
+    assert.deepEqual(
+      wrong.map((h) => h.page).slice(0, 5),
+      [],
+      `${wrong.length} of ${headers.length} pages carry a different mark from the icon — ${how}`,
+    );
   });
 });

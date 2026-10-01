@@ -9,7 +9,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 527 unit tests, 98 jsdom tests, 94 tool tests, the
+runs typecheck, 527 unit tests, 98 jsdom tests, 111 tool tests, the
 compatibility audit, all three builds, the package validator, and 36 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -263,5 +263,5 @@ precisely why that check is written down.
   not been executed and will need a look the first time it runs.
 - **Post to Reddit, Hacker News or anywhere else.** Drafts are in
   `LAUNCH.md`. An automated account posting self-promotion gets the domain
-  shadowbanned, which would cost the 711-page search asset. That was a
+  shadowbanned, which would cost the 713-page search asset. That was a
   decision, not an omission.
