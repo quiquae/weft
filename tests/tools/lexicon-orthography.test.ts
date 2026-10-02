@@ -78,8 +78,18 @@ const PROSE = [
  * homographs (`an`, `is`, `dead`, `ham`), and a word only enters this table once
  * someone has checked it is not one. Add to it when prose gains a Latin word the
  * lexicon does not carry.
+ *
+ * `homō` and `clāvicula` joined it when the notes under `vir` and `clāvis` were
+ * rewritten to name them. Neither is a headword, and neither bare spelling
+ * occurs in any note or in the prose scanned below — which is what makes each
+ * safe to police everywhere. The match is case-sensitive, so the genus in
+ * "Homo sapiens" is not the Latin noun misspelled.
  */
-const UNDEFINED: ReadonlyMap<string, string> = new Map([['insula', 'īnsula']]);
+const UNDEFINED: ReadonlyMap<string, string> = new Map([
+  ['insula', 'īnsula'],
+  ['homo', 'homō'],
+  ['clavicula', 'clāvicula'],
+]);
 
 type Entry = { tgtLemma?: string; note?: string; src?: string };
 

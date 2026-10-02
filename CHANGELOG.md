@@ -89,6 +89,27 @@ mickle makes a muckle" is a corruption of "many a little makes a mickle".
 Every Old English etymon now names the entry it was checked against, and the
 tests refuse one that names none.
 
+**Five Latin notes did not survive a dictionary.** A note is the sentence
+under a woven word, and all 28 Latin ones were read against Lewis & Short,
+Allen & Greenough and etymonline. The first row of the pack called *virī* a
+"third-person plural" — person is a verb's, and *virī* is the plural of a
+noun — and now says what the word is: a man as opposed to a woman, and often
+a husband, where a human being is *homō*. The collarbone was "named for its
+key-like shape", where etymonline has it "so called supposedly from its
+function" and the bone is medieval Latin's *clāvicula*, a little key, which
+is all the note says now. Jenner "named the vaccine", where the dictionaries
+credit him with *vaccination* and with the Latin for cowpox, so the vaccine
+is simply named after the cowpox he used — on the landing page too, which
+quoted it. Latin had "no bare word for yes", where the grammar says no one
+word in common use and Lewis & Short gives *ita* as yes in replies. And "a
+little shade" under *umbra* described *umbella*: with the etymon line
+switched off, it glossed the wrong word. *ita* was also listed as the
+ancestor of an English "ita vero", which is Latin: the tooltip badge, the
+word page's sentence and a cognate score of 0.96, which told the word
+selector a reader half knew it already, are gone. Every Latin note now names
+the entries it was checked against, and the tests refuse one that names
+none, or that gives a noun a verb's grammar.
+
 French now leads the landing page, the README, the social card and the store
 listing; the Latin and Old English section stayed, reframed. The Chrome
 marquee tile kept the four words the social card had dropped — one French,
@@ -292,7 +313,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 790 tests: 527 unit, 98 in jsdom, 129 over the build tools, and
+**Built with** 798 tests: 527 unit, 98 in jsdom, 137 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

@@ -24,7 +24,13 @@
 # once vowel length is marked. Values are the standard classical
 # reconstruction.
 #
-man	noun	vir	virī	m	/ˈwɪr/	virile	third-person plural “virī” also means “men” collectively
+# The note column is a published sentence, so it is held to a dictionary.
+# Every note names the entries it was checked against in
+# tools/seed/la-notes.tsv, Lewis & Short for the Latin and etymonline for the
+# English word it explains, and tests/tools/la-notes.test.ts fails on a note
+# that names none, or that has been reworded since it was read.
+#
+man	noun	vir	virī	m	/ˈwɪr/	virile	a man as opposed to a woman, and often a husband; a human being is “homō”
 woman	noun	fēmina	fēminae	f	/ˈfeːmɪna/	feminine	
 child	noun	puer	puerī	m	/ˈpʊɛr/	puerile	“puer” covers boy and child alike
 boy	noun	puer	puerī	m	/ˈpʊɛr/	puerile	
@@ -76,7 +82,7 @@ cat	noun	fēlēs	fēlēs	f	/ˈfeːleːs/	feline
 horse	noun	equus	equī	m	/ˈɛkʷʊs/	equine	
 bird	noun	avis	avēs	f	/ˈawɪs/	aviary	
 fish	noun	piscis	piscēs	m	/ˈpɪskɪs/	piscine	
-cow	noun	vacca	vaccae	f	/ˈwakːa/	vaccine	Jenner named the vaccine after the cowpox he used
+cow	noun	vacca	vaccae	f	/ˈwakːa/	vaccine	the vaccine is named after the cowpox Jenner used
 sheep	noun	ovis	ovēs	f	/ˈɔwɪs/	ovine	
 pig	noun	porcus	porcī	m	/ˈpɔrkʊs/	pork	
 wolf	noun	lupus	lupī	m	/ˈlʊpʊs/	lupine	
@@ -118,7 +124,7 @@ book	noun	liber	librī	m	/ˈlɪbɛr/	library
 word	noun	verbum	verba	n	/ˈwɛrbʊm/	verbal	
 letter	noun	littera	litterae	f	/ˈlɪtːɛra/	literate	
 name	noun	nōmen	nōmina	n	/ˈnoːmɛn/	nominal	
-key	noun	clāvis	clāvēs	f	/ˈklaːwɪs/	clavicle	the collarbone was named for its key-like shape
+key	noun	clāvis	clāvēs	f	/ˈklaːwɪs/	clavicle	medieval Latin called the collarbone “clāvicula”, a little key
 bridge	noun	pōns	pontēs	m	/ˈpoːns/	pontoon	
 church	noun	ecclēsia	ecclēsiae	f	/ɛˈkːleːsɪa/	ecclesiastical	
 ship	noun	nāvis	nāvēs	f	/ˈnaːwɪs/	navy	
@@ -166,7 +172,7 @@ wind	noun	ventus	ventī	m	/ˈwɛntʊs/	ventilate
 cloud	noun	nūbēs	nūbēs	f	/ˈnuːbeːs/	nubilous	
 ice	noun	glaciēs	glaciēs	f	/ˈɡlakɪeːs/	glacier	
 light	noun	lūx	lūcēs	f	/ˈluːks/	lucid	
-shadow	noun	umbra	umbrae	f	/ˈʊmbra/	umbrella	a little shade
+shadow	noun	umbra	umbrae	f	/ˈʊmbra/	umbrella	“umbrella” is a little shade
 time	noun	tempus	tempora	n	/ˈtɛmpʊs/	temporal	
 day	noun	diēs	diēs	m	/ˈdɪeːs/	diary	
 night	noun	nox	noctēs	f	/ˈnɔks/	nocturnal	
@@ -375,7 +381,7 @@ ten	num	decem			/ˈdɛkɛm/	decimal
 hundred	num	centum			/ˈkɛntʊm/	century	
 thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mīlle passūs, a thousand paces
 first	num	prīmus			/ˈpriːmʊs/	primary	
-yes	intj	ita			/ˈɪta/	ita vero	classical Latin has no bare word for yes; “ita” means “thus”
+yes	intj	ita			/ˈɪta/		Latin has no one common word for yes; “ita” means “thus”, said in reply
 hello	intj	salvē			/ˈsalweː/	salvation	literally “be well”
 goodbye	intj	valē			/ˈwaleː/	valediction	literally “be strong”
 please	intj	quaesō			/kʷae̯ˈsoː/		
