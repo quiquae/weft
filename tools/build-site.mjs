@@ -27,7 +27,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
 import { FEATURES } from '../src/core/entitlements.ts';
-import { entriesByTarget } from '../src/core/lexicon.ts';
+import { entriesByTarget, spelling } from '../src/core/lexicon.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
 import { markSvg } from './brand.ts';
 
@@ -185,7 +185,9 @@ function slugify(word) {
 function assignSlugs(entries) {
   const shared = new Map();
   for (const e of entries) {
-    const base = slugify(e.tgtLemma);
+    // A homograph number is not part of the address either: `hund²` shares
+    // `hund`'s base, so the two words are `hund-dog` and `hund-hundred`.
+    const base = slugify(spelling(e.tgtLemma));
     if (!shared.has(base)) shared.set(base, []);
     shared.get(base).push(e);
   }
@@ -315,7 +317,7 @@ function wordPage(entry, lang, index) {
     '@context': 'https://schema.org',
     '@type': 'DefinedTerm',
     name: target,
-    alternateName: entry.tgtLemma,
+    alternateName: spelling(entry.tgtLemma),
     description,
     inDefinedTermSet: {
       '@type': 'DefinedTermSet',

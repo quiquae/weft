@@ -55,15 +55,15 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **536 pass**, 132 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **540 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **150 pass**, 41 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **158 pass**, 45 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **37 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 713 pages, 16 108 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 716 pages, 16 178 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -213,7 +213,7 @@ package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
-builds and link-checks all 713 pages on every push but the deploy job is
+builds and link-checks all 716 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
@@ -236,8 +236,27 @@ simplify that to "use the row with the story": that moves the gloss the
 vocabulary list shows and the quiz asks, which a probe measured on
 2026-10-02. Do not drop the part-of-speech condition either: Old English
 `hund` is a dog and a hundred, two words with one spelling, and a claim about
-one is false of the other. Those homographs still share a card each, which no
-lookup can fix; `TODO.md` has it.
+one is false of the other. The seed numbers those apart now (below), and the
+condition is the line behind that for a homograph nobody has numbered yet.
+
+**Two words with one spelling are two cards, and the number that tells them
+apart is never printed.** Old English `hund` is a dog and a hundred, `earm`
+an arm and poor, `rīċe` a realm and rich — English Wiktionary gives each pair
+two etymologies — so `tools/seed/lex-ang.tsv` writes the second `hund²`. The
+number is part of `tgtLemma`, which is the card's id, so the hundred has its
+own schedule, feed line, quiz question, page (`/old-english/hund-hundred`)
+and ledger key; `spelling()` in `src/core/lexicon.ts` takes it off for
+anything a reader sees, and the pack's `tgt` never carries it. The first word
+is written bare and numbers start at ², so numbering a second word never
+moves a card a learner already has. Do not number the first (`hund¹`): it
+orphans every existing `ang:hund` card. Do not derive the number from part of
+speech either: `sōþ` is true and truth, German `schnell` quick and quickly,
+one word each, and only a dictionary can say which kind a pair is.
+`tests/tools/lexicon-homographs.test.ts` fails on a target shared across
+parts of speech that is neither numbered nor listed in its `ONE_WORD` with
+the reason, and the quiz compares rows by spelling so that "dog" is never a
+wrong answer to *hund*. French `mort`, death and dead, is two etymologies
+too and is still one card; `TODO.md` has it.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.

@@ -43,7 +43,8 @@ def fill(lang):
         if ipa:
             kept += 1
             continue
-        value = transcribe(tgt, pos)
+        # hund² is the second word spelled hund; the number is not spoken.
+        value = transcribe(tgt.rstrip('²³⁴⁵⁶⁷⁸⁹'), pos)
         if not value:
             skipped += 1
             continue

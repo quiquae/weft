@@ -1,6 +1,7 @@
 import type { LangCode, LexEntry, MemoryCard } from './types.ts';
 import { mulberry32, hashString } from './rand.ts';
 import { fold } from './similarity.ts';
+import { spelling } from './lexicon.ts';
 
 /**
  * The unlock quiz.
@@ -76,17 +77,23 @@ export function distractorsFor(
   side: 'target' | 'source',
 ): string[] {
   const correct = side === 'target' ? entry.tgt : entry.lemma;
+  // Not the word itself, and not another word spelled the same: hund² and
+  // hund are a hundred and a dog, and a learner shown "hund" who answers
+  // "dog" has answered correctly. So rows are compared by spelling, which
+  // covers the word's own rows too.
+  const written = spelling(entry.tgtLemma);
+  const other = (e: LexEntry): boolean => spelling(e.tgtLemma) !== written;
   const candidates = pool.filter(
     (e) =>
       e.pos === entry.pos &&
       Math.abs(e.band - entry.band) <= 1 &&
-      e.tgtLemma !== entry.tgtLemma &&
+      other(e) &&
       (side === 'target' ? e.tgt !== correct : e.lemma !== correct),
   );
 
   // Fall back to a looser filter rather than returning too few options: a
   // two-option "multiple choice" gives away the answer.
-  const source = candidates.length >= n ? candidates : pool.filter((e) => e.tgtLemma !== entry.tgtLemma);
+  const source = candidates.length >= n ? candidates : pool.filter(other);
 
   const picked = new Set<string>();
   let guard = 0;

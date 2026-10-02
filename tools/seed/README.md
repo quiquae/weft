@@ -64,7 +64,12 @@ lemma <TAB> pos <TAB> tgt <TAB> tgt2 <TAB> gender <TAB> ipa <TAB> etymon <TAB> n
 ```
 
 - `tgt` — citation form: singular noun, infinitive verb, masculine singular
-  adjective, Latin/Old English nominative singular.
+  adjective, Latin/Old English nominative singular. A second word with the
+  same spelling carries a homograph number — Old English `hund²`, the
+  hundred, beside `hund`, the dog — which makes it a memory card and a site
+  page of its own and is never shown to a reader (`spelling()` in
+  `src/core/lexicon.ts`). The first word is written bare, and the numbers
+  start at ², so numbering a second word never moves the first one's card.
 - `tgt2` — plural for nouns, present participle for verbs, otherwise empty.
 - `gender` — m | f | n | c. Shown in the tooltip; empty where not applicable.
 - `ipa` — optional. Required in practice for historical languages, which have

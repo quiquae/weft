@@ -26,8 +26,11 @@ import type { LexEntry } from './types.ts';
  * Only the same part of speech, because one spelling is not always one word.
  * Old English `hund` is a dog and a hundred and `earm` is an arm and poor,
  * and a claim about one is false of the other: "earm survived into English
- * as arm" is not true of the adjective. Every row sharing a target word and
- * a part of speech in the seven packs is one word with two English glosses,
+ * as arm" is not true of the adjective. The seed writes the second word of
+ * each such pair with a homograph number — `earm²` — so the two arrive here
+ * as two keys and never meet (see `spelling()`); the line is for the
+ * homograph nobody has numbered yet. Every row sharing a target word and a
+ * part of speech in the seven packs is one word with two English glosses,
  * which is what makes the line safe to draw there. Across parts of speech
  * nothing is borrowed, and a word whose first row carries no claim keeps
  * none — a blank is cheaper than a claim about the wrong word.
@@ -55,6 +58,27 @@ export function entriesByTarget(entries: Record<string, LexEntry[]>): Map<string
     out.set(word, teller ? withClaimOf(head, teller) : head);
   }
   return out;
+}
+
+/**
+ * A target headword as a reader sees it: without its homograph number.
+ *
+ * One spelling is sometimes two words. Old English `hund` is a dog and a
+ * hundred, `earm` an arm and poor, `rīċe` a realm and rich — English
+ * Wiktionary gives each pair two etymologies — and a card keyed by the
+ * spelling alone made one card of the two, so a reader who met *hund* as
+ * "hundred" was told it survived as *hound*, asked "dog" in the quiz, and
+ * scheduled as though meeting the number were meeting the animal. So the
+ * seed writes the second word `hund²`, and the number travels in `tgtLemma`,
+ * which is the card's identity: two words, two cards, two pages.
+ *
+ * The first word is written bare and numbers start at two, so numbering a
+ * second word never moves the card the first one already has. The number is
+ * never shown: the page prints `tgt`, which the pack builder writes without
+ * it, and anything that has only a `tgtLemma` to print goes through here.
+ */
+export function spelling(tgtLemma: string): string {
+  return tgtLemma.replace(/[²³⁴⁵⁶⁷⁸⁹]$/u, '');
 }
 
 /** An etymon or a note: anything the discoveries feed can tell. */

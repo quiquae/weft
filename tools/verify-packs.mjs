@@ -19,6 +19,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spelling } from '../src/core/lexicon.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEED = join(ROOT, 'tools/seed');
@@ -80,11 +81,13 @@ async function verifySeed(lang) {
   for (const { line, cols } of rows) {
     // etymon and note were never destructured, so no check had ever looked
     // at either column — including Old English's 544 etymons.
-    const [lemma, pos, tgt, tgt2, gender, ipa, etymon, note] = cols;
+    const [lemma, pos, cell, tgt2, gender, ipa, etymon, note] = cols;
     const where = `lex-${lang}.tsv:${line} ${lemma} (${pos})`;
-    if (!tgt) continue;
-
-    if (tgt !== tgt.trim()) fail(`${where}: target has surrounding whitespace`);
+    if (!cell) continue;
+    if (cell !== cell.trim()) fail(`${where}: target has surrounding whitespace`);
+    // `hund²` is the second word spelled hund: the number is the card's
+    // identity, and every check below is about the spelling.
+    const tgt = spelling(cell);
 
     // Distinguishing a paste slip from a cognate: a real cognate *starts*
     // with (or shares a stem with) the English word — "persona", "foresta",

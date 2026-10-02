@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { entriesByTarget } from '../../src/core/lexicon.ts';
+import { entriesByTarget, spelling } from '../../src/core/lexicon.ts';
 import { buildDiscoveries } from '../../src/core/discoveries.ts';
 import type { LexEntry } from '../../src/core/types.ts';
 import { card, entry } from '../helpers.ts';
@@ -64,8 +64,9 @@ describe('entriesByTarget', () => {
   });
 
   test('never takes a claim across parts of speech, because one spelling can be two words', () => {
-    // Old English earm is an arm and it is poor: two words. Were the adjective
-    // listed first, borrowing the noun's etymon would tell everyone who met
+    // Old English earm is an arm and it is poor: two words. The seed numbers
+    // the adjective earm² now, but were a homograph left unnumbered with the
+    // adjective first, borrowing the noun's etymon would tell everyone who met
     // earm as "poor" that it survived into English as arm.
     const poor = entry({ src: 'poor', lemma: 'poor', pos: 'adj', tgt: 'earm', tgtLemma: 'earm' });
     const arm = entry({ src: 'arm', lemma: 'arm', pos: 'noun', tgt: 'earm', tgtLemma: 'earm', etymonOf: 'arm' });
@@ -88,6 +89,32 @@ describe('entriesByTarget', () => {
     const found = entriesByTarget(frozen).get('argent');
     assert.equal(found?.note, ARGENTINE);
     assert.equal(frozen.silver?.[0]?.note, undefined);
+  });
+});
+
+describe('spelling', () => {
+  // Old English hund is a dog and a hundred: two words, which the seed tells
+  // apart by writing the second hund². The number keeps the second word's card
+  // apart from the first; nothing a reader sees may carry it.
+  test('takes the homograph number off a headword', () => {
+    assert.equal(spelling('hund²'), 'hund');
+    assert.equal(spelling('rīċe²'), 'rīċe');
+    assert.equal(spelling('earm³'), 'earm');
+  });
+
+  test('leaves every other headword exactly as written', () => {
+    assert.equal(spelling('hund'), 'hund');
+    assert.equal(spelling('mīlle passūs'), 'mīlle passūs');
+    assert.equal(spelling('wes hāl'), 'wes hāl');
+  });
+
+  test('two words under one spelling are two entries, each with its own gloss and claim', () => {
+    const dog = entry({ src: 'dog', lemma: 'dog', tgt: 'hund', tgtLemma: 'hund', etymonOf: 'hound' });
+    const hundred = entry({ src: 'hundred', lemma: 'hundred', pos: 'num', tgt: 'hund', tgtLemma: 'hund²' });
+    const lookup = entriesByTarget(pack(dog, hundred));
+    assert.equal(lookup.get('hund')?.lemma, 'dog');
+    assert.equal(lookup.get('hund²')?.lemma, 'hundred');
+    assert.equal(lookup.get('hund²')?.etymonOf, undefined);
   });
 });
 

@@ -22,6 +22,7 @@ import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spelling } from '../src/core/lexicon.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SEED = join(ROOT, 'tools/seed');
@@ -219,10 +220,14 @@ async function buildPack(lang, core) {
     }
     seenLemmas.add(key);
     if (!row.tgt) continue; // a deliberate "this language has no such word"
+    // `hund²` is the second of two words spelled hund. The number is the
+    // card's identity and goes into `tgtLemma` as written; the form a reader
+    // is shown is the spelling, without it. See `spelling()`.
+    const written = spelling(row.tgt);
     if (!VALID_GENDER.has(row.gender)) {
       warn(`lex-${lang}.tsv:${row.__line}: bad gender "${row.gender}" for "${row.lemma}"`);
     }
-    if (row.tgt === row.lemma) {
+    if (written === row.lemma) {
       warn(`lex-${lang}.tsv:${row.__line}: "${row.lemma}" maps to itself, will be skipped at runtime`);
     }
     translated++;
@@ -251,7 +256,7 @@ async function buildPack(lang, core) {
     };
 
     // Citation / base form.
-    push(row.lemma, row.tgt, {
+    push(row.lemma, written, {
       conf: confidenceFor(spec.pos, spec.senses, spec.pos === 'verb' ? 'base' : 'base'),
       ...(spec.pos === 'noun' ? { num: 'sg' } : {}),
     });

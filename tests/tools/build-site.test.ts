@@ -12,7 +12,8 @@
  *      this covers whether the builder asks.
  *   2. No word page states its own descent backwards. See below.
  *   3. No word page starts a second sentence with a lexicon note. See below.
- *   4. Every headword gets a page, and no two pages share a path. See below.
+ *   4. Every headword gets a page, no two pages share a path, and none prints
+ *      a homograph number. See below.
  *   5. A word page's address spells every letter of its headword. See below.
  *   6. Every page's header draws the mark that ships as the icon. See below.
  */
@@ -40,20 +41,35 @@ const DEEP = [
 ];
 
 /**
- * Every headword a pack carries, which is one page each.
+ * Every word a pack carries, which is one page each, as the page should
+ * name it: its spelling and the English it glosses.
  *
  * Read off `tgtLemma` rather than off the surface forms, because the packs
  * hold a row per inflected form and the builder collapses them: `mouth` and
- * `mouths` are two rows of one headword and so one page.
+ * `mouths` are two rows of one headword and so one page. The gloss is the
+ * word's first singular row, which is the one its page prints.
+ *
+ * The spelling is the headword with its homograph number taken off — `hund²`
+ * is the second word spelled hund, the hundred — and it is taken off here
+ * rather than by the builder's own function, so that a number the builder
+ * failed to remove reaches the comparison and fails it.
  */
 function headwords(lang: string): Set<string> {
   const pack = JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8'));
+  const rows = new Map<string, { lemma: string; num?: string }[]>();
+  for (const list of Object.values(pack.entries) as { tgtLemma: string; lemma: string; num?: string }[][]) {
+    for (const e of list) rows.set(e.tgtLemma, [...(rows.get(e.tgtLemma) ?? []), e]);
+  }
   const found = new Set<string>();
-  for (const list of Object.values(pack.entries) as { tgtLemma: string }[][]) {
-    for (const e of list) found.add(e.tgtLemma);
+  for (const [word, same] of rows) {
+    const head = same.find((e) => e.num !== 'pl') ?? same[0];
+    found.add(`${word.replace(/[²³⁴⁵⁶⁷⁸⁹]$/u, '')} — ${head?.lemma}`);
   }
   return found;
 }
+
+/** Any superscript digit, which is what a homograph number is written with. */
+const SUPERSCRIPT_DIGIT = /[⁰¹²³⁴⁵⁶⁷⁸⁹]/u;
 
 /** URL → its `<lastmod>`, or null where the sitemap declines to give one. */
 function lastmods(xml: string): Map<string, string | null> {
@@ -95,8 +111,10 @@ function descentOf(page: string, html: string): Descent | null {
 
 let dates: Map<string, string | null>;
 let descents: Descent[];
-/** Which word each page is *about*, by directory — its own rendered headword. */
+/** Which word each page is *about*, by directory — its rendered headword and the English it glosses. */
 let targets: Map<string, Set<string>>;
+/** Every rendered page that prints a superscript digit anywhere, with the text around it. */
+let numberedPages: string[];
 /** Every word page's address beside the headword it is the page for. */
 let words: { page: string; slug: string; headword: string }[];
 /** Every `<loc>` the sitemap declares, **with duplicates kept**, and the file each resolves to. */
@@ -123,17 +141,21 @@ before(() => {
         // The index page in the same directory carries no word heading.
         const h1 = html.match(/<h1 class="word__target"[^>]*>([^<]+)<\/h1>/);
         if (!h1) continue;
-        (targets.get(dir) as Set<string>).add(h1[1] as string);
+        const gloss = html.match(/<p class="word__gloss">[^<]*<strong>([^<]+)<\/strong>/)?.[1];
+        (targets.get(dir) as Set<string>).add(`${h1[1]} — ${gloss}`);
         words.push({ page: `/${dir}/${slug}`, slug, headword: h1[1] as string });
       }
     }
     // Every page, the hand-written landing page among them: it is copied in
     // from `site/` rather than rendered, which is exactly why it has to be
     // read here and not assumed to follow the template.
+    numberedPages = [];
     headers = (readdirSync(out, { recursive: true }) as string[])
       .filter((file) => file.endsWith('.html'))
       .map((file) => {
         const html = readFileSync(join(out, file), 'utf8');
+        const at = html.search(SUPERSCRIPT_DIGIT);
+        if (at !== -1) numberedPages.push(`/${file}: …${html.slice(Math.max(0, at - 40), at + 2)}`);
         const svg = html.match(/<div class="brand">[\s\S]*?(<svg[\s\S]*?<\/svg>)/)?.[1];
         return { page: `/${file}`, mark: svg ? markInSvg(svg) : null };
       });
@@ -340,10 +362,17 @@ describe('a word page joins its note to the descent sentence', () => {
  * second from the sitemap the builder just wrote — so a seed edit that
  * introduces a third collision fails here without an edit to this file, in
  * either language.
+ *
+ * One spelling can also be two words on purpose: Old English `hund` is a dog
+ * and a hundred, and the seed writes the second `hund²`. Both pages are
+ * headed hund, so a page is matched by its headword *and* its gloss, and the
+ * number, which only tells the two cards apart, must appear on neither.
  */
 describe('every headword gets its own page', () => {
   for (const { lang, dir } of DEEP) {
     test(`no ${dir} headword is overwritten by another that slugs the same`, () => {
+      // By spelling *and* gloss, because one spelling can be two words: Old
+      // English hund is a dog and a hundred, and each is a page.
       const rendered = targets.get(dir) as Set<string>;
       const lost = [...headwords(lang)].filter((w) => !rendered.has(w));
 
@@ -354,6 +383,13 @@ describe('every headword gets its own page', () => {
       );
     });
   }
+
+  test('no page prints a homograph number', () => {
+    // `hund²` is the card's identity, not anything a reader is shown: the
+    // page for the hundred is headed hund, like the page for the dog, and
+    // told apart by its gloss and its address.
+    assert.deepEqual(numberedPages, [], `${numberedPages.length} pages print a homograph number:\n  ${numberedPages.join('\n  ')}`);
+  });
 
   test('no two sitemap entries serve the same page', () => {
     const byFile = new Map<string, string[]>();
