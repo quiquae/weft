@@ -307,6 +307,16 @@ what it thinks. Measured after the fix: two consecutive runs produce all
 fifteen shots byte-identical, which is the first time that sentence has been
 true.
 
+**And it said nothing about two words whose story it had.** A card is a
+target word and the pack has a row per English gloss, so *argent* is *silver*
+and *money* and *fille* is *girl* and *daughter* — and their claims sit on the
+money and daughter rows, while the progress page read every word from its
+first row. The feed, the vocabulary list, the quiz and the site now read a
+card back through one lookup, which takes a word's story from another of its
+rows when its own carries none, and leaves the gloss where it was. Only from a
+row of the same part of speech: Old English *hund* is a dog and a hundred, and
+a claim about one is false of the other.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -327,8 +337,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 805 tests: 527 unit, 98 in jsdom, 144 over the build tools, and
-36 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 821 tests: 536 unit, 98 in jsdom, 150 over the build tools, and
+37 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface

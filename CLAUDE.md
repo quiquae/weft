@@ -55,13 +55,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **536 pass**, 132 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **144 pass**, 39 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **150 pass**, 41 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **37 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 985 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 16 108 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -222,6 +222,22 @@ pointing at nothing.
 community, to be sent by a human. An automated account posting self-promotion
 earns a domain-level shadowban, which would destroy the 713-page search asset.
 That was a decision, not an omission.
+
+**A card is read back as a word in one place, and its story travels where
+its gloss does not.** A memory card is keyed by its target word and the pack
+holds a row per English gloss, so `fr:argent` is *silver* and *money* both.
+`entriesByTarget()` in `src/core/lexicon.ts` is the only reader — the
+dashboard's feed and vocabulary list, the quiz builder and the site builder
+all go through it, and `tests/tools/lexicon-lookup.test.ts` fails on a
+hand-built `map.set(row.tgtLemma, …)` anywhere under `src/` or `tools/`. A
+word is glossed from its first singular row, and when that row carries no
+claim it takes one from another row *of the same part of speech*. Do not
+simplify that to "use the row with the story": that moves the gloss the
+vocabulary list shows and the quiz asks, which a probe measured on
+2026-10-02. Do not drop the part-of-speech condition either: Old English
+`hund` is a dog and a hundred, two words with one spelling, and a claim about
+one is false of the other. Those homographs still share a card each, which no
+lookup can fix; `TODO.md` has it.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
