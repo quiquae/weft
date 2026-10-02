@@ -124,6 +124,14 @@ function interestOf(kind: DiscoveryKind, historical: boolean): number {
  *
  * Not random: the same word always reads the same way, so the feed does not
  * reshuffle its own wording between visits.
+ *
+ * These say English *descends* from the word, which is true only of a stage
+ * of English: an Old English word did become the English one. They were
+ * once chosen for every historical language, so Latin was told in them —
+ * "rēx survived into English as regal", "English aquatic comes straight
+ * from aqua", on 232 of the 314 lines its pack could produce — though
+ * English borrowed those words, usually through a derivative or through
+ * French. See `ancestorOfEnglish`.
  */
 const DESCENT_FRAMES = [
   (target: string, descendant: string) => `English ${descendant} comes straight from ${target}.`,
@@ -133,12 +141,15 @@ const DESCENT_FRAMES = [
 ];
 
 /**
- * The same variation, for a language that is still spoken.
+ * The same variation, for every language English borrowed from, living or
+ * dead.
  *
- * The historical frames do not transfer: "survived into English as" implies
+ * The descent frames do not transfer: "survived into English as" implies
  * the source language did not, which is true of Old English and rude about
- * French. The living-language set says borrowing rather than descent,
- * because that is what actually happened.
+ * French, and "comes straight from" is untrue of Latin, whose words reached
+ * English through a derivative as often as not. These say borrowing rather
+ * than descent, because that is what actually happened — the same verb the
+ * Latin site's word pages use, "was borrowed from".
  *
  * This branch had no frames at all until French gained etymologies — one
  * template, repeated, which is the monotony the historical frames were
@@ -164,23 +175,26 @@ function frameFor(word: string): number {
  * — rather than as a dictionary fact, because that is what makes it feel like
  * progress rather than trivia.
  */
-function sentence(entry: LexEntry, kind: DiscoveryKind, historical: boolean): string {
+function sentence(entry: LexEntry, kind: DiscoveryKind, inherited: boolean): string {
   const note = entry.note ? entry.note.replace(/\.$/, '') : '';
 
   switch (kind) {
     case 'literal':
       return `${entry.tgt} — ${note}.`;
     case 'false-friend':
-      return entry.etymonOf
+      if (!entry.etymonOf) return `${entry.tgt} — ${note}.`;
+      return inherited
         ? `${entry.tgt} became English ${entry.etymonOf}, but ${lowerFirst(note)}.`
-        : `${entry.tgt} — ${note}.`;
+        : `English borrowed ${entry.etymonOf} from ${entry.tgt}, but ${lowerFirst(note)}.`;
     case 'unchanged':
-      return historical
+      // A thousand years is the time English has been saying an Old English
+      // word; English took camera from Latin in 1708.
+      return inherited
         ? `${entry.tgt} has not changed in a thousand years — it is still ${entry.etymonOf}.`
         : `${entry.tgt} is simply ${entry.etymonOf}.`;
     case 'descent': {
       const descendant = entry.etymonOf ?? '';
-      const frames = historical ? DESCENT_FRAMES : BORROWING_FRAMES;
+      const frames = inherited ? DESCENT_FRAMES : BORROWING_FRAMES;
       const frame = frames[frameFor(entry.tgtLemma) % frames.length];
       return frame ? frame(entry.tgt, descendant) : `English ${descendant} comes from ${entry.tgt}.`;
     }
@@ -200,8 +214,14 @@ export interface BuildDiscoveriesOptions {
   cards: MemoryCard[];
   /** Entry lookup by target headword. */
   entriesByLemma: Map<string, LexEntry>;
-  /** True when the target language has no living speakers. */
+  /** True when the target language has no living speakers. Orders the feed. */
   historical: boolean;
+  /**
+   * True when English descends from the target language — Old English — so a
+   * word with an etymon *became* the English one. False for every language
+   * English borrowed from, Latin as much as French. Chooses the verbs.
+   */
+  ancestorOfEnglish: boolean;
   limit?: number;
 }
 
@@ -221,7 +241,7 @@ export function buildDiscoveries(opts: BuildDiscoveriesOptions): Discovery[] {
       kind,
       target: entry.tgt,
       source: entry.lemma,
-      text: sentence(entry, kind, opts.historical),
+      text: sentence(entry, kind, opts.ancestorOfEnglish),
       metAt: card.firstSeen,
     };
     if (entry.etymonOf) discovery.descendant = entry.etymonOf;

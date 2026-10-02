@@ -241,7 +241,7 @@ describe('in the Old English pack that ships, each word of a pair reads as itsel
     assert.ok(ang, 'no Old English pack was read');
     const lookup = entriesByTarget(ang.entries);
     for (const { word, second } of PAIRS) {
-      const told = buildDiscoveries({ cards: [met(`${word}²`)], entriesByLemma: lookup, historical: true }).map((d) => d.text);
+      const told = buildDiscoveries({ cards: [met(`${word}²`)], entriesByLemma: lookup, historical: true, ancestorOfEnglish: true }).map((d) => d.text);
       assert.deepEqual(told, [...second.feed], `a reader who met ${word} as “${second.gloss}”`);
     }
   });

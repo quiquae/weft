@@ -325,6 +325,53 @@ test.describe('the progress page', () => {
     // reads argent from its first row, as the quiz does.
     await expect(dashboard.locator('.vocab__row', { hasText: 'argent' })).toContainText('silver');
   });
+
+  test('tells a Latin word in the verbs of borrowing, not of descent', async ({
+    context,
+    extensionId,
+    rpc,
+    configure,
+  }) => {
+    /*
+     * Latin is dead, and the feed chose its verbs by that: it told Latin in
+     * the frames written for Old English, "rēx survived into English as
+     * regal", on 232 of the 314 lines the pack can produce. English borrowed
+     * those words; the frame now follows whether English descends from the
+     * language, which only the language table can say and only the page can
+     * pass, so this reads what the dashboard actually prints.
+     */
+    const now = Date.now();
+    const card = (lemma: string) => ({
+      id: `la:${lemma}`,
+      target: 'la',
+      lemma,
+      stability: 0,
+      difficulty: 5,
+      lastReview: 0,
+      reps: 0,
+      lapses: 0,
+      exposures: 3,
+      firstSeen: now - 86_400_000,
+    });
+    await rpc({
+      type: 'import-data',
+      payload: {
+        format: 'weft-export/1',
+        settings: {},
+        cards: Object.fromEntries(['rēx', 'aqua', 'lūna', 'camera'].map((w) => [`la:${w}`, card(w)])),
+      },
+    });
+    await configure({ 'learning.activeTarget': 'la', 'learning.targetLangs': ['la'] });
+
+    const dashboard = await context.newPage();
+    await dashboard.goto(`chrome-extension://${extensionId}/dashboard.html`);
+    const rows = dashboard.locator('.finds__row');
+    await expect(rows).toHaveCount(4, { timeout: 15_000 });
+    for (const text of await rows.allInnerTexts()) {
+      expect(text).toMatch(/from|simply/);
+      expect(text).not.toMatch(/survived into English|comes straight from|began as|thousand years|became English/);
+    }
+  });
 });
 
 test.describe('the notification fallback', () => {

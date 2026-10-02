@@ -55,10 +55,10 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **540 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **544 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **158 pass**, 45 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **37 pass, 3 skipped**, 2.0 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **162 pass**, 46 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
@@ -257,6 +257,21 @@ parts of speech that is neither numbered nor listed in its `ONE_WORD` with
 the reason, and the quiz compares rows by spelling so that "dog" is never a
 wrong answer to *hund*. French `mort`, death and dead, is two etymologies
 too and is still one card; `TODO.md` has it.
+
+**The feed's verbs say whether English descends from a language, not whether
+it is dead.** `src/core/discoveries.ts` has two sets of frames: "survived into
+English as", "comes straight from", "began as" for a stage of English, and
+"English borrowed X from Y", "came into English from" for everything else.
+They were chosen by `historical` until 2026-10-02, which told Latin as Old
+English on 232 of its 314 lines. They are chosen by `ancestorOfEnglish` in
+`src/core/languages.ts` now, true for Old and Middle English only, and
+`historical` keeps its other job, ordering the feed — rarity is a fact about
+the data, and Latin's descents are as common as Old English's. Do not fold the
+two back into one flag: Latin is dead and borrowed, and the two answers
+differ. `tests/tools/feed-frames.test.ts` derives the flag from the table's
+own names — a historical language named "… English" — so it cannot be
+satisfied by moving it, and the dashboard's own wiring is read by an e2e test
+in `friction.spec.ts`.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
