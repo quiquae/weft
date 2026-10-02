@@ -274,6 +274,90 @@ a verb. The Latin etymon column is not covered yet; `TODO.md` has it.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-02 — twenty-two addresses had lost a letter, and moving one call put it back
+
+The queue named the `vir` note first and the Old English addresses second.
+PR #43 had landed the note that morning, so the topmost unchecked item was
+the addresses; `TODO.md`'s own tick settled it in a minute.
+
+**Measured before anything moved, and the item was exact.** Over all seven
+packs, 22 of 350 Old English headwords change slug when `slugify()`
+decomposes first, 0 of 349 Latin and 0 in the five modern packs, and the
+reorder creates no new collision anywhere — Latin keeps its two known pairs,
+which `assignSlugs()` already splits. The cause was one call in the wrong
+place: the letter map ran before `normalize('NFD')`, so `ǣ`, one code point,
+was not yet the `æ` the map knew; it lost its macron afterwards and the bare
+`æ` fell to the catch-all hyphen. `sǣ`, sea, was `/old-english/s`; `ǣfen`,
+evening, `/old-english/fen`.
+
+**The guard reads the built pages**, in `tests/tools/build-site.test.ts`,
+which already renders all 713 into a temporary directory: every word page's
+address must spell each letter of its `<h1>` headword. The test folds the
+headword itself instead of borrowing the builder's function — the defect was
+in the order of the builder's steps, and a copy would have copied the order
+— so it decomposes first by construction and refuses a letter with no ASCII
+spelling rather than hyphenating it. Red first on all 22, named by address
+and headword. A floor wants more than 600 pages, more than 50 headwords
+needing a spelled letter (66) and at least one arriving precomposed (22).
+Five probes, each restored by md5: the builder dropping þ and ð (25 named),
+spelling þ as `t` (25), the test's table forgetting ð (9), an empty walk,
+and a fold that forgets to decompose, which fails loudly on 359 pages rather
+than passing.
+
+**What moved was proved, not read.** Built before and after into temporary
+directories: 22 files renamed and 91 changed — 23 Latin pages, 66 Old
+English, the descent hub and the sitemap — and all 113 are the 22 addresses
+rewritten and nothing else, 282 occurrences, shown by rewriting the old
+build's addresses and comparing byte for byte. Three pages read whole, and
+`/latin/mare` links back to `/old-english/sae`. No tracked file linked any of
+the 22, and none needs a redirect before **B3**.
+
+**Found and queued, not fixed:** the Old English pronunciation key,
+`META.ang.note`, prints `"th"`, `"ch"` and `"sh"` in straight marks on 346
+word pages — the class PR #20 closed for the notes, out of sight of the notes'
+guard. `/support`, `/privacy` and `/pricing` print straight quotes too, from
+Markdown and the entitlement copy; that is a different decision and is
+written up as one.
+
+Counts moved 798 → **800** and tools 137 → **139** / 37 → **38** suites in
+six places, `docs/LAUNCH.md:221` first.
+
+**The run that did all of the above never committed it, and the reason is
+worth a rule.** It started `npm run test:all` as a background task, said it
+would wait for the notification, and ended its turn. Under `claude -p` a
+turn that ends is a session that ends: the queue recorded the job `ok` at
+03:16, the gate was killed about halfway through the end-to-end tests, and
+the fix, the guard, the count sweep and `TODO.md` sat uncommitted on
+`site/old-english-ash-slugs`, with this entry still a draft in `/tmp`
+holding a placeholder where the measurement goes. The next queued run found
+it a minute later from the files' mtimes and the queue's own log, re-ran the
+red half by hand — the fix reverted, the test named the same 22; restored by
+copy and checked by md5 — re-ran the rename proof against a fresh build
+(113 of 113, 282 occurrences, `diff -r` identical to the proof's), re-ran
+the gate, and landed it. **Commit before starting a long gate; in an
+unattended session, wait on it in the foreground or under a monitor, never
+by ending the turn.**
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **139 tools / 38 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **985 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 1.9 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **713 pages / 16 108 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies in `dist/`, `src/`, `tests/`,
+`tools/` or `test-results/`, whose xattr was re-set first.
+
+Assumed, with nobody to ask: that the addresses need no redirects, because
+nothing is published before B3; that no `CHANGELOG.md` paragraph is wanted,
+following PR #36, the other fix that moved word-page addresses; and that the
+key's quote marks wait for their own item.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds nine agent-shaped items, the nineteen Latin
+pronunciations first.
+
 ### 2026-10-02 — the five-minute note was five notes, and one of them was on the landing page
 
 The queue sent this session at the Old English etymons, which PR #42 landed

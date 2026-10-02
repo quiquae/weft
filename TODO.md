@@ -2713,6 +2713,16 @@ in `Next`. Five things a later run would be sorry not to know:
 5. **A bare `cd` in a compound command moves the session's directory.** One
    loop ran `cd dist/site` without a subshell, and every later relative path
    resolved from there until it was noticed. Absolute paths, or `( cd … )`.
+6. **Under `claude -p`, ending the turn ends the session, and kills whatever
+   it left running.** The run that made this fix started `npm run test:all`
+   in the background, ended its turn to wait for the notification, and was
+   gone: the gate died halfway through e2e and every edit sat uncommitted
+   until the next queued run found it by mtime and by the queue's log under
+   `~/.claude-queue/log/`. That run re-verified and landed it. Commit before
+   starting anything long, and wait on it in the foreground or under a
+   monitor. A run that finds an uncommitted tree on a branch should read
+   `~/.claude-queue/done/` for the job that left it before deciding whether
+   the work is finished or abandoned.
 
 **What was assumed, with nobody to ask.** That the addresses need no
 redirects, because nothing is published before **B3**; that a `CHANGELOG.md`
