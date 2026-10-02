@@ -156,6 +156,7 @@ export function attentionSummary(
 }
 
 export interface UpcomingReview {
+  /** The card's `lemma`, which is an identity: print `spelling(lemma)`. */
   lemma: string;
   days: number;
   stability: number;

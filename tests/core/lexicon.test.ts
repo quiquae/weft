@@ -100,12 +100,19 @@ describe('spelling', () => {
     assert.equal(spelling('hund²'), 'hund');
     assert.equal(spelling('rīċe²'), 'rīċe');
     assert.equal(spelling('earm³'), 'earm');
+    // One number only: a doubled one is malformed, and stays visible to
+    // tests/tools/lexicon-homographs.test.ts, which refuses it.
+    assert.equal(spelling('hund²³'), 'hund²');
   });
 
   test('leaves every other headword exactly as written', () => {
     assert.equal(spelling('hund'), 'hund');
     assert.equal(spelling('mīlle passūs'), 'mīlle passūs');
     assert.equal(spelling('wes hāl'), 'wes hāl');
+    // A first word is never numbered, and a number is never an ASCII digit:
+    // both are left showing for the homograph guard to refuse.
+    assert.equal(spelling('hund¹'), 'hund¹');
+    assert.equal(spelling('hund2'), 'hund2');
   });
 
   test('two words under one spelling are two entries, each with its own gloss and claim', () => {

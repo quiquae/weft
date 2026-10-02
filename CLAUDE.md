@@ -373,6 +373,28 @@ the feed prints a note with no gloss beside it. All 36 generated screenshots
 byte-identical under `TZ=Pacific/Pago_Pago`, three groups stamped, the
 package unchanged at 986 KB.
 
+**A second reader found no leak and six things to harden**, all taken: the
+type docs say the id may carry a number, the diagnostics leak check also
+looks for the spelling, the guard refuses an ASCII `hund2` and warns
+against renaming a numbered word bare, `fill_ipa.py` strips one number as
+`spelling()` does, the site's superscript scan reads only pages built from
+the packs, and `packs` and `packs:verify` pass `--experimental-strip-types`
+now that the builder imports TypeScript. Re-verifying the screenshots after
+that found a trap worth more than the fix: in zsh, `set -- $spec` does not
+split, so a loop meant to run the three generators ran the ordinary e2e
+suite three times, wrote no image, and every hash matched. **Count what a
+generator wrote before believing it agreed** — "written since stamp: 0" is
+what said so. Run explicitly, all 36 came back byte-identical again.
+
+**And the queue merged #47 before that hardening was pushed.** `cq land`
+merges a PR whose checks have passed, and #47's had on the commit before;
+it landed two minutes after the hardening was committed, deleted the local
+branch, and the session was then stopped by the account's session limit.
+The next run found the commit in the reflog, cherry-picked it onto `main`
+— the squash's tree equals the pushed head's, so it applied cleanly and
+reproduced the very tree the screenshots were verified on — and landed it
+as its own PR. **Open a PR as a draft until the last commit is in.**
+
 Counts moved 821 → **833**: unit 536 → **540** / 132 → **133** suites,
 tools 150 → **158** / 41 → **45**, in six places, `docs/LAUNCH.md:221`
 first; and a `CHANGELOG.md` paragraph, because the cards ship.

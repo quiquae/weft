@@ -74,7 +74,12 @@ export interface LexEntry {
   pos: Pos;
   /** Target surface form to display. */
   tgt: string;
-  /** Target headword; the identity used for the vocabulary list and scheduling. */
+  /**
+   * Target headword; the identity used for the vocabulary list and scheduling.
+   * The second of two words with one spelling ends in a homograph number —
+   * `hund²`, the hundred, beside `hund`, the dog — so print `tgt`, or
+   * `spelling()` from `./lexicon.ts`, and never this as it stands.
+   */
   tgtLemma: string;
   gender?: Gender;
   num?: GramNumber;
@@ -153,6 +158,7 @@ export interface MemoryCard {
   /** `${target}:${tgtLemma}` */
   id: string;
   target: LangCode;
+  /** The pack's `tgtLemma`, homograph number and all: print `spelling(lemma)`. */
   lemma: string;
   /** FSRS stability, in days. */
   stability: number;

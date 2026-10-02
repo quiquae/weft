@@ -33,13 +33,15 @@
 # tests/tools/ang-etymons.test.ts fails on one that names none.
 #
 # One spelling is sometimes two words. hund is a dog and a hundred, earm an
-# arm and poor, rice a realm and rich, and English Wiktionary gives each
+# arm and poor, rīċe a realm and rich, and English Wiktionary gives each
 # pair two etymologies. A memory card is keyed by the target, so the second
 # word of each is written with a homograph number, "hund²", and is a card, a
 # page and a ledger key of its own; nothing a reader sees prints the number.
-# The first word is written bare, so its card keeps the id it already had,
-# and the numbers follow Wiktionary's numbering of the etymologies. "soþ",
-# true and truth, is one word with one etymology and is not numbered.
+# The first word is written bare, so its card keeps the id it already had.
+# The numbers follow Wiktionary's numbering of the etymologies, as all three
+# happen to allow; where the two ever disagree, the word that already has
+# the card stays bare. "sōþ", true and truth, is one word with one etymology
+# and is not numbered.
 # tests/tools/lexicon-homographs.test.ts fails on a target shared across
 # parts of speech that is neither numbered nor listed there as one word.
 #

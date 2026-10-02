@@ -1,5 +1,6 @@
 import type { MemoryCard, Settings } from './types.ts';
 import type { Tier } from './entitlements.ts';
+import { spelling } from './lexicon.ts';
 
 /**
  * The report someone pastes into a bug report.
@@ -129,7 +130,10 @@ export function diagnosticsLeakCheck(input: DiagnosticsInput): string[] {
     ['OpenAI key', s.providers.openai.key],
     ...s.sites.taxed.map((r) => ['a taxed site pattern', r.pattern] as [string, string]),
     ...s.sites.excluded.map((p) => ['a never-weave pattern', p] as [string, string]),
-    ...input.cards.slice(0, 50).map((c) => ['a vocabulary word', c.lemma] as [string, string]),
+    // As stored and as a reader would see it: `hund²` is printed `hund`.
+    ...input.cards
+      .slice(0, 50)
+      .flatMap((c) => [c.lemma, spelling(c.lemma)].map((w) => ['a vocabulary word', w] as [string, string])),
   ];
 
   const report = buildDiagnostics(input);

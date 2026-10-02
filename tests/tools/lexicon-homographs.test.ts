@@ -144,7 +144,11 @@ describe('a homograph number marks a later word, never the first', () => {
           offenders.push(`${lang}:${word} — the first word is written bare, so that numbering never moves its card`);
           continue;
         }
-        if (!words.has(bare)) offenders.push(`${lang}:${word} numbers a second ${bare}, and the pack has no first`);
+        if (!words.has(bare)) {
+          // Not "so write it bare": every card a learner already has for the
+          // first word would then silently become this one.
+          offenders.push(`${lang}:${word} numbers a second ${bare}, and the pack has no first — restore the first rather than rename this one bare`);
+        }
         const before = n === 2 ? bare : `${bare}${SUPERSCRIPT[n - 1]}`;
         if (!words.has(before)) offenders.push(`${lang}:${word} skips ${before}`);
       }
@@ -159,6 +163,9 @@ describe('a homograph number marks a later word, never the first', () => {
       for (const list of Object.values(pack.entries)) {
         for (const row of list) {
           if ([...row.tgt].some((ch) => SUPERSCRIPT.includes(ch))) shown.push(`${lang} ${row.src} → ${row.tgt}`);
+          // No target in any pack is spelled with a digit, so one is a number
+          // typed on the line rather than raised: `hund2` would be printed.
+          if (/[0-9]/.test(row.tgtLemma)) shown.push(`${lang} ${row.src} → ${row.tgtLemma}: write a homograph number raised, ²`);
         }
       }
     }
