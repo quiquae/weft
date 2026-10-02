@@ -6,7 +6,7 @@
 
 **State on 2026-10-02:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **139** tool tests / 38 suites, **36** e2e passing
+suites, **144** tool tests / 39 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 985 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -275,10 +275,19 @@ English headwords in all. It decomposes first now, and
 `tests/tools/build-site.test.ts` folds every headword itself and fails on
 an address that drops a letter. See the ticked item in `Next`.
 
+**And as of 2026-10-02 every Latin transcription is stressed where the
+classical rule puts it.** Thirty were not — seven words with *qu* stressed
+on the wrong syllable, three *-eus* words a syllable short, `iūsiūrandum` a
+syllable long, and nineteen with the mark a consonant early, /pɛˈrsoːna/ —
+from three defects in `tools/seed/_ipa.py`, all fixed, and
+`tests/tools/latin-stress.test.ts` now works out every headword's syllables
+and stress from its spelling by Allen & Greenough's rules and refuses a
+transcription that disagrees. See the ticked item in `Next`.
+
 **So the whole of B0 is closed and `Now` is empty. `Next` holds nine
-agent-shaped items, and two of them — nineteen Latin pronunciations that are
-wrong, and the Latin descents nobody has looked up — should land before B3
-indexes the pages they are on.** The code is not
+agent-shaped items, and two of them — the Latin descents nobody has looked
+up, and an Old English word stressed on the wrong syllable — should land
+before B3 indexes the pages they are on.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining item besides those nine needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
@@ -2023,7 +2032,7 @@ below it can move until it is.
       move: the install page's `<lastmod>` is the commit date of
       `tools/build-site.mjs`, the coarseness Notes already records.
 
-- [ ] **Nineteen Latin pronunciations are wrong in the seed, and the
+- [x] **Nineteen Latin pronunciations are wrong in the seed, and the
       generator that wrote them has three bugs.** Found 2026-10-02 from one
       row read for its note: `persōna` is printed `/pɛˈrsoːna/`. Measured
       over all 356 rows of `lex-la.tsv` with a scratch syllabifier:
@@ -2057,6 +2066,73 @@ below it can move until it is.
       scratch script is `/tmp/weft-la/stress.py` if `/tmp` has survived.
       While there: `tools/seed/__pycache__/_ipa.cpython-312.pyc` is tracked.
       About an hour, and free before **B3**.
+
+      **Done 2026-10-02, and it was thirty, not nineteen.** The three bugs
+      were exactly as diagnosed; the census was not, for two reasons. The
+      scratch script compared stress counted from the end of the word, so
+      `caeruleus` — three syllables stressed on the first where it has four
+      stressed on the second — read as "antepenult" both ways and was missed:
+      the *eu* rows are **3**, not 2. And the "consonant early" count took
+      only clusters that cannot begin a word (*rs*, *nt*); Allen & Greenough
+      §7 splits *sp*, *gn* and a doubled consonant too — "dīx-it, sax-um
+      are preferred to dī-xit" — so `aspicere`, `pugnāre`, `difficilis` and
+      `nārrāre` /naːˈrːaːrɛ/ were wrong as well: **19** onset-only rows, 4
+      more inside the *qu* seven. Plus `iūsiūrandum`, a syllable long,
+      because its second *i* is the consonant of *jūrandum* (Lewis & Short:
+      "jus-jūrandum"). 7 + 3 + 19 + 1 = **30** headwords, 50 surface forms.
+
+      **The rule was checked against the sources before it was written
+      down.** A&G §§2–8 and 10–12 read from Perseus (§5 note 2: the *u* of
+      *qu* and *gu* "is reckoned neither as a vowel nor as a consonant"; §7a
+      and note 1; §11b–c and note 3; §12), Lewis & Short for the four
+      respelt words, and Wiktionary's Classical transcriptions for 16 of the
+      30 — 9 headwords, and 7 verbs by their first person — which agree with
+      the A&G division on every one, compounds included (`respōnsum`
+      [rɛsˈpõː.sũː]), except `mōnstrō` [ˈmõː.stroː], where Wiktionary
+      nasalises the *n* and this generator does not. So
+      `mōnstrāre` is /moːnsˈtraːrɛ/. A doubled consonant the mark falls
+      inside is written out twice, `naːrˈraːrɛ`, and keeps `ː` elsewhere.
+
+      **The fix is one tokenisation for both halves.** `_la_tokens()` reads
+      the word once and the stress, the weight and the mark all read its
+      tokens; *eu* is a diphthong only in `LA_EU_DIPHTHONG` (ceu, heu, neu,
+      seu); `LA_RESPELT` holds `iūsiūrandum` as `iūsjūrandum`. Then every
+      Latin IPA cell was blanked and `fill_ipa.py la` refilled all 356 —
+      safe because all 356 had first been shown equal to the old generator's
+      output, so none was a hand correction — and **exactly the 30 moved;
+      the other 326 are byte-identical.** The self-check gained 13 forms
+      worked by hand, 11 of which fail on the old generator (`seu` and
+      `tenebrae` are guards against over-correcting), and now exits 1 on a
+      mismatch where it printed a count and exited 0. `__pycache__/` is
+      untracked and ignored.
+
+      **The guard is `tests/tools/latin-stress.test.ts`, 5 tests**, which
+      work every headword's syllables, stressed syllable and onset out of
+      its spelling by A&G §§7, 11, 12 — without importing the generator —
+      and hold the IPA column to them. Red first on exactly the 30. A
+      spelling the rules cannot read (an untabled *eu*, *ei*, *ui*, *su*
+      before a vowel, *z*) is refused with a message saying to read Lewis &
+      Short, not guessed. Seven probes, each restored by md5: the test
+      without the mute + liquid onset (names `agricola`, `ecclēsia`,
+      `mōnstrāre`), without *qu* (14 rows), `cāseus` dropped from the table
+      (refused), `persōna` and `quīnque` reverted in the seed (each named
+      alone), the parser blind to the non-syllabic mark (19 unreadable).
+      **The seventh passed, and that is a finding:** no headword has a short
+      penult before a stop and a liquid (*te-ne-brae*), so the data cannot
+      test that branch of the weight rule; `tenebrae` is in the generator's
+      self-check instead.
+
+      **What moved.** `en-la.json`: 50 `ipa` fields and `builtAt` 10-01 →
+      10-02; no other pack. The site: 30 Latin word pages, each exactly the
+      old page with its transcription rewritten (180 occurrences, checked
+      by rewriting a build of `main` and comparing byte for byte), and the
+      sitemap, where 701 of 713 `<lastmod>` moved to 10-02 — every Latin and
+      Old English word page, because the date is per pack. All 36 generated
+      screenshots came back byte-identical, the documentation set with
+      `TZ=America/Los_Angeles` as before, and the three groups are stamped.
+      `README.md` and `docs/THIRD-PARTY.md` said the derivation was "tested
+      against known forms" and now say what is checked; THIRD-PARTY credits
+      Allen & Greenough, which two ledgers already cite.
 
 - [x] **Hold the committed icons to the geometry by their pixels — not by
       rebuilding and diffing them, which this item used to propose and which
@@ -2307,6 +2383,26 @@ below it can move until it is.
       reader also opens on GitHub, where a Markdown smart-quote pass would
       change what they see there. About 10 minutes.
 
+- [ ] **Old English stress has never been checked against a source, and one
+      word is stressed on the wrong syllable.** Found 2026-10-02 while the
+      Latin pronunciations were fixed. Old English stresses the root's first
+      syllable, so `old_english_ipa()` can only go wrong on an unstressed
+      prefix it does not list. Measured over `lex-ang.tsv`: every prefixed
+      verb is in `ANG_PREFIXED` (ābīdan, beginnan, forġietan, ġemunan,
+      ondrǣdan), and the nominal prefixes (*un-*, *and-*, *on-*) take the
+      stress, which is right. What is left is three adverbs built on *tō*:
+      `tōdæġ` is /ˈtoːdæj/ where Wiktionary has /toːˈdæj/; `tōgædere` is
+      /ˈtoːɣædere/ where Wiktionary has /ˈtoːˌɡæ.de.re/ — the stress right,
+      but the *g* begins *gædere* and is a stop, as *be-ginnan*'s is; and
+      `tōmorgen` has no Wiktionary entry at all. Read Campbell's *Old
+      English Grammar* on the stress of particle compounds, or another
+      grammar that states it, before choosing; then list the adverbs the way
+      `ANG_PREFIXED` lists verbs, and hold the column with a test the way
+      `tests/tools/latin-stress.test.ts` holds Latin's. While there:
+      `andswaru` and `onsīen` voice their *s* to /z/ because it stands
+      between voiced sounds, though it begins the second element. About an
+      hour, and free before **B3**.
+
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
       etymonline dates *farewell* to a Middle English phrase "attested by c.
@@ -2340,15 +2436,15 @@ below it can move until it is.
 
 `Now` is **empty** and `Next` holds **nine** unchecked items above, as of
 2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The nineteen Latin pronunciations first, because they are
-wrong on a published page today and are cheapest to fix before **B3**; then
-the feed's hidden etymologies, which are true facts out of sight, and the
-feed's Latin frames beside them, which are overstatements in it; then the
-Latin descent pass, the longest, which also wants to land before B3 and now
-has six known failures to start from; then the landing page's table, the
-dashboard's date and the pronunciation key's quote marks, three small
-guards; then `far wel` and `camera`, content questions. The Latin note on
-`vir` and the 22 Old English addresses, which sat first, are done.
+to work them. The feed's hidden etymologies first, which are true facts out
+of sight, and the feed's Latin frames beside them, which are overstatements
+in it; then the Latin descent pass, the longest, which wants to land before
+**B3** and has six known failures to start from; then the landing page's
+table, the dashboard's date and the pronunciation key's quote marks, three
+small guards; then Old English stress, one wrong word and a grammar to
+read, also free before B3; then `far wel` and `camera`, content questions.
+The Latin note on `vir`, the 22 Old English addresses and the thirty Latin
+pronunciations, which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2681,6 +2777,53 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the thirty Latin pronunciations: the census came from a
+script that counted from the end of the word.** Ticked in `Next`. Six things
+a later run would be sorry not to know:
+
+1. **`fill_ipa.py` never overwrites, so regenerating means blanking the
+   column — and blanking destroys any hand correction.** Prove first that
+   every cell equals what the current generator writes (`python3 -B`, import
+   `latin_ipa` from `tools/seed/`, compare row by row). On 2026-10-02 all
+   356 did, so the whole column was blanked and refilled and the diff was
+   the fix. If one ever differs, it is a hand correction: keep it.
+2. **Compare syllable counts before stress positions.** The scratch script
+   that sized this item compared stress counted from the end, and
+   `caeruleus` — stressed on the first of three in the seed, the second of
+   four by the rule — is "antepenult" both ways. The test checks the count
+   first and judges stress only where the counts agree.
+3. **The division rule is A&G §7 note 1's preference, for compounds too.**
+   A group of consonants splits before its last, a stop and a liquid going
+   with the next vowel together; §7b's separation of a compound's parts is
+   not applied, which is Wiktionary's Classical practice (`respōnsum`
+   [rɛsˈpõː.sũː]). The one word Wiktionary divides otherwise is `mōnstrō`,
+   because it nasalises *n* before *s*. Add nasalisation to the generator and
+   the onset of those words changes with it.
+4. **The test refuses what it cannot read, and the table it reads from can
+   only say "two vowels" or "consonant".** A new headword with *eu*, *ei*,
+   *ui*, *su* before a vowel, or *z* fails by name until somebody reads
+   Lewis & Short and respells it in `RESPELT`. A word whose *eu* really is
+   a diphthong (*seu*) needs the test taught one more case, and the
+   generator's `LA_EU_DIPHTHONG` already lists it.
+5. **One branch of the weight rule has no data.** Probe P7 dropped the
+   stop-before-liquid exception from the test's weight rule and nothing
+   failed: no headword has a short penult before *pr*, *tr*, *cl* and the
+   rest. `tenebrae` is in the generator's self-check so the branch is held
+   somewhere.
+6. **Playwright deletes `test-results/` and the iCloud attribute goes with
+   it.** The first-run generator died with `Unknown system error -11 …
+   .playwright-artifacts-0 2` after the store and documentation generators
+   had passed. `rm -rf test-results && mkdir test-results && xattr -w
+   'com.apple.fileprovider.ignore#P' 1 test-results`, then run it again;
+   it passed in 11 s.
+
+**What was assumed, with nobody to ask.** That A&G's preferred division
+beats the convention it mentions, "any consonant group … that can begin a
+word"; that a compound divides by the same rule, as Wiktionary does; that a
+doubled consonant the mark falls inside is written out twice, `naːrˈraːrɛ`;
+and that the Old English adverbs wait for their own item rather than riding
+on a Latin one.
 
 **2026-10-02 — the 22 Old English addresses: one call moved, and the proof
 was a byte comparison of the whole site.** The queue named the `vir` note first;

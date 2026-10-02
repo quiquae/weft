@@ -110,6 +110,20 @@ selector a reader half knew it already, are gone. Every Latin note now names
 the entries it was checked against, and the tests refuse one that names
 none, or that gives a noun a verb's grammar.
 
+**Thirty Latin pronunciations were wrong.** The tooltip, each word page and
+its meta description print IPA for every Latin word, derived from the
+spelling, and no test checked the derivation. Seven words spelled
+with *qu* were stressed on the wrong syllable — *quīnque*, a word of two, on
+its last — because the stress was counted on a reading of the word that took
+the *u* of *qu* for a vowel. *cāseus*, *calceus* and *caeruleus* were each a
+syllable short, given an *eu* diphthong where Lewis & Short marks the *e*
+short, and *iūsiūrandum* a syllable long, its second *i* being the consonant
+that begins *jūrandum*. Nineteen more put the stress mark before every
+consonant since the last vowel: *persōna* was /pɛˈrsoːna/, and is
+/pɛrˈsoːna/. All thirty are regenerated, and the tests now work out every
+Latin word's syllables and stress from its spelling, by Allen & Greenough's
+rules, and refuse a transcription that disagrees.
+
 French now leads the landing page, the README, the social card and the store
 listing; the Latin and Old English section stayed, reframed. The Chrome
 marquee tile kept the four words the social card had dropped — one French,
@@ -313,7 +327,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 800 tests: 527 unit, 98 in jsdom, 139 over the build tools, and
+**Built with** 805 tests: 527 unit, 98 in jsdom, 144 over the build tools, and
 36 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
