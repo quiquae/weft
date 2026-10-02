@@ -36,7 +36,7 @@
  *         long by position, with a short vowel before two consonants or *x*.
  *         A mute before *l* or *r* is properly short — "the ordinary
  *         pronunciation was pa-trem" — and goes with the vowel after it. *h*
- *         is not counted, nor the *u* of *qu* and *gu* (§5 note 2).
+ *         is not counted, nor the *u* of *qu* and *gu* (§11 note 3).
  *   §12   a word of two syllables is stressed on the first; a longer one on
  *         the penult if that is long, otherwise on the antepenult.
  *
@@ -121,7 +121,7 @@ function spell(headword: string): Unit[] | string {
       i += 1;
     } else if (ch === 'z') {
       return 'z is a double consonant (A&G §4) and nothing here says how it is transcribed';
-    } else if (/[a-z]/.test(ch) || ch === 'j') {
+    } else if (/[a-z]/.test(ch)) {
       units.push({ kind: 'c', letter: ch });
       i += 1;
     } else {
