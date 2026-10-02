@@ -138,18 +138,25 @@ function descentSentence(meta, etymonOf, note) {
  * and typeable, while the page itself shows the word properly spelled. A URL
  * containing þ and a macron is a URL nobody can share by voice.
  *
+ * Takes the word apart before it spells anything, because a letter that
+ * arrives precomposed with its mark is not yet the letter the table knows:
+ * `ǣ` is one code point. Spelled first, `ǣ` slipped past the rule for `æ`,
+ * lost its macron, and the bare `æ` left behind became a hyphen — so `sǣ`
+ * was published as `/old-english/s` and `ǣfen` as `/old-english/fen`, 22
+ * headwords in all.
+ *
  * Not unique on its own, and it cannot be: see `assignSlugs()` below.
  */
 function slugify(word) {
   return word
     .toLowerCase()
+    .normalize('NFD')
     .replace(/æ/g, 'ae')
     .replace(/œ/g, 'oe')
     .replace(/[þð]/g, 'th')
     .replace(/ƿ/g, 'w')
     .replace(/ȝ/g, 'g')
     .replace(/ſ/g, 's')
-    .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');

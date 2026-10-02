@@ -13,7 +13,8 @@
  *   2. No word page states its own descent backwards. See below.
  *   3. No word page starts a second sentence with a lexicon note. See below.
  *   4. Every headword gets a page, and no two pages share a path. See below.
- *   5. Every page's header draws the mark that ships as the icon. See below.
+ *   5. A word page's address spells every letter of its headword. See below.
+ *   6. Every page's header draws the mark that ships as the icon. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -96,6 +97,8 @@ let dates: Map<string, string | null>;
 let descents: Descent[];
 /** Which word each page is *about*, by directory — its own rendered headword. */
 let targets: Map<string, Set<string>>;
+/** Every word page's address beside the headword it is the page for. */
+let words: { page: string; slug: string; headword: string }[];
 /** Every `<loc>` the sitemap declares, **with duplicates kept**, and the file each resolves to. */
 let served: { loc: string; file: string | null }[];
 /** Every rendered page and the mark its header draws, or null where it draws none. */
@@ -109,15 +112,19 @@ before(() => {
     dates = lastmods(xml);
     descents = [];
     targets = new Map();
+    words = [];
     for (const dir of ['latin', 'old-english']) {
       targets.set(dir, new Set());
       for (const file of readdirSync(join(out, dir))) {
         const html = readFileSync(join(out, dir, file), 'utf8');
-        const found = descentOf(`/${dir}/${file.replace(/\.html$/, '')}`, html);
+        const slug = file.replace(/\.html$/, '');
+        const found = descentOf(`/${dir}/${slug}`, html);
         if (found) descents.push(found);
         // The index page in the same directory carries no word heading.
         const h1 = html.match(/<h1 class="word__target"[^>]*>([^<]+)<\/h1>/);
-        if (h1) (targets.get(dir) as Set<string>).add(h1[1] as string);
+        if (!h1) continue;
+        (targets.get(dir) as Set<string>).add(h1[1] as string);
+        words.push({ page: `/${dir}/${slug}`, slug, headword: h1[1] as string });
       }
     }
     // Every page, the hand-written landing page among them: it is copied in
@@ -374,6 +381,80 @@ describe('every headword gets its own page', () => {
 
     assert.deepEqual(dead, [], `${dead.length} sitemap URLs 404`);
     assert.ok(served.length > 700, `the sitemap came out with only ${served.length} URLs`);
+  });
+});
+
+/**
+ * A word page's address spells the whole of its headword.
+ *
+ * `slugify()` folds a headword to ASCII so that an address can be typed and
+ * said aloud: marks come off, and the letters ASCII lacks are spelled out —
+ * þ and ð as th, æ as ae. It spelled those letters *before* it took the word
+ * apart, and a letter that arrives precomposed with its mark is not yet the
+ * letter the table knows: `ǣ` is one code point, U+01E3. So `ǣ` slipped past
+ * the rule for `æ`, came apart into `æ` and a macron, lost the macron, and
+ * fell to the catch-all that turns anything else into a hyphen. 22 Old
+ * English headwords lost their ǣ that way, and the worst were wrong rather
+ * than ugly: `sǣ`, sea, was `/old-english/s`, and `ǣfen`, evening, was
+ * `/old-english/fen`, which is an English word for something else. Every
+ * link to them resolved, so `site:check` had nothing to say.
+ *
+ * The fold is written out here rather than borrowed from the builder,
+ * because the defect was in the order of the builder's steps and a copy would
+ * have copied the order. It takes the word apart first, by construction, and
+ * it refuses a letter it has no spelling for instead of hyphenating it — the
+ * same silent drop, arriving with a letter nobody has added yet. A slug may
+ * run on past the fold: that is the English word `assignSlugs()` appends when
+ * two headwords fold alike, which the suite above polices.
+ */
+const SPELLED: Record<string, string> = { æ: 'ae', œ: 'oe', þ: 'th', ð: 'th', ƿ: 'w', ȝ: 'g', ſ: 's' };
+
+/** A headword's letters with their marks taken off, one string per letter. */
+const bare = (word: string): string[] => [...word.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '')];
+
+/** The ASCII a headword's address should spell, or the first letter nothing spells. */
+function fold(word: string): { ascii: string } | { unspelled: string } {
+  let ascii = '';
+  for (const ch of bare(word)) {
+    if (/[a-z0-9]/.test(ch)) ascii += ch;
+    else if (ch in SPELLED) ascii += SPELLED[ch];
+    else if (/[\p{L}\p{N}]/u.test(ch)) return { unspelled: ch };
+    else ascii += '-';
+  }
+  return { ascii: ascii.replace(/-+/g, '-').replace(/^-|-$/g, '') };
+}
+
+describe('a word page’s address spells every letter of its headword', () => {
+  test('no address drops a letter of the word it is the page for', () => {
+    const offenders = words.flatMap((w) => {
+      const f = fold(w.headword);
+      if ('unspelled' in f) return [`${w.page} is ${w.headword}, and nothing spells its ${f.unspelled}`];
+      const kept = w.slug === f.ascii || w.slug.startsWith(`${f.ascii}-`);
+      return kept ? [] : [`${w.page} is ${w.headword}, which spells ${f.ascii}`];
+    });
+
+    assert.deepEqual(
+      offenders.slice(0, 5),
+      [],
+      `${offenders.length} word pages are published at an address that drops a letter of their headword:\n  ${offenders
+        .slice(0, 5)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('the rule has something to police', () => {
+    // Floors, not exact counts, so a new headword needs no edit here. The
+    // second is the one that matters: a letter the table spells reaching the
+    // fold only once its mark is off is the case that slipped, and a rule
+    // that no longer meets it cannot show the case is closed.
+    const spelled = words.filter((w) => bare(w.headword).some((ch) => ch in SPELLED));
+    const precomposed = words.filter((w) =>
+      [...w.headword.toLowerCase()].some((ch) => !(ch in SPELLED) && bare(ch).some((b) => b in SPELLED)),
+    );
+
+    assert.ok(words.length > 600, `only ${words.length} word pages were read`);
+    assert.ok(spelled.length > 50, `only ${spelled.length} headwords need a letter spelled out`);
+    assert.ok(precomposed.length > 0, 'no headword carries a spelled letter precomposed with its mark');
   });
 });
 

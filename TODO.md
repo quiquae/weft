@@ -6,7 +6,7 @@
 
 **State on 2026-10-02:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **137** tool tests / 37 suites, **36** e2e passing
+suites, **139** tool tests / 38 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 985 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -267,11 +267,18 @@ checked against in `tools/seed/la-notes.tsv`, and a test refuses one that
 names none, has been reworded since, or gives a noun a verb's grammar. See
 the ticked item in `Next`.
 
+**And as of 2026-10-02 every word page's address spells its whole
+headword.** `slugify()` spelled æ before it took a word apart, so the
+precomposed `ǣ` slipped past and became a hyphen: `sǣ`, sea, was published
+as `/old-english/s` and `ǣfen`, evening, as `/old-english/fen`, 22 Old
+English headwords in all. It decomposes first now, and
+`tests/tools/build-site.test.ts` folds every headword itself and fails on
+an address that drops a letter. See the ticked item in `Next`.
+
 **So the whole of B0 is closed and `Now` is empty. `Next` holds nine
-agent-shaped items, and three of them — 22 Old English URLs that lose a
-letter, nineteen Latin pronunciations that are wrong, and the Latin descents
-nobody has looked up — should land before B3 indexes the pages they are
-on.** The code is not
+agent-shaped items, and two of them — nineteen Latin pronunciations that are
+wrong, and the Latin descents nobody has looked up — should land before B3
+indexes the pages they are on.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining item besides those nine needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
@@ -1959,7 +1966,7 @@ below it can move until it is.
       documentation set only with the date held (see Notes), and the three
       groups are stamped.
 
-- [ ] **Twenty-two Old English words are published at a URL that drops or
+- [x] **Twenty-two Old English words are published at a URL that drops or
       mangles their ǣ.** Found 2026-10-01 in the list of pages the etymon
       pass changed: `lǣċe` is `/old-english/l-ce` and `tǣcan`
       `/old-english/t-can`. `slugify()` (`tools/build-site.mjs`) maps `æ` to
@@ -1975,6 +1982,46 @@ below it can move until it is.
       change creates. Every Latin page links its Old English counterpart by
       slug, so those links move too, and `site:check` will say so. Free before
       **B3**, a stranded URL each after. About 30 minutes.
+
+      **Done 2026-10-02, and it was exactly as found: 22 of 350, and none
+      anywhere else.** Measured over all seven packs before anything moved:
+      Latin 0 of 349 and the five modern packs 0, which have no word pages
+      in any case. `slugify()` now takes the word apart before it spells
+      anything — one call moved ahead of the letter map — and the reorder
+      creates no new collision in any pack, so `assignSlugs()` had nothing
+      to do. `sǣ`
+      is `/old-english/sae`, `ǣfen` `/old-english/aefen`, `ǣr`
+      `/old-english/aer`, `lǣċe` `/old-english/laece`, `ǣghwǣr`
+      `/old-english/aeghwaer`.
+
+      **The guard is a new `describe` in `tests/tools/build-site.test.ts`**,
+      read off the built pages like the rest of that file: every word page's
+      address must spell its whole headword. The test folds the headword
+      itself rather than borrowing the builder's function, because the defect
+      was in the order of the builder's steps and a copy would have copied
+      the order — so it decomposes first by construction, and it refuses a
+      letter it has no spelling for instead of hyphenating it. Red first,
+      naming all 22 by address and headword. A floor beside it wants more
+      than 600 word pages read, more than 50 headwords that need a letter
+      spelled out (66 do) and at least one whose spelled letter arrives
+      precomposed (22 do). Five probes, each restored by md5: the builder
+      forgetting þ and ð (25 pages named), the builder spelling þ as `t`
+      (25), the test's own table forgetting ð (9, "nothing spells its ð"),
+      an empty walk ("only 0 word pages were read"), and the test's fold
+      forgetting to decompose, which fails loudly on 359 pages instead of
+      passing.
+
+      **What moved, proved rather than eyeballed.** Built before and after
+      into temporary directories: 22 files renamed and 91 changed — 23 Latin
+      pages, 66 Old English, the Old English descent hub and the sitemap —
+      and every one of the 113 differs by the 22 addresses and nothing else,
+      282 occurrences, checked by rewriting the old build's addresses and
+      comparing the result byte for byte with the new one. `site:check` 713
+      pages / 16 108 links, the same totals as before, because only targets
+      moved. No tracked file linked any of the 22, and nothing needs a
+      redirect, because nothing is published before **B3**. One date will
+      move: the install page's `<lastmod>` is the commit date of
+      `tools/build-site.mjs`, the coarseness Notes already records.
 
 - [ ] **Nineteen Latin pronunciations are wrong in the seed, and the
       generator that wrote them has three bugs.** Found 2026-10-02 from one
@@ -2241,6 +2288,25 @@ below it can move until it is.
       chart read "Oct 1" beside a change log reading "Oct 2" — correct, and it
       looks like a bug. About 30 minutes.
 
+- [ ] **The Old English pronunciation key quotes with straight marks, on 346
+      word pages.** Found 2026-10-02 reading `/old-english/laece` after the
+      slug fix. `META.ang.note` (`tools/build-site.mjs:82`) reads `þ and ð
+      are both "th"; c before a front vowel is "ch"; sc is "sh"`, and
+      `<p class="word__pronNote">` prints it on every Old English word page
+      with a pronunciation — 346 of 350, the four phrases without IPA being
+      the rest. It is the class PR #20 closed for the lexicon notes, which
+      quote “ ” as the site's own prose does; the quote guard in
+      `tests/tools/lexicon-orthography.test.ts` scans the packs and never
+      sees the builder's strings. `META.la.note` has no quotes. The fix is
+      three pairs of marks; the guard is a check in
+      `tests/tools/build-site.test.ts` that no `word__pronNote` holds a
+      straight `"`, which that file can read off the pages it already
+      builds. Not the same decision as `/support`, `/privacy` and `/pricing`,
+      which print straight quotes too, from `docs/SUPPORT.md`,
+      `docs/PRIVACY.md` and the entitlement copy: those are documents a
+      reader also opens on GitHub, where a Markdown smart-quote pass would
+      change what they see there. About 10 minutes.
+
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
       etymonline dates *farewell* to a Middle English phrase "attested by c.
@@ -2274,16 +2340,15 @@ below it can move until it is.
 
 `Now` is **empty** and `Next` holds **nine** unchecked items above, as of
 2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The 22 mangled Old English URLs first, because changing them
-is free before **B3** and strands them after; the nineteen Latin
-pronunciations second, for the same reason and because they are wrong on a
-published page today; then the feed's hidden etymologies, which are true
-facts out of sight, and the feed's Latin frames beside them, which are
-overstatements in it; then the Latin descent pass, the longest, which also
-wants to land before B3 and now has six known failures to start from; then
-the landing page's table and the dashboard's date, two small guards; then
-`far wel` and `camera`, content questions. The Latin note on `vir`, which
-sat first, is done.
+to work them. The nineteen Latin pronunciations first, because they are
+wrong on a published page today and are cheapest to fix before **B3**; then
+the feed's hidden etymologies, which are true facts out of sight, and the
+feed's Latin frames beside them, which are overstatements in it; then the
+Latin descent pass, the longest, which also wants to land before B3 and now
+has six known failures to start from; then the landing page's table, the
+dashboard's date and the pronunciation key's quote marks, three small
+guards; then `far wel` and `camera`, content questions. The Latin note on
+`vir` and the 22 Old English addresses, which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2616,6 +2681,45 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the 22 Old English addresses: one call moved, and the proof
+was a byte comparison of the whole site.** The queue named the `vir` note first;
+PR #43 had landed it, so the topmost unchecked item was the slugs, now ticked
+in `Next`. Five things a later run would be sorry not to know:
+
+1. **Decompose before you spell, in any fold.** A letter precomposed with its
+   mark is one code point (`ǣ` U+01E3, `ǽ` U+01FD), and a rule written for
+   the bare letter cannot see it until `normalize('NFD')` has split it. That
+   is the whole defect. The builder strips marks with the range
+   U+0300–U+036F and the test with `\p{M}`; they agree on every mark the
+   seven packs hold today — eight of them, all inside that range — and would
+   part only on a mark from the extended blocks.
+2. **A rename is checked by rewriting, not by reading the diff.** 113 files
+   moved. `/tmp/weft-slug/verify.mjs` rewrites the 22 old addresses in a
+   build of `main` and compares it byte for byte with the new build: 113 of
+   113 identical, 282 occurrences, nothing else changed. Seconds to run, and
+   it would have caught a template change riding along, which reading 113
+   diffs would not. `/tmp/weft-slug/measure.mjs` counts the affected
+   headwords per pack; neither survives a reboot.
+3. **The test's spelling table mirrors all seven of the builder's letters,
+   though the packs use three** (æ, þ, ð). ƿ, ȝ, ſ and œ are there so that a
+   headword using one is spelled rather than refused — the refusal is for a
+   letter the *builder* has no spelling for either, which it would turn into
+   a hyphen. Add a letter to both or to neither.
+4. **The straight quotes on `/support`, `/privacy` and `/pricing` are not the
+   pronunciation key's problem.** The key is the builder's own string; those
+   come from Markdown documents a reader also opens on GitHub and from the
+   entitlement copy. The item in `Next` covers the key only, on purpose.
+5. **A bare `cd` in a compound command moves the session's directory.** One
+   loop ran `cd dist/site` without a subshell, and every later relative path
+   resolved from there until it was noticed. Absolute paths, or `( cd … )`.
+
+**What was assumed, with nobody to ask.** That the addresses need no
+redirects, because nothing is published before **B3**; that a `CHANGELOG.md`
+paragraph is not wanted, following PR #36, the other fix that moved word-page
+addresses, which added none — the site is not part of the 1.0.1 package; and
+that the key's quote marks wait for their own item rather than riding on
+this one.
 
 **2026-10-02 — the queue's item was one PR stale, and the five-minute item
 under it was five notes, an etymon and a ledger.** The queue sent this
