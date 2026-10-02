@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **540** unit / 133 suites, **98** jsdom / 22
-suites, **158** tool tests / 45 suites, **37** e2e passing
+of this session — typecheck clean, **544** unit / 133 suites, **98** jsdom / 22
+suites, **162** tool tests / 46 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -41,6 +41,14 @@ found a fourth pair**: French `mort`, death and dead, to which English
 Wiktionary gives two etymologies too. It is still one card, deliberately, and
 is queued in `Next`. See the ticked item there and the note at the top of
 Notes.
+
+**And as of 2026-10-02 the feed tells Latin in the verbs of borrowing.** It
+chose its verbs by whether a language is dead, so Latin was told in Old
+English's — "rēx survived into English as regal" — on 232 of its 314 lines.
+They follow whether English *descends* from the language now,
+`ancestorOfEnglish` in the language table, true for Old and Middle English
+only; `historical` still orders the feed. Exactly 310 Latin lines moved and
+no other language's did. See the ticked item in `Next`.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
 npm's own exit status captured rather than a pipe's:**
@@ -312,7 +320,7 @@ from three defects in `tools/seed/_ipa.py`, all fixed, and
 and stress from its spelling by Allen & Greenough's rules and refuses a
 transcription that disagrees. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds nine
+**So the whole of B0 is closed and `Now` is empty. `Next` holds eight
 agent-shaped items, and two of them — the Latin descents nobody has looked
 up, and an Old English word stressed on the wrong syllable — should land
 before B3 indexes the pages they are on.** The
@@ -2464,7 +2472,7 @@ below it can move until it is.
       reads the same lookup as before, and that lookup is held over the
       shipped pack in the tools test.
 
-- [ ] **The feed tells Latin borrowings in Old English's words.** Found
+- [x] **The feed tells Latin borrowings in Old English's words.** Found
       2026-10-02 when a corrected note moved `vir` into the feed's plain
       frame and it read "vir survived into English as virile".
       `src/core/discoveries.ts` has two sets of frames chosen by one
@@ -2492,6 +2500,53 @@ below it can move until it is.
       and `tests/core/delight.test.ts` holds the frames. Do it with or after
       the Latin descent pass below, which settles what a Latin claim may say.
       About 45 minutes.
+
+      **Done 2026-10-02, before the descent pass rather than with it.** The
+      pass decides which Latin claims are true; this decides only the verb a
+      true one is told in, and "borrowed" is the site's own verb for every
+      Latin claim, so nothing here waits on it. Measured first with the real
+      modules, every word of every pack met once: Latin printed **232** of
+      its 314 lines in Old English's verbs — 71 "survived into English", 73
+      "comes straight from", 82 "began as", 6 "thousand years" — French none,
+      Old English 239, rightly.
+
+      **The flag is in the language table, not the feed.** `LanguageMeta`
+      gains `ancestorOfEnglish`, true for `ang` and `enm`: Old Norse, Greek
+      and Gothic are historical and English borrowed from them too.
+      `buildDiscoveries` takes it as a *required* option beside `historical`,
+      so the typechecker makes every caller say which kind of language it
+      has — measured by deleting it from the dashboard's call, which then
+      fails to compile — and keys the descent frames, the unchanged sentence
+      and the false-friend sentence on it. A borrowed unchanged word reads
+      "camera is simply camera.", French's existing sentence; a borrowed
+      false friend "English borrowed donation from dōnum, but …", which no
+      pack reaches yet. `historical` still orders the feed, and a test says
+      so in both directions.
+
+      Test-first. `tests/core/delight.test.ts` +4: red naming "English
+      aquatic comes straight from aqua", the thousand years on `camera` and
+      "dōnum became English donation", with the ordering guard green, as it
+      must be. `tests/tools/feed-frames.test.ts`, 4 tests in 1 suite, over
+      the shipped packs with each language's own entry: red on `main`, 449
+      lines; and its first probe found a hole in it — flagging Latin as an
+      ancestor passed every test, because they trusted the flag they were
+      checking — so its first test now derives the flag from the table's
+      names, a historical language called "… English", and names `la
+      (Latin)` when the flag moves. And one e2e test in `friction.spec.ts`,
+      four Latin cards read off the real dashboard: red against `main`'s
+      build, "camera has not changed in a thousand years — it is still
+      camera.", run from a `/tmp` worktree with `node_modules` linked in.
+
+      **What moved: exactly 310 Latin feed lines** — the 304 descents and
+      the 6 unchanged — of 755 across the seven packs, diffed line by line
+      against `main`'s module, and none in any other language. 366 bytes of
+      package, 986 KB still. No page of the site moved: it never printed
+      the feed. Of the 36 generated screenshots one moved, `dashboard.png`,
+      by its two dates and nothing else — the chart's axis and the change
+      log, read by cropping both bands — because the date window `TZ`
+      had held this morning had closed; it is committed as the generator now
+      draws it, and that group's "no change" stamp is deleted rather than
+      rewritten. The other two groups are stamped.
 
 - [ ] **The Latin pack's descent claims have never been checked against a
       source either.** Found 2026-10-01, by the question that found the Old
@@ -2663,18 +2718,17 @@ below it can move until it is.
       the word really covers. `īnfāns` is also marked masculine where Lewis &
       Short has it of common gender.
 
-`Now` is **empty** and `Next` holds **nine** unchecked items above, as of
+`Now` is **empty** and `Next` holds **eight** unchecked items above, as of
 2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The feed's Latin frames first, which are overstatements in
-it; then the Latin descent pass, the longest, which wants to land before
-**B3** and has six known failures to start from; then the landing page's
+to work them. The Latin descent pass first, the longest, which wants to land
+before **B3** and has six known failures to start from; then the landing page's
 table, the dashboard's date and the pronunciation key's quote marks, three
 small guards; then French `mort`, one card or two, a decision with the
 evidence written down; then Old English stress, one wrong word and a
 grammar to read, also free before B3; then `far wel` and `camera`, content
 questions. The Latin note on `vir`, the 22 Old English addresses, the thirty
-Latin pronunciations, the feed's hidden etymologies and the Old English
-homographs, which sat first, are done.
+Latin pronunciations, the feed's hidden etymologies, the Old English
+homographs and the feed's Latin frames, which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3007,6 +3061,47 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the feed's Latin frames: 232 lines told as descents, and a
+guard that trusted the flag it was checking.** Ticked in `Next`. Five things a
+later run would be sorry not to know:
+
+1. **A test that asks the flag what to expect cannot check the flag.** The
+   first draft of `tests/tools/feed-frames.test.ts` read each language's
+   `ancestorOfEnglish` to decide which verbs its lines should use, so
+   flagging Latin moved the behaviour and the expectation together and
+   every test passed. Its first test now derives the flag from something
+   the flag does not control, the table's own names. Probe a guard by
+   moving the input it trusts, not only the code it covers.
+2. **Nothing holds `dashboard.png`'s date after 12:00 UTC.**
+   `TZ=Pacific/Pago_Pago` works until 11:00 UTC the day after the shot and
+   `Etc/GMT+12`, the westernmost zone, until 12:00. Later than that the
+   shot moves by its two dates — the attention chart's axis near y 2059 and
+   the change log near y 3759 of the 900×3919 image. Crop both bands with
+   `sips -c <h> <w> --cropOffset <y> 0` to confirm that is all, commit it,
+   and delete the group's "no change" stamp. The `dashboard.png` item in
+   `Next` is the fix.
+3. **To run a new e2e test red against `main` without a stash through
+   iCloud-watched `src/`**: `git worktree add --detach /tmp/x origin/main`,
+   `ln -s <repo>/node_modules /tmp/x/node_modules`, copy the spec in, then
+   `node build.mjs --target=chrome --test` and `npx playwright test <spec>
+   -g '<name>'` inside `/tmp/x`. Remove the worktree after.
+4. **`/tmp` did not survive the restart after the session limit**:
+   `/tmp/weft-homo` from the morning was gone when this run resumed, so
+   the PR body had to be written again. Anything worth keeping goes in the
+   repository or the PR.
+5. **The verbs were fixed before the claims, on purpose.** The Latin descent
+   pass decides which claims are true; this only decides the verb a true
+   one is told in, and "borrowed" is already the site's verb for every
+   Latin page. The pass may still remove claims, which will remove lines,
+   not reword them.
+
+**What was assumed, with nobody to ask.** That the item could go ahead of the
+descent pass for the reason in point 5; that a Latin word English took
+unchanged reads "camera is simply camera.", French's sentence, rather than a
+new one; that Middle English carries the flag although no pack exists for
+it, since the table already lists it; and that a `dashboard.png` moved only
+by its dates is committed as regenerated rather than held back.
 
 **2026-10-02 — the Old English homographs: three words were two each, and
 the guard that holds them found a fourth in French.** Ticked in `Next`. Ten

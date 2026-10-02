@@ -136,7 +136,7 @@ describe('buildDiscoveries', () => {
     const found = buildDiscoveries({
       cards: [...met, unseen],
       entriesByLemma: entries,
-      historical: true,
+      historical: true, ancestorOfEnglish: true,
     });
     assert.ok(!found.some((d) => d.target === 'þing'));
   });
@@ -145,13 +145,13 @@ describe('buildDiscoveries', () => {
     const found = buildDiscoveries({
       cards: [card({ lemma: 'dull', target: 'ang', exposures: 5 })],
       entriesByLemma: entries,
-      historical: true,
+      historical: true, ancestorOfEnglish: true,
     });
     assert.deepEqual(found, []);
   });
 
   test('classifies a meaning shift as a false friend', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     const starve = found.find((d) => d.target === 'steorfan');
     assert.ok(starve);
     assert.equal(starve.kind, 'false-friend');
@@ -160,14 +160,14 @@ describe('buildDiscoveries', () => {
   });
 
   test('classifies a literal gloss as literal', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     const lord = found.find((d) => d.target === 'hlāford');
     assert.equal(lord?.kind, 'literal');
     assert.match(String(lord?.text), /loaf-keeper/);
   });
 
   test('classifies a plain descent as descent', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     const house = found.find((d) => d.target === 'hūs');
     assert.equal(house?.kind, 'descent');
     assert.match(String(house?.text), /hūs/);
@@ -183,7 +183,7 @@ describe('buildDiscoveries', () => {
     const found = buildDiscoveries({
       cards: [card({ lemma: 'weald', target: 'ang', exposures: 3 })],
       entriesByLemma: same,
-      historical: true,
+      historical: true, ancestorOfEnglish: true,
     });
     assert.equal(found[0]?.kind, 'unchanged');
     assert.match(String(found[0]?.text), /has not changed/);
@@ -199,14 +199,14 @@ describe('buildDiscoveries', () => {
     const found = buildDiscoveries({
       cards: [card({ lemma: 'ǣfen', target: 'ang', exposures: 3 })],
       entriesByLemma: additive,
-      historical: true,
+      historical: true, ancestorOfEnglish: true,
     });
     assert.notEqual(found[0]?.kind, 'false-friend');
     assert.doesNotMatch(String(found[0]?.text), /but whence/);
   });
 
   test('puts the most interesting kinds first', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     const kinds = found.map((d) => d.kind);
     const firstDescent = kinds.indexOf('descent');
     const lastInteresting = Math.max(kinds.lastIndexOf('false-friend'), kinds.lastIndexOf('literal'));
@@ -224,8 +224,8 @@ describe('buildDiscoveries', () => {
       many.set(t, entry({ src: e, lemma: e, tgt: t, tgtLemma: t, etymonOf: e }));
       cards.push(card({ lemma: t, target: 'ang', exposures: 3 }));
     }
-    const first = buildDiscoveries({ cards, entriesByLemma: many, historical: true });
-    const again = buildDiscoveries({ cards, entriesByLemma: many, historical: true });
+    const first = buildDiscoveries({ cards, entriesByLemma: many, historical: true, ancestorOfEnglish: true });
+    const again = buildDiscoveries({ cards, entriesByLemma: many, historical: true, ancestorOfEnglish: true });
     assert.deepEqual(first.map((d) => d.text), again.map((d) => d.text), 'must be stable');
     assert.ok(new Set(first.map((d) => d.text.replace(/[a-zāēīōūǣþðæġ]+/gi, 'X'))).size > 1, 'must vary');
   });
@@ -259,11 +259,11 @@ describe('buildDiscoveries', () => {
       // Every card met in the same millisecond, as a bulk import produces.
       cards.push(card({ lemma: t, target: 'fr', exposures: 3, firstSeen: NOW - 1000 }));
     }
-    const forwards = buildDiscoveries({ cards, entriesByLemma: tied, historical: false });
+    const forwards = buildDiscoveries({ cards, entriesByLemma: tied, historical: false, ancestorOfEnglish: false });
     const backwards = buildDiscoveries({
       cards: [...cards].reverse(),
       entriesByLemma: tied,
-      historical: false,
+      historical: false, ancestorOfEnglish: false,
     });
     assert.ok(forwards.length > 1, 'nothing to order, so this proves nothing');
     assert.deepEqual(
@@ -291,7 +291,7 @@ describe('buildDiscoveries', () => {
         card({ lemma: 'père', target: 'fr', exposures: 3, firstSeen: NOW - 1000 }),
       ],
       entriesByLemma: accented,
-      historical: false,
+      historical: false, ancestorOfEnglish: false,
     });
     assert.deepEqual(found.map((d) => d.target), ['père', 'pierre']);
   });
@@ -308,13 +308,93 @@ describe('buildDiscoveries', () => {
     const found = buildDiscoveries({
       cards: [card({ lemma: 'hūs', target: 'ang', exposures: 3 })],
       entriesByLemma: entries,
-      historical: false,
+      historical: false, ancestorOfEnglish: false,
     });
     const text = String(found[0]?.text);
     assert.match(text, /from/, `expected a borrowing sentence, got "${text}"`);
     for (const dead of [/survived into/i, /comes straight from/i, /thousand years/i]) {
       assert.ok(!dead.test(text), `a living language was described with "${text}"`);
     }
+  });
+
+  /** The verbs that say English descends from a word: true only of a stage of English. */
+  const INHERITED = [/survived into English/, /comes straight from/, /began as/, /thousand years/, /became English/];
+
+  test('a dead language English borrowed from is told in the verbs of borrowing', () => {
+    /*
+     * Latin has no living speakers, so it was handed the frames written for
+     * Old English, and 232 of the 314 lines the Latin pack can produce said
+     * English descends from the word: "rēx survived into English as regal",
+     * "English aquatic comes straight from aqua". English borrowed them,
+     * often through a derivative or through French, which is why the Latin
+     * site says "was borrowed from". Whether a language is dead is the wrong
+     * question for the verb; whether English descends from it is the right one.
+     */
+    const latin = new Map<string, LexEntry>();
+    const cards = [];
+    for (const [t, e, en] of [
+      ['rēx', 'regal', 'king'], ['aqua', 'aquatic', 'water'], ['lūna', 'lunar', 'moon'],
+      ['manus', 'manual', 'hand'], ['mare', 'marine', 'sea'],
+    ] as Array<[string, string, string]>) {
+      latin.set(t, entry({ src: en, lemma: en, tgt: t, tgtLemma: t, etymonOf: e }));
+      cards.push(card({ lemma: t, target: 'la', exposures: 3 }));
+    }
+    const found = buildDiscoveries({ cards, entriesByLemma: latin, historical: true, ancestorOfEnglish: false });
+    assert.equal(found.length, 5, 'every word should have a line');
+    for (const d of found) {
+      assert.match(d.text, /from/, `expected a borrowing sentence, got "${d.text}"`);
+      for (const verb of INHERITED) assert.doesNotMatch(d.text, verb, `a borrowing was told as a descent: "${d.text}"`);
+    }
+  });
+
+  test('a word English borrowed unchanged is not given a thousand years', () => {
+    // English took camera for a vault in 1708; Old English's timescale is a
+    // claim about words English never stopped saying.
+    const same = new Map<string, LexEntry>([
+      ['camera', entry({ src: 'room', lemma: 'room', tgt: 'camera', tgtLemma: 'camera', etymonOf: 'camera' })],
+    ]);
+    const found = buildDiscoveries({
+      cards: [card({ lemma: 'camera', target: 'la', exposures: 3 })],
+      entriesByLemma: same,
+      historical: true,
+      ancestorOfEnglish: false,
+    });
+    assert.equal(found[0]?.kind, 'unchanged');
+    assert.equal(found[0]?.text, 'camera is simply camera.');
+  });
+
+  test('a borrowed word whose sense moved is not said to have become English', () => {
+    // No pack carries such a row today, and this frame was the last one that
+    // said "became" whatever the language.
+    const moved = new Map<string, LexEntry>([
+      ['dōnum', entry({ src: 'gift', lemma: 'gift', tgt: 'dōnum', tgtLemma: 'dōnum', etymonOf: 'donation', note: '“dōnum” meant a gift to a god' })],
+    ]);
+    const found = buildDiscoveries({
+      cards: [card({ lemma: 'dōnum', target: 'la', exposures: 3 })],
+      entriesByLemma: moved,
+      historical: true,
+      ancestorOfEnglish: false,
+    });
+    assert.equal(found[0]?.kind, 'false-friend');
+    assert.equal(found[0]?.text, 'English borrowed donation from dōnum, but “dōnum” meant a gift to a god.');
+  });
+
+  test('a dead language keeps the dead languages’ order, whoever English took its words from', () => {
+    // The order answers "what is rare in this language", which is about the
+    // data, not the verb: in Latin, as in Old English, a descent is the
+    // default and a note the find. A living language puts descents first.
+    const two = new Map<string, LexEntry>([
+      ['rēx', entry({ src: 'king', lemma: 'king', tgt: 'rēx', tgtLemma: 'rēx', etymonOf: 'regal' })],
+      ['ita', entry({ src: 'yes', lemma: 'yes', pos: 'adv', tgt: 'ita', tgtLemma: 'ita', note: 'Latin has no one common word for yes' })],
+    ]);
+    const cards = [
+      card({ lemma: 'rēx', target: 'la', exposures: 3, firstSeen: NOW - 1000 }),
+      card({ lemma: 'ita', target: 'la', exposures: 3, firstSeen: NOW - 9000 }),
+    ];
+    const kinds = (historical: boolean) =>
+      buildDiscoveries({ cards, entriesByLemma: two, historical, ancestorOfEnglish: false }).map((d) => d.kind);
+    assert.deepEqual(kinds(true), ['note', 'descent']);
+    assert.deepEqual(kinds(false), ['descent', 'note']);
   });
 
   test('the living-language frames vary, as the historical ones do', () => {
@@ -331,7 +411,7 @@ describe('buildDiscoveries', () => {
       many.set(lemma, entry);
       cards.push(card({ lemma, target: 'ang', exposures: 3 }));
     }
-    const found = buildDiscoveries({ cards, entriesByLemma: many, historical: false });
+    const found = buildDiscoveries({ cards, entriesByLemma: many, historical: false, ancestorOfEnglish: false });
     const descents = found.filter((d) => d.kind === 'descent');
     if (descents.length < 2) return; // not enough data in the fixture to judge
     const shapes = new Set(descents.map((d) => d.text.replace(/[^ ]+/g, (w) => (/^[A-Z]/.test(w) ? 'X' : w))));
@@ -339,7 +419,7 @@ describe('buildDiscoveries', () => {
   });
 
   test('puts the most recently met first', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     for (let i = 1; i < found.length; i++) {
       assert.ok((found[i - 1]?.metAt ?? 0) >= (found[i]?.metAt ?? 0));
     }
@@ -347,13 +427,13 @@ describe('buildDiscoveries', () => {
 
   test('respects the limit', () => {
     assert.equal(
-      buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, limit: 2 }).length,
+      buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true, limit: 2 }).length,
       2,
     );
   });
 
   test('never emits a double full stop or a stray capital mid-sentence', () => {
-    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true });
+    const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     for (const d of found) {
       assert.doesNotMatch(d.text, /\.\./, d.text);
       assert.match(d.text, /\.$/, `should end in a full stop: ${d.text}`);

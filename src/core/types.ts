@@ -46,6 +46,12 @@ export interface LanguageMeta {
   endonym: string;
   /** True for languages with no living native speakers. */
   historical: boolean;
+  /**
+   * True for a stage of English itself — Old and Middle English — whose
+   * words English inherited rather than borrowed. Not the same as
+   * `historical`: Latin is dead, and English borrowed from it.
+   */
+  ancestorOfEnglish?: boolean;
   rtl: boolean;
   morphology: MorphologyStrategy;
   /** BCP-47 tag for speechSynthesis, or null when no voice exists. */

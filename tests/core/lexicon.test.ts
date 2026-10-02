@@ -131,7 +131,7 @@ describe('the feed, read the way the dashboard reads the pack', () => {
     const found = buildDiscoveries({
       cards: met,
       entriesByLemma: entriesByTarget(pack(silver, money)),
-      historical: false,
+      historical: false, ancestorOfEnglish: false,
     });
     assert.deepEqual(
       found.map((d) => d.text),

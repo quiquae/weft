@@ -329,6 +329,16 @@ offers one word of a spelling as a wrong answer to the other. Nothing on
 screen marks them apart but the gloss. A card you already have for one of the
 three stays with the first word, which is the one it was always shown as.
 
+**And Latin was told as though English descended from it.** The feed chose its
+verbs by whether a language is still spoken, so Latin, being dead, was told in
+the ones written for Old English — "rēx survived into English as regal",
+"English aquatic comes straight from aqua", "camera has not changed in a
+thousand years" — on 232 of the 314 lines its pack can print. English borrowed
+those words, often through a derivative or through French, which is what the
+Latin pages of the site have always said. The verbs now follow whether English
+descends from the language: Old English keeps them, and Latin is told the way
+French is, in the verbs of borrowing.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -349,8 +359,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 833 tests: 540 unit, 98 in jsdom, 158 over the build tools, and
-37 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 842 tests: 544 unit, 98 in jsdom, 162 over the build tools, and
+38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface

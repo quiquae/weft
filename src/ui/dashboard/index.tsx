@@ -89,6 +89,7 @@ function Dashboard() {
     cards: mine,
     entriesByLemma: glosses,
     historical: lang.historical,
+    ancestorOfEnglish: lang.ancestorOfEnglish === true,
     limit: 24,
   });
   /**
