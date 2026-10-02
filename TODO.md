@@ -2442,7 +2442,7 @@ below it can move until it is.
       now matches a page by headword *and* gloss, because two pages are
       headed hund. Five probes, each restored by md5: slugs without the
       collision suffix (named ōs, liber and the three pairs), the pack
-      builder leaving the number in `tgt` (five tests, 22 pages), `sōþ` off
+      builder leaving the number in `tgt` (six tests, 22 pages), `sōþ` off
       the list and a bogus entry on it (both named), the lookup grouping
       by spelling (three tests), and the orthography reading above.
 

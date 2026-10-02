@@ -358,7 +358,7 @@ Red first naming exactly the three, with the five one-word targets passing.
 and numbering it may move the store art — and is queued as a decision.
 
 Done test-first, with five probes restored by md5; the one worth keeping is
-the pack builder leaving the number in `tgt`, which fails five tests across
+the pack builder leaving the number in `tgt`, which fails six tests across
 22 pages. Two readers changed with no failing test beforehand and were
 probed instead: `verify-packs` warned three times on `²` until it read the
 spelling, and the orthography guard missed a planted bare `riċe` under its
