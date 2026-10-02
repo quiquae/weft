@@ -8,6 +8,7 @@ import {
 import { cardRetrievability, daysUntilDue } from '../../core/fsrs.ts';
 import { formatDuration } from '../../core/escalation.ts';
 import { buildDiscoveries } from '../../core/discoveries.ts';
+import { entriesByTarget } from '../../core/lexicon.ts';
 import { earnedMilestones, nextMilestone } from '../../core/milestones.ts';
 import { historyDays } from '../../core/entitlements.ts';
 import { api } from '../../shared/browser.ts';
@@ -49,16 +50,12 @@ function Dashboard() {
       : null,
   );
 
+  // One entry per word, telling the word's story wherever the pack keeps it.
+  // See `entriesByTarget`: a first-row lookup built here left the feed silent
+  // about argent and fille, whose claims sit on their second rows.
   const glosses = useMemo(() => {
     const entries = packRequest.data?.pack?.entries;
-    if (!entries) return new Map<string, LexEntry>();
-    const byLemma = new Map<string, LexEntry>();
-    for (const list of Object.values(entries)) {
-      for (const entry of list) {
-        if (!byLemma.has(entry.tgtLemma)) byLemma.set(entry.tgtLemma, entry);
-      }
-    }
-    return byLemma;
+    return entries ? entriesByTarget(entries) : new Map<string, LexEntry>();
   }, [packRequest.data]);
 
   if (stats.loading) {
