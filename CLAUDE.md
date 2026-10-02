@@ -55,13 +55,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **536 pass**, 132 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **144 pass**, 39 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **150 pass**, 41 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **37 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 985 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 16 108 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -223,6 +223,22 @@ community, to be sent by a human. An automated account posting self-promotion
 earns a domain-level shadowban, which would destroy the 713-page search asset.
 That was a decision, not an omission.
 
+**A card is read back as a word in one place, and its story travels where
+its gloss does not.** A memory card is keyed by its target word and the pack
+holds a row per English gloss, so `fr:argent` is *silver* and *money* both.
+`entriesByTarget()` in `src/core/lexicon.ts` is the only reader — the
+dashboard's feed and vocabulary list, the quiz builder and the site builder
+all go through it, and `tests/tools/lexicon-lookup.test.ts` fails on a
+hand-built `map.set(row.tgtLemma, …)` anywhere under `src/` or `tools/`. A
+word is glossed from its first singular row, and when that row carries no
+claim it takes one from another row *of the same part of speech*. Do not
+simplify that to "use the row with the story": that moves the gloss the
+vocabulary list shows and the quiz asks, which a probe measured on
+2026-10-02. Do not drop the part-of-speech condition either: Old English
+`hund` is a dog and a hundred, two words with one spelling, and a claim about
+one is false of the other. Those homographs still share a card each, which no
+lookup can fix; `TODO.md` has it.
+
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
 Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
@@ -286,6 +302,87 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-02 — eleven hidden stories were two, and three words were two words each
+
+The queue named the topmost unchecked item exactly: the discoveries feed read
+one pack row per target word, and "eleven true etymologies sit on the other
+one". It asked for the surfaces that read that map to be measured before a
+shape was chosen.
+
+**Four surfaces, not two, and all four were the same hand loop.** The
+dashboard built one first-row map for the feed *and* the vocabulary list
+beside it — its gloss, its etymon badge, its search box; the quiz builder
+built a second; and the site builder a third, for every Latin and Old
+English page. `git grep` for `.set(… .tgtLemma` finds exactly those three.
+
+**Counted row by row and read through the feed's own sentence, the eleven
+were four things.** Two hidden outright — `fille` and `argent`, whose claims
+sit on the daughter and money rows because `fr-cousins.tsv` keys claims by
+English lemma. Three a second true descent beside one the feed already
+tells (`domus` → *domicile*, and so on). Four saying nothing the first row
+does not. And two claims about a *different word* with the same spelling,
+which is the finding: Old English `hund` is a dog and a hundred, `earm` an
+arm and poor, `rīċe` a realm and powerful, and each pair shares one card. A
+reader who met *hund* as "hundred" is told it survived as *hound*, asked
+"dog" in the quiz, and shown "dog" in the list. No lookup can fix that,
+because a card does not record which word was met; it is the new top of
+`TODO.md`'s `Next`, with three shapes and none chosen.
+
+**Shape 1, taken at the level of the claim.** `entriesByTarget()` in the new
+`src/core/lexicon.ts` reads each word from its first singular row and, when
+that row carries no claim, copies on the first claim another row *of the
+same part of speech* carries, etymon and note together. The literal shape 1,
+"prefer the row with a story", was probed and rejected: it moved *fille* to
+*daughter* and *argent* to *money* in the list and the quiz. Shape 2 would
+have scheduled 46 one-word-two-gloss cards twice and needed a migration;
+shape 3 would have copied `rīċe`'s "rich" onto the noun. The part-of-speech
+line withholds nothing on today's packs and is what stops the rule ever
+telling *earm*'s "poor" readers about *arm*.
+
+Done test-first: `tests/core/lexicon.test.ts` (9 tests, 2 suites), red on
+the missing module and then 5 of 9 against the old loop moved into core;
+`tests/tools/lexicon-lookup.test.ts` (6 tests, 2 suites), red naming exactly
+the three hand copies, which now fails on any `map.set(row.tgtLemma, …)`
+under `src/` or `tools/` and holds the lookup to the shipped packs; and one
+e2e test, red against `main`'s dashboard, which listed "argent silver seen
+3×" and rendered no feed. Six probes, each restored by md5, each firing for
+its own reason.
+
+**What moved: two feed lines and 652 bytes.** The site, built before and
+after, is byte-identical in all 718 files; all 36 generated screenshots
+came back byte-identical — the documentation set under
+`TZ=Pacific/Pago_Pago`, because `America/Los_Angeles` had crossed midnight —
+and the three groups are stamped. The package grew 985 → 986 KB, measured by
+building `main`'s two callers and this branch's in turn. One process slip,
+caught by `git diff --stat`: a `perl -0pi` replacement containing `\x{2019}`
+double-encoded the whole of `TODO.md`, +1017/−886 for a two-word edit, and
+was reversed byte for byte before anything was committed.
+
+Counts moved 805 → **821**: unit 527 → **536** / 130 → **132** suites, tools
+144 → **150** / 39 → **41**, e2e 36 → **37**, in six places,
+`docs/LAUNCH.md:221` first; and a `CHANGELOG.md` paragraph, because the feed
+ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 536 unit / 132 suites, 98
+jsdom / 22 suites, 150 tools / 41 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **37 e2e passed and 3 skipped in 1.8 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **713
+pages / 16 108 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that a claim belongs to the word, so the feed
+may tell *argent*'s money-row note to a reader who met it as silver; that
+the list and the quiz keep the first row's gloss rather than show every
+gloss a word has; that the site reads through the same lookup although it
+changes nothing there today; and that the homographs want their own item.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds nine agent-shaped items, the three Old English
+homographs first.
 
 ### 2026-10-02 — nineteen wrong pronunciations were thirty, and the miss was in how the census counted
 

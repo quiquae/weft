@@ -265,8 +265,8 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 527 unit + 98 jsdom + 144 over the build tools
-npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
+npm test               # 536 unit + 98 jsdom + 150 over the build tools
+npm run test:e2e       # 37 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest
@@ -283,7 +283,7 @@ npm run release -- --version=X.Y.Z           # version, build, package, notes
 npm run licence -- --name="..." --tier=pro   # issue a licence key
 ```
 
-`npm run test:e2e` reports "36 passed, 3 skipped". The three skipped ones
+`npm run test:e2e` reports "37 passed, 3 skipped". The three skipped ones
 are asset generators rather than assertions — `WEFT_STORE=1`,
 `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1` turn them on when the store
 screenshots need redrawing.

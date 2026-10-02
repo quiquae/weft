@@ -9,14 +9,14 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 527 unit tests, 98 jsdom tests, 144 tool tests, the
-compatibility audit, all three builds, the package validator, and 36 end-to-end
+runs typecheck, 536 unit tests, 98 jsdom tests, 150 tool tests, the
+compatibility audit, all three builds, the package validator, and 37 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
 
 Three further end-to-end specs are defined and deliberately skipped — they
 generate assets rather than assert anything, and run only behind
-`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "36 passed, 3
+`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "37 passed, 3
 skipped" is the green result, not a partial one.
 
 `test:all` does **not** include `npm run packs:verify`, `npm run site:check`

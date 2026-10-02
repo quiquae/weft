@@ -279,6 +279,52 @@ test.describe('the progress page', () => {
     await expect(dashboard.locator('.headline')).toContainText(/words of French/);
     await expect(dashboard.locator('.tile').first()).toBeVisible();
   });
+
+  test('tells a word’s story from whichever of its rows carries it', async ({
+    context,
+    extensionId,
+    rpc,
+  }) => {
+    /*
+     * A card is a target word; the pack has a row per English gloss.
+     * `argent` is silver first and money second in en-fr.json, and only the
+     * money row carries a claim. The dashboard read every card from its
+     * word's first row, so the feed said nothing about argent at all, while
+     * the unit tests — which hand `buildDiscoveries` a lookup they built
+     * themselves — could not see what the page actually passed it.
+     */
+    const now = Date.now();
+    await rpc({
+      type: 'import-data',
+      payload: {
+        format: 'weft-export/1',
+        settings: {},
+        cards: {
+          'fr:argent': {
+            id: 'fr:argent',
+            target: 'fr',
+            lemma: 'argent',
+            stability: 0,
+            difficulty: 5,
+            lastReview: 0,
+            reps: 0,
+            lapses: 0,
+            exposures: 3,
+            firstSeen: now - 86_400_000,
+          },
+        },
+      },
+    });
+
+    const dashboard = await context.newPage();
+    await dashboard.goto(`chrome-extension://${extensionId}/dashboard.html`);
+    await expect(dashboard.locator('.finds')).toContainText(
+      'argent — shares a root with English “argentine”, silvery.',
+    );
+    // The story moved; the gloss did not. The list beside the feed still
+    // reads argent from its first row, as the quiz does.
+    await expect(dashboard.locator('.vocab__row', { hasText: 'argent' })).toContainText('silver');
+  });
 });
 
 test.describe('the notification fallback', () => {

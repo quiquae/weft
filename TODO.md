@@ -5,14 +5,29 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **144** tool tests / 39 suites, **36** e2e passing
+of this session — typecheck clean, **536** unit / 132 suites, **98** jsdom / 22
+suites, **150** tool tests / 41 suites, **37** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 985 KB and passing `npm run validate`. The package grew
+packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
-crossed a rounding boundary, and 984 → 985 KB the same evening by the Old
-English pack's 1 541, its notes having grown longer than its etymons shrank.
+crossed a rounding boundary, 984 → 985 KB the same evening by the Old
+English pack's 1 541, its notes having grown longer than its etymons shrank,
+and 985 → 986 KB on 2026-10-02 by 652 bytes, the shared lookup below —
+measured by building `main`'s two callers and this branch's in turn.
 `npm run test:all` exits 0 end to end.
+
+**And as of 2026-10-02 the feed tells a word's story wherever the pack keeps
+it.** A card is a target word and the pack has a row per English gloss, so
+`fr:argent` is *silver* and *money*; three readers built their own lookup and
+kept the first row, so the feed said nothing about *argent* and *fille*,
+whose claims sit on their money and daughter rows. One lookup now,
+`entriesByTarget()`, read by the dashboard, the quiz builder and the site:
+the gloss stays on the first row and the story comes from a row of the same
+part of speech. **Measuring it found the item's "eleven" was two**, and found
+three words that are two words each — Old English `hund`, `earm` and `rīċe` —
+for which the feed states one word's etymology to a reader who met the other.
+That is the new top of `Next`. See the ticked item there and the note at the
+top of Notes.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
 npm's own exit status captured rather than a pipe's:**
@@ -285,9 +300,10 @@ and stress from its spelling by Allen & Greenough's rules and refuses a
 transcription that disagrees. See the ticked item in `Next`.
 
 **So the whole of B0 is closed and `Now` is empty. `Next` holds nine
-agent-shaped items, and two of them — the Latin descents nobody has looked
-up, and an Old English word stressed on the wrong syllable — should land
-before B3 indexes the pages they are on.** The code is not
+agent-shaped items, and three of them — the Old English homographs, the
+Latin descents nobody has looked up, and an Old English word stressed on the
+wrong syllable — should land before B3 indexes the pages they are on.** The
+code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining item besides those nine needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
@@ -2233,7 +2249,7 @@ below it can move until it is.
       beside the icons, so this commit leaves no group stale but the
       release notes.
 
-- [ ] **The discoveries feed reads one pack entry per target word, and
+- [x] **The discoveries feed reads one pack entry per target word, and
       eleven true etymologies sit on the other one.** Found 2026-10-01 when
       a corrected French note would not appear in a rendered feed. Cards
       are keyed by the target word (`fr:argent`), and the dashboard and the
@@ -2253,6 +2269,121 @@ below it can move until it is.
       row sharing a target word the same claim, which is a data patch over
       a lookup bug. Measure first which surfaces besides the feed read that
       map.
+
+      **Done 2026-10-02, and two were hidden, not eleven.** Measured first,
+      over all seven packs, row by row. **Four surfaces built that lookup by
+      hand, not two**: the feed and the vocabulary list beside it — its
+      gloss, its "→ English" badge and its search box — from one map in the
+      dashboard; the quiz builder; and the site builder, for every Latin
+      and Old English word page and hub, which skipped plurals and otherwise
+      did the same. 49 target words have more than one English gloss. Of
+      the eleven claims counted above, the feed hid exactly two, `fille`
+      and `argent`, whose first rows carry nothing. Three are a second true
+      descent beside one the feed already tells (`domus` → *domicile*,
+      `terra` → *territory*, `magnus` → *magnificent*); four say nothing
+      the first row does not (`puer`'s boy row, `mann`'s person row,
+      `sōþ`'s true row, `hund`'s hound row); and two are claims about a
+      different word with the same spelling, `hund` "hundred" and `rīċe`
+      "rich" — the item directly below.
+
+      **Shape 1, taken at the level of the claim.** `entriesByTarget()` in
+      `src/core/lexicon.ts` reads each word from its first singular row
+      and, when that row carries no claim, takes the first claim — etymon
+      and note together — that another row *of the same part of speech*
+      carries. All three readers use it, and their hand copies are gone.
+      Not the literal shape 1, "prefer an entry that carries a story":
+      probe P3 picked the storied row whole and moved `fille`'s gloss from
+      *girl* to *daughter* and `argent`'s from *silver* to *money*, in the
+      vocabulary list and in the quiz — a change to what a learner is
+      asked, made because of which row a claims file filed the claim under.
+      Not shape 2: 46 of the 49 shared words are one word with two glosses,
+      so keying cards by English lemma would schedule *fille* twice, and it
+      needs a migration of every stored card and exported file. Not shape
+      3: `fr-cousins.tsv` keys its claims by English lemma by design, and
+      copying a claim to every row sharing a spelling would copy `rīċe`'s
+      "rich" onto the noun.
+
+      **The part-of-speech line is what stops shape 1 manufacturing a false
+      claim, and it withholds nothing today.** Every row sharing a word and
+      a part of speech in the seven packs is one word with two glosses —
+      read through, all 49 — and no first row lacks a claim that only a row
+      of another part of speech carries. It is there for `earm`: were
+      *poor* listed before *arm*, shape 1 would tell every reader who met
+      *earm* as "poor" that it survived into English as *arm*.
+
+      Test-first. `tests/core/lexicon.test.ts`, 9 tests in 2 suites: red on
+      the missing module, then 5 of 9 red against a stub that was the old
+      loop moved into core, the 4 green being the three guards against
+      over-correcting and the one-entry-per-word check.
+      `tests/tools/lexicon-lookup.test.ts`, 6 tests in 2 suites: no source
+      file under `src/` or `tools/` builds a map keyed by a row's
+      `tgtLemma` — red naming exactly the three copies — and over the
+      shipped packs the lookup tells every same-part-of-speech story,
+      borrows none across parts of speech and moves no gloss, with floors
+      on the files walked and the packs read. One e2e test in
+      `friction.spec.ts` imports an `argent` card and reads the real
+      dashboard: red against `main`'s dashboard, whose snapshot listed
+      "argent silver seen 3×" and rendered no feed at all. Six probes, each
+      restored by md5: without the part-of-speech condition only the unit
+      test on `earm` fires, because the packs give it nothing to catch;
+      first-row-only fails five, naming `fr:fille` and `fr:argent`; the
+      storied row taken whole fails both gloss tests, naming the four
+      fields it moved; writing onto the row fails the frozen-pack test; and
+      both floors fire, "only 14 source files were read" and "read 0
+      packs".
+
+      **What moved: two lines of the feed**, "fille — shares a root with
+      English “filial”." and "argent — shares a root with English
+      “argentine”, silvery." The site, built before and after into
+      temporary directories, is byte-identical in all 718 files. All 36
+      generated screenshots came back byte-identical — none of the 19
+      seeded words has two glosses — the documentation set with
+      `TZ=Pacific/Pago_Pago` holding the date, and the three groups are
+      stamped. The package grew 652 bytes, 985 → 986 KB.
+
+- [ ] **Three Old English target words are two words each, and every
+      surface speaks for the first.** Found 2026-10-02 measuring the item
+      above. A card is keyed by its target word alone, so `ang:hund` is
+      the dog and the hundred, `ang:earm` the arm and poor, and `ang:rīċe`
+      the realm and powerful: two words each, under one spelling, their
+      rows told apart only by part of speech (noun and numeral, noun and
+      adjective twice). What a reader who met only the second sees:
+
+      | Met as | The feed says | The quiz asks | The vocabulary list |
+      |---|---|---|---|
+      | *hundred* → `hund` | "hund survived into English as hound." | *dog* | hund — dog, → English *hound* |
+      | *poor* → `earm` | "earm survived into English as arm." | *arm* | earm — arm, → English *arm* |
+      | *rich* → `rīċe` | "rīċe — a realm; it survives as the -ric of “bishopric”." | *country* | rīċe — country |
+
+      The first two are false etymologies of the word the reader met. The
+      schedule is shared as well — the card the selector consults for the
+      hundred row is the dog's — so meeting one word counts as meeting the
+      other. And the site prints one page per spelling, the first row's:
+      the numeral and both adjectives have no page, and `rīċe` → *rich*, a
+      checked descent in `tools/seed/ang-etymons.tsv`, is on no page at all
+      and absent from the descent hub. No lookup can fix this, because a
+      card does not record which word was met; the part-of-speech line in
+      `entriesByTarget()` only stops it getting worse. Three shapes, none
+      chosen:
+
+      1. **A homograph number in the seed**, carried into `tgtLemma`, so
+         the second word is a second card, a second page — `assignSlugs`
+         already makes `hund-dog` and `hund-hundred` of a shared base — and
+         a second ledger key. Honest and general. It touches everything
+         that displays `tgtLemma` or keys on it: the site's headword and
+         slug, the Old English ledger, the orthography guard’s vocabulary.
+      2. **Teach the second word under a spelling that does not collide.**
+         etymonline gives "Old English hundred “the number of 100, a
+         counting of 100”", beside "simple hund" as the common word; for
+         *poor*, a word Bosworth–Toller attests — unchecked candidates are
+         *þearfende* and *unspēdiġ*. A content decision per row, and it
+         cannot save *rīċe* → *rich*, the best of the three.
+      3. **Drop the second rows.** Smallest, and loses the same descent.
+
+      Under 1 or 2 an existing learner's card for these three stays with
+      the first word, which is a small wrong for at most three cards. Free
+      before **B3**, because 1 moves two addresses. About two hours for 1,
+      with the ledgers.
 
 - [ ] **The feed tells Latin borrowings in Old English's words.** Found
       2026-10-02 when a corrected note moved `vir` into the feed's plain
@@ -2436,15 +2567,17 @@ below it can move until it is.
 
 `Now` is **empty** and `Next` holds **nine** unchecked items above, as of
 2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The feed's hidden etymologies first, which are true facts out
-of sight, and the feed's Latin frames beside them, which are overstatements
-in it; then the Latin descent pass, the longest, which wants to land before
+to work them. The Old English homographs first, which are false claims in
+the feed and the quiz and are free to fix before **B3** moves their
+addresses; then the feed's Latin frames, which are overstatements in it;
+then the Latin descent pass, the longest, which wants to land before
 **B3** and has six known failures to start from; then the landing page's
 table, the dashboard's date and the pronunciation key's quote marks, three
 small guards; then Old English stress, one wrong word and a grammar to
 read, also free before B3; then `far wel` and `camera`, content questions.
-The Latin note on `vir`, the 22 Old English addresses and the thirty Latin
-pronunciations, which sat first, are done.
+The Latin note on `vir`, the 22 Old English addresses, the thirty Latin
+pronunciations and the feed's hidden etymologies, which sat first, are
+done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2777,6 +2910,48 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the feed's lookup: eleven hidden stories were two, and the
+other nine were three different things.** Ticked in `Next`. Six things a
+later run would be sorry not to know:
+
+1. **Count rows, then classify each by what the feed would print.** The
+   item's eleven were rows whose claim differs from the first row's; only
+   the sentence the feed builds tells a hidden story from a duplicate one
+   from a claim about another word. `/tmp/weft-feed/measure2.ts` runs the
+   real `buildDiscoveries` over every row of every pack, and
+   `/tmp/weft-feed/shared.ts` lists the 49 words with two glosses and their
+   parts of speech. `/tmp` does not survive a reboot.
+2. **A story travels between a word's rows; a gloss does not.** Probe P3
+   took the storied row whole, which is the item's shape 1 read literally,
+   and moved *fille* to *daughter* and *argent* to *money* in the
+   vocabulary list and the quiz. `entriesByTarget()` copies the claim onto
+   the first row instead. Do not simplify it back.
+3. **The part-of-speech line is a proxy for "the same word"**, and it holds
+   because all 49 shared words were read: every same-part-of-speech pair is
+   one word with two glosses. A homograph sharing a part of speech would
+   defeat it. The homograph item's first shape, a number in the seed, is
+   what would make the line unnecessary.
+4. **`TZ=Pacific/Pago_Pago` holds `dashboard.png`'s date until 11:00 UTC the
+   day after it was taken.** `America/Los_Angeles` stopped working at 08:00
+   BST. Run `TZ=… date` before the generator, not after. Queued in `Next`
+   as a real fix.
+5. **`perl -0pi` with a `\x{…}` in the replacement double-encodes the whole
+   file**: it reads bytes, meets one wide character and writes everything
+   out as UTF-8 again. `git diff --stat` showed +1017/−886 on a two-word
+   edit. Reversed by decoding as UTF-8 and writing every code point at or
+   below 0xFF back as one byte; then use the Edit tool, or `perl -CSD`.
+6. **The source guard is a tripwire for the copy that was there, not a
+   proof.** It catches `map.set(row.tgtLemma, …)`; a lookup keyed through
+   a temporary variable would pass it.
+
+**What was assumed, with nobody to ask.** That a claim belongs to the word,
+so the feed may tell *argent*'s money-row note to a reader who met *argent*
+as silver — the tooltip still shows only the woven row's claim; that the
+vocabulary list and the quiz keep the first row's gloss rather than gain all
+of a word's glosses, which would be more honest and would change what the
+quiz asks; that the site reads through the same lookup although it changes
+nothing there today; and that the homographs want their own item.
 
 **2026-10-02 — the thirty Latin pronunciations: the census came from a
 script that counted from the end of the word.** Ticked in `Next`. Six things

@@ -27,6 +27,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
 import { FEATURES } from '../src/core/entitlements.ts';
+import { entriesByTarget } from '../src/core/lexicon.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
 import { markSvg } from './brand.ts';
 
@@ -1222,14 +1223,10 @@ async function main() {
     const lang = file.slice(3, -5);
     const pack = JSON.parse(await readFile(join(PACKS, file), 'utf8'));
     packDate[lang] = pack.meta?.builtAt ?? null;
-    // One entry per headword: the packs carry a row per surface form.
-    const seen = new Map();
-    for (const list of Object.values(pack.entries)) {
-      for (const e of list) {
-        if (e.num === 'pl') continue;
-        if (!seen.has(e.tgtLemma)) seen.set(e.tgtLemma, e);
-      }
-    }
+    // One entry per headword: the packs carry a row per surface form and per
+    // English gloss. The lookup the extension reads cards back with, so a
+    // page and the dashboard cannot disagree about which row a word is.
+    const seen = entriesByTarget(pack.entries);
     // Attach the plural where the pack has one.
     for (const list of Object.values(pack.entries)) {
       for (const e of list) {

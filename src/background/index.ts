@@ -18,6 +18,7 @@ import {
 import { cardId, isRetirable, newCard, reviewCard } from '../core/fsrs.ts';
 import { effectiveLevel } from '../core/selector.ts';
 import { buildQuiz, quizPassed, quizScore } from '../core/quiz.ts';
+import { entriesByTarget } from '../core/lexicon.ts';
 import { validateSettings } from '../core/settings.ts';
 import { clampToTier, exceedsTier, featureInfo } from '../core/entitlements.ts';
 import { describeLicence } from '../core/licence.ts';
@@ -407,21 +408,14 @@ const handlers: Handlers = {
       return { questions: [], error: 'Could not load the vocabulary pack.' };
     }
 
-    const pool: LexEntry[] = [];
-    const byLemma = new Map<string, LexEntry>();
-    for (const list of Object.values(pack.entries)) {
-      for (const entry of list) {
-        pool.push(entry);
-        if (!byLemma.has(entry.tgtLemma)) byLemma.set(entry.tgtLemma, entry);
-      }
-    }
-
     const allCards = await store.loadCards();
     const cards = Object.values(allCards).filter((c) => c.target === target);
     const questions = buildQuiz({
       cards,
-      entriesByLemma: byLemma,
-      pool,
+      // The same lookup the dashboard reads, so the quiz asks a word by the
+      // gloss the vocabulary list shows for it. See `entriesByTarget`.
+      entriesByLemma: entriesByTarget(pack.entries),
+      pool: Object.values(pack.entries).flat(),
       target,
       source: settings.learning.sourceLang,
       count: settings.friction.quizWordCount,
