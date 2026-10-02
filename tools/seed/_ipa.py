@@ -4,10 +4,15 @@ Grapheme-to-phoneme for Latin and Old English.
 Neither language has a speech-synthesis voice, so the tooltip shows IPA
 instead of offering audio. Hand-typing 700 transcriptions would be slow and
 would drift; both orthographies are close to deterministic once vowel length
-is marked, so the transcription is derived and the derivation is tested.
+is marked, so the transcription is derived. Run this file to check the
+derivation against forms worked out by hand; every Latin value it has written
+into `lex-la.tsv` is also held to the classical rules of syllable and stress
+by `tests/tools/latin-stress.test.ts`, which reads them out of the spelling
+on its own.
 
 Values are the standard teaching reconstructions: Classical Latin as in
-Allen's *Vox Latina*, Old English as in Hogg / Campbell.
+Allen's *Vox Latina*, Old English as in Hogg / Campbell. Latin syllables and
+stress follow Allen & Greenough's *New Latin Grammar*, §§7, 11 and 12.
 """
 
 # --------------------------------------------------------------- Latin ----
@@ -16,7 +21,22 @@ LA_VOWELS = {
     'a': 'a', 'ā': 'aː', 'e': 'ɛ', 'ē': 'eː', 'i': 'ɪ', 'ī': 'iː',
     'o': 'ɔ', 'ō': 'oː', 'u': 'ʊ', 'ū': 'uː', 'y': 'y', 'ȳ': 'yː',
 }
-LA_DIPHTHONGS = {'ae': 'ae̯', 'oe': 'oe̯', 'au': 'au̯', 'eu': 'eu̯'}
+LA_DIPHTHONGS = {'ae': 'ae̯', 'oe': 'oe̯', 'au': 'au̯'}
+"""
+eu is a diphthong in a handful of particles — ceu, "contr. from ce-ve, like
+neu and seu, from neve and sive" (Lewis & Short), and heu — and two vowels in
+most words that spell it, which Lewis & Short marks: cāsĕus, calcĕus,
+caerŭlĕus. A vowel before a vowel is short (A&G §10a), so it is a syllable of
+its own. Listed rather than detected, for the reason ANG_PREFIXED is.
+"""
+LA_EU_DIPHTHONG = {'ceu', 'heu', 'neu', 'seu'}
+"""
+Headwords whose spelling hides a consonant i, respelled with j as Lewis &
+Short prints them. An i between a consonant and a vowel is otherwise a vowel,
+fī-li-us; a compound whose second part begins with the consonant cannot say
+so in this spelling, and iūsiūrandum came out with a syllable too many.
+"""
+LA_RESPELT = {'iūsiūrandum': 'iūsjūrandum'}
 LA_CONSONANTS = {
     'b': 'b', 'c': 'k', 'd': 'd', 'f': 'f', 'g': 'ɡ', 'h': 'h', 'k': 'k',
     'l': 'l', 'm': 'm', 'n': 'n', 'p': 'p', 'r': 'r', 's': 's', 't': 't',
@@ -30,58 +50,105 @@ STOP_LIQUID = {'pl', 'pr', 'bl', 'br', 'tr', 'dr', 'cl', 'cr', 'gl', 'gr', 'fl',
 LA_LONG = set('āēīōūȳ')
 
 
-def _la_units(word):
+def _la_tokens(word):
     """
-    Split into (kind, text) units: 'v' for a vowel nucleus, 'c' otherwise.
+    Read a lowercase headword into ('v' | 'c', spelling, ipa) tokens: one per
+    syllable's vowel or diphthong, one per consonant.
 
-    Must apply the same i -> /j/ rule as the transcriber. "ianua" has three
-    syllables, not four, and getting that wrong moves the stress.
+    The stress and the transcription both read these, and reading the word
+    once is the point. The stress used to be counted on a walk of its own
+    that took the u of qu for a vowel, so quīnque had four syllables to it
+    and was stressed on its last, while the transcription knew qu is one
+    consonant and nothing compared the two. In qu and gu the u is "reckoned
+    neither as a vowel nor as a consonant" (A&G §5 note 2).
     """
-    units = []
+    w = LA_RESPELT.get(word, word)
+    tokens = []
     i = 0
-    w = word
     while i < len(w):
-        two = w[i:i + 2]
-        if two in LA_DIPHTHONGS:
-            units.append(('v', two))
+        rest = w[i:]
+        if rest.startswith('qu'):
+            tokens.append(('c', 'qu', 'kʷ'))
             i += 2
             continue
-        ch = w[i]
-        if ch == 'i' and i + 1 < len(w) and w[i + 1] in LA_VOWELS and (i == 0 or w[i - 1] in LA_VOWELS):
-            units.append(('c', 'j'))
-            i += 1
+        if rest.startswith('ngu') and len(rest) > 3 and rest[3] in LA_VOWELS:
+            # Two consonants, and the syllable boundary falls between them.
+            tokens += [('c', 'n', 'ŋ'), ('c', 'gu', 'ɡʷ')]
+            i += 3
             continue
-        if ch in LA_VOWELS:
-            units.append(('v', ch))
-            i += 1
+        digraph = next((d for d in ('ch', 'ph', 'th', 'rh') if rest.startswith(d)), None)
+        if digraph:
+            tokens.append(('c', digraph, {'ch': 'kʰ', 'ph': 'pʰ', 'th': 'tʰ', 'rh': 'r'}[digraph]))
+            i += 2
             continue
-        units.append(('c', ch))
+        two = rest[:2]
+        if two in LA_DIPHTHONGS or (two == 'eu' and w in LA_EU_DIPHTHONG):
+            tokens.append(('v', two, LA_DIPHTHONGS.get(two, 'eu̯')))
+            i += 2
+            continue
+        ch = rest[0]
+        if ch == 'i' and len(rest) > 1 and rest[1] in LA_VOWELS and (i == 0 or w[i - 1] in LA_VOWELS):
+            tokens.append(('c', 'i', 'j'))
+        elif ch in LA_VOWELS:
+            tokens.append(('v', ch, LA_VOWELS[ch]))
+        elif ch == 'n' and len(rest) > 1 and rest[1] in 'cgq':
+            tokens.append(('c', ch, 'ŋ'))
+        else:
+            tokens.append(('c', ch, LA_CONSONANTS.get(ch, ch)))
         i += 1
-    return units
+    return tokens
+
+
+def _la_nuclei(tokens):
+    return [i for i, t in enumerate(tokens) if t[0] == 'v']
+
+
+def _la_stressed(tokens, nuclei):
+    """
+    Which syllable is stressed (A&G §12): the first of two, otherwise the
+    penult if it is long and the antepenult if not.
+
+    A penult is long by nature, with a long vowel or a diphthong, or by
+    position, before two consonants or x or z, except a stop before a liquid
+    (A&G §11). h is not counted, nor the u of qu and gu, which is why tokens
+    carry their spelling: the transcription's length marks would mislead.
+    """
+    n = len(nuclei)
+    if n <= 2:
+        return 0
+    penult = tokens[nuclei[-2]][1]
+    if penult in LA_LONG or len(penult) == 2:
+        return n - 2
+    after = [t[1] for t in tokens[nuclei[-2] + 1:nuclei[-1]] if t[1] != 'h']
+    count = sum(2 if c in ('x', 'z') else 1 for c in after)
+    # A vowel before consonant i makes a long syllable, mâ-ior (A&G §11d).
+    long = (count >= 2 and ''.join(after) not in STOP_LIQUID) or after[:1] in (['i'], ['j'])
+    return n - 2 if long else n - 3
+
+
+def _la_onset(tokens, nuclei, k):
+    """
+    The token syllable k begins with, which is where its stress mark goes.
+
+    A syllable takes the one consonant before its vowel, or a stop and the
+    liquid after it, and leaves the rest to the syllable before: per-sō-na,
+    nār-rā-re, ec-clē-si-a, mōns-trā-re (A&G §7a and note 1, §11c). The mark
+    used to go before every consonant since the last vowel, which printed
+    persōna as /pɛˈrsoːna/.
+    """
+    if k == 0:
+        return 0
+    start, end = nuclei[k - 1] + 1, nuclei[k]
+    if end - start >= 2 and tokens[end - 2][1] + tokens[end - 1][1] in STOP_LIQUID:
+        return end - 2
+    return end - 1 if end > start else end
 
 
 def la_syllable_count_and_stress(word):
-    """Return (number of nuclei, index of the stressed nucleus)."""
-    units = _la_units(word)
-    nuclei = [i for i, (k, _) in enumerate(units) if k == 'v']
-    n = len(nuclei)
-    if n <= 1:
-        return n, 0
-    if n == 2:
-        return n, 0
-    # Weight of the penult decides between penult and antepenult stress.
-    penult_pos = nuclei[-2]
-    penult_text = units[penult_pos][1]
-    # The units carry orthography, so heaviness is tested against macrons and
-    # orthographic diphthongs, not against IPA length marks.
-    heavy = penult_text in LA_DIPHTHONGS or penult_text in LA_LONG
-    if not heavy:
-        cluster = ''.join(t for k, t in units[penult_pos + 1:nuclei[-1]] if k == 'c')
-        if 'x' in cluster or 'z' in cluster:
-            heavy = True
-        elif len(cluster) >= 2 and cluster[:2] not in STOP_LIQUID:
-            heavy = True
-    return n, (n - 2 if heavy else n - 3)
+    """Return (number of syllables, index of the stressed one)."""
+    tokens = _la_tokens(word)
+    nuclei = _la_nuclei(tokens)
+    return len(nuclei), _la_stressed(tokens, nuclei)
 
 
 FRONT = set('eēiīæǣyȳ')
@@ -91,82 +158,30 @@ def latin_ipa(word):
     w = word.strip().lower()
     if not w or ' ' in w:
         return ''
-    n, stress_index = la_syllable_count_and_stress(w)
+    tokens = _la_tokens(w)
+    nuclei = _la_nuclei(tokens)
+    mark = _la_onset(tokens, nuclei, _la_stressed(tokens, nuclei)) if nuclei else 0
 
-    out = []
-    nucleus_seen = -1
-    i = 0
-    while i < len(w):
-        rest = w[i:]
+    units = []
+    for idx, (kind, spelling, ipa) in enumerate(tokens):
+        if idx == mark and mark > 0 and spelling == 'x':
+            # x is two consonants, "probably dīc-sit, sac-sum" (A&G §7 note
+            # 1): the syllable takes the second.
+            units += [('c', 'k'), ('ˈ', 'ˈ'), ('c', 's')]
+            continue
+        if idx == mark:
+            units.append(('ˈ', 'ˈ'))
+        units.append((kind, ipa))
 
-        # Digraphs and conditioned consonants first.
-        if rest.startswith('qu'):
-            out.append(('c', 'kʷ'))
-            i += 2
-            continue
-        if rest.startswith('ngu') and len(rest) > 3 and rest[3] in LA_VOWELS:
-            out.append(('c', 'ŋɡʷ'))
-            i += 3
-            continue
-        for digraph, ipa in (('ch', 'kʰ'), ('ph', 'pʰ'), ('th', 'tʰ'), ('rh', 'r')):
-            if rest.startswith(digraph):
-                out.append(('c', ipa))
-                i += 2
-                break
-        else:
-            two = rest[:2]
-            if two in LA_DIPHTHONGS:
-                nucleus_seen += 1
-                out.append(('v', LA_DIPHTHONGS[two], nucleus_seen))
-                i += 2
-                continue
-            ch = rest[0]
-            if ch == 'i' and len(rest) > 1 and rest[1] in LA_VOWELS and (i == 0 or w[i - 1] in LA_VOWELS):
-                out.append(('c', 'j'))
-                i += 1
-                continue
-            if ch in LA_VOWELS:
-                nucleus_seen += 1
-                out.append(('v', LA_VOWELS[ch], nucleus_seen))
-                i += 1
-                continue
-            if ch == 'n' and len(rest) > 1 and rest[1] in 'cgq':
-                out.append(('c', 'ŋ'))
-                i += 1
-                continue
-            if ch == 'u' and i > 0 and w[i - 1] in 'qg':
-                out.append(('c', 'w'))
-                i += 1
-                continue
-            out.append(('c', LA_CONSONANTS.get(ch, ch)))
-            i += 1
-            continue
-        continue
-
-    # Geminates become length marks.
+    # Geminates become length marks, except where the stress mark falls
+    # between the two, since each belongs to its own syllable: nār-rā-re.
     phones = []
-    for unit in out:
+    for unit in units:
         if unit[0] == 'c' and phones and phones[-1][0] == 'c' and phones[-1][1] == unit[1]:
             phones[-1] = ('c', unit[1] + 'ː')
         else:
             phones.append(unit)
-
-    # Place the stress mark at the onset of the stressed syllable.
-    result = []
-    stress_done = n <= 1 and False
-    for idx, unit in enumerate(phones):
-        if unit[0] == 'v' and unit[2] == stress_index and not stress_done:
-            # Walk back over this syllable's onset consonants.
-            onset = []
-            while result and result[-1] not in ('ˈ',) and _is_consonant(result[-1]):
-                onset.insert(0, result.pop())
-            result.append('ˈ')
-            result.extend(onset)
-            stress_done = True
-        result.append(unit[1])
-    if not stress_done:
-        result.insert(0, 'ˈ')
-    return '/' + ''.join(result) + '/'
+    return '/' + ''.join(p[1] for p in phones) + '/'
 
 
 CONSONANT_PHONES = set(
@@ -329,6 +344,16 @@ if __name__ == '__main__':
         ('terra', '/ˈtɛrːa/'), ('caelum', '/ˈkae̯lʊm/'), ('vīta', '/ˈwiːta/'),
         ('nauta', '/ˈnau̯ta/'), ('sanguis', '/ˈsaŋɡʷɪs/'), ('iānua', '/ˈjaːnʊa/'),
         ('oculus', '/ˈɔkʊlʊs/'), ('pāx', '/ˈpaːks/'),
+        # qu is one consonant, so these are stressed by the right count.
+        ('quīnque', '/ˈkʷiːŋkʷɛ/'), ('quattuor', '/ˈkʷatːʊɔr/'), ('relinquere', '/rɛˈlɪŋkʷɛrɛ/'),
+        # -eus is two syllables outside the listed particles.
+        ('cāseus', '/ˈkaːsɛʊs/'), ('caeruleus', '/kae̯ˈrʊlɛʊs/'), ('seu', '/ˈseu̯/'),
+        # The mark goes where the stressed syllable begins.
+        ('persōna', '/pɛrˈsoːna/'), ('mōnstrāre', '/moːnsˈtraːrɛ/'), ('nārrāre', '/naːrˈraːrɛ/'),
+        ('ecclēsia', '/ɛkˈkleːsɪa/'), ('relaxāre', '/rɛlakˈsaːrɛ/'),
+        # A stop before a liquid leaves the penult short: no headword has one.
+        ('tenebrae', '/ˈtɛnɛbrae̯/'),
+        ('iūsiūrandum', '/juːsjuːˈrandʊm/'),
     ]
     checks_ang = [
         ('hūs', '/ˈhuːs/'), ('stān', '/ˈstɑːn/'), ('cyning', '/ˈkyniŋɡ/'),
@@ -361,3 +386,4 @@ if __name__ == '__main__':
             bad += 1
         print(f'  ang {flag} {word:12s} {got:22s} want {want}  (verb: prefix unstressed)')
     print(f'\n{bad} mismatches')
+    raise SystemExit(1 if bad else 0)
