@@ -24,8 +24,9 @@
  * of speech carry, and the gloss of its first singular row. The lookup must
  * tell one of those claims whenever there is one, never a claim from a row
  * of another part of speech — Old English `hund` is a dog and a hundred, two
- * words — and gloss every word exactly as its first singular row does, which
- * is what the vocabulary list, the quiz and the site go on showing.
+ * words, which the seed now numbers apart (`tests/tools/lexicon-homographs.test.ts`)
+ * — and gloss every word exactly as its first singular row does, which is
+ * what the vocabulary list, the quiz and the site go on showing.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';

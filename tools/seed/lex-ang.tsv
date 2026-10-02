@@ -32,6 +32,17 @@
 # checked against in tools/seed/ang-etymons.tsv, and
 # tests/tools/ang-etymons.test.ts fails on one that names none.
 #
+# One spelling is sometimes two words. hund is a dog and a hundred, earm an
+# arm and poor, rice a realm and rich, and English Wiktionary gives each
+# pair two etymologies. A memory card is keyed by the target, so the second
+# word of each is written with a homograph number, "hund²", and is a card, a
+# page and a ledger key of its own; nothing a reader sees prints the number.
+# The first word is written bare, so its card keeps the id it already had,
+# and the numbers follow Wiktionary's numbering of the etymologies. "soþ",
+# true and truth, is one word with one etymology and is not numbered.
+# tests/tools/lexicon-homographs.test.ts fails on a target shared across
+# parts of speech that is neither numbered nor listed there as one word.
+#
 man	noun	mann	menn	m	/ˈmɑnː/	man	“mann” meant a human being of either sex
 woman	noun	wīfmann	wīfmenn	f	/ˈwiːvmɑnː/	woman	literally “woman-person”
 child	noun	ċild	cildru	n	/ˈtʃild/	child	
@@ -235,8 +246,8 @@ quick	adj	swift			/ˈswift/	swift	“cwic” meant alive, as in “the quick and
 slow	adj	slāw			/ˈslɑːw/	slow	
 true	adj	sōþ			/ˈsoːθ/	sooth	
 false	adj	lēas			/ˈlæːɑs/	-less	the suffix in “hopeless” is this word
-rich	adj	rīċe			/ˈriːtʃe/	rich	it meant powerful before it meant wealthy
-poor	adj	earm			/ˈæɑrm/		
+rich	adj	rīċe²			/ˈriːtʃe/	rich	it meant powerful before it meant wealthy
+poor	adj	earm²			/ˈæɑrm/		
 happy	adj	ēadiġ			/ˈæːɑdij/		
 sad	adj	unrōt			/ˈunroːt/		“sad” is another word, “sæd”, which meant sated, full
 tired	adj	wēriġ			/ˈweːrij/	weary	
@@ -380,7 +391,7 @@ seven	num	seofon			/ˈseovon/	seven
 eight	num	eahta			/ˈæɑxtɑ/	eight	
 nine	num	nigon			/ˈniɣon/	nine	
 ten	num	tīen			/ˈtiːen/	ten	
-hundred	num	hund			/ˈhund/		the usual word for it; English kept “hundred”, “a counting of 100”
+hundred	num	hund²			/ˈhund/		the usual word for the number; English kept “hundred”, “a counting of 100”
 thousand	num	þūsend			/ˈθuːzend/	thousand	
 first	num	forma			/ˈformɑ/	former	“former” began as its comparative
 yes	intj	ġēa			/ˈjæːɑ/	yea	

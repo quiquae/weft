@@ -75,6 +75,22 @@ describe('distractorsFor', () => {
     const options = distractorsFor(POOL[0] as LexEntry, POOL, 3, mulberry32(11), 'source');
     assert.equal(new Set(options).size, options.length);
   });
+
+  test('never offers the other word of a spelling as a wrong answer', () => {
+    // Old English hund is a dog and a hundred, and the seed writes the second
+    // hund². Both questions show the learner "hund", so offering "dog" as a
+    // wrong answer to it is offering a right one.
+    const dog = entry({ src: 'dog', lemma: 'dog', pos: 'noun', tgt: 'hund', tgtLemma: 'hund', band: 1 });
+    const hundred = entry({ src: 'hundred', lemma: 'hundred', pos: 'noun', tgt: 'hund', tgtLemma: 'hund²', band: 1 });
+    const cat = entry({ src: 'cat', lemma: 'cat', pos: 'noun', tgt: 'catt', tgtLemma: 'catt', band: 1 });
+    const house = entry({ src: 'house', lemma: 'house', pos: 'noun', tgt: 'hūs', tgtLemma: 'hūs', band: 1 });
+    const pool = [dog, hundred, cat, house];
+
+    for (const seed of [1, 2, 3, 4, 5]) {
+      assert.ok(!distractorsFor(hundred, pool, 3, mulberry32(seed), 'source').includes('dog'), `seed ${seed} offered dog for hund²`);
+      assert.ok(!distractorsFor(dog, pool, 3, mulberry32(seed), 'source').includes('hundred'), `seed ${seed} offered hundred for hund`);
+    }
+  });
 });
 
 describe('buildQuiz', () => {

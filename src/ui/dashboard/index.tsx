@@ -8,7 +8,7 @@ import {
 import { cardRetrievability, daysUntilDue } from '../../core/fsrs.ts';
 import { formatDuration } from '../../core/escalation.ts';
 import { buildDiscoveries } from '../../core/discoveries.ts';
-import { entriesByTarget } from '../../core/lexicon.ts';
+import { entriesByTarget, spelling } from '../../core/lexicon.ts';
 import { earnedMilestones, nextMilestone } from '../../core/milestones.ts';
 import { historyDays } from '../../core/entitlements.ts';
 import { api } from '../../shared/browser.ts';
@@ -470,7 +470,7 @@ function VocabRow({
   return (
     <li class="vocab__row" data-stage={stage}>
       <span class="vocab__gloss">
-        <Gloss target={entry?.tgt ?? card.lemma} source={entry?.lemma ?? '—'} />
+        <Gloss target={entry?.tgt ?? spelling(card.lemma)} source={entry?.lemma ?? '—'} />
       </span>
       <span class="vocab__hold" aria-hidden="true">
         <WeaveBand ratio={retention} height={12} warps={16} label="" />

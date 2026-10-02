@@ -42,6 +42,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spelling } from '../../src/core/lexicon.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 
@@ -104,11 +105,16 @@ const pack = (lang: string): Entry[] =>
     >,
   ).flat();
 
-/** Macron-stripped headword → the way the pack spells it. */
+/**
+ * Macron-stripped headword → the way the pack spells it.
+ *
+ * Read from the spelling, without a homograph number: `rīċe²` is the second
+ * word spelled rīċe, and the bare form a note might wrongly write is `riċe`.
+ */
 function headwords(entries: Entry[]): Map<string, string> {
   const found = new Map<string, string>();
   for (const { tgtLemma } of entries) {
-    for (const word of (tgtLemma ?? '').split(/\s+/)) {
+    for (const word of spelling(tgtLemma ?? '').split(/\s+/)) {
       if (word && bare(word) !== word) found.set(bare(word).toLowerCase(), word);
     }
   }

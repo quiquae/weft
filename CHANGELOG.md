@@ -317,6 +317,18 @@ rows when its own carries none, and leaves the gloss where it was. Only from a
 row of the same part of speech: Old English *hund* is a dog and a hundred, and
 a claim about one is false of the other.
 
+**And three of those words were two words each.** Old English *hund* is a dog
+and a hundred, *earm* an arm and poor and *rīċe* a realm and rich, and each
+pair shared one memory card, because a card was keyed by the spelling alone.
+So a reader who met *hund* as "hundred" was told it survived into English as
+*hound*, was asked "dog" for it in the unlock quiz, and was scheduled as though
+meeting the number had been meeting the animal — and *rīċe* → *rich*, a checked
+descent, was on no page of the site. The second word of each is now a word of
+its own, with its own card, gloss, quiz question and page, and the quiz never
+offers one word of a spelling as a wrong answer to the other. Nothing on
+screen marks them apart but the gloss. A card you already have for one of the
+three stays with the first word, which is the one it was always shown as.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -337,7 +349,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 821 tests: 536 unit, 98 in jsdom, 150 over the build tools, and
+**Built with** 833 tests: 540 unit, 98 in jsdom, 158 over the build tools, and
 37 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

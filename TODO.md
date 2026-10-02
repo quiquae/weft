@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **536** unit / 132 suites, **98** jsdom / 22
-suites, **150** tool tests / 41 suites, **37** e2e passing
+of this session — typecheck clean, **540** unit / 133 suites, **98** jsdom / 22
+suites, **158** tool tests / 45 suites, **37** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -26,8 +26,21 @@ the gloss stays on the first row and the story comes from a row of the same
 part of speech. **Measuring it found the item's "eleven" was two**, and found
 three words that are two words each — Old English `hund`, `earm` and `rīċe` —
 for which the feed states one word's etymology to a reader who met the other.
-That is the new top of `Next`. See the ticked item there and the note at the
-top of Notes.
+See the ticked item there and the note at the top of Notes.
+
+**And as of 2026-10-02 those three are two words each in the product too.**
+The seed writes the second word with a homograph number — `hund²`, the
+hundred beside `hund`, the dog — which is part of `tgtLemma` and so of the
+card's id, and is printed nowhere. Each word now has its own card, schedule,
+feed line, vocabulary row, quiz question and page (`/old-english/hund-hundred`
+beside `/old-english/hund-dog`), and the quiz never offers one word of a
+spelling as a wrong answer to the other; `rīċe` → *rich* reaches a page and the
+descent hub for the first time. A new guard refuses a target shared across
+parts of speech that is neither numbered nor listed as one word, and **it
+found a fourth pair**: French `mort`, death and dead, to which English
+Wiktionary gives two etymologies too. It is still one card, deliberately, and
+is queued in `Next`. See the ticked item there and the note at the top of
+Notes.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
 npm's own exit status captured rather than a pipe's:**
@@ -35,7 +48,7 @@ npm's own exit status captured rather than a pipe's:**
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **713** pages, **16 108** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **716** pages, **16 178** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -300,9 +313,9 @@ and stress from its spelling by Allen & Greenough's rules and refuses a
 transcription that disagrees. See the ticked item in `Next`.
 
 **So the whole of B0 is closed and `Now` is empty. `Next` holds nine
-agent-shaped items, and three of them — the Old English homographs, the
-Latin descents nobody has looked up, and an Old English word stressed on the
-wrong syllable — should land before B3 indexes the pages they are on.** The
+agent-shaped items, and two of them — the Latin descents nobody has looked
+up, and an Old English word stressed on the wrong syllable — should land
+before B3 indexes the pages they are on.** The
 code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining item besides those nine needs Creagh.** The critical
@@ -2341,7 +2354,7 @@ below it can move until it is.
       `TZ=Pacific/Pago_Pago` holding the date, and the three groups are
       stamped. The package grew 652 bytes, 985 → 986 KB.
 
-- [ ] **Three Old English target words are two words each, and every
+- [x] **Three Old English target words are two words each, and every
       surface speaks for the first.** Found 2026-10-02 measuring the item
       above. A card is keyed by its target word alone, so `ang:hund` is
       the dog and the hundred, `ang:earm` the arm and poor, and `ang:rīċe`
@@ -2384,6 +2397,72 @@ below it can move until it is.
       the first word, which is a small wrong for at most three cards. Free
       before **B3**, because 1 moves two addresses. About two hours for 1,
       with the ledgers.
+
+      **Done 2026-10-02, shape 1 — and the guard it needed found a fourth
+      pair.** Measured first, over all seven packs: **nine** targets share a
+      headword across parts of speech, not three — these three, `sōþ` (true,
+      truth), German `schnell` and `langsam` (an adjective and its adverb),
+      Spanish `mañana` (morning, tomorrow) and French `mort` (death, dead).
+      Part of speech cannot tell the two kinds apart; English Wiktionary
+      can. `hund`, `earm` and `rice` — Wiktionary's title for `rīċe`, which
+      404s — each have two etymology sections; `soþ`, `schnell`, `langsam`
+      and `mañana` have one; `mort` has two, and is the item below.
+
+      **Shape 1, because it is the only one that keeps `rīċe` → *rich*.**
+      Shape 2 would choose a different Old English word for "poor" for a
+      software reason and cannot save *rich*; shape 3 loses all three
+      words. The number is a superscript after the citation form in the
+      seed's `tgt` cell — `hund²`, `earm²`, `rīċe²` — in Wiktionary's order
+      of etymologies, which is also the order the rows already had, so the
+      first word (dog, arm, realm) keeps its bare id and every existing
+      card. `tgtLemma` carries the number and `tgt` never does;
+      `spelling()` in `src/core/lexicon.ts` takes it off for the one place
+      the extension prints a `tgtLemma` — the dashboard's fallback — and
+      for every tool that reads the cell as a spelling: the site's slugs
+      and JSON-LD, `verify-packs`, which warned three times on `²` as a
+      script character until it read the spelling, `fill_ipa.py`, and the
+      orthography guard, which missed a planted bare `riċe` under the old
+      reading and catches it now. The quiz compared distractors by
+      identity, which let "dog" be a wrong answer to *hund²*; it compares
+      spellings. The hundred's note said "the usual word for it", and the
+      feed prints a note with no gloss beside it, so it says "for the
+      number" — the same claim from the same entry.
+
+      Test-first. `tests/core/lexicon.test.ts` +3 and `quiz.test.ts` +1:
+      red on the missing export and on "seed 1 offered dog for hund²".
+      `tests/tools/lexicon-homographs.test.ts`, 7 tests in 4 suites: red
+      naming exactly `ang:earm`, `ang:hund` and `ang:rīċe` while the five
+      listed one-word targets passed, then on the three missing entries,
+      the feed and the floor; it fails on a target shared across parts of
+      speech that is neither numbered nor in `ONE_WORD`, on a listed word
+      that no longer spans two, on a `¹` or a number with no bare first,
+      and checks each pair against hand-written glosses, claims and feed
+      sentences. `tests/tools/build-site.test.ts` +1: red on three pages
+      printing `hund²` through JSON-LD `alternateName`; its overwrite test
+      now matches a page by headword *and* gloss, because two pages are
+      headed hund. Five probes, each restored by md5: slugs without the
+      collision suffix (named ōs, liber and the three pairs), the pack
+      builder leaving the number in `tgt` (six tests, 22 pages), `sōþ` off
+      the list and a bogus entry on it (both named), the lookup grouping
+      by spelling (three tests), and the orthography reading above.
+
+      **What moved: 5 of 7 154 fields** of `en-ang.json` — three
+      `tgtLemma`s, the note, `builtAt` — and `index.json` did not. The
+      site went 713 → **716** pages and 16 108 → **16 178** links: three
+      renamed (`hund` → `hund-dog`, `earm` → `earm-arm`, `rice` →
+      `rice-country`), three new. Main's build rewritten by those three
+      addresses is byte-identical to this one in 698 of 718 files, 22
+      occurrences; the other 20 differ only by the new words — the Latin
+      pages for hundred, poor and rich now link an Old English
+      counterpart, 14 adjective pages list one in "Other adjectives", the
+      index counts 353 words and 306 descents, the hub gains `rīċe` →
+      *rich*, and two sitemap dates move with the pack. `/old-english/hund-hundred`
+      is the first page to render the "Worth knowing" branch, and reads as
+      a caption. All 36 generated screenshots came back byte-identical
+      under `TZ=Pacific/Pago_Pago` and the three groups are stamped; the
+      package stayed 986 KB. No end-to-end test was added: the dashboard
+      reads the same lookup as before, and that lookup is held over the
+      shipped pack in the tools test.
 
 - [ ] **The feed tells Latin borrowings in Old English's words.** Found
       2026-10-02 when a corrected note moved `vir` into the feed's plain
@@ -2514,6 +2593,25 @@ below it can move until it is.
       reader also opens on GitHub, where a Markdown smart-quote pass would
       change what they see there. About 10 minutes.
 
+- [ ] **French `mort` is two words by Wiktionary's etymologies, and is one
+      card.** Found 2026-10-02 by the homograph guard. `fr:mort` is death,
+      the noun, from Latin *mors*, and dead, the adjective and the past
+      participle of *mourir*, from *mortuus*; English Wiktionary gives the
+      two separate etymologies, as it does `hund`. Unlike `hund`, nothing
+      false is said: the one claim, "shares a root with English
+      “mortal”", sits on the death row, is first, and is true of both. What
+      is wrong is smaller — a reader who met *mort* only as "dead" sees
+      "mort — death" in the vocabulary list, is asked "death" in the quiz,
+      and shares a schedule with the noun. Two shapes: number the adjective
+      `mort²` in `lex-fr.tsv`, which leaves the dead row with no claim of
+      its own unless `fr-cousins.tsv` gains a cited one (*mortuary*, from
+      *mortuarius*, from *mortuus*, is a candidate, unchecked); or keep one
+      card and rewrite its `ONE_WORD` reason in
+      `tests/tools/lexicon-homographs.test.ts` as the decision it then is.
+      `tests/e2e/pages/showcase.html`, which the store listing art is shot
+      from, contains "dead", so numbering may move a store screenshot:
+      regenerate, read, and commit what moves. About 30 minutes.
+
 - [ ] **Old English stress has never been checked against a source, and one
       word is stressed on the wrong syllable.** Found 2026-10-02 while the
       Latin pronunciations were fixed. Old English stresses the root's first
@@ -2567,17 +2665,16 @@ below it can move until it is.
 
 `Now` is **empty** and `Next` holds **nine** unchecked items above, as of
 2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The Old English homographs first, which are false claims in
-the feed and the quiz and are free to fix before **B3** moves their
-addresses; then the feed's Latin frames, which are overstatements in it;
-then the Latin descent pass, the longest, which wants to land before
+to work them. The feed's Latin frames first, which are overstatements in
+it; then the Latin descent pass, the longest, which wants to land before
 **B3** and has six known failures to start from; then the landing page's
 table, the dashboard's date and the pronunciation key's quote marks, three
-small guards; then Old English stress, one wrong word and a grammar to
-read, also free before B3; then `far wel` and `camera`, content questions.
-The Latin note on `vir`, the 22 Old English addresses, the thirty Latin
-pronunciations and the feed's hidden etymologies, which sat first, are
-done.
+small guards; then French `mort`, one card or two, a decision with the
+evidence written down; then Old English stress, one wrong word and a
+grammar to read, also free before B3; then `far wel` and `camera`, content
+questions. The Latin note on `vir`, the 22 Old English addresses, the thirty
+Latin pronunciations, the feed's hidden etymologies and the Old English
+homographs, which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2910,6 +3007,56 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the Old English homographs: three words were two each, and
+the guard that holds them found a fourth in French.** Ticked in `Next`. Seven
+things a later run would be sorry not to know:
+
+1. **English Wiktionary titles an Old English page without macrons or
+   overdots, and keeps the thorn.** `rīċe` and `sōþ` return 404 from
+   `index.php?title=…&action=raw`; the entries are at `rice` and `soþ`, with
+   the marked form only in the headword line. Read the `===Etymology N===`
+   sections: two of them is the dictionary saying two words. The wikitext
+   read this session is in `/tmp/weft-homo/wikt/`, which does not survive a
+   reboot.
+2. **Part of speech is a symptom, not the test.** Nine targets across the
+   seven packs share a headword across parts of speech. Three are two words
+   (numbered now), four are one word with one etymology (`sōþ`, `schnell`,
+   `langsam`, `mañana`), and `mort` is two etymologies kept as one card —
+   the item in `Next`. Do not "simplify" the guard into numbering every
+   cross-part-of-speech target, or `entriesByTarget()` into a rule keyed on
+   part of speech alone.
+3. **Never number the first word.** `hund¹` would change the id of every
+   `ang:hund` card a learner already has, and nothing migrates stored
+   cards or exported files. The guard refuses a `¹`, and a number with no
+   bare first.
+4. **`node tools/build-pack.mjs --lang=ang` rewrites `index.json` with one
+   language in it.** It writes the index from the packs it built. A probe
+   that rebuilt one pack left a six-language hole in the index until it was
+   copied back; build with `--all`, or restore the index after.
+5. **A rename is proved by rewriting the old build, again.**
+   `/tmp/weft-homo/rename-proof.mjs` rewrites the three old addresses in a
+   build of `main` and compares: 698 of 718 files identical, and the 20 that
+   are not were read line by line — every difference is one of the three
+   new words. Build `main` from a `git worktree add --detach /tmp/… origin/main`
+   rather than a stash; the worktree is outside iCloud and needs no
+   `node_modules` for the site builder.
+6. **`TZ=Pacific/Pago_Pago` held `dashboard.png`'s 1 October date at 07:50
+   UTC on the 2nd.** Same window as the note below; it closes at 11:00 UTC.
+7. **`tools/build-pack.mjs` now imports from `src/core/`**, as
+   `build-site.mjs` and `verify-packs.mjs` do, so `npm run packs` needs a
+   Node that strips types by default — 22.18 or later, which CI's `22` is.
+
+**What was assumed, with nobody to ask.** That the design could be taken
+without the approval the brainstorming process asks for, the run being
+unattended, and is the one recorded in the ticked item; that the numbers
+follow Wiktionary's order of etymologies, which is also the rows' order;
+that the vocabulary list may show two rows reading "hund" told apart only by
+their glosses, with no number on screen; that the hundred's note could be
+reworded from "for it" to "for the number" as the same claim; that French
+`mort` waits for its own decision rather than riding on an Old English item,
+partly because numbering it may move the store art; and that no end-to-end
+test was needed, the dashboard's code being unchanged but for one fallback.
 
 **2026-10-02 — the feed's lookup: eleven hidden stories were two, and the
 other nine were three different things.** Ticked in `Next`. Six things a

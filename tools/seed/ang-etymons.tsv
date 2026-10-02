@@ -44,6 +44,12 @@
 # the note was rewritten and the entry is cited on its line; the other notes
 # were read against their etymon's entry only.
 #
+# A numbered target is the second of two words with one spelling: rīċe² is
+# rich, the adjective, and rīċe the realm. English Wiktionary gives the two
+# separate etymologies, files both under "rice", and gives the adjective as
+# the one that became rich. The number is part of the key, so this line can
+# only vouch for the adjective. See lex-ang.tsv on homographs.
+#
 man	noun	mann	man	etym:man
 woman	noun	wīfmann	woman	etym:woman
 child	noun	ċild	child	etym:child
@@ -221,7 +227,7 @@ quick	adj	swift	swift	etym:swift
 slow	adj	slāw	slow	etym:slow
 true	adj	sōþ	sooth	etym:sooth
 false	adj	lēas	-less	etym:-less
-rich	adj	rīċe	rich	etym:rich
+rich	adj	rīċe²	rich	etym:rich wikt:ang:rice
 tired	adj	wēriġ	weary	etym:weary
 full	adj	full	full	etym:full
 empty	adj	ǣmettiġ	empty	etym:empty
