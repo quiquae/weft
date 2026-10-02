@@ -1,0 +1,107 @@
+# Where each note in lex-la.tsv was checked.
+#
+# lemma | pos | tgt | note | sources
+#
+# A note is the sentence printed under a woven Latin word: in the tooltip,
+# joined to the descent sentence on /latin/<word>, in the note column of the
+# descent hub, and — when it says "means" or "literally" — as the word's line
+# in the discoveries feed. It is a published claim, and until 2026-10-02
+# nothing recorded that any of the 28 had been looked up. The first row of the
+# pack said so by itself: man → vir, "third-person plural “virī” also means
+# “men” collectively". A noun has no person.
+#
+# On 2026-10-02 all 28 were read against Lewis & Short for every Latin word a
+# note uses, Allen & Greenough for the two that state a rule of grammar, and
+# etymonline for every English word a note explains. Five did not stand as
+# written and are listed at the foot of this file with what the dictionary
+# says, so that nobody restores one in good faith.
+#
+# The line repeats the note. That is the point: reword a note and it has no
+# source until somebody opens the dictionary again and says which entry.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was checked against, separated by spaces:
+#
+#   ls:<key>           Lewis & Short, A Latin Dictionary (1879), by the entry's
+#                      key in the Perseus text — os1 is mouth, os2 is bone:
+#                      perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<key>
+#   ag:<section>       Allen & Greenough's New Latin Grammar (1903), by section:
+#                      perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0001:smythp=<section>
+#   etym:<english>     https://www.etymonline.com/word/<english>
+#   wikt:la:<latin>    https://en.wiktionary.org/wiki/<latin>#Latin
+#   wikt:en:<english>  https://en.wiktionary.org/wiki/<english>#English
+#
+# tests/tools/la-notes.test.ts requires every note in lex-la.tsv to have a
+# line here repeating it, every line to cite Lewis & Short's entry for the
+# note's own headword, and a note that names its row's English etymon to cite
+# that word's etymonline entry. It cannot tell an entry somebody read from one
+# somebody typed: cite the ones actually opened.
+#
+# What a note is held to
+# ----------------------
+# A source that contradicts it, hedges what it states flatly, or says less
+# than it does, and the note is rewritten to what the entry says. A loose
+# paraphrase of an entry stands: "in Latin it includes the household slaves"
+# is weaker than Lewis & Short, for whom familia is first of all "the slaves in
+# a household", and it is true.
+#
+# The etymon column of lex-la.tsv is not covered here. It wants a ledger of
+# its own, and TODO.md has the item.
+#
+man	noun	vir	a man as opposed to a woman, and often a husband; a human being is “homō”	ls:vir ls:homo wikt:la:vir wikt:la:homo
+child	noun	puer	“puer” covers boy and child alike	ls:puer
+person	noun	persōna	originally an actor’s mask	ls:persona etym:person
+family	noun	familia	in Latin it includes the household slaves	ls:familia etym:family
+baby	noun	īnfāns	literally “not speaking”	ls:infans etym:infant
+farmer	noun	agricola	a rare masculine first-declension noun	ls:agricola1 ag:42
+bone	noun	os	distinct from “ōs”, mouth, only by vowel length	ls:os2 ls:os1
+cow	noun	vacca	the vaccine is named after the cowpox Jenner used	ls:vacca1 ls:vaccinus etym:vaccine etym:vaccination wikt:en:vaccine
+mouse	noun	mūs	“muscle” is a little mouse, from the shape	ls:mus1 ls:musculus etym:muscle
+apple	noun	mālum	“mālum” apple and “malum” evil differ only in vowel length	ls:malum2 ls:malum1
+door	noun	iānua	Janus, god of doorways, gave January its name	ls:janua ls:Janus ls:Januarius etym:january etym:janus
+room	noun	camera	a vaulted chamber; the photographic sense came much later	ls:camera etym:camera
+key	noun	clāvis	medieval Latin called the collarbone “clāvicula”, a little key	ls:clavis ls:clavicula etym:clavicle wikt:la:clavicula wikt:en:clavicle
+silver	noun	argentum	Argentina is named for the metal	ls:argentum etym:argentina
+shadow	noun	umbra	“umbrella” is a little shade	ls:umbra ls:umbella etym:umbrella
+money	noun	pecūnia	from “pecus”, cattle: the original wealth	ls:pecunia ls:pecus1 etym:pecuniary
+song	noun	carmen	a carmen was a song and a spell alike	ls:carmen1 etym:charm
+music	noun	mūsica	the art of the Muses	ls:musica etym:music
+hope	noun	spēs	“despair” is to be out of spēs	ls:spes ls:despero etym:despair
+tomorrow	adv	crās	to put it off until crās	ls:cras ls:procrastino etym:procrastinate
+almost	adv	paene	paene īnsula, almost an island	ls:paene ls:paeninsula etym:peninsula
+truly	adv	vērē	“very” descends from vērus, true	ls:vere ls:verus etym:very
+seven	num	septem	September was the seventh month of the old Roman year	ls:septem ls:September etym:september
+nine	num	novem	November was the ninth month of the old Roman year	ls:novem ls:November etym:november
+thousand	num	mīlle	a mile was mīlle passūs, a thousand paces	ls:mille ls:passus3 etym:mile
+yes	intj	ita	Latin has no one common word for yes; “ita” means “thus”, said in reply	ls:ita ag:336
+hello	intj	salvē	literally “be well”	ls:salve2 ls:salveo
+goodbye	intj	valē	literally “be strong”	ls:vale ls:valeo etym:valediction
+#
+# Rewritten on 2026-10-02: the old note, and what the dictionary says
+# -------------------------------------------------------------------
+#   man     vir      "third-person plural “virī” also means “men” collectively"
+#                    virī is the nominative plural of a second-declension noun, and person is
+#                    a verb's. ls:vir: "a male person, a man (opp. femina)"; "a husband,
+#                    maritus (very freq.)"; human beings only "poet." ls:homo: "a human being,
+#                    man".
+#   key     clāvis   "the collarbone was named for its key-like shape"
+#                    etym:clavicle: "So called supposedly from its function as the 'fastener'
+#                    of the shoulder", the sense "a loan-translation of Greek kleis", and the
+#                    bone "Medieval Latin clavicula", used c. 980. ls:clavicula has "A small
+#                    key", a tendril and "a bar, bolt of the door" — no bone and no shape, which
+#                    is why the note says medieval.
+#   cow     vacca    "Jenner named the vaccine after the cowpox he used"
+#                    etym:vaccination: the word Jenner used "for the technique he publicized",
+#                    from vaccine (adj.), 1798; etym:vaccine: the noun is 1846, "from French
+#                    vaccin". wikt:en:vaccine: what Jenner coined was variolae vaccinae, his
+#                    name for cowpox. Nobody says he named the vaccine.
+#   shadow  umbra    "a little shade"
+#                    That is umbella — ls:umbella: "dim. umbra (a little shadow, i. e. meton.),
+#                    a sunshade, parasol" — and through it umbrella. The tooltip prints a note
+#                    whether or not the etymon badge is on, and alone under umbra this one read
+#                    as a gloss of umbra, which is shade and not little.
+#   yes     ita      "classical Latin has no bare word for yes; “ita” means “thus”"
+#                    ag:336: "There is no one Latin word in common use meaning simply yes or
+#                    no" — the note had dropped "in common use". ls:ita: "In affirmations, esp.
+#                    in replies, yes, it is so, just so, true".

@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-01:** every automatable check is green, measured at the end
+**State on 2026-10-02:** every automatable check is green, measured at the end
 of this session — typecheck clean, **527** unit / 130 suites, **98** jsdom / 22
-suites, **129** tool tests / 35 suites, **36** e2e passing
+suites, **137** tool tests / 37 suites, **36** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 985 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -14,13 +14,13 @@ crossed a rounding boundary, and 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank.
 `npm run test:all` exits 0 end to end.
 
-**The three gates `test:all` leaves out, re-measured on 2026-10-01, each with
+**The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
 npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **713** pages, **16 109** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **713** pages, **16 108** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -254,12 +254,26 @@ which nobody has proved. Every Old English etymon names the entry it was
 checked against in `tools/seed/ang-etymons.tsv`, and a test refuses one that
 names none. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds five
-agent-shaped items, and two of them — the Latin note on `vir` and 22 Old
-English URLs that lose a letter — should land before B3 indexes the pages
-they are on.** The code is not
+**And as of 2026-10-02 the Latin notes are held the same way, where it was
+five of 28.** The queued item was one note calling a noun's plural
+"third-person". Reading the other 27 against Lewis & Short, Allen &
+Greenough and etymonline found four more that did not stand: the collarbone
+"named for its key-like shape", Jenner having "named the vaccine" — that one
+on the landing page — Latin having "no bare word for yes", and "a little
+shade" under *umbra*, which is *umbella*. And *ita* was listed as the
+ancestor of an English "ita vero", which is Latin, and scored a cognate at
+0.96 on the strength of it. Every Latin note names the entries it was
+checked against in `tools/seed/la-notes.tsv`, and a test refuses one that
+names none, has been reworded since, or gives a noun a verb's grammar. See
+the ticked item in `Next`.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds nine
+agent-shaped items, and three of them — 22 Old English URLs that lose a
+letter, nineteen Latin pronunciations that are wrong, and the Latin descents
+nobody has looked up — should land before B3 indexes the pages they are
+on.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those five needs Creagh.** The critical
+more. **Every remaining item besides those nine needs Creagh.** The critical
 path is **B1 — the domain `weft.study` is not registered**, and nothing
 below it can move until it is.
 
@@ -1867,13 +1881,83 @@ below it can move until it is.
       `etymonOf` and 66 `note` fields and nothing else; `index.json` did not
       move.
 
-- [ ] **One Latin note puts a verb's grammar on a noun.** `lex-la.tsv`,
+- [x] **One Latin note puts a verb's grammar on a noun.** `lex-la.tsv`,
       the very first row: man → `vir`, note "third-person plural “virī” also
       means “men” collectively". *virī* is the nominative plural of a noun,
       and person belongs to verbs. Seen while reading the file's header for
       the item above, and not checked further — the rest of the Latin notes
       have not been read for this. Five minutes and a pack rebuild; the
       sentence also stands on `/latin/vir`.
+
+      **Done 2026-10-02, and reading the rest found four more notes and an
+      etymon.** All 28 Latin notes were read against Lewis & Short for every
+      Latin word a note uses (47 entries), Allen & Greenough for the two
+      that state a rule of grammar (§42 and §336), and etymonline for every
+      English word a note explains (23 entries), with English Wiktionary
+      beside them for five. 23 stand as written. Five do not:
+
+      | Row | The note said | The dictionary says | It says now |
+      |---|---|---|---|
+      | man → `vir` | third-person plural “virī” also means “men” collectively | *virī* is a nominative plural. Lewis & Short: "a male person, a man (opp. femina)"; "a husband … (very freq.)"; human beings only "poet." | a man as opposed to a woman, and often a husband; a human being is “homō” |
+      | key → `clāvis` | the collarbone was named for its key-like shape | etymonline: "So called supposedly from its function as the 'fastener' of the shoulder", and the bone is "Medieval Latin clavicula", c. 980 — Lewis & Short's *clāvicula* is a small key, a tendril, a door-bolt | medieval Latin called the collarbone “clāvicula”, a little key |
+      | cow → `vacca` | Jenner named the vaccine after the cowpox he used | etymonline credits Jenner with *vaccination*, "for the technique he publicized", and dates the noun *vaccine* to 1846, "from French vaccin"; Wiktionary credits him with *variolae vaccinae*, his name for cowpox | the vaccine is named after the cowpox Jenner used |
+      | yes → `ita` | classical Latin has no bare word for yes; “ita” means “thus” | Allen & Greenough §336: "no one Latin word in common use meaning simply yes or no"; Lewis & Short on *ita*: "In affirmations, esp. in replies, yes" | Latin has no one common word for yes; “ita” means “thus”, said in reply |
+      | shadow → `umbra` | a little shade | that is *umbella*, "dim. umbra (a little shadow …), a sunshade, parasol" — and the tooltip prints a note with the etymon badge off, where this one glossed *umbra* itself | “umbrella” is a little shade |
+
+      **The last two, and the second row's "medieval", came from a second
+      reader**, given the same extracts and told to prove the first reading
+      wrong. The "medieval" overturned the first reading's own rewrite of
+      `clāvis`, "the collarbone is “clāvicula”" — true of medieval Latin, on a
+      page headed "Classical, c. 75 BC – AD 200". It also failed `vacca`,
+      which the first reading had left as "supported in substance" and then
+      rewritten itself while the second reader was still working; the two
+      verdicts were reached separately. The vaccine sentence
+      was on the landing page and in `docs/PEDAGOGY.md` as "Jenner named it
+      after the cowpox he used"; both say "named after the cowpox Jenner
+      used" now. The hub's intro — "*Vaccine* is named after a cow, because
+      Jenner used cowpox" — never made the claim and stands.
+
+      **And `ita` was listed as the ancestor of an English "ita vero".** It
+      is Latin: Allen & Greenough §336 gives *ita vērō* as one of the ways
+      Latin says yes, etymonline has no such entry and Wiktionary no English
+      section. The note is what found it — a note's wording picks the feed's
+      sentence, "means" makes a false friend, and the feed read "ita became
+      English ita vero, but classical Latin has no bare word for yes".
+      `/latin/ita` said "your English **ita vero** was borrowed from", the
+      tooltip "Ancestor of English ita vero", and the selector scored
+      `yes → ita` a cognate at **0.960** on the strength of it, which is 0
+      now. The etymon is removed; the note is the page's "Worth knowing".
+      `vir`'s feed line was no sentence either — "vir became English virile,
+      but third-person plural “virī” also means “men” collectively" — and is
+      a plain descent now.
+
+      **The guard is three things, each red first.**
+      (1) `tools/seed/la-notes.tsv`, one line per note, repeating it and
+      naming the entries read, with `tests/tools/la-notes.test.ts` — 6
+      tests, a new suite — failing on a note with no line, a note reworded
+      since its line was written, a line that does not cite Lewis & Short's
+      entry for the note's own headword, a note naming its row's etymon
+      without citing that word's etymonline entry, an unreadable token, or a
+      line outliving its note. Red on an empty ledger, naming all 28. The
+      five notes taken out are at the foot of the ledger with what the
+      dictionary says.
+      (2) A second `describe` in `tests/tools/lexicon-notes.test.ts`:
+      person, tense and conjugation appear only in notes on verbs, derived
+      from each entry's own `pos` across all seven packs. Red naming `vir`
+      alone; `wīfmann`'s "woman-person" is not grammar and did not fire.
+      (3) `homō` and `clāvicula` joined the orthography guard's table of
+      Latin the lexicon does not carry.
+      Nineteen probes across the three, each shown to fire or to stay green
+      as it should, each restored by md5.
+
+      Rendered and read against a baseline build: `/latin/vir`,
+      `/latin/clavis`, `/latin/vacca`, `/latin/umbra`, `/latin/ita`, the hub
+      (314 rows → 313), the Latin index and the landing page — nine files,
+      the ninth the sitemap, where two dates moved. `en-la.json` moved in 9
+      `note` fields, 1 `etymonOf` and its date, and nothing else; `index.json`
+      did not move. All 36 generated screenshots came back byte-identical, the
+      documentation set only with the date held (see Notes), and the three
+      groups are stamped.
 
 - [ ] **Twenty-two Old English words are published at a URL that drops or
       mangles their ǣ.** Found 2026-10-01 in the list of pages the etymon
@@ -1891,6 +1975,41 @@ below it can move until it is.
       change creates. Every Latin page links its Old English counterpart by
       slug, so those links move too, and `site:check` will say so. Free before
       **B3**, a stranded URL each after. About 30 minutes.
+
+- [ ] **Nineteen Latin pronunciations are wrong in the seed, and the
+      generator that wrote them has three bugs.** Found 2026-10-02 from one
+      row read for its note: `persōna` is printed `/pɛˈrsoːna/`. Measured
+      over all 356 rows of `lex-la.tsv` with a scratch syllabifier:
+
+      | What | Count | Examples |
+      |---|---|---|
+      | Stressed on the wrong syllable | **7** | `quīnque` `/kʷiːˈŋkʷɛ/`, a disyllable stressed on its last; `quaesō`, `quattuor`, `quaerere`, `coquere`, `relinquere`, `quaestiō` |
+      | A diphthong the word does not have | **2** | `cāseus` `/ˈkaːseu̯s/`, `calceus` — *-e-us* is two syllables |
+      | The stress mark a consonant early | **10** more | `/pɛˈrsoːna/`, `/aˈrɡɛntʊm/`, `/dɔˈrmiːrɛ/`, `/sɛˈntiːrɛ/`, `/moːˈnstraːrɛ/`, `/ɪˈntɛrdʊm/` — *rs*, *rg*, *nt* cannot begin a Latin syllable |
+
+      All seven of the first kind contain *qu*, and that is the bug.
+      `tools/seed/_ipa.py` walks the word twice, `_la_units` for the stress
+      and `latin_ipa` for the phones, and only the second knows *qu* is one
+      consonant: the first counts its *u* as a nucleus — `quīnque` comes out
+      with four syllables — so the stress index is worked out against the
+      wrong count. `eu` is in `LA_DIPHTHONGS` for every word, where Latin has
+      it in a handful (*seu*, *neu*, *heu*). And the mark is placed by walking
+      back over every consonant before the stressed vowel, so it takes the
+      previous syllable's coda with it. Old English shows none of the third
+      kind and was not checked for the others. The module's docstring says
+      "the derivation is tested" and `docs/THIRD-PARTY.md` that it is "tested
+      against known forms"; no test in the repository imports it, so the test
+      this item adds is also what makes both sentences true.
+
+      These print in the tooltip, on each word page and in its meta
+      description — `/latin/quinque` says "pronounced /kʷiːˈŋkʷɛ/". Fix the
+      three in `_ipa.py`; `fill_ipa.py` never overwrites a value, so clear
+      the nineteen cells first or correct them by hand; then hold it with a
+      test that recomputes the stressed syllable from the macronised
+      headword, which is the classical rule and needs no dictionary. The
+      scratch script is `/tmp/weft-la/stress.py` if `/tmp` has survived.
+      While there: `tools/seed/__pycache__/_ipa.cpython-312.pyc` is tracked.
+      About an hour, and free before **B3**.
 
 - [x] **Hold the committed icons to the geometry by their pixels — not by
       rebuilding and diffing them, which this item used to propose and which
@@ -2012,6 +2131,35 @@ below it can move until it is.
       a lookup bug. Measure first which surfaces besides the feed read that
       map.
 
+- [ ] **The feed tells Latin borrowings in Old English's words.** Found
+      2026-10-02 when a corrected note moved `vir` into the feed's plain
+      frame and it read "vir survived into English as virile".
+      `src/core/discoveries.ts` has two sets of frames chosen by one
+      boolean, `historical`, and Latin is historical, so it takes the set
+      written for Old English: "English X comes straight from Y", "X began
+      as Y", "Y survived into English as X". Those are what the Old English
+      ledger holds a claim to. The Latin site says something looser on
+      purpose — `META.la`'s frame is "was borrowed from" — because *virile*
+      is from *virīlis* and *clavicle* from *clāvicula*, through French. Run
+      over the pack with the real module: of 314 Latin lines **304** are
+      plain descents, and 226 of those take one of the three strong frames
+      (73 "comes straight from", 82 "began as", 71 "survived into English
+      as") — "English aquatic comes straight from aqua", "rēx survived into
+      English as regal". Six more are the `unchanged` kind — `camera`,
+      `duo`, `bonus`, `via`, `ōvum`, `rēgīna` — and read "camera has not
+      changed in a thousand years — it is still camera", which is Old
+      English's timescale on a word English took in 1708 for a vault. The
+      false-friend frame says "became" too; no Latin row reaches it today.
+
+      The borrowing frames French already uses say what happened — "English
+      borrowed X from Y", "X came into English from Y" — so the smallest fix
+      keys the frame set on whether English *descends* from the language
+      rather than on whether it is still spoken: Old English descends, Latin
+      and French lend. `historical` keeps its other job, ordering the feed,
+      and `tests/core/delight.test.ts` holds the frames. Do it with or after
+      the Latin descent pass below, which settles what a Latin claim may say.
+      About 45 minutes.
+
 - [ ] **The Latin pack's descent claims have never been checked against a
       source either.** Found 2026-10-01, by the question that found the Old
       English ones: was the flaw particular to the language? 312 Latin word
@@ -2036,6 +2184,63 @@ below it can move until it is.
 
       About two hours, and before **B3** for the same reason.
 
+      **Six were found on 2026-10-02 without looking for them**, while the
+      notes were being read, so "never been checked" is the right
+      description and two hours may be low:
+
+      | Row | The pack says | What was read |
+      |---|---|---|
+      | yes → `ita` | borrowed as "ita vero" | Latin, not English — **already removed**; see the ticked `vir` item |
+      | always → `semper` | borrowed as "semper fidelis" | a Latin motto English quotes: no English section in Wiktionary, no etymonline entry. *sempiternal* is "from Latin sempiternus … from semper" |
+      | truly → `vērē` | borrowed as *very* | etymonline: Old French *verai*, from Vulgar Latin *\*veracus*, from *verax*, from *verus* — the adjective, not this adverb. The row's own note says "descends from vērus", under a sentence saying it was borrowed from `vērē` |
+      | hello → `salvē` | borrowed as *salvation* | etymonline: from *salvātiō*, from *salvāre*, "to save"; Lewis & Short derives *salvāre* from *salvus*, and `salvē`, the imperative of *salvēre*, from *salvus* too. Cousins |
+      | farmer → `agricola` | borrowed as *agriculture* | *agricultura*, *ager* + *cultura*; `agricola` is *ager* + *colere*. Cousins |
+      | door → `iānua` | borrowed as *January* | *Ianuarius*, "(the month) of Janus"; Lewis & Short derives `iānua` from *Janus* too. The row's own note says Janus gave January its name |
+
+      The pack has 319 rows with an etymon and 313 word pages that print
+      the sentence, one fewer of each than yesterday. Lewis & Short is one
+      file now (see Notes, 2026-10-02), `/tmp/weft-la/ls.py` prints an entry
+      by key, and `tools/seed/la-notes.tsv` already cites 23 etymonline
+      entries for the notes — its token grammar is the one to reuse.
+
+- [ ] **The landing page's descent table is a hand copy of eight pack
+      claims, and nothing holds it to them.** Found 2026-10-02 when a
+      corrected note had to be changed a second time, by hand, in
+      `site/index.html`. The table repeats five Old English and three Latin
+      rows — headword, English word, note — and the page cannot import, so
+      each was typed. It has needed a hand edit twice in two days, *drēam →
+      dream* when the pack stopped claiming it and "Jenner named it" when
+      its note changed, and both were remembered rather than caught: no
+      test reads the table, and `tests/tools/lexicon-orthography.test.ts`
+      checks only how it spells. The guard is derivable. Every row's first
+      word is a `tgtLemma` in a deep pack whose `etymonOf` is the row's
+      English word — *mīlle passūs* and *paene īnsula* by their first word.
+      Whether the fourth cell must equal the pack's note is the judgement: the
+      table's "it meant simply “to die”" is the pack's "“steorfan” simply
+      meant to die", reworded. All eight first words carry exactly the English
+      word their row shows, checked against the packs on 2026-10-02. About
+      20 minutes, in `tests/tools/build-site.test.ts`, which already reads
+      the built page.
+
+- [ ] **`dashboard.png` photographs the date, so it differs from its committed
+      bytes on every day but the one it was taken.** In Notes since 2026-10-01
+      as "not fixed"; queued 2026-10-02 because it cost this session a detour
+      and will cost every later one that touches `src/`. The change-log row
+      prints the calendar date of the run and the attention chart its last
+      seven days (`src/ui/dashboard/index.tsx`, two `toLocaleDateString`
+      calls). A plain regeneration on 2026-10-02 changed that one file of 36;
+      run again with `TZ=America/Los_Angeles`, where it was still the 1st, all
+      14 documentation shots matched their committed bytes. The fix is a held
+      date in `tests/e2e/screenshots.spec.ts` and a line in
+      `tests/tools/screenshots.test.ts` that fails if the spec stops holding
+      it. Two things to know first. The change-log entry is stamped when the
+      harness's import queues a change, which happens in the service worker
+      rather than the dashboard page, so a clock held on the page alone may
+      not reach it — check before relying on it. And the two dates are not the
+      same day between midnight and 04:00: `dayKey` rolls over at four, so the
+      chart read "Oct 1" beside a change log reading "Oct 2" — correct, and it
+      looks like a bug. About 30 minutes.
+
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
       etymonline dates *farewell* to a Middle English phrase "attested by c.
@@ -2049,15 +2254,36 @@ below it can move until it is.
       (sorry), which are well-formed Old English but may be this lexicon's
       own phrasings rather than attested ones.
 
-`Now` is **empty** and `Next` holds **five** unchecked items above, as of
-2026-10-01, all agent-shaped and none waiting on B1. The order is the order
-to work them. The one-line Latin note first, because it is five minutes and
-stands on a published page; the 22 mangled Old English URLs second, because
-changing them is free before **B3** and strands them after; then the feed's
-hidden etymologies, which are true facts out of sight rather than false ones
-in it; then the Latin descent pass, the longest, which also wants to land
-before B3; then `far wel`, a content question. The Old English etymons,
-which sat first, are done.
+- [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
+      as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
+      an arched roof, an arch", and no room. The pack's attribution says
+      "Latin glosses checked against Lewis & Short" and the seed's header says
+      "Classical Latin"; the room is etymonline's "Late Latin camera 'a
+      chamber, room'", which gave French *chambre*. The same question `far
+      wel` asks, of the *target*. A crude first pass over all 356 rows — does
+      the English lemma occur anywhere in the Lewis & Short entry for its
+      headword — finds it in **328**. Of the other 28, five are verbs the
+      script could not look up and most of the rest are a cross-reference stub
+      (`serpēns`, "v. serpo") or a synonym (`magnus`, "great"); the ones worth
+      a human eye are `camera`/room, `cānus`/grey ("white, hoary"),
+      `fuscus`/brown ("dark, swarthy") and `audāx`/brave ("oftener in a bad
+      sense"). The script is `/tmp/weft-la/glosscheck.py`. A content decision
+      per row: a better headword (*conclāve*, *fortis*), or a note saying what
+      the word really covers. `īnfāns` is also marked masculine where Lewis &
+      Short has it of common gender.
+
+`Now` is **empty** and `Next` holds **nine** unchecked items above, as of
+2026-10-02, all agent-shaped and none waiting on B1. The order is the order
+to work them. The 22 mangled Old English URLs first, because changing them
+is free before **B3** and strands them after; the nineteen Latin
+pronunciations second, for the same reason and because they are wrong on a
+published page today; then the feed's hidden etymologies, which are true
+facts out of sight, and the feed's Latin frames beside them, which are
+overstatements in it; then the Latin descent pass, the longest, which also
+wants to land before B3 and now has six known failures to start from; then
+the landing page's table and the dashboard's date, two small guards; then
+`far wel` and `camera`, content questions. The Latin note on `vir`, which
+sat first, is done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -2100,6 +2326,30 @@ without anyone to ask, each reversible in one line of
    descent**, rather than going blank — so a reviewer reading the diff sees
    new claims, not only removed ones. Each was checked on both sides like
    every other line; *argent* → *argentine* is the thinnest of them.
+
+**Four Latin calls a human may want to look at**, taken on 2026-10-02
+without anyone to ask, each reversible in a line of `tools/seed/lex-la.tsv`
+and the same line of `tools/seed/la-notes.tsv`, then `npm run packs`:
+
+1. **The note under `vir` says something new rather than something
+   smaller.** The smallest fix was "the plural “virī”…", which leaves a
+   sentence saying the plural of *man* means *men*. It says instead what
+   Lewis & Short says the word is, and names *homō*, which the pack does not
+   teach. Old English's `mann` is "a human being of either sex": the two
+   notes now make opposite points about the same English word, which is the
+   interesting thing about it.
+2. **`clāvis` lost its reason rather than gaining the other one.**
+   etymonline's own account — the collarbone as the shoulder's fastener,
+   after Greek *kleis* — sits behind a "supposedly", so the note gives
+   neither reason and says only whose word it was.
+3. **The landing page's vaccine row is weaker copy now, and true.** "Jenner
+   named it after the cowpox he used" became "named after the cowpox Jenner
+   used". If the agency is wanted back, what he did name was *variolae
+   vaccinae*, cowpox, in 1798.
+4. **`ita` has no descendant now, and `semper` still has "semper
+   fidelis".** The first is not English anywhere. The second is a Latin
+   motto English quotes, which the Latin frame's verb, "borrowed", arguably
+   covers, so it is left for the descent pass, where it is in the table.
 
 **Three Old English calls a human may want to look at**, taken on
 2026-10-01 without anyone to ask, each reversible in a line:
@@ -2366,6 +2616,61 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-02 — the queue's item was one PR stale, and the five-minute item
+under it was five notes, an etymon and a ledger.** The queue sent this
+session at the Old English etymons, which PR #42 landed on 2026-10-01; the
+topmost unchecked item was the Latin note on `vir`, now ticked in `Next`.
+Eight things a later run would be sorry not to know:
+
+1. **Lewis & Short is one file.** `curl -sL` the Perseus text from
+   `raw.githubusercontent.com/PerseusDL/lexica/master/CTS_XML_TEI/perseus/pdllex/lat/ls/lat.ls.perseus-eng2.xml`
+   — 77 MB, no rate limit — and every entry is an `<entryFree key="…">`.
+   Keys drop macrons, write consonantal *i* as *j* (`janua`) and number
+   homographs (`os1` mouth, `os2` bone). An adverb or an imperative is often
+   a one-line stub pointing at its headword (`vere` → `verus`, `salve2` →
+   `salveo`), so read both. Allen & Greenough is on Perseus by section,
+   `…/hopper/text?doc=Perseus:text:1999.04.0001:smythp=42`; the Dickinson
+   edition's section addresses could not be guessed. `/tmp/weft-la/ls.py`
+   prints an entry by key and `/tmp/weft-la/ls/` holds the 40-odd read.
+2. **etymonline heads a proper noun without a part of speech**, so the
+   fetcher's `word (n.)` pattern finds nothing on `/word/Argentina` or
+   `/word/Janus` and writes the page's navigation into the cache instead of
+   failing. Cut the raw page at "Origin and history of". The addresses are
+   not case-sensitive.
+3. **A note's wording picks the feed's sentence, so run the feed over every
+   note, not only the new ones.** "means" and "meant" make a false friend,
+   and that frame opens "X became English Y, but" — which is how a bad
+   etymon (`ita vero`) and a bad note (`vir`) both surfaced as one line of
+   nonsense. `/tmp/weft-la/feed.ts` runs the real module over a pack.
+4. **A second reader told to prove the first one wrong changed three verdicts
+   in sixteen minutes** — one of them the first reader's own rewrite. It was
+   given the note list and the extracts on disk, forbidden
+   the network and its own memory, and asked for a quotation per verdict.
+   Cheap, and the only check here that is not the author rereading.
+5. **A stamp wants the date held, not a pixel diff.** `dashboard.png` came
+   back different because it was after midnight. `TZ=America/Los_Angeles
+   WEFT_SCREENS=1 npx playwright test screenshots` put the clock back in the
+   day the file was taken and all 14 matched their committed bytes — which
+   shows the code draws the same picture, where a diff confined to two rows
+   only suggests it. Queued in `Next` as a real fix.
+6. **`test-results/` loses its iCloud attribute every time Playwright
+   deletes it.** The second generator run died on `Unknown system error -11
+   … scandir 'test-results/.playwright-artifacts-0'` straight after the
+   first had passed. `rm -rf test-results && mkdir test-results && xattr -w
+   'com.apple.fileprovider.ignore#P' 1 test-results` before *each* run.
+7. **Four shell slips, all zsh.** `$PIPESTATUS` is empty — zsh spells it
+   `$pipestatus` — so `npm … | tail; echo ${PIPESTATUS[0]}` printed nothing
+   and looked like success; redirect to a file and read `$?`. An unquoted
+   `--include=*.ts` is a glob zsh refuses ("no matches found") before grep
+   runs. `process.argv[2] ?? fallback` keeps an empty string; `||` is the
+   one that falls through. And a foreground `sleep` is refused by the
+   harness, so a wait has to be work.
+8. **The first verdict on `vacca` was too kind, and the standard was written
+   down after it.** It was left as "supported in substance", and rewritten
+   once the standard had been written — for the second reader's instructions,
+   then the ledger's header: a source that contradicts a note, hedges what it
+   states flatly, or says less than it does. Write the rule first, then read.
 
 **2026-10-01 — the Old English etymons: the sample said six to ten more
 false, and the file held twenty-seven.** The item is ticked in `Next`. Six

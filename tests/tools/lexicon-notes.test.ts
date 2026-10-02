@@ -54,7 +54,14 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const PACKS = join(ROOT, 'src/lexicon/packs');
 
-type Entry = { src?: string; tgtLemma?: string; etymonOf?: string; note?: string };
+type Entry = {
+  src?: string;
+  lemma?: string;
+  tgtLemma?: string;
+  etymonOf?: string;
+  note?: string;
+  pos?: string;
+};
 
 /** Every pack, so a note added to a language that has none today is covered. */
 function everyEntry(): Array<{ pack: string; entry: Entry }> {
@@ -137,6 +144,85 @@ describe('a tooltip note reads on its own, without the etymon badge above it', (
     assert.ok(
       policed.size >= 3,
       `only ${policed.size} proper-noun descendants carry a note, so the rule above is close to vacuous: ${[...policed].join(', ')}`,
+    );
+  });
+});
+
+/**
+ * A note may not hand its entry a grammatical category its part of speech lacks.
+ *
+ * The first row of the Latin pack read: man → `vir`, "third-person plural
+ * “virī” also means “men” collectively". *virī* is the nominative plural of a
+ * noun; person is a property of verbs. It stood in the tooltip, on
+ * `/latin/vir`, and — because the note contains "means", which is how
+ * `src/core/discoveries.ts` recognises a false friend — in the feed, as "vir
+ * became English virile, but third-person plural “virī” also means “men”
+ * collectively", which is not a sentence about anything.
+ *
+ * Nothing could have noticed, because nothing compares a note with the
+ * columns beside it. The pack already says what each entry is: `pos` is on
+ * every one. So the rule is derived from the data rather than from a list of
+ * notes somebody remembered — person, tense and conjugation are a verb's, and
+ * a note on anything else that reaches for one has mislabelled a form.
+ *
+ * Narrow in both directions, and each limit was measured against the 212
+ * distinct notes in the seven packs, eleven of which use a grammatical term:
+ *
+ *  - **Participles are out.** A participle is the verb's adjective and nouns
+ *    are made from them, so a noun's note may fairly name one. Two verbs'
+ *    notes already do — `fōn`, whose participle gave "fang", and `niman`,
+ *    whose participle was "numb" — and the same fact told from the noun's
+ *    side would be just as true.
+ *  - **Only the verb's categories are policed, not the noun's.** A verb
+ *    governs a case, so "takes the dative" is a true thing to say on a verb's
+ *    row. `burg`'s "its dative, “byriġ”" and `agricola`'s "first-declension"
+ *    are on nouns today, but the converse rule would refuse a correct note
+ *    the first time somebody wrote one.
+ *  - **"woman-person" is not grammar.** `wīfmann`'s note glosses the compound;
+ *    only *first-*, *second-* and *third-person* count.
+ *
+ * It cannot go quietly vacuous through missing data: were `pos` ever dropped
+ * from the packs, every verb's note would be policed too, and `wendan`'s "its
+ * past tense “went”" would fail by name.
+ */
+const VERB_ONLY = /\b(?:first|second|third)[- ]person\b|\btense\b|\bconjugation\b/iu;
+
+describe('a note names only the grammar its entry has', () => {
+  test('person, tense and conjugation appear only in notes on verbs', () => {
+    const offenders = new Set<string>();
+
+    for (const { pack, entry } of everyEntry()) {
+      // By lemma, not surface form: `man` and `men` are one row and one note.
+      const { note, pos, tgtLemma = '?', lemma = '?' } = entry;
+      if (!note || pos === 'verb') continue;
+      const found = VERB_ONLY.exec(note);
+      if (found) {
+        offenders.add(
+          `${pack} ${lemma} → ${tgtLemma} (${pos ?? 'no part of speech'}): “${found[0]}” is a verb’s — ${note}`,
+        );
+      }
+    }
+
+    assert.deepEqual(
+      [...offenders],
+      [],
+      `${offenders.size} notes give a verb’s category to a word that is not a verb:\n  ${[...offenders].join('\n  ')}`,
+    );
+  });
+
+  test('the rule has something to police', () => {
+    // A floor rather than an exact count, so it fires only when coverage
+    // shrinks: a pack losing its notes, or the glob above matching nothing.
+    // 168 notes sat on something other than a verb when this was written.
+    const policed = new Set(
+      everyEntry()
+        .filter(({ entry }) => entry.note && entry.pos !== 'verb')
+        .map(({ pack, entry }) => `${pack} ${entry.tgtLemma} ${entry.note}`),
+    );
+
+    assert.ok(
+      policed.size >= 100,
+      `only ${policed.size} notes sit on a word that is not a verb, so the rule above inspects almost nothing`,
     );
   });
 });

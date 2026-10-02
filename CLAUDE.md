@@ -57,14 +57,14 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **129 pass**, 35 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **137 pass**, 37 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 985 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 713 pages, 16 109 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-01 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
+| `npm run site:check` | link-check the generated site | 713 pages, 16 108 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -255,10 +255,132 @@ held by it, because a gloss of Old English meaning wants Bosworth–Toller,
 which nothing here cites. The claims taken out are listed at the foot of the
 ledger with what the dictionary says; read that before restoring one.
 
+**And a Latin note names its entries, because a note is a published
+sentence.** Every note in `tools/seed/lex-la.tsv` has a line in
+`tools/seed/la-notes.tsv` that repeats it and cites Lewis & Short's entry for
+its headword, and etymonline's for the English word when the note names the
+row's etymon; `tests/tools/la-notes.test.ts` fails on a note with no line, a
+line citing neither, or a note reworded since its line was written — which
+is the point of repeating it. A note is held to what the entries say: one
+they contradict, hedge or say less than is rewritten, and a loose paraphrase
+of a true thing stands. On 2026-10-02 that rewrote 5 of 28, among them
+Jenner having "named the vaccine", which the landing page quoted. Separately,
+`tests/tools/lexicon-notes.test.ts` refuses a note in any pack that gives a
+word a verb's person, tense or conjugation when its own `pos` says it is not
+a verb. The Latin etymon column is not covered yet; `TODO.md` has it.
+
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-02 — the five-minute note was five notes, and one of them was on the landing page
+
+The queue sent this session at the Old English etymons, which PR #42 landed
+the evening before; `git log` settled it in a minute. The topmost unchecked
+item was the note under `vir`, queued by that same session: "third-person
+plural “virī” also means “men” collectively", a verb's grammar on a noun's
+plural. Five minutes, it said, and the other Latin notes not read.
+
+**All 28 were read, against three dictionaries.** Lewis & Short for every
+Latin word a note uses — the whole Perseus text is one 77 MB file on GitHub,
+so 47 entries were read from it rather than fetched one at a time — Allen &
+Greenough for the two notes that state a rule of grammar, and etymonline for
+the 23 English words the notes explain. 23 stand. Five do not: `vir`;
+`clāvis`, whose collarbone was "named for its key-like shape" where
+etymonline says "supposedly from its function"; `vacca`, "Jenner named the
+vaccine", where the dictionaries credit him with *vaccination* and date the
+noun to 1846, from French — **on the landing page too**, which quoted it;
+`ita`, "no bare word for yes", where the grammar says no one word "in common
+use"; and `umbra`, "a little shade", which is *umbella*, and which glossed
+the wrong word whenever the etymon badge is switched off.
+
+**Two of the five, and the final wording of a third, came from a second
+reader**, given the extracts on disk and told to prove the first reading
+wrong, with a quotation per verdict and no network. It found `umbra` and
+`ita`, and that the first rewrite of `clāvis` — "the collarbone is
+“clāvicula”" — is medieval Latin on a page headed "Classical". It failed
+`vacca` as well, separately from the first reading, which had left it
+"supported in substance" and rewritten it while the reader ran. **Write the
+standard down before the reading, not after**: the first verdict on `vacca`
+was formed before "says more than the source" had been written anywhere,
+and fell the moment it was.
+
+**And reading the notes found an etymon that is not English.** `ita` was the
+ancestor of "ita vero" — Latin, one of the ways Allen & Greenough §336 lists
+for saying yes. `/latin/ita` said "your English **ita vero** was borrowed
+from", the tooltip "Ancestor of English ita vero", and the selector scored
+`yes → ita` a cognate at **0.96** on the strength of it, so a first meeting
+with *ita* was treated as half-known. The note is what surfaced it: a note's
+wording picks the feed's sentence, "means" makes a false friend, and that
+frame read "ita became English ita vero, but classical Latin has no bare
+word for yes". Removed; the score is 0.
+
+**The guard is a ledger and a rule.** `tools/seed/la-notes.tsv` repeats each
+note and names the entries read, and `tests/tools/la-notes.test.ts` — 6
+tests, a new suite — derives what a line must cite: Lewis & Short's key for
+its own headword (macrons dropped, consonantal *i* as *j*, a homograph digit
+allowed), and etymonline's entry for the English word whenever the note
+names the row's etymon. It fails on a note with no line, a note reworded
+since, an unreadable token, or a line outliving its note. Repeating the note
+is the design: an edit leaves it unsourced until somebody reads again. Red
+first on an empty ledger, naming all 28. Separately, a second `describe` in
+`tests/tools/lexicon-notes.test.ts` refuses person, tense or conjugation in a
+note on anything its own `pos` says is not a verb, across all seven packs —
+red naming `vir` alone, with `wīfmann`'s "woman-person" rightly left alone.
+And `homō` and `clāvicula` joined the orthography guard's table of Latin the
+lexicon does not carry. Nineteen probes across the three, each restored by
+md5; two were meant to stay green and did — `os` cited without its
+homograph digit, and "third-person" on a verb.
+
+**What moved.** `en-la.json`: 9 `note` fields, 1 `etymonOf` and its date.
+Nine files of the built site: five word pages, the descent hub (314 → 313
+rows), the Latin index, the landing page and two sitemap dates, all read
+against a baseline build. All 36 generated screenshots came back
+byte-identical and the three groups are stamped — the documentation set only
+with the date held: after midnight `dashboard.png` printed "Oct 2" in its
+change log, and `TZ=America/Los_Angeles` put the run back on the 1st, where
+all 14 matched. Counts moved 790 → 798 and tools 129 → 137 / 35 → 37 suites,
+`docs/LAUNCH.md:221` first; site links 16 109 → 16 108.
+
+**Found and queued, each measured, none fixed.** Nineteen Latin
+pronunciations are wrong: seven stressed on the wrong syllable, every one
+containing *qu*, because `tools/seed/_ipa.py`'s stress pass counts the *u* of
+*qu* as a vowel; two given a diphthong they lack; ten with the stress mark a
+consonant early, `/pɛˈrsoːna/` — and the generator's docstring says "the
+derivation is tested" where nothing imports it. The feed tells Latin
+borrowings in Old English's frames, "rēx survived into English as regal", on
+226 of 304 lines. Five more Latin etymons fail on sight — *semper fidelis*,
+`vērē` → *very*, `salvē` → *salvation*, `agricola` → *agriculture*, `iānua` →
+*January*. The landing page's descent table is a hand copy of eight pack
+claims that nothing reads. `dashboard.png` photographs the date. And
+`camera` is taught as "room" where Lewis & Short has only a vault.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured rather
+than a pipe's: `npm run test:all` **exit 0** — typecheck clean, 527 unit / 130
+suites, 98 jsdom / 22 suites, **137 tools / 37 suites**, compat 21
+dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail / 0 without data,
+**985 KB × 3** passing `validate`, **36 e2e passed and 3 skipped in 2.0 min**,
+then build and validate again. Separately: `packs:verify` **0 errors / 4
+warnings**; `npm run site` then `site:check` **713 pages / 16 108 links**, all
+resolving; a last `npm run packs` moved nothing; `artefacts:check` **8 groups,
+1 stale**, exit 1 — the release notes, B2a, with all three screenshot groups
+`ok` on the commit that stamps them. Zero iCloud conflict copies in `dist/`,
+`src/`, `tests/`, `tools/` or `test-results/`. One stray file did appear —
+`tools/seed/__pycache__/_ipa.cpython-314.pyc`, written by importing the IPA
+module to read its behaviour — and was deleted before the commit.
+
+Assumed, with nobody to ask: that a note is held to a dictionary the way a
+claim is, and that a loose paraphrase of a true thing stands; that
+"medieval" belongs in the `clāvis` note on a classical page; that the
+landing page's vaccine row should lose Jenner's agency rather than gain
+*variolae vaccinae*; that `ita` is better with no descendant than with *ita
+vero*; and that a ledger repeating each note is worth the duplication.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. Four Latin calls to look at rather than do are in `TODO.md`
+under "Four Latin calls". `Next` holds nine agent-shaped items, the 22 Old
+English URLs first.
 
 ### 2026-10-01 — twenty-seven Old English descents were not true as stated, in two shapes
 
