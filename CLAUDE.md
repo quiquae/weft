@@ -322,6 +322,81 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-02 — three words were two words each, and the guard found a fourth
+
+`TODO.md`'s `Now` was empty and the topmost unchecked item in `Next` was the
+one the session before had queued: Old English `hund` is a dog and a
+hundred, `earm` an arm and poor, `rīċe` a realm and rich, and each pair
+shared one card, so the feed told a reader who met *hund* as "hundred" that
+it survived as *hound* and the quiz asked them "dog". Three shapes, none
+chosen.
+
+**Measured first, and the item's three were nine.** Over the seven packs,
+nine targets share a headword across parts of speech. English Wiktionary,
+read for each, gives `hund`, `earm` and `rice` — its title for `rīċe`, which
+404s — two etymology sections apiece, and `soþ`, German `schnell` and
+`langsam` and Spanish `mañana` one. So part of speech is a symptom and only
+a dictionary decides. French `mort`, death and dead, has two as well.
+
+**Shape 1, a homograph number, because it alone keeps `rīċe` → *rich*.**
+The seed writes `hund²`, `earm²`, `rīċe²`, in Wiktionary's order, which is
+also the rows' order, so the first word keeps its bare id and every card a
+learner already has. The number lives in `tgtLemma`, the card's id; the
+pack's `tgt` never carries it, and `spelling()` in `src/core/lexicon.ts`
+takes it off wherever a tool or a fallback prints a headword. The quiz now
+compares distractors by spelling, because by identity it offered "dog" as
+a wrong answer to *hund²*. The site's slugs come from the spelling, so
+`assignSlugs()` makes `hund-dog` and `hund-hundred` as it made `os-mouth`.
+
+**The guard is `tests/tools/lexicon-homographs.test.ts`.** A target shared
+across parts of speech is numbered or listed in `ONE_WORD` with what the
+dictionary says; a listed word must still span two; a number follows a bare
+first and starts at ²; no row's `tgt` prints one; and the three pairs are
+checked against glosses, claims and feed sentences written out by hand.
+Red first naming exactly the three, with the five one-word targets passing.
+`fr:mort` is on the list knowingly — its one claim is true of both senses,
+and numbering it may move the store art — and is queued as a decision.
+
+Done test-first, with five probes restored by md5; the one worth keeping is
+the pack builder leaving the number in `tgt`, which fails five tests across
+22 pages. Two readers changed with no failing test beforehand and were
+probed instead: `verify-packs` warned three times on `²` until it read the
+spelling, and the orthography guard missed a planted bare `riċe` under its
+old reading.
+
+**What moved: 5 of 7 154 fields of `en-ang.json`**, and 713 → **716** site
+pages, 16 108 → **16 178** links. Three addresses renamed, three pages new;
+main's build rewritten by the three old addresses is byte-identical in 698
+of 718 files, and the 20 others differ only by the new words. The hundred's
+note says "the usual word for the number" where it said "for it", because
+the feed prints a note with no gloss beside it. All 36 generated screenshots
+byte-identical under `TZ=Pacific/Pago_Pago`, three groups stamped, the
+package unchanged at 986 KB.
+
+Counts moved 821 → **833**: unit 536 → **540** / 132 → **133** suites,
+tools 150 → **158** / 41 → **45**, in six places, `docs/LAUNCH.md:221`
+first; and a `CHANGELOG.md` paragraph, because the cards ship.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 540 unit / 133 suites, 98
+jsdom / 22 suites, 158 tools / 45 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **37 e2e passed and 3 skipped in 1.6 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **716
+pages / 16 178 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that the design could go ahead without the
+approval step the process asks for, the run being unattended; that two
+vocabulary rows reading "hund", told apart only by their glosses, are better
+than a number on screen; that the note could be reworded as the same claim;
+and that `mort` wants its own decision.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds nine agent-shaped items, the feed's Latin frames
+first.
+
 ### 2026-10-02 — eleven hidden stories were two, and three words were two words each
 
 The queue named the topmost unchecked item exactly: the discoveries feed read
