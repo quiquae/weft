@@ -2435,9 +2435,9 @@ below it can move until it is.
       listed one-word targets passed, then on the three missing entries,
       the feed and the floor; it fails on a target shared across parts of
       speech that is neither numbered nor in `ONE_WORD`, on a listed word
-      that no longer spans two, on a `¹` or a number with no bare first,
-      and checks each pair against hand-written glosses, claims and feed
-      sentences. `tests/tools/build-site.test.ts` +1: red on three pages
+      that no longer spans two, on a `¹`, a number with no bare first or
+      one typed as an ASCII digit, and checks each pair against
+      hand-written glosses, claims and feed sentences. `tests/tools/build-site.test.ts` +1: red on three pages
       printing `hund²` through JSON-LD `alternateName`; its overwrite test
       now matches a page by headword *and* gloss, because two pages are
       headed hund. Five probes, each restored by md5: slugs without the
@@ -3009,7 +3009,7 @@ Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
 **2026-10-02 — the Old English homographs: three words were two each, and
-the guard that holds them found a fourth in French.** Ticked in `Next`. Seven
+the guard that holds them found a fourth in French.** Ticked in `Next`. Nine
 things a later run would be sorry not to know:
 
 1. **English Wiktionary titles an Old English page without macrons or
@@ -3044,8 +3044,28 @@ things a later run would be sorry not to know:
 6. **`TZ=Pacific/Pago_Pago` held `dashboard.png`'s 1 October date at 07:50
    UTC on the 2nd.** Same window as the note below; it closes at 11:00 UTC.
 7. **`tools/build-pack.mjs` now imports from `src/core/`**, as
-   `build-site.mjs` and `verify-packs.mjs` do, so `npm run packs` needs a
-   Node that strips types by default — 22.18 or later, which CI's `22` is.
+   `build-site.mjs` and `verify-packs.mjs` do, so `npm run packs` and
+   `npm run packs:verify` pass `--experimental-strip-types`, as the test
+   scripts do: it is a no-op from Node 22.18, and what makes 22.6–22.17 work.
+   Node 20, which `engines` still allows, runs none of the TypeScript
+   scripts, tests included; that was true before this change.
+8. **An independent reviewer read every reader of `tgtLemma` under `src/`
+   and found no leak**, and its hardening was taken: the type docs say the
+   id may carry a number, the diagnostics leak check also looks for the
+   spelling, the guard refuses an ASCII digit (`hund2`) and warns against
+   renaming a numbered word bare, `fill_ipa.py` strips one number as
+   `spelling()` does, and the site's superscript scan covers only the pages
+   built from the packs. Left as it was, deliberately: the per-page repeat
+   cap and the daily new-word budget count `hund` and `hund²` separately,
+   which is right for two words; and the 42 headwords shared *within* a
+   part of speech were read by eye on 2026-10-02 and not against a
+   dictionary, so a homograph among them is invisible to every guard here.
+9. **zsh does not split an unquoted variable, and a generator that never
+   ran reads as byte-identical.** A loop doing `set -- $spec` handed
+   Playwright an empty spec name: it ran the ordinary e2e suite three
+   times, 37 passed each, wrote no image, and every hash still matched the
+   commit. The count of files written since a stamp is what caught it.
+   Count what a generator wrote before believing it agreed.
 
 **What was assumed, with nobody to ask.** That the design could be taken
 without the approval the brainstorming process asks for, the run being

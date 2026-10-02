@@ -12,6 +12,7 @@ are reviewable in a diff. Existing non-empty values are never overwritten:
 a hand-corrected transcription always wins.
 """
 import pathlib
+import re
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
@@ -44,7 +45,8 @@ def fill(lang):
             kept += 1
             continue
         # hund² is the second word spelled hund; the number is not spoken.
-        value = transcribe(tgt.rstrip('²³⁴⁵⁶⁷⁸⁹'), pos)
+        # One number, as spelling() in src/core/lexicon.ts takes it off.
+        value = transcribe(re.sub('[²³⁴⁵⁶⁷⁸⁹]$', '', tgt), pos)
         if not value:
             skipped += 1
             continue

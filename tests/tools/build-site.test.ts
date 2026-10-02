@@ -154,7 +154,10 @@ before(() => {
       .filter((file) => file.endsWith('.html'))
       .map((file) => {
         const html = readFileSync(join(out, file), 'utf8');
-        const at = html.search(SUPERSCRIPT_DIGIT);
+        // Only the pages built from the packs: a privacy policy may one day
+        // have a footnote, which is not a homograph number.
+        const fromPacks = /^(?:latin|old-english)\//.test(file) || /-words-/.test(file);
+        const at = fromPacks ? html.search(SUPERSCRIPT_DIGIT) : -1;
         if (at !== -1) numberedPages.push(`/${file}: …${html.slice(Math.max(0, at - 40), at + 2)}`);
         const svg = html.match(/<div class="brand">[\s\S]*?(<svg[\s\S]*?<\/svg>)/)?.[1];
         return { page: `/${file}`, mark: svg ? markInSvg(svg) : null };
