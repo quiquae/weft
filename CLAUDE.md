@@ -303,6 +303,87 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-02 — eleven hidden stories were two, and three words were two words each
+
+The queue named the topmost unchecked item exactly: the discoveries feed read
+one pack row per target word, and "eleven true etymologies sit on the other
+one". It asked for the surfaces that read that map to be measured before a
+shape was chosen.
+
+**Four surfaces, not two, and all four were the same hand loop.** The
+dashboard built one first-row map for the feed *and* the vocabulary list
+beside it — its gloss, its etymon badge, its search box; the quiz builder
+built a second; and the site builder a third, for every Latin and Old
+English page. `git grep` for `.set(… .tgtLemma` finds exactly those three.
+
+**Counted row by row and read through the feed's own sentence, the eleven
+were four things.** Two hidden outright — `fille` and `argent`, whose claims
+sit on the daughter and money rows because `fr-cousins.tsv` keys claims by
+English lemma. Three a second true descent beside one the feed already
+tells (`domus` → *domicile*, and so on). Four saying nothing the first row
+does not. And two claims about a *different word* with the same spelling,
+which is the finding: Old English `hund` is a dog and a hundred, `earm` an
+arm and poor, `rīċe` a realm and powerful, and each pair shares one card. A
+reader who met *hund* as "hundred" is told it survived as *hound*, asked
+"dog" in the quiz, and shown "dog" in the list. No lookup can fix that,
+because a card does not record which word was met; it is the new top of
+`TODO.md`'s `Next`, with three shapes and none chosen.
+
+**Shape 1, taken at the level of the claim.** `entriesByTarget()` in the new
+`src/core/lexicon.ts` reads each word from its first singular row and, when
+that row carries no claim, copies on the first claim another row *of the
+same part of speech* carries, etymon and note together. The literal shape 1,
+"prefer the row with a story", was probed and rejected: it moved *fille* to
+*daughter* and *argent* to *money* in the list and the quiz. Shape 2 would
+have scheduled 46 one-word-two-gloss cards twice and needed a migration;
+shape 3 would have copied `rīċe`'s "rich" onto the noun. The part-of-speech
+line withholds nothing on today's packs and is what stops the rule ever
+telling *earm*'s "poor" readers about *arm*.
+
+Done test-first: `tests/core/lexicon.test.ts` (9 tests, 2 suites), red on
+the missing module and then 5 of 9 against the old loop moved into core;
+`tests/tools/lexicon-lookup.test.ts` (6 tests, 2 suites), red naming exactly
+the three hand copies, which now fails on any `map.set(row.tgtLemma, …)`
+under `src/` or `tools/` and holds the lookup to the shipped packs; and one
+e2e test, red against `main`'s dashboard, which listed "argent silver seen
+3×" and rendered no feed. Six probes, each restored by md5, each firing for
+its own reason.
+
+**What moved: two feed lines and 652 bytes.** The site, built before and
+after, is byte-identical in all 718 files; all 36 generated screenshots
+came back byte-identical — the documentation set under
+`TZ=Pacific/Pago_Pago`, because `America/Los_Angeles` had crossed midnight —
+and the three groups are stamped. The package grew 985 → 986 KB, measured by
+building `main`'s two callers and this branch's in turn. One process slip,
+caught by `git diff --stat`: a `perl -0pi` replacement containing `\x{2019}`
+double-encoded the whole of `TODO.md`, +1017/−886 for a two-word edit, and
+was reversed byte for byte before anything was committed.
+
+Counts moved 805 → **821**: unit 527 → **536** / 130 → **132** suites, tools
+144 → **150** / 39 → **41**, e2e 36 → **37**, in six places,
+`docs/LAUNCH.md:221` first; and a `CHANGELOG.md` paragraph, because the feed
+ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 536 unit / 132 suites, 98
+jsdom / 22 suites, 150 tools / 41 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **37 e2e passed and 3 skipped in 1.8 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **713
+pages / 16 108 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that a claim belongs to the word, so the feed
+may tell *argent*'s money-row note to a reader who met it as silver; that
+the list and the quiz keep the first row's gloss rather than show every
+gloss a word has; that the site reads through the same lookup although it
+changes nothing there today; and that the homographs want their own item.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds nine agent-shaped items, the three Old English
+homographs first.
+
 ### 2026-10-02 — nineteen wrong pronunciations were thirty, and the miss was in how the census counted
 
 The same run landed the Old English addresses below as PR #44 and then took
