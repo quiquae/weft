@@ -10,3 +10,4 @@ test-results/
 tools/.cache/
 *.log
 .licence-private.jwk
+__pycache__/

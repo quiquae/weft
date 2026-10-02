@@ -40,7 +40,10 @@ Glosses checked against:
 Classical pronunciation follows the standard reconstruction as set out in
 W. Sidney Allen, *Vox Latina* (Cambridge, 1965). Transcriptions are derived
 from the orthography by `tools/seed/_ipa.py`, which is near-deterministic once
-vowel length is marked, and tested against known forms.
+vowel length is marked and checks itself against forms worked out by hand.
+Syllables and stress follow *Allen and Greenough's New Latin Grammar* (Ginn,
+1903; public domain), §§7, 11 and 12, and `tests/tools/latin-stress.test.ts`
+holds every Latin transcription to those rules.
 
 The **DCC Core Latin Vocabulary** (Dickinson College Commentaries, CC BY-SA)
 informed which Latin words belong in a core list.

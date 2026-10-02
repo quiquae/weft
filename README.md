@@ -99,8 +99,9 @@ language. Old English `drēam` means joy and music, not a sleeping vision.
 Neither language has a speech-synthesis voice on any platform, so the tooltip
 shows a reconstructed pronunciation in IPA instead of pretending to offer
 audio. Roughly 700 transcriptions are derived from the orthography, which is
-near-deterministic in both once vowel length is marked, and the derivation is
-tested against known forms.
+near-deterministic in both once vowel length is marked. The generator checks
+itself against forms worked out by hand, and the test suite holds every Latin
+transcription to the classical rules of syllable and stress.
 
 A letterform switch separates orthographic difficulty from vocabulary
 difficulty. `þēod` is not hard because of the word, it is hard because of the
@@ -264,7 +265,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 527 unit + 98 jsdom + 139 over the build tools
+npm test               # 527 unit + 98 jsdom + 144 over the build tools
 npm run test:e2e       # 36 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules

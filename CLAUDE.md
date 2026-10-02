@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **527 pass**, 130 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **139 pass**, 38 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **144 pass**, 39 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **36 pass, 3 skipped**, 3.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -269,10 +269,107 @@ Jenner having "named the vaccine", which the landing page quoted. Separately,
 word a verb's person, tense or conjugation when its own `pos` says it is not
 a verb. The Latin etymon column is not covered yet; `TODO.md` has it.
 
+**A Latin transcription is held to the grammar, not to the generator.**
+`tests/tools/latin-stress.test.ts` works every headword's syllables, stress
+and the stressed syllable's first consonant out of its spelling by Allen &
+Greenough §§7, 11 and 12, and fails on IPA that disagrees. It does not
+import `tools/seed/_ipa.py` on purpose: the thirty wrong transcriptions it
+found on 2026-10-02 were all in how the generator read the spelling, and a
+borrowed reading would have agreed with them. A group of consonants splits
+before its last, a stop and a liquid going on together, and compounds are
+not divided by their parts — A&G §7 note 1's preference, and Wiktionary's
+Classical practice. What the spelling cannot show (*eu* as one syllable or
+two, a consonant *i* after a consonant) is read from Lewis & Short into the
+test's `RESPELT`; a headword the rules cannot read fails by name.
+
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-02 — nineteen wrong pronunciations were thirty, and the miss was in how the census counted
+
+The same run landed the Old English addresses below as PR #44 and then took
+the next unchecked item: nineteen Latin transcriptions, from three defects
+in `tools/seed/_ipa.py` — a stress walk that took the *u* of *qu* for a
+vowel, an *eu* diphthong in every word, and a stress mark placed before
+every consonant since the last vowel.
+
+**The defects were exactly as diagnosed and the count was not.** The
+scratch script behind it compared stress counted from the end of the word,
+so `caeruleus`, stressed on the first of three syllables where it has four
+and the second is stressed, read "antepenult" both ways. And the
+consonant-early count took only clusters no Latin word begins with, *rs*,
+*nt*; Allen & Greenough §7 splits *sp*, *gn* and a doubled consonant too,
+"dīx-it, sax-um … preferred to dī-xit", so `aspicere`, `pugnāre`,
+`difficilis` and `nārrāre` /naːˈrːaːrɛ/ were wrong as well. With
+`iūsiūrandum` a syllable long — its second *i* begins *jūrandum*, as Lewis
+& Short prints it — that is 7 + 3 + 19 + 1 = **30** headwords and 50
+surface forms. **Compare the counts before the positions.**
+
+**The rule was read before it was written.** A&G §§2–8 and 10–12 from
+Perseus, Lewis & Short for the four words the spelling cannot settle
+(*cāsĕus*, *calcĕus*, *caerŭlĕus*, *jus-jūrandum*), and Wiktionary's
+Classical transcriptions for 16 of the 30, which agree with A&G's division
+on every one, compounds included, except `mōnstrō`, which Wiktionary
+nasalises and this generator does not.
+
+**The fix is one reading of the word for both halves.** `_la_tokens()`
+feeds the stress, the weight and the mark alike; *eu* is a diphthong only
+in *ceu*, *heu*, *neu* and *seu*; the mark goes where the stressed syllable
+begins, splitting a doubled consonant, `naːrˈraːrɛ`. Every Latin cell was
+then blanked and refilled — safe only because all 356 were first shown to
+equal the old generator's output — and exactly the 30 moved. The
+self-check gained 13 hand-worked forms, 11 of which fail on the old code,
+and exits 1 on a mismatch; it used to print a count and exit 0.
+
+**The guard is `tests/tools/latin-stress.test.ts`, 5 tests**, which works
+each headword's syllables, stress and onset out of its spelling by A&G's
+rules without importing the generator, and refuses a spelling it cannot
+read rather than guessing. Red first on exactly the 30. Seven probes,
+restored by md5; six fired on exactly the right rows, and the seventh,
+which removed the stop-before-liquid exception from the weight rule,
+passed, because no headword has such a penult. That branch is held by
+`tenebrae` in the self-check instead.
+
+**What moved, proved by rewriting.** `en-la.json`: 50 `ipa` fields and its
+date. The site: 30 Latin word pages, each the old page with its
+transcription rewritten and nothing else (180 occurrences), and 701 of 713
+sitemap dates, the per-pack coarseness already recorded. All 36 generated
+screenshots byte-identical and the three groups stamped. `README.md` and
+`docs/THIRD-PARTY.md` claimed the derivation was "tested against known
+forms" and now say what is checked; THIRD-PARTY credits Allen & Greenough.
+The tracked `__pycache__` is gone and ignored.
+
+**Found and queued:** Old English stress had never been checked either.
+Every prefixed verb is listed, but `tōdæġ` is /ˈtoːdæj/ where Wiktionary
+has /toːˈdæj/, `tōgædere` gives the stop of *gædere* as ɣ, and `tōmorgen`
+has no entry to check against.
+
+Counts moved 800 → **805** and tools 139 → **144** / 38 → **39** suites in
+six places, `docs/LAUNCH.md:221` first.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 527 unit / 130 suites, 98
+jsdom / 22 suites, **144 tools / 39 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **985 KB × 3**
+passing `validate`, **36 e2e passed and 3 skipped in 1.9 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check`
+**713 pages / 16 108 links**, all resolving; `artefacts:check` **8 groups,
+1 stale**, exit 1 — the release notes, B2a. The first-run generator died
+once on the iCloud trap, which Playwright re-arms by deleting
+`test-results/`, and passed when the attribute was set again. Zero
+conflict copies at the end.
+
+Assumed, with nobody to ask: that A&G's preferred division beats the
+convention it mentions; that a compound divides by the same rule, as
+Wiktionary does; that a doubled consonant the mark splits is written twice;
+and that the Old English adverbs wait for their own item.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds nine agent-shaped items, the feed's hidden
+etymologies first.
 
 ### 2026-10-02 — twenty-two addresses had lost a letter, and moving one call put it back
 
