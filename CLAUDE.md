@@ -337,6 +337,73 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-02 — Latin was told as Old English, and the guard first trusted the flag it checked
+
+This run began by finding its predecessor's last commit orphaned: the queue's
+`cq land` had merged #47 at its pushed head two minutes after the review
+hardening was committed locally, and the account's session limit stopped the
+session before the push. The commit was in the reflog; cherry-picked onto
+`main`, whose squash tree equalled the pushed head's, it reproduced the tree
+the screenshots had been verified on, and landed as #48 — opened as a draft
+this time, so nothing could land it early. Then the topmost unchecked item:
+the feed's Latin frames.
+
+**Measured first, every word of every pack met once with the real modules:
+Latin printed 232 of its 314 feed lines in Old English's verbs** — "rēx
+survived into English as regal", "English aquatic comes straight from aqua",
+"camera has not changed in a thousand years". The frames were chosen by
+`historical`, and Latin is dead; English borrowed those words.
+
+**The flag is a fact about the language, so it is in the language table.**
+`ancestorOfEnglish`, true for Old and Middle English only — Norse, Greek and
+Gothic are historical and borrowed from too — chooses the descent frames, the
+unchanged sentence and the false-friend sentence; `historical` still orders
+the feed, and a test pins that in both directions. It is a required option
+of `buildDiscoveries`, so leaving it out of the dashboard's call fails the
+typecheck, which was probed.
+
+**The guard's first draft could not see the flag move**, and that is the
+transferable half. `tests/tools/feed-frames.test.ts` read each language's
+flag to decide what its lines should say, so flagging Latin moved the
+behaviour and the expectation together and every test passed. Its first test
+now derives the flag from the table's own names — a historical language
+called "… English" — and names `la (Latin)` when it moves. Done test-first:
+4 unit tests red on the three frames, the guard red on `main` at 449 lines,
+and one e2e test red against `main`'s real dashboard, built in a `/tmp`
+worktree with `node_modules` linked, on "camera has not changed in a thousand
+years — it is still camera."
+
+**What moved: exactly 310 Latin feed lines of 755** across the seven packs,
+diffed line by line against `main`'s module, and none in any other language;
+366 bytes of package, 986 KB still. Of the 36 screenshots only
+`dashboard.png` moved, by its two dates — the morning's `TZ` window had
+closed — read by cropping both bands, committed as regenerated, with its
+group's "no change" stamp deleted.
+
+Counts moved 833 → **842**: unit 540 → **544**, tools 158 → **162** / 45 →
+**46** suites, e2e 37 → **38**, in six places, `docs/LAUNCH.md:221` first;
+and a `CHANGELOG.md` paragraph, because the feed ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 544 unit / 133 suites, 98
+jsdom / 22 suites, 162 tools / 46 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 2.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **716
+pages / 16 178 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that the verbs could be fixed before the Latin
+descent pass checks the claims, since "borrowed" is already the site's verb;
+that a word English took unchanged reads "camera is simply camera.", French's
+sentence; that Middle English carries the flag with no pack yet; and that a
+`dashboard.png` moved only by its dates is committed rather than held back.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds eight agent-shaped items, the Latin descent pass
+first.
+
 ### 2026-10-02 — three words were two words each, and the guard found a fourth
 
 `TODO.md`'s `Now` was empty and the topmost unchecked item in `Next` was the
