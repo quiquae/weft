@@ -3009,7 +3009,7 @@ Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
 **2026-10-02 — the Old English homographs: three words were two each, and
-the guard that holds them found a fourth in French.** Ticked in `Next`. Nine
+the guard that holds them found a fourth in French.** Ticked in `Next`. Ten
 things a later run would be sorry not to know:
 
 1. **English Wiktionary titles an Old English page without macrons or
@@ -3066,6 +3066,18 @@ things a later run would be sorry not to know:
    times, 37 passed each, wrote no image, and every hash still matched the
    commit. The count of files written since a stamp is what caught it.
    Count what a generator wrote before believing it agreed.
+10. **The queue landed PR #47 before its last commit was pushed.**
+    `cq land` merges any PR whose checks have passed, and #47's had, on
+    `4f987be`, while the session was still acting on its reviewer's notes.
+    It merged at 09:28 BST, two minutes after the hardening was committed
+    locally and before it was pushed, and deleted the local branch; the
+    session was then cut off by the account's session limit, so the
+    hardening survived only in the reflog. The next run recovered it by
+    cherry-picking `f2653a4` onto `main` — the squash's tree equals the
+    pushed head's, `e9bfa10f`, so it applied cleanly, and the result equals
+    the tree the screenshots were verified on, `0649e274` — and landed it
+    as its own PR. **Open a PR as a draft until the last commit is in, mark
+    it ready only then, and push each commit as it is made.**
 
 **What was assumed, with nobody to ask.** That the design could be taken
 without the approval the brainstorming process asks for, the run being

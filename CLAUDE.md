@@ -386,6 +386,15 @@ suite three times, wrote no image, and every hash matched. **Count what a
 generator wrote before believing it agreed** — "written since stamp: 0" is
 what said so. Run explicitly, all 36 came back byte-identical again.
 
+**And the queue merged #47 before that hardening was pushed.** `cq land`
+merges a PR whose checks have passed, and #47's had on the commit before;
+it landed two minutes after the hardening was committed, deleted the local
+branch, and the session was then stopped by the account's session limit.
+The next run found the commit in the reflog, cherry-picked it onto `main`
+— the squash's tree equals the pushed head's, so it applied cleanly and
+reproduced the very tree the screenshots were verified on — and landed it
+as its own PR. **Open a PR as a draft until the last commit is in.**
+
 Counts moved 821 → **833**: unit 536 → **540** / 132 → **133** suites,
 tools 150 → **158** / 41 → **45**, in six places, `docs/LAUNCH.md:221`
 first; and a `CHANGELOG.md` paragraph, because the cards ship.
