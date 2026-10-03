@@ -64,7 +64,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
-| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
+| `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
 Also: `npm run dev` (watch), `npm run zip` (per target, a flat archive for the
@@ -428,6 +428,18 @@ what the map shows, and the four marks carry the proof.
 
 No test counts moved and nothing that ships moved, so there is no count
 sweep and no `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7 under macOS 27.0.1, with npm's own exit
+status captured: `npm run test:all` **exit 0** — typecheck clean, 544 unit /
+133 suites, 98 jsdom / 22 suites, 170 tools / 48 suites, compat 21
+dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail / 0 without data,
+**986 KB × 3** passing `validate`, **38 e2e passed and 3 skipped in 1.5
+min**, then build and validate again. Separately: `packs:verify` **0 errors
+/ 4 warnings**; `npm run site` then `site:check` **716 pages / 16 165
+links**, all resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 —
+the release notes, B2a — and the seven others `ok`, the six rebaselined
+groups by this commit's own date. Zero iCloud conflict copies in the
+tracked trees, `dist/` or `test-results/`.
 
 Assumed, with nobody to ask: that the rebaseline is wanted now rather than
 folded into the tooltip change; that 5.5 MB of history is an acceptable
