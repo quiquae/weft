@@ -25,7 +25,7 @@
 #   wikt:en:<english>   https://en.wiktionary.org/wiki/<english>#English
 #   wikt:ang:<old>      https://en.wiktionary.org/wiki/<old>#Old_English
 #
-# tests/tools/ang-etymons.test.ts requires every etymon in lex-ang.tsv to have
+# tests/tools/etymons.test.ts requires every etymon in lex-ang.tsv to have
 # a line here citing that English word's own entry, and no line here to
 # outlive its claim. It cannot tell an entry somebody read from one somebody
 # typed: cite the ones actually opened. etymonline files neighbour and grey

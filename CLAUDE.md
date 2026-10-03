@@ -293,7 +293,7 @@ the entries cited should be the ones actually opened.
 **So does an Old English one, and a compound is not a descent.** Every etymon
 in `tools/seed/lex-ang.tsv` has a line in `tools/seed/ang-etymons.tsv` naming
 the English word's own entry — etymonline, or English Wiktionary where it has
-none — and `tests/tools/ang-etymons.test.ts` fails on an etymon with no line,
+none — and `tests/tools/etymons.test.ts` fails on an etymon with no line,
 a line citing some other word, or a line outliving its claim. The product
 says "became", "the direct ancestor of" and "comes straight from", so a
 descent survives a cognate reshaping the word (*sister*, *give*) and an
@@ -317,7 +317,23 @@ of a true thing stands. On 2026-10-02 that rewrote 5 of 28, among them
 Jenner having "named the vaccine", which the landing page quoted. Separately,
 `tests/tools/lexicon-notes.test.ts` refuses a note in any pack that gives a
 word a verb's person, tense or conjugation when its own `pos` says it is not
-a verb. The Latin etymon column is not covered yet; `TODO.md` has it.
+a verb.
+
+**A Latin etymon names its entry too, under a looser verb.** Every etymon in
+`tools/seed/lex-la.tsv` has a line in `tools/seed/la-etymons.tsv` naming the
+English word's own entry, and the same `tests/tools/etymons.test.ts` holds
+both ledgers. The product says "borrowed", not "became", so a Latin claim
+survives French or Italian standing between the two words and the English
+word coming from a derivative or compound of the headword (*vaccine* from
+*vaccīnus*, from *vacca*). It does not survive a sibling, a word built on
+the same thing the headword was (*ludicrous* is from *lūdere*, beside
+*lūdus*); an adjective under its adverb (*very* is from *vērus*, not *vērē*);
+a Latin word taken from Greek on its own (*nauticus* is "= ναυτικός", not
+*nauta* with a suffix); or a hedge on the link itself. On 2026-10-03 that
+standard removed 14 of 319 and gave 14 more a word that did come from the
+headword: *janitor* is from *iānitor*, the keeper of an *iānua*, where
+*January* is from *Janus*, as `iānua` itself is. Read the foot of the ledger
+before restoring one.
 
 **A Latin transcription is held to the grammar, not to the generator.**
 `tests/tools/latin-stress.test.ts` works every headword's syllables, stress

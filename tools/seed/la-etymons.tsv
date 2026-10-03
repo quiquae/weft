@@ -1,0 +1,398 @@
+# Where each Latin etymon in lex-la.tsv was checked.
+#
+# lemma | pos | tgt | etymon | sources
+#
+# The etymon column of lex-la.tsv names an English word that came from a Latin
+# one, and the product prints it three ways: "This is the Latin word your
+# English X was borrowed from" on the word page, "Ancestor of English X" in
+# the tooltip, and "English borrowed X from Y" in the discoveries feed. So it
+# has to be true of X, and X is where it is checked.
+#
+# On 2026-10-03 all 319 were read against etymonline, against English
+# Wiktionary for the six English words etymonline has no entry for, and
+# against Lewis & Short where the English entry stops at a Latin derivative
+# without saying what it was built on. 28 were not true as stated: 14 are
+# removed, and 14 now name a word that did come from the headword. They are
+# listed at the foot of this file with what the dictionary says, so that
+# nobody restores one in good faith.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was checked against, separated by spaces:
+#
+#   etym:<english>      https://www.etymonline.com/word/<english>
+#   wikt:en:<english>   https://en.wiktionary.org/wiki/<english>#English
+#   wikt:la:<latin>     https://en.wiktionary.org/wiki/<latin>#Latin
+#   ls:<key>            Lewis & Short, A Latin Dictionary (1879), by the entry's
+#                       key in the Perseus text, as in la-notes.tsv:
+#                       perseus.tufts.edu/hopper/text?doc=Perseus:text:1999.04.0059:entry=<key>
+#
+# tests/tools/etymons.test.ts requires every etymon in lex-la.tsv to have a
+# line here citing that English word's own entry, and no line here to
+# outlive its claim. It cannot tell an entry somebody read from one somebody
+# typed: cite the ones actually opened. etymonline files malic acid under
+# malic, and the test knows that.
+#
+# What a borrowing survives, and what it does not
+# -----------------------------------------------
+# Latin's verb is "borrowed", looser than Old English's "became", on purpose.
+# It survives French, Italian or Spanish standing between the two: pork is
+# Old French porc "and directly from Latin porcus". It survives the English
+# word coming from a word built on the headword — a derivative, a diminutive,
+# a compound: vaccine is from vaccīnus, from vacca; muscle from musculus,
+# "a little mouse"; mellifluous from mellifluus, mel and fluere. And it
+# survives a dictionary hesitating between two routes that both lead to the
+# headword: saline is "probably from Latin salinum ... or salinae", both
+# "from sal".
+#
+# It does not survive the English word coming from a sibling, a word built on
+# the same thing the headword was: ludicrous is from ludicrum, "from ludere",
+# and lūdus is beside it; protect is from protegere, from tegere, and tēctum
+# is beside it. An adverb is built on its adjective, so very, from vērus, is
+# not from vērē. It does not survive a Latin word that only looks built on the
+# headword and was taken from Greek on its own: Lewis & Short has nauticus
+# "= ναυτικός", not nauta and -icus. And it does not survive "probably",
+# "of uncertain origin" or "a merger" when the doubt is about the link to the
+# headword, rather than about where the headword itself came from.
+#
+man	noun	vir	virile	etym:virile
+woman	noun	fēmina	feminine	etym:feminine
+child	noun	puer	puerile	etym:puerile
+boy	noun	puer	puerile	etym:puerile
+person	noun	persōna	person	etym:person
+friend	noun	amīcus	amicable	etym:amicable
+family	noun	familia	family	etym:family
+mother	noun	māter	maternal	etym:maternal
+father	noun	pater	paternal	etym:paternal
+brother	noun	frāter	fraternal	etym:fraternal etym:fraternity
+sister	noun	soror	sorority	etym:sorority
+son	noun	fīlius	filial	etym:filial
+daughter	noun	fīlia	filial	etym:filial
+wife	noun	uxor	uxorious	etym:uxorious
+husband	noun	marītus	marital	etym:marital
+baby	noun	īnfāns	infant	etym:infant
+king	noun	rēx	regal	etym:regal
+queen	noun	rēgīna	regina	etym:regina wikt:en:regina
+lord	noun	dominus	dominate	etym:dominate
+neighbour	noun	vīcīnus	vicinity	etym:vicinity
+stranger	noun	aliēnus	alien	etym:alien
+enemy	noun	hostis	hostile	etym:hostile
+soldier	noun	mīles	military	etym:military
+teacher	noun	magister	magisterial	etym:magisterial
+doctor	noun	medicus	medical	etym:medical
+head	noun	caput	capital	etym:capital
+hand	noun	manus	manual	etym:manual
+eye	noun	oculus	ocular	etym:ocular
+ear	noun	auris	aural	etym:aural
+mouth	noun	ōs	oral	etym:oral
+nose	noun	nāsus	nasal	etym:nasal
+tooth	noun	dēns	dental	etym:dental
+hair	noun	capillus	capillary	etym:capillary
+heart	noun	cor	cordial	etym:cordial
+blood	noun	sanguis	sanguine	etym:sanguine
+bone	noun	os	ossify	etym:ossify
+arm	noun	bracchium	brachial	etym:brachial ls:bracchium
+leg	noun	crūs	crural	wikt:en:crural ls:crus
+foot	noun	pēs	pedal	etym:pedal
+finger	noun	digitus	digit	etym:digit
+face	noun	faciēs	facial	etym:facial
+body	noun	corpus	corporeal	etym:corporeal
+skin	noun	cutis	cuticle	etym:cuticle
+voice	noun	vōx	vocal	etym:vocal
+dog	noun	canis	canine	etym:canine
+cat	noun	fēlēs	feline	etym:feline
+horse	noun	equus	equine	etym:equine
+bird	noun	avis	aviary	etym:aviary
+fish	noun	piscis	piscine	etym:piscine
+cow	noun	vacca	vaccine	etym:vaccine etym:vaccination
+sheep	noun	ovis	ovine	etym:ovine
+pig	noun	porcus	pork	etym:pork
+wolf	noun	lupus	lupine	etym:lupine
+bear	noun	ursus	ursine	etym:ursine
+lion	noun	leō	lion	etym:lion
+mouse	noun	mūs	muscle	etym:muscle
+snake	noun	serpēns	serpent	etym:serpent
+bee	noun	apis	apiary	etym:apiary
+worm	noun	vermis	vermin	etym:vermin
+raven	noun	corvus	corvine	etym:corvine
+hound	noun	canis	canine	etym:canine
+ox	noun	bōs	bovine	etym:bovine
+bread	noun	pānis	pantry	etym:pantry
+water	noun	aqua	aquatic	etym:aquatic
+wine	noun	vīnum	vine	etym:vine
+milk	noun	lac	lactose	etym:lactose
+meat	noun	carō	carnivore	etym:carnivore etym:carnivorous
+fruit	noun	frūctus	fruit	etym:fruit
+apple	noun	mālum	malic acid	etym:malic
+salt	noun	sāl	saline	etym:saline
+honey	noun	mel	mellifluous	etym:mellifluous
+cheese	noun	cāseus	casein	etym:casein
+egg	noun	ōvum	ovum	etym:ovum
+fire	noun	ignis	ignite	etym:ignite
+house	noun	domus	domestic	etym:domestic
+home	noun	domus	domicile	etym:domicile ls:domicilium
+door	noun	iānua	janitor	etym:janitor ls:janitor
+window	noun	fenestra	defenestrate	wikt:en:defenestrate etym:defenestration
+wall	noun	mūrus	mural	etym:mural
+floor	noun	solum	sole	etym:sole
+room	noun	camera	camera	etym:camera
+book	noun	liber	library	etym:library
+word	noun	verbum	verbal	etym:verbal
+letter	noun	littera	literate	etym:literate
+name	noun	nōmen	nominal	etym:nominal
+key	noun	clāvis	clavicle	etym:clavicle
+bridge	noun	pōns	pontoon	etym:pontoon
+ship	noun	nāvis	navy	etym:navy
+sword	noun	gladius	gladiator	etym:gladiator
+shield	noun	scūtum	escutcheon	etym:escutcheon
+ring	noun	ānulus	annular	etym:annular ls:anulus1
+gold	noun	aurum	aureate	etym:aureate
+silver	noun	argentum	Argentina	etym:argentina wikt:la:argentinus
+iron	noun	ferrum	ferrous	etym:ferrous
+stone	noun	lapis	lapidary	etym:lapidary
+glass	noun	vitrum	vitreous	etym:vitreous
+cloth	noun	pannus	pane	etym:pane
+coat	noun	tunica	tunic	etym:tunic
+sun	noun	sōl	solar	etym:solar
+moon	noun	lūna	lunar	etym:lunar
+star	noun	stēlla	stellar	etym:stellar
+sky	noun	caelum	celestial	etym:celestial
+earth	noun	terra	terrain	etym:terrain
+sea	noun	mare	marine	etym:marine
+river	noun	flūmen	flume	etym:flume
+lake	noun	lacus	lagoon	etym:lagoon
+mountain	noun	mōns	mountain	etym:mountain
+forest	noun	silva	sylvan	etym:sylvan
+tree	noun	arbor	arboreal	etym:arboreal
+leaf	noun	folium	foliage	etym:foliage etym:foil wikt:en:foliage
+flower	noun	flōs	floral	etym:floral etym:flora
+grass	noun	herba	herb	etym:herb
+field	noun	ager	agrarian	etym:agrarian
+road	noun	via	via	etym:via
+city	noun	urbs	urban	etym:urban
+village	noun	vīcus	vicinity	etym:vicinity
+world	noun	mundus	mundane	etym:mundane
+country	noun	patria	repatriate	etym:repatriate
+place	noun	locus	local	etym:local
+rain	noun	pluvia	pluvial	etym:pluvial
+wind	noun	ventus	ventilate	etym:ventilate
+cloud	noun	nūbēs	nubilous	wikt:en:nubilous ls:nubilus
+ice	noun	glaciēs	glacier	etym:glacier
+light	noun	lūx	lucid	etym:lucid
+shadow	noun	umbra	umbrella	etym:umbrella
+time	noun	tempus	temporal	etym:temporal
+day	noun	diēs	diary	etym:diary
+night	noun	nox	nocturnal	etym:nocturnal
+year	noun	annus	annual	etym:annual
+month	noun	mēnsis	menstrual	etym:menstrual
+hour	noun	hōra	hour	etym:hour
+evening	noun	vesper	vespers	etym:vespers
+summer	noun	aestās	estival	wikt:en:estival ls:aestivus
+winter	noun	hiems	hibernate	etym:hibernate etym:hibernation ls:hibernus
+autumn	noun	autumnus	autumn	etym:autumn
+life	noun	vīta	vital	etym:vital
+death	noun	mors	mortal	etym:mortal
+love	noun	amor	amorous	etym:amorous
+war	noun	bellum	belligerent	etym:belligerent
+peace	noun	pāx	pacify	etym:pacify
+truth	noun	vēritās	verity	etym:verity
+law	noun	lēx	legal	etym:legal
+work	noun	labor	labour	etym:labour etym:labor
+money	noun	pecūnia	pecuniary	etym:pecuniary
+price	noun	pretium	precious	etym:precious
+question	noun	quaestiō	question	etym:question
+answer	noun	respōnsum	response	etym:response
+story	noun	fābula	fable	etym:fable
+song	noun	carmen	charm	etym:charm
+music	noun	mūsica	music	etym:music
+game	noun	lūdus	interlude	etym:interlude
+fear	noun	timor	timorous	etym:timorous
+hope	noun	spēs	despair	etym:despair
+joy	noun	gaudium	joy	etym:joy
+anger	noun	īra	irate	etym:irate
+gift	noun	dōnum	donate	etym:donate etym:donation
+good	adj	bonus	bonus	etym:bonus
+bad	adj	malus	malice	etym:malice
+big	adj	magnus	magnitude	etym:magnitude
+great	adj	magnus	magnificent	etym:magnificent
+long	adj	longus	longitude	etym:longitude
+short	adj	brevis	brevity	etym:brevity
+high	adj	altus	altitude	etym:altitude
+low	adj	humilis	humble	etym:humble
+old	adj	vetus	veteran	etym:veteran
+young	adj	iuvenis	juvenile	etym:juvenile
+new	adj	novus	novel	etym:novel
+hot	adj	calidus	scald	etym:scald
+cold	adj	frīgidus	frigid	etym:frigid
+warm	adj	tepidus	tepid	etym:tepid
+heavy	adj	gravis	gravity	etym:gravity
+strong	adj	fortis	fortitude	etym:fortitude
+weak	adj	dēbilis	debilitate	etym:debilitate
+hard	adj	dūrus	durable	etym:durable
+soft	adj	mollis	mollify	etym:mollify
+quick	adj	celer	celerity	etym:celerity
+slow	adj	tardus	tardy	etym:tardy
+true	adj	vērus	verify	etym:verify
+false	adj	falsus	false	etym:false
+poor	adj	pauper	poverty	etym:poverty
+happy	adj	fēlīx	felicity	etym:felicity
+sad	adj	trīstis	triste	wikt:en:triste
+full	adj	plēnus	plenary	etym:plenary
+empty	adj	vacuus	vacuum	etym:vacuum
+clean	adj	pūrus	pure	etym:pure
+dirty	adj	sordidus	sordid	etym:sordid
+ugly	adj	turpis	turpitude	etym:turpitude
+easy	adj	facilis	facile	etym:facile
+difficult	adj	difficilis	difficult	etym:difficult etym:difficulty
+free	adj	līber	liberty	etym:liberty
+wise	adj	sapiēns	sapient	etym:sapient
+brave	adj	audāx	audacious	etym:audacious
+holy	adj	sacer	sacred	etym:sacred
+deep	adj	profundus	profound	etym:profound
+wide	adj	lātus	latitude	etym:latitude
+narrow	adj	angustus	anguish	etym:anguish ls:angustiae
+dead	adj	mortuus	mortuary	etym:mortuary
+alive	adj	vīvus	vivid	etym:vivid
+whole	adj	tōtus	total	etym:total
+white	adj	albus	albino	etym:albino
+black	adj	niger	negro	etym:negro
+red	adj	ruber	rubric	etym:rubric
+green	adj	viridis	verdant	etym:verdant
+blue	adj	caeruleus	cerulean	etym:cerulean
+yellow	adj	flāvus	flavine	wikt:en:flavine wikt:en:flavin
+brown	adj	fuscus	obfuscate	etym:obfuscate
+have	verb	habēre	habit	etym:habit
+say	verb	dīcere	dictate	etym:dictate
+go	verb	īre	exit	etym:exit
+come	verb	venīre	advent	etym:advent
+see	verb	vidēre	video	etym:video
+know	verb	scīre	science	etym:science
+think	verb	putāre	compute	etym:compute
+take	verb	capere	capture	etym:capture
+give	verb	dare	data	etym:data
+make	verb	facere	factory	etym:factory
+find	verb	invenīre	invent	etym:invent
+want	verb	velle	volition	etym:volition
+tell	verb	nārrāre	narrate	etym:narrate
+ask	verb	rogāre	interrogate	etym:interrogate
+work	verb	labōrāre	labour	etym:labour etym:labor
+play	verb	lūdere	ludic	etym:ludic
+run	verb	currere	current	etym:current
+walk	verb	ambulāre	ambulatory	etym:ambulatory
+speak	verb	loquī	eloquent	etym:eloquent etym:eloquence
+read	verb	legere	legible	etym:legible
+write	verb	scrībere	scribe	etym:scribe
+eat	verb	edere	edible	etym:edible
+drink	verb	bibere	imbibe	etym:imbibe
+sleep	verb	dormīre	dormitory	etym:dormitory
+sit	verb	sedēre	sedentary	etym:sedentary
+stand	verb	stāre	stature	etym:stature ls:statura
+live	verb	vīvere	vivacious	etym:vivacious
+die	verb	morī	moribund	etym:moribund
+love	verb	amāre	amateur	etym:amateur
+hate	verb	ōdisse	odium	etym:odium ls:odium1
+fear	verb	timēre	timid	etym:timid
+hear	verb	audīre	audio	etym:audio
+feel	verb	sentīre	sentiment	etym:sentiment
+hold	verb	tenēre	tenacious	etym:tenacious etym:tenacity
+carry	verb	portāre	portable	etym:portable
+bring	verb	ferre	transfer	etym:transfer
+send	verb	mittere	mission	etym:mission
+buy	verb	emere	redeem	etym:redeem
+sell	verb	vēndere	vend	etym:vend
+pay	verb	solvere	solvent	etym:solvent
+build	verb	aedificāre	edifice	etym:edifice
+break	verb	frangere	fracture	etym:fracture
+open	verb	aperīre	aperture	etym:aperture
+close	verb	claudere	conclude	etym:conclude
+begin	verb	incipere	incipient	etym:incipient
+help	verb	iuvāre	adjutant	etym:adjutant
+teach	verb	docēre	doctrine	etym:doctrine etym:doctor
+remember	verb	meminisse	memento	etym:memento
+forget	verb	oblīvīscī	oblivion	etym:oblivion
+win	verb	vincere	invincible	etym:invincible
+fight	verb	pugnāre	pugnacious	etym:pugnacious
+swim	verb	natāre	natatorium	etym:natatorium ls:natator
+fly	verb	volāre	volatile	etym:volatile
+ride	verb	vehī	vehicle	etym:vehicle
+sing	verb	canere	chant	etym:chant
+laugh	verb	rīdēre	ridicule	etym:ridicule
+wait	verb	exspectāre	expect	etym:expect
+watch	verb	spectāre	spectator	etym:spectator
+look	verb	aspicere	aspect	etym:aspect
+show	verb	mōnstrāre	demonstrate	etym:demonstrate
+call	verb	vocāre	vocation	etym:vocation
+put	verb	pōnere	position	etym:position
+keep	verb	servāre	conserve	etym:conserve
+leave	verb	relinquere	relinquish	etym:relinquish
+follow	verb	sequī	sequence	etym:sequence
+seek	verb	quaerere	query	etym:query
+choose	verb	ēligere	elect	etym:elect
+change	verb	mūtāre	mutate	etym:mutate
+grow	verb	crēscere	crescent	etym:crescent
+fall	verb	cadere	cadence	etym:cadence
+rise	verb	surgere	insurgent	etym:insurgent
+turn	verb	vertere	convert	etym:convert
+move	verb	movēre	motion	etym:motion
+throw	verb	iacere	eject	etym:eject
+catch	verb	capere	capture	etym:capture
+cut	verb	secāre	section	etym:section
+wash	verb	lavāre	lavatory	etym:lavatory
+cook	verb	coquere	concoct	etym:concoct
+always	adv	semper	sempiternal	etym:sempiternal
+tomorrow	adv	crās	procrastinate	etym:procrastinate etym:procrastination
+almost	adv	paene	peninsula	etym:peninsula
+together	adv	simul	simultaneous	etym:simultaneous
+alone	adv	sōlus	solitary	etym:solitary
+again	adv	iterum	iterate	etym:iterate etym:iteration
+everywhere	adv	ubīque	ubiquitous	etym:ubiquitous etym:ubiquity
+one	num	ūnus	unit	etym:unit etym:unity
+two	num	duo	duo	etym:duo
+three	num	trēs	trey	etym:trey
+four	num	quattuor	quart	etym:quart ls:quartus
+five	num	quīnque	quintet	etym:quintet ls:quintus1
+six	num	sex	sextet	etym:sextet etym:sestet ls:sextus1
+seven	num	septem	September	etym:september
+eight	num	octō	octave	etym:octave
+nine	num	novem	November	etym:november
+ten	num	decem	decimal	etym:decimal
+hundred	num	centum	century	etym:century
+thousand	num	mīlle	mile	etym:mile
+first	num	prīmus	primary	etym:primary
+goodbye	intj	valē	valediction	etym:valediction
+#
+# Removed on 2026-10-03, with what the dictionary says
+# ----------------------------------------------------
+# Each was a claim lex-la.tsv made. A row keeps its note where it had one.
+#
+#   farmer   agricola     agriculture     etym:agriculture — from agricultura, "agri cultura", ager + cultura; ls:agricola1 is "ager-colo". Cousins
+#   sailor   nauta        nautical        etym:nautical — from Latin nauticus, "from Greek nautikos"; ls:nauticus "= ναυτικός", ls:nauta "for navita, from navis"
+#   goat     capra        capricious      etym:caprice — "a word of uncertain origin", Latin capreolus among "some guesses from 19c."; ls:capra is from caper
+#   roof     tēctum       protect         etym:protect — from protegere, pro + "tegere"; ls:tectum is from tego. Siblings
+#   church   ecclēsia     ecclesiastical  etym:ecclesiastic — from ecclesiasticus, "from Greek ekklesiastikos", from ekklesiastes; ls:ecclesiasticus "= ἐκκλησιαστικός"
+#   land     terra        territory       etym:territory — "probably from Latin territorium", whose "rise ... is unexplained", or from "terrere 'to frighten'"; terra keeps terrain on its earth row
+#   morning  māne         matinee         etym:matins — from matutinus, "associated with Matuta"; ls:matutinus is from Matuta, and ls:Matuta from the "root ma- of mane"
+#   dream    somnium      somnolent       etym:somnolent — from somnolentus, "from somnus"; ls:somnium is from somnus too
+#   oath     iūsiūrandum  jurisdiction    etym:jurisdiction — from "iuris dictio, genitive of ius"; ls:jusjurandum is built on ius as well
+#   learn    discere      disciple        etym:disciple — discipulus "is of uncertain origin": from discere in OED and Watkins, not "according to Barnhart and Klein"
+#   slowly   lentē        lento           etym:lento — from Italian lento, "from Latin lentus"; ls:lente is the adverb of lentus
+#   quickly  celeriter    accelerate      etym:accelerate — from accelerare, ad + celerare, "from celer"; ls:celeriter is the adverb of celer
+#   truly    vērē         very            etym:very — from Old French verai, from Vulgar Latin *veracus, "from Latin verax", "from verus"; ls:vere is the adverb of verus
+#   hello    salvē        salvation       etym:salvation — from salvationem, "from ... salvare 'to save'"; ls:salve2 is the imperative of salveo. Cousins through salvus
+#
+# Replaced on 2026-10-03: the old etymon, the new one, and why
+# ------------------------------------------------------------
+#   door      iānua      January → janitor             etym:january — from Ianuarius, "(the month) of Janus"; ls:januarius and ls:janua are both from Janus. etym:janitor — from ianitor, "from ianua"
+#   floor     solum      soil → sole                   etym:soil — "a merger or confusion of three words in Old French"; etym:sole — from solea, "from solum"
+#   river     flūmen     fluvial → flume               etym:fluvial — from fluvius, "related to fluere"; etym:flume — "from Latin flumen"
+#   country   patria     patriot → repatriate          etym:patriot — from Late Latin patriota, "from Greek patriotes"; etym:repatriate — from repatriare, re- + "patria"
+#   game      lūdus      ludicrous → interlude         etym:ludicrous — from ludicrum, "from ludere", where ls:ludicer says ludus; etym:interlude — inter + "ludus 'a play'"
+#   fear      timor      timid → timorous              etym:timid — from timidus, "from timere"; etym:timorous — from timorosus, "from Latin timor"
+#   fear      timēre     timorous → timid              the same two entries: each word now sits on the row it came from
+#   joy       gaudium    gaudy → joy                   etym:gaudy — "probably" from gaud, "or possibly" from a Germanic plant name; etym:joy — from gaudia, "plural of gaudium"
+#   hot       calidus    calorie → scald               etym:calorie — "from Latin calor"; etym:scald — from excaldare, ex + "calidus 'hot'"
+#   red       ruber      ruby → rubric                 etym:ruby — from rubeus, "which is related to ruber"; etym:rubric — from rubrica, "from ruber"
+#   remember  meminisse  memory → memento              etym:memory — from memoria, from memor, PIE *(s)mer-; etym:memento — "imperative of meminisse"
+#   rise      surgere    surge → insurgent             etym:surge — "a word of uncertain origin, probably from French"; etym:insurgent — from insurgere, in- + "surgere"
+#   always    semper     semper fidelis → sempiternal  a motto English quotes, with no entry as an English word; etym:sempiternal — from sempiternus, "from semper"
+#   three     trēs       trio → trey                   etym:trio — Italian, "from tri-", "patterned on duo"; etym:trey — from Old French treis, "from Latin tria"
