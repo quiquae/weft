@@ -64,6 +64,12 @@ const DEEP = ['la', 'ang'];
  * own headword. Latin keeps *borrowed* rather than borrowing the sibling's
  * *became* because a learned borrowing is what it is: `vaccine` did not become
  * anything, it was coined from `vacca`.
+ *
+ * `index` is the same distinction where the language index states it — its
+ * title, the description a search result and a shared link print, and its
+ * lead. It was one string for both languages until 2026-10-03, so the Latin
+ * index said its words had "the English word they became", in the verbs the
+ * feed had stopped using for Latin the day before.
  */
 const META = {
   la: {
@@ -72,6 +78,11 @@ const META = {
     era: 'Classical, c. 75 BC – AD 200',
     slug: 'latin',
     descent: { before: 'This is the Latin word your English', after: 'was borrowed from' },
+    index: {
+      title: 'with the English words borrowed from them',
+      description: 'the English word borrowed from them',
+      lead: 'the English word borrowed from them',
+    },
     note: 'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard.',
   },
   ang: {
@@ -80,6 +91,11 @@ const META = {
     era: 'West Saxon, c. 900–1050',
     slug: 'old-english',
     descent: { before: 'This is the Old English word that became', after: '' },
+    index: {
+      title: 'with their English descendants',
+      description: 'the English word they became',
+      lead: 'the English word they turned into',
+    },
     note: 'þ and ð are both "th"; c before a front vowel is "ch"; sc is "sh". A macron marks a long vowel.',
   },
 };
@@ -473,13 +489,13 @@ function languageIndex(lang, entries) {
 
   const description =
     `Every ${meta.name} word in the Weft lexicon: ${entries.length} entries with pronunciation, ` +
-    `gender and, for ${withEtymon} of them, the English word they became.`;
+    `gender and, for ${withEtymon} of them, ${meta.index.description}.`;
 
   return {
     path: join(meta.slug, 'index.html'),
     url,
     html: page({
-      title: `${meta.name} words, with their English descendants | Weft`.slice(0, 70),
+      title: `${meta.name} words, ${meta.index.title} | Weft`.slice(0, 70),
       description,
       canonical: url,
       jsonLd: {
@@ -500,7 +516,7 @@ function languageIndex(lang, entries) {
     <h1>${esc(meta.name)}</h1>
     <p class="standfirst">
       ${entries.length} words, each with its pronunciation and grammar —
-      and for ${withEtymon} of them, the English word they turned into.
+      and for ${withEtymon} of them, ${esc(meta.index.lead)}.
     </p>
   </header>
 ${sections}

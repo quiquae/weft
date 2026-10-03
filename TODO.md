@@ -6,7 +6,7 @@
 
 **State on 2026-10-03:** every automatable check is green, measured at the end
 of this session — typecheck clean, **544** unit / 133 suites, **98** jsdom / 22
-suites, **167** tool tests / 47 suites, **38** e2e passing
+suites, **170** tool tests / 48 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -60,6 +60,17 @@ records every entry read, and `tests/tools/etymons.test.ts` holds it and the
 Old English ledger alike. Regenerating the screenshots for it found that none
 reproduces on this machine any more, on `main` as here — text antialiasing
 only, queued in `Next`. See the ticked item there.
+
+**And as of 2026-10-03 the Latin index says "borrowed" too.** Its title,
+its description — printed four times, in the head, for a shared link twice
+and in its structured data — and its lead had said the Latin words had "the
+English word they became", "turned into" and "their English descendants",
+from one string shared with Old English. Each language has its own index
+wording now, and `tests/tools/build-site.test.ts` reads every Latin page,
+with the pack's own words blanked out, and fails on a verb of descent. Of
+718 built files only `latin/index.html` moved. See the ticked item in
+`Next`; the tooltip says "Ancestor of English" of Latin words still, and is
+queued there.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-03, each with
 npm's own exit status captured rather than a pipe's:**
@@ -331,15 +342,14 @@ from three defects in `tools/seed/_ipa.py`, all fixed, and
 and stress from its spelling by Allen & Greenough's rules and refuses a
 transcription that disagrees. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds eight
-agent-shaped items, and two of them — the Latin descents nobody has looked
-up, and an Old English word stressed on the wrong syllable — should land
-before B3 indexes the pages they are on.** The
-code is not
-otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those nine needs Creagh.** The critical
-path is **B1 — the domain `weft.study` is not registered**, and nothing
-below it can move until it is.
+**So the whole of B0 is closed and `Now` is empty. `Next` holds ten
+agent-shaped items, and two of them — an Old English word stressed on the
+wrong syllable, and the tooltip calling Latin an ancestor of English —
+should land before B3 or B5 put the pages and the extension in front of
+anyone.** The code is not otherwise what is holding the release up, and
+neither is the version any more. **Every remaining item besides those ten
+needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+registered**, and nothing below it can move until it is.
 
 ## Now
 
@@ -2657,7 +2667,7 @@ below it can move until it is.
       floor in `tests/tools/build-site.test.ts` wanted more than 300 Latin
       descent pages and got exactly 300, so it is 250 now.
 
-- [ ] **The Latin index still says the English word "they became".**
+- [x] **The Latin index still says the English word "they became".**
       Found 2026-10-03 reading the site diff of the descent pass.
       `/latin/`'s meta description, and the two social copies of it, read
       "349 entries with pronunciation, gender and, for 300 of them, the
@@ -2668,6 +2678,59 @@ below it can move until it is.
       in `tests/tools/build-site.test.ts`, which already reads every built
       page: no Latin page says an English word was "became" from it. About
       15 minutes.
+
+      **Done 2026-10-03, and it was eight places in three phrasings, not
+      one.** Measured on a build before anything moved: `/latin/` printed
+      "the English word they became" four times — its meta description,
+      the `og:` and `twitter:` copies, and its structured data — "the
+      English word they turned into" once, in the lead under the heading,
+      and "Latin words, with their English descendants" three times, as its
+      title and both social titles. All three came from one template shared
+      with Old English, where all three are true. No other Latin page used
+      any of them: the 349 word pages already said "the source of English
+      *vaccine*" in their own descriptions where Old English's say "the
+      direct ancestor of", and the hub says "the English words they gave
+      us". The one other hit, `/latin/vere`'s "“very” descends from vērus",
+      is a lexicon note, held by `tools/seed/la-notes.tsv`, and was left.
+
+      **The fix is per-language wording in `META`**, `index: { title,
+      description, lead }` beside `descent`, Latin's in the word pages'
+      verb: "Latin words, with the English words borrowed from them", and
+      "the English word borrowed from them" in the description and the
+      lead. Old English keeps all three of its phrasings byte for byte.
+      Built before and after: **1 file of 718 differs**, `latin/index.html`,
+      at exactly the eight places.
+
+      **The guard reads every Latin page in the builder's own words.** A new
+      `describe` in `tests/tools/build-site.test.ts` reads each page of a
+      deep language — body, `<meta>` contents and the structured data's
+      sentences — blanks out everything the pack itself says in English
+      (glosses, etymons, notes) with equal-length spaces, and fails on a
+      descent verb on any page of a language whose `ancestorOfEnglish` is
+      false: *became*, *turned into*, *descendant*, *descends from*,
+      *ancestor of*, and the feed's three. Blanked rather than cut, so an
+      offender is quoted from the page as it reads; blanked at all, because a
+      note is the lexicon's sentence and may say "descends from" about a
+      French route. Red first on exactly the eight. A control requires the
+      verbs on more than 300 Old English pages, and a floor names the index
+      and the hub, which are read by name so a renamed hub fails loudly.
+      Probes, each restored by md5: without the blanking it names
+      `/latin/vere`'s note; a pattern that matches nothing fails the control,
+      "0 of 355"; a renamed hub fails the whole file; and Latin word pages
+      printing "the direct ancestor of" fail **1 200** times, 300 pages by
+      four copies. Tools 167 → **170**, suites 47 → **48**, in six places,
+      `docs/LAUNCH.md:221` first.
+
+      **Found, and queued below rather than fixed**: the tooltip that ships
+      in the extension calls a Latin word the "Ancestor of English" X — the
+      noun the site just stopped using for Latin — because it chooses its
+      badge by `historical`, the flag #49 stopped the feed using. Assumed,
+      with nobody to ask: that "descendants" is the same claim as "became"
+      in a noun, by this repository's own usage, where "English descends
+      from" a language is exactly what Latin is not; and that the landing
+      page's "*rivière* became the English word", French and beside a row
+      reading "English took the word itself", is a copy decision for the
+      item below rather than this one.
 
 - [ ] **No committed screenshot reproduces on this machine any more, on
       `main` as on the branch.** Found 2026-10-03 regenerating the three
@@ -2687,6 +2750,32 @@ below it can move until it is.
       — and decide whether to commit all 36 regenerated, which a reader of
       the README would see as every image changing at once for no reason.
       About 30 minutes to measure; the decision may want a human.
+
+- [ ] **The tooltip calls a Latin word the "Ancestor of English" X, and
+      chooses that by the flag #49 stopped the feed using.** Found
+      2026-10-03 while the Latin index was fixed. `src/content/tooltip.ts`
+      prints its etymon badge as `${meta.historical ? 'Ancestor of' :
+      'Related to'} English`, so Latin, being dead, gets Old English's
+      noun: "Ancestor of English **vaccine**", where the site's own Latin
+      word pages say "the source of English “vaccine”" and the index now
+      says "borrowed". The same holds one layer down: `cognateReason()` in
+      `src/core/similarity.ts` returns "ancestor of English “X”" for every
+      entry with an etymon in every language, so the tooltip's reason line
+      reads "New to you, and ancestor of English “…”" for French and Latin
+      words too, and `explainChoice()` in `src/core/explain.ts` finds that
+      phrase by regex to drop it when the badge is off — so the wording and
+      the filter must move together. Shape: choose the badge by
+      `ancestorOfEnglish`, as the feed does, with "Source of English" for
+      the rest, Latin's word-page noun; and give `cognateReason` the same
+      choice. Tests that pin the current text: `tests/dom/tooltip.test.ts`
+      (3), `tests/core/delight.test.ts` (4), `tests/core/similarity.test.ts`
+      (1). It moves `src/`, so all three screenshot groups go stale by
+      provenance and the item above decides what a regeneration here can
+      prove; `docs/screens/page-tooltip.png` and the store listing's scene 3
+      show a tooltip, so read which language each shows first. While there,
+      the landing page's "*rivière* became the English word" (site/index.html,
+      the French section) is the same verb on a French borrowing beside a row
+      reading "English took the word itself" — a copy call. About 45 minutes.
 
 - [ ] **The `iānua` note now sits beside *janitor* and talks about
       *January*.** The word page reads "This is the Latin word your English
@@ -2824,22 +2913,24 @@ below it can move until it is.
       the word really covers. `īnfāns` is also marked masculine where Lewis &
       Short has it of common gender.
 
-`Now` is **empty** and `Next` holds **eight** unchecked items above, as of
-2026-10-02, all agent-shaped and none waiting on B1. The order is the order
-to work them. The Latin descent pass first, the longest, which wants to land
-before **B3** and has six known failures to start from; then the landing page's
-table, the dashboard's date and the pronunciation key's quote marks, three
-small guards; then French `mort`, one card or two, a decision with the
-evidence written down; then Old English stress, one wrong word and a
-grammar to read, also free before B3; then `far wel` and `camera`, content
-questions. The Latin note on `vir`, the 22 Old English addresses, the thirty
-Latin pronunciations, the feed's hidden etymologies, the Old English
-homographs and the feed's Latin frames, which sat first, are done.
+`Now` is **empty** and `Next` holds **ten** unchecked items above, as of
+2026-10-03, all agent-shaped and none waiting on B1. The order is the order
+to work them. The screenshots first, because no committed one reproduces on
+this machine and every item that moves `src/` meets that; then the tooltip's
+"Ancestor of English", which moves `src/`; then the `iānua` note, the landing
+page's table, the dashboard's date and the pronunciation key's quote marks,
+four small ones; then French `mort`, one card or two, a decision with the
+evidence written down; then Old English stress, one wrong word and a grammar
+to read, free before B3; then `far wel` and `camera`, content questions. The
+Latin note on `vir`, the 22 Old English addresses, the thirty Latin
+pronunciations, the feed's hidden etymologies, the Old English homographs,
+the feed's Latin frames, the Latin descent pass and the Latin index's
+"became", which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
-read the Blocked section and confirm B1 has not moved. Beyond the five items, the three gates `test:all`
-leaves out were all re-measured on 2026-10-01 and the numbers are in the
+read the Blocked section and confirm B1 has not moved. Beyond the items, the three gates `test:all`
+leaves out were all re-measured on 2026-10-03 and the numbers are in the
 state line at the top — so that particular piece of honest work is spent for
 now. It was not idle: `site:check` was the one that found the slug collision,
 and what found it was **counting**, not following links. The gate walks HTML
@@ -3195,6 +3286,37 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-03 — the Latin index's "became": eight places, three phrasings,
+one template.** Ticked in `Next`. Four things a later run would be sorry not
+to know:
+
+1. **A page's claim is printed more times than it appears.** The index's
+   description went out four times — `<meta name="description">`, `og:`,
+   `twitter:` and the JSON-LD — and its title three. `plain()` in
+   `tests/tools/build-site.test.ts` strips tags, which deletes every one of
+   those, because they live in attributes; a guard that reads only the body
+   sees one place of eight. `readable()` there reads the `<meta>` contents
+   and the structured data's own sentences as well; reuse it for any rule
+   about what a page *says*.
+2. **To check the builder's words on a page that also prints the pack's,
+   blank the pack out at equal length.** `packSays()` makes one whole-word
+   pattern of every gloss, etymon and note a pack holds; replacing each
+   match with as many spaces leaves the builder's text where it stood, so an
+   offender is quoted from the page as it reads. Cutting instead mangles the
+   quote ("the English   they became", `word` being a gloss), and not
+   blanking at all catches `/latin/vere`'s note, which is the note ledger's
+   business. Whole words matter: the Latin pack glosses "come", `venīre`,
+   and a substring blank would cut "comes straight from" to "s straight
+   from" and hide it.
+3. **The site already told Latin right everywhere but the index.** Latin
+   word pages' descriptions say "the source of English “vaccine”", Old
+   English's "the direct ancestor of"; the hub says "the English words they
+   gave us". The index was the one template shared by both languages, and a
+   shared template is where a per-language distinction goes missing. The
+   tooltip is the same shape in the extension, and is queued in `Next`.
+4. **B1 has not moved.** `dig weft.study @8.8.8.8` still answers NXDOMAIN on
+   2026-10-03.
 
 **2026-10-03 — the Latin descents: 27 of 319 false, and a session that ended
 mid-generator.** Ticked in `Next`. Six things a later run would be sorry not
