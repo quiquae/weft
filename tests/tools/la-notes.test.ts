@@ -32,7 +32,7 @@
  *
  * So the lookup is recorded, in `tools/seed/la-notes.tsv`, one line per note,
  * and these tests hold the two files together the way
- * `tests/tools/ang-etymons.test.ts` holds Old English etymons to theirs. The
+ * `tests/tools/etymons.test.ts` holds etymons to theirs. The
  * line repeats the note, so editing a note leaves it without a source until
  * somebody reads the dictionary again and says which entry. What a line must
  * cite is derived from the row rather than listed:
@@ -50,8 +50,8 @@
  *
  * Old English notes are still not held to a source: a gloss of Old English
  * meaning wants Bosworth–Toller, which nothing here cites. The Latin etymon
- * column is not covered either — that is a ledger of its own, and `TODO.md`
- * has the item.
+ * column has a ledger of its own, `tools/seed/la-etymons.tsv`, held by
+ * `tests/tools/etymons.test.ts`.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';

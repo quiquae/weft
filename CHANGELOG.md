@@ -339,6 +339,19 @@ Latin pages of the site have always said. The verbs now follow whether English
 descends from the language: Old English keeps them, and Latin is told the way
 French is, in the verbs of borrowing.
 
+**Twenty-seven Latin etymologies were not true as stated.** Every Latin word
+page names the English word borrowed from it, and so do the tooltip and the
+feed, and nothing recorded that any of the 319 had been looked up. All were
+read against etymonline, English Wiktionary where it has no entry, and Lewis
+& Short. Fourteen named a cousin or no English word at all — *ludicrous* is
+from *lūdere*, beside *lūdus*; *very* is from the adjective *vērus*, not the
+adverb *vērē*; *capricious* is of uncertain origin; *semper fidelis* is a
+motto — and now name nothing. Thirteen now name the word that did come from
+the headword: the door *iānua* gave *janitor*, where *January* is from
+*Janus*; *flūmen* gave *flume*, *gaudium* *joy*, *ruber* *rubric* and
+*meminisse* *memento*. Each claim names the dictionary entry it was checked
+against, and one that names none fails the build.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -359,7 +372,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 842 tests: 544 unit, 98 in jsdom, 162 over the build tools, and
+**Built with** 847 tests: 544 unit, 98 in jsdom, 167 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

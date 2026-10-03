@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-02:** every automatable check is green, measured at the end
+**State on 2026-10-03:** every automatable check is green, measured at the end
 of this session — typecheck clean, **544** unit / 133 suites, **98** jsdom / 22
-suites, **162** tool tests / 46 suites, **38** e2e passing
+suites, **167** tool tests / 47 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -50,13 +50,24 @@ They follow whether English *descends* from the language now,
 only; `historical` still orders the feed. Exactly 310 Latin lines moved and
 no other language's did. See the ticked item in `Next`.
 
-**The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
+**And as of 2026-10-03 every Latin etymon names the entry it was checked
+against.** All 319 were read against etymonline, English Wiktionary and
+Lewis & Short, and 27 were false — most of them a cousin rather than a
+descendant: *timid* is from *timēre*, beside `timor`, and *January* from
+*Janus*, beside `iānua`. 14 claims are gone and 13 name the word that did
+come from the headword (`iānua` → *janitor*); `tools/seed/la-etymons.tsv`
+records every entry read, and `tests/tools/etymons.test.ts` holds it and the
+Old English ledger alike. Regenerating the screenshots for it found that none
+reproduces on this machine any more, on `main` as here — text antialiasing
+only, queued in `Next`. See the ticked item there.
+
+**The three gates `test:all` leaves out, re-measured on 2026-10-03, each with
 npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **716** pages, **16 178** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **716** pages, **16 165** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -2548,7 +2559,7 @@ below it can move until it is.
       draws it, and that group's "no change" stamp is deleted rather than
       rewritten. The other two groups are stamped.
 
-- [ ] **The Latin pack's descent claims have never been checked against a
+- [x] **The Latin pack's descent claims have never been checked against a
       source either.** Found 2026-10-01, by the question that found the Old
       English ones: was the flaw particular to the language? 312 Latin word
       pages say "This is the Latin word your English X was borrowed from",
@@ -2590,6 +2601,101 @@ below it can move until it is.
       file now (see Notes, 2026-10-02), `/tmp/weft-la/ls.py` prints an entry
       by key, and `tools/seed/la-notes.tsv` already cites 23 etymonline
       entries for the notes — its token grammar is the one to reuse.
+
+      **Done 2026-10-03, all 319 rather than a slice.** Read against
+      etymonline for every English word, 316 entries fetched with `curl` and
+      a User-Agent carrying no personal detail; English Wiktionary for the
+      six etymonline lacks (*crural*, *defenestrate*, *nubilous*, *estival*,
+      *triste*, *flavine*); and Lewis & Short where an English entry stops at
+      a Latin derivative without saying what it was built on. Each claim was
+      read beside its entry's opening, and every chain sentence was scanned
+      for a hedge — 60 carry one — and each hedge read for which side of the
+      link it sits on. Most doubt where the Latin word itself came from, or
+      which of two routes through a word built on it English took, and leave
+      the claim alone.
+
+      **27 were false, in six shapes.** Twelve were a sibling, a word built
+      on the same thing the headword was: *timid* is from *timidus*, "from
+      timere", beside `timor`; *ludicrous* from *ludicrum*, "from ludere",
+      beside `lūdus`; *protect* from *protegere*, beside `tēctum`; *January*
+      from *Ianuarius*, "(the month) of Janus", where Lewis & Short derives
+      `iānua` from *Janus* too. Three adverbs were given their adjective's
+      descendant (`vērē` → *very*, `lentē` → *lento*, `celeriter` →
+      *accelerate*). Three were a Greek loan beside another — `nauta` and
+      *nauticus*, "= ναυτικός", `ecclēsia` and *ecclesiasticus*, `patria` and
+      *patriota*. *memory* is from *memor*, another root than `meminisse`.
+      Six were hedged at the link itself: *capricious* ("uncertain origin"),
+      *territory* ("probably"), *disciple* (disputed), *soil* ("a merger or
+      confusion of three words"), *gaudy* and *surge*. And two are no English
+      borrowing of the word: *semper fidelis* is a motto, and *trio* is
+      Italian, "from tri-, patterned on duo".
+
+      **14 removed, 13 replaced, one swapped.** Each replacement is the
+      English word its own entry derives from the headword, read the same
+      way: `iānua` → *janitor*, `flūmen` → *flume*, `gaudium` → *joy*,
+      `ruber` → *rubric*, `meminisse` → *memento*, `calidus` → *scald*,
+      `solum` → *sole*, `patria` → *repatriate*, `lūdus` → *interlude*,
+      `surgere` → *insurgent*, `semper` → *sempiternal*, `trēs` → *trey*, and
+      `timor` → *timorous*. `timēre` → *timorous* was true and now carries
+      *timid*, so each word sits on the row it came from. The ledger is
+      `tools/seed/la-etymons.tsv`, with the claims taken out at its foot and
+      what the dictionary says; `tests/tools/ang-etymons.test.ts` became
+      `tests/tools/etymons.test.ts` and holds both ledgers, 5 → 10 tests and
+      1 → 2 suites. Red first on all 319, with the Old English half green;
+      six probes restored by md5, each failing by name, among them a removed
+      claim restored to the seed without a line, named as `lex-la.tsv:59
+      farmer → agricola`.
+
+      **What moved.** `en-la.json`: 46 `etymonOf` fields and its date. The
+      feed: 314 → 304 Latin lines, every new one read — "English borrowed
+      janitor from iānua." The site, built before and after: 30 files — 27
+      word pages, the hub 313 → 300 rows, the Latin index and the sitemap.
+      `/latin/terra` did not move: its first row was always *terrain*, so
+      *territory* was on no page. Three pages whose only claim went —
+      `vērē`, `salvē`, `agricola` — now print their note under "Worth
+      knowing", a branch that rendered on no page before; read, and fine. A
+      floor in `tests/tools/build-site.test.ts` wanted more than 300 Latin
+      descent pages and got exactly 300, so it is 250 now.
+
+- [ ] **The Latin index still says the English word "they became".**
+      Found 2026-10-03 reading the site diff of the descent pass.
+      `/latin/`'s meta description, and the two social copies of it, read
+      "349 entries with pronunciation, gender and, for 300 of them, the
+      English word they became" — the descent verb #49 took out of the feed
+      for Latin, and which the Latin word pages have never used ("was
+      borrowed from"). Old English's index may say "became" truthfully; read
+      both. The fix is a word in `tools/build-site.mjs`; the guard belongs
+      in `tests/tools/build-site.test.ts`, which already reads every built
+      page: no Latin page says an English word was "became" from it. About
+      15 minutes.
+
+- [ ] **No committed screenshot reproduces on this machine any more, on
+      `main` as on the branch.** Found 2026-10-03 regenerating the three
+      groups after the Latin pass staled them by provenance. All 36
+      generated shots came back different from their committed bytes; the
+      same 36, generated from `main` in a worktree with `node_modules`
+      linked, came back byte-identical to the branch's, so the Latin pass
+      moves none of them and the drift is the machine's. A pixel diff of
+      `options.png` puts it in text antialiasing on every line of the page —
+      33 277 pixels over 2 874 rows, no channel more than 35 apart — and all
+      36 read the same way: 510 to 33 277 pixels each, spread over the text,
+      no channel anywhere more than 47 apart, so no glyph and no date
+      changed. The committed bytes were kept and the three groups stamped
+      with a note saying exactly that. Next: find what
+      moved — `sw_vers` against the date of the last commit that changed a
+      shot, the Playwright Chromium build in `~/Library/Caches/ms-playwright`
+      — and decide whether to commit all 36 regenerated, which a reader of
+      the README would see as every image changing at once for no reason.
+      About 30 minutes to measure; the decision may want a human.
+
+- [ ] **The `iānua` note now sits beside *janitor* and talks about
+      *January*.** The word page reads "This is the Latin word your English
+      *janitor* was borrowed from — Janus, god of doorways, gave January its
+      name." True, and it reads as an aside. A note that names the
+      doorkeeper — that a *iānitor* kept the *iānua* — would join it better;
+      it needs a new line in `tools/seed/la-notes.tsv` citing `ls:janua` and
+      `etym:janitor`, and `iānitor` in the orthography guard's table of
+      Latin the lexicon does not carry. About 15 minutes.
 
 - [ ] **The landing page's descent table is a hand copy of eight pack
       claims, and nothing holds it to them.** Found 2026-10-02 when a
@@ -2771,6 +2877,34 @@ without anyone to ask, each reversible in one line of
    descent**, rather than going blank — so a reviewer reading the diff sees
    new claims, not only removed ones. Each was checked on both sides like
    every other line; *argent* → *argentine* is the thinnest of them.
+
+**Four Latin descent calls a human may want to look at**, taken on
+2026-10-03 without anyone to ask, each reversible in one line of
+`tools/seed/lex-la.tsv` and the same line of `tools/seed/la-etymons.tsv`,
+then `npm run packs`:
+
+1. **`niger` → *negro* is true, and stays.** etymonline has *Negro* from
+   Spanish or Portuguese *negro*, "from Latin nigrum (nominative niger)".
+   The pass checked truth, not tone; whether a learner's word page should
+   lead with that word is a different decision. *denigrate*, from
+   *dēnigrāre*, de- and *nigrāre*, "from niger", is the true alternative.
+2. **Where the line fell between a hedge on the link and a hedge on the
+   word.** *surge* went on etymonline's "a word of uncertain origin,
+   probably from French sourge-", though every route it names ends at
+   *surgere*; *domicile* stayed on its "perhaps from domus + colere",
+   because Lewis & Short derives *domicilium* from *domus* flatly and both
+   analyses contain *domus*. *disciple* went: etymonline reports OED and
+   Watkins deriving *discipulus* from *discere* and Barnhart and Klein
+   disagreeing, and Lewis & Short's "disco" is one side of that argument.
+3. **A replacement is a choice of word.** *scald* over *cauldron* (both
+   from *calidus*, *scald* one step nearer), *insurgent* over *resurgent*,
+   *trey* — a word of the card table — for `trēs`, *flume* for `flūmen`,
+   *sempiternal* for `semper`. Each is true by its own entry, and each is
+   one line.
+4. **Fourteen rows teach a word with no story now**, `agricola` and
+   `vērē` among them. A blank was preferred to a weaker true claim found in
+   a hurry, which is the rule the French pass set; three of the fourteen
+   keep a note, now printed under "Worth knowing".
 
 **Four Latin calls a human may want to look at**, taken on 2026-10-02
 without anyone to ask, each reversible in a line of `tools/seed/lex-la.tsv`
@@ -3061,6 +3195,45 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-03 — the Latin descents: 27 of 319 false, and a session that ended
+mid-generator.** Ticked in `Next`. Six things a later run would be sorry not
+to know:
+
+1. **Where the reading is, and that it will not last.** `/tmp/weft-la2`:
+   `raw/` and `txt/` hold the etymonline pages and their entry text, one per
+   English word; `wikt/` the Wiktionary sections; `ls.xml` the whole of
+   Lewis & Short and `ls.pickle` an index of it that `ls.py <key>…` prints
+   from in under a second; `screen.py` prints every claim beside its entry's
+   opening, `hedge.py` every chain sentence with a hedge in it, `feed/feed.ts`
+   the real feed over a pack, and `pngdiff.py` decodes two PNGs in pure
+   Python and says where they differ. `/tmp` does not survive a reboot; the
+   durable record is `tools/seed/la-etymons.tsv`, which names every entry
+   read.
+2. **Python's `urllib` took about seven seconds a request to etymonline
+   here; `curl` takes a tenth of one.** The first fetcher managed 20 pages in
+   three minutes. Shell out to `curl`.
+3. **The false Latin claim has one usual shape, and it is not the French
+   one.** French and Old English paired a word with its translation. Latin
+   paired it with a *cousin*: a word built on the same verb (*timid* from
+   *timēre*, beside `timor`), an adjective's descendant under its adverb, or
+   a Greek loan beside another Greek loan. Ask of each claim what the English
+   word's Latin source was built on, and whether the headword is on that
+   chain or beside it.
+4. **Read a hedge for which side of the link it sits on.** Sixty chain
+   sentences carry "probably", "perhaps", "related to" or "of uncertain
+   origin", and most are about where the Latin word itself came from. Six sat
+   on the link to the headword, and those claims went.
+5. **The control for a screenshot drift is the other tree.** All 36
+   regenerated shots differed from their commits; regenerating `main` in a
+   `/tmp` worktree with `node_modules` linked took four minutes and showed
+   the branch moved none of them. A pixel diff can only say where bytes
+   differ; the second tree says why.
+6. **This run's first session ended while a generator ran in the
+   background, with everything uncommitted.** The next found it all on disk
+   — the seed, the ledger, the rebuilt pack — committed it before running
+   anything long, and opened the PR as a draft at once. Commit first; the
+   generator can always be run again, and the reading cannot.
 
 **2026-10-02 — the feed's Latin frames: 232 lines told as descents, and a
 guard that trusted the flag it was checking.** Ticked in `Next`. Five things a

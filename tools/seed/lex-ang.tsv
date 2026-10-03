@@ -30,7 +30,7 @@
 # too. Nor is a compound the word itself: "bishopric" contains "rice", but
 # "rice" did not become it. Every etymon names the dictionary entry it was
 # checked against in tools/seed/ang-etymons.tsv, and
-# tests/tools/ang-etymons.test.ts fails on one that names none.
+# tests/tools/etymons.test.ts fails on one that names none.
 #
 # One spelling is sometimes two words. hund is a dog and a hundred, earm an
 # arm and poor, rīċe a realm and rich, and English Wiktionary gives each

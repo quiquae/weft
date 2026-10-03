@@ -19,6 +19,13 @@
 # memorising a foreign word, they are being shown where their own word came
 # from. "vaccine" from vacca, cow. "mile" from mīlle passūs. "peninsula" from
 # paene īnsula, almost an island.
+#
+# So an etymon is a published claim, and it is held to a dictionary. The
+# English word must have come from this Latin word, or from one built on it:
+# a word built on the same root beside it is a cousin, and is not claimed —
+# "ludicrous" is from "lūdere", not "lūdus". Every etymon names the entry it
+# was checked against in tools/seed/la-etymons.tsv, and
+# tests/tools/etymons.test.ts fails on one that names none.
 # 
 # IPA is generated from the orthography, which is very nearly deterministic
 # once vowel length is marked. Values are the standard classical
@@ -56,8 +63,8 @@ enemy	noun	hostis	hostēs	m	/ˈhɔstɪs/	hostile
 soldier	noun	mīles	mīlitēs	m	/ˈmiːlɛs/	military	
 teacher	noun	magister	magistrī	m	/maˈɡɪstɛr/	magisterial	
 doctor	noun	medicus	medicī	m	/ˈmɛdɪkʊs/	medical	
-farmer	noun	agricola	agricolae	m	/aˈɡrɪkɔla/	agriculture	a rare masculine first-declension noun
-sailor	noun	nauta	nautae	m	/ˈnau̯ta/	nautical	
+farmer	noun	agricola	agricolae	m	/aˈɡrɪkɔla/		a rare masculine first-declension noun
+sailor	noun	nauta	nautae	m	/ˈnau̯ta/		
 head	noun	caput	capita	n	/ˈkapʊt/	capital	
 hand	noun	manus	manūs	f	/ˈmanʊs/	manual	
 eye	noun	oculus	oculī	m	/ˈɔkʊlʊs/	ocular	
@@ -95,7 +102,7 @@ worm	noun	vermis	vermēs	m	/ˈwɛrmɪs/	vermin
 raven	noun	corvus	corvī	m	/ˈkɔrwʊs/	corvine	
 hound	noun	canis	canēs	m	/ˈkanɪs/	canine	
 ox	noun	bōs	bovēs	m	/ˈboːs/	bovine	
-goat	noun	capra	caprae	f	/ˈkapra/	capricious	
+goat	noun	capra	caprae	f	/ˈkapra/		
 food	noun	cibus	cibī	m	/ˈkɪbʊs/		
 bread	noun	pānis	pānēs	m	/ˈpaːnɪs/	pantry	
 water	noun	aqua	aquae	f	/ˈakʷa/	aquatic	
@@ -111,11 +118,11 @@ egg	noun	ōvum	ōva	n	/ˈoːwʊm/	ovum
 fire	noun	ignis	ignēs	m	/ˈɪɡnɪs/	ignite	
 house	noun	domus	domūs	f	/ˈdɔmʊs/	domestic	
 home	noun	domus	domūs	f	/ˈdɔmʊs/	domicile	
-door	noun	iānua	iānuae	f	/ˈjaːnʊa/	January	Janus, god of doorways, gave January its name
+door	noun	iānua	iānuae	f	/ˈjaːnʊa/	janitor	Janus, god of doorways, gave January its name
 window	noun	fenestra	fenestrae	f	/fɛˈnɛstra/	defenestrate	
 wall	noun	mūrus	mūrī	m	/ˈmuːrʊs/	mural	
-roof	noun	tēctum	tēcta	n	/ˈteːktʊm/	protect	
-floor	noun	solum	sola	n	/ˈsɔlʊm/	soil	
+roof	noun	tēctum	tēcta	n	/ˈteːktʊm/		
+floor	noun	solum	sola	n	/ˈsɔlʊm/	sole	
 room	noun	camera	camerae	f	/ˈkamɛra/	camera	a vaulted chamber; the photographic sense came much later
 table	noun	mēnsa	mēnsae	f	/ˈmeːnsa/		
 chair	noun	sella	sellae	f	/ˈsɛlːa/		
@@ -126,7 +133,7 @@ letter	noun	littera	litterae	f	/ˈlɪtːɛra/	literate
 name	noun	nōmen	nōmina	n	/ˈnoːmɛn/	nominal	
 key	noun	clāvis	clāvēs	f	/ˈklaːwɪs/	clavicle	medieval Latin called the collarbone “clāvicula”, a little key
 bridge	noun	pōns	pontēs	m	/ˈpoːns/	pontoon	
-church	noun	ecclēsia	ecclēsiae	f	/ɛkˈkleːsɪa/	ecclesiastical	
+church	noun	ecclēsia	ecclēsiae	f	/ɛkˈkleːsɪa/		
 ship	noun	nāvis	nāvēs	f	/ˈnaːwɪs/	navy	
 boat	noun	scapha	scaphae	f	/ˈskapʰa/		
 sword	noun	gladius	gladiī	m	/ˈɡladɪʊs/	gladiator	
@@ -146,9 +153,9 @@ moon	noun	lūna	lūnae	f	/ˈluːna/	lunar
 star	noun	stēlla	stēllae	f	/ˈsteːlːa/	stellar	
 sky	noun	caelum	caela	n	/ˈkae̯lʊm/	celestial	
 earth	noun	terra	terrae	f	/ˈtɛrːa/	terrain	
-land	noun	terra	terrae	f	/ˈtɛrːa/	territory	
+land	noun	terra	terrae	f	/ˈtɛrːa/		
 sea	noun	mare	maria	n	/ˈmarɛ/	marine	
-river	noun	flūmen	flūmina	n	/ˈfluːmɛn/	fluvial	
+river	noun	flūmen	flūmina	n	/ˈfluːmɛn/	flume	
 lake	noun	lacus	lacūs	m	/ˈlakʊs/	lagoon	
 mountain	noun	mōns	montēs	m	/ˈmoːns/	mountain	
 hill	noun	collis	collēs	m	/ˈkɔlːɪs/		
@@ -164,7 +171,7 @@ city	noun	urbs	urbēs	f	/ˈʊrbs/	urban
 town	noun	oppidum	oppida	n	/ˈɔpːɪdʊm/		
 village	noun	vīcus	vīcī	m	/ˈwiːkʊs/	vicinity	
 world	noun	mundus	mundī	m	/ˈmʊndʊs/	mundane	
-country	noun	patria	patriae	f	/ˈpatrɪa/	patriot	
+country	noun	patria	patriae	f	/ˈpatrɪa/	repatriate	
 place	noun	locus	loca	n	/ˈlɔkʊs/	local	
 rain	noun	pluvia	pluviae	f	/ˈplʊwɪa/	pluvial	
 snow	noun	nix	nivēs	f	/ˈnɪks/		
@@ -180,7 +187,7 @@ year	noun	annus	annī	m	/ˈanːʊs/	annual
 month	noun	mēnsis	mēnsēs	m	/ˈmeːnsɪs/	menstrual	
 week	noun	hebdomas	hebdomadēs	f	/ˈhɛbdɔmas/		
 hour	noun	hōra	hōrae	f	/ˈhoːra/	hour	
-morning	noun	māne		n	/ˈmaːnɛ/	matinee	
+morning	noun	māne		n	/ˈmaːnɛ/		
 evening	noun	vesper	vesperēs	m	/ˈwɛspɛr/	vespers	
 summer	noun	aestās	aestātēs	f	/ˈae̯staːs/	estival	
 winter	noun	hiems	hiemēs	f	/ˈhɪɛms/	hibernate	
@@ -200,13 +207,13 @@ answer	noun	respōnsum	respōnsa	n	/rɛsˈpoːnsʊm/	response
 story	noun	fābula	fābulae	f	/ˈfaːbʊla/	fable	
 song	noun	carmen	carmina	n	/ˈkarmɛn/	charm	a carmen was a song and a spell alike
 music	noun	mūsica		f	/ˈmuːsɪka/	music	the art of the Muses
-game	noun	lūdus	lūdī	m	/ˈluːdʊs/	ludicrous	
-dream	noun	somnium	somnia	n	/ˈsɔmnɪʊm/	somnolent	
-fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timid	
+game	noun	lūdus	lūdī	m	/ˈluːdʊs/	interlude	
+dream	noun	somnium	somnia	n	/ˈsɔmnɪʊm/		
+fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timorous	
 hope	noun	spēs	spēs	f	/ˈspeːs/	despair	“despair” is to be out of spēs
-joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	gaudy	
+joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	joy	
 anger	noun	īra	īrae	f	/ˈiːra/	irate	
-oath	noun	iūsiūrandum	iūsiūranda	n	/juːsjuːˈrandʊm/	jurisdiction	
+oath	noun	iūsiūrandum	iūsiūranda	n	/juːsjuːˈrandʊm/		
 gift	noun	dōnum	dōna	n	/ˈdoːnʊm/	donate	
 good	adj	bonus			/ˈbɔnʊs/	bonus	
 bad	adj	malus			/ˈmalʊs/	malice	
@@ -221,7 +228,7 @@ low	adj	humilis			/ˈhʊmɪlɪs/	humble
 old	adj	vetus			/ˈwɛtʊs/	veteran	
 young	adj	iuvenis			/ˈjʊwɛnɪs/	juvenile	
 new	adj	novus			/ˈnɔwʊs/	novel	
-hot	adj	calidus			/ˈkalɪdʊs/	calorie	
+hot	adj	calidus			/ˈkalɪdʊs/	scald	
 cold	adj	frīgidus			/ˈfriːɡɪdʊs/	frigid	
 warm	adj	tepidus			/ˈtɛpɪdʊs/	tepid	
 heavy	adj	gravis			/ˈɡrawɪs/	gravity	
@@ -259,7 +266,7 @@ sick	adj	aeger			/ˈae̯ɡɛr/
 whole	adj	tōtus			/ˈtoːtʊs/	total	
 white	adj	albus			/ˈalbʊs/	albino	
 black	adj	niger			/ˈnɪɡɛr/	negro	
-red	adj	ruber			/ˈrʊbɛr/	ruby	
+red	adj	ruber			/ˈrʊbɛr/	rubric	
 green	adj	viridis			/ˈwɪrɪdɪs/	verdant	
 blue	adj	caeruleus			/kae̯ˈrʊlɛʊs/	cerulean	
 yellow	adj	flāvus			/ˈflaːwʊs/	flavine	
@@ -295,7 +302,7 @@ live	verb	vīvere	vīvēns		/ˈwiːwɛrɛ/	vivacious
 die	verb	morī	moriēns		/ˈmɔriː/	moribund	
 love	verb	amāre	amāns		/aˈmaːrɛ/	amateur	
 hate	verb	ōdisse			/oːˈdɪsːɛ/	odium	
-fear	verb	timēre	timēns		/tɪˈmeːrɛ/	timorous	
+fear	verb	timēre	timēns		/tɪˈmeːrɛ/	timid	
 hear	verb	audīre	audiēns		/au̯ˈdiːrɛ/	audio	
 feel	verb	sentīre	sentiēns		/sɛnˈtiːrɛ/	sentiment	
 hold	verb	tenēre	tenēns		/tɛˈneːrɛ/	tenacious	
@@ -311,9 +318,9 @@ open	verb	aperīre	aperiēns		/apɛˈriːrɛ/	aperture
 close	verb	claudere	claudēns		/ˈklau̯dɛrɛ/	conclude	
 begin	verb	incipere	incipiēns		/ɪŋˈkɪpɛrɛ/	incipient	
 help	verb	iuvāre	iuvāns		/jʊˈwaːrɛ/	adjutant	
-learn	verb	discere	discēns		/ˈdɪskɛrɛ/	disciple	
+learn	verb	discere	discēns		/ˈdɪskɛrɛ/		
 teach	verb	docēre	docēns		/dɔˈkeːrɛ/	doctrine	
-remember	verb	meminisse			/mɛmɪˈnɪsːɛ/	memory	
+remember	verb	meminisse			/mɛmɪˈnɪsːɛ/	memento	
 forget	verb	oblīvīscī	oblīvīscēns		/ɔbliːˈwiːskiː/	oblivion	
 win	verb	vincere	vincēns		/ˈwɪŋkɛrɛ/	invincible	
 lose	verb	āmittere	āmittēns		/aːˈmɪtːɛrɛ/		
@@ -338,7 +345,7 @@ choose	verb	ēligere	ēligēns		/eːˈlɪɡɛrɛ/	elect
 change	verb	mūtāre	mūtāns		/muːˈtaːrɛ/	mutate	
 grow	verb	crēscere	crēscēns		/ˈkreːskɛrɛ/	crescent	
 fall	verb	cadere	cadēns		/ˈkadɛrɛ/	cadence	
-rise	verb	surgere	surgēns		/ˈsʊrɡɛrɛ/	surge	
+rise	verb	surgere	surgēns		/ˈsʊrɡɛrɛ/	insurgent	
 turn	verb	vertere	vertēns		/ˈwɛrtɛrɛ/	convert	
 move	verb	movēre	movēns		/mɔˈweːrɛ/	motion	
 throw	verb	iacere	iaciēns		/ˈjakɛrɛ/	eject	
@@ -346,7 +353,7 @@ catch	verb	capere	capiēns		/ˈkapɛrɛ/	capture
 cut	verb	secāre	secāns		/sɛˈkaːrɛ/	section	
 wash	verb	lavāre	lavāns		/laˈwaːrɛ/	lavatory	
 cook	verb	coquere	coquēns		/ˈkɔkʷɛrɛ/	concoct	
-always	adv	semper			/ˈsɛmpɛr/	semper fidelis	
+always	adv	semper			/ˈsɛmpɛr/	sempiternal	
 never	adv	numquam			/ˈnʊmkʷam/		
 often	adv	saepe			/ˈsae̯pɛ/		
 sometimes	adv	interdum			/ɪnˈtɛrdʊm/		
@@ -363,14 +370,14 @@ again	adv	iterum			/ˈɪtɛrʊm/	iterate
 here	adv	hīc			/ˈhiːk/		
 everywhere	adv	ubīque			/ʊˈbiːkʷɛ/	ubiquitous	
 nowhere	adv	nusquam			/ˈnʊskʷam/		
-slowly	adv	lentē			/ˈlɛnteː/	lento	
-quickly	adv	celeriter			/kɛˈlɛrɪtɛr/	accelerate	
-truly	adv	vērē			/ˈweːreː/	very	“very” descends from vērus, true
+slowly	adv	lentē			/ˈlɛnteː/		
+quickly	adv	celeriter			/kɛˈlɛrɪtɛr/		
+truly	adv	vērē			/ˈweːreː/		“very” descends from vērus, true
 perhaps	adv	forsitan			/ˈfɔrsɪtan/		
 very	adv	valdē			/ˈwaldeː/		
 one	num	ūnus			/ˈuːnʊs/	unit	
 two	num	duo			/ˈdʊɔ/	duo	
-three	num	trēs			/ˈtreːs/	trio	
+three	num	trēs			/ˈtreːs/	trey	
 four	num	quattuor			/ˈkʷatːʊɔr/	quart	
 five	num	quīnque			/ˈkʷiːŋkʷɛ/	quintet	
 six	num	sex			/ˈsɛks/	sextet	
@@ -382,7 +389,7 @@ hundred	num	centum			/ˈkɛntʊm/	century
 thousand	num	mīlle			/ˈmiːlːɛ/	mile	a mile was mīlle passūs, a thousand paces
 first	num	prīmus			/ˈpriːmʊs/	primary	
 yes	intj	ita			/ˈɪta/		Latin has no one common word for yes; “ita” means “thus”, said in reply
-hello	intj	salvē			/ˈsalweː/	salvation	literally “be well”
+hello	intj	salvē			/ˈsalweː/		literally “be well”
 goodbye	intj	valē			/ˈwaleː/	valediction	literally “be strong”
 please	intj	quaesō			/ˈkʷae̯soː/		
 sorry	intj	ignōsce			/ɪɡˈnoːskɛ/		

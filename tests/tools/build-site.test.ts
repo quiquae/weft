@@ -264,9 +264,11 @@ describe('a word page states its descent in the right direction', () => {
     // A floor, not an exact count, so a new word page does not have to be
     // registered here — but a builder that stops rendering the sentence, or a
     // parser that stops finding it, can no longer pass by inspecting nothing.
+    // Latin's sat at 300 exactly on 2026-10-03, once the descent pass had
+    // taken 13 false claims off their pages, so its floor sits well below.
     const byLang = (prefix: string) => descents.filter((d) => d.page.startsWith(prefix)).length;
 
-    assert.ok(byLang('/latin/') > 300, `only ${byLang('/latin/')} Latin pages render a descent sentence`);
+    assert.ok(byLang('/latin/') > 250, `only ${byLang('/latin/')} Latin pages render a descent sentence`);
     assert.ok(
       byLang('/old-english/') > 300,
       `only ${byLang('/old-english/')} Old English pages render a descent sentence`,
