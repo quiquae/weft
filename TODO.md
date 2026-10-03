@@ -3447,6 +3447,30 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-10-03 — the tooltip's badge landed, and the queue merged it before
+its CI had started.** Ticked in `Next`. Two things a later run would be
+sorry not to know:
+
+1. **Opening a PR is landing it.** This run's first attempt hit the
+   account's session limit four seconds after `gh pr create`. The queue's
+   drain loop then calls `auto_land()` in `~/.claude-queue/bin/cq`, and its
+   `pr_verdict()` reads an empty `statusCheckRollup` as "no checks
+   configured" — which is what every PR looks like for its first few
+   seconds, before GitHub attaches the CI run — and it runs `gh pr ready`
+   on a draft before merging. #53, opened as a draft at 07:07:53Z, was
+   readied at 07:07:57Z and merged at 07:08:00Z, while its CI run
+   (07:07:56Z–07:11:08Z) was still going. That run passed, and so did
+   `main`'s, so nothing is broken. But the journal's "open a PR as a draft
+   until the last commit is in" protects nothing: `cq land --go` readies
+   drafts too. Run the whole gate *before* `gh pr create`, and push nothing
+   you would not want on `main`. The fix belongs in `cq`, and is a human's:
+   an empty rollup on a repository with workflows means "not yet", not
+   "none".
+2. **Read every frame of a scene.** Store scene 3 hovers *pain* in the
+   Chrome frame and *rivière* in the Apple and Edge ones. The item had read
+   one and predicted that no shot would move; two did, and they were the
+   proof that the fix worked.
+
 **2026-10-03 — the screenshots' drift was the operating system, and it was
 41 images.** Ticked in `Next`. Five things a later run would be sorry not to
 know:

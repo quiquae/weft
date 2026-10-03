@@ -430,6 +430,16 @@ Counts moved 850 → **858**: unit 544 → **548**, jsdom 98 → **102** / 22 �
 **23** suites, in six places, `docs/LAUNCH.md:221` first; and a
 `CHANGELOG.md` paragraph, because the tooltip ships.
 
+**And the queue merged the PR before its CI had started.** This run's first
+attempt hit the account's session limit four seconds after opening #53 as a
+draft. The queue's drain loop then ran `auto_land()`, whose `pr_verdict()`
+reads an empty check rollup — what every PR has for its first seconds — as
+"no checks configured", readies a draft and merges: #53 landed at 07:08:00Z
+with its CI run still in progress. That run passed, and so did `main`'s. The
+retry, on another account, found the work on `main` byte for byte and
+recorded this. **Opening a PR is landing it: run the gate first, and do not
+count on a draft.**
+
 Measured at the end, on Node 26.7, with npm's own exit status captured:
 `npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
 jsdom / 23 suites, 170 tools / 48 suites, compat 21 dependencies × 3
@@ -448,8 +458,9 @@ line as "ancestor of English" did; that the landing sentence was this
 item's to change, as it asked; and that the dashboard item belongs first.
 
 What needs a human: unchanged, everything below **B1**, register
-`weft.study` — NXDOMAIN today. `Next` holds ten agent-shaped items, the
-dashboard's date first.
+`weft.study` — NXDOMAIN today. And outside this repository, `cq`'s
+`pr_verdict()` should not merge on an empty check rollup. `Next` holds ten
+agent-shaped items, the dashboard's date first.
 
 ### 2026-10-03 — the screenshots moved because macOS did, and so did five images nobody had regenerated
 
