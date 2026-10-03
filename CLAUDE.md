@@ -208,6 +208,20 @@ JavaScript specifies to the bit. The four icons are the only images here for
 which that is true, which is why the screenshots and the Chromium-drawn art
 stay on provenance and shape readings.
 
+**The Chromium-drawn images reproduce only on the operating system that drew
+them.** Chromium on macOS draws text with the system's fonts and CoreText, so
+an OS upgrade can move every glyph edge in every screenshot, tile and card
+while the browser, the page and every shape stay the same to the pixel.
+macOS 27.0.1, installed 2026-10-02, did exactly that: all 41 Chromium-drawn
+images came back differing from their commits by text antialiasing alone —
+no channel more than 47 apart, the mark's rectangles and every CSS rule
+untouched — and the whole set was recommitted in a commit that changed
+nothing else. When every such image moves at once and no glyph does, run
+`softwareupdate --history` against the date of the last regeneration that
+agreed, before reading anything else. Then rebaseline the whole set in a
+commit of its own, ahead of any change that moves a shot for a real reason,
+so that change arrives as a clean diff rather than mixed into the renderer's.
+
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
@@ -357,6 +371,73 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-03 — the screenshots moved because macOS did, and so did five images nobody had regenerated
+
+The queue sent this run at the Latin index's "became", which #51 landed an
+hour before; `git log` settled it. The topmost unchecked item was #50's: no
+committed screenshot reproduced on this machine, the cause unknown, and
+whether to recommit 36 images left for a person.
+
+**One command found the cause.** `softwareupdate --history`: macOS 27.0.1,
+installed 2026-10-02 at 13:49 BST, thirty-nine minutes after #49 merged on a
+regeneration that reproduced every shot but `dashboard.png`'s dates.
+Playwright's Chromium, its lockfile and the font-smoothing preferences had
+not moved.
+
+**The images said which half of the renderer it was.** Chromium on macOS
+draws shapes with Skia and text through the system's fonts and CoreText. The
+Edge logo holds one of each: 36 pixels differ, all in the wordmark, and 0 in
+the mark's rectangles. The marquee, the small tile and the social card read
+the same way, and the four icons, drawn by arithmetic, came back
+byte-identical. A scratch decoder in Node did the counting, there being no
+image library on this machine, after two false starts worth knowing: `/tmp`
+is `/private/tmp`, so its main-module check never fired, and a box drawn
+round a tile's blue pixels took in a blue French word below the mark.
+
+**It was 41 images, not 36.** The tiles, the Edge logo, the card and the
+icon sheet were fresh by provenance and differed too: the renderer is one
+more input no pathspec declares. All 41 keep their size, differ in 36 to
+33 277 pixels, and no channel is more than 47 apart, where a changed glyph
+would flip paper to ink at 170 or more. A second run of every generator
+matched the first byte for byte, and the screenshots' range is exactly #50's
+of a day earlier.
+
+**Recommitted, all 41, in a commit that changes nothing else** — the call
+#50 left for a person, taken because the old bytes can never be drawn here
+again, and because the tooltip item next would otherwise land its real
+change inside the renderer's. The cost is about 5.5 MB of history on a
+23 MiB pack. The six stamps of the changed groups were deleted, and a new
+paragraph under the decisions above says what to run first next time.
+Generated under `TZ=Pacific/Pago_Pago`, the last zone still on the 2nd, so
+`dashboard.png` kept its dates — on the last day it could: the held-date
+item is now the only thing between a regeneration and 36 matches.
+
+**And the next item got cheaper.** Read for which language each tooltip
+shot shows, as that item asked: `page-tooltip.png` hovers French *oiseau*
+and store scene 3 French *pain*, each with a note and no etymon. So the fix
+to the tooltip's "Ancestor of English" should move no screenshot, and a
+regeneration can now show that it does not.
+
+One sentence of this session's own was withdrawn before it was committed:
+the first draft of the ticked item said a diff map showed nothing on the
+tooltip's box or the woven words' underlines, read by eye off a reduced
+image. A measurement of the box's edge caught the page's own headline in
+its threshold and proved nothing either way, so the sentence now claims only
+what the map shows, and the four marks carry the proof.
+
+No test counts moved and nothing that ships moved, so there is no count
+sweep and no `CHANGELOG.md` paragraph.
+
+Assumed, with nobody to ask: that the rebaseline is wanted now rather than
+folded into the tooltip change; that 5.5 MB of history is an acceptable
+price for byte comparison working again; that the five art images belong
+in it though no item named them; and that the pixel-diff tool is worth
+queuing rather than building in the same PR.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds ten agent-shaped items, the
+tooltip first.
 
 ### 2026-10-03 — the Latin index said "became" in eight places, and the guard had to read the head
 

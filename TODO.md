@@ -342,6 +342,15 @@ from three defects in `tools/seed/_ipa.py`, all fixed, and
 and stress from its spelling by Allen & Greenough's rules and refuses a
 transcription that disagrees. See the ticked item in `Next`.
 
+**And as of 2026-10-03 the committed images reproduce on this machine
+again.** The operating system moved under them: macOS 27.0.1, installed on
+2026-10-02, draws text a few shades differently, so all 41 Chromium-drawn
+images — the 36 screenshots, both store tiles, the Edge logo, the social
+card and the icon sheet — were recommitted in a commit that moves no glyph
+and no shape, and every generator now reproduces its own output byte for
+byte. `dashboard.png` is the exception from 13:00 BST on the 3rd, by its
+printed dates, which is queued. See the ticked item in `Next`.
+
 **So the whole of B0 is closed and `Now` is empty. `Next` holds ten
 agent-shaped items, and two of them — an Old English word stressed on the
 wrong syllable, and the tooltip calling Latin an ancestor of English —
@@ -2732,7 +2741,7 @@ registered**, and nothing below it can move until it is.
       reading "English took the word itself", is a copy decision for the
       item below rather than this one.
 
-- [ ] **No committed screenshot reproduces on this machine any more, on
+- [x] **No committed screenshot reproduces on this machine any more, on
       `main` as on the branch.** Found 2026-10-03 regenerating the three
       groups after the Latin pass staled them by provenance. All 36
       generated shots came back different from their committed bytes; the
@@ -2750,6 +2759,56 @@ registered**, and nothing below it can move until it is.
       — and decide whether to commit all 36 regenerated, which a reader of
       the README would see as every image changing at once for no reason.
       About 30 minutes to measure; the decision may want a human.
+
+      **Done 2026-10-03: the operating system moved, and all 41
+      Chromium-drawn images are recommitted in a commit that changes
+      nothing else.** `softwareupdate --history` answered it in one
+      command: **macOS 27.0.1 was installed on 2026-10-02 at 13:49 BST**,
+      replacing Tahoe 26.6.2 — thirty-nine minutes after #49 merged on a
+      regeneration that reproduced every shot but `dashboard.png`'s dates,
+      and before #50's, which reproduced none. Nothing else in the window
+      moved: Playwright's `chromium-1243` has been cached since 2026-09-15,
+      `package-lock.json` (Playwright 1.63.0) is unchanged since the same
+      day, and the font-smoothing preferences are unset.
+
+      **The images say which half of the renderer moved.** Chromium on
+      macOS draws shapes with Skia and text with the system's fonts and
+      CoreText, and `logo-edge-300x300.png` holds one of each, the mark's
+      rectangles above the wordmark: 36 pixels differ, every one inside
+      "Weft", and 0 inside the mark. The marquee, the small tile and the
+      social card read the same way — 0 differing pixels inside each mark,
+      the rules under the marquee's French words untouched — and the four
+      icons, drawn by arithmetic with no browser, came back byte-identical.
+      The art's text is "Iowan Old Style", a system font, so the upgrade
+      changed that font or CoreText; the two cannot be told apart without
+      the old OS, and nothing here depends on which.
+
+      **It was 41 images, not 36.** The three art groups were `ok` by
+      provenance, their inputs not having moved, and differed all the same:
+      both tiles, the Edge logo, `site/og.png` and the icon sheet. All 41
+      keep their dimensions and differ in 36 to 33 277 pixels, and no
+      channel anywhere is more than 47 apart, where a changed glyph flips
+      paper to ink at 170 or more. The screenshots' range, 510 to 33 277, is
+      exactly what #50 measured the day before, so the new renderer is
+      stable across days; a second run of every generator came back
+      byte-identical to the first, and all 36 shots were written both times.
+      Generated under `TZ=Pacific/Pago_Pago`, where it was still the 2nd,
+      so `dashboard.png` kept its committed dates. A diff map of
+      `page-tooltip.png`, read by eye, shows the differences running along
+      the text; the measured proof that shapes did not move is the four
+      marks above, not this.
+
+      **Recommitted rather than kept, for two reasons.** The old bytes can
+      never be produced on this machine again, so keeping them makes every
+      later regeneration report 41 differences and every session pay for a
+      pixel diff to learn that nothing moved; and the next item moves the
+      tooltip, so a baseline taken first lets that change arrive as a clean
+      diff instead of mixed into the renderer's. The cost is about 5.5 MB
+      of history, on a 23 MiB pack, and one commit in which every image
+      changes at once, which its message and a new paragraph in `CLAUDE.md`
+      explain. The six verify stamps of the changed groups were deleted, as
+      #30–#32 deleted theirs for a content change; the icons' stamp stays,
+      true as written.
 
 - [ ] **The tooltip calls a Latin word the "Ancestor of English" X, and
       chooses that by the flag #49 stopped the feed using.** Found
@@ -2770,9 +2829,13 @@ registered**, and nothing below it can move until it is.
       choice. Tests that pin the current text: `tests/dom/tooltip.test.ts`
       (3), `tests/core/delight.test.ts` (4), `tests/core/similarity.test.ts`
       (1). It moves `src/`, so all three screenshot groups go stale by
-      provenance and the item above decides what a regeneration here can
-      prove; `docs/screens/page-tooltip.png` and the store listing's scene 3
-      show a tooltip, so read which language each shows first. While there,
+      provenance — and since the rebaseline above, a regeneration can prove
+      byte for byte what it moves. Read on 2026-10-03, neither tooltip shot
+      shows what this changes: `docs/screens/page-tooltip.png` hovers
+      French *oiseau* and the store listing's scene 3 French *pain*, each
+      with a note and no etymon, and `page-old-english.png` hovers *ēa*,
+      which has none. So expect all 36 to come back byte-identical,
+      `dashboard.png`'s printed dates aside (see its item). While there,
       the landing page's "*rivière* became the English word" (site/index.html,
       the French section) is the same verb on a French borrowing beside a row
       reading "English took the word itself" — a copy call. About 45 minutes.
@@ -2823,6 +2886,13 @@ registered**, and nothing below it can move until it is.
       same day between midnight and 04:00: `dayKey` rolls over at four, so the
       chart read "Oct 1" beside a change log reading "Oct 2" — correct, and it
       looks like a bug. About 30 minutes.
+
+      **Since 2026-10-03 it is the one shot a regeneration cannot
+      reproduce.** The rebaseline held the 2nd under `TZ=Pacific/Pago_Pago`,
+      and from 13:00 BST on the 3rd no time zone on Earth is still on the
+      2nd, so `dashboard.png` now differs by its two dates on every
+      regeneration until this lands. Read the two bands before calling
+      anything else in it moved.
 
 - [ ] **The Old English pronunciation key quotes with straight marks, on 346
       word pages.** Found 2026-10-02 reading `/old-english/laece` after the
@@ -2913,19 +2983,37 @@ registered**, and nothing below it can move until it is.
       the word really covers. `īnfāns` is also marked masculine where Lewis &
       Short has it of common gender.
 
+- [ ] **Commit the pixel diff: three sessions have each written their own
+      and thrown it away.** Found 2026-10-03. Telling a renderer's drift
+      from a real change means locating the differing pixels — how many,
+      how far apart, inside which box — and 2026-09-29 did it in a browser
+      canvas, #50 with a pure-Python decoder and 2026-10-03 with a Node one
+      in `/tmp`. `tests/tools/png.ts` already decodes every PNG here. Move
+      it to `tools/png.ts`, re-exported for the tests, and add
+      `npm run png:diff -- <path>…`, comparing each working file with its
+      `HEAD` blob: dimensions, differing pixels, the largest channel
+      difference, the bounding box, and `--region=x0,y0,x1,y1` to count
+      inside a box, such as a mark's. Two traps the scratch one met: on
+      macOS `/tmp` is `/private/tmp`, so a script comparing
+      `import.meta.url` with `argv[1]` never runs its main block; and a
+      "bluish pixels" box for a mark swallows blue text below it unless the
+      search box stops short of the text. About 30 minutes, with tests in
+      `tests/tools/`.
+
 `Now` is **empty** and `Next` holds **ten** unchecked items above, as of
 2026-10-03, all agent-shaped and none waiting on B1. The order is the order
-to work them. The screenshots first, because no committed one reproduces on
-this machine and every item that moves `src/` meets that; then the tooltip's
-"Ancestor of English", which moves `src/`; then the `iānua` note, the landing
-page's table, the dashboard's date and the pronunciation key's quote marks,
-four small ones; then French `mort`, one card or two, a decision with the
-evidence written down; then Old English stress, one wrong word and a grammar
-to read, free before B3; then `far wel` and `camera`, content questions. The
-Latin note on `vir`, the 22 Old English addresses, the thirty Latin
-pronunciations, the feed's hidden etymologies, the Old English homographs,
-the feed's Latin frames, the Latin descent pass and the Latin index's
-"became", which sat first, are done.
+to work them. The tooltip's "Ancestor of English" first, which moves `src/`,
+and whose regeneration the screenshots' rebaseline now lets prove byte for
+byte that no shot moved; then the `iānua` note, the landing page's table,
+the dashboard's date and the pronunciation key's quote marks, four small
+ones; then French `mort`, one card or two, a decision with the evidence
+written down; then Old English stress, one wrong word and a grammar to read,
+free before B3; then `far wel` and `camera`, content questions; then the
+pixel diff, a tool. The Latin note on `vir`, the 22 Old English addresses,
+the thirty Latin pronunciations, the feed's hidden etymologies, the Old
+English homographs, the feed's Latin frames, the Latin descent pass, the
+Latin index's "became" and the screenshots' renderer drift, which sat first,
+are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3286,6 +3374,36 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-03 — the screenshots' drift was the operating system, and it was
+41 images.** Ticked in `Next`. Five things a later run would be sorry not to
+know:
+
+1. **When every Chromium-drawn image moves at once and no glyph does, ask
+   the OS first.** `softwareupdate --history` dated macOS 27.0.1 to 39
+   minutes after the last regeneration that agreed. #50 had proved the drift
+   was the machine's — the other tree drew the same bytes — and could not
+   say what on the machine moved; the install log could, in one command.
+2. **Provenance cannot see the renderer.** The tiles, the Edge logo, the
+   social card and the icon sheet were `ok` by `artefacts:check`, no input
+   having moved, and all five differed. The renderer is an input no
+   pathspec declares — the same shape as the pasted mark of 2026-10-01 —
+   so "fresh" means nobody has committed a source since, never that the
+   generator would draw the same thing today.
+3. **An image that holds both a shape and text is a controlled
+   experiment.** The Edge logo, the mark above the wordmark, separated Skia
+   from CoreText in one diff: 36 pixels in the word, 0 in the mark. Count
+   inside the four marks again before trusting a whole-image statistic.
+4. **A time zone holds a date for about a day.** UTC−12 is the last place
+   on any date, so from 12:00 UTC the next day no `TZ` reaches it; the
+   rebaseline was the last moment `dashboard.png` could be drawn on the 2nd.
+   Its held-date item is the fix.
+5. **Where the scratch is, and that it will not last.** `/tmp/weft-pngdiff.mjs`
+   decodes two PNGs and reports differing pixels, the largest channel
+   difference, the bounding box and a count inside `--region`;
+   `/tmp/weft-markcheck.mjs` finds a mark's box and writes a diff map. The
+   last item in `Next` is to commit the first properly. And **B1 has not
+   moved**: `dig weft.study @8.8.8.8` answers NXDOMAIN.
 
 **2026-10-03 — the Latin index's "became": eight places, three phrasings,
 one template.** Ticked in `Next`. Four things a later run would be sorry not
