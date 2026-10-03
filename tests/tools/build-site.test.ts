@@ -573,7 +573,10 @@ describe('every page carries the mark that ships as the icon', () => {
  * Latin index kept them for a day longer, in a string of its own: its
  * description, the two social copies of it and its structured data said the
  * Latin words had "the English word they became", its lead "the English word
- * they turned into", and its title "their English descendants".
+ * they turned into", and its title "their English descendants". Its word
+ * pages had it right throughout, down to the description a search result
+ * prints: Latin's says "the source of English vaccine" where Old English's
+ * says "the direct ancestor of English mouse".
  *
  * Read off every page a deep language has, in the builder's own words. The
  * pack's own English — its glosses, the English words it names, its notes —
@@ -583,7 +586,8 @@ describe('every page carries the mark that ships as the icon', () => {
  * language is which comes from `ancestorOfEnglish` in the language table,
  * whose own guard is `tests/tools/feed-frames.test.ts`.
  */
-const DESCENT = /\b(?:became|turned into|descendants?|descends? from|survived into|comes straight from|began as)\b/i;
+const DESCENT =
+  /\b(?:became|turned into|descendants?|descends? from|ancestors? of|survived into|comes straight from|began as)\b/i;
 
 /**
  * What a page says to a reader and to a crawler: its body, and from its head

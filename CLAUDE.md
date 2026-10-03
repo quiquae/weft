@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **544 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **167 pass**, 47 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **170 pass**, 48 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -271,7 +271,12 @@ two back into one flag: Latin is dead and borrowed, and the two answers
 differ. `tests/tools/feed-frames.test.ts` derives the flag from the table's
 own names — a historical language named "… English" — so it cannot be
 satisfied by moving it, and the dashboard's own wiring is read by an e2e test
-in `friction.spec.ts`.
+in `friction.spec.ts`. The site draws the same line per language in `META` in
+`tools/build-site.mjs` — `descent` for a word page, `index` for the language
+index, which shared one string with Old English and said Latin's words had
+"the English word they became" until 2026-10-03 — and
+`tests/tools/build-site.test.ts` fails on a verb of descent anywhere on a
+Latin page, the pack's own words blanked out first.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
@@ -352,6 +357,84 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-03 — the Latin index said "became" in eight places, and the guard had to read the head
+
+The topmost unchecked item was the one the descent pass queued an hour
+before: `/latin/`'s description said its words had "the English word they
+became", the verb #49 took out of the feed for Latin. Fifteen minutes, it
+said, and "read both" indexes.
+
+**Measured on a build first, and the one phrase was three.** The description
+went out four times — the `<meta>` description, the `og:` and `twitter:`
+copies, the structured data — the lead under the heading said "the English
+word they turned into", and the title, three times, "Latin words, with their
+English descendants". All from one template shared with Old English, where
+every word of it is true. Nothing else on the 351 Latin pages used a verb of
+descent: the word pages' own descriptions already said "the source of
+English *vaccine*" where Old English's say "the direct ancestor of". The one
+other hit, `/latin/vere`'s "“very” descends from vērus", is a note, held by
+the note ledger, and stays.
+
+**The fix is `index` beside `descent` in `META`**, three phrasings per
+language, Latin's in the word pages' verb: "Latin words, with the English
+words borrowed from them". Built before and after: one file of 718 moved,
+`latin/index.html`, at exactly the eight places; Old English byte-identical.
+
+**The guard is the transferable half.** A new `describe` in
+`tests/tools/build-site.test.ts` reads every page of a deep language whose
+`ancestorOfEnglish` is false and fails on *became*, *turned into*,
+*descendant*, *descends from*, *ancestor of* or the feed's three. Two things
+it has to do that the file's existing helpers do not. It reads the head:
+`plain()` strips tags, and a `<meta>`'s claim lives in an attribute, so the
+body alone is one place of the eight. And it blanks out the pack's own
+English, whole words at equal length, so the builder's sentences are what is
+left and an offender can be quoted as the page reads — whole words because
+the Latin pack glosses "come", and a substring blank would cut "comes
+straight from" to nothing anyone could match. Red first on exactly the
+eight; a control wants the verbs on more than 300 Old English pages. Four
+probes, restored by md5: unblanked it names `/latin/vere`'s note, a dead
+pattern fails the control, a renamed hub fails the file, and Latin word
+pages printing "the direct ancestor of" fail 1 200 times.
+
+**One sentence of this session's own was false before it shipped**, and is
+the same slip this file keeps recording: the note on whole-word blanking
+first said the Latin pack glosses "be". It does not; a one-line query of the
+pack said "come", and the note now says so. Count from the data, not from
+the sentence written about it.
+
+**Found and queued, not fixed:** the tooltip that ships calls a Latin word
+the "Ancestor of English" X, choosing its badge by `historical`, the flag
+#49 retired from the feed, and `cognateReason()` says "ancestor of English"
+for every language's etymon. It moves `src/`, which meets the screenshot
+drift queued first in `Next`.
+
+Counts moved 847 → **850** and tools 167 → **170** / 47 → **48** suites, in
+six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved, only a site page, following PR #36.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 544 unit / 133 suites, 98
+jsdom / 22 suites, **170 tools / 48 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. The guard gained "ancestor of" after that run's tools
+step, so `test:tools` and the typecheck were run again on the final tree.
+Separately: `packs:verify` **0 errors / 4 warnings**; `npm run site` then
+`site:check` **716 pages / 16 165 links**, all resolving; `artefacts:check`
+**8 groups, 1 stale**, exit 1 — the release notes, B2a. Zero iCloud
+conflict copies.
+
+Assumed, with nobody to ask: that "descendants" is the same claim as
+"became" in a noun, by this repository's own usage; that "borrowed from
+them" is better than the hub's "gave us", because it is the word pages'
+verb; and that the landing page's "*rivière* became the English word",
+French and beside a row reading "English took the word itself", is a copy
+call for the tooltip item rather than this one.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — still NXDOMAIN today. `Next` holds ten agent-shaped items,
+the screenshot drift first.
 
 ### 2026-10-03 — twenty-seven Latin descents were cousins or worse, and the first session to read them ended mid-generator
 
