@@ -22,14 +22,14 @@ export interface Reasons {
   drivers: string[];
 }
 
-/** How each factor reads when it is the reason. */
+/**
+ * How each factor reads when it is the reason.
+ *
+ * `cognate` is not here: its phrasing depends on the reader's settings and on
+ * the word's language, so `explainChoice` builds it.
+ */
 const PHRASES: Record<string, (entry: LexEntry) => string | null> = {
   due: () => 'it is due for review',
-  cognate: (entry) => {
-    const reason = cognateReason(entry);
-    if (reason) return reason;
-    return 'it resembles the English word';
-  },
   frequency: () => 'it is common enough to meet often',
   bandFit: () => 'it sits at your level',
   guessability: () => 'the sentence around it gives you enough to go on',
@@ -55,6 +55,14 @@ export interface ExplainOptions {
    * leaked it straight back, one line lower.
    */
   allowEtymon?: boolean;
+  /**
+   * Whether English descends from the word's language, `ancestorOfEnglish`
+   * in the language table: an etymon is then "ancestor of English", and
+   * otherwise "source of English". Required, as it is of the feed, so a
+   * caller that forgets it fails the typecheck rather than calling Latin an
+   * ancestor.
+   */
+  ancestorOfEnglish: boolean;
 }
 
 /**
@@ -67,14 +75,15 @@ export interface ExplainOptions {
 export function explainChoice(
   entry: LexEntry,
   factors: Record<string, number> | undefined,
-  opts: ExplainOptions = {},
+  opts: ExplainOptions,
 ): Reasons {
   const allowEtymon = opts.allowEtymon !== false;
   const reason = () => {
-    const text = cognateReason(entry);
-    if (!text) return null;
-    if (!allowEtymon && /ancestor of english/i.test(text)) return null;
-    return text;
+    // Withheld by the etymon itself, not by its wording: this once matched
+    // "ancestor of English", which the same fact told as "source of" would
+    // have walked straight past.
+    if (!allowEtymon && entry.etymonOf) return null;
+    return cognateReason(entry, opts.ancestorOfEnglish);
   };
 
   if (opts.firstMeeting) {

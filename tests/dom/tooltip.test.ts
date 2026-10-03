@@ -8,6 +8,7 @@ installDom('<p>host</p>');
 const { Tooltip } = await import('../../src/content/tooltip.ts');
 const { defaultSettings } = await import('../../src/core/settings.ts');
 const { applyPatch } = await import('../../src/core/patch.ts');
+const { LANGUAGES } = await import('../../src/core/languages.ts');
 
 /**
  * The tooltip's shadow root is closed, so `host.shadowRoot` is null by
@@ -120,9 +121,23 @@ describe('tooltip content', () => {
     assert.match(text, /place-name/);
   });
 
-  test('says "related to" rather than "ancestor of" for a modern language', () => {
-    const { root } = open('fr', {}, { tgt: 'importante', tgtLemma: 'importante', etymonOf: 'important' });
-    assert.match(root.querySelector('.etymon')?.textContent ?? '', /Related to English/);
+  test('calls a Latin word the source of the English word, not its ancestor', () => {
+    // Latin is dead and English borrowed from it, so "ancestor" — the word
+    // for what Old English is to English — is false of it. The site's Latin
+    // word pages say "the source of English vaccine"; so does the badge, and
+    // so does the line above it that explains the choice.
+    const { root, text } = open('la', {}, { tgt: 'vacca', tgtLemma: 'vacca', ipa: '/ˈwakka/', etymonOf: 'vaccine', note: undefined });
+    assert.equal(root.querySelector('.etymon')?.textContent, 'Source of English vaccine');
+    assert.match(root.querySelector('.why')?.textContent ?? '', /source of English “vaccine”/i);
+    assert.doesNotMatch(text, /ancestor/i);
+  });
+
+  test('calls a French etymon the source of the English word', () => {
+    // Every French etymon is a word English took from French or Old French,
+    // checked against a dictionary (tools/seed/fr-cousins.tsv), so the badge
+    // says what was checked rather than the vaguer "related to".
+    const { root } = open('fr', {}, { tgt: 'forêt', tgtLemma: 'forêt', etymonOf: 'forest', note: undefined });
+    assert.equal(root.querySelector('.etymon')?.textContent, 'Source of English forest');
   });
 
   test('falls back to a cognate note when there is no etymon', () => {
@@ -155,6 +170,19 @@ describe('tooltip content', () => {
     assert.doesNotMatch(text, /Ancestor of English/);
   });
 
+  test('hides a borrowing as completely as a descent', () => {
+    // The badge and the reason line beneath it both name the English word,
+    // in either noun, so hiding the badge has to silence both.
+    const { root, text } = open(
+      'la',
+      { 'reveal.showEtymon': false },
+      { tgt: 'vacca', tgtLemma: 'vacca', ipa: '/ˈwakka/', etymonOf: 'vaccine', note: undefined },
+    );
+    assert.equal(root.querySelector('.etymon'), null);
+    assert.ok(root.querySelector('.why'), 'the reason line should still be there');
+    assert.doesNotMatch(text, /vaccine|(ancestor|source) of English/i);
+  });
+
   test('keeps the note when the etymon badge is hidden', () => {
     // The note is appended unconditionally while the badge above it is behind
     // a switch, so a note written to lean on that badge loses its referent
@@ -180,6 +208,37 @@ describe('tooltip content', () => {
   test('shows the band only when asked', () => {
     assert.doesNotMatch(open('ang').text, /A1/);
     assert.match(open('ang', { 'reveal.showBand': true }).text, /A1/);
+  });
+});
+
+describe('the etymon badge follows descent, not death', () => {
+  // The badge once said "Ancestor of" for every historical language, so
+  // Latin, being dead, was given Old English's noun on 300 of its words —
+  // the choice #49 took out of the feed. Whether English descends from a
+  // language is worked out here from the table's own names, a historical
+  // language called "… English", rather than read from `ancestorOfEnglish`,
+  // so flagging Latin fails by name instead of moving the expectation with
+  // the behaviour.
+  const targets = Object.values(LANGUAGES).filter((l) => l.code !== 'en');
+  const inherited = (name: string, historical: boolean) => historical && / English$/.test(name);
+
+  test('says "ancestor of" for a stage of English and "source of" for every other language', () => {
+    const wrong: string[] = [];
+    for (const lang of targets) {
+      const { root, text } = open(lang.code, {}, { tgt: 'wyrd', tgtLemma: 'wyrd', etymonOf: 'weird', note: undefined });
+      const badge = root.querySelector('.etymon')?.textContent ?? '(no badge)';
+      const want = `${inherited(lang.name, lang.historical) ? 'Ancestor' : 'Source'} of English weird`;
+      if (badge !== want) wrong.push(`${lang.code} (${lang.name}): "${badge}", wanted "${want}"`);
+      if (!inherited(lang.name, lang.historical) && /ancestor/i.test(text)) {
+        wrong.push(`${lang.code} (${lang.name}): the card says "ancestor"`);
+      }
+    }
+    assert.deepEqual(wrong, []);
+  });
+
+  test('the table gives both nouns something to say', () => {
+    assert.ok(targets.some((l) => inherited(l.name, l.historical)), 'no language is a stage of English');
+    assert.ok(targets.some((l) => l.historical && !inherited(l.name, l.historical)), 'no dead language English borrowed from');
   });
 });
 

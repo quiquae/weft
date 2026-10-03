@@ -99,9 +99,12 @@ export interface LexEntry {
   band: number;
   ipa?: string;
   /**
-   * Set when the target word is the actual etymological ancestor of an English
-   * word: Old English "hūs" -> "house". Powers the etymon badge, which is the
-   * single most motivating thing about historical-language mode.
+   * Set when English took a word from the target word: inherited it, from a
+   * stage of English (Old English "hūs" -> "house"), or borrowed it, from
+   * every other language (Latin "vacca" -> "vaccine"). Powers the etymon
+   * badge, which is the single most motivating thing about historical-language
+   * mode, and which says "ancestor of" only of the first; see
+   * `etymonRelation` in `similarity.ts`.
    */
   etymonOf?: string;
   /** Short usage note shown in the tooltip. */

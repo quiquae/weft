@@ -12,7 +12,7 @@ describe('explainChoice', () => {
   const plain = entry({ src: 'dog', lemma: 'dog', tgt: 'chien', tgtLemma: 'chien' });
 
   test('leads with newness when the word is new', () => {
-    const { sentence } = explainChoice(plain, { due: 1 }, { firstMeeting: true });
+    const { sentence } = explainChoice(plain, { due: 1 }, { firstMeeting: true, ancestorOfEnglish: false });
     assert.match(sentence, /New to you/);
   });
 
@@ -23,13 +23,13 @@ describe('explainChoice', () => {
       tgt: 'nación',
       tgtLemma: 'nación',
     });
-    const { sentence } = explainChoice(cognate, { cognate: 0.95, due: 0.2 });
+    const { sentence } = explainChoice(cognate, { cognate: 0.95, due: 0.2 }, { ancestorOfEnglish: false });
     assert.match(sentence, /identical to the English word/i);
   });
 
   test('names the etymon for a historical word', () => {
     const oe = entry({ src: 'house', lemma: 'house', tgt: 'hūs', tgtLemma: 'hūs', etymonOf: 'house' });
-    const { sentence } = explainChoice(oe, { cognate: 0.9, due: 0.3 });
+    const { sentence } = explainChoice(oe, { cognate: 0.9, due: 0.3 }, { ancestorOfEnglish: true });
     assert.match(sentence, /ancestor of English/i);
   });
 
@@ -41,7 +41,7 @@ describe('explainChoice', () => {
       bandFit: 0.7,
       confidence: 0.95,
       score: 0.61,
-    });
+    }, { ancestorOfEnglish: false });
     assert.doesNotMatch(sentence, /[0-9]\.[0-9]/, 'no decimals in user-facing copy');
     assert.match(sentence, /^Chosen because /);
     assert.ok(sentence.length < 160);
@@ -57,14 +57,14 @@ describe('explainChoice', () => {
       positionGate: 1,
       score: 1,
       due: 0.5,
-    });
+    }, { ancestorOfEnglish: false });
     for (const gate of ['confidence', 'ambiguityGate', 'repeatGate', 'positionGate', 'score']) {
       assert.ok(!drivers.includes(gate), `${gate} must never be a reason`);
     }
   });
 
   test('falls back gracefully with no factors at all', () => {
-    const { sentence } = explainChoice(plain, undefined);
+    const { sentence } = explainChoice(plain, undefined, { ancestorOfEnglish: false });
     assert.ok(sentence.length > 10);
     assert.doesNotMatch(sentence, /undefined|NaN/);
   });
@@ -76,7 +76,7 @@ describe('explainChoice', () => {
       bandFit: 0.8,
       guessability: 0.75,
       pos: 0.7,
-    });
+    }, { ancestorOfEnglish: false });
     assert.ok((sentence.match(/, and /g) ?? []).length <= 1, sentence);
   });
 
@@ -535,27 +535,64 @@ describe('explainChoice and the etymon preference', () => {
     etymonOf: 'house',
   });
 
+  const la = entry({
+    src: 'cow',
+    lemma: 'cow',
+    tgt: 'vacca',
+    tgtLemma: 'vacca',
+    etymonOf: 'vaccine',
+  });
+
+  /** Either way the explanation can name the English word a word gave. */
+  const EITHER = /(ancestor|source) of English/i;
+
   test('mentions descent by default', () => {
-    assert.match(explainChoice(oe, { cognate: 0.9 }).sentence, /ancestor of English/i);
+    assert.match(explainChoice(oe, { cognate: 0.9 }, { ancestorOfEnglish: true }).sentence, /ancestor of English/i);
+  });
+
+  test('calls a borrowed word the source of the English word, never its ancestor', () => {
+    // English borrowed vaccine; it descends from no Latin word. The badge
+    // above this line says "Source of English" of it, and the two must agree.
+    const { sentence } = explainChoice(la, { cognate: 0.9 }, { ancestorOfEnglish: false });
+    assert.match(sentence, /source of English “vaccine”/i);
+    assert.doesNotMatch(sentence, /ancestor/i);
+  });
+
+  test('says the same on a first meeting', () => {
+    const { sentence } = explainChoice(la, { due: 1 }, { firstMeeting: true, ancestorOfEnglish: false });
+    assert.equal(sentence, 'New to you, and source of English “vaccine”');
   });
 
   test('says nothing about descent when the reader has hidden it', () => {
     // The explanation sits one line below the etymon badge. Leaking the same
     // fact there would quietly undo the setting.
-    const { sentence } = explainChoice(oe, { cognate: 0.9 }, { allowEtymon: false });
-    assert.doesNotMatch(sentence, /ancestor of English/i);
+    const { sentence } = explainChoice(oe, { cognate: 0.9 }, { allowEtymon: false, ancestorOfEnglish: true });
+    assert.doesNotMatch(sentence, EITHER);
     assert.ok(sentence.length > 10, 'still has to say something');
   });
 
+  test('withholds a borrowing too, whatever the sentence calls it', () => {
+    // Held by the etymon itself rather than by its wording: the filter once
+    // matched "ancestor of English", and a borrowing told as "source of"
+    // would have walked past it.
+    for (const opts of [{ cognate: 0.9 }, undefined]) {
+      const { sentence } = explainChoice(la, opts, { allowEtymon: false, ancestorOfEnglish: false });
+      assert.doesNotMatch(sentence, EITHER);
+      assert.doesNotMatch(sentence, /vaccine/);
+    }
+    const first = explainChoice(la, { due: 1 }, { firstMeeting: true, allowEtymon: false, ancestorOfEnglish: false });
+    assert.doesNotMatch(first.sentence, /vaccine/);
+  });
+
   test('also withholds it on a first meeting', () => {
-    const { sentence } = explainChoice(oe, { due: 1 }, { firstMeeting: true, allowEtymon: false });
-    assert.doesNotMatch(sentence, /ancestor of English/i);
+    const { sentence } = explainChoice(oe, { due: 1 }, { firstMeeting: true, allowEtymon: false, ancestorOfEnglish: true });
+    assert.doesNotMatch(sentence, EITHER);
     assert.match(sentence, /New to you/);
   });
 
   test('a non-etymon cognate reason is still allowed', () => {
     const cognate = entry({ src: 'nation', lemma: 'nation', tgt: 'nación', tgtLemma: 'nación' });
-    const { sentence } = explainChoice(cognate, { cognate: 0.95 }, { allowEtymon: false });
+    const { sentence } = explainChoice(cognate, { cognate: 0.95 }, { allowEtymon: false, ancestorOfEnglish: false });
     assert.match(sentence, /identical to the English word/i);
   });
 });

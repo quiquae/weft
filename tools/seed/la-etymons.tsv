@@ -4,7 +4,7 @@
 #
 # The etymon column of lex-la.tsv names an English word that came from a Latin
 # one, and the product prints it three ways: "This is the Latin word your
-# English X was borrowed from" on the word page, "Ancestor of English X" in
+# English X was borrowed from" on the word page, "Source of English X" in
 # the tooltip, and "English borrowed X from Y" in the discoveries feed. So it
 # has to be true of X, and X is where it is checked.
 #

@@ -2,7 +2,7 @@
  * A tooltip note has to read on its own, because the line above it is optional.
  *
  * The tooltip prints two things under a woven word: an etymon badge
- * ("Ancestor of English **January**") and, beneath it, the pack's note. The
+ * ("Source of English **November**") and, beneath it, the pack's note. The
  * badge is behind a user switch — `reveal.showEtymon`, `src/core/settings.ts`,
  * default on, toggled at `src/ui/options/sections.tsx` under "Where your
  * English word came from". The note is not: `src/content/tooltip.ts` appends
@@ -113,8 +113,8 @@ describe('a tooltip note reads on its own, without the etymon badge above it', (
     // Narrow for the same measured reason: 962 of the 1131 entries carrying an
     // `etymonOf` have no note, and almost all of them are right to. An
     // ordinary descendant is inferable from the headword beside it — *octō*
-    // next to "Ancestor of English octave" explains itself. A name is not:
-    // *novem* next to "Ancestor of English November" tells the reader nothing
+    // next to "Source of English octave" explains itself. A name is not:
+    // *novem* next to "Source of English November" tells the reader nothing
     // about why nine became a month, so the historical fact is the only thing
     // that can.
     const missing = everyEntry()

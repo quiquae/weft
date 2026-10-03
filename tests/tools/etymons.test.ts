@@ -19,7 +19,7 @@
  * nothing recorded that any of them had been looked up.
  *
  * Latin's column is printed as "This is the Latin word your English X was
- * borrowed from" on every Latin word page, "Ancestor of English X" in the
+ * borrowed from" on every Latin word page, "Source of English X" in the
  * tooltip, and in the feed's borrowing frames. Its standard is looser than Old
  * English's, because its verb is: a learned borrowing from a word built on
  * this one is still a borrowing — *vaccine* is from *vaccīnus*, from `vacca`.
