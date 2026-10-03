@@ -1,5 +1,0 @@
-{
-  "artefact": "store listing screenshots",
-  "verifiedAt": "2026-10-03T04:44:17.186Z",
-  "note": "Regenerated on this commit and on main (e3bc27b) under TZ=America/Los_Angeles: all 15 generated files agree byte for byte between the two trees, so the Latin etymon pass moves none of them. Both differ from the committed files by text antialiasing alone, no channel more than 47 apart and no glyph changed, because the renderer on the machine has moved since they were taken; the committed files are kept. See TODO.md."
-}
