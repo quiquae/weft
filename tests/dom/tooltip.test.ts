@@ -194,15 +194,15 @@ describe('tooltip content', () => {
       'la',
       { 'reveal.showEtymon': false },
       {
-        tgt: 'iānua',
-        tgtLemma: 'iānua',
-        ipa: '/ˈjaːnʊa/',
-        etymonOf: 'January',
-        note: 'Janus, god of doorways, gave January its name',
+        tgt: 'septem',
+        tgtLemma: 'septem',
+        ipa: '/ˈsɛptɛm/',
+        etymonOf: 'September',
+        note: 'September was the seventh month of the old Roman year',
       },
     );
     assert.equal(root.querySelector('.etymon'), null, 'the etymon badge should be hidden');
-    assert.match(text, /Janus, god of doorways, gave January its name/);
+    assert.match(text, /September was the seventh month of the old Roman year/);
   });
 
   test('shows the band only when asked', () => {

@@ -59,7 +59,7 @@ bone	noun	os	distinct from “ōs”, mouth, only by vowel length	ls:os2 ls:os1
 cow	noun	vacca	the vaccine is named after the cowpox Jenner used	ls:vacca1 ls:vaccinus etym:vaccine etym:vaccination wikt:en:vaccine
 mouse	noun	mūs	“muscle” is a little mouse, from the shape	ls:mus1 ls:musculus etym:muscle
 apple	noun	mālum	“mālum” apple and “malum” evil differ only in vowel length	ls:malum2 ls:malum1
-door	noun	iānua	Janus, god of doorways, gave January its name	ls:janua ls:Janus ls:Januarius etym:january etym:janus
+door	noun	iānua	a iānitor kept the iānua	ls:janua ls:janitor etym:janitor
 room	noun	camera	a vaulted chamber; the photographic sense came much later	ls:camera etym:camera
 key	noun	clāvis	medieval Latin called the collarbone “clāvicula”, a little key	ls:clavis ls:clavicula etym:clavicle wikt:la:clavicula wikt:en:clavicle
 silver	noun	argentum	Argentina is named for the metal	ls:argentum etym:argentina
@@ -105,3 +105,13 @@ goodbye	intj	valē	literally “be strong”	ls:vale ls:valeo etym:valediction
 #                    ag:336: "There is no one Latin word in common use meaning simply yes or
 #                    no" — the note had dropped "in common use". ls:ita: "In affirmations, esp.
 #                    in replies, yes, it is so, just so, true".
+#
+# Rewritten on 2026-10-03: true, and beside the point
+# ---------------------------------------------------
+#   door    iānua    "Janus, god of doorways, gave January its name"
+#                    True — ls:janua: "jānŭa, ae, f. [Janus …]"; etym:january, from Ianuarius,
+#                    "(the month) of Janus" — but la-etymons.tsv moved the row's etymon from
+#                    January to janitor the same day, because January is from Janus and not
+#                    from iānua, and the note was left talking about a word the row no longer
+#                    names. ls:janitor: "jānĭtor, ōris, m. [janua], a door-keeper, porter";
+#                    etym:janitor: "from Latin ianitor "doorkeeper, porter," from ianua".
