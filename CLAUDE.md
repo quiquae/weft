@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **544 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **162 pass**, 46 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **167 pass**, 47 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -330,10 +330,10 @@ the same thing the headword was (*ludicrous* is from *lūdere*, beside
 *lūdus*); an adjective under its adverb (*very* is from *vērus*, not *vērē*);
 a Latin word taken from Greek on its own (*nauticus* is "= ναυτικός", not
 *nauta* with a suffix); or a hedge on the link itself. On 2026-10-03 that
-standard removed 14 of 319 and gave 14 more a word that did come from the
-headword: *janitor* is from *iānitor*, the keeper of an *iānua*, where
-*January* is from *Janus*, as `iānua` itself is. Read the foot of the ledger
-before restoring one.
+standard found 27 of 319 false: 14 are removed, and 13 name instead a word
+that did come from the headword — *janitor* is from *iānitor*, the keeper of
+an *iānua*, where *January* is from *Janus*, as `iānua` itself is. Read the
+foot of the ledger before restoring one.
 
 **A Latin transcription is held to the grammar, not to the generator.**
 `tests/tools/latin-stress.test.ts` works every headword's syllables, stress

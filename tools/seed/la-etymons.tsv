@@ -11,10 +11,12 @@
 # On 2026-10-03 all 319 were read against etymonline, against English
 # Wiktionary for the six English words etymonline has no entry for, and
 # against Lewis & Short where the English entry stops at a Latin derivative
-# without saying what it was built on. 28 were not true as stated: 14 are
-# removed, and 14 now name a word that did come from the headword. They are
-# listed at the foot of this file with what the dictionary says, so that
-# nobody restores one in good faith.
+# without saying what it was built on. 27 were not true as stated: 14 are
+# removed, and 13 now name a word that did come from the headword. A
+# fourteenth, timēre, gave its true etymon to timor and took timor's, so that
+# each word sits on the row it came from. All are listed at the foot of this
+# file with what the dictionary says, so that nobody restores one in good
+# faith.
 #
 # The sources field
 # -----------------
