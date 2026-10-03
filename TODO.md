@@ -2966,7 +2966,7 @@ registered**, and nothing below it can move until it is.
       `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
       ships moved.
 
-- [ ] **The `iānua` note now sits beside *janitor* and talks about
+- [x] **The `iānua` note now sits beside *janitor* and talks about
       *January*.** The word page reads "This is the Latin word your English
       *janitor* was borrowed from — Janus, god of doorways, gave January its
       name." True, and it reads as an aside. A note that names the
@@ -2974,6 +2974,30 @@ registered**, and nothing below it can move until it is.
       it needs a new line in `tools/seed/la-notes.tsv` citing `ls:janua` and
       `etym:janitor`, and `iānitor` in the orthography guard's table of
       Latin the lexicon does not carry. About 15 minutes.
+
+      **Done 2026-10-03, as written.** The note is "a iānitor kept the
+      iānua", read against three entries fetched that evening: Lewis &
+      Short's *jānŭa* "[Janus …] a door, house-door", its *jānĭtor*
+      "[janua], a door-keeper, porter", and etymonline's *janitor*, "from
+      Latin ianitor "doorkeeper, porter," from ianua". The ledger line cites
+      all three — `ls:janitor` beyond the item's two, because the 2026-10-02
+      standard reads Lewis & Short for every Latin word a note uses — and the
+      old note is at the ledger's foot, true and beside the point, so nobody
+      restores *January* thinking it was lost by accident. Written ledger
+      first: the guard went red naming `lex-la.tsv:121` alone. `iānitor` is
+      in `UNDEFINED`, and a bare `ianitor` planted in the built pack passed
+      the old table 4 of 4 and fails the new one naming `door` and `doors`,
+      restored by md5. The feed line does not move — neither note matches
+      its "means" or "literally" patterns, so *iānua* stays a plain
+      borrowing — and `en-la.json` moved in exactly 2 fields, `builtAt`
+      staying 2026-10-03, so no sitemap date moved. Of 716 built pages two
+      changed, `/latin/ianua` and the descent hub's note cell. All 36
+      screenshots regenerated, all written, all byte-identical; the three
+      groups are stamped. **And a test still made the claim the pack had
+      dropped**: `tests/dom/tooltip.test.ts` built its hidden-badge fixture
+      from `iānua` → *January* and the old note, which the Latin descent
+      pass found false, so it is `septem` → *September* now, the live case
+      the proper-noun guard polices. No test count moved.
 
 - [ ] **The landing page's descent table is a hand copy of eight pack
       claims, and nothing holds it to them.** Found 2026-10-02 when a

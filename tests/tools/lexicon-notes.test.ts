@@ -38,6 +38,10 @@
  * The last is the worst of them: with the badge off it does not merely dangle,
  * it reads as a gloss, and *septem* means seven, not September.
  *
+ * `iānua` has since left the rule altogether. The Latin descent pass of
+ * 2026-10-03 found *January* is from *Janus*, as `iānua` itself is, so its
+ * etymon is *janitor* now, and its note names the *iānitor* who kept the door.
+ *
  * Deliberately outside the rule: a handful of notes gloss a *common*-noun
  * descendant the same way — `setl` → settle, "the high-backed bench";
  * `nēahgebūr` → neighbour, "the near-dweller". Read alone these still parse

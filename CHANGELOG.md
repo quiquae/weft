@@ -362,6 +362,13 @@ ancestor, so the Edge listing's own screenshot showed French *rivière* as
 to English river". Both now say "ancestor of" only of Old English, and
 "source of" of every language English borrowed from.
 
+**And the note under *iānua* still talked about January.** Once the door
+*iānua* named *janitor* rather than *January*, its note — "Janus, god of
+doorways, gave January its name", which is true — read as an aside beside
+it, in the tooltip, on its word page and in the site's table of Latin words
+in English. It now names the word in between: "a iānitor kept the iānua",
+the *iānitor* being Latin's doorkeeper and the source of the English word.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

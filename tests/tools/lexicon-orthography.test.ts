@@ -85,11 +85,17 @@ const PROSE = [
  * occurs in any note or in the prose scanned below — which is what makes each
  * safe to police everywhere. The match is case-sensitive, so the genus in
  * "Homo sapiens" is not the Latin noun misspelled.
+ *
+ * `iānitor` joined it when the note under `iānua` was rewritten to name the
+ * doorkeeper its English *janitor* came through. Its bare form is `ianitor`,
+ * not the English word, so *janitor* in prose is never mistaken for it; before
+ * it was added, a bare `ianitor` planted in the shipped note passed unseen.
  */
 const UNDEFINED: ReadonlyMap<string, string> = new Map([
   ['insula', 'īnsula'],
   ['homo', 'homō'],
   ['clavicula', 'clāvicula'],
+  ['ianitor', 'iānitor'],
 ]);
 
 type Entry = { tgtLemma?: string; note?: string; src?: string };
