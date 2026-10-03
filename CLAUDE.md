@@ -63,7 +63,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 716 pages, 16 178 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-02 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -352,6 +352,97 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-03 — twenty-seven Latin descents were cousins or worse, and the first session to read them ended mid-generator
+
+The queue sent this run at the Old English homographs, which #47 landed; the
+topmost unchecked item was the Latin descent pass, "about two hours, and two
+hours may be low". It was done whole rather than sliced, because reading
+each claim beside its entry's opening took twenty minutes once a script
+printed them in pairs.
+
+**All 319 were read.** etymonline for every English word — 316 pages
+through `curl`, after Python's `urllib` stalled at seven seconds a request —
+English Wiktionary for the six etymonline lacks, and Lewis & Short, one
+77 MB file, wherever an English entry stops at a Latin derivative. Every
+chain sentence was scanned for a hedge and the 60 that carry one read for
+which side of the link it sits on.
+
+**27 were false, and the usual shape was a cousin, not a translation.**
+French and Old English had paired an English word with its translation;
+Latin paired it with a word built on the same thing as the headword. *timid*
+is from *timidus*, "from timere", beside `timor`; *ludicrous* from *lūdere*
+beside `lūdus`; *January* from *Ianuarius*, "(the month) of Janus", where
+Lewis & Short derives `iānua` from *Janus* too. Three adverbs carried their
+adjective's descendant (`vērē` → *very*); three Latin words were Greek loans
+beside other Greek loans (`nauta` and *nauticus*, "= ναυτικός"); *memory* is
+from *memor*, another root than `meminisse` altogether; six were hedged at
+the link itself (*capricious*, *territory*, *disciple*, *soil*, *gaudy*,
+*surge*); and *semper fidelis* is a motto and *trio* Italian.
+
+**14 removed, 13 replaced, one swapped**, each replacement read the same
+way: `iānua` → *janitor*, `flūmen` → *flume*, `gaudium` → *joy*, `ruber` →
+*rubric*, `meminisse` → *memento*, and `timēre`, whose *timorous* was true,
+gave it to `timor` for *timid*. The ledger is `tools/seed/la-etymons.tsv`,
+with what the dictionary says about every claim taken out at its foot, and
+`tests/tools/ang-etymons.test.ts` became `tests/tools/etymons.test.ts`,
+holding both ledgers: red first on all 319 with the Old English half green,
+then six probes restored by md5, each failing by name.
+
+**What moved.** 46 `etymonOf` fields of `en-la.json`; the feed 314 → 304
+Latin lines, every new one read; 30 files of the site — 27 word pages, the
+hub 313 → 300 rows, the Latin index and the sitemap — and three pages whose
+only claim went now print their note under "Worth knowing", a branch no page
+had rendered. A floor in `build-site.test.ts` wanted more than 300 Latin
+descent pages and got exactly 300.
+
+**The screenshots: all 36 differ from their commits, and the change moves
+none of them.** The pack is under `src`, so all three groups went stale by
+provenance and were regenerated with the date held. Every shot came back
+different; the same 36 generated from `main` in a `/tmp` worktree came back
+byte-identical to the branch's. A pure-Python decode of all 36 puts every
+difference in text antialiasing — no channel more than 47 apart, so no
+glyph and no date moved. The committed bytes were kept, the three stamps
+say exactly that, and finding what moved on the machine is queued. **The
+control for a drift is the other tree**: a pixel diff says where bytes
+differ, and only the second tree says why.
+
+**The first session of this run ended while a generator ran in the
+background, with the whole pass uncommitted.** The second found it intact,
+committed and opened the PR as a draft before running anything long. One
+error of its own, caught before landing: "28 were not true as stated" went
+into four places before anybody noticed that `timēre`'s claim, one of the 28
+rows changed, had been true. Count the claims that were false, not the rows
+that moved.
+
+Counts moved 842 → **847** and tools 162 → **167** / 46 → **47** suites, in
+six places, `docs/LAUNCH.md:221` first; site links 16 178 → **16 165**, the
+hub rows that left; and a `CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 544 unit / 133 suites, 98
+jsdom / 22 suites, **167 tools / 47 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.9 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **716
+pages / 16 165 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that a compound or a derivative of the
+headword is a borrowing under Latin's verb where it is not a descent under
+Old English's; that an adverb is not an ancestor of its adjective's
+descendant; that a hedge on the link drops a claim and a hedge on the Latin
+word's own origin does not; that a blank beats a weak true claim found in a
+hurry; that `niger` → *negro*, true, stays for a human to judge; and that
+screenshots differing only by the machine's renderer are kept, not
+recommitted.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. Four Latin descent calls are in `TODO.md` to look at rather
+than do, and whether to recommit 36 screenshots for a renderer change wants
+a person. `Next` holds ten agent-shaped items, the Latin index's "became"
+first.
 
 ### 2026-10-02 — Latin was told as Old English, and the guard first trusted the flag it checked
 

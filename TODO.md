@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-02:** every automatable check is green, measured at the end
+**State on 2026-10-03:** every automatable check is green, measured at the end
 of this session — typecheck clean, **544** unit / 133 suites, **98** jsdom / 22
 suites, **167** tool tests / 47 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -50,13 +50,24 @@ They follow whether English *descends* from the language now,
 only; `historical` still orders the feed. Exactly 310 Latin lines moved and
 no other language's did. See the ticked item in `Next`.
 
-**The three gates `test:all` leaves out, re-measured on 2026-10-02, each with
+**And as of 2026-10-03 every Latin etymon names the entry it was checked
+against.** All 319 were read against etymonline, English Wiktionary and
+Lewis & Short, and 27 were false — most of them a cousin rather than a
+descendant: *timid* is from *timēre*, beside `timor`, and *January* from
+*Janus*, beside `iānua`. 14 claims are gone and 13 name the word that did
+come from the headword (`iānua` → *janitor*); `tools/seed/la-etymons.tsv`
+records every entry read, and `tests/tools/etymons.test.ts` holds it and the
+Old English ledger alike. Regenerating the screenshots for it found that none
+reproduces on this machine any more, on `main` as here — text antialiasing
+only, queued in `Next`. See the ticked item there.
+
+**The three gates `test:all` leaves out, re-measured on 2026-10-03, each with
 npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **716** pages, **16 178** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **716** pages, **16 165** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
