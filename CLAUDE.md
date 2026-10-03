@@ -55,8 +55,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **544 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **98 pass**, 22 suites, ~9 s wall clock here |
+| `npm run test:unit` | pure-core tests, no browser | **548 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **170 pass**, 48 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
@@ -290,7 +290,12 @@ in `friction.spec.ts`. The site draws the same line per language in `META` in
 index, which shared one string with Old English and said Latin's words had
 "the English word they became" until 2026-10-03 — and
 `tests/tools/build-site.test.ts` fails on a verb of descent anywhere on a
-Latin page, the pack's own words blanked out first.
+Latin page, the pack's own words blanked out first. The tooltip draws it
+too, since 2026-10-03: its etymon badge and the reason line beneath it read
+one choice, `etymonRelation()` in `src/core/similarity.ts` — "ancestor of
+English" for a stage of English, "source of English" for the rest — and
+`tests/dom/tooltip.test.ts` derives each language's noun from the table's
+names in the same way.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
@@ -371,6 +376,80 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-03 — the tooltip called Latin an ancestor, and two store shots were the proof
+
+The queue named the item and it was the topmost unchecked one: #52 had
+ticked the screenshot drift above it, which `git log` confirmed.
+
+**One choice, read in two places.** The badge chose its noun by
+`historical` — "Ancestor of" for every dead language, "Related to" for the
+rest — and `cognateReason()` said "ancestor of English" of every etymon in
+every language, so the line above the badge could contradict it. Both read
+`etymonRelation()` now, by `ancestorOfEnglish`: "ancestor of English" for a
+stage of English, "source of English" for everything else, the Latin word
+pages' noun. French moved too, from "Related to", which said less than its
+checked borrowings. The flag is required of `cognateReason` and
+`explainChoice`, as it is of `buildDiscoveries`. The hide-the-badge filter
+had matched the words "ancestor of English" — the coupling the item warned
+of — and holds `entry.etymonOf` now, so no rewording can leak a hidden
+fact; the dead `PHRASES.cognate`, which bypassed it, is gone.
+
+**Test-first, with the guard derived from names.** 4 unit tests red on the
+Latin wording, and a jsdom `describe` that works each language's noun out
+from the table's names — a historical language called "… English" — red on
+all 15 others. Two probes, restored by md5: the old regex filter fails
+exactly the two hide-the-badge tests, and flagging Latin fails the guard
+naming `la (Latin)`.
+
+**The item predicted no screenshot would move, and two did — the change
+shown working.** It had read store scene 3 as hovering *pain*, which is the
+Chrome frame; the Apple and Edge frames hover *rivière*, which has an
+etymon. All 36 regenerated under `TZ=Pacific/Pago_Pago`, every one written:
+34 byte-identical, `dashboard.png` among them; `apple-03-cousins.png`
+differs in 886 pixels, one line of text, the badge; `edge-03-cousins.png` in
+26 611, all inside the tooltip's box, because its first-meeting line had
+said "New to you, and ancestor of English “river”" above "Related to
+English river" — a French word called an ancestor, in store art, over a
+badge saying otherwise. A second store run matched the first byte for byte,
+after one attempt that died on the iCloud trap in `test-results/` with exit
+1 and nothing written, and passed once the attribute was set again. **Read
+every frame of a scene, not one.**
+
+**Taken with nobody to ask**: the landing page's and the README's
+"*rivière* became the English word" now say "English took *rivière*
+itself", the verb of the table row beside it.
+
+**Found and queued**: "Chosen because ancestor of English “house”, and it
+is due for review" — every cognate reason is a bare phrase after "because",
+measured the same before this change and after. And the dashboard's date
+item moved to the top of `Next`: from 13:00 BST today no zone holds its
+dates, and everything below it that moves `src/` would pay a detour.
+
+Counts moved 850 → **858**: unit 544 → **548**, jsdom 98 → **102** / 22 →
+**23** suites, in six places, `docs/LAUNCH.md:221` first; and a
+`CHANGELOG.md` paragraph, because the tooltip ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, 170 tools / 48 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies in the tracked trees, `dist/` or
+`test-results/`.
+
+Assumed, with nobody to ask: that French's badge should say "source of"
+rather than keep "related to", every French etymon being a checked
+borrowing; that "source of English", with no article, reads in the reason
+line as "ancestor of English" did; that the landing sentence was this
+item's to change, as it asked; and that the dashboard item belongs first.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds ten agent-shaped items, the
+dashboard's date first.
 
 ### 2026-10-03 — the screenshots moved because macOS did, and so did five images nobody had regenerated
 

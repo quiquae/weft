@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-03:** every automatable check is green, measured at the end
-of this session — typecheck clean, **544** unit / 133 suites, **98** jsdom / 22
+of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
 suites, **170** tool tests / 48 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
@@ -69,8 +69,9 @@ from one string shared with Old English. Each language has its own index
 wording now, and `tests/tools/build-site.test.ts` reads every Latin page,
 with the pack's own words blanked out, and fails on a verb of descent. Of
 718 built files only `latin/index.html` moved. See the ticked item in
-`Next`; the tooltip says "Ancestor of English" of Latin words still, and is
-queued there.
+`Next`; the tooltip said "Ancestor of English" of Latin words too, and
+says "Source of English" since the session after — see the ticked item
+there.
 
 **The three gates `test:all` leaves out, re-measured on 2026-10-03, each with
 npm's own exit status captured rather than a pipe's:**
@@ -2810,7 +2811,7 @@ registered**, and nothing below it can move until it is.
       #30–#32 deleted theirs for a content change; the icons' stamp stays,
       true as written.
 
-- [ ] **The tooltip calls a Latin word the "Ancestor of English" X, and
+- [x] **The tooltip calls a Latin word the "Ancestor of English" X, and
       chooses that by the flag #49 stopped the feed using.** Found
       2026-10-03 while the Latin index was fixed. `src/content/tooltip.ts`
       prints its etymon badge as `${meta.historical ? 'Ancestor of' :
@@ -2840,6 +2841,83 @@ registered**, and nothing below it can move until it is.
       the French section) is the same verb on a French borrowing beside a row
       reading "English took the word itself" — a copy call. About 45 minutes.
 
+      **Done 2026-10-03, and the prediction about the screenshots was half
+      wrong: two moved, and they are the proof.** The badge and the reason
+      line now read one choice, `etymonRelation()` in
+      `src/core/similarity.ts`, by `ancestorOfEnglish`: "ancestor of
+      English" for Old and Middle English, "source of English" for every
+      other language. Latin moved from "Ancestor of" and French from
+      "Related to", which said less than its checked borrowings. The flag is
+      required of `cognateReason` and `explainChoice`, as it is of
+      `buildDiscoveries`, so a forgotten caller fails the typecheck. The
+      hide-the-badge filter in `explainChoice` now holds the etymon itself
+      (`entry.etymonOf`) rather than matching "ancestor of English", and the
+      dead `PHRASES.cognate`, which bypassed that filter, is gone.
+
+      Test-first: 4 unit tests red on the Latin wording, and a new
+      `describe` in `tests/dom/tooltip.test.ts` that derives each language's
+      noun from the table's own names, as `feed-frames.test.ts` does — red
+      on all 15 non-English languages, French's "Related to" and Latin's
+      "Ancestor of" among them. Probes, each restored by md5: the old regex
+      filter put back fails "withholds a borrowing too" and "hides a
+      borrowing as completely as a descent" and nothing else; flagging Latin
+      `ancestorOfEnglish` fails the guard naming `la (Latin)`. Unit 544 →
+      **548**, jsdom 98 → **102** / 22 → **23** suites, in six places,
+      `docs/LAUNCH.md:221` first.
+
+      **The screenshots.** All 36 regenerated under
+      `TZ=Pacific/Pago_Pago`, every one written: 34 byte-identical to their
+      commits, `dashboard.png` included, and two moved — by exactly the
+      tooltip. Scene 3 of the store listing hovers *pain* only in the Chrome
+      frame; the Apple and Edge frames hover *rivière*, which has an etymon.
+      `apple-03-cousins.png` differs in 886 pixels, all in one line of text
+      at y 737–748, "Related to English **river**" becoming "Source of
+      English **river**"; `edge-03-cousins.png` in 26 611, all inside the
+      tooltip's box, because its first-meeting reason line had read "New to
+      you, and **ancestor** of English “river”" — a French word, in store
+      art — over a badge saying "Related to", and the narrower text
+      narrowed the card. A second run of the store generator wrote all 15
+      again, byte-identical. Committed; the documentation and first-run
+      groups stamped as reproduced, the store group not, its content having
+      changed. **Read every frame of a scene**: the item's "neither tooltip
+      shot shows what this changes" had read one of three.
+
+      **And the copy call was taken**: `site/index.html` and `README.md`
+      both said "*rivière* became the English word"; both now say "English
+      took *rivière* itself; it never took *cheval*", the table row's own
+      verb.
+
+- [ ] **`dashboard.png` photographs the date, so it differs from its committed
+      bytes on every day but the one it was taken.** In Notes since 2026-10-01
+      as "not fixed"; queued 2026-10-02 because it cost this session a detour
+      and will cost every later one that touches `src/`. The change-log row
+      prints the calendar date of the run and the attention chart its last
+      seven days (`src/ui/dashboard/index.tsx`, two `toLocaleDateString`
+      calls). A plain regeneration on 2026-10-02 changed that one file of 36;
+      run again with `TZ=America/Los_Angeles`, where it was still the 1st, all
+      14 documentation shots matched their committed bytes. The fix is a held
+      date in `tests/e2e/screenshots.spec.ts` and a line in
+      `tests/tools/screenshots.test.ts` that fails if the spec stops holding
+      it. Two things to know first. The change-log entry is stamped when the
+      harness's import queues a change, which happens in the service worker
+      rather than the dashboard page, so a clock held on the page alone may
+      not reach it — check before relying on it. And the two dates are not the
+      same day between midnight and 04:00: `dayKey` rolls over at four, so the
+      chart read "Oct 1" beside a change log reading "Oct 2" — correct, and it
+      looks like a bug. About 30 minutes.
+
+      **Moved to the top on 2026-10-03, because every item below that moves
+      `src/` pays for it.** The tooltip's badge was regenerated at 08:00 BST
+      under `TZ=Pacific/Pago_Pago` and `dashboard.png` matched; after 13:00
+      BST no zone can do that again.
+
+      **Since 2026-10-03 it is the one shot a regeneration cannot
+      reproduce.** The rebaseline held the 2nd under `TZ=Pacific/Pago_Pago`,
+      and from 13:00 BST on the 3rd no time zone on Earth is still on the
+      2nd, so `dashboard.png` now differs by its two dates on every
+      regeneration until this lands. Read the two bands before calling
+      anything else in it moved.
+
 - [ ] **The `iānua` note now sits beside *janitor* and talks about
       *January*.** The word page reads "This is the Latin word your English
       *janitor* was borrowed from — Janus, god of doorways, gave January its
@@ -2868,32 +2946,6 @@ registered**, and nothing below it can move until it is.
       20 minutes, in `tests/tools/build-site.test.ts`, which already reads
       the built page.
 
-- [ ] **`dashboard.png` photographs the date, so it differs from its committed
-      bytes on every day but the one it was taken.** In Notes since 2026-10-01
-      as "not fixed"; queued 2026-10-02 because it cost this session a detour
-      and will cost every later one that touches `src/`. The change-log row
-      prints the calendar date of the run and the attention chart its last
-      seven days (`src/ui/dashboard/index.tsx`, two `toLocaleDateString`
-      calls). A plain regeneration on 2026-10-02 changed that one file of 36;
-      run again with `TZ=America/Los_Angeles`, where it was still the 1st, all
-      14 documentation shots matched their committed bytes. The fix is a held
-      date in `tests/e2e/screenshots.spec.ts` and a line in
-      `tests/tools/screenshots.test.ts` that fails if the spec stops holding
-      it. Two things to know first. The change-log entry is stamped when the
-      harness's import queues a change, which happens in the service worker
-      rather than the dashboard page, so a clock held on the page alone may
-      not reach it — check before relying on it. And the two dates are not the
-      same day between midnight and 04:00: `dayKey` rolls over at four, so the
-      chart read "Oct 1" beside a change log reading "Oct 2" — correct, and it
-      looks like a bug. About 30 minutes.
-
-      **Since 2026-10-03 it is the one shot a regeneration cannot
-      reproduce.** The rebaseline held the 2nd under `TZ=Pacific/Pago_Pago`,
-      and from 13:00 BST on the 3rd no time zone on Earth is still on the
-      2nd, so `dashboard.png` now differs by its two dates on every
-      regeneration until this lands. Read the two bands before calling
-      anything else in it moved.
-
 - [ ] **The Old English pronunciation key quotes with straight marks, on 346
       word pages.** Found 2026-10-02 reading `/old-english/laece` after the
       slug fix. `META.ang.note` (`tools/build-site.mjs:82`) reads `þ and ð
@@ -2912,6 +2964,25 @@ registered**, and nothing below it can move until it is.
       `docs/PRIVACY.md` and the entitlement copy: those are documents a
       reader also opens on GitHub, where a Markdown smart-quote pass would
       change what they see there. About 10 minutes.
+
+- [ ] **The tooltip's reason line is ungrammatical whenever its reason is a
+      cognate.** Found 2026-10-03 measuring the badge fix. `explainChoice()`
+      joins its reasons as "Chosen because …", and every phrase
+      `cognateReason()` returns is a bare phrase written for the other two
+      frames it fills — "New to you, and …", and capitalised as a line on
+      its own — so the tooltip reads "Chosen because ancestor of English
+      “house”, and it is due for review", "Chosen because source of English
+      “vaccine”, …" and "Chosen because near-identical to the English word,
+      …". Every other phrase in `PHRASES` is a clause, "it is due for
+      review". Measured on `main` before the badge fix as after it, so not
+      that change's doing. Shape: a clause in the "Chosen because" frame
+      only — "it is the source of English “vaccine”", "it is
+      near-identical to the English word" — leaving the first-meeting frame,
+      which reads correctly. Tests that pin the text are in
+      `tests/core/delight.test.ts` and `tests/dom/tooltip.test.ts`. It moves
+      `src/`, so regenerate the three groups and read what moves; store
+      scene 3's Chrome frame says "Chosen because the sentence around it…",
+      which has no cognate in it. About 30 minutes.
 
 - [ ] **French `mort` is two words by Wiktionary's etymologies, and is one
       card.** Found 2026-10-02 by the homograph guard. `fr:mort` is death,
@@ -3002,17 +3073,18 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **ten** unchecked items above, as of
 2026-10-03, all agent-shaped and none waiting on B1. The order is the order
-to work them. The tooltip's "Ancestor of English" first, which moves `src/`,
-and whose regeneration the screenshots' rebaseline now lets prove byte for
-byte that no shot moved; then the `iānua` note, the landing page's table,
-the dashboard's date and the pronunciation key's quote marks, four small
-ones; then French `mort`, one card or two, a decision with the evidence
-written down; then Old English stress, one wrong word and a grammar to read,
-free before B3; then `far wel` and `camera`, content questions; then the
-pixel diff, a tool. The Latin note on `vir`, the 22 Old English addresses,
-the thirty Latin pronunciations, the feed's hidden etymologies, the Old
-English homographs, the feed's Latin frames, the Latin descent pass, the
-Latin index's "became" and the screenshots' renderer drift, which sat first,
+to work them. The dashboard's date first, because after 13:00 BST on
+2026-10-03 no time zone holds `dashboard.png`'s dates and every item below
+that moves `src/` would otherwise pay a detour for it; then the `iānua`
+note, the landing page's table, the pronunciation key's quote marks and the
+reason line's grammar, four small ones; then French `mort`, one card or two,
+a decision with the evidence written down; then Old English stress, one
+wrong word and a grammar to read, free before B3; then `far wel` and
+`camera`, content questions; then the pixel diff, a tool. The Latin note on
+`vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
+feed's hidden etymologies, the Old English homographs, the feed's Latin
+frames, the Latin descent pass, the Latin index's "became", the screenshots'
+renderer drift and the tooltip's "Ancestor of English", which sat first,
 are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
