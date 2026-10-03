@@ -393,6 +393,72 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-03 — the iānua note names the doorkeeper, and a test still made the claim the pack had dropped
+
+The queue named the item and it was the topmost unchecked one: #55 had
+ticked the dashboard's date above it, which `git log` confirmed.
+
+**The note is "a iānitor kept the iānua"**, read against three entries
+fetched that evening, the caches earlier sessions kept in `/tmp` being gone:
+Lewis & Short's *jānŭa*, "[Janus …] a door, house-door", its *jānĭtor*,
+"[janua], a door-keeper, porter", and etymonline's *janitor*, "from Latin
+ianitor "doorkeeper, porter," from ianua". So `/latin/ianua` reads "This is
+the Latin word your English **janitor** was borrowed from — a iānitor kept
+the iānua": the whole chain, *janitor* from *iānitor* from *iānua*, in one
+sentence. The ledger line cites all three — `ls:janitor` beyond the item's
+two, because the 2026-10-02 standard reads Lewis & Short for every Latin
+word a note uses — and the old note is at the ledger's foot, true and beside
+the point, so nobody restores *January* thinking it was lost by accident.
+
+**Test-first, and the spelling guard shown blind before it could see.** The
+ledger line went in first and `tests/tools/la-notes.test.ts` went red naming
+`lex-la.tsv:121` alone. `iānitor` joined `UNDEFINED` in
+`tests/tools/lexicon-orthography.test.ts`: a bare `ianitor` planted in the
+built pack passed the old table 4 of 4 and failed the new one naming `door`
+and `doors`, the pack then restored by md5. Its bare form is `ianitor`, not
+*janitor*, so the English word in prose can never trip it.
+
+**What moved: 2 fields of `en-la.json`**, the `door` and `doors` notes, with
+`builtAt` staying 2026-10-03, so `index.json` and every sitemap date stood
+still. Built from `main` in a `/tmp` worktree and from the branch: 2 of 716
+pages differ, `/latin/ianua` and the descent hub's note cell. The feed line
+does not move — neither note matches "means" or "literally", so *iānua* stays
+a plain borrowing. All 36 screenshots were regenerated on a test build, 14 +
+15 + 7 written by count of mtimes, all byte-identical, with no time zone
+set — the dashboard's date is held since #55 — and the three groups are
+stamped.
+
+**And a test still made the claim the pack had dropped.**
+`tests/dom/tooltip.test.ts` built its hidden-badge fixture from `iānua` →
+*January* and the old note — the claim #50 found false, kept alive in the
+suite because a fixture is built in memory and no ledger reads it. It is
+`septem` → *September* now, the live case `tests/tools/lexicon-notes.test.ts`
+polices, and that file's header says `iānua` has left its rule. **When a
+claim is dropped, grep its words across `tests/` as well as the seeds.**
+
+No test count moved. A `CHANGELOG.md` paragraph, because the note ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, 176 tools / 49 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.8 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a — with the three stamped groups `ok`. Two iCloud conflict copies
+sit at the repository root, `weft-firefox-1.0.0 2.zip` and
+`weft-safari-1.0.0-folder 2.zip`: gitignored 1.0.0 builds, left alone.
+
+Assumed, with nobody to ask: that "kept" reads as the doorkeeper's verb, to
+keep a door, rather than as possession; that the item's two citations were a
+floor rather than the list; and that the fixture belonged in this change,
+being a copy of the note it rewrote.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds eight agent-shaped items, the landing page's
+descent table first.
+
 ### 2026-10-03 — the dashboard's date came from two clocks, and holding them found a third thing
 
 The queue named no item; `TODO.md`'s topmost unchecked one was
