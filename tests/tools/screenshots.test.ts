@@ -12,9 +12,10 @@
  * minute apart, on a tree nothing had changed.
  *
  * `TODO.md` recorded the cause as an absolute calendar date rendered from
- * `Date.now()`, and that was wrong — `dashboard-transparency.png` holds the
- * only visible rendered date in the page and was rock stable. Measured, it
- * was two causes, neither of them a date:
+ * `Date.now()`, and for two runs a minute apart that was wrong: the dates
+ * `dashboard.png` prints move only between days. Measured, it was two
+ * causes, neither of them a date — the date is the third, and has its own
+ * `describe` at the foot of this file:
  *
  * 1. **Attention accrued by the run itself.** The popup's attention line and
  *    the dashboard's milestone bars read whatever the run happened to earn
@@ -46,7 +47,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { formatDuration } from '../../src/core/escalation.ts';
+import { dayKey, formatDuration } from '../../src/core/escalation.ts';
+import { cardRetrievability } from '../../src/core/fsrs.ts';
+import { defaultSettings } from '../../src/core/settings.ts';
+import type { MemoryCard } from '../../src/core/types.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const SPEC = join(ROOT, 'tests/e2e/screenshots.spec.ts');
@@ -206,5 +210,195 @@ describe('the documentation screenshots are reproducible', () => {
       'reset-vocabulary runs after import-data, which erases the seeded plan instead of the ' +
         'words the run happened to read',
     );
+  });
+});
+
+/**
+ * The instant the spec draws the extension's surfaces at, read out of it.
+ *
+ * A local date and time, the way the dashboard reads a day key itself —
+ * `new Date(`${d.day}T12:00:00`)` — so a run in any time zone prints the
+ * same day.
+ */
+function held(): { literal: string; at: number } {
+  const m = /HELD_AT\s*=\s*new Date\('(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})'\)\.getTime\(\)/.exec(spec);
+  assert.ok(
+    m,
+    "screenshots.spec.ts declares no HELD_AT = new Date('YYYY-MM-DDTHH:MM:SS').getTime(), so " +
+      'dashboard.png prints the day the generator runs on and differs from its commit every ' +
+      'other day',
+  );
+  return { literal: m[1]!, at: new Date(m[1]!).getTime() };
+}
+
+/** How long before the held instant the plan is written, read out of the spec. */
+function lead(): number {
+  const m = /SEEDED_AT\s*=\s*HELD_AT\s*-\s*([\d_]+);/.exec(spec);
+  assert.ok(m, 'screenshots.spec.ts declares no SEEDED_AT = HELD_AT - <ms>;');
+  return Number(m[1]!.replace(/_/g, ''));
+}
+
+/** The seeded plan's reviewed cards: lemma, stability in days, days since review. */
+function plan(): Array<{ lemma: string; stability: number; ago: number }> {
+  const start = spec.indexOf('const plan');
+  assert.notEqual(start, -1, 'the seeded plan is no longer `const plan` — has it been renamed?');
+  const block = spec.slice(start, spec.indexOf('];', start));
+  const rows = [...block.matchAll(/\['([^']+)', (\d+), ([\d.]+), (\d+), (\d+)\]/g)];
+  assert.ok(rows.length >= 10, `only ${rows.length} rows of the plan were read`);
+  return rows
+    .filter((r) => Number(r[2]) > 0)
+    .map((r) => ({ lemma: r[1]!, stability: Number(r[3]), ago: Number(r[4]) }));
+}
+
+/** The calendar day of `ts` in local time, as `dayKey` writes one. */
+const localDay = (ts: number): string => {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
+/*
+ * `dashboard.png` prints three dates in its attention chart — the first
+ * day, the peak and the last — and one in the change log, so a plain
+ * regeneration differed from its commit by those four on every day but the
+ * one it was taken. From 13:00 BST on 2026-10-03 no time zone held the 2nd
+ * that the rebaseline had drawn, so `TZ=` could not buy it back either.
+ *
+ * The two dates come from two clocks. The chart is drawn from the page's
+ * own `Date.now()`, but the change log's entry is stamped by the background
+ * worker when the import queues a change and the spec cancels it, and the
+ * attention the chart plots is filed under the worker's day. Holding the
+ * page alone would have moved the chart's labels and left the log on the
+ * real day — and filed the seeded half hour under a day the held chart
+ * does not show.
+ */
+describe('the documentation screenshots hold the date', () => {
+  const firstShot = (): number => {
+    const at = spec.indexOf("['onboarding.html'");
+    assert.notEqual(at, -1, 'the shots table no longer starts at onboarding.html');
+    return at;
+  };
+
+  test('the extension pages are drawn at the held instant', () => {
+    held();
+    const fixed = spec.search(/context\.clock\.setFixedTime\(HELD_AT\)/);
+    assert.notEqual(
+      fixed,
+      -1,
+      "no context.clock.setFixedTime(HELD_AT), so the dashboard's chart reads its days off the " +
+        'wall clock',
+    );
+    assert.ok(
+      fixed < firstShot(),
+      'the page clock is held after the first extension surface is shot, so the shots before ' +
+        'it are drawn on the real day',
+    );
+  });
+
+  test("the worker's clock is held before it stamps anything the dashboard prints", () => {
+    const call = spec.indexOf('await holdWorkerClock(worker, SEEDED_AT)');
+    assert.notEqual(
+      call,
+      -1,
+      "the background worker's clock is never held, so the change log prints the real day",
+    );
+    assert.match(
+      spec,
+      /async function holdWorkerClock\([\s\S]*?\.evaluate\([\s\S]*?globalThis\.Date\s*=/,
+      'holdWorkerClock does not replace Date inside the worker, so it holds nothing',
+    );
+    for (const stamp of ["type: 'import-data'", "type: 'cancel-pending'", "type: 'record-attention'"]) {
+      const at = spec.indexOf(stamp);
+      assert.notEqual(at, -1, `the spec no longer sends ${stamp} — has it moved?`);
+      assert.ok(
+        call < at,
+        `${stamp} reaches the worker before its clock is held, so what it stamps is dated by the ` +
+          'wall clock',
+      );
+    }
+    // A restarted worker comes back on the real clock, and the first thing
+    // it does is read the step back as tampering. Checking the held worker
+    // is still the one answering is what turns that into a failed run
+    // rather than a quietly wrong shot.
+    const check = spec.search(/expect\(await worker\.evaluate\(\(\) => Date\.now\(\)\)\)/);
+    assert.ok(
+      check > call && check < firstShot(),
+      'nothing checks the held worker is still running before the extension surfaces are shot',
+    );
+  });
+
+  test('the seeded cards are dated from the held clock', () => {
+    // "Due in 3d" and "97% held" are the distance from a card's last review
+    // to the page's now. Seeded from the wall clock, they would be read
+    // against a page held somewhere else.
+    assert.match(spec, /const now = SEEDED_AT;/, 'the seeded plan is not dated from SEEDED_AT');
+    assert.doesNotMatch(
+      spec,
+      /const now = Date\.now\(\)/,
+      'the seeded plan is dated from the wall clock while the pages are held',
+    );
+    assert.ok(lead() > 0, 'the plan is written at the instant the pages are drawn, not before it');
+  });
+
+  test('every reviewed card in the plan is clear of its 90% line when the page is drawn', () => {
+    // "N words are slipping" counts the cards below 90% retrievability, and
+    // a card reviewed as many days ago as its stability sits exactly on the
+    // line at the seeding instant — so drawn there, the count is a question
+    // of the last bit of Math.pow. `oiseau` is such a card, and the first
+    // held run counted 3 where every earlier one had counted 4.
+    const at = held().at;
+    const card = (row: { stability: number; ago: number }, seeded: number): MemoryCard => ({
+      id: 'fr:x',
+      target: 'fr',
+      lemma: 'x',
+      stability: row.stability,
+      difficulty: 5,
+      lastReview: seeded - row.ago * 86_400_000,
+      reps: 1,
+      lapses: 0,
+      exposures: 1,
+      firstSeen: 0,
+    });
+    const onTheLine = (seeded: number): string[] =>
+      plan()
+        .filter((row) => Math.abs(cardRetrievability(card(row, seeded), at) - 0.9) < 1e-9)
+        .map((row) => row.lemma);
+    assert.deepEqual(
+      onTheLine(at - lead()),
+      [],
+      'these cards sit on their 90% line when the page is drawn, so whether they count as ' +
+        'slipping is a rounding error',
+    );
+    // Non-vacuity: seeded at the instant itself, the plan does put one there.
+    assert.ok(onTheLine(at).length > 0, 'no card in the plan sits on its line at the seeding instant');
+  });
+
+  test('the held instant is ahead of every real one', () => {
+    // The worker has already read the real time by the time a spec can
+    // reach it, and `noteClock` reads any step backwards as tampering —
+    // which forces difficulty up and prints itself. So the held instant has
+    // to be later than now, and stay so: only its month and day are printed.
+    const { literal, at } = held();
+    assert.ok(
+      at - Date.now() > 365 * 86_400_000,
+      `HELD_AT is ${literal}, which is not a year ahead of the wall clock; move its year on ` +
+        'and keep the month and day, which are all the shots print',
+    );
+  });
+
+  test('the chart and the change log name the same day at the held instant', () => {
+    // The chart labels its bars by `dayKey`, which rolls over at 04:00; the
+    // change log prints the calendar day. Between midnight and four they
+    // disagree — correct, and it reads as a bug in documentation art.
+    const rollover = defaultSettings(0, 'test').attention.rolloverHour;
+    const { literal, at } = held();
+    assert.equal(
+      dayKey(at, rollover),
+      localDay(at),
+      `at ${literal} the chart's day is ${dayKey(at, rollover)} and the change log's ` +
+        `${localDay(at)}`,
+    );
+    // Non-vacuity: the same day before the rollover does disagree.
+    const early = new Date(`${literal.slice(0, 10)}T00:30:00`).getTime();
+    assert.notEqual(dayKey(early, rollover), localDay(early), 'dayKey no longer rolls over late');
   });
 });

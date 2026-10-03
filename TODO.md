@@ -6,7 +6,7 @@
 
 **State on 2026-10-03:** every automatable check is green, measured at the end
 of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
-suites, **170** tool tests / 48 suites, **38** e2e passing
+suites, **176** tool tests / 49 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -349,13 +349,22 @@ again.** The operating system moved under them: macOS 27.0.1, installed on
 images — the 36 screenshots, both store tiles, the Edge logo, the social
 card and the icon sheet — were recommitted in a commit that moves no glyph
 and no shape, and every generator now reproduces its own output byte for
-byte. `dashboard.png` is the exception from 13:00 BST on the 3rd, by its
-printed dates, which is queued. See the ticked item in `Next`.
+byte. `dashboard.png` was the exception from 13:00 BST on the 3rd, by its
+printed dates, until the paragraph below. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds ten
-agent-shaped items, and two of them — an Old English word stressed on the
-wrong syllable, and the tooltip calling Latin an ancestor of English —
-should land before B3 or B5 put the pages and the extension in front of
+**And as of 2026-10-03 `dashboard.png` reproduces on any day, in any
+zone.** It prints four dates, and they came from two clocks: the chart's
+from the page, the change log's from the background worker, which also
+files attention under a day. The spec now holds both at noon on 2 October —
+the pages through `context.clock`, the worker through a `Date` proxy
+evaluated in it — in the year 2099, because the worker's clock-rewind check
+reads any step backwards as tampering. Regenerated on the 3rd under
+Europe/London and on the 4th under Pacific/Kiritimati: all 14 shots
+byte-identical to their commits both times. See the ticked item in `Next`.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds nine
+agent-shaped items, and one of them — an Old English word stressed on the
+wrong syllable — should land before B3 puts the pages in front of
 anyone.** The code is not otherwise what is holding the release up, and
 neither is the version any more. **Every remaining item besides those ten
 needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
@@ -2887,7 +2896,7 @@ registered**, and nothing below it can move until it is.
       took *rivière* itself; it never took *cheval*", the table row's own
       verb.
 
-- [ ] **`dashboard.png` photographs the date, so it differs from its committed
+- [x] **`dashboard.png` photographs the date, so it differs from its committed
       bytes on every day but the one it was taken.** In Notes since 2026-10-01
       as "not fixed"; queued 2026-10-02 because it cost this session a detour
       and will cost every later one that touches `src/`. The change-log row
@@ -2917,6 +2926,45 @@ registered**, and nothing below it can move until it is.
       2nd, so `dashboard.png` now differs by its two dates on every
       regeneration until this lands. Read the two bands before calling
       anything else in it moved.
+
+      **Done 2026-10-03, and the warning about the worker was the whole
+      item.** The page's clock alone does not reach the change log: the
+      worker stamps it when the import queues a change and when the spec
+      cancels it, and files the seeded half hour under the worker's day.
+      Measured with the worker's half of the fix taken out: the log printed
+      "Oct 3" and the top tile "0s" of taxed attention today. So
+      `tests/e2e/screenshots.spec.ts` holds both, after the woven pages
+      have closed — `context.clock.setFixedTime(HELD_AT)` for every page,
+      and `holdWorkerClock()`, a `Date` proxy evaluated in the worker that
+      moves only `Date.now()` and an argument-less `new Date()` and runs on
+      from where it is set. `HELD_AT` is noon on 2 October **2099**: the
+      worker has read the real time before a spec can reach it, and
+      `noteClock` reads any step backwards as tampering, so the instant must
+      be ahead of every real one, and only month and day are printed. The
+      spec checks the held worker is still the one answering before the
+      surfaces are shot and again after, so a restarted worker fails the run
+      rather than drawing a penalty.
+
+      **Holding the clock found a knife-edge the wall clock had been
+      hiding.** The first held run moved one line: "4 words are slipping"
+      became 3. The plan reviews `oiseau` three days back with a stability of
+      three days, so at the seeding instant it is at exactly 90%
+      retrievability, and `< 0.9` is decided by `Math.pow`'s last bit; every
+      earlier run had opened the dashboard seconds after the import, which
+      tipped it under. The plan and the worker's clock now start at
+      `SEEDED_AT`, a minute before the pages, and a test holds every reviewed
+      card in the plan clear of its line, naming `oiseau` when the lead is
+      set to 0.
+
+      Six tests in a new `describe` in `tests/tools/screenshots.test.ts`,
+      red first on all of them. Regenerated three times on the final
+      behaviour: twice on the 3rd under Europe/London, and once under
+      `TZ=Pacific/Kiritimati`, where it was already the 4th — all 14 shots
+      written every time, all 14 byte-identical to their commits,
+      `dashboard.png` included. The group
+      is stamped. Tools 170 → **176** / 48 → **49** suites, in six places,
+      `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
+      ships moved.
 
 - [ ] **The `iānua` note now sits beside *janitor* and talks about
       *January*.** The word page reads "This is the Latin word your English
@@ -3071,21 +3119,19 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **ten** unchecked items above, as of
+`Now` is **empty** and `Next` holds **nine** unchecked items above, as of
 2026-10-03, all agent-shaped and none waiting on B1. The order is the order
-to work them. The dashboard's date first, because after 13:00 BST on
-2026-10-03 no time zone holds `dashboard.png`'s dates and every item below
-that moves `src/` would otherwise pay a detour for it; then the `iānua`
-note, the landing page's table, the pronunciation key's quote marks and the
-reason line's grammar, four small ones; then French `mort`, one card or two,
+to work them. The `iānua` note first, the landing page's table, the
+pronunciation key's quote marks and the reason line's grammar, four small
+ones; then French `mort`, one card or two,
 a decision with the evidence written down; then Old English stress, one
 wrong word and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
 `vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
-renderer drift and the tooltip's "Ancestor of English", which sat first,
-are done.
+renderer drift, the tooltip's "Ancestor of English" and the dashboard's
+date, which sat first, are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3446,6 +3492,39 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-03 — `dashboard.png` is held, and the hold has two halves.**
+Ticked in `Next`. Five things a later run would be sorry not to know:
+
+1. **An extension has two clocks, and Playwright's reaches one.**
+   `context.clock` fakes `Date` in pages and frames; the background worker
+   keeps the real one, and the worker is what stamps the change log
+   (`lock.log[].at`), files attention under a day (`dayKey` in
+   `record-attention`) and dates `introduced`. `holdWorkerClock()` in
+   `tests/e2e/screenshots.spec.ts` is the worker's half: a `Date` proxy
+   evaluated in it. Reuse it if another shot ever prints a date.
+2. **A held instant in the past is a tampering event.** `load()` runs
+   `noteClock` on every fresh load, and every `invalidate()` — the import,
+   the vocabulary reset — makes the next one fresh. The fixtures' first
+   message has already shown the worker the real time, so any held instant
+   behind it trips the rewind penalty, which raises difficulty and prints
+   itself. That is why `HELD_AT` is in 2099. Do not "tidy" it to 2026.
+3. **Holding a clock takes away the seconds a run adds, and those can have
+   been hiding a boundary.** `oiseau` — reviewed 3 days back, stability 3 —
+   is at exactly 90% at the seeding instant; the run's own seconds had
+   always tipped it to "slipping". `SEEDED_AT` is a minute before the pages,
+   and `tests/tools/screenshots.test.ts` names any reviewed card in the plan
+   within 1e-9 of its line. If the plan is edited, keep each card's
+   days-since-review off its stability.
+4. **The store and first-run sets print no date.** Regenerated on the 3rd
+   under Europe/London: 15 of 15 and 7 of 7 byte-identical to commits drawn
+   on the 2nd. Only `docs/screens` needed the hold; no `TZ=` is needed for
+   any regeneration now.
+5. **`sips` can crop.** `sips -c H W --cropOffset Y X in.png --out out.png`
+   ships with macOS and needs nothing installed — but an offset of 0 is
+   ignored and the crop is centred, so the first "top of the page" crop
+   here was its middle. And **B1 has not moved**: `dig weft.study
+   @8.8.8.8` answers NXDOMAIN.
 
 **2026-10-03 — the tooltip's badge landed, and the queue merged it before
 its CI had started.** Ticked in `Next`. Two things a later run would be

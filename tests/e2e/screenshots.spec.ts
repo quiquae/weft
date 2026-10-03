@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures.ts';
+import type { Worker } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +33,64 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), '../../docs/screens');
  */
 export const SEEDED_ATTENTION_SECONDS = 1800;
 
+/**
+ * The instant every extension surface is drawn at: noon on 2 October.
+ *
+ * `dashboard.png` prints four dates — its attention chart's first day, peak
+ * and last, and the change log's day — so drawn at the wall clock it
+ * differed from its commit on every day but the one it was taken, and a
+ * regeneration could not tell a change from the calendar.
+ *
+ * Noon, because the chart's days roll over at 04:00 and the change log's at
+ * midnight, so in the small hours the two name different days. A local
+ * time, so a run in any zone prints the same one.
+ *
+ * And 2099, because only the month and day are printed and the instant has
+ * to be ahead of every real one. The worker has read the real time before a
+ * spec can reach it, and `noteClock` reads any step backwards as tampering,
+ * which forces the difficulty up and says so on the page.
+ */
+export const HELD_AT = new Date('2099-10-02T12:00:00').getTime();
+
+/**
+ * When the seeded plan is written, and the worker's clock runs from: a
+ * minute before the pages are drawn, as an import always ran before the
+ * dashboard was opened.
+ *
+ * Not the same instant, because the plan puts `oiseau` three days after a
+ * review that left it a stability of three days — exactly on its 90% line —
+ * and at the seeding instant itself whether it is "slipping" is a question
+ * of `Math.pow`'s last bit. Drawn there, the first held run said "3 words
+ * are slipping" where every earlier run, opening the page a few seconds
+ * after the import, had said 4. `tests/tools/screenshots.test.ts` holds
+ * every card in the plan clear of the line.
+ */
+export const SEEDED_AT = HELD_AT - 60_000;
+
+/**
+ * Run the background worker's clock from `at`, as though that were now.
+ *
+ * `context.clock` reaches pages and frames, not workers, and the worker is
+ * where the change log is stamped and attention is filed under a day. A
+ * Proxy rather than a stub, so `new Date(ts)`, `Date.parse` and `instanceof`
+ * behave exactly as before and only `Date.now()` and an argument-less
+ * `new Date()` move. It runs on from `at` rather than standing still, so two
+ * stamps a second apart stay a second apart.
+ */
+async function holdWorkerClock(worker: Worker, at: number): Promise<void> {
+  await worker.evaluate((held) => {
+    const Real = Date;
+    const offset = held - Real.now();
+    const now = (): number => Real.now() + offset;
+    globalThis.Date = new Proxy(Real, {
+      construct: (target, args, newTarget) =>
+        Reflect.construct(target, args.length ? args : [now()], newTarget),
+      apply: () => new Real(now()).toString(),
+      get: (target, key, receiver) => (key === 'now' ? now : Reflect.get(target, key, receiver)),
+    });
+  }, at);
+}
+
 test.describe('screenshots', () => {
   test.skip(({}) => process.env['WEFT_SCREENS'] !== '1', 'set WEFT_SCREENS=1');
 
@@ -41,7 +100,7 @@ test.describe('screenshots', () => {
   // connection-refused rather than as a timeout.
   test.setTimeout(300_000);
 
-  test('capture every surface', async ({ context, extensionId, configure, origin, rpc }) => {
+  test('capture every surface', async ({ context, extensionId, configure, origin, rpc, worker }) => {
     await mkdir(OUT, { recursive: true });
 
     // --- the woven page, light and dark ---
@@ -120,10 +179,25 @@ test.describe('screenshots', () => {
      */
     await new Promise((resolve) => setTimeout(resolve, 2500));
 
+    /*
+     * Hold the date for everything from here on, in both places it is read.
+     *
+     * The dashboard's chart takes its days from the page's own clock, but the
+     * change log is stamped by the worker — when the import below queues a
+     * change and when it is cancelled — and the seeded half hour is filed
+     * under the worker's day. Held on the pages alone, measured, the change
+     * log printed the real day and the dashboard "0s" of taxed attention
+     * today: the half hour had gone under a day the held page does not call
+     * today. Here, after the woven pages have closed, so the three shots
+     * above are drawn exactly as before.
+     */
+    await holdWorkerClock(worker, SEEDED_AT);
+    await context.clock.setFixedTime(HELD_AT);
+
     // Seed a plausible vocabulary through the real import path, so the
     // progress page shows all three stages rather than a single flat band.
     const day = 86_400_000;
-    const now = Date.now();
+    const now = SEEDED_AT;
     const seeded: Record<string, unknown> = {};
     // Old English, because those entries carry the etymologies and
     // false-friend notes that the discoveries feed is built from — seeding
@@ -246,6 +320,11 @@ test.describe('screenshots', () => {
       url: `${origin}/article.html`,
     });
 
+    // The worker answering must still be the one whose clock was held. One
+    // restarted since would be back on the real clock, read that step back as
+    // tampering, and put the penalty in every shot below.
+    expect(await worker.evaluate(() => Date.now())).toBeGreaterThanOrEqual(SEEDED_AT);
+
     // --- extension surfaces ---
     const shots: Array<[string, string, { width: number; height: number }]> = [
       ['onboarding.html', 'onboarding.png', { width: 900, height: 900 }],
@@ -345,5 +424,9 @@ test.describe('screenshots', () => {
       await view.screenshot({ path: join(OUT, file) });
       await view.close();
     }
+
+    // And still held at the end, so a restart between the shots fails the
+    // run rather than leaving half of them drawn on the real day.
+    expect(await worker.evaluate(() => Date.now())).toBeGreaterThanOrEqual(SEEDED_AT);
   });
 });

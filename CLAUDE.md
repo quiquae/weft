@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **548 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **170 pass**, 48 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **176 pass**, 49 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -222,6 +222,22 @@ agreed, before reading anything else. Then rebaseline the whole set in a
 commit of its own, ahead of any change that moves a shot for a real reason,
 so that change arrives as a clean diff rather than mixed into the renderer's.
 
+**The documentation screenshots are drawn at a held instant, and the
+worker's clock is held with the pages'.** `dashboard.png` prints four dates,
+and two clocks write them: the page draws the chart's days, but the
+background worker stamps the change log and files attention under a day,
+and Playwright's `context.clock` does not reach a worker. So
+`tests/e2e/screenshots.spec.ts` holds both — `context.clock.setFixedTime`
+for the pages, `holdWorkerClock()`, a `Date` proxy evaluated in the worker,
+for the rest. Do not move `HELD_AT` into the past to make it look like a
+real date: the worker has read the real time before any spec can reach it,
+and `noteClock` reads a step backwards as tampering, which forces the
+difficulty up and prints itself — hence noon on 2 October 2099, of which
+only the month and day are shown. And do not seed the plan at `HELD_AT`
+itself: `SEEDED_AT` is a minute earlier because a card reviewed as many days
+ago as its stability sits exactly on its 90% line at the seeding instant.
+`tests/tools/screenshots.test.ts` fails on either.
+
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
@@ -376,6 +392,79 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-03 — the dashboard's date came from two clocks, and holding them found a third thing
+
+The queue named no item; `TODO.md`'s topmost unchecked one was
+`dashboard.png` photographing the date, moved to the top by #53 because from
+13:00 BST on the 3rd no time zone held the 2nd its commit shows.
+
+**The item's warning was the item.** It said a clock held on the page might
+not reach the change log, which the worker stamps. Read first, then
+measured: the page draws the chart's three dates, but the change log's
+`at` is the worker's `Date.now()` when the import queues a change and when
+the spec cancels it, and `record-attention` files the seeded half hour
+under the worker's `dayKey`. With the worker's half taken out of the fix,
+the log printed "Oct 3" and the top tile "0s" of taxed attention today.
+
+**So both are held, and the year is 2099 for a reason in `src/core/`.**
+`context.clock.setFixedTime(HELD_AT)` for every page, and
+`holdWorkerClock()`, a `Date` proxy evaluated in the worker that moves only
+`Date.now()` and an argument-less `new Date()`. A past instant was not
+available: `load()` runs `noteClock` again after every `invalidate()`, the
+worker has seen the real time by then, and a step back is tampering — so
+the instant has to be ahead of every real one, and only month and day are
+printed. The spec checks the held worker is still the one answering before
+the shots and after them.
+
+**Holding the clock moved one line, and that was a knife-edge the wall clock
+had hidden.** "4 words are slipping" became 3: the plan reviews `oiseau`
+three days back with a stability of three days, so at the seeding instant
+its retrievability is exactly 0.9 and `< 0.9` is `Math.pow`'s last bit.
+Every earlier run had opened the dashboard seconds after the import. The
+plan and the worker now start a minute before the pages, `SEEDED_AT`, and a
+test holds every reviewed card in the plan clear of its line — red naming
+`oiseau` with the lead set to 0.
+
+Test-first: six tests in a new `describe` in
+`tests/tools/screenshots.test.ts`, red on all six before the spec moved.
+Regenerated on the final behaviour three times — twice on the 3rd under
+Europe/London, once under `TZ=Pacific/Kiritimati`, already the 4th — all 14
+shots written every time and all 14 byte-identical to their commits,
+`dashboard.png` with them. The group is stamped. One aside worth having: `sips -c H W
+--cropOffset Y X` crops a PNG with nothing installed, and with an offset of
+0 it centres the crop instead of starting at the edge.
+
+Counts moved 858 → **864** and tools 170 → **176** / 48 → **49** suites, in
+six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+**The other two sets print no date**, measured rather than assumed: the
+store and first-run generators, run on the 3rd under Europe/London, wrote
+all 15 and all 7 byte-identical to commits drawn on the 2nd. So the hold is
+in one spec only.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, **176 tools / 49 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a — with `documentation screenshots` `ok` on its new stamp. Zero
+iCloud conflict copies in the tracked trees or `dist/`; one in
+`test-results/`, `.last-run 2.json`, after five generator runs, deleted.
+
+Assumed, with nobody to ask: that a far-future year is better than
+teaching `noteClock` about tests, since only the art needs it; that a
+minute is a fair stand-in for "the dashboard is opened after the import";
+and that the hold belongs after the woven pages close, so their three shots
+are drawn exactly as before.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds nine agent-shaped items, the
+`iānua` note first.
 
 ### 2026-10-03 — the tooltip called Latin an ancestor, and two store shots were the proof
 
