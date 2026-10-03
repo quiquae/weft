@@ -72,8 +72,8 @@ inside an English word you use:
 | `main` | → | hand | shares a root with *manual* and *manicure* |
 | `rivière` | → | river | English took the word itself |
 
-Two different claims, kept apart deliberately. `rivière` **became** the
-English word; `cheval` never did — it shares a root with a word that means
+Two different claims, kept apart deliberately. English **took** `rivière`
+itself; it never took `cheval`, which shares a root with a word that means
 something else. Stating the second as though it were the first would be a
 nice story and a false one, and the discoveries feed would then repeat it as
 fact. `tools/seed/fr-cousins.tsv` holds both, labelled.
