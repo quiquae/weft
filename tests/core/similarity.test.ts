@@ -140,16 +140,24 @@ describe('cognateScore', () => {
 
 describe('cognateReason', () => {
   test('names the etymon when there is one', () => {
-    const r = cognateReason(entry({ src: 'house', tgt: 'hūs', etymonOf: 'house' }));
-    assert.match(String(r), /ancestor of English/);
+    const r = cognateReason(entry({ src: 'house', tgt: 'hūs', etymonOf: 'house' }), true);
+    assert.equal(r, 'ancestor of English “house”');
+  });
+
+  test('calls a word English borrowed its source, never its ancestor', () => {
+    // English descends from Old English and borrowed from Latin; "ancestor"
+    // is true of hūs and false of vacca, whose word page says "the source of
+    // English vaccine".
+    const r = cognateReason(entry({ src: 'cow', tgt: 'vacca', etymonOf: 'vaccine' }), false);
+    assert.equal(r, 'source of English “vaccine”');
   });
 
   test('describes near-identity', () => {
-    const r = cognateReason(entry({ src: 'nation', tgt: 'nación' }));
+    const r = cognateReason(entry({ src: 'nation', tgt: 'nación' }), false);
     assert.match(String(r), /near-identical|identical/);
   });
 
   test('returns null when there is nothing to say', () => {
-    assert.equal(cognateReason(entry({ src: 'dog', tgt: 'chien' })), null);
+    assert.equal(cognateReason(entry({ src: 'dog', tgt: 'chien' }), false), null);
   });
 });

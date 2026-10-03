@@ -352,6 +352,16 @@ the headword: the door *iānua* gave *janitor*, where *January* is from
 *meminisse* *memento*. Each claim names the dictionary entry it was checked
 against, and one that names none fails the build.
 
+**And the tooltip still called Latin an ancestor.** The badge under a woven
+word chose its noun the way the feed once chose its verbs, by whether the
+language is dead, so each of 300 Latin words was "Ancestor of English"
+something English borrowed — "Ancestor of English vaccine". The line above
+it, which says why the word was chosen, called every language's etymon an
+ancestor, so the Edge listing's own screenshot showed French *rivière* as
+"New to you, and ancestor of English “river”" over a badge reading "Related
+to English river". Both now say "ancestor of" only of Old English, and
+"source of" of every language English borrowed from.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -372,7 +382,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 850 tests: 544 unit, 98 in jsdom, 170 over the build tools, and
+**Built with** 858 tests: 548 unit, 102 in jsdom, 170 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

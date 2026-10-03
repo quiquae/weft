@@ -190,9 +190,10 @@ function suffixBonus(srcFolded: string, tgtFolded: string): number {
  *  - Orthographic: folded Jaro-Winkler. Catches nation/nación, important/
  *    important, water/Wasser.
  *  - Morphological: a known suffix correspondence with a related stem.
- *  - Etymological: the pack says this word IS the ancestor of an English word.
- *    Old English hūs scores 0.62 orthographically but is maximally learnable
- *    once you are told it became "house", so etymon presence floors the score.
+ *  - Etymological: the pack says English took a word from this one — Old
+ *    English hūs became "house", and English borrowed "vaccine" from Latin
+ *    vacca. hūs scores 0.62 orthographically but is maximally learnable once
+ *    you are told where "house" came from, so etymon presence floors the score.
  */
 export function cognateScore(entry: LexEntry): number {
   const src = fold(entry.src || entry.lemma);
@@ -214,11 +215,28 @@ export function cognateScore(entry: LexEntry): number {
 }
 
 /**
- * A small, human-readable reason for the score, shown in the "why this word?"
- * debug panel and in the tooltip for historical languages.
+ * What a word with an etymon is to the English word it names: its ancestor,
+ * for a stage of English, and its source for every language English borrowed
+ * from. The tooltip's badge and the reason line beneath it both read this, so
+ * the two cannot disagree.
+ *
+ * Chosen by `ancestorOfEnglish`, never by `historical`. It was once chosen by
+ * the second, so Latin, being dead, was called the ancestor of 300 English
+ * words it lent — the mistake #49 took out of the feed's verbs.
  */
-export function cognateReason(entry: LexEntry): string | null {
-  if (entry.etymonOf) return `ancestor of English “${entry.etymonOf}”`;
+export function etymonRelation(ancestorOfEnglish: boolean): string {
+  return ancestorOfEnglish ? 'ancestor of English' : 'source of English';
+}
+
+/**
+ * A small, human-readable reason for the score, shown in the "why this word?"
+ * debug panel and in the tooltip.
+ *
+ * `ancestorOfEnglish` is the word's language's flag, required so a caller
+ * cannot forget it and call Latin an ancestor; see `etymonRelation`.
+ */
+export function cognateReason(entry: LexEntry, ancestorOfEnglish: boolean): string | null {
+  if (entry.etymonOf) return `${etymonRelation(ancestorOfEnglish)} “${entry.etymonOf}”`;
   const src = fold(entry.src || entry.lemma);
   const tgt = fold(entry.tgt || entry.tgtLemma);
   if (!src || !tgt) return null;

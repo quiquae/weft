@@ -1,6 +1,7 @@
 import type { Grade, LangCode, LexEntry, Settings } from '../core/types.ts';
 import { getLanguage } from '../core/languages.ts';
 import { explainChoice } from '../core/explain.ts';
+import { etymonRelation } from '../core/similarity.ts';
 import { WEFT_ATTR } from './walker.ts';
 
 /**
@@ -285,6 +286,10 @@ export class Tooltip {
   private render(content: TooltipContent): void {
     const { entry, target, original, replacement } = content;
     const meta = getLanguage(target);
+    // Whether English descends from this language, not whether it is dead:
+    // Old English is the ancestor of "house", and Latin only the source of
+    // "vaccine". See `etymonRelation`.
+    const ancestorOfEnglish = meta.ancestorOfEnglish === true;
     const reveal = this.settings.reveal;
     const card = this.card;
     card.textContent = '';
@@ -320,13 +325,15 @@ export class Tooltip {
         // Never mention descent here if the reader turned the etymon badge
         // off; the explanation must not reinstate a fact they hid.
         allowEtymon: reveal.showEtymon,
+        ancestorOfEnglish,
       });
       card.append(el('div', 'why', sentence));
     }
 
     if (reveal.showEtymon && entry.etymonOf) {
       const box = el('div', 'etymon');
-      box.append(document.createTextNode(`${meta.historical ? 'Ancestor of' : 'Related to'} English `));
+      const relation = etymonRelation(ancestorOfEnglish);
+      box.append(document.createTextNode(`${relation.charAt(0).toUpperCase()}${relation.slice(1)} `));
       const strong = document.createElement('b');
       strong.textContent = entry.etymonOf;
       box.append(strong);

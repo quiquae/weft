@@ -72,8 +72,8 @@ inside an English word you use:
 | `main` | → | hand | shares a root with *manual* and *manicure* |
 | `rivière` | → | river | English took the word itself |
 
-Two different claims, kept apart deliberately. `rivière` **became** the
-English word; `cheval` never did — it shares a root with a word that means
+Two different claims, kept apart deliberately. English **took** `rivière`
+itself; it never took `cheval`, which shares a root with a word that means
 something else. Stating the second as though it were the first would be a
 nice story and a false one, and the discoveries feed would then repeat it as
 fact. `tools/seed/fr-cousins.tsv` holds both, labelled.
@@ -265,7 +265,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 544 unit + 98 jsdom + 170 over the build tools
+npm test               # 548 unit + 102 jsdom + 170 over the build tools
 npm run test:e2e       # 38 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules
