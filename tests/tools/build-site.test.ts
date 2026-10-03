@@ -16,6 +16,7 @@
  *      a homograph number. See below.
  *   5. A word page's address spells every letter of its headword. See below.
  *   6. Every page's header draws the mark that ships as the icon. See below.
+ *   7. No page about Latin says English descends from it. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -25,6 +26,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { contentDate } from '../../tools/sitemap.ts';
+import { getLanguage } from '../../src/core/languages.ts';
+import type { LangCode } from '../../src/core/types.ts';
 import { markInSvg, differences, type MarkReading } from './mark-reading.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -34,10 +37,13 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const builtAt = (lang: string): string =>
   JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8')).meta.builtAt;
 
-/** The two languages that get a page per word. Mirrors `DEEP` in the builder. */
+/**
+ * The two languages that get a page per word. Mirrors `DEEP` in the builder,
+ * with the descent hub `descentHub()` writes for each.
+ */
 const DEEP = [
-  { lang: 'la', dir: 'latin' },
-  { lang: 'ang', dir: 'old-english' },
+  { lang: 'la', dir: 'latin', hub: 'latin-words-in-everyday-english' },
+  { lang: 'ang', dir: 'old-english', hub: 'old-english-words-that-became-english' },
 ];
 
 /**
@@ -121,6 +127,12 @@ let words: { page: string; slug: string; headword: string }[];
 let served: { loc: string; file: string | null }[];
 /** Every rendered page and the mark its header draws, or null where it draws none. */
 let headers: { page: string; mark: MarkReading | null }[];
+/**
+ * Every page a deep language has — its words, its index, its hub — as it
+ * reads, and in `own` with everything the pack itself says blanked out, which
+ * leaves the builder's words where they stood.
+ */
+let told: { lang: LangCode; page: string; text: string; own: string }[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
@@ -171,6 +183,17 @@ before(() => {
         (c) => existsSync(c) && statSync(c).isFile(),
       );
       return { loc: m[1] as string, file: file ? file.slice(out.length) : null };
+    });
+    told = DEEP.flatMap(({ lang, dir, hub }) => {
+      const said = packSays(lang);
+      // The hub by name, so a renamed hub fails here rather than going unread.
+      return [...readdirSync(join(out, dir)).map((f) => join(dir, f)), `${hub}.html`].map((file) => {
+        const text = readable(readFileSync(join(out, file), 'utf8'));
+        // Blanked rather than cut, so a match in what is left can be quoted
+        // from the page as the page has it.
+        const own = text.replace(said, (m) => ' '.repeat(m.length));
+        return { lang: lang as LangCode, page: `/${file.replace(/\.html$/, '')}`, text, own };
+      });
     });
   } finally {
     rmSync(out, { recursive: true, force: true });
@@ -536,5 +559,114 @@ describe('every page carries the mark that ships as the icon', () => {
       [],
       `${wrong.length} of ${headers.length} pages carry a different mark from the icon — ${how}`,
     );
+  });
+});
+
+/**
+ * A page about Latin never says that English descends from it.
+ *
+ * English descends from Old English and borrowed from Latin, and the product
+ * tells the two in different verbs: the Latin word pages say "your English
+ * *vaccine* was borrowed from", the feed "English borrowed vaccine from
+ * vacca", and #49 took Old English's verbs out of the feed's Latin lines,
+ * where "rēx survived into English as regal" had stood on 232 of 314. The
+ * Latin index kept them for a day longer, in a string of its own: its
+ * description, the two social copies of it and its structured data said the
+ * Latin words had "the English word they became", its lead "the English word
+ * they turned into", and its title "their English descendants".
+ *
+ * Read off every page a deep language has, in the builder's own words. The
+ * pack's own English — its glosses, the English words it names, its notes —
+ * is taken out first, because a note is the lexicon's sentence and is held to
+ * its dictionary by `tests/tools/la-notes.test.ts`: "“very” descends from
+ * vērus" is a note about a French route, and is that file's business. Which
+ * language is which comes from `ancestorOfEnglish` in the language table,
+ * whose own guard is `tests/tools/feed-frames.test.ts`.
+ */
+const DESCENT = /\b(?:became|turned into|descendants?|descends? from|survived into|comes straight from|began as)\b/i;
+
+/**
+ * What a page says to a reader and to a crawler: its body, and from its head
+ * the title and descriptions a search result and a shared link print. A
+ * script is read only for the structured data's own sentences, because the
+ * rest of it is addresses, and an address spells a headword.
+ */
+function readable(html: string): string {
+  const strings = (v: unknown): string[] =>
+    typeof v === 'string'
+      ? /^https?:\/\//.test(v)
+        ? []
+        : [v]
+      : v && typeof v === 'object'
+        ? Object.values(v).flatMap(strings)
+        : [];
+  const head = [...html.matchAll(/<meta\b[^>]*\bcontent="([^"]*)"/g)].map((m) => m[1] as string);
+  const data = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].flatMap((m) =>
+    strings(JSON.parse(m[1] as string)),
+  );
+  const body = html.replace(/<script\b[\s\S]*?<\/script>/g, ' ').replace(/<[^>]+>/g, ' ');
+  return [...head, ...data, body]
+    .join(' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ');
+}
+
+/** Everything a pack says in English, as one pattern matching any of it as whole words, longest first. */
+function packSays(lang: string): RegExp {
+  const pack = JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8'));
+  const said = new Set<string>();
+  for (const list of Object.values(pack.entries) as Record<string, string | undefined>[][]) {
+    for (const e of list) for (const s of [e.src, e.lemma, e.etymonOf, e.note]) if (s) said.add(s);
+  }
+  const alternatives = [...said]
+    .sort((a, b) => b.length - a.length)
+    .map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`(?<![\\p{L}\\p{N}])(?:${alternatives.join('|')})(?![\\p{L}\\p{N}])`, 'gu');
+}
+
+describe('a page about a language English borrowed from never says English descends from it', () => {
+  test('no Latin page tells a borrowing in the verbs of descent', () => {
+    // Every occurrence, not every page: the index printed its description
+    // four times — in the head, twice for a shared link, and once in its
+    // structured data — and its title three.
+    const offenders = told
+      .filter((t) => !getLanguage(t.lang).ancestorOfEnglish)
+      .flatMap((t) =>
+        [...t.own.matchAll(new RegExp(DESCENT, 'gi'))].map((m) => {
+          const at = m.index as number;
+          return `${t.page}: “…${t.text.slice(Math.max(0, at - 50), at + m[0].length + 10).trim()}…”`;
+        }),
+      );
+
+    assert.deepEqual(
+      offenders.slice(0, 10),
+      [],
+      `a page says English descends from a language it borrowed from, ${offenders.length} times:\n  ${offenders
+        .slice(0, 10)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('the verbs are still found where they are true', () => {
+    // The control. A pattern that matched nothing would pass every Latin page
+    // above; Old English is told in these verbs on every page with a claim,
+    // in the builder's words, so the pattern has to keep finding them there.
+    const ancestral = told.filter((t) => getLanguage(t.lang).ancestorOfEnglish);
+    const found = ancestral.filter((t) => DESCENT.test(t.own));
+
+    assert.ok(found.length > 300, `only ${found.length} of ${ancestral.length} Old English pages say became`);
+  });
+
+  test('the rule has something to police', () => {
+    // A floor, so a new word page needs no edit here: every Latin page is read,
+    // the index and the hub among them.
+    const latin = told.filter((t) => t.lang === 'la').map((t) => t.page);
+
+    assert.ok(latin.length > 300, `only ${latin.length} Latin pages were read`);
+    assert.ok(latin.includes('/latin/index'), 'the Latin index was not read');
+    assert.ok(latin.includes('/latin-words-in-everyday-english'), 'the Latin descent hub was not read');
   });
 });
