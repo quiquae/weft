@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
-of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
+of this session — typecheck clean, **551** unit / 134 suites, **102** jsdom / 23
 suites, **191** tool tests / 53 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
@@ -3143,7 +3143,7 @@ registered**, and nothing below it can move until it is.
       byte-identical and are stamped, and the documentation group's old
       "no change" stamp is deleted, this PR having changed that group.
 
-- [ ] **The tooltip's reason line is ungrammatical whenever its reason is a
+- [x] **The tooltip's reason line is ungrammatical whenever its reason is a
       cognate.** Found 2026-10-03 measuring the badge fix. `explainChoice()`
       joins its reasons as "Chosen because …", and every phrase
       `cognateReason()` returns is a bare phrase written for the other two
@@ -3161,6 +3161,26 @@ registered**, and nothing below it can move until it is.
       `src/`, so regenerate the three groups and read what moves; store
       scene 3's Chrome frame says "Chosen because the sentence around it…",
       which has no cognate in it. About 30 minutes.
+
+      **Done 2026-10-04, the same session, as its own PR.** One
+      `likeness()` in `src/core/similarity.ts` now decides what makes a word
+      recognisable — the English word it gave, or identical, near-identical,
+      recognisably related, same root — and one table, `SAID`, says each
+      kind as a phrase and as a clause. `cognateReason()` returns the
+      phrase and a new `cognateClause()` the clause: "it is the ancestor of
+      English “house”", "it has the English word’s root and a predictable
+      ending". `explainChoice()` takes the clause after "Chosen because"
+      and keeps the phrase for the first meeting and for a line of its own.
+      Three tests in `tests/core/delight.test.ts`, red first on the two that
+      read the frame: one word per kind gives exactly its clause, every
+      reason the frame can give has a finite verb, and the two other frames
+      keep the phrase. Two probes fail by name — a clause regressed to a
+      phrase, the greeting switched to the clause. The jsdom tests needed
+      no edit: they match "source of English “vaccine”", which the clause
+      contains. All three groups regenerated, 14 + 15 + 7 written: none
+      moved, no shot showing a cognate reason in that frame, and all three
+      are stamped. No shipped word reaches "same root" — the test uses
+      *silently*/*silenciosamente*, built for it.
 
 - [ ] **French `mort` is two words by Wiktionary's etymologies, and is one
       card.** Found 2026-10-02 by the homograph guard. `fr:mort` is death,
@@ -3261,9 +3281,9 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **six** unchecked items above, as of
+`Now` is **empty** and `Next` holds **five** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. The reason line's grammar first, a small one; then French `mort`, one card or two,
+to work them. French `mort` first, one card or two,
 a decision with the evidence written down; then Old English stress, one
 wrong word and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
@@ -3271,8 +3291,8 @@ wrong word and a grammar to read, free before B3; then `far wel` and
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
 renderer drift, the tooltip's "Ancestor of English", the dashboard's
-date, the `iānua` note, the landing page's tables, the site key's quote marks
-and the pronunciation keys are done.
+date, the `iānua` note, the landing page's tables, the site key's quote marks,
+the pronunciation keys and the reason line's grammar are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3633,6 +3653,20 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-04 — the reason line, as clauses.** Ticked in `Next`. Two things
+a later run would be sorry not to know:
+
+1. **A phrase and its clause live in one table.** `SAID` in
+   `src/core/similarity.ts` holds both forms of each likeness, so a new kind
+   is written twice in one place or not at all; the delight test's
+   `LIKENESSES` names one word per kind and `FINITE` the verbs the reasons
+   use — a reason with a new verb fails until it is added, which is the
+   moment to read it.
+2. **This session landed three PRs, #58 to #60, in under an hour.** Each was
+   branched from a freshly pulled `main` after the one before had merged, so
+   none stacked; the queue's two-hour slot fits three small items when each
+   is measured before it is written.
 
 **2026-10-04 — the pronunciation keys, held to the packs.** Ticked in
 `Next`. Three things a later run would be sorry not to know:

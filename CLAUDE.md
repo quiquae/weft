@@ -55,7 +55,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **548 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **551 pass**, 134 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **191 pass**, 53 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
@@ -392,6 +392,63 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — "Chosen because" takes a clause, and one table says each likeness both ways
+
+The same session's third PR, the next item in `Next`: the tooltip read
+"Chosen because ancestor of English “house”, and it is due for review",
+because `cognateReason()` returns a phrase written for the two other frames
+it fills, the first-meeting greeting and a line of its own.
+
+**One likeness, said two ways in one table.** `likeness()` in
+`src/core/similarity.ts` decides what makes a word recognisable — the English
+word it gave, or identical, near-identical, recognisably related, same root
+— and `SAID` holds each kind as a phrase and as a clause, so the two cannot
+drift. `cognateReason()` keeps the phrase; the new `cognateClause()` gives
+"it is the ancestor of English “house”", "it is the source of English
+“vaccine”", "it has the English word’s root and a predictable ending".
+`explainChoice()` takes the clause after "Chosen because" and the phrase
+everywhere else, where it already read.
+
+**Test-first, and the guard is the frame's grammar.** Three tests in
+`tests/core/delight.test.ts`: one word per kind gives exactly its clause;
+every reason the frame can give, all five `PHRASES` and the fallback with
+the etymon hidden among them, has a finite verb, from a list a new verb
+must join; and the greeting and the line of its own keep the phrase. Red
+first on the first two, on "Chosen because ancestor of English “house”".
+The verb list was short by one on the first green run — "it resembles the
+English word" is a clause the list did not know — and the test said so by
+name. No shipped word reaches "same root", so its case is built:
+*silently*/*silenciosamente*. Two probes, restored by md5, fail by name.
+
+**Nothing in the art moved, as the item said.** All three groups
+regenerated, 14 + 15 + 7 written by count of mtimes, every one
+byte-identical: no shot shows a cognate reason in that frame. All three are
+stamped. A `CHANGELOG.md` paragraph, because the tooltip ships.
+
+Counts moved 879 → **882** and unit 548 → **551** / 133 → **134** suites, in
+six places, `docs/LAUNCH.md:221` first.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, **551 unit / 134 suites**,
+102 jsdom / 23 suites, 191 tools / 53 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that "it has the English word’s root and a
+predictable ending" says what "same root, predictable ending" meant; and
+that "New to you, and source of English “vaccine”" reads well enough to
+keep, as the item judged. `cognateReason()`'s comment still mentions a
+"why this word?" debug panel; nothing in `src/` but `explainChoice()` calls
+it.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds five agent-shaped items, French
+`mort` first.
 
 ### 2026-10-04 — the pronunciation keys say what their packs bear out, and the site reads the tooltip's
 
