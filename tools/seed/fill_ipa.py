@@ -14,9 +14,9 @@ a hand-corrected transcription always wins.
 
 The tooltip prints a row's transcription under the form it wove, so a plural
 or a participle needs one of its own: /ˈmenː/ under menn, never mann's
-/ˈmɑnː/. Old English's are written, and tests/tools/old-english-stress.test.ts
-reads them. Latin's wait until tests/tools/latin-stress.test.ts reads second
-forms too, and until then a Latin second form prints no transcription.
+/ˈmɑnː/, and /ˈamaːns/ under amāns, never amāre's /aˈmaːrɛ/. Both languages'
+are written, and tests/tools/old-english-stress.test.ts and
+tests/tools/latin-stress.test.ts read each beside its headword.
 """
 import pathlib
 import re
@@ -31,7 +31,7 @@ TRANSCRIBERS = {
     'ang': old_english_ipa,
 }
 # The languages whose second forms are transcribed, in the ninth column.
-SECOND_FORMS = {'ang'}
+SECOND_FORMS = {'ang', 'la'}
 # hund² is the second word spelled hund; the number is not spoken.
 # One number, as spelling() in src/core/lexicon.ts takes it off.
 NUMBER = re.compile('[²³⁴⁵⁶⁷⁸⁹]$')

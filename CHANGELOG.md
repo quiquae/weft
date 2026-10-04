@@ -485,9 +485,14 @@ transcription of its own, divided where its headword is, so *hūsbondan*
 keeps the voiceless *s* of *hūsbonda* and *beginnende* the unstressed *be-*
 of *beginnan*; and Wright's §313 gives *fuglas* and *morgnas* the spirant
 their headwords have, where a lost vowel left the *g* before a consonant.
-A Latin plural or participle shows no pronunciation for now, which is
-silence rather than another word's sound, until Latin's are transcribed and
-checked the same way.
+
+**And so does a Latin one.** Each of the 223 Latin plurals and participles
+that showed no pronunciation shows its own, held to Allen & Greenough's rules
+of syllable and stress beside its headword. The stress moves on 47 of them,
+where the grammar moves it: *amāre* is stressed on its second syllable and
+*amāns* on its first, *labor* on its first and *labōrēs* on its second. And
+*iēns*, the participle of *īre*, has two syllables, its *i* the verb's own
+vowel rather than the consonant that begins *iānua*.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
@@ -509,7 +514,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 920 tests: 562 unit, 102 in jsdom, 217 over the build tools, and
+**Built with** 921 tests: 562 unit, 102 in jsdom, 218 over the build tools, and
 39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

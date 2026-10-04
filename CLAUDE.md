@@ -57,11 +57,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **217 pass**, 60 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **218 pass**, 60 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 988 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -448,8 +448,13 @@ a second form divides where its headword does (`_division()` in
 `tests/tools/form-transcriptions.test.ts` reads the shipped packs and fails
 on one transcription under two spellings or two under one, and
 `tests/tools/old-english-stress.test.ts` holds every second form to Wright
-as it holds the headwords. Latin's second forms print nothing yet; see
-`TODO.md`.
+as it holds the headwords, and `tests/tools/latin-stress.test.ts` every
+Latin one to Allen & Greenough. A second form is read from its own
+spelling, never stressed where its headword is: *amāre* is stressed on its
+second syllable and *amāns* on its first. What a second form's spelling
+hides is respelt in the test's `RESPELT` and the generator's `LA_RESPELT`
+alike — *iēns*, the participle of *īre*, begins with a vowel, which the
+spelling would read as the consonant that begins *iānua*.
 
 **A respelt word keeps its cards, and a card id once shipped is never
 dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
@@ -476,6 +481,80 @@ rest of the day an update lands.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — every Latin plural and participle sounds like itself, and *iēns* begins with a vowel
+
+The queue named the Old English compounds' fricatives, `wīfmann` and
+`hūsbonda`, which #65 landed that morning and `TODO.md` had ticked, so the
+work was its topmost unchecked item: the 223 Latin second forms that #68 left
+silent rather than wrong.
+
+**Test-first, and the guard reads a second form beside its headword.**
+`tests/tools/latin-stress.test.ts` reads `f[3]` and `f[8]` as the Old English
+guard does, names a second form with the headword it is of, and wants every
+one transcribed: red on all 247 seed rows that have one. The floor added to
+`form-transcriptions.test.ts` went red on "only 0 Latin words print a sound
+under two spellings". All 947 existing cells, 356 Latin and 591 Old English,
+were shown to equal the changed generator before `SECOND_FORMS` took `la`;
+the fill wrote 247 and kept 356, and the Old English seed did not move by
+md5.
+
+**Reading the forms before writing the test found what the test could not.**
+The guard re-derives the syllables from A&G rather than importing the
+generator, so that a misreading in one is not copied into the other. But both
+read the same rule, that an *i* before a vowel at the start of a word is the
+consonant — *iānua* — and `iēns`, the participle of `īre`, is the exception:
+its *i* is the verb's stem vowel. Both would have printed /ˈjeːns/, one
+syllable, and agreed. Wiktionary writes `{{la-IPA|ïēns}}`; a vowel before a
+vowel is short (A&G §10a); so both `RESPELT` tables give it a breve, and the
+generator learned the five breve vowels to read one. **Two independent
+readings of one rule agree on its exceptions: a lexical exception is found by
+reading the words, and a guard holds it only once somebody writes it down.**
+`iūsiūranda` needed its headword's *j* the same way, and the form itself turned
+out to be Medieval — English Wiktionary: "In Classical Latin, both parts
+decline" — which is queued, not changed: it is a question about the target,
+and no card moves either way.
+
+The generator's self-check gained seven hand-worked second forms, red on
+exactly the two respelt words before the fix. The stress moves on 47
+distinct second forms, as the item predicted — *amāre* /aˈmaːrɛ/, *amāns*
+/ˈamaːns/; *labor*, *labōrēs* — and a floor wants more than 30, so a reading
+that copied its headword's stress cannot pass for one with nothing to find.
+Five probes, restored by md5, each failing by name: `amāns` stressed as
+`amāre` is, `iēns` given one syllable, the test forgetting that `iēns` is
+respelt, a respelling of no form, and `virī` left blank.
+
+**What moved: 223 `ipa` fields of `en-la.json` and nothing else**, its
+`builtAt` already today, `index.json` untouched. The site, built from `main`
+in a `/tmp` worktree and from the branch, is byte-identical, 721 files. All 36
+screenshots regenerated byte-identical, 14 + 15 + 7 written by mtime, and the
+three groups are stamped. The seven packs are 669 722 bytes, **654 KB** — the
+figure `README.md` and `CHANGELOG.md` already printed, and which #68's shrink
+to 649 KB had made stale for a night; nothing swept it then, because the count
+sweep greps for test totals. The package grew 983 → **988 KB** by the same
+5 069 bytes, the build copying the pack verbatim. Counts moved 920 →
+**921** and tools 217 → **218**, in six places, `docs/LAUNCH.md:221`
+first, and a `CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 562 unit / 136 suites, 102
+jsdom / 23 suites, **218 tools / 60 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **988 KB × 3**
+passing `validate`, **39 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies. The whole of it took under an hour
+of the two the slot allowed, so the next item was queued rather than begun.
+
+Assumed, with nobody to ask: that the seed's Medieval plural is transcribed as
+written and queued rather than changed inside an item about transcriptions;
+that a breve, the test's existing respelling mark, serves where Wiktionary
+writes a diaeresis; and that Wiktionary's template input is evidence enough
+for one syllable division, since Lewis & Short cites *iens* unmarked.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds four agent-shaped items, `iūsiūranda` first.
 
 ### 2026-10-04 — a woven plural sounds like itself, in Old English; in Latin it is silent
 

@@ -43,6 +43,13 @@
  * What the spelling cannot show is read from Lewis & Short and written down
  * below, not guessed; a headword spelling a combination nothing here can read
  * is refused, and the message says which.
+ *
+ * A second form — the plural of a noun, the participle of a verb — is held to
+ * the same rules beside its headword. The tooltip prints the seed's ninth
+ * column, `ipa2`, under it, and until 2026-10-04 printed the headword's sound
+ * there instead: /ˈwɪr/ under *virī*, /aˈmaːrɛ/ under *amāns*, which Latin
+ * stresses on its first syllable of two. A second form is read from its own
+ * spelling, so its stress may stand elsewhere than its headword's.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -64,12 +71,19 @@ const LEXICON = join(ROOT, 'tools/seed/lex-la.tsv');
  * second part begins with the consonant, which Lewis & Short prints as *j*.
  * The breve and the *j* are the only marks used: a breve vowel is short and
  * never half of a diphthong.
+ *
+ * A second form is listed under its own spelling, read the way its headword
+ * is. And one *i* before a vowel at the start of a word is not the consonant:
+ * *iēns*, the participle of *īre*, has the verb's stem vowel, which Wiktionary
+ * writes `{{la-IPA|ïēns}}`, and a vowel before a vowel is short (A&G §10a).
  */
 const RESPELT: Record<string, string> = {
   cāseus: 'cāsĕus',
   calceus: 'calcĕus',
   caeruleus: 'caerŭlĕus',
   iūsiūrandum: 'iūsjūrandum', // "jus-jūrandum"
+  iūsiūranda: 'iūsjūranda',
+  iēns: 'ĭēns',
 };
 
 /** One spelled syllable nucleus, or one consonant as A&G §11 counts them. */
@@ -223,15 +237,31 @@ function marked(ps: Phone[]): Marked | string {
   return { syllables, stressed, onset, run };
 }
 
-type Row = { line: number; tgt: string; ipa: string };
+/** A transcribed form: a headword, or a second form beside the headword it is `of`. */
+type Row = { line: number; tgt: string; ipa: string; of?: string };
 
-const rows: Row[] = readFileSync(LEXICON, 'utf8')
+/** Each transcribed headword, and each second form beside it, with the seed row's own transcription of it. */
+const rows: Row[] = [];
+/** Second forms the seed gives no transcription of their own, which the tooltip prints no sound under. */
+const untranscribed: string[] = [];
+/** Every form the seed spells, transcribed or not. */
+const forms = new Set<string>();
+readFileSync(LEXICON, 'utf8')
   .split('\n')
-  .flatMap((text, i) => {
-    if (!text || text.startsWith('#')) return [];
+  .forEach((text, i) => {
+    if (!text || text.startsWith('#')) return;
     const f = text.split('\t');
-    return f[2] && f[5] ? [{ line: i + 1, tgt: f[2], ipa: f[5] }] : [];
+    const [tgt = '', tgt2 = '', ipa = '', ipa2 = ''] = [f[2], f[3], f[5], f[8]];
+    for (const form of [tgt, tgt2]) if (form) forms.add(form);
+    if (!tgt || !ipa) return;
+    rows.push({ line: i + 1, tgt, ipa });
+    if (!tgt2) return;
+    if (ipa2) rows.push({ line: i + 1, tgt: tgt2, ipa: ipa2, of: tgt });
+    else untranscribed.push(`lex-la.tsv:${i + 1} ${tgt2}, of ${tgt} ${ipa}`);
   });
+
+/** A form as a message names it: a second form with the headword it is of. */
+const named = (r: Row): string => (r.of ? `${r.tgt} (of ${r.of})` : r.tgt);
 
 type Checked = Row & { reading: Reading; mark: Marked };
 
@@ -242,8 +272,8 @@ for (const row of rows) {
   const units = spell(row.tgt);
   const ps = phones(row.ipa);
   const mark = typeof ps === 'string' ? ps : marked(ps);
-  if (typeof units === 'string') unread.push(`lex-la.tsv:${row.line} ${row.tgt}: ${units}`);
-  else if (typeof mark === 'string') unread.push(`lex-la.tsv:${row.line} ${row.tgt} ${row.ipa}: ${mark}`);
+  if (typeof units === 'string') unread.push(`lex-la.tsv:${row.line} ${named(row)}: ${units}`);
+  else if (typeof mark === 'string') unread.push(`lex-la.tsv:${row.line} ${named(row)} ${row.ipa}: ${mark}`);
   else checked.push({ ...row, reading: read(units), mark });
 }
 
@@ -260,13 +290,27 @@ function report(offenders: string[], what: string): void {
 describe('every Latin transcription is stressed where the classical rule puts it', () => {
   test('every headword and its transcription can be read', () => {
     report(unread, 'cannot be read');
+    const stale = Object.keys(RESPELT).filter((word) => !forms.has(word));
+    assert.deepEqual(stale, [], `respelt here and no longer a form of lex-la.tsv: ${stale.join(', ')}`);
+  });
+
+  test('every second form has a transcription of its own', () => {
+    // The tooltip prints a row's transcription under the form it wove, and the
+    // pack builder prints the ninth column, ipa2, under a second form, or no
+    // sound at all where the seed has none.
+    assert.deepEqual(
+      untranscribed.slice(0, 30),
+      [],
+      `${untranscribed.length} second forms have no transcription of their own — run python3 tools/seed/fill_ipa.py:\n  ` +
+        untranscribed.slice(0, 30).join('\n  '),
+    );
   });
 
   test('a transcription has a syllable for each vowel and diphthong of its headword', () => {
     report(
       checked
         .filter((r) => r.mark.syllables !== r.reading.before.length)
-        .map((r) => `${r.tgt} ${r.ipa}: ${r.mark.syllables} syllables, where the spelling has ${r.reading.before.length}`),
+        .map((r) => `${named(r)} ${r.ipa}: ${r.mark.syllables} syllables, where the spelling has ${r.reading.before.length}`),
       'have the wrong number of syllables',
     );
   });
@@ -277,7 +321,7 @@ describe('every Latin transcription is stressed where the classical rule puts it
         .filter((r) => r.mark.syllables === r.reading.before.length && r.mark.stressed !== r.reading.stressed)
         .map(
           (r) =>
-            `${r.tgt} ${r.ipa}: stressed on the ${ordinal(r.mark.stressed)} of ${r.reading.before.length} syllables, ` +
+            `${named(r)} ${r.ipa}: stressed on the ${ordinal(r.mark.stressed)} of ${r.reading.before.length} syllables, ` +
             `where the rule stresses the ${ordinal(r.reading.stressed)}`,
         ),
       'are stressed on the wrong syllable',
@@ -292,9 +336,9 @@ describe('every Latin transcription is stressed where the classical rule puts it
           const run = (r.reading.before[r.mark.stressed] as string[]).length;
           const want = onset(r.reading, r.mark.stressed);
           if (r.mark.run !== run)
-            return [`${r.tgt} ${r.ipa}: ${r.mark.run} consonants before the stressed vowel, where the spelling has ${run}`];
+            return [`${named(r)} ${r.ipa}: ${r.mark.run} consonants before the stressed vowel, where the spelling has ${run}`];
           if (r.mark.onset !== want)
-            return [`${r.tgt} ${r.ipa}: ${r.mark.onset} of them after the mark, where the syllable takes ${want}`];
+            return [`${named(r)} ${r.ipa}: ${r.mark.onset} of them after the mark, where the syllable takes ${want}`];
           return [];
         }),
       'put the stress mark inside the wrong syllable',
@@ -305,17 +349,25 @@ describe('every Latin transcription is stressed where the classical rule puts it
     // Floors, not exact counts, so a new headword needs no edit here. Each
     // names a case one of the rules decides, so a reading that stops meeting
     // it cannot be taken for one that has nothing wrong to find.
-    const long3 = checked.filter((r) => r.reading.before.length >= 3);
+    const heads = checked.filter((r) => !r.of);
+    const long3 = heads.filter((r) => r.reading.before.length >= 3);
     const byPosition = long3.filter((r) => {
       const after = (r.reading.before.at(-1) as string[]).filter((c) => c !== 'h');
       return r.reading.stressed === r.reading.before.length - 2 && after.length >= 2;
     });
     const antepenult = long3.filter((r) => r.reading.stressed === r.reading.before.length - 3);
-    const split = checked.filter((r) => r.reading.stressed > 0 && (r.reading.before[r.reading.stressed] as string[]).length >= 2);
-    const mutePlusLiquid = checked.filter((r) => r.reading.stressed > 0 && onset(r.reading, r.reading.stressed) === 2);
-    const qu = checked.filter((r) => r.tgt.includes('qu'));
+    const split = heads.filter((r) => r.reading.stressed > 0 && (r.reading.before[r.reading.stressed] as string[]).length >= 2);
+    const mutePlusLiquid = heads.filter((r) => r.reading.stressed > 0 && onset(r.reading, r.reading.stressed) === 2);
+    const qu = heads.filter((r) => r.tgt.includes('qu'));
+    const second = checked.filter((r) => r.of);
+    // A second form read from its own spelling, not copied from its headword:
+    // amāre is stressed on its second syllable and amāns on its first.
+    const byLine = new Map(heads.map((r) => [r.line, r]));
+    const moved = second.filter((r) => byLine.get(r.line)?.reading.stressed !== r.reading.stressed);
 
-    assert.ok(checked.length > 300, `only ${checked.length} of ${rows.length} Latin rows were read`);
+    assert.ok(heads.length > 300, `only ${heads.length} Latin headwords were read`);
+    assert.ok(second.length > 200, `only ${second.length} second forms were read beside their headwords`);
+    assert.ok(moved.length > 30, `only ${moved.length} second forms are stressed on another syllable than their headwords`);
     assert.ok(byPosition.length > 10, `only ${byPosition.length} words are stressed on a penult long by position`);
     assert.ok(antepenult.length > 20, `only ${antepenult.length} words are stressed on the antepenult`);
     assert.ok(split.length > 10, `only ${split.length} stressed syllables follow a group of consonants`);

@@ -6,9 +6,9 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
-suites, **217** tool tests / 60 suites, **39** e2e passing
+suites, **218** tool tests / 60 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 983 KB and passing `npm run validate`. The package grew
+packages built at 988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
@@ -19,15 +19,17 @@ measured by building `main`'s two callers and this branch's in turn — and
 `main`'s Chrome package beside this one — and shrank 987 → 983 KB the same
 night by 4 545 bytes, the Latin pack giving up the 223 transcriptions it
 printed under second forms (−4 854) and the Old English one writing its own
-(+309). `npm run test:all` exits 0 end to end.
+(+309) — and grew back 983 → 988 KB later that night by 5 069 bytes, all of
+them the Latin pack writing its second forms' own. `npm run test:all` exits
+0 end to end.
 
 **And as of 2026-10-04 a woven plural or participle sounds like itself.**
 The tooltip printed a row's one transcription, its headword's, under every
 form of the word — /ˈmɑnː/ under *menn* on 206 Old English rows, /ˈwɪr/
-under *virī* on 223 Latin ones. Old English second forms carry their own
-now, in a ninth seed column, `ipa2`, held to Wright like the headwords;
-Latin's print no sound until theirs are written, which is the first item in
-`Next`. `tests/tools/form-transcriptions.test.ts` reads the shipped packs
+under *virī* on 223 Latin ones. Every second form carries its own now, in a
+ninth seed column, `ipa2`, held like the headwords: Old English's to
+Wright, Latin's to Allen & Greenough, which stresses *amāns* on its first
+syllable where *amāre* is stressed on its second. `tests/tools/form-transcriptions.test.ts` reads the shipped packs
 and fails on one transcription printed under two spellings.
 
 **And as of 2026-10-04 a word the pack respells keeps its cards.** A card is
@@ -3652,7 +3654,7 @@ registered**, and nothing below it can move until it is.
       213 → **217** / 59 → **60** suites, total 916 → **920**, in six
       places, `docs/LAUNCH.md:221` first; the package 987 → **983 KB**.
 
-- [ ] **Latin's plurals and participles print no pronunciation, and want
+- [x] **Latin's plurals and participles print no pronunciation, and want
       their own.** Since 2026-10-04 the builder prints a second form's
       `ipa2` or nothing, and `lex-la.tsv` has no ninth column, so 223 Latin
       rows show no sound — silence, where they showed the headword's.
@@ -3667,6 +3669,56 @@ registered**, and nothing below it can move until it is.
       syllable and *amāns*, of two, on its first. Then
       add `la` to the floor in `form-transcriptions.test.ts`, and check the
       tooltip test fixtures still pass. About an hour.
+
+      **Done 2026-10-04, and the spelling hid one vowel.** The queue named
+      the Old English compounds' fricatives, which #65 landed and this file
+      had ticked, so the work was this item. Test-first: the guard reads
+      `f[3]` and `f[8]` beside each headword, a second form named with the
+      headword it is of, and a new test wants every one transcribed — red
+      on all 247 seed rows with a second form, and the floor added to
+      `form-transcriptions.test.ts` red on "only 0 Latin words". Every
+      existing cell, 356 Latin and 591 Old English, was shown to equal the
+      changed generator before `SECOND_FORMS` took `la` and the column was
+      filled: 247 written, 356 kept, and the Old English seed untouched by
+      md5. All 247 read clean by A&G but two the spelling cannot show.
+      **`iēns`**, the participle of `īre`, begins with the verb's stem
+      vowel, not the consonant of `iānua`: Wiktionary writes
+      `{{la-IPA|ïēns}}`, and a vowel before a vowel is short (A&G §10a), so
+      both `RESPELT` tables give it a breve, the generator learning the
+      breve vowels to read it — /ˈɪeːns/, where the generator said
+      /ˈjeːns/. And `iūsiūranda` takes its headword's *j*. The generator's
+      self-check gained seven hand-worked second forms, red on exactly those
+      two first. The stress moves on 47 distinct second forms, as the item
+      expected — `amāre` /aˈmaːrɛ/, `amāns` /ˈamaːns/; `labor`, `labōrēs`
+      — and a floor holds more than 30 of them, so a reading that copied
+      its headword's stress cannot pass for one with nothing to find.
+      Five probes, restored by md5, each failing by name: `amāns` stressed
+      as `amāre` is, `iēns` given one syllable, the test forgetting `iēns`
+      is respelt, a respelling of no form, and `virī` left blank.
+
+      What moved: `en-la.json` 223 `ipa` fields added and nothing else, its
+      `builtAt` already today; `index.json` untouched. The site, built from
+      `main` in a `/tmp` worktree and from the branch: byte-identical, 721
+      files, a word page printing its headword's sound. The seven packs are
+      669 722 bytes, **654 KB** — the figure `README.md` and `CHANGELOG.md`
+      already printed, which #68's shrink to 649 KB had made stale for a
+      night. All 36 screenshots regenerated byte-identical, 14 + 15 + 7
+      written, and the three groups stamped. Tools 217 → **218** / 60
+      suites, total
+      920 → **921**, in six places, `docs/LAUNCH.md:221` first.
+
+- [ ] **`iūsiūrandum`'s plural is woven in its Medieval form.** Found
+      2026-10-04 transcribing it. The seed weaves "oaths" as `iūsiūranda`,
+      declining only the second part; English Wiktionary's entry says "In
+      Classical Latin, both parts decline, but in Medieval Latin sometimes
+      only the second part declines", and Lewis & Short gives the genitive
+      as "jurisjurandi". The seed's header says Classical Latin, whose
+      plural is `iūraiūranda` — though nothing here has found it attested.
+      Either write that, respelt `iūrajūranda` in both `RESPELT` tables and
+      transcribed /juːrajuːˈranda/, or blank `tgt2`, which the header calls
+      the correct outcome for a plural never woven. No card moves: the card
+      is `tgtLemma`. About 20 minutes, most of it looking for the plural in
+      a text.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
@@ -3718,9 +3770,9 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **four** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. Latin's second forms' transcriptions first, the Old English
-half being done; then `far wel` and `camera`,
-content questions; then the pixel diff, a tool. The Latin note on `vir`, the
+to work them. `iūsiūranda` first, a form the seed writes in Medieval Latin;
+then `far wel` and `camera`, content questions; then the pixel diff, a
+tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -3728,8 +3780,8 @@ the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
 the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
-genders, the plurals' dots and the Old English second forms' transcriptions
-are done.
+genders, the plurals' dots and both languages' second forms'
+transcriptions are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
