@@ -54,6 +54,11 @@
  * particle in Wright's lists (§§564–589, 645–656) is refused unless it is
  * written down one way or the other; a compound of two nouns cannot be found
  * that way, and is listed as it is met.
+ *
+ * The second half reads every undotted g the same way, by §§313–324, and is
+ * introduced where it begins. On 2026-10-04 it found six more: `folgian`,
+ * `morgen` and `tōmorgen` gave a spirant the stop of *good*, and `beorg`,
+ * `burg` and `ēagþȳrel` gave it to a g that ends an element voiceless.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -136,7 +141,7 @@ const CONSONANTS = 'bcċdfgġhklmnprstwxþð';
 const VOICED = new Set([...VOWELS, ...'bdgġlmnrw']);
 const FRICATIVE = new Set(['f', 's', 'þ', 'ð']);
 
-type Row = { line: number; tgt: string; word: string; ipa: string };
+type Row = { line: number; pos: string; tgt: string; word: string; ipa: string };
 
 const rows: Row[] = readFileSync(LEXICON, 'utf8')
   .split('\n')
@@ -145,7 +150,8 @@ const rows: Row[] = readFileSync(LEXICON, 'utf8')
     const f = text.split('\t');
     const tgt = f[2] ?? '';
     // hund² is the second word spelled hund; the number is not spoken.
-    return tgt && f[5] ? [{ line: i + 1, tgt, word: tgt.replace(/[¹²³⁴⁵⁶⁷⁸⁹⁰]+$/, '').toLowerCase(), ipa: f[5] }] : [];
+    const word = tgt.replace(/[¹²³⁴⁵⁶⁷⁸⁹⁰]+$/, '').toLowerCase();
+    return tgt && f[5] ? [{ line: i + 1, pos: f[1] ?? '', tgt, word, ipa: f[5] }] : [];
   });
 const headwords = new Set(rows.map((r) => r.word));
 
@@ -307,5 +313,148 @@ describe('every Old English transcription is stressed and voiced where the gramm
     assert.ok(voiced > 30, `only ${voiced} f, s or þ stand between voiced sounds`);
     assert.ok(atSecond.length >= 3, `only ${atSecond.length} compounds begin their second element with f, s or þ`);
     assert.ok(refused.length > 30, `only ${refused.length} headwords begin with a particle's letters`);
+  });
+});
+
+/*
+ * An undotted g is the guttural one, and Wright gives it a sound by where it
+ * stands (§§313–324). The pack dots the palatal g, so these read every g it
+ * leaves bare:
+ *
+ *   §314  at the start of a word or a root, the explosive: "initial guttural
+ *         ʒ … had become the voiced explosive g before the end of the OE.
+ *         period".
+ *   §313  after n, the explosive too, since the spirant "became g after ŋ".
+ *   §320  inside a word, after a vowel, l or r and before a vowel, the voiced
+ *         spirant: "Medial ʒ remained a guttural spirant before original
+ *         guttural vowels" — "belgan … beorgan … folgian, to follow … swelgan".
+ *   §323  at the end of a word, after l, r or a guttural vowel, voiceless:
+ *         "After liquids and guttural vowels the restoration of the g was
+ *         merely orthographical", and late Old English writes "beorh, hill;
+ *         burh, city". English Wiktionary's module voices it, [burˠɣ]; the
+ *         pack is dated 900–1050, which is the late Old English Wright means.
+ *   §320 note  before a voiceless consonant, "ʒ became h (= x) …, but the g
+ *         was often restored", so either spirant stands there.
+ *
+ * Two places make a g palatal whatever it came from, and an undotted g there
+ * contradicts the grammar: between Old English palatal vowels (§320, "It also
+ * became palatal between OE. palatal vowels") and at the end of a word or a
+ * first element after one (§324, "dæg … weg … bodig … hefig"). The -ian of a
+ * weak verb is *-ōjan, an original guttural vowel, so a g before it stays
+ * guttural — §320's own "dagian from *dagōjan", and Wright's plegian, whose
+ * index gives "plægian, plagian" beside it (§538).
+ */
+
+/** Headwords whose g stands where Wright makes it palatal, and which the pack writes bare. Dotting a headword moves its card's id, which is why they are waiting. */
+const AWAITING_DOTS: Record<string, string> = {
+  wīg: 'final after a palatal vowel (§324); Wiktionary writes wīġ',
+  hunig: 'final after a palatal vowel, as §324’s bodig and hefig; Wiktionary writes huniġ',
+  twēgen: 'between palatal vowels (§320); Wiktionary writes twēġen',
+  ǣghwǣr: 'ending a first element after a palatal vowel (§324); ǣġ- is ā-ġe-, and Wiktionary’s module reads ǣġhwǣr /ˈæːj.xwæːr/',
+};
+
+const BACK = 'aāoōuū';
+const FRONT = 'iīeēæǣyȳ';
+const VOICELESS = 'cfhkpstþ';
+
+type G = 'ɡ' | 'ɣ' | 'x' | 'either';
+
+/** Each undotted g of a headword, read by Wright, or why it cannot be. */
+function gsOf(row: Row): { sounds: G[]; refused: string[] } {
+  const word = row.word;
+  const at = COMPOUNDED[word]?.first.length ?? -1;
+  const sounds: G[] = [];
+  const refused: string[] = [];
+  for (let i = 0; i < word.length; i++) {
+    if (word[i] !== 'g') continue;
+    const prev = word[i - 1] ?? '';
+    const next = word[i + 1] ?? '';
+    if (prev === 'c') continue; // cg is §319's palatal gg, /ddʒ/
+    if (prev === 'g' || next === 'g') {
+      refused.push('a doubled g, which nothing here reads');
+      continue;
+    }
+    if (i === 0 || i === at || prev === 'n') {
+      sounds.push('ɡ');
+      continue;
+    }
+    const ends = i + 1 === word.length || i + 1 === at;
+    if (ends) {
+      if (FRONT.includes(prev)) refused.push(`a g ending ${i + 1 === at ? 'its first element' : 'the word'} after a palatal vowel is palatal (§324), and is not dotted`);
+      else if (!'lr'.includes(prev) && !BACK.includes(prev)) refused.push(`a final g after “${prev}”, which nothing here reads`);
+      else if (i + 1 === word.length) sounds.push('x');
+      else if (VOICELESS.includes(next)) sounds.push('either');
+      else refused.push(`a g before “${next}”, which nothing here reads`);
+      continue;
+    }
+    if (!VOWELS.includes(next) || !(VOWELS.includes(prev) || 'lr'.includes(prev))) {
+      refused.push(`a g between “${prev}” and “${next}”, which nothing here reads`);
+      continue;
+    }
+    const weakVerb = row.pos === 'verb' && word.slice(i + 1).startsWith('ian');
+    if (!weakVerb && FRONT.includes(prev) && FRONT.includes(next)) {
+      refused.push('a g between palatal vowels is palatal (§320), and is not dotted');
+      continue;
+    }
+    sounds.push('ɣ');
+  }
+  return { sounds, refused };
+}
+
+/** The x of a transcription that an h wrote: every h but one beginning a word or an element (§§325–328). */
+function xOfH(row: Row): number {
+  const at = COMPOUNDED[row.word]?.first.length ?? -1;
+  return [...row.word].filter((ch, i) => ch === 'h' && i !== 0 && i !== at).length;
+}
+
+describe('every undotted Old English g has the sound Wright gives the guttural g where it stands', () => {
+  test('an undotted g stands where the grammar allows the guttural one', () => {
+    report(
+      checked.flatMap((r) => {
+        const { refused } = gsOf(r);
+        if (AWAITING_DOTS[r.word]) return refused.length ? [] : [`${r.tgt}: listed as awaiting its dots, and its g reads as guttural`];
+        return refused.map((why) => `${r.tgt} ${r.ipa}: ${why}`);
+      }),
+      'have an undotted g the grammar makes palatal or nothing here reads',
+    );
+    const stale = Object.keys(AWAITING_DOTS).filter((word) => !headwords.has(word));
+    assert.deepEqual(stale, [], `awaiting dots and no longer a headword of lex-ang.tsv: ${stale.join(', ')}`);
+  });
+
+  test('an undotted g is a stop where a root begins and after n, voiced inside a word, and voiceless at its end', () => {
+    report(
+      checked.flatMap((r) => {
+        if (AWAITING_DOTS[r.word]) return [];
+        const want = gsOf(r).sounds;
+        if (!want.length) return [];
+        const count = (re: RegExp): number => (r.ipa.match(re) ?? []).length;
+        const got = { stop: count(/ɡ/g), voiced: count(/ɣ/g), voiceless: count(/x/g) - xOfH(r) };
+        const n = (g: G): number => want.filter((w) => w === g).length;
+        const fits =
+          got.stop === n('ɡ') &&
+          got.voiced >= n('ɣ') &&
+          got.voiceless >= n('x') &&
+          got.voiced + got.voiceless === n('ɣ') + n('x') + n('either');
+        return fits
+          ? []
+          : [
+              `${r.tgt} ${r.ipa}: ${got.stop} ɡ, ${got.voiced} ɣ and ${got.voiceless} x from its g, ` +
+                `where the spelling has ${n('ɡ')} ɡ, ${n('ɣ')} ɣ and ${n('x')} x` +
+                (n('either') ? `, and ${n('either')} either spirant` : ''),
+            ];
+      }),
+      'give an undotted g the wrong sound',
+    );
+  });
+
+  test('the g rules have something to police', () => {
+    const all = checked.filter((r) => !AWAITING_DOTS[r.word]).flatMap((r) => gsOf(r).sounds);
+    const n = (g: G): number => all.filter((w) => w === g).length;
+    const afterN = checked.filter((r) => /ng/.test(r.word)).length;
+    assert.ok(n('ɡ') > 20, `only ${n('ɡ')} undotted g begin a root or follow n`);
+    assert.ok(afterN > 10, `only ${afterN} headwords have ng`);
+    assert.ok(n('ɣ') >= 8, `only ${n('ɣ')} undotted g stand inside a word`);
+    assert.ok(n('x') >= 2, `only ${n('x')} undotted g end a word after l, r or a guttural vowel`);
+    assert.ok(n('either') >= 1, `no undotted g stands before a voiceless consonant`);
   });
 });

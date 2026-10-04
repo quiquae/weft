@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **551 pass**, 134 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **196 pass**, 54 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **199 pass**, 55 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -404,12 +404,91 @@ the test lists it, and refuses a headword beginning with one of Wright's
 particles that it has not been told is compounded or simple. A fricative
 that *ends* a first element, in `wīfmann` and `hūsbonda`, is counted neither
 way: Wright's note can be read as reaching it, Wiktionary voices it, and
-nothing here has decided.
+nothing here has decided. The same file holds every undotted *g* — the
+guttural one, since the pack dots the palatal — to §§313–324: the explosive
+where a root begins and after *n*, the voiced spirant inside a word after a
+vowel, *l* or *r* (§320, "folgian, to follow"), and voiceless at the end of
+one after a liquid or a guttural vowel (§323, "beorh, hill; burh, city"),
+where English Wiktionary voices it; the pack is late Old English, which is
+Wright's point. A *g* the grammar makes palatal whatever it came from —
+between palatal vowels, or after one at the end of a word — is refused
+unless `AWAITING_DOTS` lists it, and the cure is a dot, which moves a
+card's id: read `TODO.md`'s item on the dots before adding one.
 
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — an undotted *g* was a stop after *l* and *r*, and the dots wait on a card rename
+
+The queue named the Old English pronunciation key's straight quotes, which
+#58 landed this morning and #59 then removed the copy of: `META.ang.note` no
+longer exists, and `tests/tools/build-site.test.ts:925` already fails on a
+straight quote anywhere on the site. So the work was `TODO.md`'s topmost
+unchecked item, the Old English dots.
+
+**It was two items, split by what moves a card.** Wright's §§309–324, read
+whole: §311 lists *sēc(e)an*, *tǣc(e)an* and *þenc(e)an* among the palatal
+*c*, §312 names *fisc* and *flǣsc*, and §§320 and 324 make four more of the
+pack's *g* palatal — `wīg`, `hunig`, `twēgen`, `ǣghwǣr` — with
+`nēahgebūr`'s *ġe-* an eleventh. But a dot changes `tgtLemma`, which is
+`cardId()`'s lemma, and nothing in `src/` renames a card, so each dot would
+orphan a learner's cards, which the homograph decision refuses. That half is
+the next item, the rename first. The half that moves no card was done.
+
+**An undotted *g* was a stop wherever it did not stand between two
+vowels.** §320 lists "beorgan … folgian, to follow … swelgan" under the
+guttural spirant, and §323 says a final *g* after a liquid kept its letter
+and lost its voice — "the restoration of the g was merely orthographical" —
+naming "beorh, hill; burh, city". So `folgian`, `morgen` and `tōmorgen` take
+/ɣ/, `beorg` and `burg` /x/, and `ēagþȳrel`, whose *g* ends `ēag-` before
+*þ*, /x/, where §320's note lets the test take either spirant. Wiktionary's
+module, asked through `action=expandtemplates`, agrees on every spirant and
+voices the final one; Wright names both words, and the pack is his late Old
+English.
+
+Test-first: a second `describe` in `tests/tools/old-english-stress.test.ts`,
+3 tests, red on exactly the six. It refuses an undotted *g* where the
+grammar makes it palatal whatever it came from, and keeps the four the pack
+has in `AWAITING_DOTS`, whose stale check fails as each dot lands. A *g*
+before a weak verb's *-ian* stays guttural, *-ian* being *-ōjan*: Wright's
+own *dagian*, and his index gives `plegian` beside "plægian, plagian". One
+floor of this session's own was guessed, 30 stops where there are 26, and
+failed on the first run; it is set from the count now. Three probes,
+restored by md5, each fail by name.
+
+All 352 cells equalled the old generator, so the column was blanked and
+refilled and exactly the six moved: 11 `ipa` fields, `builtAt` already
+today, no sitemap date; 6 of 716 pages, each `main`'s with its six printings
+of the transcription rewritten and nothing else. All 36 screenshots
+regenerated byte-identical, 14 + 15 + 7 written by count of mtimes, and the
+three groups are stamped. Counts moved 887 → **890** and tools 196 → **199**
+/ 54 → **55** suites, in six places, `docs/LAUNCH.md:221` first. A
+`CHANGELOG.md` paragraph, because the pack ships, and §§313–324 credited in
+`docs/THIRD-PARTY.md`.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 551 unit / 134 suites, 102
+jsdom / 23 suites, **199 tools / 55 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Documentation moved during that run, so `test:tools` was
+run again on the final tree: 199 of 199. Separately: `packs:verify` **0
+errors / 4 warnings**; `npm run site` then `site:check` **716 pages / 16 165
+links**, all resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 —
+the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that Wright's [x] beats Wiktionary's [ɣ] at
+the end of a word, because he names the two words; that a *g* before a
+voiceless consonant may be either spirant, since Wright says "often
+restored"; that four words may wait in a list rather than move cards
+nothing renames; and that the queued item, done twice over, wanted no third
+pass.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds four agent-shaped items, the Old English dots
+first, with the card rename to build before any dot.
 
 ### 2026-10-04 — Old English stress, read against the grammar that is free to read
 

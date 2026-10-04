@@ -8,15 +8,15 @@ is marked, so the transcription is derived. Run this file to check the
 derivation against forms worked out by hand; every Latin value it has written
 into `lex-la.tsv` is also held to the classical rules of syllable and stress
 by `tests/tools/latin-stress.test.ts`, and every Old English value in
-`lex-ang.tsv` to Wright's rules of stress and voicing by
+`lex-ang.tsv` to Wright's rules of stress, voicing and the guttural g by
 `tests/tools/old-english-stress.test.ts`, each of which reads the spelling on
 its own.
 
 Values are the standard teaching reconstructions: Classical Latin as in
 Allen's *Vox Latina*, Old English as in Hogg / Campbell. Latin syllables and
 stress follow Allen & Greenough's *New Latin Grammar*, §§7, 11 and 12; Old
-English stress and voicing Joseph and Elizabeth Mary Wright's *Old English
-Grammar* (1914), §§7–15 and 261.
+English stress, voicing and the guttural g Joseph and Elizabeth Mary Wright's
+*Old English Grammar* (1914), §§7–15, 261 and 313–324.
 """
 
 # --------------------------------------------------------------- Latin ----
@@ -312,10 +312,20 @@ def _ang_phones(word, initial=True):
         elif ch == 'n' and nxt and nxt in 'gckġ':
             phones.append('ŋ')
         elif ch == 'g':
-            # Velar g lenites between vowels, but not root-initially: the g of
-            # be-ginnan is a stop because the root begins there.
-            between_vowels = prev in ANG_VOWELS and nxt in ANG_VOWELS
-            phones.append('ɣ' if between_vowels and not at_start else 'ɡ')
+            # Undotted g is the guttural one (Wright §§313–324). It is the
+            # explosive where a root begins — the g of be-ginnan — and after
+            # n; the voiced spirant inside a word after a vowel, l or r (§320,
+            # "beorgan … folgian … swelgan"); and voiceless at the end of one
+            # after l, r or a guttural vowel, where "the restoration of the g
+            # was merely orthographical" (§323: "beorh, hill; burh, city").
+            # `prev and ...` for the reason `nxt and ...` is written below.
+            after = bool(prev) and (prev in 'lr' or prev in 'aāoōuū')
+            if not at_start and not nxt and after:
+                phones.append('x')
+            elif not at_start and nxt in ANG_VOWELS and (prev in ANG_VOWELS or after):
+                phones.append('ɣ')
+            else:
+                phones.append('ɡ')
         elif ch == 'ƿ':
             phones.append('w')
         elif ch in 'bdklmnprtwxz':
@@ -386,9 +396,13 @@ if __name__ == '__main__':
         ('wæter', '/ˈwæter/'), ('nigon', '/ˈniɣon/'), ('dagas', '/ˈdɑɣɑs/'),
         ('dæġ', '/ˈdæj/'), ('ċild', '/ˈtʃild/'),  ('cwēn', '/ˈkweːn/'),
         # An adverb of tō and a noun is stressed on the noun, whose g is a stop.
-        ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'), ('tōmorgen', '/toːˈmorɡen/'),
+        ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'), ('tōmorgen', '/toːˈmorɣen/'),
         # A compound's second element begins with the sound a word begins with.
-        ('andswaru', '/ˈɑndswɑru/'), ('onsīen', '/ˈonsiːen/'), ('ēagþȳrel', '/ˈæːɑɡθyːrel/'),
+        ('andswaru', '/ˈɑndswɑru/'), ('onsīen', '/ˈonsiːen/'), ('ēagþȳrel', '/ˈæːɑxθyːrel/'),
+        # Undotted g is a spirant inside a word after l or r, and voiceless at
+        # its end after one or a guttural vowel: no headword has the last.
+        ('folgian', '/ˈfolɣiɑn/'), ('morgen', '/ˈmorɣen/'), ('beorg', '/ˈbeorx/'),
+        ('plōg', '/ˈploːx/'), ('lang', '/ˈlɑŋɡ/'),
     ]
     bad = 0
     for word, want in checks_la:

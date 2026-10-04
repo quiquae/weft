@@ -58,10 +58,11 @@ Glosses checked against:
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair
-Campbell, *Old English Grammar*. Stress and the voicing of *f*, *s* and *þ*
-follow Joseph and Elizabeth Mary Wright, *Old English Grammar* (Oxford, 2nd
-ed., 1914), §§7–15 and 261, and `tests/tools/old-english-stress.test.ts`
-holds every Old English transcription to those rules.
+Campbell, *Old English Grammar*. Stress, the voicing of *f*, *s* and *þ*,
+and the sound of an undotted *g* follow Joseph and Elizabeth Mary Wright,
+*Old English Grammar* (Oxford, 2nd ed., 1914), §§7–15, 261 and 313–324, and
+`tests/tools/old-english-stress.test.ts` holds every Old English
+transcription to those rules.
 
 Public-domain sources impose no conditions. They are listed for scholarly
 honesty rather than for compliance.

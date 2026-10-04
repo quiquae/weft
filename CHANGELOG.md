@@ -416,6 +416,18 @@ word's stress and voicing from its spelling by Wright's rules, refusing a
 word that begins with a particle when nothing says whether it is compounded
 of it.
 
+**And six gave a *g* the sound of the *g* in *good* where the grammar has a
+spirant.** An Old English *g* written without a dot is the guttural one, and
+it was transcribed as a stop wherever it did not stand between two vowels.
+Wright makes it the voiced spirant inside a word after *l* or *r* as well —
+"beorgan … folgian, to follow … swelgan" (§320) — and voiceless at the end of
+one after them, where late Old English writes "beorh, hill; burh, city"
+(§323). So *folgian*, *morgen* and *tōmorgen* are /ˈfolɣiɑn/, /ˈmorɣen/ and
+/toːˈmorɣen/, *beorg* and *burg* /ˈbeorx/ and /ˈburx/, and the *g* that ends
+*ēagþȳrel*'s first element, before its *þ*, is /x/. The tests now read every
+undotted *g* by Wright's rules, and name four words whose *g* the grammar
+makes palatal — *wīg*, *hunig*, *twēgen* and *ǣghwǣr* — which want their dots.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -436,7 +448,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 887 tests: 551 unit, 102 in jsdom, 196 over the build tools, and
+**Built with** 890 tests: 551 unit, 102 in jsdom, 199 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
