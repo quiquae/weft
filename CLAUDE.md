@@ -286,7 +286,10 @@ one word each, and only a dictionary can say which kind a pair is.
 parts of speech that is neither numbered nor listed in its `ONE_WORD` with
 the reason, and the quiz compares rows by spelling so that "dog" is never a
 wrong answer to *hund*. French `mort`, death and dead, is two etymologies
-too and is still one card; `TODO.md` has it.
+too, and has been two cards since 2026-10-04: dead is `mort²`, though
+Wiktionary numbers it first, because death already had the card — where
+the dictionary's order and the cards' disagree, the word holding the card
+stays bare.
 
 **The feed's verbs say whether English descends from a language, not whether
 it is dead.** `src/core/discoveries.ts` has two sets of frames: "survived into
