@@ -369,6 +369,19 @@ it, in the tooltip, on its word page and in the site's table of Latin words
 in English. It now names the word in between: "a iānitor kept the iānua",
 the *iānitor* being Latin's doorkeeper and the source of the English word.
 
+**The pronunciation keys said what the transcriptions above them did not.**
+A historical language has no voice to play, so the tooltip shows a short key
+to its spelling instead, and every Latin and Old English word page on the
+site printed one too. The Old English key gave rules for bare letters — *c
+before front vowels is "ch"*, *g before front vowels is "y"*, *sc is "sh"* —
+over transcriptions that did otherwise: *cyning* /ˈkyniŋɡ/, *beginnan*,
+*fisc* /ˈfisk/. What the transcriptions follow, without an exception, is the
+dots printed on the word, and the key never mentioned them; it says now that
+ċ is “ch”, ġ is “y”, sċ is “sh” and cg is “dg”. The Latin key said *ae* was
+/ai̯/ above ten words transcribed /ae̯/, and says /ae̯/. The site printed its
+own copy of each key, which had drifted from the extension's; it prints the
+extension's now, and both are tested against the lexicon they describe.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -389,7 +402,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 872 tests: 548 unit, 102 in jsdom, 184 over the build tools, and
+**Built with** 879 tests: 548 unit, 102 in jsdom, 191 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

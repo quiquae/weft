@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **548 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **184 pass**, 51 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **191 pass**, 53 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
