@@ -382,6 +382,16 @@ dots printed on the word, and the key never mentioned them; it says now that
 own copy of each key, which had drifted from the extension's; it prints the
 extension's now, and both are tested against the lexicon they describe.
 
+**And the line saying why a word was chosen did not always parse.** It
+gives its reasons as "Chosen because …", and every reason is a clause — "it
+is due for review" — except the one about English: a word's likeness to its
+English was a phrase, written for the line that greets a new word, so the
+tooltip said "Chosen because ancestor of English “house”, and it is due for
+review". It says "Chosen because it is the ancestor of English “house”"
+now, and "it is the source of English “vaccine”", "it is near-identical to
+the English word" and so on; the greeting, "New to you, and source of
+English “vaccine”", keeps the phrase it was written for.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -402,7 +412,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 879 tests: 548 unit, 102 in jsdom, 191 over the build tools, and
+**Built with** 882 tests: 551 unit, 102 in jsdom, 191 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
