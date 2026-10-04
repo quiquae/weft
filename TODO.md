@@ -6,7 +6,7 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
-suites, **211** tool tests / 58 suites, **39** e2e passing
+suites, **213** tool tests / 59 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 987 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -386,6 +386,12 @@ it was not enough, Bosworth–Toller; one was wrong, `wīfmann`, marked
 feminine, which is masculine because `mann` is. `tools/seed/ang-genders.tsv`
 records them and `tests/tools/genders.test.ts` holds the seed to it. See the
 ticked item in `Next`.
+
+**And as of 2026-10-04 a plural spells its stem the way its headword does.**
+Three dropped a dot — `cildru`, `cildclāðas`, `ǣgru` — and the egg itself
+wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
+`tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
+a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
 **So the whole of B0 is closed and `Now` is empty. `Next` holds four
 agent-shaped items, none of them waiting on B1.** The code is not
@@ -3541,25 +3547,60 @@ registered**, and nothing below it can move until it is.
       suites, total 910 → **914**, in six places, `docs/LAUNCH.md:221`
       first.
 
-- [ ] **A woven plural or participle shows its headword's transcription,
-      and three Old English plurals disagree with their headwords' dots.**
+- [x] **Three Old English plurals disagree with their headwords' dots.**
+      Split 2026-10-04 out of the item below, which found it while dotting
+      `fisċ`: comparing each second form's stem with its headword's dots
+      found five that differ. `fisċ → fiscas` and `ċiriċe → ċirican` are
+      right, a back vowel following, but `ċild → cildru` and `ċildclāð →
+      cildclāðas` drop the dot before *i* — English Wiktionary declines
+      `ċild` as a z-stem on its dotted stem — and `æġ → ǣgru` disagrees
+      twice: Wiktionary writes `{{ang-noun|ǣġ|n|ǣġru}}`, long and dotted
+      both, so the headword itself wants a macron, which is a `RENAMED` line
+      and a ledger line.
+
+      **Done 2026-10-04, all three and the macron.** The guard came first: a
+      new `describe` in `tests/tools/lexicon-orthography.test.ts` follows
+      each Old English second form along the stem it shares with its
+      headword, letters compared without their marks, and refuses one that
+      drops a dot unless a back vowel follows, or dots a letter its headword
+      leaves bare. Red on exactly the three — `children → cildru, of ċild:
+      drops the dot of its headword's “ċ” before “i”` and the same for
+      `cildclāðas` and `ǣgru` — with `fiscas` and `ċirican` passing; a
+      probe dotting `cyningas` was named by the reverse branch, the pack
+      restored by md5. The headword's length was read before it moved:
+      Wiktionary and Sievers §175 ("ǣg, egg", among the words where final
+      *g* "is only met with after a long vowel") make it long, and
+      Bosworth–Toller prints "æg … pl. ægru", short, at 496 — its long
+      *ǽg* at 497 is "water, island". Two against one. So `ǣġ`, `ǣġru`,
+      `ċildru` and `ċildclāðas`; `æġ: 'ǣġ'` in `RENAMED`, `ang ǣġ` in
+      `card-ids.tsv`, and the egg's line in `ang-genders.tsv` respelt.
+      `card-ids.test.ts` went red on the seed alone, naming `ang:ǣġ` missing
+      and `ang:æġ (card-ids.tsv:337)` stranded, and green with the two
+      lines; the stress test then refused `ǣġ` for beginning with the
+      particle *ǣ-*, and it joined `SIMPLE`. `en-ang.json`: 8 of 7 160
+      fields; site: 5 of 721 files — the three word pages, the Old English
+      index and `/latin/ovum`, which names its Old English counterpart —
+      each `main`'s with the respelt forms rewritten, 23 occurrences; no
+      address moved. All 36 screenshots byte-identical, 15 + 14 + 7 written
+      after the last edit to `src/`, and the three groups stamped. Tools 211
+      → **213** / 58 → **59** suites, total 914 → **916**, in six places,
+      `docs/LAUNCH.md:221` first.
+
+- [ ] **A woven plural or participle shows its headword's transcription.**
       Found 2026-10-04 while dotting `fisċ`. The seed has one `ipa` per row,
       transcribing `tgt`, and the pack builder copies it onto the row of the
       second form too, so the tooltip prints /ˈmɑnː/ under *menn*, /ˈwɪr/
       under *virī* and, now, /ˈseːtʃɑn/ under *sēċende* and /ˈfiʃ/ under
       *fiscas*: 206 Old English rows and 223 Latin ones print a
       transcription of a form that is not the one on the page. Either
-      transcribe `tgt2` too — `_ipa.py` reads any spelling — or print the
-      headword beside the sound, so the claim says what it is of. And
-      comparing each second form's stem with its headword's dots found five
-      that differ: `fisċ → fiscas` and `ċiriċe → ċirican` are right, a back
-      vowel following, but `ċild → cildru` and `ċildclāð → cildclāðas` drop
-      the dot before *i* — English Wiktionary declines `ċild` as a z-stem on
-      its dotted stem — and `æġ → ǣgru` disagrees twice: Wiktionary writes
-      `{{ang-noun|ǣġ|n|ǣġru}}`, long and dotted both, so the headword itself
-      wants a macron, which is a `RENAMED` line and a ledger line. Read the
-      declension tables before changing any of them; a `tgt2` alone moves
-      no card.
+      transcribe `tgt2` too — `_ipa.py` reads any spelling, though the two
+      stress guards read only headwords, so they would need to read the
+      second forms as well — or print the headword beside the sound, so the
+      claim says what it is of. The first is the truer tooltip and moves
+      up to 429 pack fields; a word page prints its headword's
+      transcription, so measure whether any page moves at all. The second
+      is a tooltip template change. About two hours for the first; split
+      it, Old English before Latin.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
@@ -3611,9 +3652,8 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **four** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. The transcriptions a woven plural borrows from its headword,
-and the three plurals whose dots disagree with theirs, first; then `far wel`
-and `camera`,
+to work them. The transcriptions a woven plural borrows from its headword
+first; then `far wel` and `camera`,
 content questions; then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
@@ -3621,8 +3661,8 @@ descent pass, the Latin index's "became", the screenshots' renderer drift,
 the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
 the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
-undotted *g*, the eleven dots, the compounds' fricatives and the Old English
-genders are done.
+undotted *g*, the eleven dots, the compounds' fricatives, the Old English
+genders and the plurals' dots are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3983,6 +4023,23 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-04 — the plurals' dots, finished by a later run.** Ticked in
+`Next`. Three things a later run would be sorry not to know:
+
+1. **The previous run did this work on `main` and stopped before it
+   committed.** It had merged two PRs, pulled `main`, and started editing
+   without `git checkout -b`; the edits sat uncommitted in the working tree
+   for four hours until this run found them by `git status`, branched, and
+   finished. Branch before the first edit, and commit before anything long.
+2. **Bosworth–Toller can disagree with the grammars on length, and its
+   neighbours show it.** Its search for *ǽg* returns 496, "ÆG … An EGG",
+   short, beside 497, "ǽg … water, island", long; read both before
+   deciding which one a word is.
+3. **A respelling's rewrite proof needs word boundaries.** `æġ` sits inside
+   `dæġ`, `mæġden`, `tōdæġ` and `ġiestrandæġ`, so the replacement that
+   proves a page changed only by the respelling is `(?<!\w)æġ(?!\w)`, not
+   a bare string.
 
 **2026-10-04 — the Old English genders, read against two dictionaries.**
 Ticked in `Next`. Three things a later run would be sorry not to know:

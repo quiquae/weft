@@ -140,7 +140,7 @@ const SIMPLE = new Set([
   'bedd', 'beorg', 'bera', 'beran',
   'forma', 'full', 'oft', 'singan', 'tōð',
   'ān', 'āna', 'āscian', 'āscung', 'āþ', // ā- verbs are §646's; āscian is not one of them
-  'ǣfen', 'ǣfre', 'ǣr',
+  'ǣfen', 'ǣfre', 'ǣr', 'ǣġ', // ǣġ is egg, one word with no particle in it
   // From ǣmetta, "leisure", which etymonline says is "perhaps" ǣ- and mōtan:
   // stressed on its first syllable either way, with nothing to voice where it would divide.
   'ǣmettiġ',

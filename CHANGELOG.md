@@ -464,6 +464,18 @@ against English Wiktionary and, where Wiktionary was not enough,
 Bosworth–Toller, and *wīfmann* was the only one of 178 that was wrong. The
 tests now hold each to the entry it was read in.
 
+**And three Old English plurals spell their headword's stem the way the
+headword does.** The pack dots a palatal *c* and *g* and pronounces what it
+dots, and three plurals dropped a dot their headword carries: "children"
+was woven as *cildru* under *ċild*, "babies" as *cildclāðas* under
+*ċildclāð*, and "eggs" as *ǣgru* under *æġ*. They are *ċildru*,
+*ċildclāðas* and *ǣġru* now, as English Wiktionary declines them. The egg
+itself is *ǣġ*, with the long vowel Wiktionary and Sievers give it, so its
+card moves to the new spelling with its whole history, as the eleven dotted
+words' did. A plural may still drop a dot where a back vowel follows, which
+is the guttural sound coming back — *fisċ*, *fiscas* — and the tests now
+refuse one that drops it anywhere else.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -484,7 +496,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 914 tests: 562 unit, 102 in jsdom, 211 over the build tools, and
+**Built with** 916 tests: 562 unit, 102 in jsdom, 213 over the build tools, and
 39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
