@@ -476,6 +476,19 @@ words' did. A plural may still drop a dot where a back vowel follows, which
 is the guttural sound coming back — *fisċ*, *fiscas* — and the tests now
 refuse one that drops it anywhere else.
 
+**And a woven plural or participle sounds like itself.** The tooltip prints
+a pronunciation under the word it wove, and every word had one, its
+headword's, so it printed *mann*'s /ˈmɑnː/ under *menn*, *ċild*'s /ˈtʃild/
+under *ċildru*, and *vir*'s /ˈwɪr/ under Latin *virī* — 206 Old English
+forms and 223 Latin ones. Each Old English plural and participle now has a
+transcription of its own, divided where its headword is, so *hūsbondan*
+keeps the voiceless *s* of *hūsbonda* and *beginnende* the unstressed *be-*
+of *beginnan*; and Wright's §313 gives *fuglas* and *morgnas* the spirant
+their headwords have, where a lost vowel left the *g* before a consonant.
+A Latin plural or participle shows no pronunciation for now, which is
+silence rather than another word's sound, until Latin's are transcribed and
+checked the same way.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -496,7 +509,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 916 tests: 562 unit, 102 in jsdom, 213 over the build tools, and
+**Built with** 920 tests: 562 unit, 102 in jsdom, 217 over the build tools, and
 39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

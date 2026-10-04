@@ -57,11 +57,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **213 pass**, 59 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **217 pass**, 60 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 987 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 983 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -435,6 +435,22 @@ grammar makes palatal whatever it came from — between palatal vowels, or
 after one at the end of a word — is refused, and the cure is its dot, which
 moves the word's card: see the next paragraph.
 
+**A transcription is of one spelling.** The tooltip prints a row's `ipa`
+under the form that row wove, never beside the headword, so the seed's
+ninth column, `ipa2`, transcribes `tgt2`, and `tools/build-pack.mjs` prints
+it under the second form — the headword's only where the two are spelled
+alike, and nothing otherwise. Do not fall back to the headword's: that is
+what printed /ˈmɑnː/ under *menn* on 206 Old English rows and /ˈwɪr/ under
+*virī* on 223 Latin ones until 2026-10-04. `ipa2` is last so the eight
+readers that index the first eight columns by position still find them, and
+a second form divides where its headword does (`_division()` in
+`tools/seed/_ipa.py`), which is how `hūsbondan` keeps its voiceless *s*.
+`tests/tools/form-transcriptions.test.ts` reads the shipped packs and fails
+on one transcription under two spellings or two under one, and
+`tests/tools/old-english-stress.test.ts` holds every second form to Wright
+as it holds the headwords. Latin's second forms print nothing yet; see
+`TODO.md`.
+
 **A respelt word keeps its cards, and a card id once shipped is never
 dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
 in a seed files every card a learner has for the word under an id no pack
@@ -460,6 +476,89 @@ rest of the day an update lands.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — a woven plural sounds like itself, in Old English; in Latin it is silent
+
+The queue named the eleven Old English dots, which #64 landed this morning
+and #65–#67 followed; `TODO.md` had it ticked, so the work was its topmost
+unchecked item: a woven plural or participle printing its headword's
+transcription, /ˈmɑnː/ under *menn*. Split as the item asked, Old English
+first.
+
+**Measured in the shipped packs before anything moved**: grouping each
+pack's rows by card, 206 Old English rows and 223 Latin ones print one
+transcription under two spellings — the item's figures exactly. The seed's
+239 Old English second forms are more because some English plurals are
+never woven.
+
+**The seed gained a ninth column, and it is last on purpose.** `ipa2`
+transcribes `tgt2`. Eight readers index the first eight columns by position
+— `verify-packs.mjs` destructures them, four tests read `f[5]` or `f[7]` —
+so a column in the middle would have moved every one of them. `fill_ipa.py`
+fills it for Old English only, `SECOND_FORMS = {'ang'}`, because Latin's
+guard does not read second forms yet. A second form divides where its
+headword does, `_division()` in `_ipa.py`: without it the generator read
+`hūsbondan` as a simple word and voiced its *s*, and stressed `beginnende`
+on *be-*. The four participles `ANG_PREFIXED` listed were dead — nothing
+had ever transcribed a `tgt2` — and are gone.
+
+**The builder prints a second form's own sound or none.** The headword's
+only where the two are spelled alike, which kept five Latin plurals
+(*diēs* beside *diēs*) that dropping it outright would have lost; the
+first measurement said 228 Latin fields removed where the defect was 223,
+and the five were the difference. `shared` became a function of `ipa`
+rather than `ipa` moving into each push, because JSON keeps insertion
+order and moving the key would have reordered 1 164 unchanged fields.
+
+**Test-first, and the second guard found two transcriptions wrong.**
+`tests/tools/form-transcriptions.test.ts`, 3 tests in a new suite, reads
+the packs: red on 422 words. `old-english-stress.test.ts` reads every
+second form beside its headword, every list keyed by the headword: red on
+239 with no `ipa2`. Filled and green on stress and voicing at once, it then
+refused three *g*: `plegiende`, a weak verb's *-iende*, which the
+guard's *-ian* exception now covers; and `fuglas` and `morgnas`, a *g* a
+lost vowel left before *l* and *n*, which the generator made the stop.
+Wright §313, read from the copy cached in `/tmp/weft-wright/`: Germanic *ʒ*
+"remained a spirant in all other positions" than after *ŋ*, and §314 makes
+only the initial one a stop. Fixed in generator and guard, each reading the
+grammar itself; every one of 591 cells was shown to equal the final
+generator, the column refilled from the pre-fill seed, and exactly the two
+moved. Five probes, restored by md5, each failing its own test by name —
+among them a builder dropping every second form's sound, which only the
+floor catches.
+
+**What moved.** `en-ang.json` 206 `ipa` fields; `en-la.json` 223 removed and
+`builtAt` 10-03 → 10-04; `index.json` nothing. The site, built from `main`
+in a `/tmp` worktree and from the branch: 1 of 721 files, `sitemap.xml`, the
+Latin index's and hub's dates; no page, a word page printing its headword's
+sound. All 36 screenshots regenerated byte-identical, 14 + 15 + 7 written,
+and the three groups stamped after the last edit to `src/`. The package
+shrank 987 → **983 KB**, 4 545 bytes, all of it the two packs.
+`pronunciation-keys.test.ts` read "each headword's transcription" as the
+first transcribed row of a card, true only while every row carried the
+headword's; it reads the headword's own row now. Counts moved 916 →
+**920** and tools 213 → **217** / 59 → **60** suites, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 562 unit / 136 suites, 102
+jsdom / 23 suites, **217 tools / 60 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **983 KB × 3**
+passing `validate`, **39 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a.
+
+Assumed, with nobody to ask: that a Latin second form showing no sound
+until its own is written beats showing its headword's, by the rule that a
+blank costs less trust than a false claim; that §313 settles a *g* before a
+voiced consonant without a second grammar, being explicit; and that the
+ninth column is better last than beside `ipa`.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds four agent-shaped items, Latin's second forms
+first.
 
 ### 2026-10-04 — three plurals take their headwords' dots, and the egg its long vowel
 
