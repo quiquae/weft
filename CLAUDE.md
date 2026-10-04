@@ -55,13 +55,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **551 pass**, 134 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **199 pass**, 55 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **207 pass**, 57 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 987 KB unpacked per target |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -411,14 +411,121 @@ vowel, *l* or *r* (§320, "folgian, to follow"), and voiceless at the end of
 one after a liquid or a guttural vowel (§323, "beorh, hill; burh, city"),
 where English Wiktionary voices it; the pack is late Old English, which is
 Wright's point. A *g* the grammar makes palatal whatever it came from —
-between palatal vowels, or after one at the end of a word — is refused
-unless `AWAITING_DOTS` lists it, and the cure is a dot, which moves a
-card's id: read `TODO.md`'s item on the dots before adding one.
+between palatal vowels, or after one at the end of a word — is refused,
+and the cure is its dot, which moves the word's card: see the next
+paragraph.
+
+**A respelt word keeps its cards, and a card id once shipped is never
+dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
+in a seed files every card a learner has for the word under an id no pack
+reads, and nothing in the build notices — the packs rebuild, every page
+renders, and the word arrives as new with its reviews stranded. `RENAMED`
+in `src/core/renames.ts` records each old spelling beside its new one, and
+`renameCards()` moves those cards, whole, where cards come in: `loadCards()`
+on the first load after an update, written back so the move is made once,
+and `importCards()` before the merge, for an export written before the
+change. `tools/seed/card-ids.tsv` is the ledger of every card id a pack has
+carried, taken 2026-10-04 when no id had been lost since 1.0.0, and
+`tests/tools/card-ids.test.ts` fails on a ledger id no pack teaches unless
+`RENAMED` moves it to one that does, on a word a pack teaches with no ledger
+line, on a rename whose old spelling is still taught or was never shipped,
+and on a rename that changes letters rather than marks, because a
+different word is a different card. Never delete a `RENAMED` line or a
+ledger line: an install that has not loaded its cards since, or an export
+from before, still holds the old id. Today's `introduced` list holds bare
+lemmas and is not renamed, which costs at most one new-word slot for the
+rest of the day an update lands.
 
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — eleven Old English words take their dots, and their cards go with them
+
+The queue named the Old English stress item, which #62 and #63 landed this
+morning; `TODO.md` had it ticked, and its six dotted words had become the
+topmost unchecked item, "Eleven Old English headwords want their dots, and a
+dot moves a card", three hours by its own estimate, the rename table first.
+All eleven landed, in under an hour.
+
+**A spelling is a card's identity, so the rename came first.** `RENAMED` in
+`src/core/renames.ts` records each old spelling beside its new one, and
+`renameCards()` moves a card filed under it, whole, joined by `mergeCards`
+where the new spelling already has one: in `loadCards()`, written back so the
+move is made once, and in `importCards()` before the merge. Test-first, 11
+tests in `tests/core/renames.test.ts`, red on the missing module and then on
+the 4 storage tests until each half was wired; either half taken out again
+fails exactly its own two. An e2e test imports an export holding `ang:sēcan`
+and finds its 7 reviews under `sēċan`, and fails against the unwired import.
+
+**The ledger is the transferable half.** A rename only helps if somebody
+remembers to write it, and nothing enforced that. Measured first against
+`git show v1.0.0:src/lexicon/packs/…`: no pack had lost a card id since 1.0.0,
+only gained the four homograph seconds, so the ids the packs carry today are
+every id ever shipped. `tools/seed/card-ids.tsv` records them, 2 446, and
+`tests/tools/card-ids.test.ts` fails on a shipped id no pack teaches unless
+`RENAMED` moves it to one that does — a forgotten rename names
+`ang:sēcan (card-ids.tsv:262)` — as well as on a rename that would move a
+card off a word still taught, names a spelling never shipped, loops, or
+changes letters rather than marks. A CI-safe ledger rather than a git
+comparison, because `actions/checkout` is shallow and has no tags.
+
+**The dots, each read before it moved.** *c*: `sēċan`, `tǣċan`, `þenċan`,
+`wyrċan` and their participles, Wright §311. *g*: `twēġen`, `wīġ`, `huniġ`,
+`ǣġhwǣr` (§§320, 324) and `nēahġebūr`'s prefix *ġe-*; `AWAITING_DOTS` is
+gone and the refusal names the cure. *sc*: `fisċ` and `flǣsċ` (§312), with
+English Wiktionary as the second source the item asked for: it declines
+`fisċ` on the stems `fisċ|fisc`, so the plural stays `fiscas`, and writes
+`ā+scian` and `ā+scung` with `āxian` and `ācsian` beside them, so those two
+stay bare, as English *ask* does. Wiktionary titles drop the marks, so
+`action=raw` on `fisċ` returns an error page and the entry is `fisc`.
+
+**What moved, proved rather than read.** 57 fields of `en-ang.json`, its
+`builtAt` already today. 183 of 718 site files, and rewriting `main`'s build
+with the eleven spellings and transcriptions, 408 occurrences, leaves 0 that
+differ; no address moved, `slugify()` stripping the dot. All 36 screenshots
+regenerated byte-identical three times, 14 + 15 + 7 written each time. The
+third time was forced: a comment-only edit to `src/core/renames.ts` staled
+all three groups by provenance, which cannot see that a comment moves no
+pixel, so stamp after the last edit to `src/`, not before.
+
+**Found and queued, not fixed.** The tooltip prints a row's one
+transcription, its headword's, under every form of it — /ˈmɑnː/ under
+*menn*, now /ˈfiʃ/ under *fiscas* — on 206 Old English rows and 223 Latin
+ones. And three plurals disagree with their headwords' dots: `ċild → cildru`,
+`ċildclāð → cildclāðas`, and `æġ → ǣgru`, where Wiktionary has
+`{{ang-noun|ǣġ|n|ǣġru}}`, so the headword wants a macron and a `RENAMED`
+line. `wīfmann` and `hūsbonda` are an item of their own now.
+
+Counts moved 890 → **910**: unit 551 → **562** / 134 → **136** suites, tools
+199 → **207** / 55 → **57**, e2e 38 → **39**, in six places,
+`docs/LAUNCH.md:221` first; a `CHANGELOG.md` paragraph, because the pack and
+the worker ship. The package grew 986 → **987 KB** by 740 bytes, 694 in
+`background.js` and 46 in the pack, measured against `main`'s Chrome build.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, **562 unit / 136 suites**,
+102 jsdom / 23 suites, **207 tools / 57 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **987 KB × 3**
+passing `validate`, **39 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies in the tracked trees, `dist/` or
+`test-results/`.
+
+Assumed, with nobody to ask: that Wiktionary is the second source the *sc*
+words wanted; that each participle takes its infinitive's dot, the same *j*
+following both; that a ledger kept by hand, one line per new word and named
+by the failing test, is better than `npm run packs` writing it; that today's
+`introduced` list need not be renamed, costing at most one new-word slot on
+the day an update lands; and that all eleven belonged in one change, the
+rename being built for them.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds five agent-shaped items, `wīfmann` and
+`hūsbonda` first.
 
 ### 2026-10-04 — an undotted *g* was a stop after *l* and *r*, and the dots wait on a card rename
 

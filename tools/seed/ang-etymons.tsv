@@ -67,7 +67,7 @@ husband	noun	hūsbonda	husband	etym:husband
 king	noun	cyning	king	etym:king
 queen	noun	cwēn	queen	etym:queen
 lord	noun	hlāford	lord	etym:lord
-neighbour	noun	nēahgebūr	neighbour	etym:neighbor
+neighbour	noun	nēahġebūr	neighbour	etym:neighbor
 enemy	noun	fēond	fiend	etym:fiend
 doctor	noun	lǣċe	leech	etym:leech
 sailor	noun	sǣmann	seaman	etym:seaman
@@ -92,7 +92,7 @@ dog	noun	hund	hound	etym:hound etym:dog
 cat	noun	catt	cat	etym:cat
 horse	noun	hors	horse	etym:horse
 bird	noun	fugol	fowl	etym:fowl
-fish	noun	fisc	fish	etym:fish
+fish	noun	fisċ	fish	etym:fish
 cow	noun	cū	cow	etym:cow
 sheep	noun	sċēap	sheep	etym:sheep
 pig	noun	swīn	swine	etym:swine
@@ -111,10 +111,10 @@ bread	noun	hlāf	loaf	etym:loaf etym:bread
 water	noun	wæter	water	etym:water
 wine	noun	wīn	wine	etym:wine
 milk	noun	meoluc	milk	etym:milk
-meat	noun	flǣsc	flesh	etym:flesh
+meat	noun	flǣsċ	flesh	etym:flesh
 apple	noun	æppel	apple	etym:apple
 salt	noun	sealt	salt	etym:salt
-honey	noun	hunig	honey	etym:honey
+honey	noun	huniġ	honey	etym:honey
 cheese	noun	ċīese	cheese	etym:cheese
 fire	noun	fȳr	fire	etym:fire
 house	noun	hūs	house	etym:house
@@ -257,7 +257,7 @@ go	verb	gān	go	etym:go etym:gangway etym:gang
 come	verb	cuman	come	etym:come
 see	verb	sēon	see	etym:see
 know	verb	witan	wit	etym:wit
-think	verb	þencan	think	etym:think
+think	verb	þenċan	think	etym:think
 take	verb	niman	numb	etym:numb etym:nim etym:take etym:nimble
 give	verb	ġiefan	give	etym:give
 make	verb	macian	make	etym:make
@@ -265,7 +265,7 @@ find	verb	findan	find	etym:find
 want	verb	willan	will	etym:will
 tell	verb	tellan	tell	etym:tell etym:teller
 ask	verb	āscian	ask	etym:ask
-work	verb	wyrcan	wrought	etym:wrought
+work	verb	wyrċan	wrought	etym:wrought
 play	verb	plegian	play	etym:play
 run	verb	rinnan	run	etym:run
 walk	verb	wealcan	walk	etym:walk
@@ -297,7 +297,7 @@ open	verb	openian	open	etym:open
 begin	verb	beginnan	begin	etym:begin
 help	verb	helpan	help	etym:help
 learn	verb	leornian	learn	etym:learn
-teach	verb	tǣcan	teach	etym:teach etym:token
+teach	verb	tǣċan	teach	etym:teach etym:token
 forget	verb	forġietan	forget	etym:forget
 win	verb	winnan	win	etym:win
 lose	verb	losian	lose	etym:lose
@@ -316,7 +316,7 @@ put	verb	settan	set	etym:set
 keep	verb	cēpan	keep	etym:keep
 leave	verb	lǣfan	leave	etym:leave
 follow	verb	folgian	follow	etym:follow
-seek	verb	sēcan	seek	etym:seek etym:beseech
+seek	verb	sēċan	seek	etym:seek etym:beseech
 choose	verb	ċēosan	choose	etym:choose
 change	verb	wendan	wend	etym:wend
 grow	verb	grōwan	grow	etym:grow
@@ -345,7 +345,7 @@ slowly	adv	slāwlīċe	slowly	etym:slowly
 truly	adv	sōþlīċe	soothly	wikt:en:soothly
 very	adv	swīþe	swith	wikt:en:swith
 one	num	ān	one	etym:one
-two	num	twēgen	twain	etym:twain
+two	num	twēġen	twain	etym:twain
 three	num	þrēo	three	etym:three
 four	num	fēower	four	etym:four
 five	num	fīf	five	etym:five

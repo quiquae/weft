@@ -12,6 +12,7 @@ import type { Patch } from '../core/patch.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey, mergeAttention } from '../core/escalation.ts';
 import { mergeCards } from '../core/fsrs.ts';
+import { renameCards } from '../core/renames.ts';
 import { pruneAttention, pruneByAge } from '../core/prune.ts';
 import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
 import type { Tier } from '../core/entitlements.ts';
@@ -242,7 +243,15 @@ let cardsDirty = false;
 
 export async function loadCards(): Promise<Record<string, MemoryCard>> {
   if (cardCache) return cardCache;
-  cardCache = (await raw<Record<string, MemoryCard>>(KEYS.cards)) ?? {};
+  // A card filed under a spelling the pack has since changed moves to the
+  // word's current one, and is written back at once so the move is made once
+  // rather than on every awakening. See RENAMED.
+  const { cards, moved } = renameCards((await raw<Record<string, MemoryCard>>(KEYS.cards)) ?? {});
+  cardCache = cards;
+  if (moved) {
+    cardsDirty = true;
+    await flushCards();
+  }
   return cardCache;
 }
 
@@ -457,11 +466,18 @@ async function importCards(incoming: unknown): Promise<number> {
   const merged: Record<string, MemoryCard> = { ...existing };
   let added = 0;
 
+  const offered: Record<string, MemoryCard> = {};
   for (const [id, card] of Object.entries(incoming as Record<string, MemoryCard>)) {
     if (!card || typeof card !== 'object' || typeof card.lemma !== 'string') continue;
+    offered[id] = { ...card, id };
+  }
+
+  // A file an older version wrote may file a word under a spelling the pack
+  // has since changed, and this install has already moved its own copy.
+  for (const [id, card] of Object.entries(renameCards(offered).cards)) {
     const current = merged[id];
     if (!current) {
-      merged[id] = { ...card, id };
+      merged[id] = card;
       added++;
       continue;
     }
@@ -469,7 +485,7 @@ async function importCards(incoming: unknown): Promise<number> {
     // genuinely additive counters. The version of this loop that compared
     // reps OR exposures and replaced the whole record could drop nine
     // reviews to gain an exposure count — see the note on mergeCards.
-    const next = mergeCards(current, { ...card, id });
+    const next = mergeCards(current, card);
     if (next !== current) {
       merged[id] = next;
       added++;

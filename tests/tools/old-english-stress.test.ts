@@ -91,7 +91,7 @@ const COMPOUNDED: Record<string, Divided> = {
   unwlitiġ: { first: 'un', stressed: 'first' },
   // §15: a compound adverb whose first element matters more is stressed on it, "eal(l)mǣst".
   fulnēah: { first: 'ful', stressed: 'first' },
-  ǣghwǣr: { first: 'ǣg', stressed: 'first' },
+  ǣġhwǣr: { first: 'ǣġ', stressed: 'first' },
   nāhwǣr: { first: 'nā', stressed: 'first' },
   ġiestrandæġ: { first: 'ġiestran', stressed: 'first' },
   // §11: two nouns, stressed on the first.
@@ -99,7 +99,7 @@ const COMPOUNDED: Record<string, Divided> = {
   hūsbonda: { first: 'hūs', stressed: 'first' },
   sǣmann: { first: 'sǣ', stressed: 'first' },
   ċildclāð: { first: 'ċild', stressed: 'first' },
-  nēahgebūr: { first: 'nēah', stressed: 'first' },
+  nēahġebūr: { first: 'nēah', stressed: 'first' },
   ēagþȳrel: { first: 'ēag', stressed: 'first' }, // "eye-hole"
   bōcstæf: { first: 'bōc', stressed: 'first' },
 };
@@ -345,14 +345,6 @@ describe('every Old English transcription is stressed and voiced where the gramm
  * index gives "plægian, plagian" beside it (§538).
  */
 
-/** Headwords whose g stands where Wright makes it palatal, and which the pack writes bare. Dotting a headword moves its card's id, which is why they are waiting. */
-const AWAITING_DOTS: Record<string, string> = {
-  wīg: 'final after a palatal vowel (§324); Wiktionary writes wīġ',
-  hunig: 'final after a palatal vowel, as §324’s bodig and hefig; Wiktionary writes huniġ',
-  twēgen: 'between palatal vowels (§320); Wiktionary writes twēġen',
-  ǣghwǣr: 'ending a first element after a palatal vowel (§324); ǣġ- is ā-ġe-, and Wiktionary’s module reads ǣġhwǣr /ˈæːj.xwæːr/',
-};
-
 const BACK = 'aāoōuū';
 const FRONT = 'iīeēæǣyȳ';
 const VOICELESS = 'cfhkpstþ';
@@ -412,19 +404,16 @@ describe('every undotted Old English g has the sound Wright gives the guttural g
     report(
       checked.flatMap((r) => {
         const { refused } = gsOf(r);
-        if (AWAITING_DOTS[r.word]) return refused.length ? [] : [`${r.tgt}: listed as awaiting its dots, and its g reads as guttural`];
         return refused.map((why) => `${r.tgt} ${r.ipa}: ${why}`);
       }),
-      'have an undotted g the grammar makes palatal or nothing here reads',
+      'have an undotted g the grammar makes palatal or nothing here reads. The cure for a palatal one ' +
+        'is its dot, and a dot moves the card: add the old spelling to RENAMED in src/core/renames.ts',
     );
-    const stale = Object.keys(AWAITING_DOTS).filter((word) => !headwords.has(word));
-    assert.deepEqual(stale, [], `awaiting dots and no longer a headword of lex-ang.tsv: ${stale.join(', ')}`);
   });
 
   test('an undotted g is a stop where a root begins and after n, voiced inside a word, and voiceless at its end', () => {
     report(
       checked.flatMap((r) => {
-        if (AWAITING_DOTS[r.word]) return [];
         const want = gsOf(r).sounds;
         if (!want.length) return [];
         const count = (re: RegExp): number => (r.ipa.match(re) ?? []).length;
@@ -448,7 +437,7 @@ describe('every undotted Old English g has the sound Wright gives the guttural g
   });
 
   test('the g rules have something to police', () => {
-    const all = checked.filter((r) => !AWAITING_DOTS[r.word]).flatMap((r) => gsOf(r).sounds);
+    const all = checked.flatMap((r) => gsOf(r).sounds);
     const n = (g: G): number => all.filter((w) => w === g).length;
     const afterN = checked.filter((r) => /ng/.test(r.word)).length;
     assert.ok(n('ɡ') > 20, `only ${n('ɡ')} undotted g begin a root or follow n`);

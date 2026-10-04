@@ -44,7 +44,7 @@
  *
  * Deliberately outside the rule: a handful of notes gloss a *common*-noun
  * descendant the same way — `setl` → settle, "the high-backed bench";
- * `nēahgebūr` → neighbour, "the near-dweller". Read alone these still parse
+ * `nēahġebūr` → neighbour, "the near-dweller". Read alone these still parse
  * as a gloss of the Old English word, which is close enough to true to be
  * harmless, and drawing the line at proper nouns is what keeps this guard
  * from needing a judgement call per entry.
