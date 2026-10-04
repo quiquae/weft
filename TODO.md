@@ -6,7 +6,7 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
-suites, **207** tool tests / 57 suites, **39** e2e passing
+suites, **211** tool tests / 58 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 987 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -380,10 +380,17 @@ after the voicing had run its course, so it is /ˈhuːsbondɑ/, and
 `wīfmann` keeps its /v/, because Sievers counts its late *wimman* among
 the changes of a voiced *f*. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds five
+**And as of 2026-10-04 every Old English gender names the entry it was
+read in.** All 178 nouns were read against English Wiktionary and, where
+it was not enough, Bosworth–Toller; one was wrong, `wīfmann`, marked
+feminine, which is masculine because `mann` is. `tools/seed/ang-genders.tsv`
+records them and `tests/tools/genders.test.ts` holds the seed to it. See the
+ticked item in `Next`.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds four
 agent-shaped items, none of them waiting on B1.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those five needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining item besides those four needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -3484,7 +3491,7 @@ registered**, and nothing below it can move until it is.
       without `grown` fails the voicing test and its floor by name, and
       `grown` on `sǣmann` is refused by name. No test count moved.
 
-- [ ] **`wīfmann` is marked feminine, and the grammars decline it as
+- [x] **`wīfmann` is marked feminine, and the grammars decline it as
       `mann` is.** Found 2026-10-04 reading Sievers for its *f*. The seed
       row is `woman noun wīfmann wīfmenn f`, and the tooltip prints the
       gender. Sievers (tr. Cook, 1903), §281 note 1, under the masculine
@@ -3500,6 +3507,39 @@ registered**, and nothing below it can move until it is.
       Wiktionary's `{{ang-noun|…|g}}` is the transferable half, one `curl`
       per headword with `action=raw` (titles drop the marks). About 20
       minutes for the row, an hour or two for the pass.
+
+      **Done 2026-10-04, the row and the pass.** Bosworth–Toller, read
+      first: "wíf-mann, (wím-, wim-?), es; m. (but seó wífman occurs)". Then
+      all 176 noun targets — 178 rows, `hund` being dog and hound — were
+      fetched from Wiktionary raw and their Old English `{{ang-noun}}`
+      genders compared with the seed's. Of the 178 rows, 149 agreed outright;
+      20 differed only because a page holds every word of one spelling
+      (`stefn`, voice, f, beside `stefn`, stem, m; `lagu`, law, f, beside
+      `lagu`, sea, m) or gives a word two genders, the seed's among them.
+      That left nine, each read in
+      Bosworth–Toller: `hīwsċipe`, `onsīen` (*an-sýn*), `pæð`
+      and `blis` have no Wiktionary entry under those titles and agree with
+      the seed; `īren`'s Wiktionary header says m where its own declension
+      table is a neuter a-stem, and B–T has "es; n."; `þorp` is n in
+      Wiktionary and "es; m." in B–T, which the pack's attribution names, so
+      it stays m; `ċildclāð` is n in B–T's main entry and "m. (not n.)" in
+      its Supplement, which is cited; `fremde` is an adjective, used as a
+      noun for a stranger, which Wiktionary records; and `wīfmann` was the
+      one wrong. So `tools/seed/ang-genders.tsv` repeats every noun's
+      gender beside the entries it was read in, 178 lines, 8 naming B–T, and
+      `tests/tools/genders.test.ts`, 4 tests in 1 suite, holds the two files
+      together. Test-first: red on a header-only ledger, all 178 unsourced;
+      then, the ledger written from the dictionaries, red on exactly
+      `lex-ang.tsv:49 woman → wīfmann is f, where ang-genders.tsv:45 read
+      m`; then the seed cell, and green. Three probes, restored by md5: a
+      Wiktionary citation of `mann` on `wīfmann`'s line, a deleted `hound`
+      line, and a line for an untaught `draca`, each named. `en-ang.json`:
+      2 of 7 160 fields, `woman` and `women`; site: 1 of 721 files,
+      `/old-english/wifmann`, `main`'s page with its five printings of the
+      gender rewritten; all 36 screenshots byte-identical, 15 + 14 + 7
+      written, the three groups stamped. Tools 207 → **211** / 57 → **58**
+      suites, total 910 → **914**, in six places, `docs/LAUNCH.md:221`
+      first.
 
 - [ ] **A woven plural or participle shows its headword's transcription,
       and three Old English plurals disagree with their headwords' dots.**
@@ -3569,11 +3609,11 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **five** unchecked items above, as of
+`Now` is **empty** and `Next` holds **four** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. `wīfmann`'s gender first, one cell and twenty minutes; then
-the transcriptions a woven plural borrows from its headword, and the three
-plurals whose dots disagree with theirs; then `far wel` and `camera`,
+to work them. The transcriptions a woven plural borrows from its headword,
+and the three plurals whose dots disagree with theirs, first; then `far wel`
+and `camera`,
 content questions; then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
@@ -3581,7 +3621,8 @@ descent pass, the Latin index's "became", the screenshots' renderer drift,
 the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
 the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
-undotted *g*, the eleven dots and the compounds' fricatives are done.
+undotted *g*, the eleven dots, the compounds' fricatives and the Old English
+genders are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3942,6 +3983,24 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-04 — the Old English genders, read against two dictionaries.**
+Ticked in `Next`. Three things a later run would be sorry not to know:
+
+1. **Bosworth–Toller answers `curl`.** `https://bosworthtoller.com/search?q=<word>`
+   lists entries as links to `/<id>`, and `https://bosworthtoller.com/<id>`
+   is the entry, its grammar after the word "Grammar" once the tags are
+   stripped. The Supplement's entries have ids of their own and can correct
+   the main dictionary: `ċildclāð` is "n." at 6142 and "m. (not n.)" at
+   41645. Its data are "free for any purpose", it says; cite `bt:<id>`.
+2. **A Wiktionary page is a spelling, not a word, and can disagree with
+   itself.** 20 of the 24 pages that differed from the seed held a second
+   word of the same spelling or a second gender; `īren`'s header says m over
+   a neuter declension table. Compare by etymology, and read the table.
+3. **The comparison is cheap to repeat.** 176 titles at 0.4 s apart took
+   about two minutes; the script is in this item's Done paragraph in
+   outline, and `tests/tools/genders.test.ts`'s `wiktionaryTitle()` is the
+   title rule.
 
 **2026-10-04 — the compounds' fricatives, decided by grammars that name
 them.** Ticked in `Next`. Four things a later run would be sorry not to
