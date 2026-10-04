@@ -6,7 +6,7 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
-suites, **181** tool tests / 50 suites, **38** e2e passing
+suites, **184** tool tests / 51 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -3044,7 +3044,7 @@ registered**, and nothing below it can move until it is.
       ledger line outlives it), `paene insula` unmacroned, and the tables'
       class renamed (the floor: "found 0"). Nothing on the page moved.
 
-- [ ] **The Old English pronunciation key quotes with straight marks, on 346
+- [x] **The Old English pronunciation key quotes with straight marks, on 346
       word pages.** Found 2026-10-02 reading `/old-english/laece` after the
       slug fix. `META.ang.note` (`tools/build-site.mjs:82`) reads `þ and ð
       are both "th"; c before a front vowel is "ch"; sc is "sh"`, and
@@ -3062,6 +3062,65 @@ registered**, and nothing below it can move until it is.
       `docs/PRIVACY.md` and the entitlement copy: those are documents a
       reader also opens on GitHub, where a Markdown smart-quote pass would
       change what they see there. About 10 minutes.
+
+      **Done 2026-10-04, on 349 pages, and the guard reads every page.** 349,
+      not 346: the homograph pass added three Old English word pages after
+      this was counted. The key now prints “th”, “ch” and “sh”. The guard is
+      not the `word__pronNote` check proposed above, which would police the
+      one string already found: a new `describe` in
+      `tests/tools/build-site.test.ts` reads every page the site serves
+      through `readable()` — body, `<meta>` and structured data, with
+      `&quot;` decoded, since `esc()` writes the mark that way — and fails
+      on a straight `"` anywhere but the three pages `OWN_MARKS` excuses by
+      name and reason. A page added later is held without an edit. Red first
+      on exactly the 349. Four probes, restored by md5, each failing by
+      name: a quote in the install page's prose (`/install.html`, not a pack
+      page), one in the language index's description alone
+      (`/old-english/index.html`, read from the head), the reader losing its
+      `&quot;` decode (the floor, which the rule alone would have passed),
+      and a misspelt exemption (fails twice). Straight apostrophes were
+      measured too and left: the landing page reads with 3 and no curly
+      one, so that is one convention, not a mixed one.
+
+      **And the key is a hand copy, and both copies state rules the packs'
+      own transcriptions contradict.** The item below.
+
+- [ ] **The pronunciation keys state rules the packs' own transcriptions
+      contradict, and the site's are hand copies of the tooltip's.** Found
+      2026-10-04 while curling the site key's marks. The tooltip prints
+      `pronunciationNote` from `src/core/languages.ts` for a historical
+      target (`src/content/tooltip.ts:355`, at most three times a page), and
+      `docs/screens/page-old-english.png` shows it, in straight marks. The
+      site prints `META.<lang>.note` from `tools/build-site.mjs`, a copy of
+      the same sentence that has drifted in both languages. Measured over
+      each pack's headwords with IPA:
+      - Old English, both keys: "c before a front vowel is “ch”" — 5
+        headwords transcribe it /k/ (`cyning`, `cēpan`, `wolcen`, `macian`,
+        `lōcian`); "sc is “sh”" — 4 transcribe /sk/ (`fisc`, `flǣsc`,
+        `āscian`, `āscung`).
+      - Old English, the tooltip's only: "g before front vowels is “y”" —
+        10 transcribe /ɡ/ or /ɣ/ (`beginnan`, `finger`, `morgen`, `twēgen`,
+        `ēage`, …).
+      - Latin, the tooltip's only: "ae as /ai̯/" — all 10 headwords with
+        *ae* transcribe /ae̯/ (`caelum`, `aestās`, `saepe`, …), so the key
+        contradicts the line above it in the same tooltip.
+      What the transcriptions do follow, without one exception, is the
+      dots: every ċ outside *sċ* is /tʃ/ (17 headwords), every ġ /j/ (25),
+      every *sċ* /ʃ/ (10), every *cg* /ddʒ/ (3) — and neither key mentions
+      a dot, though the page and the tooltip print them. Shape: one key per
+      language, in the language table, read by the site as well
+      (`getLanguage()`; the builder already imports `src/core/`), written
+      in curly marks and stating only what the pack bears out — for Old
+      English, ċ, ġ, *sċ* and *cg* rather than rules about bare letters.
+      The guard: a test that each letter a key names has the sound it says
+      in every headword that has the letter, derived from the key's own
+      text, and that the site prints the table's sentence. It moves `src/`:
+      regenerate the three screenshot groups, and `page-old-english.png`
+      will move. Separately, and not this item's: the pack writes `fisc`,
+      `flǣsc`, `sēcan`, `tǣcan`, `þencan` and `wyrcan` undotted, with /k/
+      or /sk/, where English Wiktionary has *fisċ* /fiʃ/, *sēċan*
+      /ˈseː.t͡ʃɑn/ and so on — a question for the Old English stress item
+      below, which reads the generator against a grammar. About 45 minutes.
 
 - [ ] **The tooltip's reason line is ungrammatical whenever its reason is a
       cognate.** Found 2026-10-03 measuring the badge fix. `explainChoice()`
@@ -3171,8 +3230,8 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **seven** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. The pronunciation key's quote marks and the reason line's
-grammar first, two small ones; then French `mort`, one card or two,
+to work them. The pronunciation keys first, one per language and true of
+its pack, then the reason line's grammar, a small one; then French `mort`, one card or two,
 a decision with the evidence written down; then Old English stress, one
 wrong word and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
@@ -3180,7 +3239,8 @@ wrong word and a grammar to read, free before B3; then `far wel` and
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
 renderer drift, the tooltip's "Ancestor of English", the dashboard's
-date, the `iānua` note and the landing page's tables are done.
+date, the `iānua` note, the landing page's tables and the site key's quote marks
+are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3541,6 +3601,27 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-04 — the site key's quote marks, and the two keys behind them.**
+Ticked in `Next`. Four things a later run would be sorry not to know:
+
+1. **`esc()` hides a straight quote from grep.** The builder writes `"` as
+   `&quot;`, so a search of the HTML for `"` finds every attribute delimiter
+   and a search for `&quot;` misses the structured data, where JSON writes
+   `\"`. `readable()` in `tests/tools/build-site.test.ts` decodes it, and
+   `pages` there now holds every page the site serves as it reads: reuse it
+   for any rule about what the whole site says.
+2. **Read a sentence for whether it is true while changing its marks.** The
+   item was three pairs of quotes; reading the key it sat in against the
+   pack's own IPA found that two of its three rules are contradicted on
+   the very pages that print it, and that the tooltip's copy, in
+   `src/core/languages.ts`, is worse. The new top item has the numbers.
+3. **`'abc'.includes('')` is true.** A scratch count of "c before a front
+   vowel" that defaulted the letter after the last to `''` counted every
+   word-final *c* and *g*: 12 became 5 and 22 became 10 once the end of the
+   word was excluded. Check a count's members, not only its size.
+4. **B1 has not moved.** `dig weft.study @8.8.8.8` answers NXDOMAIN on
+   2026-10-04.
 
 **2026-10-03 — `dashboard.png` is held, and the hold has two halves.**
 Ticked in `Next`. Five things a later run would be sorry not to know:

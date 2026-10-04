@@ -18,6 +18,8 @@
  *   6. Every page's header draws the mark that ships as the icon. See below.
  *   7. No page about Latin says English descends from it. See below.
  *   8. The landing page's descent tables say what the packs say. See below.
+ *   9. No page quotes in straight marks but the three that print another
+ *      document's copy. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -137,6 +139,8 @@ let headers: { page: string; mark: MarkReading | null }[];
 let told: { lang: LangCode; page: string; text: string; own: string }[];
 /** The landing page as the site serves it. */
 let landing: string;
+/** Every page the site serves, as it reads. */
+let pages: { page: string; text: string }[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
@@ -167,10 +171,12 @@ before(() => {
     // from `site/` rather than rendered, which is exactly why it has to be
     // read here and not assumed to follow the template.
     numberedPages = [];
+    pages = [];
     headers = (readdirSync(out, { recursive: true }) as string[])
       .filter((file) => file.endsWith('.html'))
       .map((file) => {
         const html = readFileSync(join(out, file), 'utf8');
+        pages.push({ page: `/${file}`, text: readable(html) });
         // Only the pages built from the packs: a privacy policy may one day
         // have a footnote, which is not a homograph number.
         const fromPacks = /^(?:latin|old-english)\//.test(file) || /-words-/.test(file);
@@ -874,5 +880,75 @@ describe('the landing page’s descent tables say what the packs say', () => {
       assert.ok(from.length >= 2, `only ${from.length} rows come from the ${lang} pack`);
     }
     assert.ok(deepRows.filter((r) => r.claim).length >= 3, 'fewer than three deep rows print a note');
+  });
+});
+
+/**
+ * A page quotes in the marks the site's own prose uses.
+ *
+ * The site writes “ ” — the landing page, the descent hubs, and every lexicon
+ * note since PR #20 unified them. That guard,
+ * `tests/tools/lexicon-orthography.test.ts`, reads the packs, and the
+ * builder's own strings are not in a pack: so the Old English pronunciation
+ * key, `META.ang.note`, printed `þ and ð are both "th"` in straight marks
+ * under the transcription of 349 word pages, out of sight of the one rule
+ * that would have named it. Read off the built pages instead, so a string is
+ * held wherever it comes from — the builder, a pack, or `site/index.html` —
+ * and a page added later is held without an edit here.
+ *
+ * Read through `readable()`, which decodes what `esc()` encodes. The builder
+ * writes a straight quote as `&quot;`, so a search of the HTML for `"` finds
+ * nothing but attribute delimiters, and a search for `&quot;` misses the
+ * structured data, where JSON escapes it its own way.
+ */
+
+/**
+ * Pages that print another document's copy, and keep that document's marks.
+ * Whether those move is a different decision, written up in `TODO.md`: a
+ * smart-quote pass in the Markdown renderer would change nothing on GitHub,
+ * where the two documents are also read, and the entitlement copy is the
+ * extension's before it is the site's.
+ */
+const OWN_MARKS: Readonly<Record<string, string>> = {
+  '/support.html': 'docs/SUPPORT.md, which a reader also opens on GitHub',
+  '/privacy.html': 'docs/PRIVACY.md, which a reader also opens on GitHub',
+  '/pricing.html': 'the feature copy in src/core/entitlements.ts, which the extension prints too',
+};
+
+describe('a page quotes in the site’s own marks', () => {
+  test('no page prints a straight double quote', () => {
+    const offenders = pages.filter((p) => !(p.page in OWN_MARKS) && p.text.includes('"'));
+    const at = (text: string): string => {
+      const i = text.indexOf('"');
+      return text.slice(Math.max(0, i - 40), i + 20).trim();
+    };
+
+    assert.deepEqual(
+      offenders.map((p) => p.page).slice(0, 5),
+      [],
+      `${offenders.length} pages print a straight double quote:\n  ${offenders
+        .slice(0, 5)
+        .map((p) => `${p.page}: …${at(p.text)}…`)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('every page excused its own marks is one the site still serves', () => {
+    const served = new Set(pages.map((p) => p.page));
+    const gone = Object.keys(OWN_MARKS).filter((page) => !served.has(page));
+
+    assert.deepEqual(gone, [], `OWN_MARKS excuses pages the build no longer writes: ${gone.join(', ')}`);
+  });
+
+  test('the rule has something to police', () => {
+    // The reader first: a `readable()` that stopped decoding `&quot;` would
+    // pass every page while every page still printed the mark.
+    assert.ok(
+      readable('<p class="word__pronNote">&quot;th&quot;</p>').includes('"th"'),
+      'the reader cannot see an escaped quote',
+    );
+    assert.ok(pages.length > 700, `only ${pages.length} pages were read`);
+    const exempt = pages.filter((p) => p.page in OWN_MARKS).length;
+    assert.ok(pages.length - exempt > 700, `only ${pages.length - exempt} pages are held to the rule`);
   });
 });

@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **548 pass**, 133 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **181 pass**, 50 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **184 pass**, 51 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -392,6 +392,62 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — the site's pronunciation key took curly quotes, and reading it found two false rules
+
+The topmost unchecked item was the Old English pronunciation key printing
+`"th"`, `"ch"` and `"sh"` in straight marks under every transcription,
+`META.ang.note` in `tools/build-site.mjs`. Ten minutes, it said, and it was:
+**349** pages, not 346, the homograph pass having added three since it was
+counted.
+
+**The guard reads every page, not the one string found.** The item proposed
+checking `word__pronNote`; that polices the defect already fixed. A new
+`describe` in `tests/tools/build-site.test.ts` reads all 716 pages through
+`readable()` — body, `<meta>`, structured data, with `&quot;` decoded,
+which is how `esc()` writes the mark and why grep cannot find it — and
+fails on a straight `"` anywhere but `/support`, `/privacy` and `/pricing`,
+which `OWN_MARKS` excuses by name and reason: they print `docs/*.md` and
+the extension's feature copy, a different decision. Red first on exactly
+the 349. Four probes, restored by md5: install-page prose, a head-only
+description, the reader losing its decode (the floor alone catches it) and
+a misspelt exemption, each failing by name.
+
+**Reading the key while changing its marks found what is wrong with it.**
+Its rules are about bare letters, and the pack's transcriptions follow the
+dots: every ċ outside *sċ* is /tʃ/, every ġ /j/, every *sċ* /ʃ/, every *cg*
+/ddʒ/, without an exception — while "c before a front vowel is “ch”" is
+contradicted by 5 headwords (`cyning`, `cēpan` …) and "sc is “sh”" by 4
+(`fisc`, `flǣsc` …). And the key is a hand copy of `pronunciationNote` in
+`src/core/languages.ts`, which the tooltip prints, in straight marks, in
+`docs/screens/page-old-english.png`: that copy adds "g before front vowels
+is “y”", contradicted by 10, and its Latin sibling says "ae as /ai̯/" above
+a transcription of /ae̯/ in all 10 headwords with *ae*. Queued first in
+`Next` with every number, because it moves `src/` and the screenshots, and
+the item was the quote marks.
+
+Counts moved 869 → **872** and tools 181 → **184** / 50 → **51** suites, in
+six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: only a
+site string moved, following PR #36.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, **184 tools / 51 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies in `dist/`, `src/`, `tests/`,
+`tools/` or `test-results/`.
+
+Assumed, with nobody to ask: that a guard over every page beats the one the
+item proposed; that the three document pages keep their marks, as the item
+said; and that the false rules are a second item rather than this one's.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds seven agent-shaped items, the
+pronunciation keys first.
 
 ### 2026-10-04 — the landing page's tables were two hand copies, and one note column is a judgement a ledger can hold
 

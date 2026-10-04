@@ -96,7 +96,7 @@ const META = {
       description: 'the English word they became',
       lead: 'the English word they turned into',
     },
-    note: 'þ and ð are both "th"; c before a front vowel is "ch"; sc is "sh". A macron marks a long vowel.',
+    note: 'þ and ð are both “th”; c before a front vowel is “ch”; sc is “sh”. A macron marks a long vowel.',
   },
 };
 
