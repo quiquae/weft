@@ -5,16 +5,27 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
-of this session — typecheck clean, **551** unit / 134 suites, **102** jsdom / 23
-suites, **199** tool tests / 55 suites, **38** e2e passing
+of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
+suites, **207** tool tests / 57 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 986 KB and passing `npm run validate`. The package grew
+packages built at 987 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
 and 985 → 986 KB on 2026-10-02 by 652 bytes, the shared lookup below —
-measured by building `main`'s two callers and this branch's in turn.
-`npm run test:all` exits 0 end to end.
+measured by building `main`'s two callers and this branch's in turn — and
+986 → 987 KB on 2026-10-04 by 740 bytes, 694 of them the card rename in
+`background.js` and 46 the eleven Old English dots, measured by building
+`main`'s Chrome package beside this one. `npm run test:all` exits 0 end to
+end.
+
+**And as of 2026-10-04 a word the pack respells keeps its cards.** A card is
+filed under its word's spelling, so the eleven Old English dots below would
+each have stranded a learner's reviews; `RENAMED` moves those cards when an
+install loads them and when an old export is imported, and
+`tools/seed/card-ids.tsv`, the ledger of every card id a pack has carried,
+fails the tools suite on a respelling that forgets. See the ticked dots item
+in `Next`.
 
 **And as of 2026-10-02 the feed tells a word's story wherever the pack keeps
 it.** A card is a target word and the pack has a row per English gloss, so
@@ -3315,7 +3326,7 @@ registered**, and nothing below it can move until it is.
       list, the *-ian* rule removed (names `plegian`), and a guttural word
       put on it.
 
-- [ ] **Eleven Old English headwords want their dots, and a dot moves a
+- [x] **Eleven Old English headwords want their dots, and a dot moves a
       card.** Found 2026-10-04, measured against Wright, not fixed. The
       pack's transcriptions follow its dots, so a word written bare is
       transcribed /k/, /sk/ or /ɡ/ where the grammar makes it palatal:
@@ -3356,6 +3367,93 @@ registered**, and nothing below it can move until it is.
       Wright's only other word on *wīfmann* is "wimman … beside older
       wifman", an assimilation that says nothing of voicing. About three
       hours; split it, the rename table first.
+
+      **Done 2026-10-04: all eleven, and the cards follow their words.** The
+      rename table came first, as asked. `RENAMED` in `src/core/renames.ts`
+      records each old spelling beside its new one, and `renameCards()`
+      moves a card filed under it — whole, joined by `mergeCards` where the
+      new spelling already has one — in `loadCards()`, written back so the
+      move is made once, and in `importCards()` before the merge.
+      Test-first: `tests/core/renames.test.ts`, 11 tests in 2 suites, red on
+      the missing module and then on its 4 storage tests until each half was
+      wired; either half taken out again fails exactly its own two. One e2e
+      test in `friction.spec.ts` imports an export holding `ang:sēcan` and
+      finds its 7 reviews under `sēċan`, and against the unwired import
+      fails naming "the old spelling is still a card".
+
+      **Nothing enforced remembering an old spelling, so a ledger does.**
+      Measured against `git show v1.0.0:src/lexicon/packs/…`: no pack had
+      lost a card id since 1.0.0, only gained the four homograph seconds. So
+      `tools/seed/card-ids.tsv` is every id the packs carried, 2 446 then,
+      and `tests/tools/card-ids.test.ts`, 8 tests in 2 suites, fails on a
+      ledger id no pack teaches unless `RENAMED` moves it to one that does,
+      on a taught word with no line, on a rename whose old spelling is still
+      taught or was never shipped, on a trail that loops, and on a rename
+      that changes letters rather than marks. Red first with the table
+      filled and the seed still bare, on exactly the two rename rules; then,
+      dotted, on the new ids missing from the ledger. Three probes, restored
+      by md5: dropping `sēcan` names `ang:sēcan (card-ids.tsv:262)`, a
+      mistyped `tæcan` fails "names spellings a pack really used", and
+      `stān → hūs` fails "changes marks, never letters".
+
+      **The dots.** `sēċan`, `tǣċan`, `þenċan` and `wyrċan`, with their
+      participles and the two notes that quote them; `twēġen`, `wīġ`,
+      `huniġ`, `ǣġhwǣr` and `nēahġebūr`, with `AWAITING_DOTS` gone from
+      `tests/tools/old-english-stress.test.ts` and its refusal naming the
+      cure — put back undotted, `wīg` fails by name; and `fisċ` and `flǣsċ`,
+      read against English Wiktionary for the second source this item asked
+      for. It writes `{{ang-IPA|fisċ}}` and `{{ang-IPA|flǣsċ}}`, declines
+      `fisċ` on the two stems `fisċ|fisc`, so the plural stays `fiscas`
+      before its back vowel, and writes `ā+scian` and `ā+scung`, with
+      `āxian`, `ācsian` and `āxung` beside them; so `āscian` and `āscung`
+      stay bare, as Wright's own note and English *ask* say. The eleven IPA
+      cells were blanked and refilled and exactly they moved. `en-ang.json`
+      moved in 57 fields — 18 `tgtLemma`, 18 `ipa`, 17 `tgt`, 4 `note` —
+      with `builtAt` already today and `index.json` untouched. Built from
+      `main` in a `/tmp` worktree and from the branch, 183 of 718 site files
+      differ, the eleven words' pages and every page whose sibling lists or
+      links print one, and all 183 are `main`'s with the eleven spellings and
+      transcriptions rewritten, 408 occurrences, and nothing else; no
+      address moved. All 36 screenshots regenerated byte-identical twice,
+      14 + 15 + 7 written each time by count of mtimes, and the three groups
+      are stamped.
+
+- [ ] **`wīfmann` and `hūsbonda` voice a fricative that ends their first
+      element, and nothing here has decided whether Wright allows it.**
+      Split 2026-10-04 out of the dots item above, which left it open.
+      `wīfmann` /ˈwiːvmɑnː/ and `hūsbonda` /ˈhuːzbondɑ/ voice the *f* and
+      *s* that end `wīf-` and `hūs-`. Wright's §261 note, "This voicing of
+      f, þ, s only took place in simple words, but not in compounds", can
+      be read as reaching them, though all four of its examples (āþwēan,
+      ġefeoht, ġesendan, wynsum) have the fricative *begin* the second
+      element, and Wright's only other word on `wīfmann` is "wimman …
+      beside older wifman", an assimilation that says nothing of voicing.
+      English Wiktionary voices both, [ˈwiːvˌmɑn]. Read a second grammar
+      that names a compound like these — Campbell or Sievers–Brunner on
+      voicing at a compound boundary — before choosing;
+      `tests/tools/old-english-stress.test.ts` counts the two neither way
+      and says so, and whichever way it goes the test should then hold it.
+      No card moves either way, only the `ipa` column. About an hour.
+
+- [ ] **A woven plural or participle shows its headword's transcription,
+      and three Old English plurals disagree with their headwords' dots.**
+      Found 2026-10-04 while dotting `fisċ`. The seed has one `ipa` per row,
+      transcribing `tgt`, and the pack builder copies it onto the row of the
+      second form too, so the tooltip prints /ˈmɑnː/ under *menn*, /ˈwɪr/
+      under *virī* and, now, /ˈseːtʃɑn/ under *sēċende* and /ˈfiʃ/ under
+      *fiscas*: 206 Old English rows and 223 Latin ones print a
+      transcription of a form that is not the one on the page. Either
+      transcribe `tgt2` too — `_ipa.py` reads any spelling — or print the
+      headword beside the sound, so the claim says what it is of. And
+      comparing each second form's stem with its headword's dots found five
+      that differ: `fisċ → fiscas` and `ċiriċe → ċirican` are right, a back
+      vowel following, but `ċild → cildru` and `ċildclāð → cildclāðas` drop
+      the dot before *i* — English Wiktionary declines `ċild` as a z-stem on
+      its dotted stem — and `æġ → ǣgru` disagrees twice: Wiktionary writes
+      `{{ang-noun|ǣġ|n|ǣġru}}`, long and dotted both, so the headword itself
+      wants a macron, which is a `RENAMED` line and a ledger line. Read the
+      declension tables before changing any of them; a `tgt2` alone moves
+      no card.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
