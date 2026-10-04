@@ -526,6 +526,93 @@ describe('milestones', () => {
   });
 });
 
+/**
+ * "Chosen because …" takes a clause. Every reason in `PHRASES` is one — "it is
+ * due for review" — and the cognate reason was a phrase, written for the two
+ * other frames it fills, so the tooltip read "Chosen because ancestor of
+ * English “house”, and it is due for review". The first-meeting line ("New to
+ * you, and …") and a line of its own take the phrase, and keep it.
+ */
+describe('explainChoice gives its reasons as clauses', () => {
+  /** One word for every kind of likeness `cognateReason` can name. */
+  const LIKENESSES = [
+    {
+      word: entry({ src: 'house', lemma: 'house', tgt: 'hūs', tgtLemma: 'hūs', etymonOf: 'house' }),
+      ancestorOfEnglish: true,
+      clause: 'it is the ancestor of English “house”',
+    },
+    {
+      word: entry({ src: 'cow', lemma: 'cow', tgt: 'vacca', tgtLemma: 'vacca', etymonOf: 'vaccine' }),
+      ancestorOfEnglish: false,
+      clause: 'it is the source of English “vaccine”',
+    },
+    {
+      word: entry({ src: 'lion', lemma: 'lion', tgt: 'lion', tgtLemma: 'lion' }),
+      ancestorOfEnglish: false,
+      clause: 'it is identical to the English word',
+    },
+    {
+      word: entry({ src: 'family', lemma: 'family', tgt: 'famille', tgtLemma: 'famille' }),
+      ancestorOfEnglish: false,
+      clause: 'it is near-identical to the English word',
+    },
+    {
+      word: entry({ src: 'soldier', lemma: 'soldier', tgt: 'soldat', tgtLemma: 'soldat' }),
+      ancestorOfEnglish: false,
+      clause: 'it is recognisably related to the English word',
+    },
+    {
+      word: entry({ src: 'silently', lemma: 'silently', tgt: 'silenciosamente', tgtLemma: 'silenciosamente', pos: 'adv' }),
+      ancestorOfEnglish: false,
+      clause: 'it has the English word’s root and a predictable ending',
+    },
+  ];
+
+  /**
+   * The finite verbs the reasons use: what a clause has and a bare phrase
+   * lacks. A reason with a verb not here fails until it is added, which is
+   * the moment to read it.
+   */
+  const FINITE = /\b(?:is|are|has|gives|sits|resembles)\b/;
+
+  test('a cognate reason after “Chosen because” is a clause', () => {
+    for (const { word, ancestorOfEnglish, clause } of LIKENESSES) {
+      const { sentence } = explainChoice(word, { cognate: 0.9, due: 0.3 }, { ancestorOfEnglish });
+      assert.equal(sentence, `Chosen because ${clause}, and it is due for review`);
+    }
+  });
+
+  test('every reason the frame can give has a verb of its own', () => {
+    const plain = entry({ src: 'dog', lemma: 'dog', tgt: 'chien', tgtLemma: 'chien', pos: 'noun' });
+    const adj = entry({ src: 'big', lemma: 'big', tgt: 'grand', tgtLemma: 'grand', pos: 'adj' });
+    const said = [
+      ...['due', 'frequency', 'bandFit', 'guessability', 'pos'].map(
+        (factor) => explainChoice(plain, { [factor]: 1 }, { ancestorOfEnglish: false }).sentence,
+      ),
+      explainChoice(adj, { pos: 1 }, { ancestorOfEnglish: false }).sentence,
+      ...LIKENESSES.map(
+        ({ word, ancestorOfEnglish }) => explainChoice(word, { cognate: 0.9 }, { ancestorOfEnglish }).sentence,
+      ),
+      // With the etymon hidden, the fallback stands in for it.
+      explainChoice(LIKENESSES[0]!.word, { cognate: 0.9 }, { allowEtymon: false, ancestorOfEnglish: true }).sentence,
+    ];
+    for (const sentence of said) {
+      const why = sentence.replace(/^Chosen because /, '');
+      assert.notEqual(why, sentence, `not a reason: ${sentence}`);
+      for (const part of why.split(', and ')) assert.match(part, FINITE, sentence);
+    }
+  });
+
+  test('the first meeting and a line of its own keep the phrase', () => {
+    const [oe] = LIKENESSES;
+    assert.equal(
+      explainChoice(oe!.word, { due: 1 }, { firstMeeting: true, ancestorOfEnglish: true }).sentence,
+      'New to you, and ancestor of English “house”',
+    );
+    assert.equal(explainChoice(oe!.word, undefined, { ancestorOfEnglish: true }).sentence, 'Ancestor of English “house”');
+  });
+});
+
 describe('explainChoice and the etymon preference', () => {
   const oe = entry({
     src: 'house',

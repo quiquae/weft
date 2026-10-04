@@ -228,6 +228,37 @@ export function etymonRelation(ancestorOfEnglish: boolean): string {
   return ancestorOfEnglish ? 'ancestor of English' : 'source of English';
 }
 
+/** What makes a word recognisable beside the English: the word it gave, or how close the two look. */
+type Likeness =
+  | { kind: 'etymon'; relation: string; english: string }
+  | { kind: 'identical' | 'near' | 'related' | 'root' };
+
+function likeness(entry: LexEntry, ancestorOfEnglish: boolean): Likeness | null {
+  if (entry.etymonOf) {
+    return { kind: 'etymon', relation: etymonRelation(ancestorOfEnglish), english: entry.etymonOf };
+  }
+  const src = fold(entry.src || entry.lemma);
+  const tgt = fold(entry.tgt || entry.tgtLemma);
+  if (!src || !tgt) return null;
+  if (src === tgt) return { kind: 'identical' };
+  const jw = jaroWinkler(src, tgt);
+  if (jw >= 0.88) return { kind: 'near' };
+  if (jw >= 0.75) return { kind: 'related' };
+  if (suffixBonus(src, tgt) >= 0.18) return { kind: 'root' };
+  return null;
+}
+
+/** Each likeness as a phrase, and as a clause with a subject and a verb of its own. */
+const SAID: Record<Exclude<Likeness['kind'], 'etymon'>, { phrase: string; clause: string }> = {
+  identical: { phrase: 'identical to the English word', clause: 'it is identical to the English word' },
+  near: { phrase: 'near-identical to the English word', clause: 'it is near-identical to the English word' },
+  related: {
+    phrase: 'recognisably related to the English word',
+    clause: 'it is recognisably related to the English word',
+  },
+  root: { phrase: 'same root, predictable ending', clause: 'it has the English word’s root and a predictable ending' },
+};
+
 /**
  * A small, human-readable reason for the score, shown in the "why this word?"
  * debug panel and in the tooltip.
@@ -236,14 +267,21 @@ export function etymonRelation(ancestorOfEnglish: boolean): string {
  * cannot forget it and call Latin an ancestor; see `etymonRelation`.
  */
 export function cognateReason(entry: LexEntry, ancestorOfEnglish: boolean): string | null {
-  if (entry.etymonOf) return `${etymonRelation(ancestorOfEnglish)} “${entry.etymonOf}”`;
-  const src = fold(entry.src || entry.lemma);
-  const tgt = fold(entry.tgt || entry.tgtLemma);
-  if (!src || !tgt) return null;
-  if (src === tgt) return 'identical to the English word';
-  const jw = jaroWinkler(src, tgt);
-  if (jw >= 0.88) return 'near-identical to the English word';
-  if (jw >= 0.75) return 'recognisably related to the English word';
-  if (suffixBonus(src, tgt) >= 0.18) return 'same root, predictable ending';
-  return null;
+  const found = likeness(entry, ancestorOfEnglish);
+  if (!found) return null;
+  return found.kind === 'etymon' ? `${found.relation} “${found.english}”` : SAID[found.kind].phrase;
+}
+
+/**
+ * The same reason as a clause, for the one frame a phrase does not fit.
+ * `explainChoice` gives its reasons as "Chosen because …", where every other
+ * reason is a clause — "it is due for review" — and the phrase read as a
+ * broken sentence there: "Chosen because ancestor of English “house”". The
+ * first-meeting line, "New to you, and source of English “vaccine”", and a
+ * line on its own take the phrase.
+ */
+export function cognateClause(entry: LexEntry, ancestorOfEnglish: boolean): string | null {
+  const found = likeness(entry, ancestorOfEnglish);
+  if (!found) return null;
+  return found.kind === 'etymon' ? `it is the ${found.relation} “${found.english}”` : SAID[found.kind].clause;
 }

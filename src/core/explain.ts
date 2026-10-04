@@ -1,5 +1,5 @@
 import type { LexEntry } from './types.ts';
-import { cognateReason } from './similarity.ts';
+import { cognateClause, cognateReason } from './similarity.ts';
 
 /**
  * Why this word?
@@ -25,8 +25,9 @@ export interface Reasons {
 /**
  * How each factor reads when it is the reason.
  *
- * `cognate` is not here: its phrasing depends on the reader's settings and on
- * the word's language, so `explainChoice` builds it.
+ * Each is a clause, because they follow "Chosen because". `cognate` is not
+ * here: its phrasing depends on the reader's settings and on the word's
+ * language, so `explainChoice` builds it, as a clause from `cognateClause`.
  */
 const PHRASES: Record<string, (entry: LexEntry) => string | null> = {
   due: () => 'it is due for review',
@@ -78,12 +79,14 @@ export function explainChoice(
   opts: ExplainOptions,
 ): Reasons {
   const allowEtymon = opts.allowEtymon !== false;
-  const reason = () => {
+  // As a phrase for the first meeting and a line of its own, and as a clause
+  // after "Chosen because".
+  const reason = (said: typeof cognateReason = cognateReason) => {
     // Withheld by the etymon itself, not by its wording: this once matched
     // "ancestor of English", which the same fact told as "source of" would
     // have walked straight past.
     if (!allowEtymon && entry.etymonOf) return null;
-    return cognateReason(entry, opts.ancestorOfEnglish);
+    return said(entry, opts.ancestorOfEnglish);
   };
 
   if (opts.firstMeeting) {
@@ -103,7 +106,7 @@ export function explainChoice(
 
   const parts: string[] = [];
   for (const name of ranked) {
-    const phrase = name === 'cognate' ? (reason() ?? 'it resembles the English word') : PHRASES[name]?.(entry);
+    const phrase = name === 'cognate' ? (reason(cognateClause) ?? 'it resembles the English word') : PHRASES[name]?.(entry);
     if (phrase && !parts.includes(phrase)) parts.push(phrase);
     if (parts.length === 2) break;
   }
