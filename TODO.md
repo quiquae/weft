@@ -8,7 +8,7 @@
 of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
 suites, **218** tool tests / 60 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 983 KB and passing `npm run validate`. The package grew
+packages built at 988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
@@ -19,7 +19,9 @@ measured by building `main`'s two callers and this branch's in turn — and
 `main`'s Chrome package beside this one — and shrank 987 → 983 KB the same
 night by 4 545 bytes, the Latin pack giving up the 223 transcriptions it
 printed under second forms (−4 854) and the Old English one writing its own
-(+309). `npm run test:all` exits 0 end to end.
+(+309) — and grew back 983 → 988 KB later that night by 5 069 bytes, all of
+them the Latin pack writing its second forms' own. `npm run test:all` exits
+0 end to end.
 
 **And as of 2026-10-04 a woven plural or participle sounds like itself.**
 The tooltip printed a row's one transcription, its headword's, under every
