@@ -39,6 +39,16 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * the pack dots in `ġemunan` and no spelling rule can see. English
  * Wiktionary writes `wīġ`, `huniġ`, `twēġen` and `nēahġebūr`, and its
  * pronunciation module reads `ǣġhwǣr`.
+ *
+ * **And two *sc*.** §312: "some time during the OE. period the guttural sc
+ * became palatal, except in loanwords", naming "fisc, fish; flǣsc, flesh";
+ * English Wiktionary writes `fisċ` and `flǣsċ`. Its declension keeps the
+ * plural `fiscas`, the guttural before a back vowel, which is what the pack
+ * weaves for "fishes". Read literally, Wright's sentence would dot `āscian`
+ * and `āscung` too, and they stay bare: his own note gives "axian, to ask …
+ * beside … ascian", Wiktionary writes them `ā+scian` and `ā+scung` with
+ * `āxian`, `ācsian` and `āxung` beside them, and English kept *ask*, not
+ * *ash*.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -51,6 +61,8 @@ export const RENAMED: Renames = {
     hunig: 'huniġ',
     ǣghwǣr: 'ǣġhwǣr',
     nēahgebūr: 'nēahġebūr',
+    fisc: 'fisċ',
+    flǣsc: 'flǣsċ',
   },
 };
 
