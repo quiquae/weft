@@ -440,10 +440,11 @@ resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
 notes, B2a. Zero iCloud conflict copies.
 
 Assumed, with nobody to ask: that "it has the English word’s root and a
-predictable ending" says what "same root, predictable ending" meant; that
-"New to you, and source of English “vaccine”" reads well enough to keep, as
-the item judged; and that the debug panel, which shows the phrase, wants
-the phrase.
+predictable ending" says what "same root, predictable ending" meant; and
+that "New to you, and source of English “vaccine”" reads well enough to
+keep, as the item judged. `cognateReason()`'s comment still mentions a
+"why this word?" debug panel; nothing in `src/` but `explainChoice()` calls
+it.
 
 What needs a human: unchanged, everything below **B1**, register
 `weft.study` — NXDOMAIN today. `Next` holds five agent-shaped items, French
