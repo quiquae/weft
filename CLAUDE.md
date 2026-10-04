@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **551 pass**, 134 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **191 pass**, 53 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **196 pass**, 54 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -391,10 +391,106 @@ Classical practice. What the spelling cannot show (*eu* as one syllable or
 two, a consonant *i* after a consonant) is read from Lewis & Short into the
 test's `RESPELT`; a headword the rules cannot read fails by name.
 
+**And so is an Old English one, where the word divides.**
+`tests/tools/old-english-stress.test.ts` holds every Old English
+transcription to Joseph and Elizabeth Mary Wright's *Old English Grammar*
+(1914): the stress on the first syllable unless the word begins with a
+particle the language left unstressed — a verb's inseparable prefix, and the
+*tō* of an adverb made of it and a noun, "tōgǽdere" (§§10–15) — and *f*, *s*
+and *þ* voiced between voiced sounds, but not where a root or a compound's
+second element begins (§261 note). It does not import the generator, for
+Latin's reason. Where a word divides is what the spelling cannot show, so
+the test lists it, and refuses a headword beginning with one of Wright's
+particles that it has not been told is compounded or simple. A fricative
+that *ends* a first element, in `wīfmann` and `hūsbonda`, is counted neither
+way: Wright's note can be read as reaching it, Wiktionary voices it, and
+nothing here has decided.
+
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — Old English stress, read against the grammar that is free to read
+
+The queue named the landing page's descent table, which #57 landed this
+morning and `TODO.md` had ticked, so the work was the topmost unchecked item:
+Old English stress, with `tōdæġ` /ˈtoːdæj/ where Wiktionary has /toːˈdæj/,
+and Campbell to be read before choosing.
+
+**Campbell is not free to read; Wright is, and says it in a sentence.**
+Joseph and Elizabeth Mary Wright's *Old English Grammar* (2nd ed., 1914) is
+whole on archive.org as `oldenglishgramma00wrig`, and §15 reads: "In
+compound adverbs the first element had the chief or secondary stress
+according as it was the more or less important element of the compound, as
+eal(l)mǣst … but onwég, away; tōgǽdere, together". So all three *tō*
+adverbs take the stress on the noun — `tōgædere` too, where Wiktionary's
+/ˈtoːˌɡæ.de.re/ turned out to be its template's default for a *tō* nobody
+marked, its `tōdæġ` being written `tō<dæġ`. And `tōgædere`'s *g* begins a
+root, so it is the stop, as *be-ginnan*'s is, not the spirant between vowels.
+
+**The voicing half was a rule as well, and had a third word.** §261 note:
+"This voicing of f, þ, s only took place in simple words, but not in
+compounds, such as āþwēan … ġefeoht … ġesendan … wynsum." Listing every
+headword whose transcription voices a fricative found `ēagþȳrel`
+/ˈæːɑɡðyːrel/ beside the item's `andswaru` and `onsīen`. `onsīen` keeps its
+stress on *on*: §568 gives "ansīen, countenance" under *an-*, "stressed form
+of the preposition on". What Wright leaves open is a fricative that *ends* a
+first element — `wīfmann` /v/, `hūsbonda` /z/ — since all four of its
+examples begin the second, and Wiktionary voices both. Left alone, counted
+neither way by the test, and written into the next item.
+
+**The fix lists, as the generator already did.** The adverbs join the
+prefixed verbs in `ANG_PREFIXED`, the three compounds are `ANG_COMPOUNDED`,
+and each element is transcribed on its own. All 352 cells equalled the old
+generator, so the column was blanked and refilled: exactly six moved, which
+is 9 `ipa` fields of `en-ang.json` — three of the words have plurals — and
+its date. Built from `main` in a `/tmp` worktree and from the branch, six
+word pages differ, each at its six printings of the transcription and
+nothing else, shown by rewriting `main`'s pages; 704 of 716 sitemap dates
+moved, the pack-granular dating already recorded.
+
+**The guard reads the spelling, as Latin's does.**
+`tests/tools/old-english-stress.test.ts`, 5 tests in a new suite: the mark
+at the start unless a word begins with a particle the language left
+unstressed; a root after one begins with its initial sound; *f*, *s* and *þ*
+voiced between voiced sounds and not where a root or a second element
+begins; and a refusal of any headword beginning with one of Wright's
+particles that it has not been told is compounded or simple — 34 of them,
+*bedd* to *singan*. Red first on exactly the six: three on stress, `tōgædere`
+also on its root, three on voicing. Seven probes, restored by md5, six
+failing one test each by name and `wīfmann` unvoiced, meant to stay green,
+staying green. One false positive on the way, this session's own: reading
+every /ks/ as an *x* subtracted the real *k* and *s* of `bōcstæf`; the test
+counts spelled *x* now.
+
+All three screenshot groups regenerated, 14 + 15 + 7 written by count of
+mtimes, none moved, all three stamped. A `CHANGELOG.md` paragraph, because
+the pack ships; Wright is credited in `docs/THIRD-PARTY.md` beside Allen &
+Greenough, and the README says the Old English column is held too. Counts moved 882 → **887** and tools 191 →
+**196** / 53 → **54** suites, in six places, `docs/LAUNCH.md:221` first.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 551 unit / 134 suites, 102
+jsdom / 23 suites, **196 tools / 54 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Documentation moved during that run's end-to-end step,
+so `test:tools` was run again on the final tree: 196 of 196. Separately:
+`packs:verify` **0 errors / 4 warnings**; a second `npm run packs` moved
+nothing; `npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that Wright may stand in for Campbell, being
+free and explicit on both rules; that a grammar naming `tōgædere` outweighs
+a template's default; that WS `onsīen` is Wright's *ansīen*; and that a
+fricative ending a first element is a question for the next item rather
+than this one's to decide.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds four agent-shaped items, the Old English dots
+first.
 
 ### 2026-10-04 — French `mort` is two cards, because the rule for `hund` says so
 

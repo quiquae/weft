@@ -101,7 +101,8 @@ shows a reconstructed pronunciation in IPA instead of pretending to offer
 audio. Roughly 700 transcriptions are derived from the orthography, which is
 near-deterministic in both once vowel length is marked. The generator checks
 itself against forms worked out by hand, and the test suite holds every Latin
-transcription to the classical rules of syllable and stress.
+transcription to the classical rules of syllable and stress, and every Old
+English one to its grammar's rules of stress and voicing.
 
 A letterform switch separates orthographic difficulty from vocabulary
 difficulty. `þēod` is not hard because of the word, it is hard because of the
@@ -265,7 +266,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 551 unit + 102 jsdom + 191 over the build tools
+npm test               # 551 unit + 102 jsdom + 196 over the build tools
 npm run test:e2e       # 38 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, checked against MDN's compat data
 npm run validate       # pre-flight the built packages against store rules

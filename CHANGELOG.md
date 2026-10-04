@@ -401,6 +401,21 @@ adjective were meeting the noun. Dead is a card of its own now, with its own
 schedule and question; every card a reader already had for *mort* stays
 death.
 
+**Six Old English pronunciations were wrong.** Old English stresses the
+first syllable of a word's root, so its transcriptions can only go wrong
+where a word begins with a particle the language left unstressed, and nothing
+had checked them. *tōdæġ*, *tōmorgen* and *tōgædere* were stressed on *tō*,
+where Wright's *Old English Grammar* (§15) gives "tōgǽdere, together" its
+stress on the noun, and *tōgædere*'s *g* had the sound it has between two
+vowels, where it begins *gædere* and is hard, as in *good*. *andswaru*,
+*onsīen* and *ēagþȳrel* voiced the *s* or *þ* that begins their second
+element — /ˈɑndzwɑru/ — where that voicing "only took place in simple words,
+but not in compounds" (§261). All six are corrected, *tōdæġ* to /toːˈdæj/
+and *andswaru* to /ˈɑndswɑru/, and the tests now read every Old English
+word's stress and voicing from its spelling by Wright's rules, refusing a
+word that begins with a particle when nothing says whether it is compounded
+of it.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -421,7 +436,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 882 tests: 551 unit, 102 in jsdom, 191 over the build tools, and
+**Built with** 887 tests: 551 unit, 102 in jsdom, 196 over the build tools, and
 38 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
