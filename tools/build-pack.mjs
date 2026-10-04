@@ -74,7 +74,9 @@ function parseTsv(text, columns, file) {
 }
 
 const CORE_COLUMNS = ['lemma', 'pos', 'zipf', 'band', 'senses', 'plural', 'gerund'];
-const LEX_COLUMNS = ['lemma', 'pos', 'tgt', 'tgt2', 'gender', 'ipa', 'etymon', 'note'];
+// ipa2 is the transcription of tgt2, and last so that every reader of the
+// first eight columns by position reads them where they always were.
+const LEX_COLUMNS = ['lemma', 'pos', 'tgt', 'tgt2', 'gender', 'ipa', 'etymon', 'note', 'ipa2'];
 
 const VALID_POS = new Set(['noun', 'verb', 'adj', 'adv', 'num', 'intj']);
 const VALID_GENDER = new Set(['m', 'f', 'n', 'c', '']);
@@ -232,7 +234,13 @@ async function buildPack(lang, core) {
     }
     translated++;
 
-    const shared = {
+    // A transcription is of one spelling: the tooltip prints it under the form
+    // a row wove, so the headword's goes on the headword's row and the second
+    // form's, ipa2, on the second form's. A second form with no ipa2 prints no
+    // sound, which is silence, where the headword's would be a false claim —
+    // unless it is spelled as its headword is, Latin diēs beside diēs.
+    const ipa2 = row.ipa2 || (row.tgt2 === written ? row.ipa : '');
+    const shared = (ipa) => ({
       lemma: row.lemma,
       pos: spec.pos,
       tgtLemma: row.tgt,
@@ -240,14 +248,14 @@ async function buildPack(lang, core) {
       senses: spec.senses,
       band: spec.band,
       ...(row.gender ? { gender: row.gender } : {}),
-      ...(row.ipa ? { ipa: row.ipa } : {}),
+      ...(ipa ? { ipa } : {}),
       ...(row.etymon ? { etymonOf: row.etymon } : {}),
       ...(row.note ? { note: row.note } : {}),
-    };
+    });
 
-    const push = (surface, tgt, extra) => {
+    const push = (surface, tgt, ipa, extra) => {
       const key = surface.toLowerCase();
-      const entry = { src: key, ...shared, tgt, ...extra };
+      const entry = { src: key, ...shared(ipa), tgt, ...extra };
       if (!entries[key]) entries[key] = [];
       // Two lemmas can share a surface form ("light" noun and adjective).
       // Keep both; the selector scores them and picks one.
@@ -256,7 +264,7 @@ async function buildPack(lang, core) {
     };
 
     // Citation / base form.
-    push(row.lemma, written, {
+    push(row.lemma, written, row.ipa, {
       conf: confidenceFor(spec.pos, spec.senses, spec.pos === 'verb' ? 'base' : 'base'),
       ...(spec.pos === 'noun' ? { num: 'sg' } : {}),
     });
@@ -265,7 +273,7 @@ async function buildPack(lang, core) {
     if (spec.pos === 'noun') {
       const plural = englishPlural(row.lemma, spec.plural);
       if (plural && row.tgt2) {
-        push(plural, row.tgt2, {
+        push(plural, row.tgt2, ipa2, {
           conf: confidenceFor('noun', spec.senses, 'plural'),
           num: 'pl',
         });
@@ -276,7 +284,7 @@ async function buildPack(lang, core) {
       }
     } else if (spec.pos === 'verb' && row.tgt2) {
       const gerund = englishGerund(row.lemma, spec.gerund);
-      push(gerund, row.tgt2, { conf: confidenceFor('verb', spec.senses, 'gerund') });
+      push(gerund, row.tgt2, ipa2, { conf: confidenceFor('verb', spec.senses, 'gerund') });
     }
   }
 

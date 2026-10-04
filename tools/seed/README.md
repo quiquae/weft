@@ -60,7 +60,7 @@ lemma <TAB> pos <TAB> zipf <TAB> band <TAB> senses <TAB> plural <TAB> gerund
 ### lex-&lt;lang&gt;.tsv
 
 ```
-lemma <TAB> pos <TAB> tgt <TAB> tgt2 <TAB> gender <TAB> ipa <TAB> etymon <TAB> note
+lemma <TAB> pos <TAB> tgt <TAB> tgt2 <TAB> gender <TAB> ipa <TAB> etymon <TAB> note <TAB> ipa2
 ```
 
 - `tgt` — citation form: singular noun, infinitive verb, masculine singular
@@ -77,6 +77,12 @@ lemma <TAB> pos <TAB> tgt <TAB> tgt2 <TAB> gender <TAB> ipa <TAB> etymon <TAB> n
 - `etymon` — set when this word is the actual ancestor of an English word,
   e.g. Old English `hūs` for "house". Powers the etymon badge.
 - `note` — one short line shown in the tooltip.
+- `ipa2` — the transcription of `tgt2`, which the tooltip prints under the
+  second form, as it prints `ipa` under `tgt`. Old English has one for every
+  second form; a row without one prints no sound under its second form
+  rather than its headword's, unless the two are spelled alike. It is the
+  last column so that every reader of the first eight finds them where they
+  always were. `python3 tools/seed/fill_ipa.py` writes both.
 
 Blank `tgt` skips the row, which is how a language legitimately declines to
 translate a lemma (Old English has no word for "computer").
