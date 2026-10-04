@@ -17,6 +17,7 @@
  *   5. A word page's address spells every letter of its headword. See below.
  *   6. Every page's header draws the mark that ships as the icon. See below.
  *   7. No page about Latin says English descends from it. See below.
+ *   8. The landing page's descent tables say what the packs say. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -27,7 +28,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { contentDate } from '../../tools/sitemap.ts';
 import { getLanguage } from '../../src/core/languages.ts';
-import type { LangCode } from '../../src/core/types.ts';
+import { entriesByTarget, spelling } from '../../src/core/lexicon.ts';
+import type { LangCode, LexEntry } from '../../src/core/types.ts';
 import { markInSvg, differences, type MarkReading } from './mark-reading.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -133,6 +135,8 @@ let headers: { page: string; mark: MarkReading | null }[];
  * leaves the builder's words where they stood.
  */
 let told: { lang: LangCode; page: string; text: string; own: string }[];
+/** The landing page as the site serves it. */
+let landing: string;
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
@@ -140,6 +144,7 @@ before(() => {
     execFileSync(process.execPath, [TOOL, `--out=${out}`], { stdio: 'pipe' });
     const xml = readFileSync(join(out, 'sitemap.xml'), 'utf8');
     dates = lastmods(xml);
+    landing = readFileSync(join(out, 'index.html'), 'utf8');
     descents = [];
     targets = new Map();
     words = [];
@@ -672,5 +677,202 @@ describe('a page about a language English borrowed from never says English desce
     assert.ok(latin.length > 300, `only ${latin.length} Latin pages were read`);
     assert.ok(latin.includes('/latin/index'), 'the Latin index was not read');
     assert.ok(latin.includes('/latin-words-in-everyday-english'), 'the Latin descent hub was not read');
+  });
+});
+
+/**
+ * The landing page's descent tables, held to the packs they quote.
+ *
+ * `site/index.html` is written by hand and cannot import, so every row of its
+ * two tables was typed from a pack: seven French words with the claim each
+ * carries, then five Old English and three Latin words with the English word
+ * each became or was borrowed into. Twice in two days a row had to be
+ * corrected by hand after its pack moved — *drēam → dream* when the Old
+ * English pack stopped claiming it, the vaccine row when its note stopped
+ * saying Jenner named it — and both times somebody remembered. Nothing read
+ * the tables; `tests/tools/lexicon-orthography.test.ts` checks only how they
+ * spell.
+ *
+ * A row's word is read through `entriesByTarget()`, as the tooltip, the
+ * dashboard and the word pages read one, so the table is held to what the
+ * product shows rather than to a row of the seed.
+ *
+ * What a row claims is derived wherever the pack says it in a form a test can
+ * read. A French row's English is the word's gloss, and its claim is either a
+ * descent — "English took the word itself", which is the word's etymon being
+ * that gloss — or a cousin note naming exactly the English words the pack's
+ * own note names. A deep row's English is the word's etymon, its target read
+ * by its first word, so *mīlle passūs* is `mīlle`, and a phrase has to stand
+ * in the pack's note as the table prints it.
+ *
+ * A deep row's note is a paraphrase — the table's "it meant simply “to die”"
+ * is the pack's "“steorfan” simply meant to die" — and a paraphrase cannot be
+ * derived, so it is ledgered. `CHECKED` repeats each cell beside the note it
+ * was read against, as `tools/seed/la-notes.tsv` repeats a Latin note, and a
+ * move on either side leaves the row unchecked until somebody reads the two
+ * together again. A cell may stay empty: silence is never false.
+ */
+const CHECKED: readonly { row: string; cell: string; note: string }[] = [
+  { row: 'hlāford', cell: 'literally “loaf-keeper”', note: '“hlāf-weard”, the loaf-keeper' },
+  { row: 'steorfan', cell: 'it meant simply “to die”', note: '“steorfan” simply meant to die' },
+  { row: 'sellan', cell: 'it meant “to give”', note: '“sellan” meant to give' },
+  { row: 'vacca', cell: 'named after the cowpox Jenner used', note: 'the vaccine is named after the cowpox Jenner used' },
+  { row: 'mīlle passūs', cell: 'a thousand paces', note: 'a mile was mīlle passūs, a thousand paces' },
+  { row: 'paene īnsula', cell: 'almost an island', note: 'paene īnsula, almost an island' },
+];
+
+/** One row of a descent table, cell by cell, and which table it is in. */
+type DescentRow = { table: number; cells: number; target: string; english: string; claim: string };
+
+/**
+ * Every row of every descent table on the page. The French table comes first
+ * and the Latin and Old English one second, which is how the two are told
+ * apart: their third columns mean different things, a gloss in the first and
+ * the English word the target gave in the second.
+ */
+function descentRows(html: string): DescentRow[] {
+  return [...html.matchAll(/<table class="descent">([\s\S]*?)<\/table>/g)].flatMap((t, table) =>
+    [...(t[1] as string).matchAll(/<tr>([\s\S]*?)<\/tr>/g)].map((r) => {
+      const cells = [...(r[1] as string).matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/g)].map((c) => plain(c[1] as string));
+      const [target = '', , english = '', claim = ''] = cells;
+      return { table, cells: cells.length, target, english, claim };
+    }),
+  );
+}
+
+/** Each word a pack carries, under its spelling, as the product reads it. */
+function wordsOf(lang: string): Map<string, LexEntry[]> {
+  const pack = JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8'));
+  const found = new Map<string, LexEntry[]>();
+  for (const word of entriesByTarget(pack.entries).values()) {
+    const key = spelling(word.tgtLemma);
+    found.set(key, [...(found.get(key) ?? []), word]);
+  }
+  return found;
+}
+
+/** The words a sentence puts in quotation marks, in order. */
+const quoted = (s: string): string[] => [...s.matchAll(/“([^”]+)”/g)].map((m) => m[1] as string);
+
+const TOOK = 'English took the word itself';
+const COUSIN = /^shares a root with /;
+
+/** What is wrong with a French row, or null. */
+function frenchRow(row: DescentRow, fr: Map<string, LexEntry[]>): string | null {
+  const said = `${row.target} → ${row.english}, \`${row.claim}\``;
+  const words = fr.get(row.target) ?? [];
+  const word = words.find((w) => w.lemma === row.english);
+  if (!word) {
+    return words.length
+      ? `${said}: the pack glosses it ${words.map((w) => `“${w.lemma}”`).join(' and ')}`
+      : `${said}: the French pack has no word “${row.target}”`;
+  }
+  if (row.claim === TOOK) {
+    if (word.etymonOf === row.english) return null;
+    return `${said}: the pack ${word.etymonOf ? `gives its etymon as “${word.etymonOf}”` : 'names no etymon'}`;
+  }
+  if (COUSIN.test(row.claim)) {
+    if (!word.note || !/^shares a root with English /.test(word.note)) {
+      return `${said}: the pack’s note is ${word.note ? `\`${word.note}\`` : 'empty'}`;
+    }
+    const [table, pack] = [quoted(row.claim), quoted(word.note)];
+    if (table.join('|') === pack.join('|')) return null;
+    return `${said}: the pack’s note names ${pack.map((w) => `“${w}”`).join(' and ')}`;
+  }
+  return `${said}: a claim this test cannot read — say it as the other rows do, or teach the test`;
+}
+
+/** The deep word a row is about, by its first word, if its pack gives the row's English. */
+function deepWord(row: DescentRow, deep: Map<string, LexEntry[]>[]): LexEntry | undefined {
+  const head = row.target.split(' ')[0] as string;
+  return deep.flatMap((words) => words.get(head) ?? []).find((w) => w.etymonOf === row.english);
+}
+
+describe('the landing page’s descent tables say what the packs say', () => {
+  const rows = (): DescentRow[] => descentRows(landing);
+  const deep = (): Map<string, LexEntry[]>[] => DEEP.map(({ lang }) => wordsOf(lang));
+
+  test('every French row gives the word’s gloss and the pack’s own claim', () => {
+    const fr = wordsOf('fr');
+    const offenders = rows()
+      .filter((r) => r.table === 0)
+      .flatMap((r) => frenchRow(r, fr) ?? []);
+
+    assert.deepEqual(offenders, [], `${offenders.length} French rows disagree with the pack:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('every Latin and Old English row names the English word its pack does', () => {
+    const packs = deep();
+    const offenders = rows()
+      .filter((r) => r.table === 1)
+      .flatMap((r) => {
+        const head = r.target.split(' ')[0] as string;
+        const said = `${r.target} → ${r.english}`;
+        const word = deepWord(r, packs);
+        if (!word) {
+          const found = packs.flatMap((words) => words.get(head) ?? []);
+          return found.length
+            ? `${said}: the pack gives ${found.map((w) => (w.etymonOf ? `“${w.etymonOf}”` : 'no etymon')).join(' and ')}`
+            : `${said}: neither deep pack has a word “${head}”`;
+        }
+        // A phrase is the table's, not the pack's, unless the note gives it.
+        if (r.target !== head && !word.note?.includes(r.target)) {
+          return `${said}: the pack’s note does not give the phrase “${r.target}”`;
+        }
+        return [];
+      });
+
+    assert.deepEqual(offenders, [], `${offenders.length} rows disagree with their pack:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('every note the deep table prints was read against the pack’s note it now carries', () => {
+    const packs = deep();
+    const offenders = rows()
+      .filter((r) => r.table === 1 && r.claim)
+      .flatMap((r) => {
+        const said = `${r.target} → ${r.english}`;
+        const word = deepWord(r, packs);
+        // A row whose word was not found is named by the test above.
+        if (!word) return [];
+        const note = word.note;
+        if (!note) return `${said}: the row says \`${r.claim}\` and the pack carries no note`;
+        const line = CHECKED.find((c) => c.row === r.target);
+        if (!line) return `${said}: \`${r.claim}\` has no line in CHECKED — read it against the pack’s \`${note}\` and add one`;
+        if (line.cell !== r.claim) return `${said}: the row now reads \`${r.claim}\`, and was checked as \`${line.cell}\``;
+        if (line.note !== note) return `${said}: the pack’s note is now \`${note}\`, and the row was checked against \`${line.note}\``;
+        return [];
+      });
+
+    assert.deepEqual(offenders, [], `${offenders.length} notes are unchecked:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('no line in CHECKED outlives its row', () => {
+    const printed = new Set(rows().flatMap((r) => (r.table === 1 && r.claim ? r.target : [])));
+    const stale = CHECKED.filter((c) => !printed.has(c.row)).map((c) => c.row);
+
+    assert.deepEqual(stale, [], `CHECKED holds lines for rows the page no longer prints a note on: ${stale.join(', ')}`);
+  });
+
+  test('the rule has something to police', () => {
+    // Floors rather than counts, so a row added needs no edit here — but
+    // every row it adds is read, and both kinds of French claim are, so a
+    // table whose markup moved fails here instead of passing empty.
+    const all = rows();
+    const tables = new Set(all.map((r) => r.table));
+    const french = all.filter((r) => r.table === 0);
+    const deepRows = all.filter((r) => r.table === 1);
+    const packs = deep();
+
+    assert.deepEqual([...tables], [0, 1], `expected two descent tables, French first, and found ${tables.size}`);
+    assert.deepEqual(all.filter((r) => r.cells !== 4).map((r) => r.target), [], 'a row without four cells');
+    assert.ok(french.length >= 5, `only ${french.length} French rows were read`);
+    assert.ok(french.some((r) => r.claim === TOOK), 'no French row says English took the word itself');
+    assert.ok(french.some((r) => COUSIN.test(r.claim)), 'no French row names a cousin');
+    assert.ok(deepRows.length >= 5, `only ${deepRows.length} Latin and Old English rows were read`);
+    for (const [i, { lang }] of DEEP.entries()) {
+      const from = deepRows.filter((r) => packs[i]?.has(r.target.split(' ')[0] as string));
+      assert.ok(from.length >= 2, `only ${from.length} rows come from the ${lang} pack`);
+    }
+    assert.ok(deepRows.filter((r) => r.claim).length >= 3, 'fewer than three deep rows print a note');
   });
 });
