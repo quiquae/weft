@@ -227,3 +227,56 @@ describe('a lexicon note quotes with the same marks the site itself does', () =>
     assert.ok(ALL_LANGS.length >= 7, `expected at least 7 packs, found ${ALL_LANGS.length}`);
   });
 });
+
+/*
+ * An Old English second form keeps its headword's dots.
+ *
+ * The pack dots the palatal c and g, ċ and ġ, and pronounces what it dots, so
+ * a plural or a participle that drops a dot its headword carries spells one
+ * stem two ways, and one of them wrongly. On 2026-10-04 three did: `ċild` wove
+ * "children" as `cildru`, `ċildclāð` "babies" as `cildclāðas`, and `æġ`
+ * "eggs" as `ǣgru`, where English Wiktionary declines `ċild` on its dotted
+ * stem and writes `{{ang-noun|ǣġ|n|ǣġru}}`. A dot may go where a back vowel
+ * follows, which is the guttural sound coming back — `fisċ`, `fiscas` and
+ * `ċiriċe`, `ċirican`, as Wiktionary declines them on the stems `fisċ|fisc`.
+ */
+type Form = Entry & { tgt?: string };
+
+const DOTTED = new Set(['ċ', 'ġ']);
+const BACK = new Set([...'aāoōuū']);
+/** A letter without its marks: ċ is c and ǣ is æ, so a stem can be followed across them. */
+const base = (ch: string): string => ch.normalize('NFD').replace(/\p{Mn}/gu, '');
+
+/** How a second form departs from its headword's dots along the stem they share, or nothing. */
+function departs(head: string, form: string): string | undefined {
+  const h = [...head];
+  const f = [...form];
+  for (let k = 0; k < Math.min(h.length, f.length) && base(h[k] as string) === base(f[k] as string); k++) {
+    const next = f[k + 1] ?? '';
+    if (DOTTED.has(h[k] as string) && !DOTTED.has(f[k] as string) && !BACK.has(next))
+      return `drops the dot of its headword's “${h[k]}”${next ? ` before “${next}”` : ' at its end'}`;
+    if (!DOTTED.has(h[k] as string) && DOTTED.has(f[k] as string)) return `dots a “${f[k]}” its headword leaves bare`;
+  }
+  return undefined;
+}
+
+describe('an Old English second form keeps its headword’s dots', () => {
+  const forms = (pack('ang') as Form[]).filter((e) => e.tgt && e.tgt !== spelling(e.tgtLemma ?? ''));
+
+  test('a plural or a participle drops a dot only where a back vowel follows', () => {
+    const offenders = forms.flatMap((e) => {
+      const head = spelling(e.tgtLemma ?? '');
+      const why = departs(head, e.tgt as string);
+      return why ? [`en-ang ${e.src} → ${e.tgt}, of ${head}: ${why}`] : [];
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} second forms spell their stem another way:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('the rule has something to police', () => {
+    const dotted = forms.filter((e) => [...spelling(e.tgtLemma ?? '')].some((ch) => DOTTED.has(ch)));
+    const undone = dotted.filter((e) => [...(e.tgt as string)].filter((ch) => DOTTED.has(ch)).length < [...spelling(e.tgtLemma ?? '')].filter((ch) => DOTTED.has(ch)).length);
+    assert.ok(forms.length > 150, `only ${forms.length} Old English second forms were read`);
+    assert.ok(dotted.length > 20, `only ${dotted.length} second forms belong to a dotted headword`);
+    assert.ok(undone.length >= 2, `only ${undone.length} second forms rightly drop a dot before a back vowel`);
+  });
+});

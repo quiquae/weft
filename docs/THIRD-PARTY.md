@@ -76,7 +76,9 @@ Boston, 1903), §193, and Karl Luick, *Historische Grammatik der englischen
 Sprache*, §639, for the two words it decides. Wright, Bülbring and Sievers
 are public domain; Luick's chapter on the consonants was edited from his
 notes by Friedrich Wild and Herbert Koziol and published in 1940, and one
-sentence of it is quoted.
+sentence of it is quoted. Vowel length follows the dictionaries and, where
+they disagree, the grammar: *ǣġ*, egg, is long in Wiktionary and in Sievers
+§175, where Bosworth–Toller prints it short.
 
 Public-domain sources impose no conditions. They are listed for scholarly
 honesty rather than for compliance.

@@ -54,6 +54,13 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * beside … ascian", Wiktionary writes them `ā+scian` and `ā+scung` with
  * `āxian`, `ācsian` and `āxung` beside them, and English kept *ask*, not
  * *ash*.
+ *
+ * **And a macron, the same day.** `æġ`, egg, is long: English Wiktionary
+ * writes `{{ang-noun|ǣġ|n|ǣġru}}`, and Sievers (tr. Cook, 1903), §175, lists
+ * "ǣg, egg" among the words where a final *g* "is only met with after a long
+ * vowel or diphthong". Bosworth–Toller prints it short, "æg … pl. ægru", and
+ * is outvoted. Its plural, which the pack wove undotted as `ǣgru`, is
+ * `ǣġru`.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -68,6 +75,7 @@ export const RENAMED: Renames = {
     nēahgebūr: 'nēahġebūr',
     fisc: 'fisċ',
     flǣsc: 'flǣsċ',
+    æġ: 'ǣġ',
   },
 };
 
