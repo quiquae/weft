@@ -83,11 +83,16 @@ describe('every transcription a pack prints is of the form it is printed under',
     // Without a floor the first test passes on a pack whose second forms print
     // no transcription at all, which is what a builder that stops reading the
     // second form's column would ship. Old English transcribes 204 words under
-    // two spellings each, as of 2026-10-04.
+    // two spellings each, as of 2026-10-04, and Latin 218.
     assert.equal(words.size, 7, `read ${words.size} packs`);
-    const twoSpellings = [...(words.get('ang') ?? new Map<string, Row[]>()).values()].filter(
-      (rows) => new Set(rows.map((r) => r.tgt)).size > 1,
-    );
-    assert.ok(twoSpellings.length > 150, `only ${twoSpellings.length} Old English words print a sound under two spellings`);
+    for (const [lang, name] of [
+      ['ang', 'Old English'],
+      ['la', 'Latin'],
+    ] as const) {
+      const twoSpellings = [...(words.get(lang) ?? new Map<string, Row[]>()).values()].filter(
+        (rows) => new Set(rows.map((r) => r.tgt)).size > 1,
+      );
+      assert.ok(twoSpellings.length > 150, `only ${twoSpellings.length} ${name} words print a sound under two spellings`);
+    }
   });
 });

@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **217 pass**, 60 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **218 pass**, 60 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -448,8 +448,13 @@ a second form divides where its headword does (`_division()` in
 `tests/tools/form-transcriptions.test.ts` reads the shipped packs and fails
 on one transcription under two spellings or two under one, and
 `tests/tools/old-english-stress.test.ts` holds every second form to Wright
-as it holds the headwords. Latin's second forms print nothing yet; see
-`TODO.md`.
+as it holds the headwords, and `tests/tools/latin-stress.test.ts` every
+Latin one to Allen & Greenough. A second form is read from its own
+spelling, never stressed where its headword is: *amāre* is stressed on its
+second syllable and *amāns* on its first. What a second form's spelling
+hides is respelt in the test's `RESPELT` and the generator's `LA_RESPELT`
+alike — *iēns*, the participle of *īre*, begins with a vowel, which the
+spelling would read as the consonant that begins *iānua*.
 
 **A respelt word keeps its cards, and a card id once shipped is never
 dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
