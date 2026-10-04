@@ -74,9 +74,11 @@ function transcribed(): Map<LangCode, Map<string, string>> {
     const lang = file.slice(3, -5) as LangCode;
     const pack = JSON.parse(readFileSync(join(PACKS, file), 'utf8'));
     const heads = new Map<string, string>();
-    for (const rows of Object.values(pack.entries) as { tgtLemma: string; ipa?: string }[][]) {
+    for (const rows of Object.values(pack.entries) as { tgt: string; tgtLemma: string; ipa?: string }[][]) {
       for (const row of rows) {
-        if (row.ipa && !heads.has(row.tgtLemma)) heads.set(row.tgtLemma, row.ipa);
+        // The headword's row: a plural or participle prints a transcription of
+        // its own spelling, which the headword's letters cannot be counted against.
+        if (row.ipa && row.tgt === spelling(row.tgtLemma) && !heads.has(row.tgtLemma)) heads.set(row.tgtLemma, row.ipa);
       }
     }
     out.set(lang, heads);

@@ -169,19 +169,32 @@ const CONSONANTS = 'bcċdfgġhklmnprstwxþð';
 const VOICED = new Set([...VOWELS, ...'bdgġlmnrw']);
 const FRICATIVE = new Set(['f', 's', 'þ', 'ð']);
 
-type Row = { line: number; pos: string; tgt: string; word: string; ipa: string };
+/**
+ * A transcribed form. `head` is its headword without the number; a second
+ * form, the plural of a noun or the participle of a verb, divides where its
+ * headword does, so every list below is read by `head`.
+ */
+type Row = { line: number; pos: string; tgt: string; word: string; head: string; second: boolean; ipa: string };
 
-const rows: Row[] = readFileSync(LEXICON, 'utf8')
+/** Each transcribed headword, and each second form beside it, with the seed row's own transcription of it. */
+const rows: Row[] = [];
+/** Second forms the seed gives no transcription of their own, which the tooltip would print under them. */
+const untranscribed: string[] = [];
+readFileSync(LEXICON, 'utf8')
   .split('\n')
-  .flatMap((text, i) => {
-    if (!text || text.startsWith('#')) return [];
+  .forEach((text, i) => {
+    if (!text || text.startsWith('#')) return;
     const f = text.split('\t');
-    const tgt = f[2] ?? '';
+    const [pos = '', tgt = '', tgt2 = '', ipa = '', ipa2 = ''] = [f[1], f[2], f[3], f[5], f[8]];
+    if (!tgt || !ipa) return;
     // hund² is the second word spelled hund; the number is not spoken.
-    const word = tgt.replace(/[¹²³⁴⁵⁶⁷⁸⁹⁰]+$/, '').toLowerCase();
-    return tgt && f[5] ? [{ line: i + 1, pos: f[1] ?? '', tgt, word, ipa: f[5] }] : [];
+    const head = tgt.replace(/[¹²³⁴⁵⁶⁷⁸⁹⁰]+$/, '').toLowerCase();
+    rows.push({ line: i + 1, pos, tgt, word: head, head, second: false, ipa });
+    if (!tgt2) return;
+    if (ipa2) rows.push({ line: i + 1, pos, tgt: tgt2, word: tgt2.toLowerCase(), head, second: true, ipa: ipa2 });
+    else untranscribed.push(`lex-ang.tsv:${i + 1} ${tgt2}, of ${tgt} ${ipa}`);
   });
-const headwords = new Set(rows.map((r) => r.word));
+const headwords = new Set(rows.map((r) => r.head));
 
 /** The particle a headword begins with, if it spells one. */
 const particleOf = (word: string): string | undefined => PARTICLES.find((p) => word.startsWith(p) && word !== p);
@@ -192,9 +205,9 @@ function unreadable(row: Row): string | undefined {
   if (odd) return `“${odd}” is not a letter the rules know`;
   const marks = [...row.ipa].filter((ch) => ch === 'ˈ').length;
   if (marks !== 1) return `${marks} stress marks`;
-  const divided = COMPOUNDED[row.word];
-  if (!divided && !SIMPLE.has(row.word)) {
-    const particle = particleOf(row.word);
+  const divided = COMPOUNDED[row.head];
+  if (!divided && !SIMPLE.has(row.head)) {
+    const particle = particleOf(row.head);
     if (particle)
       return `it begins with the particle “${particle}-” and nothing here says whether it is compounded of it — read a dictionary and list it in COMPOUNDED or SIMPLE`;
   }
@@ -226,8 +239,8 @@ function initialOf(root: string): string | undefined {
  * are voiced and how many voiceless. One ending a compound's first element is
  * voiceless, as the simple word ends, unless the compound has grown into one.
  */
-function fricatives(word: string): { voiced: number; voiceless: number } {
-  const divided = COMPOUNDED[word];
+function fricatives(word: string, head: string): { voiced: number; voiceless: number } {
+  const divided = COMPOUNDED[head];
   const at = divided?.first.length ?? -1;
   const out = { voiced: 0, voiceless: 0 };
   for (let i = 0; i < word.length; i++) {
@@ -271,10 +284,22 @@ describe('every Old English transcription is stressed and voiced where the gramm
     assert.deepEqual(stale, [], `listed here and no longer a headword of lex-ang.tsv: ${stale.join(', ')}`);
   });
 
+  test('every second form has a transcription of its own', () => {
+    // The tooltip prints a row's transcription under the form it wove, so a
+    // plural or participle given only its headword's is shown a sound it does
+    // not have. The pack builder prints the ninth column, ipa2, under it.
+    assert.deepEqual(
+      untranscribed.slice(0, 30),
+      [],
+      `${untranscribed.length} second forms have no transcription of their own — run python3 tools/seed/fill_ipa.py:\n  ` +
+        untranscribed.slice(0, 30).join('\n  '),
+    );
+  });
+
   test('a word is stressed on its first syllable, unless it begins with a particle the language left unstressed', () => {
     report(
       checked.flatMap((r) => {
-        const divided = COMPOUNDED[r.word];
+        const divided = COMPOUNDED[r.head];
         if (divided?.stressed === 'second') {
           const want = `/${UNSTRESSED_SOUND[divided.first]}ˈ`;
           return r.ipa.startsWith(want)
@@ -290,7 +315,7 @@ describe('every Old English transcription is stressed and voiced where the gramm
   test('a root after an unstressed particle begins with the sound it has at the start of a word', () => {
     report(
       checked.flatMap((r) => {
-        const divided = COMPOUNDED[r.word];
+        const divided = COMPOUNDED[r.head];
         if (divided?.stressed !== 'second') return [];
         const head = UNSTRESSED_SOUND[divided.first] as string;
         const root = r.word.slice(divided.first.length);
@@ -308,7 +333,7 @@ describe('every Old English transcription is stressed and voiced where the gramm
   test('f, s and þ are voiced between voiced sounds, and not where a word begins or a compound divides, unless it has grown into one word', () => {
     report(
       checked.flatMap((r) => {
-        const want = fricatives(r.word);
+        const want = fricatives(r.word, r.head);
         const got = transcribed(r);
         return got.voiced === want.voiced && got.voiceless === want.voiceless
           ? []
@@ -325,18 +350,20 @@ describe('every Old English transcription is stressed and voiced where the gramm
     // Floors, not exact counts, so a new headword needs no edit here. Each
     // names a case one of the rules decides, so a reading that stops meeting
     // it cannot be taken for one that has nothing wrong to find.
-    const unstressed = checked.filter((r) => COMPOUNDED[r.word]?.stressed === 'second');
+    const unstressed = checked.filter((r) => COMPOUNDED[r.head]?.stressed === 'second');
     const adverbs = unstressed.filter((r) => r.word.startsWith('tō'));
-    const voiced = checked.reduce((n, r) => n + fricatives(r.word).voiced, 0);
+    const voiced = checked.reduce((n, r) => n + fricatives(r.word, r.head).voiced, 0);
     const atSecond = checked.filter((r) => {
-      const at = COMPOUNDED[r.word]?.first.length;
+      const at = COMPOUNDED[r.head]?.first.length;
       return at !== undefined && FRICATIVE.has(r.word[at] as string);
     });
-    const endingFirst = checked.filter((r) => FRICATIVE.has(COMPOUNDED[r.word]?.first.at(-1) as string));
-    const grown = endingFirst.filter((r) => COMPOUNDED[r.word]?.grown);
-    const refused = rows.filter((r) => particleOf(r.word));
+    const endingFirst = checked.filter((r) => FRICATIVE.has(COMPOUNDED[r.head]?.first.at(-1) as string));
+    const grown = endingFirst.filter((r) => COMPOUNDED[r.head]?.grown);
+    const refused = rows.filter((r) => !r.second && particleOf(r.head));
+    const second = checked.filter((r) => r.second);
 
     assert.ok(checked.length > 300, `only ${checked.length} of ${rows.length} Old English rows were read`);
+    assert.ok(second.length > 200, `only ${second.length} second forms were read beside their headwords`);
     assert.ok(unstressed.length >= 8, `only ${unstressed.length} headwords begin with an unstressed particle`);
     assert.ok(adverbs.length >= 3, `only ${adverbs.length} adverbs are made of tō and a noun`);
     assert.ok(voiced > 30, `only ${voiced} f, s or þ stand between voiced sounds`);
@@ -369,6 +396,10 @@ describe('every Old English transcription is stressed and voiced where the gramm
  *         pack is dated 900–1050, which is the late Old English Wright means.
  *   §320 note  before a voiceless consonant, "ʒ became h (= x) …, but the g
  *         was often restored", so either spirant stands there.
+ *   §313  before a voiced consonant, after a guttural vowel, l or r, the voiced
+ *         spirant still, since "Germanic ʒ remained a spirant in all other
+ *         positions": the g of the plurals `fuglas` and `morgnas`, which a
+ *         lost vowel left before l and n.
  *
  * Two places make a g palatal whatever it came from, and an undotted g there
  * contradicts the grammar: between Old English palatal vowels (§320, "It also
@@ -376,7 +407,8 @@ describe('every Old English transcription is stressed and voiced where the gramm
  * first element after one (§324, "dæg … weg … bodig … hefig"). The -ian of a
  * weak verb is *-ōjan, an original guttural vowel, so a g before it stays
  * guttural — §320's own "dagian from *dagōjan", and Wright's plegian, whose
- * index gives "plægian, plagian" beside it (§538).
+ * index gives "plægian, plagian" beside it (§538) — and before the -iende of
+ * its participle, which is built on the same stem.
  */
 
 const BACK = 'aāoōuū';
@@ -388,7 +420,7 @@ type G = 'ɡ' | 'ɣ' | 'x' | 'either';
 /** Each undotted g of a headword, read by Wright, or why it cannot be. */
 function gsOf(row: Row): { sounds: G[]; refused: string[] } {
   const word = row.word;
-  const at = COMPOUNDED[word]?.first.length ?? -1;
+  const at = COMPOUNDED[row.head]?.first.length ?? -1;
   const sounds: G[] = [];
   const refused: string[] = [];
   for (let i = 0; i < word.length; i++) {
@@ -413,11 +445,15 @@ function gsOf(row: Row): { sounds: G[]; refused: string[] } {
       else refused.push(`a g before “${next}”, which nothing here reads`);
       continue;
     }
+    if (!VOWELS.includes(next) && VOICED.has(next) && (BACK.includes(prev) || 'lr'.includes(prev))) {
+      sounds.push('ɣ'); // §313: before a voiced consonant, still the spirant
+      continue;
+    }
     if (!VOWELS.includes(next) || !(VOWELS.includes(prev) || 'lr'.includes(prev))) {
       refused.push(`a g between “${prev}” and “${next}”, which nothing here reads`);
       continue;
     }
-    const weakVerb = row.pos === 'verb' && word.slice(i + 1).startsWith('ian');
+    const weakVerb = row.pos === 'verb' && /^i(an|end)/.test(word.slice(i + 1));
     if (!weakVerb && FRONT.includes(prev) && FRONT.includes(next)) {
       refused.push('a g between palatal vowels is palatal (§320), and is not dotted');
       continue;
@@ -429,7 +465,7 @@ function gsOf(row: Row): { sounds: G[]; refused: string[] } {
 
 /** The x of a transcription that an h wrote: every h but one beginning a word or an element (§§325–328). */
 function xOfH(row: Row): number {
-  const at = COMPOUNDED[row.word]?.first.length ?? -1;
+  const at = COMPOUNDED[row.head]?.first.length ?? -1;
   return [...row.word].filter((ch, i) => ch === 'h' && i !== 0 && i !== at).length;
 }
 

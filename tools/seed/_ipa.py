@@ -225,11 +225,7 @@ from the diphthong in geong. For a curated lexicon an explicit list is both
 correct and auditable; a rule would be neither.
 """
 ANG_PREFIXED = {
-    'ābīdan': 'ā', 'ābīdende': 'ā',
-    'beginnan': 'be', 'beginnende': 'be',
-    'forġietan': 'for', 'forġietende': 'for',
-    'ġemunan': 'ġe', 'ġemunende': 'ġe',
-    'ondrǣdan': 'on', 'ondrǣdende': 'on',
+    'ābīdan': 'ā', 'beginnan': 'be', 'forġietan': 'for', 'ġemunan': 'ġe', 'ondrǣdan': 'on',
     'tōdæġ': 'tō', 'tōgædere': 'tō', 'tōmorgen': 'tō',
 }
 
@@ -327,14 +323,18 @@ def _ang_phones(word, initial=True):
             # Undotted g is the guttural one (Wright §§313–324). It is the
             # explosive where a root begins — the g of be-ginnan — and after
             # n; the voiced spirant inside a word after a vowel, l or r (§320,
-            # "beorgan … folgian … swelgan"); and voiceless at the end of one
-            # after l, r or a guttural vowel, where "the restoration of the g
-            # was merely orthographical" (§323: "beorh, hill; burh, city").
+            # "beorgan … folgian … swelgan"), before a voiced consonant too,
+            # since it "remained a spirant in all other positions" (§313) —
+            # the g of fuglas and morgnas, where a vowel was lost after it;
+            # and voiceless at the end of one after l, r or a guttural vowel,
+            # where "the restoration of the g was merely orthographical"
+            # (§323: "beorh, hill; burh, city").
             # `prev and ...` for the reason `nxt and ...` is written below.
             after = bool(prev) and (prev in 'lr' or prev in 'aāoōuū')
+            before = bool(nxt) and (nxt in ANG_VOWELS or (after and nxt in 'lmnrw'))
             if not at_start and not nxt and after:
                 phones.append('x')
-            elif not at_start and nxt in ANG_VOWELS and (prev in ANG_VOWELS or after):
+            elif not at_start and before and (prev in ANG_VOWELS or after):
                 phones.append('ɣ')
             else:
                 phones.append('ɡ')
@@ -355,24 +355,38 @@ def _ang_phones(word, initial=True):
     return merged
 
 
-def old_english_ipa(word, pos=''):
+def _division(table, key, head):
+    """
+    A word's entry in one of the two tables above. A second form — the plural
+    of a noun, the participle of a verb — divides where its headword does, so
+    it takes the headword's entry when it begins with the same element:
+    beginnende as beginnan, wīfmenn as wīfmann.
+    """
+    if key in table:
+        return table[key]
+    first = table.get(head.strip().lower())
+    return first if first and key.startswith(first) else None
+
+
+def old_english_ipa(word, pos='', head=''):
     """
     Old English stresses the first syllable of the root, always. That makes
     the stress mark trivial to place — position zero — once any unstressed
     prefix has been separated off. Each element of a word that divides is
     transcribed on its own, so a root begins with the sound a word begins
-    with: the g of be-ginnan is a stop, the s of and-swaru voiceless.
+    with: the g of be-ginnan is a stop, the s of and-swaru voiceless. `head`
+    is the headword of a second form, which divides where it does.
     """
     w = word.strip()
     if not w or ' ' in w:
         return ''
     key = w.lower()
-    prefix = ANG_PREFIXED.get(key) if pos == 'verb' or key in ANG_PREFIXED else None
+    prefix = _division(ANG_PREFIXED, key, head)
     if prefix:
         head = _ang_phones(prefix, initial=True)
         root = _ang_phones(w[len(prefix):], initial=True)
         return '/' + ''.join(head) + 'ˈ' + ''.join(root) + '/'
-    first = ANG_COMPOUNDED.get(key)
+    first = _division(ANG_COMPOUNDED, key, head)
     if first:
         head = _ang_phones(first, initial=True)
         rest = _ang_phones(w[len(first):], initial=True)
@@ -380,7 +394,7 @@ def old_english_ipa(word, pos=''):
     return '/ˈ' + ''.join(_ang_phones(w, initial=True)) + '/'
 
 
-IPA_FOR = {'la': lambda w, pos: latin_ipa(w), 'ang': old_english_ipa}
+IPA_FOR = {'la': lambda w, pos, head='': latin_ipa(w), 'ang': old_english_ipa}
 
 
 if __name__ == '__main__':
@@ -430,6 +444,17 @@ if __name__ == '__main__':
         ('ābīdan', '/ɑːˈbiːdɑn/'), ('beginnan', '/beˈɡinːɑn/'),
         ('forġietan', '/forˈjietɑn/'), ('ġemunan', '/jeˈmunɑn/'),
     ]
+    # A second form divides where its headword does: the participle keeps the
+    # infinitive's unstressed particle, the plural the compound's boundary.
+    checks_ang_second = [
+        ('beginnende', 'beginnan', '/beˈɡinːende/'), ('ābīdende', 'ābīdan', '/ɑːˈbiːdende/'),
+        ('hūsbondan', 'hūsbonda', '/ˈhuːsbondɑn/'), ('andswara', 'andswaru', '/ˈɑndswɑrɑ/'),
+        ('wīfmenn', 'wīfmann', '/ˈwiːvmenː/'), ('menn', 'mann', '/ˈmenː/'),
+        # And its fricatives are read where they now stand: between vowels, voiced.
+        ('stafas', 'stæf', '/ˈstɑvɑs/'), ('āþas', 'āþ', '/ˈɑːðɑs/'),
+        # A g a lost vowel left before a voiced consonant is still the spirant.
+        ('fuglas', 'fugol', '/ˈfuɣlɑs/'), ('morgnas', 'morgen', '/ˈmorɣnɑs/'),
+    ]
     for word, want in checks_ang:
         got = old_english_ipa(word)
         flag = 'ok  ' if got == want else 'FAIL'
@@ -442,5 +467,11 @@ if __name__ == '__main__':
         if got != want:
             bad += 1
         print(f'  ang {flag} {word:12s} {got:22s} want {want}  (verb: prefix unstressed)')
+    for word, head, want in checks_ang_second:
+        got = old_english_ipa(word, 'noun', head)
+        flag = 'ok  ' if got == want else 'FAIL'
+        if got != want:
+            bad += 1
+        print(f'  ang {flag} {word:12s} {got:22s} want {want}  (second form of {head})')
     print(f'\n{bad} mismatches')
     raise SystemExit(1 if bad else 0)
