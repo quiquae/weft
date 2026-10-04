@@ -444,6 +444,17 @@ next loads them and when an export written before the change is imported.
 as they were: Wright's own note gives *axian* beside *ascian*, Wiktionary
 writes them undotted, and English kept *ask*.
 
+**And *hūsbonda*'s *s* is not voiced.** The voicing of *f*, *s* and *þ*
+between voiced sounds stops at a compound's seam, and nothing had decided
+which side of the seam a fricative that *ends* the first element falls on.
+Bülbring's *Altenglisches Elementarbuch* (§474) voices it only in a compound
+that has grown into one word, and Luick's *Historische Grammatik der
+englischen Sprache* (§639) names *husband* as a word taken in during the
+tenth or eleventh century, after that voicing had run its course, whose *z*
+arrived later by assimilation. So *hūsbonda* is /ˈhuːsbondɑ/, not
+/ˈhuːzbondɑ/. *wīfmann* keeps its /v/: it grew into late Old English
+*wimman*, and Sievers counts that among the changes only a voiced *f* makes.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

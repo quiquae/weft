@@ -16,7 +16,9 @@ Values are the standard teaching reconstructions: Classical Latin as in
 Allen's *Vox Latina*, Old English as in Hogg / Campbell. Latin syllables and
 stress follow Allen & Greenough's *New Latin Grammar*, §§7, 11 and 12; Old
 English stress, voicing and the guttural g Joseph and Elizabeth Mary Wright's
-*Old English Grammar* (1914), §§7–15, 261 and 313–324.
+*Old English Grammar* (1914), §§7–15, 261 and 313–324, and a fricative ending
+a compound's first element Bülbring's *Altenglisches Elementarbuch* (1902),
+§474.
 """
 
 # --------------------------------------------------------------- Latin ----
@@ -237,8 +239,18 @@ with f, s or þ. That sound keeps the value it has at the start of a word:
 "this voicing of f, þ, s only took place in simple words, but not in
 compounds, such as āþwēan, to wash; ġefeoht, battle; ġesendan, to send;
 wynsum, pleasant" (§261 note). Listed for the reason ANG_PREFIXED is.
+
+And those whose first element ends with one, which keeps the value it has at
+the end of the simple word: Bülbring, *Altenglisches Elementarbuch* (1902),
+§474, voices it only in a compound grown into one word. hūsbonda is a
+compound of hūs, and Luick, *Historische Grammatik der englischen Sprache*,
+§639 Anm. 3 (edited from his notes, 1940), names it — taken in in the tenth
+or eleventh century, after the voicing had run its course, its [z] arising
+later "nur durch Assimilation". wīfmann is left to the simple-word rule on
+purpose: it grew into late Old English wimman, and Sievers (tr. Cook, 1903),
+§193.2, puts that among the changes of a sonant f.
 """
-ANG_COMPOUNDED = {'andswaru': 'and', 'onsīen': 'on', 'ēagþȳrel': 'ēag'}
+ANG_COMPOUNDED = {'andswaru': 'and', 'onsīen': 'on', 'ēagþȳrel': 'ēag', 'hūsbonda': 'hūs'}
 
 
 def _ang_phones(word, initial=True):
@@ -399,6 +411,9 @@ if __name__ == '__main__':
         ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'), ('tōmorgen', '/toːˈmorɣen/'),
         # A compound's second element begins with the sound a word begins with.
         ('andswaru', '/ˈɑndswɑru/'), ('onsīen', '/ˈonsiːen/'), ('ēagþȳrel', '/ˈæːɑxθyːrel/'),
+        # And its first element ends with the sound the simple word ends with,
+        # unless the compound has grown into one word, as wīfmann had.
+        ('hūsbonda', '/ˈhuːsbondɑ/'), ('wīfmann', '/ˈwiːvmɑnː/'),
         # Undotted g is a spirant inside a word after l or r, and voiceless at
         # its end after one or a guttural vowel: no headword has the last.
         ('folgian', '/ˈfolɣiɑn/'), ('morgen', '/ˈmorɣen/'), ('beorg', '/ˈbeorx/'),

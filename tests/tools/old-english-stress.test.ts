@@ -44,10 +44,33 @@
  *         when doubled — and not voiced at the start of a compound's second
  *         element, nor of a root after a particle.
  *
- * Where a fricative *ends* a compound's first element, as in `wīfmann` and
- * `hūsbonda`, Wright's note can be read as reaching it, and English
- * Wiktionary's transcription voices it — [ˈwiːvˌmɑn]. Nothing here decides
- * between them, and those fricatives are counted neither way.
+ * Where a fricative *ends* a compound's first element, Wright's four examples
+ * say nothing, and Karl Bülbring's *Altenglisches Elementarbuch* (1902) says
+ * it in a sentence. §474: between voiced sounds f, s and þ became voiced "in
+ * einfachen Wörtern, wahrscheinlich ums Jahr 700" — in simple words, about the
+ * year 700 — and "auch im Auslaut erster haupttoniger Glieder von verdunkelten
+ * Kompositis", at the end of a stressed first element too, but only of a
+ * compound grown into one word, as *ðuslic* from *þus-līc*; Anm. 1 keeps them
+ * voiceless where an element begins, and at the end of an unstressed first
+ * element, *wiþūtan*. On 2026-10-04 that settled the two compounds Wright
+ * left open, each named by a second grammar:
+ *
+ *  - **`hūsbonda` was /ˈhuːzbondɑ/, and its s is voiceless.** Karl Luick's
+ *    *Historische Grammatik der englischen Sprache*, §639 Anm. 3, its
+ *    consonant chapter edited from his notes by Friedrich Wild (Leipzig,
+ *    1940; archive.org's record dates it 1921, its title page does not): the
+ *    change "hat sich in vorhistorischer Zeit vollzogen und wiederholt sich
+ *    nicht mehr" — it was over before the records begin and did not recur —
+ *    and of "das Lehnwort husbond 'Gatte', das im 10. oder 11. Jahrhundert
+ *    aufgenommen wurde", that its [z] arose later "nur durch Assimilation".
+ *    English Wiktionary's [ˈhuːzˌbon.dɑ] is its module voicing across every
+ *    boundary it is shown.
+ *  - **`wīfmann` /ˈwiːvmɑnː/ stands, because the word grew into one.** Eduard
+ *    Sievers's *Old English Grammar* (tr. Cook, 3rd ed., 1903), §193.2: "fn
+ *    (with sonant f) frequently passes into mn … so likewise LOE. wimman,
+ *    plur. wimmen, from wifmon, woman", and not in *æfnan*, "presumably
+ *    because the f is a surd". Bülbring §342 has the same *wimman* among late
+ *    Old English assimilations. A surd f would not have become m.
  *
  * What the spelling cannot show is where a word divides, and that is written
  * down below as it was read. A headword beginning with the letters of a
@@ -69,8 +92,13 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const LEXICON = join(ROOT, 'tools/seed/lex-ang.tsv');
 
-/** Which element of a compound takes the chief stress. */
-type Divided = { first: string; stressed: 'first' | 'second' };
+/**
+ * Which element of a compound takes the chief stress, and whether the compound
+ * has grown into one word, which voices a fricative ending its first element
+ * (Bülbring §474). `grown` says what grammar shows it, and is refused on a
+ * compound whose first element ends with no f, s or þ, where it decides nothing.
+ */
+type Divided = { first: string; stressed: 'first' | 'second'; grown?: string };
 
 /** Headwords that divide, read against Wright and, for the nouns, etymonline. */
 const COMPOUNDED: Record<string, Divided> = {
@@ -95,8 +123,8 @@ const COMPOUNDED: Record<string, Divided> = {
   nāhwǣr: { first: 'nā', stressed: 'first' },
   ġiestrandæġ: { first: 'ġiestran', stressed: 'first' },
   // §11: two nouns, stressed on the first.
-  wīfmann: { first: 'wīf', stressed: 'first' },
-  hūsbonda: { first: 'hūs', stressed: 'first' },
+  wīfmann: { first: 'wīf', stressed: 'first', grown: 'Sievers §193.2, Bülbring §342: LOE wimman, from wifmon' },
+  hūsbonda: { first: 'hūs', stressed: 'first' }, // Luick §639 Anm. 3: taken in in the 10th or 11th century
   sǣmann: { first: 'sǣ', stressed: 'first' },
   ċildclāð: { first: 'ċild', stressed: 'first' },
   nēahġebūr: { first: 'nēah', stressed: 'first' },
@@ -171,6 +199,8 @@ function unreadable(row: Row): string | undefined {
       return `it begins with the particle “${particle}-” and nothing here says whether it is compounded of it — read a dictionary and list it in COMPOUNDED or SIMPLE`;
   }
   if (divided && !row.word.startsWith(divided.first)) return `it does not begin with “${divided.first}”`;
+  if (divided?.grown && !FRICATIVE.has(divided.first.at(-1) as string))
+    return `it is listed as grown into one word, which decides only an f, s or þ ending “${divided.first}”, and there is none`;
   if (divided?.stressed === 'second' && !UNSTRESSED_SOUND[divided.first])
     return `nothing here says how an unstressed “${divided.first}-” sounds`;
   return undefined;
@@ -192,13 +222,14 @@ function initialOf(root: string): string | undefined {
 }
 
 /**
- * What §8 and §261 make of a headword's f, s and þ: how many are voiced, how
- * many voiceless, and how many end a compound's first element, which nothing
- * here decides.
+ * What §8, §261 and Bülbring §474 make of a headword's f, s and þ: how many
+ * are voiced and how many voiceless. One ending a compound's first element is
+ * voiceless, as the simple word ends, unless the compound has grown into one.
  */
-function fricatives(word: string): { voiced: number; voiceless: number; undecided: number } {
-  const at = COMPOUNDED[word]?.first.length ?? -1;
-  const out = { voiced: 0, voiceless: 0, undecided: 0 };
+function fricatives(word: string): { voiced: number; voiceless: number } {
+  const divided = COMPOUNDED[word];
+  const at = divided?.first.length ?? -1;
+  const out = { voiced: 0, voiceless: 0 };
   for (let i = 0; i < word.length; i++) {
     const ch = word[i] as string;
     if (!FRICATIVE.has(ch)) continue;
@@ -208,9 +239,10 @@ function fricatives(word: string): { voiced: number; voiceless: number; undecide
       i += 1;
       continue;
     }
-    if (i + 1 === at) out.undecided += 1;
+    const between = VOICED.has(word[i - 1] as string) && VOICED.has(word[i + 1] as string);
+    if (i + 1 === at) out[divided?.grown && between ? 'voiced' : 'voiceless'] += 1;
     else if (i === 0 || i === at || i + 1 === word.length) out.voiceless += 1;
-    else if (VOICED.has(word[i - 1] as string) && VOICED.has(word[i + 1] as string)) out.voiced += 1;
+    else if (between) out.voiced += 1;
     else out.voiceless += 1;
   }
   return out;
@@ -273,21 +305,16 @@ describe('every Old English transcription is stressed and voiced where the gramm
     );
   });
 
-  test('f, s and þ are voiced between voiced sounds, and not where a word or its second element begins', () => {
+  test('f, s and þ are voiced between voiced sounds, and not where a word begins or a compound divides, unless it has grown into one word', () => {
     report(
       checked.flatMap((r) => {
         const want = fricatives(r.word);
         const got = transcribed(r);
-        const fits =
-          got.voiced >= want.voiced &&
-          got.voiceless >= want.voiceless &&
-          got.voiced + got.voiceless === want.voiced + want.voiceless + want.undecided;
-        return fits
+        return got.voiced === want.voiced && got.voiceless === want.voiceless
           ? []
           : [
               `${r.tgt} ${r.ipa}: ${got.voiced} voiced and ${got.voiceless} voiceless, ` +
-                `where the spelling has ${want.voiced} voiced and ${want.voiceless} voiceless` +
-                (want.undecided ? `, and ${want.undecided} either` : ''),
+                `where the spelling has ${want.voiced} voiced and ${want.voiceless} voiceless`,
             ];
       }),
       'voice the wrong f, s or þ',
@@ -305,6 +332,8 @@ describe('every Old English transcription is stressed and voiced where the gramm
       const at = COMPOUNDED[r.word]?.first.length;
       return at !== undefined && FRICATIVE.has(r.word[at] as string);
     });
+    const endingFirst = checked.filter((r) => FRICATIVE.has(COMPOUNDED[r.word]?.first.at(-1) as string));
+    const grown = endingFirst.filter((r) => COMPOUNDED[r.word]?.grown);
     const refused = rows.filter((r) => particleOf(r.word));
 
     assert.ok(checked.length > 300, `only ${checked.length} of ${rows.length} Old English rows were read`);
@@ -312,6 +341,11 @@ describe('every Old English transcription is stressed and voiced where the gramm
     assert.ok(adverbs.length >= 3, `only ${adverbs.length} adverbs are made of tō and a noun`);
     assert.ok(voiced > 30, `only ${voiced} f, s or þ stand between voiced sounds`);
     assert.ok(atSecond.length >= 3, `only ${atSecond.length} compounds begin their second element with f, s or þ`);
+    assert.ok(
+      endingFirst.length > grown.length,
+      `no compound still felt as two words ends its first element with f, s or þ`,
+    );
+    assert.ok(grown.length >= 1, `no compound grown into one word ends its first element with f, s or þ`);
     assert.ok(refused.length > 30, `only ${refused.length} headwords begin with a particle's letters`);
   });
 });
