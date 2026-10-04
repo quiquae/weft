@@ -527,6 +527,41 @@ test.describe('taking your data with you', () => {
     expect(attnOut['news.test']?.seconds, 'attention did not survive the round trip').toBe(1800);
   });
 
+  test('a word the pack has since respelt keeps its card', async ({ rpc }) => {
+    // An export an older version wrote, before the Old English pack dotted
+    // sēcan as sēċan. The card's id is its spelling, so without RENAMED the
+    // reviews would land under an id no pack reads and the word arrive new.
+    const now = Date.now();
+    const day = 86_400_000;
+    await rpc({
+      type: 'import-data',
+      payload: {
+        format: 'weft-export/1',
+        settings: {},
+        cards: {
+          'ang:sēcan': {
+            id: 'ang:sēcan',
+            target: 'ang',
+            lemma: 'sēcan',
+            stability: 21,
+            difficulty: 5,
+            lastReview: now - 3 * day,
+            reps: 7,
+            lapses: 1,
+            exposures: 44,
+            firstSeen: now - 40 * day,
+          },
+        },
+      },
+    });
+
+    const exported = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
+    const cards = exported.payload['cards'] as Record<string, { lemma: string; reps: number }>;
+    expect(Object.keys(cards), 'the old spelling is still a card').not.toContain('ang:sēcan');
+    expect(cards['ang:sēċan']?.lemma).toBe('sēċan');
+    expect(cards['ang:sēċan']?.reps, 'the reviews did not follow the word').toBe(7);
+  });
+
   test('importing a file cannot clear a cooldown', async ({ rpc }) => {
     /*
      * An export carries the lock state, including anything queued. Import

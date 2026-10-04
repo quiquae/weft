@@ -31,6 +31,14 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * same *j*; English Wiktionary dots all four. The pack dots the palatal *c*
  * and transcribes what it dots, so these four were read /k/ where the grammar
  * reads /tʃ/.
+ *
+ * **And five *g*, the same day.** §320 makes a *g* palatal "between OE.
+ * palatal vowels", `twēġen`, and §324 after one at the end of a word or a
+ * first element, "dæg … weg … bodig … hefig": `wīġ`, `huniġ`, and `ǣġhwǣr`,
+ * whose *ǣġ-* is *ā-ġe-*. `nēahġebūr`'s *gebūr* is the prefix *ġe-*, which
+ * the pack dots in `ġemunan` and no spelling rule can see. English
+ * Wiktionary writes `wīġ`, `huniġ`, `twēġen` and `nēahġebūr`, and its
+ * pronunciation module reads `ǣġhwǣr`.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -38,6 +46,11 @@ export const RENAMED: Renames = {
     tǣcan: 'tǣċan',
     þencan: 'þenċan',
     wyrcan: 'wyrċan',
+    twēgen: 'twēġen',
+    wīg: 'wīġ',
+    hunig: 'huniġ',
+    ǣghwǣr: 'ǣġhwǣr',
+    nēahgebūr: 'nēahġebūr',
   },
 };
 
