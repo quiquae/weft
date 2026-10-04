@@ -455,6 +455,15 @@ arrived later by assimilation. So *hūsbonda* is /ˈhuːsbondɑ/, not
 /ˈhuːzbondɑ/. *wīfmann* keeps its /v/: it grew into late Old English
 *wimman*, and Sievers counts that among the changes only a voiced *f* makes.
 
+**And *wīfmann* is masculine.** The Old English for *woman* was marked
+feminine, in the tooltip and on its page. It is a compound of *mann* and is
+declined as *mann* is: Bosworth–Toller has "wíf-mann … es; m. (but seó
+wífman occurs)", and Sievers and Wright list it among the masculines. Nothing
+had checked an Old English gender before; every noun's has now been read
+against English Wiktionary and, where Wiktionary was not enough,
+Bosworth–Toller, and *wīfmann* was the only one of 178 that was wrong. The
+tests now hold each to the entry it was read in.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -475,7 +484,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 910 tests: 562 unit, 102 in jsdom, 207 over the build tools, and
+**Built with** 914 tests: 562 unit, 102 in jsdom, 211 over the build tools, and
 39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

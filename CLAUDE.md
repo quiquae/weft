@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **207 pass**, 57 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **211 pass**, 58 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -378,6 +378,19 @@ that did come from the headword — *janitor* is from *iānitor*, the keeper of
 an *iānua*, where *January* is from *Janus*, as `iānua` itself is. Read the
 foot of the ledger before restoring one.
 
+**An Old English gender names its entry too.** Every noun in
+`tools/seed/lex-ang.tsv` has a line in `tools/seed/ang-genders.tsv` that
+repeats its gender and names where it was read — English Wiktionary's Old
+English entry, or Bosworth–Toller where Wiktionary has none, contradicts
+itself, or disagrees with the seed — and `tests/tools/genders.test.ts`
+fails on a gender changed in one file and not the other, a Wiktionary
+citation of some other word, or a line outliving its noun. A Wiktionary page
+holds every word of one spelling, so read the etymology that is this word:
+`stefn`, voice, is feminine where `stefn`, stem, is masculine. Where the two
+dictionaries disagree, as on `þorp`, Bosworth–Toller decides, being the one
+the pack's attribution names. On 2026-10-04 that read all 178 nouns and found
+one wrong: `wīfmann` is masculine, because `mann` is.
+
 **A Latin transcription is held to the grammar, not to the generator.**
 `tests/tools/latin-stress.test.ts` works every headword's syllables, stress
 and the stressed syllable's first consonant out of its spelling by Allen &
@@ -447,6 +460,59 @@ rest of the day an update lands.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — `wīfmann` is masculine, and every Old English gender names its entry
+
+The same session's second PR, the item the first one queued: the seed marked
+`wīfmann` feminine, and the tooltip and its page printed it. Bosworth–Toller,
+read first, has "wíf-mann … es; m. (but seó wífman occurs)", and Sievers
+(§281 note 1) and Wright's *Elementary* grammar (§256) decline it with
+*mann*.
+
+**Then every noun, because nothing had checked one.** All 176 noun targets
+were fetched from Wiktionary raw and their `{{ang-noun}}` genders compared:
+149 of 178 rows agreed outright and 20 more once the page's other words of
+that spelling were set aside — `stefn`, voice, f, beside `stefn`, stem, m.
+The nine left were read in Bosworth–Toller, which settled each in the
+seed's favour but `wīfmann`'s: four have no Wiktionary entry under those
+titles, `īren`'s Wiktionary header contradicts its own neuter declension,
+`þorp` is n in Wiktionary and m in Bosworth–Toller, which the pack names,
+and `ċildclāð` is n in the main dictionary and "m. (not n.)" in its
+Supplement.
+
+**The guard is a ledger, as for the etymons.** `tools/seed/ang-genders.tsv`
+repeats each noun's gender beside the entries it was read in, and
+`tests/tools/genders.test.ts`, 4 tests in 1 suite, fails on a gender moved
+in one file and not the other, a Wiktionary citation of another word, or a
+line outliving its noun. Red on a header-only ledger, all 178; red on
+exactly `wīfmann` once the ledger was written from the dictionaries; green
+with the seed's cell. Three probes, restored by md5, each named. 2 of 7 160
+pack fields moved; 1 of 721 site files, `/old-english/wifmann`, at its five
+printings of the gender; all 36 screenshots byte-identical, and the three
+groups stamped. Counts moved 910 → **914** and tools 207 → **211** / 57 →
+**58** suites, in six places, `docs/LAUNCH.md:221` first. A `CHANGELOG.md`
+paragraph, because the pack ships, and the online Bosworth–Toller credited
+in `docs/THIRD-PARTY.md`.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 562 unit / 136 suites, 102
+jsdom / 23 suites, **211 tools / 58 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **987 KB × 3**
+passing `validate`, **39 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **716
+pages / 16 165 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that Bosworth–Toller decides where it and
+Wiktionary disagree, being the dictionary the pack's attribution names; that
+a substantivised adjective for "stranger" is masculine, as of a man; and
+that "m" is the right gender for a word Bosworth–Toller says is sometimes
+feminine.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds four agent-shaped items, the
+transcriptions a woven plural borrows first.
 
 ### 2026-10-04 — a compound's first element ends as its word does, unless the two grew into one
 

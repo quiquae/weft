@@ -1,0 +1,221 @@
+# Where each Old English noun's gender in lex-ang.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, and its word page prints it
+# in the Gender row and the page's description. On 2026-10-04 every noun was
+# read against English Wiktionary's Old English entry, and against
+# Bosworth–Toller, the dictionary the pack's attribution names, wherever
+# Wiktionary has no entry for the word, disagrees with itself, or disagrees
+# with the seed. One was wrong: wīfmann, woman, was marked feminine, and is
+# "wíf-mann … es; m. (but seó wífman occurs)" — declined as mann is, of
+# which it is a compound (Sievers tr. Cook §281 note 1; Wright's Elementary
+# Old English Grammar §256).
+#
+# A Wiktionary page holds every word of one spelling, so a line citing it
+# means the gender of this word's own etymology there: stefn, voice, is
+# feminine where stefn, stem, is masculine, and lagu, law, a loan from
+# Norse, is feminine where lagu, sea, is masculine. Where Wiktionary gives two
+# genders for one word (lēo, rūm, setl, clāð, heofon, sǣ, hyll, friþ), the
+# seed's is one of them.
+#
+# Where Wiktionary was not enough, Bosworth–Toller decided: hīwsċipe,
+# onsīen (an-sýn), pæð and blis have no Wiktionary entry under those titles;
+# īren's Wiktionary header says masculine and its own declension table a
+# neuter a-stem, and Bosworth–Toller has "íren, es; n."; þorp is neuter in
+# Wiktionary and "þorp, þrop, es; m." in Bosworth–Toller; and ċildclāð is
+# neuter in the main dictionary and "m. (not n.)" in its Supplement, which
+# corrects it, and which is the entry cited. fremde is an adjective, used as
+# a noun for a stranger, and Wiktionary gives that sense; masculine, as of a
+# man.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was read in, separated by spaces:
+#
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#                      (the title drops macrons and the dots of ċ and ġ)
+#   bt:<id>            https://bosworthtoller.com/<id>
+#
+# tests/tools/genders.test.ts requires every noun in lex-ang.tsv to have a
+# line here giving the same gender, every line to name an entry — a
+# Wiktionary one being the word's own — and no line to outlive its noun. It
+# cannot tell an entry somebody read from one somebody typed.
+man	mann	m	wikt:ang:mann
+woman	wīfmann	m	bt:35615 wikt:ang:wifmann
+child	ċild	n	wikt:ang:cild
+boy	cnapa	m	wikt:ang:cnapa
+girl	mæġden	n	wikt:ang:mægden
+person	mann	m	wikt:ang:mann
+friend	frēond	m	wikt:ang:freond
+family	hīwsċipe	m	bt:19147
+mother	mōdor	f	wikt:ang:modor
+father	fæder	m	wikt:ang:fæder
+brother	brōðor	m	wikt:ang:broðor
+sister	sweostor	f	wikt:ang:sweostor
+son	sunu	m	wikt:ang:sunu
+daughter	dohtor	f	wikt:ang:dohtor
+wife	wīf	n	wikt:ang:wif
+husband	hūsbonda	m	wikt:ang:husbonda
+baby	ċildclāð	m	bt:41645
+king	cyning	m	wikt:ang:cyning
+queen	cwēn	f	wikt:ang:cwen
+lord	hlāford	m	wikt:ang:hlaford
+neighbour	nēahġebūr	m	wikt:ang:neahgebur
+stranger	fremde	m	wikt:ang:fremde
+enemy	fēond	m	wikt:ang:feond
+soldier	ċempa	m	wikt:ang:cempa
+teacher	lārēow	m	wikt:ang:lareow
+doctor	lǣċe	m	wikt:ang:læce
+farmer	ierþling	m	wikt:ang:ierþling
+sailor	sǣmann	m	wikt:ang:sæmann
+head	hēafod	n	wikt:ang:heafod
+hand	hand	f	wikt:ang:hand
+eye	ēage	n	wikt:ang:eage
+ear	ēare	n	wikt:ang:eare
+mouth	mūð	m	wikt:ang:muð
+nose	nosu	f	wikt:ang:nosu
+tooth	tōð	m	wikt:ang:toð
+hair	hǣr	n	wikt:ang:hær
+heart	heorte	f	wikt:ang:heorte
+blood	blōd	n	wikt:ang:blod
+bone	bān	n	wikt:ang:ban
+arm	earm	m	wikt:ang:earm
+leg	sċanca	m	wikt:ang:scanca
+foot	fōt	m	wikt:ang:fot
+finger	finger	m	wikt:ang:finger
+face	onsīen	f	bt:1954
+body	līċ	n	wikt:ang:lic
+skin	hȳd	f	wikt:ang:hyd
+voice	stefn	f	wikt:ang:stefn
+dog	hund	m	wikt:ang:hund
+cat	catt	m	wikt:ang:catt
+horse	hors	n	wikt:ang:hors
+bird	fugol	m	wikt:ang:fugol
+fish	fisċ	m	wikt:ang:fisc
+cow	cū	f	wikt:ang:cu
+sheep	sċēap	n	wikt:ang:sceap
+pig	swīn	n	wikt:ang:swin
+wolf	wulf	m	wikt:ang:wulf
+bear	bera	m	wikt:ang:bera
+lion	lēo	m	wikt:ang:leo
+mouse	mūs	f	wikt:ang:mus
+snake	nǣdre	f	wikt:ang:nædre
+bee	bēo	f	wikt:ang:beo
+worm	wyrm	m	wikt:ang:wyrm
+raven	hræfn	m	wikt:ang:hræfn
+hound	hund	m	wikt:ang:hund
+ox	oxa	m	wikt:ang:oxa
+goat	gāt	f	wikt:ang:gat
+food	mete	m	wikt:ang:mete
+bread	hlāf	m	wikt:ang:hlaf
+water	wæter	n	wikt:ang:wæter
+wine	wīn	n	wikt:ang:win
+milk	meoluc	f	wikt:ang:meoluc
+meat	flǣsċ	n	wikt:ang:flæsc
+fruit	wæstm	m	wikt:ang:wæstm
+apple	æppel	m	wikt:ang:æppel
+salt	sealt	n	wikt:ang:sealt
+honey	huniġ	n	wikt:ang:hunig
+cheese	ċīese	m	wikt:ang:ciese
+egg	æġ	n	wikt:ang:æg
+fire	fȳr	n	wikt:ang:fyr
+house	hūs	n	wikt:ang:hus
+home	hām	m	wikt:ang:ham
+door	duru	f	wikt:ang:duru
+window	ēagþȳrel	n	wikt:ang:eagþyrel
+wall	wall	m	wikt:ang:wall
+roof	hrōf	m	wikt:ang:hrof
+floor	flōr	f	wikt:ang:flor
+room	rūm	n	wikt:ang:rum
+table	bēod	m	wikt:ang:beod
+chair	setl	n	wikt:ang:setl
+bed	bedd	n	wikt:ang:bedd
+book	bōc	f	wikt:ang:boc
+word	word	n	wikt:ang:word
+letter	bōcstæf	m	wikt:ang:bocstæf
+name	nama	m	wikt:ang:nama
+key	ċǣġ	f	wikt:ang:cæg
+bridge	brycg	f	wikt:ang:brycg
+church	ċiriċe	f	wikt:ang:cirice
+ship	sċip	n	wikt:ang:scip
+boat	bāt	m	wikt:ang:bat
+sword	sweord	n	wikt:ang:sweord
+shield	sċield	m	wikt:ang:scield
+ring	hring	m	wikt:ang:hring
+gold	gold	n	wikt:ang:gold
+silver	seolfor	n	wikt:ang:seolfor
+iron	īren	n	bt:20749
+stone	stān	m	wikt:ang:stan
+glass	glæs	n	wikt:ang:glæs
+cloth	clāð	m	wikt:ang:clað
+shoe	sċōh	m	wikt:ang:scoh
+coat	mentel	m	wikt:ang:mentel
+hat	hæt	m	wikt:ang:hæt
+sun	sunne	f	wikt:ang:sunne
+moon	mōna	m	wikt:ang:mona
+star	steorra	m	wikt:ang:steorra
+sky	heofon	m	wikt:ang:heofon
+earth	eorðe	f	wikt:ang:eorðe
+land	land	n	wikt:ang:land
+sea	sǣ	f	wikt:ang:sæ
+river	ēa	f	wikt:ang:ea
+lake	mere	m	wikt:ang:mere
+mountain	beorg	m	wikt:ang:beorg
+hill	hyll	m	wikt:ang:hyll
+forest	weald	m	wikt:ang:weald
+tree	trēow	n	wikt:ang:treow
+leaf	lēaf	n	wikt:ang:leaf
+flower	blōstma	m	wikt:ang:blostma
+grass	græs	n	wikt:ang:græs
+field	feld	m	wikt:ang:feld
+road	weġ	m	wikt:ang:weg
+path	pæð	m	bt:25120
+city	burg	f	wikt:ang:burg
+town	tūn	m	wikt:ang:tun
+village	þorp	m	bt:31961
+world	weorold	f	wikt:ang:weorold
+country	rīċe	n	wikt:ang:rice
+place	stōw	f	wikt:ang:stow
+rain	reġn	m	wikt:ang:regn
+snow	snāw	m	wikt:ang:snaw
+wind	wind	m	wikt:ang:wind
+cloud	wolcen	n	wikt:ang:wolcen
+ice	īs	n	wikt:ang:is
+light	lēoht	n	wikt:ang:leoht
+shadow	sċeadu	f	wikt:ang:sceadu
+time	tīma	m	wikt:ang:tima
+day	dæġ	m	wikt:ang:dæg
+night	niht	f	wikt:ang:niht
+year	ġēar	n	wikt:ang:gear
+month	mōnað	m	wikt:ang:monað
+week	wicu	f	wikt:ang:wicu
+hour	tīd	f	wikt:ang:tid
+morning	morgen	m	wikt:ang:morgen
+evening	ǣfen	m	wikt:ang:æfen
+summer	sumor	m	wikt:ang:sumor
+winter	winter	m	wikt:ang:winter
+autumn	hærfest	m	wikt:ang:hærfest
+life	līf	n	wikt:ang:lif
+death	dēað	m	wikt:ang:deað
+love	lufu	f	wikt:ang:lufu
+war	wīġ	n	wikt:ang:wig
+peace	friþ	m	wikt:ang:friþ
+truth	sōþ	n	wikt:ang:soþ
+law	lagu	f	wikt:ang:lagu
+work	weorc	n	wikt:ang:weorc
+money	feoh	n	wikt:ang:feoh
+price	weorþ	n	wikt:ang:weorþ
+question	āscung	f	wikt:ang:ascung
+answer	andswaru	f	wikt:ang:andswaru
+story	spell	n	wikt:ang:spell
+song	sang	m	wikt:ang:sang
+music	drēam	m	wikt:ang:dream
+game	gamen	n	wikt:ang:gamen
+dream	swefn	n	wikt:ang:swefn
+fear	fyrhtu	f	wikt:ang:fyrhtu
+hope	hopa	m	wikt:ang:hopa
+joy	blis	f	bt:4686
+anger	ierre	n	wikt:ang:ierre
+oath	āþ	m	wikt:ang:aþ
+gift	ġiefu	f	wikt:ang:giefu

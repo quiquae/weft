@@ -56,6 +56,12 @@ Glosses checked against:
 - **J. R. Clark Hall**, *A Concise Anglo-Saxon Dictionary* (1894) — public
   domain
 
+Every noun's gender was read against English Wiktionary's Old English entry
+and, where Wiktionary has none or disagrees with itself, against
+Bosworth–Toller in the online edition of Charles University, Prague
+(<https://bosworthtoller.com>), whose data are "free for any purpose";
+`tools/seed/ang-genders.tsv` names the entry for each.
+
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair
 Campbell, *Old English Grammar*. Stress, the voicing of *f*, *s* and *þ*,
