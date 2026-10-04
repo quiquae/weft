@@ -402,18 +402,25 @@ second element begins (§261 note). It does not import the generator, for
 Latin's reason. Where a word divides is what the spelling cannot show, so
 the test lists it, and refuses a headword beginning with one of Wright's
 particles that it has not been told is compounded or simple. A fricative
-that *ends* a first element, in `wīfmann` and `hūsbonda`, is counted neither
-way: Wright's note can be read as reaching it, Wiktionary voices it, and
-nothing here has decided. The same file holds every undotted *g* — the
-guttural one, since the pack dots the palatal — to §§313–324: the explosive
-where a root begins and after *n*, the voiced spirant inside a word after a
-vowel, *l* or *r* (§320, "folgian, to follow"), and voiceless at the end of
-one after a liquid or a guttural vowel (§323, "beorh, hill; burh, city"),
-where English Wiktionary voices it; the pack is late Old English, which is
-Wright's point. A *g* the grammar makes palatal whatever it came from —
-between palatal vowels, or after one at the end of a word — is refused,
-and the cure is its dot, which moves the word's card: see the next
-paragraph.
+that *ends* a first element keeps the voiceless sound the simple word ends
+with, unless the compound has grown into one word: Bülbring's *Altenglisches
+Elementarbuch* (1902), §474, voices it only "von verdunkelten Kompositis".
+So `hūsbonda` is /ˈhuːsbondɑ/ — Luick's *Historische Grammatik*, §639 Anm. 3
+(edited from his notes, 1940), names it a loan of the tenth or eleventh
+century, after the voicing had run its course, whose [z] came later by
+assimilation — and `wīfmann` keeps its /v/, the test listing it as `grown`
+on Sievers's word (tr. Cook, 1903, §193.2) that late Old English *wimman* is
+the assimilation of a sonant *f*. Wiktionary voices both, because its module
+voices across every boundary; where a grammar names the word, the grammar
+wins. The same file holds every undotted *g* — the guttural one, since the
+pack dots the palatal — to §§313–324: the explosive where a root begins and
+after *n*, the voiced spirant inside a word after a vowel, *l* or *r* (§320,
+"folgian, to follow"), and voiceless at the end of one after a liquid or a
+guttural vowel (§323, "beorh, hill; burh, city"), where English Wiktionary
+voices it; the pack is late Old English, which is Wright's point. A *g* the
+grammar makes palatal whatever it came from — between palatal vowels, or
+after one at the end of a word — is refused, and the cure is its dot, which
+moves the word's card: see the next paragraph.
 
 **A respelt word keeps its cards, and a card id once shipped is never
 dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
@@ -440,6 +447,75 @@ rest of the day an update lands.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — a compound's first element ends as its word does, unless the two grew into one
+
+The topmost unchecked item was the one the dots item split off: `wīfmann`
+/ˈwiːvmɑnː/ and `hūsbonda` /ˈhuːzbondɑ/ voice a fricative that ends their
+first element, Wright's §261 note can be read either way, and the item
+asked for a second grammar before choosing. Campbell and Sievers–Brunner are
+not free; five grammars that are sit whole on archive.org as plain text, and
+grepping them for the two words took ten minutes.
+
+**Three of them speak to it, and two name the very words.** Bülbring's
+*Altenglisches Elementarbuch* (1902), §474, gives the rule: the voicing
+happened "in einfachen Wörtern, wahrscheinlich ums Jahr 700", and at the end
+of a stressed first element only "von verdunkelten Kompositis", compounds
+grown into one word. Luick's *Historische Grammatik*, §639 Anm. 3, names
+"das Lehnwort husbond", taken in in the tenth or eleventh century, after a
+change that "wiederholt sich nicht mehr", its [z] coming later "nur durch
+Assimilation". And Sievers, in Cook's translation (1903), §193.2, lists "LOE.
+wimman … from wifmon" among the assimilations of a *sonant* f, which a surd
+one does not undergo. So `hūsbonda` is /ˈhuːsbondɑ/, and `wīfmann` keeps its
+/v/. Wiktionary voices both, but its module voices across every hyphen.
+
+**Test-first.** The voicing test now counts a fricative ending a first
+element voiceless unless `COMPOUNDED` marks the compound `grown`, with the
+grammar that shows it, refuses `grown` where it would decide nothing, and has
+a floor for each kind. Red on exactly `hūsbonda`; the generator's self-check,
+given both words, red on it with exit 1. `'hūsbonda': 'hūs'` joined
+`ANG_COMPOUNDED`. All 352 cells were shown to equal the old generator first,
+so the column was blanked and refilled, and exactly one moved: 2 of 7 160
+fields of `en-ang.json`, `builtAt` already today. Built from `main` in a
+`/tmp` worktree and from the branch, 1 of 721 site files differs,
+`/old-english/husbonda`, `main`'s page with its six printings rewritten.
+All 36 screenshots regenerated byte-identical, 15 + 14 + 7 written by mtime,
+with Playwright's `--output` pointed at `/tmp` so iCloud had no directory to
+copy; the three groups are stamped. Two probes, restored by md5, each fail
+by name. No test count moved. A `CHANGELOG.md` paragraph, because the pack
+ships, and the three grammars credited in `docs/THIRD-PARTY.md`.
+
+**One date of this session's own was wrong, and the record said it.**
+archive.org dates Luick's second part 1921; its title page says Leipzig
+1940, and its preface says §639 was prepared from his shorthand by Friedrich
+Wild. The first draft wrote "(1921)" in four files and called all four
+grammars public domain. Corrected before the commit: cited as edited from
+his notes, 1940, and not called public domain. Read the title page, not the
+catalogue.
+
+**Found and queued, not fixed:** the seed marks `wīfmann` feminine, where
+Sievers §281 and Wright's *Elementary* §256 decline it with *mann* and *fōt*
+and Wiktionary writes `{{ang-noun|wīfmann|m}}`. Nothing has checked an Old
+English gender; the item is first in `Next`.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 562 unit / 136 suites, 102
+jsdom / 23 suites, 207 tools / 57 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **987 KB × 3**
+passing `validate`, **39 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**; a
+second `npm run packs` moved nothing; `npm run site` then `site:check` **716
+pages / 16 165 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that Bülbring's "verdunkelt" covers a compound
+attested as assimilated in late Old English, though the pack spells it
+unassimilated; that a grammar naming a word outweighs a module's general
+rule; and that the gender was a separate item rather than this one's.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds five agent-shaped items,
+`wīfmann`'s gender first.
 
 ### 2026-10-04 — eleven Old English words take their dots, and their cards go with them
 

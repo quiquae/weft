@@ -62,7 +62,15 @@ Campbell, *Old English Grammar*. Stress, the voicing of *f*, *s* and *þ*,
 and the sound of an undotted *g* follow Joseph and Elizabeth Mary Wright,
 *Old English Grammar* (Oxford, 2nd ed., 1914), §§7–15, 261 and 313–324, and
 `tests/tools/old-english-stress.test.ts` holds every Old English
-transcription to those rules.
+transcription to those rules. Where a fricative ends a compound's first
+element, which Wright's examples leave open, the voicing follows Karl
+Bülbring, *Altenglisches Elementarbuch* (Heidelberg, 1902), §474, with
+Eduard Sievers, *An Old English Grammar* (tr. Albert S. Cook, 3rd ed.,
+Boston, 1903), §193, and Karl Luick, *Historische Grammatik der englischen
+Sprache*, §639, for the two words it decides. Wright, Bülbring and Sievers
+are public domain; Luick's chapter on the consonants was edited from his
+notes by Friedrich Wild and Herbert Koziol and published in 1940, and one
+sentence of it is quoted.
 
 Public-domain sources impose no conditions. They are listed for scholarly
 honesty rather than for compliance.

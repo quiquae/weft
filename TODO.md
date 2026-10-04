@@ -373,12 +373,17 @@ reads any step backwards as tampering. Regenerated on the 3rd under
 Europe/London and on the 4th under Pacific/Kiritimati: all 14 shots
 byte-identical to their commits both times. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds nine
-agent-shaped items, and one of them — an Old English word stressed on the
-wrong syllable — should land before B3 puts the pages in front of
-anyone.** The code is not otherwise what is holding the release up, and
-neither is the version any more. **Every remaining item besides those ten
-needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+**And as of 2026-10-04 an Old English compound voices a fricative ending
+its first element only when it has grown into one word.** `hūsbonda` was
+/ˈhuːzbondɑ/; Luick names it a loan of the tenth or eleventh century,
+after the voicing had run its course, so it is /ˈhuːsbondɑ/, and
+`wīfmann` keeps its /v/, because Sievers counts its late *wimman* among
+the changes of a voiced *f*. See the ticked item in `Next`.
+
+**So the whole of B0 is closed and `Now` is empty. `Next` holds five
+agent-shaped items, none of them waiting on B1.** The code is not
+otherwise what is holding the release up, and neither is the version any
+more. **Every remaining item besides those five needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -3418,7 +3423,7 @@ registered**, and nothing below it can move until it is.
       14 + 15 + 7 written each time by count of mtimes, and the three groups
       are stamped.
 
-- [ ] **`wīfmann` and `hūsbonda` voice a fricative that ends their first
+- [x] **`wīfmann` and `hūsbonda` voice a fricative that ends their first
       element, and nothing here has decided whether Wright allows it.**
       Split 2026-10-04 out of the dots item above, which left it open.
       `wīfmann` /ˈwiːvmɑnː/ and `hūsbonda` /ˈhuːzbondɑ/ voice the *f* and
@@ -3434,6 +3439,67 @@ registered**, and nothing below it can move until it is.
       `tests/tools/old-english-stress.test.ts` counts the two neither way
       and says so, and whichever way it goes the test should then hold it.
       No card moves either way, only the `ipa` column. About an hour.
+
+      **Done 2026-10-04: three grammars, two answers, one cell.** Campbell
+      and Sievers–Brunner are not free to read; five grammars that are sit
+      whole on archive.org, and three of them speak to this — Wright's
+      *Elementary Old English Grammar* (1923) and Moore and Knott (1919)
+      give only the general rule. **Bülbring's
+      rule**: *Altenglisches Elementarbuch* (1902), §474, voices *f*, *s*
+      and *þ* between voiced sounds "in einfachen Wörtern, wahrscheinlich
+      ums Jahr 700", and "auch im Auslaut erster haupttoniger Glieder von
+      verdunkelten Kompositis" — at the end of a stressed first element only
+      in a compound grown into one word, as *ðuslic*; Anm. 1 keeps them
+      voiceless where an element begins and at the end of an unstressed
+      first element, *wiþūtan*. **Luick names `hūsbonda`**: *Historische
+      Grammatik der englischen Sprache*, §639 Anm. 3 — the voicing "hat sich
+      in vorhistorischer Zeit vollzogen und wiederholt sich nicht mehr", and
+      "das Lehnwort husbond 'Gatte', das im 10. oder 11. Jahrhundert
+      aufgenommen wurde" got its [z] later "nur durch Assimilation". So it
+      is /ˈhuːsbondɑ/. **Sievers names `wīfmann`**: §193.2 of Cook's
+      translation (1903), "fn (with sonant f) frequently passes into mn …
+      so likewise LOE. wimman, plur. wimmen, from wifmon", and not in
+      *æfnan*, "presumably because the f is a surd"; Bülbring §342 has the
+      same *wimman*. A word that grew into *wimman* is Bülbring's obscured
+      compound, so it keeps /ˈwiːvmɑnː/. Wiktionary's module gives
+      [ˈhuːzˌbon.dɑ] and [ˈwiːvˌmɑn], voicing across every hyphen it is
+      shown, so it is no source on a seam.
+
+      Test-first. The voicing test counts a fricative ending a first element
+      voiceless unless `COMPOUNDED` marks the word `grown`, with the grammar
+      that shows it, and refuses `grown` on a compound whose first element
+      ends with no *f*, *s* or *þ*; two floors want one compound of each
+      kind. Red on exactly `hūsbonda /ˈhuːzbondɑ/: 1 voiced and 0
+      voiceless`; the generator's self-check, given both words, red on
+      `hūsbonda` with exit 1. Then `'hūsbonda': 'hūs'` joined
+      `ANG_COMPOUNDED` in `tools/seed/_ipa.py`. All 352 cells were first
+      shown to equal the old generator, so the column was blanked and
+      refilled, and exactly one moved. `en-ang.json`: 2 of 7 160 fields,
+      `husband` and `husbands`, `builtAt` already today. Built from `main`
+      in a `/tmp` worktree and from the branch, 1 of 721 site files differs,
+      `/old-english/husbonda`, and it is `main`'s page with its six
+      printings of the transcription rewritten. All 36 screenshots
+      regenerated byte-identical, 15 + 14 + 7 written by mtime, and the
+      three groups are stamped. Two probes, restored by md5: `wīfmann`
+      without `grown` fails the voicing test and its floor by name, and
+      `grown` on `sǣmann` is refused by name. No test count moved.
+
+- [ ] **`wīfmann` is marked feminine, and the grammars decline it as
+      `mann` is.** Found 2026-10-04 reading Sievers for its *f*. The seed
+      row is `woman noun wīfmann wīfmenn f`, and the tooltip prints the
+      gender. Sievers (tr. Cook, 1903), §281 note 1, under the masculine
+      consonant stems: "Like mon is declined the compound wifmon, woman
+      (later often assimilated: wimman), except that it is sometimes used
+      as a fem."; Wright's *Elementary Old English Grammar* (1923), §256,
+      "Like fōt are declined … man(n) … and wifman wimman, woman", among
+      the masculines; English Wiktionary `{{ang-noun|wīfmann|m}}`. So `m`,
+      which is also the more memorable fact — the Old English for *woman* is
+      masculine because *mann* is. A gender moves no card and no address.
+      Read Bosworth–Toller's entry too before changing it. And nothing has
+      ever checked an Old English gender: comparing all 356 rows with
+      Wiktionary's `{{ang-noun|…|g}}` is the transferable half, one `curl`
+      per headword with `action=raw` (titles drop the marks). About 20
+      minutes for the row, an hour or two for the pass.
 
 - [ ] **A woven plural or participle shows its headword's transcription,
       and three Old English plurals disagree with their headwords' dots.**
@@ -3503,19 +3569,19 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **four** unchecked items above, as of
+`Now` is **empty** and `Next` holds **five** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. The Old English dots first — eleven words, read against
-Wright, and a card rename to build before any of them moves, free before B3;
-then `far wel` and
-`camera`, content questions; then the pixel diff, a tool. The Latin note on
-`vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
-feed's hidden etymologies, the Old English homographs, the feed's Latin
-frames, the Latin descent pass, the Latin index's "became", the screenshots'
-renderer drift, the tooltip's "Ancestor of English", the dashboard's
-date, the `iānua` note, the landing page's tables, the site key's quote marks,
-the pronunciation keys, the reason line's grammar, French `mort`, Old
-English stress and the undotted *g* are done.
+to work them. `wīfmann`'s gender first, one cell and twenty minutes; then
+the transcriptions a woven plural borrows from its headword, and the three
+plurals whose dots disagree with theirs; then `far wel` and `camera`,
+content questions; then the pixel diff, a tool. The Latin note on `vir`, the
+22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
+etymologies, the Old English homographs, the feed's Latin frames, the Latin
+descent pass, the Latin index's "became", the screenshots' renderer drift,
+the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
+the landing page's tables, the site key's quote marks, the pronunciation
+keys, the reason line's grammar, French `mort`, Old English stress, the
+undotted *g*, the eleven dots and the compounds' fricatives are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3876,6 +3942,35 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-04 — the compounds' fricatives, decided by grammars that name
+them.** Ticked in `Next`. Four things a later run would be sorry not to
+know:
+
+1. **Five Old English grammars are on archive.org whole**, as plain text:
+   Sievers tr. Cook (1903) `oldenglishgramma00sievrich`, which says
+   "sonant" and "surd" for voiced and voiceless; Bülbring (1902)
+   `altenglischesele00bluoft`, German, "stimmhaft"; Luick
+   `p1historischegra01luicuoft` and `p2historischegra01luicuoft`; Wright's
+   *Elementary* (1923) `in.ernet.dli.2015.30689`; Moore and Knott (1919)
+   `elementsofoldeng00mooriala`. `curl https://archive.org/metadata/<id>/files`
+   names the `_djvu.txt`, and `https://archive.org/download/<id>/<name>`
+   fetches it. Campbell and Hogg are not there.
+2. **An archive.org record's year is not the book's.** The record dates
+   Luick's second part 1921; its title page says Leipzig 1940, and its
+   preface says §639 was prepared from Luick's shorthand by Friedrich Wild.
+   So it is cited as edited from his notes, and not as public domain.
+   Read the title page and the preface before writing a date.
+3. **Wiktionary's `{{ang-IPA|hūs-bonda}}` voices across its hyphen**, and
+   every hyphen: the module applies one rule, so on a compound's seam it is
+   no second source. A grammar that names the word is.
+4. **Luick's own list of voiced words (§639.1) includes *ealswā*,** whose
+   *s* begins a second element and voiced because the word fused into
+   *as* — an obscured compound in Bülbring's sense, which Wright's §261 note
+   read literally would refuse. Nothing like it is in the pack; if one
+   joins, `grown` as written decides only a fricative *ending* a first
+   element, and the test will need a second look. And **B1 has not
+   moved**: `dig weft.study @8.8.8.8` answers NXDOMAIN at 17:06 BST.
 
 **2026-10-04 — French `mort` is two cards.** Ticked in `Next`. Two things
 a later run would be sorry not to know:
