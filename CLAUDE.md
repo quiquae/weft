@@ -393,6 +393,77 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-04 — the pronunciation keys say what their packs bear out, and the site reads the tooltip's
+
+The same session, as a second PR: the item the first one queued, taken
+because the first took twenty minutes of a two-hour slot.
+
+**Every rule was measured before a word moved.** Over each pack's headwords
+with a transcription: Old English's dots are followed without one exception
+— every ċ outside *sċ* /tʃ/ (17), every ġ /j/ (25), every *sċ* /ʃ/ (10),
+every *cg* /ddʒ/ (3), every þ and ð "th", every macron long — and every
+rule about a bare letter is contradicted somewhere. Latin's *v* /w/ (58 of
+58) and *c* /k/ (88 of 88, *cc* being one long /kː/) hold; its *ae* /ai̯/
+holds nowhere. One count was wrong on the way and caught by reading its
+members: `'eiy'.includes('')` is true, so defaulting the letter after the
+last to `''` counted every word-final *c* and *g*.
+
+**The keys are one per language, in the table, and say only what holds.**
+"þ and ð are both “th”; ċ is “ch”, ġ is “y”, sċ is “sh” and cg is “dg”. A
+macron marks a long vowel." and "… ae as /ae̯/." No letterform switch hides
+the dots, which was checked, so the key always names letters the reader
+sees. The three keys with no pack took curly marks. The site's
+`META.<lang>.note` copies are gone; `wordPage()` prints
+`getLanguage(lang).pronunciationNote`.
+
+**The guard is a ledger, as the landing page's tables were.**
+`tests/tools/pronunciation-keys.test.ts` holds `KEYS` — each claim's words,
+letters and sound — to every headword: spelt n times, transcribed with the
+sound at least n times. It refuses a key that says a respelling or a
+transcription its ledger does not hold, a key a reader is shown with no
+ledger, a claim tested on fewer than three headwords, and a straight quote
+in any key. Red first with a ledger of the old keys, on exactly the four
+false rules and four keys' straight marks; the four true rules passed.
+`tests/tools/build-site.test.ts` holds every word page's key to the table,
+red first on 698. Four probes, restored by md5, each failing one test by
+name.
+
+**Six words may want their dots, and that is the stress item's now.**
+Wiktionary, read raw, dots *fisċ*, *flǣsċ*, *sēċan*, *tǣċan*, *þenċan* and
+*wyrċan*, which the pack writes bare and transcribes /k/ or /sk/. Written
+into the Old English stress item, which reads the generator against a
+grammar; the key is true of the pack either way.
+
+**Screenshots: one moved, and it is the change.** All three groups
+regenerated, 14 + 15 + 7 written by count of mtimes: `page-old-english.png`
+alone differs, its tooltip a line shorter and explaining the *weġ* and
+*ġeong* on the page above it. The store and first-run sets are stamped; the
+documentation group's "no change" stamp is deleted, that group having
+changed. A `CHANGELOG.md` paragraph, because the tooltip ships.
+
+Counts moved 872 → **879** and tools 184 → **191** / 51 → **53** suites, in
+six places, `docs/LAUNCH.md:221` first.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, **191 tools / 53 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that a key may leave a letter unexplained but
+not explain it wrongly, so undotted *g*'s /ɣ/ goes unmentioned; that “y”
+reads as the consonant beside a transcription of /j/; that *cg* earns its
+clause, being three words and *bridge* among them; and that the site's
+Latin pages gain the *ae* clause the extension always had.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds six agent-shaped items, the
+reason line's grammar first.
+
 ### 2026-10-04 — the site's pronunciation key took curly quotes, and reading it found two false rules
 
 The topmost unchecked item was the Old English pronunciation key printing
