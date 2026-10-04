@@ -3696,10 +3696,10 @@ a later run would be sorry not to know:
    `LIKENESSES` names one word per kind and `FINITE` the verbs the reasons
    use — a reason with a new verb fails until it is added, which is the
    moment to read it.
-2. **This session landed three PRs, #58 to #60, in under an hour.** Each was
-   branched from a freshly pulled `main` after the one before had merged, so
-   none stacked; the queue's two-hour slot fits three small items when each
-   is measured before it is written.
+2. **This session landed four PRs, #58 to #61, in about fifty minutes.**
+   Each was branched from a freshly pulled `main` after the one before had
+   merged, so none stacked; the queue's two-hour slot fits several small
+   items when each is measured before it is written.
 
 **2026-10-04 — the pronunciation keys, held to the packs.** Ticked in
 `Next`. Three things a later run would be sorry not to know:
