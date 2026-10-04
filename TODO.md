@@ -3602,6 +3602,27 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-10-04 — the site key's quote marks, and the two keys behind them.**
+Ticked in `Next`. Four things a later run would be sorry not to know:
+
+1. **`esc()` hides a straight quote from grep.** The builder writes `"` as
+   `&quot;`, so a search of the HTML for `"` finds every attribute delimiter
+   and a search for `&quot;` misses the structured data, where JSON writes
+   `\"`. `readable()` in `tests/tools/build-site.test.ts` decodes it, and
+   `pages` there now holds every page the site serves as it reads: reuse it
+   for any rule about what the whole site says.
+2. **Read a sentence for whether it is true while changing its marks.** The
+   item was three pairs of quotes; reading the key it sat in against the
+   pack's own IPA found that two of its three rules are contradicted on
+   the very pages that print it, and that the tooltip's copy, in
+   `src/core/languages.ts`, is worse. The new top item has the numbers.
+3. **`'abc'.includes('')` is true.** A scratch count of "c before a front
+   vowel" that defaulted the letter after the last to `''` counted every
+   word-final *c* and *g*: 12 became 5 and 22 became 10 once the end of the
+   word was excluded. Check a count's members, not only its size.
+4. **B1 has not moved.** `dig weft.study @8.8.8.8` answers NXDOMAIN on
+   2026-10-04.
+
 **2026-10-03 — `dashboard.png` is held, and the hold has two halves.**
 Ticked in `Next`. Five things a later run would be sorry not to know:
 
