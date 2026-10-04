@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-03:** every automatable check is green, measured at the end
+**State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
 suites, **181** tool tests / 50 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -2999,7 +2999,7 @@ registered**, and nothing below it can move until it is.
       pass found false, so it is `septem` → *September* now, the live case
       the proper-noun guard polices. No test count moved.
 
-- [ ] **The landing page's descent table is a hand copy of eight pack
+- [x] **The landing page's descent table is a hand copy of eight pack
       claims, and nothing holds it to them.** Found 2026-10-02 when a
       corrected note had to be changed a second time, by hand, in
       `site/index.html`. The table repeats five Old English and three Latin
@@ -3017,6 +3017,32 @@ registered**, and nothing below it can move until it is.
       word their row shows, checked against the packs on 2026-10-02. About
       20 minutes, in `tests/tools/build-site.test.ts`, which already reads
       the built page.
+
+      **Done 2026-10-04, and it was two tables, fifteen rows.** The French
+      table above it — seven words, each with "shares a root with …" or
+      "English took the word itself" — is the same kind of hand copy, of
+      `fr-cousins.tsv`'s claims, and nothing read it either. A new
+      `describe` reads both tables off the built landing page, each word
+      through `entriesByTarget()`, as the product reads one. Derived where
+      the pack's claim has a form a test can read: a French row's English
+      is the word's gloss, "took the word itself" requires its etymon to be
+      that gloss, and a cousin row must name exactly the words the pack's
+      note quotes; a deep row's English is its word's etymon, a phrase must
+      stand in the pack's note as printed. The note column is the
+      judgement, taken as a ledger rather than as equality: the six cells
+      that print a note paraphrase it, so `CHECKED` in the test repeats
+      each cell beside the pack note it was read against — all six read
+      and true — and a move on either side fails naming the row and both
+      texts. Equality would have meant rewriting three cells of published
+      copy into tooltip fragments; a substring rule passes a note whose
+      meaning moved around a kept phrase. Red first on an empty ledger,
+      naming exactly the six. Ten probes, each restored by md5, each
+      failing by name: *drēam → dream* put back ("the pack gives no
+      etymon"), `sellan` → *sale*, the vaccine note moved in the pack and
+      reworded on the page, *chivalry* dropped, *cheval* claimed as taken
+      whole, `fenêtre`'s note deleted from the pack, a row deleted (its
+      ledger line outlives it), `paene insula` unmacroned, and the tables'
+      class renamed (the floor: "found 0"). Nothing on the page moved.
 
 - [ ] **The Old English pronunciation key quotes with straight marks, on 346
       word pages.** Found 2026-10-02 reading `/old-english/laece` after the
@@ -3143,19 +3169,18 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **nine** unchecked items above, as of
-2026-10-03, all agent-shaped and none waiting on B1. The order is the order
-to work them. The `iānua` note first, the landing page's table, the
-pronunciation key's quote marks and the reason line's grammar, four small
-ones; then French `mort`, one card or two,
+`Now` is **empty** and `Next` holds **seven** unchecked items above, as of
+2026-10-04, all agent-shaped and none waiting on B1. The order is the order
+to work them. The pronunciation key's quote marks and the reason line's
+grammar first, two small ones; then French `mort`, one card or two,
 a decision with the evidence written down; then Old English stress, one
 wrong word and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
 `vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
-renderer drift, the tooltip's "Ancestor of English" and the dashboard's
-date, which sat first, are done.
+renderer drift, the tooltip's "Ancestor of English", the dashboard's
+date, the `iānua` note and the landing page's tables are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should

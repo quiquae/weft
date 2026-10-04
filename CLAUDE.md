@@ -393,6 +393,74 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-04 — the landing page's tables were two hand copies, and one note column is a judgement a ledger can hold
+
+The queue named the `iānua` note, which #56 landed the evening before:
+`TODO.md` had it ticked and `git log` showed the merge, so it took a minute.
+The topmost unchecked item was the landing page's descent table, "a hand
+copy of eight pack claims" that nothing reads.
+
+**It was two tables and fifteen rows.** The French table above it — seven
+words, each "shares a root with …" or "English took the word itself" — is
+the same kind of copy, of `fr-cousins.tsv`'s claims, and nothing read it
+either. All fifteen were checked against the packs before anything was
+written, through `entriesByTarget()`: every row holds today.
+
+**What a row claims is derived wherever the pack gives it a readable
+form.** A French row's English is its word's gloss; "took the word itself"
+is its etymon being that gloss; a cousin row must quote exactly the words
+the pack's note quotes. A Latin or Old English row's English is its word's
+etymon, read by the first word, so *mīlle passūs* is `mīlle`, and the
+phrase must stand in the pack's note as printed.
+
+**The note column was the item's judgement, and it is a ledger.** The six
+cells that print a note paraphrase it — "it meant simply “to die”" for
+"“steorfan” simply meant to die" — so equality would have rewritten three
+cells of published copy into tooltip fragments, and a substring rule
+passes a note whose meaning moved around a kept phrase. `CHECKED` in the
+test repeats each cell beside the note it was read against, as
+`tools/seed/la-notes.tsv` repeats a Latin note; all six were read and are
+true, and a move on either side fails naming the row and both texts. A
+cell may stay empty, as *hūs* and *cyning* do: silence is never false.
+
+Red first on an empty ledger, naming exactly the six. Then ten probes,
+each restored by md5 and each failing by name: *drēam → dream* put back,
+`sellan` → *sale*, the vaccine note moved in the pack and then reworded on
+the page — the two corrections the table needed by hand — *chivalry*
+dropped, *cheval* claimed as taken whole, `fenêtre`'s note deleted from
+the pack, a row deleted so its ledger line outlives it, `paene insula`
+unmacroned, and the tables' class renamed, which the floor catches as
+"found 0". One message was wrong on the first pass: an etymon mismatch
+also reported "the pack carries no note", because the note test could not
+find the word; it now leaves that row to the test that names it.
+
+Nothing on the page moved, so no screenshot, pack or site file did, and no
+`CHANGELOG.md` paragraph. Counts moved 864 → **869** and tools 176 →
+**181** / 49 → **50** suites, in six places, `docs/LAUNCH.md:221` first.
+`TODO.md`'s summary said nine unchecked items where there were eight
+after #56; it says seven now.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 548 unit / 133 suites, 102
+jsdom / 23 suites, **181 tools / 50 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies in the tracked trees, `dist/` or
+`test-results/`. One shell trap, harmless here: in zsh an unquoted `===`
+is an `=`-expansion and stops a chain with "== not found", so quote it.
+
+Assumed, with nobody to ask: that the French table was this item's too,
+being the same kind of copy; that a ledger beside the rule beats rewording
+published copy until equality holds; and that telling the tables apart by
+order, French first, is enough, since a reorder fails naming every row.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds seven agent-shaped items, the
+pronunciation key's quote marks first.
+
 ### 2026-10-03 — the iānua note names the doorkeeper, and a test still made the claim the pack had dropped
 
 The queue named the item and it was the topmost unchecked one: #55 had
