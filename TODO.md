@@ -6,7 +6,7 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **551** unit / 134 suites, **102** jsdom / 23
-suites, **191** tool tests / 53 suites, **38** e2e passing
+suites, **196** tool tests / 54 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -3221,7 +3221,7 @@ registered**, and nothing below it can move until it is.
       screenshot groups regenerated, 14 + 15 + 7 written, none moved, all
       stamped.
 
-- [ ] **Old English stress has never been checked against a source, and one
+- [x] **Old English stress has never been checked against a source, and one
       word is stressed on the wrong syllable.** Found 2026-10-02 while the
       Latin pronunciations were fixed. Old English stresses the root's first
       syllable, so `old_english_ipa()` can only go wrong on an unstressed
@@ -3241,7 +3241,45 @@ registered**, and nothing below it can move until it is.
       between voiced sounds, though it begins the second element. About an
       hour, and free before **B3**.
 
-      **And six words may want their dots, found 2026-10-04.** The pack's
+      **Done 2026-10-04: six transcriptions were wrong, three of stress and
+      three of voicing, and the dots are the next item.** Campbell is not
+      free to read; Joseph and Elizabeth Mary Wright's *Old English Grammar*
+      (2nd ed., 1914) is, on archive.org (`oldenglishgramma00wrig`), and
+      states both rules. §15: "In compound adverbs the first element had
+      the chief or secondary stress according as it was the more or less
+      important element of the compound, as eal(l)mǣst … but onwég, away;
+      tōgǽdere, together" — so the three *tō* adverbs are stressed on the
+      noun, `tōdæġ` /toːˈdæj/, `tōmorgen` /toːˈmorɡen/, `tōgædere`
+      /toːˈɡædere/, the last with the stop that begins a root, as
+      *be-ginnan*'s. Wiktionary's /ˈtoːˌɡæ.de.re/ is its template's default
+      for an unmarked *tō*, which its `tōdæġ` overrides with `tō<dæġ`; Wright
+      names the word. §261 note: "This voicing of f, þ, s only took place in
+      simple words, but not in compounds, such as āþwēan … ġefeoht …
+      ġesendan … wynsum" — so `andswaru` /ˈɑndswɑru/, `onsīen` /ˈonsiːen/
+      and a third the item had not seen, `ēagþȳrel` /ˈæːɑɡθyːrel/, whose
+      *þ* begins *þȳrel*; Wiktionary agrees on all three. `onsīen` keeps its
+      stress on *on*: §568 lists "ansīen, countenance" under *an-*, "stressed
+      form of the preposition on". `tools/seed/_ipa.py` lists the adverbs
+      with the prefixed verbs and the three compounds in `ANG_COMPOUNDED`,
+      transcribing each element on its own; all 352 cells equalled the old
+      generator, so the column was blanked and refilled, and exactly the six
+      moved. The guard is `tests/tools/old-english-stress.test.ts`, 5 tests:
+      it reads stress and voicing out of each spelling by Wright's rules
+      without importing the generator, and refuses a headword beginning with
+      a particle from Wright's lists (§§564–589, 645–656) that it has not
+      been told is compounded or simple. Red first on exactly the six, each
+      by its own rule. `en-ang.json` moved in 9 `ipa` fields — three of the
+      words have a plural — and its date; six word pages moved, each at its
+      six printings of the transcription and nothing else.
+
+      **Left alone, and written into the next item: a fricative that *ends*
+      a first element.** `wīfmann` /ˈwiːvmɑnː/ and `hūsbonda` /ˈhuːzbondɑ/
+      voice it. Wright's note can be read as reaching them, though all four
+      of its examples begin the second element, and Wiktionary voices both,
+      [ˈwiːvˌmɑn]; the test counts them neither way and says so.
+
+- [ ] **Six Old English words may want their dots, and two compounds want a
+      grammar's word on their voicing.** Found 2026-10-04. The pack's
       transcriptions follow its dots exactly — the pronunciation key says so
       now and `tests/tools/pronunciation-keys.test.ts` holds it — so a word
       the pack leaves undotted is transcribed /k/ or /sk/. English
@@ -3249,9 +3287,23 @@ registered**, and nothing below it can move until it is.
       Old English without macrons), writes six of the pack's undotted words
       dotted and feeds the dotted form to its IPA template: *fisċ*, *flǣsċ*,
       *sēċan*, *tǣċan*, *þenċan* and *wyrċan*. The pack has `fisc` /ˈfisk/,
-      `sēcan` /ˈseːkɑn/ and so on. Read Campbell on palatalisation before
-      dotting them: the spelling and the transcription move together, and
-      `āscian`, which Wiktionary writes `ā+scian`, is not one of them.
+      `sēcan` /ˈseːkɑn/ and so on. Read a grammar on palatalisation before
+      dotting them — Wright §§ 309–312 and 320 are free, at
+      `https://archive.org/download/oldenglishgramma00wrig/oldenglishgramma00wrig_djvu.txt`
+      — because the spelling and the transcription move together, and
+      `āscian`, which Wiktionary writes `ā+scian`, is not one of them. A dot
+      changes `tgtLemma`, which is a card's id and a page's address: free
+      before **B3**, and the cards are why it wants care. Two more questions
+      for the same reading. `nēahgebūr` writes *gebūr* undotted, which the
+      prefix *ġe-* is not elsewhere in the pack (`ġemunan`). And `wīfmann`
+      and `hūsbonda` voice a fricative that ends their first element (see
+      the ticked item above); if a grammar says it stays voiceless, add them
+      to `ANG_COMPOUNDED` and drop the test's "undecided" count. Also
+      noticed, not measured: the generator makes an undotted *g* a stop
+      wherever it is not between two vowels, so `ēagþȳrel` and `tōmorgen`
+      have /ɡ/ where Wiktionary prints [ɣ]; Wright §7 gives the spirant
+      "medial intervocalic" and says nothing here of *g* after *r*. About an
+      hour.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
@@ -3303,8 +3355,8 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **four** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. Old English stress first — one wrongly stressed word, six
-that may want their dots, and a grammar to read, free before B3; then `far wel` and
+to work them. The Old English dots first — six words that may want them and
+a grammar to read on palatalisation, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
 `vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
 feed's hidden etymologies, the Old English homographs, the feed's Latin

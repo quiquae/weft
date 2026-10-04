@@ -7,12 +7,16 @@ would drift; both orthographies are close to deterministic once vowel length
 is marked, so the transcription is derived. Run this file to check the
 derivation against forms worked out by hand; every Latin value it has written
 into `lex-la.tsv` is also held to the classical rules of syllable and stress
-by `tests/tools/latin-stress.test.ts`, which reads them out of the spelling
-on its own.
+by `tests/tools/latin-stress.test.ts`, and every Old English value in
+`lex-ang.tsv` to Wright's rules of stress and voicing by
+`tests/tools/old-english-stress.test.ts`, each of which reads the spelling on
+its own.
 
 Values are the standard teaching reconstructions: Classical Latin as in
 Allen's *Vox Latina*, Old English as in Hogg / Campbell. Latin syllables and
-stress follow Allen & Greenough's *New Latin Grammar*, §§7, 11 and 12.
+stress follow Allen & Greenough's *New Latin Grammar*, §§7, 11 and 12; Old
+English stress and voicing Joseph and Elizabeth Mary Wright's *Old English
+Grammar* (1914), §§7–15 and 261.
 """
 
 # --------------------------------------------------------------- Latin ----
@@ -208,7 +212,10 @@ ANG_DIPHTHONGS = {
 VOICED_CONTEXT = set(ANG_VOWELS) | set('lmnrwbdgðþæāēīōūȳǣ')
 
 """
-Verbs whose first syllable is an unstressed prefix.
+Words whose first syllable is an unstressed particle: verbs with an
+inseparable prefix (Wright, *Old English Grammar*, §14), and the adverbs made
+of tō and the noun it governs, which are stressed on the noun (§15: "onwég,
+away; tōgǽdere, together").
 
 Listed explicitly rather than detected, because nothing in the orthography
 distinguishes prefixed be-ginnan from unprefixed beran, or prefixed ge-munan
@@ -221,7 +228,17 @@ ANG_PREFIXED = {
     'forġietan': 'for', 'forġietende': 'for',
     'ġemunan': 'ġe', 'ġemunende': 'ġe',
     'ondrǣdan': 'on', 'ondrǣdende': 'on',
+    'tōdæġ': 'tō', 'tōgædere': 'tō', 'tōmorgen': 'tō',
 }
+
+"""
+Compounds stressed on their first element (§11) whose second element begins
+with f, s or þ. That sound keeps the value it has at the start of a word:
+"this voicing of f, þ, s only took place in simple words, but not in
+compounds, such as āþwēan, to wash; ġefeoht, battle; ġesendan, to send;
+wynsum, pleasant" (§261 note). Listed for the reason ANG_PREFIXED is.
+"""
+ANG_COMPOUNDED = {'andswaru': 'and', 'onsīen': 'on', 'ēagþȳrel': 'ēag'}
 
 
 def _ang_phones(word, initial=True):
@@ -320,7 +337,9 @@ def old_english_ipa(word, pos=''):
     """
     Old English stresses the first syllable of the root, always. That makes
     the stress mark trivial to place — position zero — once any unstressed
-    verbal prefix has been separated off.
+    prefix has been separated off. Each element of a word that divides is
+    transcribed on its own, so a root begins with the sound a word begins
+    with: the g of be-ginnan is a stop, the s of and-swaru voiceless.
     """
     w = word.strip()
     if not w or ' ' in w:
@@ -331,6 +350,11 @@ def old_english_ipa(word, pos=''):
         head = _ang_phones(prefix, initial=True)
         root = _ang_phones(w[len(prefix):], initial=True)
         return '/' + ''.join(head) + 'ˈ' + ''.join(root) + '/'
+    first = ANG_COMPOUNDED.get(key)
+    if first:
+        head = _ang_phones(first, initial=True)
+        rest = _ang_phones(w[len(first):], initial=True)
+        return '/ˈ' + ''.join(head) + ''.join(rest) + '/'
     return '/ˈ' + ''.join(_ang_phones(w, initial=True)) + '/'
 
 
@@ -361,6 +385,10 @@ if __name__ == '__main__':
         ('sċip', '/ˈʃip/'), ('brycg', '/ˈbryddʒ/'), ('ēage', '/ˈæːɑɣe/'),
         ('wæter', '/ˈwæter/'), ('nigon', '/ˈniɣon/'), ('dagas', '/ˈdɑɣɑs/'),
         ('dæġ', '/ˈdæj/'), ('ċild', '/ˈtʃild/'),  ('cwēn', '/ˈkweːn/'),
+        # An adverb of tō and a noun is stressed on the noun, whose g is a stop.
+        ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'), ('tōmorgen', '/toːˈmorɡen/'),
+        # A compound's second element begins with the sound a word begins with.
+        ('andswaru', '/ˈɑndswɑru/'), ('onsīen', '/ˈonsiːen/'), ('ēagþȳrel', '/ˈæːɑɡθyːrel/'),
     ]
     bad = 0
     for word, want in checks_la:
