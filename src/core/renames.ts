@@ -24,6 +24,11 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * rename may change only marks, never letters, because a different word is a
  * different card.
  *
+ * Today's introduced list (`Introduced` in `src/background/storage.ts`) holds
+ * bare lemmas and is not renamed. The cost is bounded and accepted: a word
+ * met under its old spelling earlier on the day an update lands takes one
+ * more of that day's new-word slots, and the list is gone by the next day.
+ *
  * **Old English, 2026-10-04.** Wright's *Old English Grammar* (1914) §311
  * lists "sēc(e)an, to seek … tǣc(e)an, to teach" and "þenc(e)an … to think"
  * among the palatal *c*, from an *i* or *j* that once followed it (§309,

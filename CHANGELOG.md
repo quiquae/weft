@@ -425,8 +425,24 @@ one after them, where late Old English writes "beorh, hill; burh, city"
 (§323). So *folgian*, *morgen* and *tōmorgen* are /ˈfolɣiɑn/, /ˈmorɣen/ and
 /toːˈmorɣen/, *beorg* and *burg* /ˈbeorx/ and /ˈburx/, and the *g* that ends
 *ēagþȳrel*'s first element, before its *þ*, is /x/. The tests now read every
-undotted *g* by Wright's rules, and name four words whose *g* the grammar
-makes palatal — *wīg*, *hunig*, *twēgen* and *ǣghwǣr* — which want their dots.
+undotted *g* by Wright's rules, and refuse one the grammar makes palatal;
+the four the pack had are dotted now, below.
+
+**Eleven Old English words take the dot the grammar gives them, and the
+cards for them move with them.** The Old English pack dots a palatal *c*,
+*g* and *sc* and pronounces what it dots, and eleven words it wrote bare have
+the palatal sound in Wright's grammar and English Wiktionary alike: *sēċan*,
+*tǣċan*, *þenċan* and *wyrċan* (§311), *fisċ* and *flǣsċ* (§312), and
+*twēġen*, *wīġ*, *huniġ* and *ǣġhwǣr* (§§320, 324), with *nēahġebūr*, whose
+*gebūr* is the prefix *ġe-*. So *sēċan* is /ˈseːtʃɑn/, not /ˈseːkɑn/, and
+*wīġ* /ˈwiːj/. A word's spelling is its card's identity, so the dots alone
+would have stranded every review a learner had for these words under a
+spelling nothing reads any more; the extension now records the old
+spellings and moves those cards, their whole history with them, when it
+next loads them and when an export written before the change is imported.
+*āscian* and *āscung*, which a literal reading of §312 would dot too, stay
+as they were: Wright's own note gives *axian* beside *ascian*, Wiktionary
+writes them undotted, and English kept *ask*.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
@@ -448,8 +464,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 890 tests: 551 unit, 102 in jsdom, 199 over the build tools, and
-38 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 910 tests: 562 unit, 102 in jsdom, 207 over the build tools, and
+39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface

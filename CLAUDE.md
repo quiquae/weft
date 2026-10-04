@@ -55,10 +55,10 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **551 pass**, 134 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **199 pass**, 55 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **38 pass, 3 skipped**, 2.0 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **207 pass**, 57 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 986 KB unpacked per target |
@@ -411,9 +411,30 @@ vowel, *l* or *r* (§320, "folgian, to follow"), and voiceless at the end of
 one after a liquid or a guttural vowel (§323, "beorh, hill; burh, city"),
 where English Wiktionary voices it; the pack is late Old English, which is
 Wright's point. A *g* the grammar makes palatal whatever it came from —
-between palatal vowels, or after one at the end of a word — is refused
-unless `AWAITING_DOTS` lists it, and the cure is a dot, which moves a
-card's id: read `TODO.md`'s item on the dots before adding one.
+between palatal vowels, or after one at the end of a word — is refused,
+and the cure is its dot, which moves the word's card: see the next
+paragraph.
+
+**A respelt word keeps its cards, and a card id once shipped is never
+dropped.** A card is filed as `${target}:${tgtLemma}`, so dotting a letter
+in a seed files every card a learner has for the word under an id no pack
+reads, and nothing in the build notices — the packs rebuild, every page
+renders, and the word arrives as new with its reviews stranded. `RENAMED`
+in `src/core/renames.ts` records each old spelling beside its new one, and
+`renameCards()` moves those cards, whole, where cards come in: `loadCards()`
+on the first load after an update, written back so the move is made once,
+and `importCards()` before the merge, for an export written before the
+change. `tools/seed/card-ids.tsv` is the ledger of every card id a pack has
+carried, taken 2026-10-04 when no id had been lost since 1.0.0, and
+`tests/tools/card-ids.test.ts` fails on a ledger id no pack teaches unless
+`RENAMED` moves it to one that does, on a word a pack teaches with no ledger
+line, on a rename whose old spelling is still taught or was never shipped,
+and on a rename that changes letters rather than marks, because a
+different word is a different card. Never delete a `RENAMED` line or a
+ledger line: an install that has not loaded its cards since, or an export
+from before, still holds the old id. Today's `introduced` list holds bare
+lemmas and is not renamed, which costs at most one new-word slot for the
+rest of the day an update lands.
 
 ## Journal
 
