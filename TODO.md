@@ -3260,18 +3260,19 @@ registered**, and nothing below it can move until it is.
       *þ* begins *þȳrel*; Wiktionary's transcriptions of all three keep the
       sound voiceless. `onsīen` keeps its stress on *on*, though Wiktionary's
       unmarked template stresses *sīen*: §568 lists "ansīen, countenance"
-      under *an-*, "stressed form of the preposition on". `tools/seed/_ipa.py` lists the adverbs
-      with the prefixed verbs and the three compounds in `ANG_COMPOUNDED`,
-      transcribing each element on its own; all 352 cells equalled the old
-      generator, so the column was blanked and refilled, and exactly the six
-      moved. The guard is `tests/tools/old-english-stress.test.ts`, 5 tests:
+      under *an-*, "stressed form of the preposition on".
+      `tools/seed/_ipa.py` lists the adverbs with the prefixed verbs and the
+      three compounds in `ANG_COMPOUNDED`, transcribing each element on its
+      own; all 352 cells equalled the old generator, so the column was
+      blanked and refilled, and exactly the six moved. The guard is `tests/tools/old-english-stress.test.ts`, 5 tests:
       it reads stress and voicing out of each spelling by Wright's rules
       without importing the generator, and refuses a headword beginning with
       a particle from Wright's lists (§§564–589, 645–656) that it has not
       been told is compounded or simple. Red first on exactly the six: three
-      on stress, `tōgædere` also on its root's first sound, three on voicing. `en-ang.json` moved in 9 `ipa` fields — three of the
-      words have a plural — and its date; six word pages moved, each at its
-      six printings of the transcription and nothing else.
+      on stress, `tōgædere` also on its root's first sound, three on
+      voicing. `en-ang.json` moved in 9 `ipa` fields — three of the words
+      have a plural — and its date; six word pages moved, each at its six
+      printings of the transcription and nothing else.
 
       **Left alone, and written into the next item: a fricative that *ends*
       a first element.** `wīfmann` /ˈwiːvmɑnː/ and `hūsbonda` /ˈhuːzbondɑ/
@@ -3289,7 +3290,8 @@ registered**, and nothing below it can move until it is.
       dotted and feeds the dotted form to its IPA template: *fisċ*, *flǣsċ*,
       *sēċan*, *tǣċan*, *þenċan* and *wyrċan*. The pack has `fisc` /ˈfisk/,
       `sēcan` /ˈseːkɑn/ and so on. Read a grammar on palatalisation before
-      dotting them — Wright §§ 309–312 and 320 are free, at
+      dotting them — Wright's §§309–312 are on *c* and *sc* and §§313–324
+      on *g*, free at
       `https://archive.org/download/oldenglishgramma00wrig/oldenglishgramma00wrig_djvu.txt`
       — because the spelling and the transcription move together, and
       `āscian`, which Wiktionary writes `ā+scian`, is not one of them. A dot
@@ -3299,12 +3301,14 @@ registered**, and nothing below it can move until it is.
       prefix *ġe-* is not elsewhere in the pack (`ġemunan`). And `wīfmann`
       and `hūsbonda` voice a fricative that ends their first element (see
       the ticked item above); if a grammar says it stays voiceless, add them
-      to `ANG_COMPOUNDED` and drop the test's "undecided" count. Also
-      noticed, not measured: the generator makes an undotted *g* a stop
-      wherever it is not between two vowels, so `ēagþȳrel` and `tōmorgen`
-      have /ɡ/ where Wiktionary prints [ɣ]; Wright §7 gives the spirant
-      "medial intervocalic" and says nothing here of *g* after *r*. About an
-      hour.
+      to `ANG_COMPOUNDED` and drop the test's "undecided" count. And the
+      generator makes an undotted *g* a stop wherever it is not between two
+      vowels, where Wright §320 makes medial *g* the guttural spirant after
+      *l* and *r* as well — "beorgan … folgian, to follow … swelgan" — so
+      `folgian` /ˈfolɡiɑn/, `morgen` and `tōmorgen` /ˈmorɡen/ look wrong by
+      the grammar's own example, and Wiktionary prints [ɣ] for both
+      *morgen*s; §323 is the place to read for a final *g*, `beorg` and
+      `burg`. Measured 2026-10-04, not fixed. About an hour.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
