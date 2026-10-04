@@ -135,7 +135,7 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     // classical reconstruction, so we default to no audio and show IPA.
     ttsLang: null,
     pronunciationNote:
-      'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard, ae as /ai̯/.',
+      'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard, ae as /ae̯/.',
     letterforms: ['macrons'],
     scriptFamiliarity: 1,
   }),
@@ -150,7 +150,7 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     morphology: 'citation',
     ttsLang: null,
     pronunciationNote:
-      'þ/ð are both "th"; c before front vowels is "ch"; g before front vowels is "y"; sc is "sh". Long vowels are marked with a macron.',
+      'þ and ð are both “th”; ċ is “ch”, ġ is “y”, sċ is “sh” and cg is “dg”. A macron marks a long vowel.',
     letterforms: ['macrons', 'thorn', 'eth', 'ash', 'wynn'],
     scriptFamiliarity: 0.82,
   }),
@@ -165,7 +165,7 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     morphology: 'citation',
     ttsLang: null,
     pronunciationNote:
-      'Pre-Great-Vowel-Shift values: "i" as /iː/, "ou" as /uː/. Final -e is usually pronounced.',
+      'Pre-Great-Vowel-Shift values: “i” as /iː/, “ou” as /uː/. Final -e is usually pronounced.',
     letterforms: ['thorn', 'yogh', 'longS'],
     scriptFamiliarity: 0.94,
   }),
@@ -179,7 +179,7 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     morphology: 'citation',
     ttsLang: null,
     pronunciationNote:
-      'þ is "th" in thing, ð is "th" in this; á/é/í/ó/ú are long. Stress always falls on the first syllable.',
+      'þ is “th” in thing, ð is “th” in this; á/é/í/ó/ú are long. Stress always falls on the first syllable.',
     letterforms: ['macrons', 'thorn', 'eth', 'ash'],
     scriptFamiliarity: 0.86,
   }),
@@ -206,7 +206,7 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     morphology: 'citation',
     ttsLang: null,
     pronunciationNote:
-      'Transliterated from the Gothic alphabet. þ is "th"; ai and au are short e and o before h and r.',
+      'Transliterated from the Gothic alphabet. þ is “th”; ai and au are short e and o before h and r.',
     letterforms: ['thorn'],
     scriptFamiliarity: 0.9,
   }),
