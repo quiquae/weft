@@ -36,8 +36,9 @@
  * the number off, so a fault in how it reads a number cannot agree with
  * itself.
  *
- * **On the Old English pack that ships, each word of a pair reads as
- * itself**, through the lookup the dashboard, the quiz and the site read,
+ * **In the packs that ship, each word of a pair reads as itself** — the
+ * three Old English pairs, and French `mort`, death and dead, numbered on
+ * 2026-10-04 — through the lookup the dashboard, the quiz and the site read,
  * and through the feed — checked against the sentences each reader should be
  * told, written out by hand.
  */
@@ -47,8 +48,9 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { entriesByTarget } from '../../src/core/lexicon.ts';
+import { getLanguage } from '../../src/core/languages.ts';
 import { buildDiscoveries } from '../../src/core/discoveries.ts';
-import type { LexEntry, MemoryCard } from '../../src/core/types.ts';
+import type { LangCode, LexEntry, MemoryCard } from '../../src/core/types.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const PACKS = join(ROOT, 'src/lexicon/packs');
@@ -75,20 +77,15 @@ function rowsByWord(pack: Pack): Map<string, LexEntry[]> {
  * Headwords shared across parts of speech that are one word, and the reason.
  *
  * Read in English Wiktionary on 2026-10-02, and kept to what was read there.
- * `fr:mort` is the exception and says so: Wiktionary gives the noun and the
- * adjective separate etymologies, as it does `hund`'s, but the one claim
- * either row carries is true of both, and numbering it moves the French
- * listing art. `TODO.md` asks whether it should be two cards.
+ * `fr:mort` was listed here until 2026-10-04, as one word on purpose though
+ * Wiktionary gives death and dead two etymologies, from *mors* and from
+ * *mortuus*. It is two cards now, as `hund` is, and dead is `mort²`.
  */
 const ONE_WORD: ReadonlyMap<string, string> = new Map([
   ['ang:sōþ', 'true and truth: one etymology, an adjective and a noun, and both rows claim sooth'],
   ['de:schnell', 'quick and quickly: one etymology, the adjective serving as its own adverb'],
   ['de:langsam', 'slow and slowly: one etymology, the adjective serving as its own adverb'],
   ['es:mañana', 'morning and tomorrow: one etymology, a noun and an adverb'],
-  [
-    'fr:mort',
-    'death and dead: two etymologies, from mors and from mortuus, one root; kept one card while the one claim it carries, “shares a root with mortal”, is true of both',
-  ],
 ]);
 
 /** Superscript digits, by value. A headword's homograph number is one of these, last. */
@@ -180,29 +177,41 @@ describe('a homograph number marks a later word, never the first', () => {
  */
 const PAIRS = [
   {
+    lang: 'ang',
     word: 'hund',
     first: { gloss: 'dog', etymonOf: 'hound' },
     second: { gloss: 'hundred', etymonOf: undefined, feed: ['hund — the usual word for the number; English kept “hundred”, “a counting of 100”.'] },
   },
   {
+    lang: 'ang',
     word: 'earm',
     first: { gloss: 'arm', etymonOf: 'arm' },
     second: { gloss: 'poor', etymonOf: undefined, feed: [] },
   },
   {
+    lang: 'ang',
     word: 'rīċe',
     first: { gloss: 'country', etymonOf: undefined },
     second: { gloss: 'rich', etymonOf: 'rich', feed: ['rīċe became English rich, but it meant powerful before it meant wealthy.'] },
   },
+  {
+    // Death is first because it had the card: Wiktionary numbers the
+    // adjective first, and the seed's rule is that the word already holding
+    // the card stays bare. The one claim, “mortal”, was read for death.
+    lang: 'fr',
+    word: 'mort',
+    first: { gloss: 'death', etymonOf: undefined },
+    second: { gloss: 'dead', etymonOf: undefined, feed: [] },
+  },
 ] as const;
 
-const ang = packs.find((p) => p.lang === 'ang')?.pack;
+const shipped = (lang: string) => packs.find((p) => p.lang === lang)?.pack;
 
 /** A card for one word, met once, the way the content script makes one. */
-function met(lemma: string): MemoryCard {
+function met(lang: LangCode, lemma: string): MemoryCard {
   return {
-    id: `ang:${lemma}`,
-    target: 'ang',
+    id: `${lang}:${lemma}`,
+    target: lang,
     lemma,
     stability: 0,
     difficulty: 5,
@@ -214,12 +223,13 @@ function met(lemma: string): MemoryCard {
   };
 }
 
-describe('in the Old English pack that ships, each word of a pair reads as itself', () => {
+describe('in the packs that ship, each word of a pair reads as itself', () => {
   test('each word has its own entry, gloss and claim', () => {
-    assert.ok(ang, 'no Old English pack was read');
-    const lookup = entriesByTarget(ang.entries);
     const wrong: string[] = [];
-    for (const { word, first, second } of PAIRS) {
+    for (const { lang, word, first, second } of PAIRS) {
+      const pack = shipped(lang);
+      assert.ok(pack, `no ${lang} pack was read`);
+      const lookup = entriesByTarget(pack.entries);
       for (const [key, want] of [
         [word, first],
         [`${word}²`, second],
@@ -238,10 +248,16 @@ describe('in the Old English pack that ships, each word of a pair reads as itsel
   });
 
   test('a reader who met only the second word is told its own story and not the first’s', () => {
-    assert.ok(ang, 'no Old English pack was read');
-    const lookup = entriesByTarget(ang.entries);
-    for (const { word, second } of PAIRS) {
-      const told = buildDiscoveries({ cards: [met(`${word}²`)], entriesByLemma: lookup, historical: true, ancestorOfEnglish: true }).map((d) => d.text);
+    for (const { lang, word, second } of PAIRS) {
+      const pack = shipped(lang);
+      assert.ok(pack, `no ${lang} pack was read`);
+      const { historical, ancestorOfEnglish } = getLanguage(lang);
+      const told = buildDiscoveries({
+        cards: [met(lang, `${word}²`)],
+        entriesByLemma: entriesByTarget(pack.entries),
+        historical,
+        ancestorOfEnglish: ancestorOfEnglish === true,
+      }).map((d) => d.text);
       assert.deepEqual(told, [...second.feed], `a reader who met ${word} as “${second.gloss}”`);
     }
   });

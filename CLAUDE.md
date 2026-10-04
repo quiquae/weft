@@ -286,7 +286,10 @@ one word each, and only a dictionary can say which kind a pair is.
 parts of speech that is neither numbered nor listed in its `ONE_WORD` with
 the reason, and the quiz compares rows by spelling so that "dog" is never a
 wrong answer to *hund*. French `mort`, death and dead, is two etymologies
-too and is still one card; `TODO.md` has it.
+too, and has been two cards since 2026-10-04: dead is `mort²`, though
+Wiktionary numbers it first, because death already had the card — where
+the dictionary's order and the cards' disagree, the word holding the card
+stays bare.
 
 **The feed's verbs say whether English descends from a language, not whether
 it is dead.** `src/core/discoveries.ts` has two sets of frames: "survived into
@@ -392,6 +395,58 @@ test's `RESPELT`; a headword the rules cannot read fails by name.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-04 — French `mort` is two cards, because the rule for `hund` says so
+
+The same session's fourth PR, the next item: `fr:mort` is death, from
+*mors*, and dead, from *mortuus*, two etymologies by English Wiktionary,
+and it was one card — the one exception the homograph guard listed on
+purpose.
+
+**The house rule decided it, and the item's argument for one card was not
+the rule's test.** One card was defensible because nothing false was said;
+the rule is that two etymologies are two words. A reader who met *mort* as
+dead was shown "mort — death", asked "death" and scheduled with the noun.
+
+**Numbered against the dictionary's order, on purpose.** Wiktionary,
+read raw, numbers the adjective first. Death is the bare one because death
+already had the card, the rule `tools/seed/lex-ang.tsv`'s header states in
+one line and `tools/seed/lex-fr.tsv`'s now states in a paragraph. So every
+existing `fr:mort` card stays death, and dead is `mort²`.
+
+**Test-first.** `fr:mort` came off `ONE_WORD` and the pairs table took a
+language, with *mort* beside *hund*, *earm* and *rīċe*: red first naming
+"fr:mort is death (noun), dead (adj)" and "mort² has no entry of its own".
+Then the seed, and `npm run packs`: two fields of `en-fr.json` moved,
+`builtAt` and `dead[0].tgtLemma`, and a second run moved nothing.
+`npm run cousins -- --dry` stayed a fixed point. The built site is
+byte-identical but for the French hub's sitemap date, which is the pack's.
+The dead card carries no claim — silence, not error — and *mortal* and
+*mortuary* are recorded as candidates.
+
+**No screenshot moved**, though the store art's page says "dead": all
+three groups regenerated, 14 + 15 + 7 written, every one byte-identical,
+and stamped. A `CHANGELOG.md` paragraph, because the cards ship. No test
+count moved: the guard's tests were extended, not added to.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 551 unit / 134 suites, 102
+jsdom / 23 suites, 191 tools / 53 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **986 KB × 3**
+passing `validate`, **38 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **716 pages / 16 165 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that the rule for `hund` binds French as it
+does Old English; that the card a learner already has decides which word
+stays bare; and that a second word with no claim is better silent than
+given one in a hurry.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds four agent-shaped items, Old
+English stress first.
 
 ### 2026-10-04 — "Chosen because" takes a clause, and one table says each likeness both ways
 

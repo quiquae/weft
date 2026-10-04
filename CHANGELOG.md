@@ -392,6 +392,15 @@ now, and "it is the source of English “vaccine”", "it is near-identical to
 the English word" and so on; the greeting, "New to you, and source of
 English “vaccine”", keeps the phrase it was written for.
 
+**And French *mort* is two words too.** It is death, from Latin *mors*,
+and dead, from *mortuus*, and English Wiktionary gives the two separate
+etymologies, as it does Old English *hund*'s. They shared one card, so a
+reader who met *mort* only as "dead" saw "mort — death" in the vocabulary
+list, was asked "death" in the quiz, and was scheduled as though meeting the
+adjective were meeting the noun. Dead is a card of its own now, with its own
+schedule and question; every card a reader already had for *mort* stays
+death.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

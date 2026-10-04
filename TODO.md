@@ -3182,7 +3182,7 @@ registered**, and nothing below it can move until it is.
       are stamped. No shipped word reaches "same root" — the test uses
       *silently*/*silenciosamente*, built for it.
 
-- [ ] **French `mort` is two words by Wiktionary's etymologies, and is one
+- [x] **French `mort` is two words by Wiktionary's etymologies, and is one
       card.** Found 2026-10-02 by the homograph guard. `fr:mort` is death,
       the noun, from Latin *mors*, and dead, the adjective and the past
       participle of *mourir*, from *mortuus*; English Wiktionary gives the
@@ -3200,6 +3200,26 @@ registered**, and nothing below it can move until it is.
       `tests/e2e/pages/showcase.html`, which the store listing art is shot
       from, contains "dead", so numbering may move a store screenshot:
       regenerate, read, and commit what moves. About 30 minutes.
+
+      **Done 2026-10-04, the same session, as its own PR: two cards.** The
+      house rule decided it — two etymologies are two words, as for `hund`
+      — and the only argument for one card was that nothing false is said,
+      which is not the test the rule applies. `tools/seed/lex-fr.tsv`
+      writes dead as `mort²`, with a header paragraph saying why. Death is
+      the bare one though Wiktionary numbers dead first (Etymology 1,
+      *mortuus*; Etymology 2, *mors*, read raw on 2026-10-04), because
+      death already had the card, which is the seed's own rule. Two fields
+      of `en-fr.json` moved, `builtAt` and `dead[0].tgtLemma`;
+      `npm run cousins -- --dry` is still a fixed point; the built site is
+      byte-identical but for the French hub's sitemap date, the pack's.
+      The homograph guard lost its `fr:mort` exception and its pairs table
+      now carries a language, with *mort* beside *hund*, *earm* and
+      *rīċe*: red first on both ("fr:mort is death (noun), dead (adj)",
+      "mort² has no entry of its own"). The dead card has no claim, which
+      is silence rather than error; *mortal*, cited for death, and
+      *mortuary* are both candidates for one, neither added. All three
+      screenshot groups regenerated, 14 + 15 + 7 written, none moved, all
+      stamped.
 
 - [ ] **Old English stress has never been checked against a source, and one
       word is stressed on the wrong syllable.** Found 2026-10-02 while the
@@ -3281,18 +3301,18 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **five** unchecked items above, as of
+`Now` is **empty** and `Next` holds **four** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. French `mort` first, one card or two,
-a decision with the evidence written down; then Old English stress, one
-wrong word and a grammar to read, free before B3; then `far wel` and
+to work them. Old English stress first — one wrongly stressed word, six
+that may want their dots, and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
 `vir`, the 22 Old English addresses, the thirty Latin pronunciations, the
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
 renderer drift, the tooltip's "Ancestor of English", the dashboard's
 date, the `iānua` note, the landing page's tables, the site key's quote marks,
-the pronunciation keys and the reason line's grammar are done.
+the pronunciation keys, the reason line's grammar and French `mort` are
+done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3654,6 +3674,19 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-10-04 — French `mort` is two cards.** Ticked in `Next`. Two things
+a later run would be sorry not to know:
+
+1. **The dictionary's order and the cards' can disagree, and the cards
+   win.** Wiktionary numbers the adjective first; numbering by it would
+   have made death `mort²` and moved every card a learner has. The seed
+   header in `tools/seed/lex-ang.tsv` already said so in one line, and
+   `tools/seed/lex-fr.tsv` now says so in a paragraph.
+2. **A numbered word with no claim is silent, not wrong.** If somebody
+   gives `mort²` a claim, it goes through `fr-cousins.tsv` with its
+   citations — a line keyed `dead` — and `npm run cousins`; *mortal*'s
+   etymonline entry is the one death's claim already cites.
+
 **2026-10-04 — the reason line, as clauses.** Ticked in `Next`. Two things
 a later run would be sorry not to know:
 
@@ -3663,10 +3696,10 @@ a later run would be sorry not to know:
    `LIKENESSES` names one word per kind and `FINITE` the verbs the reasons
    use — a reason with a new verb fails until it is added, which is the
    moment to read it.
-2. **This session landed three PRs, #58 to #60, in under an hour.** Each was
-   branched from a freshly pulled `main` after the one before had merged, so
-   none stacked; the queue's two-hour slot fits three small items when each
-   is measured before it is written.
+2. **This session landed four PRs, #58 to #61, in about fifty minutes.**
+   Each was branched from a freshly pulled `main` after the one before had
+   merged, so none stacked; the queue's two-hour slot fits several small
+   items when each is measured before it is written.
 
 **2026-10-04 — the pronunciation keys, held to the packs.** Ticked in
 `Next`. Three things a later run would be sorry not to know:

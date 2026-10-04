@@ -14,6 +14,15 @@
 # clause, and the infinitive is the form they will meet in a dictionary.
 # Present participles are supplied so English "-ing" forms read naturally.
 #
+# One spelling is sometimes two words. mort is death, from Latin mors, and
+# dead, from mortuus, and English Wiktionary gives the two separate
+# etymologies. A memory card is keyed by the target, so the second is
+# written with a homograph number, "mort²", and is a card of its own;
+# nothing a reader sees prints the number. Death is the one written bare,
+# though Wiktionary numbers dead first, because death already had the card.
+# tests/tools/lexicon-homographs.test.ts holds the rule; tools/seed/lex-ang.tsv
+# has three more.
+#
 man	noun	homme	hommes	m			
 woman	noun	femme	femmes	f			
 child	noun	enfant	enfants	m			
@@ -237,7 +246,7 @@ holy	adj	saint
 deep	adj	profond					
 wide	adj	large					
 narrow	adj	étroit					
-dead	adj	mort					
+dead	adj	mort²					
 alive	adj	vivant					
 sick	adj	malade					
 whole	adj	entier					
