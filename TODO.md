@@ -3257,9 +3257,10 @@ registered**, and nothing below it can move until it is.
       simple words, but not in compounds, such as āþwēan … ġefeoht …
       ġesendan … wynsum" — so `andswaru` /ˈɑndswɑru/, `onsīen` /ˈonsiːen/
       and a third the item had not seen, `ēagþȳrel` /ˈæːɑɡθyːrel/, whose
-      *þ* begins *þȳrel*; Wiktionary agrees on all three. `onsīen` keeps its
-      stress on *on*: §568 lists "ansīen, countenance" under *an-*, "stressed
-      form of the preposition on". `tools/seed/_ipa.py` lists the adverbs
+      *þ* begins *þȳrel*; Wiktionary's transcriptions of all three keep the
+      sound voiceless. `onsīen` keeps its stress on *on*, though Wiktionary's
+      unmarked template stresses *sīen*: §568 lists "ansīen, countenance"
+      under *an-*, "stressed form of the preposition on". `tools/seed/_ipa.py` lists the adverbs
       with the prefixed verbs and the three compounds in `ANG_COMPOUNDED`,
       transcribing each element on its own; all 352 cells equalled the old
       generator, so the column was blanked and refilled, and exactly the six
@@ -3267,8 +3268,8 @@ registered**, and nothing below it can move until it is.
       it reads stress and voicing out of each spelling by Wright's rules
       without importing the generator, and refuses a headword beginning with
       a particle from Wright's lists (§§564–589, 645–656) that it has not
-      been told is compounded or simple. Red first on exactly the six, each
-      by its own rule. `en-ang.json` moved in 9 `ipa` fields — three of the
+      been told is compounded or simple. Red first on exactly the six: three
+      on stress, `tōgædere` also on its root's first sound, three on voicing. `en-ang.json` moved in 9 `ipa` fields — three of the
       words have a plural — and its date; six word pages moved, each at its
       six printings of the transcription and nothing else.
 
