@@ -20,6 +20,7 @@
  *   8. The landing page's descent tables say what the packs say. See below.
  *   9. No page quotes in straight marks but the three that print another
  *      document's copy. See below.
+ *  10. A word page prints the pronunciation key the tooltip prints. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -141,6 +142,8 @@ let told: { lang: LangCode; page: string; text: string; own: string }[];
 let landing: string;
 /** Every page the site serves, as it reads. */
 let pages: { page: string; text: string }[];
+/** Every pronunciation key a word page prints, as it reads, beside the language it is the key to. */
+let keys: { page: string; lang: LangCode; printed: string }[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
@@ -152,13 +155,16 @@ before(() => {
     descents = [];
     targets = new Map();
     words = [];
-    for (const dir of ['latin', 'old-english']) {
+    keys = [];
+    for (const { lang, dir } of DEEP) {
       targets.set(dir, new Set());
       for (const file of readdirSync(join(out, dir))) {
         const html = readFileSync(join(out, dir, file), 'utf8');
         const slug = file.replace(/\.html$/, '');
         const found = descentOf(`/${dir}/${slug}`, html);
         if (found) descents.push(found);
+        const key = html.match(/<p class="word__pronNote">([^<]*)<\/p>/)?.[1];
+        if (key !== undefined) keys.push({ page: `/${dir}/${slug}`, lang: lang as LangCode, printed: readable(key).trim() });
         // The index page in the same directory carries no word heading.
         const h1 = html.match(/<h1 class="word__target"[^>]*>([^<]+)<\/h1>/);
         if (!h1) continue;
@@ -950,5 +956,38 @@ describe('a page quotes in the site’s own marks', () => {
     assert.ok(pages.length > 700, `only ${pages.length} pages were read`);
     const exempt = pages.filter((p) => p.page in OWN_MARKS).length;
     assert.ok(pages.length - exempt > 700, `only ${pages.length - exempt} pages are held to the rule`);
+  });
+});
+
+/**
+ * A word page prints the pronunciation key the tooltip prints.
+ *
+ * The tooltip reads `pronunciationNote` from `src/core/languages.ts`; until
+ * 2026-10-04 the site printed `META.<lang>.note` from the builder, a hand
+ * copy of the same sentence that had drifted in both languages — Latin's had
+ * lost its line about *ae*, Old English's its line about *g* — and was in
+ * straight marks in one of them. `tests/tools/pronunciation-keys.test.ts`
+ * holds the table's key to the pack's transcriptions; this holds every page
+ * to the table, so the two cannot drift apart again.
+ */
+describe('a word page prints the key the tooltip prints', () => {
+  test('every pronunciation key on a word page is its language table’s', () => {
+    const off = keys.filter((k) => k.printed !== getLanguage(k.lang).pronunciationNote);
+
+    assert.deepEqual(
+      off.map((k) => k.page).slice(0, 5),
+      [],
+      `${off.length} pages print a key other than the language table’s:\n  ${off
+        .slice(0, 3)
+        .map((k) => `${k.page}: ${k.printed}\n    the table: ${getLanguage(k.lang).pronunciationNote}`)
+        .join('\n  ')}`,
+    );
+  });
+
+  test('the rule has something to police', () => {
+    for (const { lang, dir } of DEEP) {
+      const n = keys.filter((k) => k.lang === lang).length;
+      assert.ok(n > 300, `only ${n} ${dir} pages print a pronunciation key`);
+    }
   });
 });

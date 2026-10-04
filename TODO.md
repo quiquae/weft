@@ -6,7 +6,7 @@
 
 **State on 2026-10-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **548** unit / 133 suites, **102** jsdom / 23
-suites, **184** tool tests / 51 suites, **38** e2e passing
+suites, **191** tool tests / 53 suites, **38** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 986 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -3085,7 +3085,7 @@ registered**, and nothing below it can move until it is.
       **And the key is a hand copy, and both copies state rules the packs'
       own transcriptions contradict.** The item below.
 
-- [ ] **The pronunciation keys state rules the packs' own transcriptions
+- [x] **The pronunciation keys state rules the packs' own transcriptions
       contradict, and the site's are hand copies of the tooltip's.** Found
       2026-10-04 while curling the site key's marks. The tooltip prints
       `pronunciationNote` from `src/core/languages.ts` for a historical
@@ -3116,11 +3116,32 @@ registered**, and nothing below it can move until it is.
       in every headword that has the letter, derived from the key's own
       text, and that the site prints the table's sentence. It moves `src/`:
       regenerate the three screenshot groups, and `page-old-english.png`
-      will move. Separately, and not this item's: the pack writes `fisc`,
-      `flǣsc`, `sēcan`, `tǣcan`, `þencan` and `wyrcan` undotted, with /k/
-      or /sk/, where English Wiktionary has *fisċ* /fiʃ/, *sēċan*
-      /ˈseː.t͡ʃɑn/ and so on — a question for the Old English stress item
-      below, which reads the generator against a grammar. About 45 minutes.
+      will move. About 45 minutes.
+
+      **Done 2026-10-04, the same session, as its own PR.** The keys in
+      `src/core/languages.ts` now read "þ and ð are both “th”; ċ is “ch”, ġ
+      is “y”, sċ is “sh” and cg is “dg”. A macron marks a long vowel." and,
+      for Latin, "… ae as /ae̯/."; the three keys with no pack took curly
+      marks too. `tests/tools/pronunciation-keys.test.ts` writes each key's
+      claims down in `KEYS` — the words that make the claim, the letters,
+      the sound — and holds each to every headword that spells the letters
+      (spelt n times, transcribed with the sound at least n times), refuses
+      a key with a respelling or transcription its ledger does not hold, a
+      shown key with no ledger at all, a claim tested on fewer than three
+      headwords, and a straight quote in any key. Red first with a ledger of
+      the old keys: exactly the four false rules — Latin *ae* on 10
+      headwords, Old English *c* on 6 (`āscian`'s *c*, inside *sc*, the
+      sixth), *g* on 10, *sc* on 4 — and four keys' straight marks; the four
+      true rules passed. Then the site: `META.<lang>.note` is gone, the word
+      page prints `getLanguage(lang).pronunciationNote`, and a new test in
+      `tests/tools/build-site.test.ts` holds every page's key to the table —
+      red first on 698 pages. Four probes on the new file, restored by md5,
+      each failing one test by name. Regenerated all three groups, every
+      file written by count of mtimes: only `page-old-english.png` moved,
+      its tooltip one line shorter and explaining the dots the page prints
+      (*weġ*, *ġeong*); the store and first-run sets came back
+      byte-identical and are stamped, and the documentation group's old
+      "no change" stamp is deleted, this PR having changed that group.
 
 - [ ] **The tooltip's reason line is ungrammatical whenever its reason is a
       cognate.** Found 2026-10-03 measuring the badge fix. `explainChoice()`
@@ -3180,6 +3201,18 @@ registered**, and nothing below it can move until it is.
       between voiced sounds, though it begins the second element. About an
       hour, and free before **B3**.
 
+      **And six words may want their dots, found 2026-10-04.** The pack's
+      transcriptions follow its dots exactly — the pronunciation key says so
+      now and `tests/tools/pronunciation-keys.test.ts` holds it — so a word
+      the pack leaves undotted is transcribed /k/ or /sk/. English
+      Wiktionary, read raw (`index.php?title=secan&action=raw`; it titles
+      Old English without macrons), writes six of the pack's undotted words
+      dotted and feeds the dotted form to its IPA template: *fisċ*, *flǣsċ*,
+      *sēċan*, *tǣċan*, *þenċan* and *wyrċan*. The pack has `fisc` /ˈfisk/,
+      `sēcan` /ˈseːkɑn/ and so on. Read Campbell on palatalisation before
+      dotting them: the spelling and the transcription move together, and
+      `āscian`, which Wiktionary writes `ā+scian`, is not one of them.
+
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
       etymonline dates *farewell* to a Middle English phrase "attested by c.
@@ -3228,10 +3261,9 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **seven** unchecked items above, as of
+`Now` is **empty** and `Next` holds **six** unchecked items above, as of
 2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. The pronunciation keys first, one per language and true of
-its pack, then the reason line's grammar, a small one; then French `mort`, one card or two,
+to work them. The reason line's grammar first, a small one; then French `mort`, one card or two,
 a decision with the evidence written down; then Old English stress, one
 wrong word and a grammar to read, free before B3; then `far wel` and
 `camera`, content questions; then the pixel diff, a tool. The Latin note on
@@ -3239,8 +3271,8 @@ wrong word and a grammar to read, free before B3; then `far wel` and
 feed's hidden etymologies, the Old English homographs, the feed's Latin
 frames, the Latin descent pass, the Latin index's "became", the screenshots'
 renderer drift, the tooltip's "Ancestor of English", the dashboard's
-date, the `iānua` note, the landing page's tables and the site key's quote marks
-are done.
+date, the `iānua` note, the landing page's tables, the site key's quote marks
+and the pronunciation keys are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -3602,6 +3634,25 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
+**2026-10-04 — the pronunciation keys, held to the packs.** Ticked in
+`Next`. Three things a later run would be sorry not to know:
+
+1. **A key is a list of claims, and each can be read against the pack.**
+   `KEYS` in `tests/tools/pronunciation-keys.test.ts` holds them; "spelt n
+   times, transcribed with the sound at least n times" is necessary rather
+   than sufficient, and it named every false rule. To change a key, rewrite
+   its line in `KEYS` with it: the test refuses a key that says more than
+   its ledger, so a rule cannot ship unread.
+2. **Wiktionary, raw.** `https://en.wiktionary.org/w/index.php?title=<word>&action=raw`
+   returns an entry's wikitext in one `curl`. Old English entries are
+   titled without macrons — `secan`, not `sēcan`, which is empty — and
+   `{{ang-IPA|…}}` shows the spelling its transcription is drawn from,
+   dots and all. Send a User-Agent with no personal detail in it.
+3. **In zsh, `set -- ${=spec}` splits a string into arguments, and
+   `set -- $spec` does not.** The 2026-10-02 journal records the trap; with
+   the fix the three screenshot generators ran in one loop, each counted by
+   the files it wrote.
+
 **2026-10-04 — the site key's quote marks, and the two keys behind them.**
 Ticked in `Next`. Four things a later run would be sorry not to know:
 
@@ -3615,7 +3666,8 @@ Ticked in `Next`. Four things a later run would be sorry not to know:
    item was three pairs of quotes; reading the key it sat in against the
    pack's own IPA found that two of its three rules are contradicted on
    the very pages that print it, and that the tooltip's copy, in
-   `src/core/languages.ts`, is worse. The new top item has the numbers.
+   `src/core/languages.ts`, is worse. The item after it has the numbers,
+   and was done the same session as its own PR.
 3. **`'abc'.includes('')` is true.** A scratch count of "c before a front
    vowel" that defaulted the letter after the last to `''` counted every
    word-final *c* and *g*: 12 became 5 and 22 became 10 once the end of the

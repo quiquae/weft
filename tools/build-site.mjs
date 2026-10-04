@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
 import { FEATURES } from '../src/core/entitlements.ts';
 import { entriesByTarget, spelling } from '../src/core/lexicon.ts';
+import { getLanguage } from '../src/core/languages.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
 import { markSvg } from './brand.ts';
 
@@ -70,6 +71,10 @@ const DEEP = ['la', 'ang'];
  * lead. It was one string for both languages until 2026-10-03, so the Latin
  * index said its words had "the English word they became", in the verbs the
  * feed had stopped using for Latin the day before.
+ *
+ * The pronunciation key is not here. It is `pronunciationNote` in
+ * `src/core/languages.ts`, which the tooltip prints too; this held a copy of
+ * it until 2026-10-04, and the copy had drifted in both languages.
  */
 const META = {
   la: {
@@ -83,7 +88,6 @@ const META = {
       description: 'the English word borrowed from them',
       lead: 'the English word borrowed from them',
     },
-    note: 'Classical reconstruction. Every letter is pronounced; v as /w/, c always hard.',
   },
   ang: {
     name: 'Old English',
@@ -96,7 +100,6 @@ const META = {
       description: 'the English word they became',
       lead: 'the English word they turned into',
     },
-    note: 'þ and ð are both “th”; c before a front vowel is “ch”; sc is “sh”. A macron marks a long vowel.',
   },
 };
 
@@ -401,7 +404,7 @@ function wordPage(entry, lang, index) {
           ${rows.map(([k, v]) => `<tr><th scope="row">${esc(k)}</th><td>${v}</td></tr>`).join('\n          ')}
         </tbody>
       </table>
-      ${entry.ipa ? `<p class="word__pronNote">${esc(meta.note)}</p>` : ''}
+      ${entry.ipa ? `<p class="word__pronNote">${esc(getLanguage(lang).pronunciationNote)}</p>` : ''}
     </section>
 
     ${
