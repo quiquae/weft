@@ -137,7 +137,7 @@ door	noun	iānua	janitor	etym:janitor ls:janitor
 window	noun	fenestra	defenestrate	wikt:en:defenestrate etym:defenestration
 wall	noun	mūrus	mural	etym:mural
 floor	noun	solum	sole	etym:sole
-room	noun	camera	camera	etym:camera
+room	noun	conclāve	conclave	etym:conclave
 book	noun	liber	library	etym:library
 word	noun	verbum	verbal	etym:verbal
 letter	noun	littera	literate	etym:literate
@@ -398,3 +398,7 @@ goodbye	intj	valē	valediction	etym:valediction
 #   rise      surgere    surge → insurgent             etym:surge — "a word of uncertain origin, probably from French"; etym:insurgent — from insurgere, in- + "surgere"
 #   always    semper     semper fidelis → sempiternal  a motto English quotes, with no entry as an English word; etym:sempiternal — from sempiternus, "from semper"
 #   three     trēs       trio → trey                   etym:trio — Italian, "from tri-", "patterned on duo"; etym:trey — from Old French treis, "from Latin tria"
+#
+# Withdrawn on 2026-10-05: true of its word, and the row left for its gloss
+# --------------------------------------------------------------------------
+#   room      camera     camera                        etym:camera — "from Latin camera "a vault, vaulted room"", and true. The row taught camera for "room", where ls:camera is "a vault, an arched roof, an arch" and the room is Late Latin (etym:chamber), so the row is conclāve now and the card is in WITHDRAWN, src/core/renames.ts. Do not move this claim onto conclāve, whose English word is conclave

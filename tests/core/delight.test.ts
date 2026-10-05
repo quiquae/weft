@@ -348,19 +348,19 @@ describe('buildDiscoveries', () => {
   });
 
   test('a word English borrowed unchanged is not given a thousand years', () => {
-    // English took camera for a vault in 1708; Old English's timescale is a
+    // English took via from Latin in 1779; Old English's timescale is a
     // claim about words English never stopped saying.
     const same = new Map<string, LexEntry>([
-      ['camera', entry({ src: 'room', lemma: 'room', tgt: 'camera', tgtLemma: 'camera', etymonOf: 'camera' })],
+      ['via', entry({ src: 'road', lemma: 'road', tgt: 'via', tgtLemma: 'via', etymonOf: 'via' })],
     ]);
     const found = buildDiscoveries({
-      cards: [card({ lemma: 'camera', target: 'la', exposures: 3 })],
+      cards: [card({ lemma: 'via', target: 'la', exposures: 3 })],
       entriesByLemma: same,
       historical: true,
       ancestorOfEnglish: false,
     });
     assert.equal(found[0]?.kind, 'unchanged');
-    assert.equal(found[0]?.text, 'camera is simply camera.');
+    assert.equal(found[0]?.text, 'via is simply via.');
   });
 
   test('a borrowed word whose sense moved is not said to have become English', () => {
