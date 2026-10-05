@@ -6,7 +6,7 @@
 
 **State on 2026-10-05:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **225** tool tests / 62 suites, **40** e2e passing
+suites, **230** tool tests / 63 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -35,6 +35,17 @@ whose plural *wesaþ hāle* glosses Latin *valete* in Bosworth–Toller. A
 learner's `far wel` card is the first card no pack teaches: `WITHDRAWN` in
 `src/core/renames.ts` keeps it and the progress pages leave it out. See the
 ticked item in `Next`.
+
+**And as of 2026-10-05 the Old English for "sorry" says regret, and every
+Old English phrase names the text it was read in.** It was `mē is lāþ`, "it
+is hateful to me", which Bosworth–Toller has only as loathing; it is
+`mē hrēoweþ` now, "it rues me", quoted with *mē* from Genesis. Of the four
+phrases the pack taught for a greeting, a farewell, a request and an apology,
+one was in no text and one meant something else, so
+`tools/seed/ang-phrases.tsv` gives every Old English interjection and every
+target of more than one word the Bosworth–Toller entry and the quotation it
+was read in, and `tests/tools/phrases.test.ts` fails on one with none. See
+the ticked item in `Next`.
 
 **And as of 2026-10-04 a woven plural or participle sounds like itself.**
 The tooltip printed a row's one transcription, its headword's, under every
@@ -3848,7 +3859,7 @@ registered**, and nothing below it can move until it is.
       **225** / 61 → **62**, e2e 39 → **40**, total 923 → **933**, in six
       places, `docs/LAUNCH.md:221` first.
 
-- [ ] **`mē is lāþ` is taught for "sorry", and Bosworth–Toller has it as
+- [x] **`mē is lāþ` is taught for "sorry", and Bosworth–Toller has it as
       loathing, not regret.** Found 2026-10-05 finishing `far wel`. `láð`
       (bt:21202) cites "Ðá wæs ic swíðe onscúniende and mé láð wæs multum
       detestatus sum, Bd. 5, 12" and "Him wæs láð tó ámyrrene his ágenne
@@ -3861,6 +3872,77 @@ registered**, and nothing below it can move until it is.
       `far wel` was (one line in `WITHDRAWN`, the new card a ledger line,
       the etymon "loath" and its line in `tools/seed/ang-etymons.tsv` moving
       with it). About 40 minutes with the screenshots.
+
+      **Done 2026-10-05: "sorry" is `mē hrēoweþ`, and `mē is lāþ`'s card is
+      withdrawn as `far wel`'s was.** `hrēowan` read first, as asked:
+      Bosworth–Toller's `hreówan` (bt:19714) is "To rue, make sorry, grieve;
+      often impers." and glosses "Hí hér syngiaþ and hit him nó ne hreówþ"
+      as "they sin in this world and are not sorry for it"; its Supplement
+      entry (bt:53179) quotes the very pair, "Þæt mé on mínum hyge hreóweð"
+      (Gen. 426), beside "Nú mé mæg hreówan þæt ic bæd God". etymonline's
+      *rue* (v.) is "Old English hreowan", and English Wiktionary's verb
+      *rue* is "from Old English hrēowan", so the row's etymon is *rue*,
+      checked in `ang-etymons.tsv`, and *loath* sits at that ledger's foot
+      under "Gone with its row", true of its word and not to be moved onto
+      the new one. The note is "literally “it rues me”, mē being the one who
+      regrets it"; it has to write *mē*, because the orthography guard reads
+      the English *me* as the headword's word with its macron dropped.
+      `sāriġ`, the adjective that became *sorry*, was considered and not
+      taken: every other pack teaches an apology formula for the row —
+      *pardon*, *Entschuldigung*, *ignōsce* — and an adjective is not one.
+      The unsyncopated *hrēoweþ* is the form Genesis and the Exeter Book
+      have; Alfredian prose writes *hrēowþ* and *hrīwþ*.
+
+      **The guard is the transferable half: two of four Old English
+      phrases were not what Old English said, and nothing had checked one
+      against a text.** `tools/seed/ang-phrases.tsv` gives every Old
+      English interjection and every target of more than one word its
+      Bosworth–Toller entry and the quotation there, and
+      `tests/tools/phrases.test.ts`, 5 tests in 1 suite, fails on a phrase
+      with no line, a line naming no Bosworth–Toller entry, a quotation
+      missing a word of its phrase — accents off, ð as þ, an inflected form
+      counting — or a line outliving its row. Red first naming exactly
+      `sorry → mē is lāþ` and the not-yet-taught `mē hrēoweþ`, with the
+      other four phrases passing; five probes, restored by md5, each named.
+      The card ledger and the etymon ledger went red on their own halves
+      before the seed moved, and green after it.
+
+      What moved: 4 of 7 161 fields of `en-ang.json` — the `sorry` row's
+      `tgt`, `tgtLemma`, `etymonOf` and a new `note` — with `builtAt`
+      already today and `index.json` untouched. The site, built from
+      `main` in a `/tmp` worktree and from the branch: 720 files both, one
+      page renamed, `/old-english/me-is-lath` → `/old-english/me-hreoweth`,
+      and rewriting `main`'s build by the respelling leaves 2 files
+      differing, that page (its etymon and note) and the descent hub's row.
+      Tools 225 → **230** / 62 → **63** suites, total 933 → **938**, in six
+      places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
+
+      **Regenerating the screenshots found the store generator unstable,
+      and that is the next item.** The first run wrote all 36 and moved the
+      three `*-04-progress.png`: three feed lines the spec never seeds —
+      *arbre*, *église*, *route* — above the seeded nineteen. Two more runs
+      on the same tree reproduced the committed bytes exactly, so the
+      change was not this one's, and the committed shots stand.
+
+- [ ] **The store generator's scene 4 sometimes shows words the run met
+      itself.** Found 2026-10-05: one run in three of `WEFT_STORE=1 npx
+      playwright test store-assets` wrote all three `*-04-progress.png`
+      with *arbre*, *église* and *route* above the seeded feed — words
+      scenes 1–3 met weaving `showcase.html` — and differing from the
+      committed shots in 41 113 to 50 272 pixels, the largest channel 201
+      apart. The other two runs matched the commit byte for byte. The spec
+      imports its plan through `import-data`, which merges with whatever
+      cards the run has already made, and never resets them, so whether
+      those words are in the feed depends on whether the content script's
+      exposures were flushed before the dashboard read the store. It is the
+      race `d0b2263` fixed in `tests/e2e/screenshots.spec.ts`: close every
+      page that weaves, wait for the flush, `reset-vocabulary`, then seed.
+      `tests/tools/screenshots.test.ts` derives its taxed pages and requires
+      each closed before the reset; give `store-assets.spec.ts` the same
+      rule, red first, and regenerate twice to show it holds. The committed
+      bytes are the right ones, so a session that sees these three move
+      should restore them from `HEAD` rather than commit them. About 30
+      minutes.
 
 - [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
       as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
@@ -3899,8 +3981,9 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **three** unchecked items above, as of
 2026-10-05, all agent-shaped and none waiting on B1. The order is the order
-to work them. `mē is lāþ` and `camera` first, content questions about the
-target; then the pixel diff, a tool. The Latin note on `vir`, the
+to work them. The store generator's unstable scene first, because every
+session that regenerates the art meets it; then `camera`, a content
+question about the target; then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -3909,7 +3992,7 @@ the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
 genders, the plurals' dots, both languages' second forms' transcriptions,
-`iūsiūrandum`'s plural and `far wel` are done.
+`iūsiūrandum`'s plural, `far wel` and `mē is lāþ` are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should

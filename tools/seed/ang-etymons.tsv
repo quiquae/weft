@@ -358,7 +358,7 @@ thousand	num	þūsend	thousand	etym:thousand
 first	num	forma	former	etym:former etym:foremost
 yes	intj	ġēa	yea	etym:yea
 please	intj	iċ bidde	bid	etym:bid
-sorry	intj	mē is lāþ	loath	etym:loath
+sorry	intj	mē hrēoweþ	rue	etym:rue wikt:en:rue
 #
 # Removed on 2026-10-01, with what the dictionary says
 # ----------------------------------------------------
@@ -397,3 +397,11 @@ sorry	intj	mē is lāþ	loath	etym:loath
 #   first     forma      foremost → former    etym:foremost is from formest; etym:former is the "comparative of forme … from Old English forma"
 #   village   þorp       thorpe → thorp       the headword both dictionaries use
 #   very      swīþe      swithe → swith       wikt:en:swith, which gives swithe as a variant; etymonline has neither
+#
+# Gone with its row on 2026-10-05
+# -------------------------------
+# True of its word, and taken out because the phrase was never Old English for
+# what it was taught for: Bosworth–Toller has "mé láð wæs" as loathing,
+# glossing "multum detestatus sum". The row teaches mē hrēoweþ, whose verb
+# became rue; see ang-phrases.tsv. Do not move loath onto it.
+#   sorry     mē is lāþ  loath       etym:loath — "Old English lað 'hated; hateful; hostile; repulsive'"

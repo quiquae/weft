@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **225 pass**, 62 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **230 pass**, 63 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -391,6 +391,22 @@ dictionaries disagree, as on `þorp`, Bosworth–Toller decides, being the one
 the pack's attribution names. On 2026-10-04 that read all 178 nouns and found
 one wrong: `wīfmann` is masculine, because `mann` is.
 
+**And an Old English phrase names the text it was read in.** A single word
+is held to a dictionary wherever the pack claims something about it; a
+phrase is where this lexicon wrote Old English of its own, and of the four
+it taught for a greeting, a farewell, a request and an apology, one was in
+no text (`far wel`) and one meant something else (`mē is lāþ`, loathing,
+not regret). So `tools/seed/ang-phrases.tsv` gives every Old English
+interjection, and every target of more than one word, the Bosworth–Toller
+entry it was read in and the quotation printed there, and
+`tests/tools/phrases.test.ts` fails on a phrase with no line, a line naming
+no Bosworth–Toller entry, a quotation missing a word of its phrase — accents
+off, ð read as þ, an inflected form counting — or a line outliving its row.
+The quotation is the check: it cannot tell a text somebody read from one
+somebody typed, but a phrase no text has cannot be given one honestly. Do
+not loosen it to a citation alone to land a phrase quickly; a reference is
+what `far wel` could have been given.
+
 **A Latin transcription is held to the grammar, not to the generator.**
 `tests/tools/latin-stress.test.ts` works every headword's syllables, stress
 and the stressed syllable's first consonant out of its spelling by Allen &
@@ -475,12 +491,14 @@ different word is a different card. Never delete a `RENAMED` line or a
 ledger line: an install that has not loaded its cards since, or an export
 from before, still holds the old id. Today's `introduced` list holds bare
 lemmas and is not renamed, which costs at most one new-word slot for the
-rest of the day an update lands. A word that was never the language leaves
-the other way: `WITHDRAWN`, beside `RENAMED`, keeps its cards where they are,
-moved by nothing and still exported, and the worker's `get-stats` leaves
-them out of the progress pages, which would list one with no English beside
-it. Old English `far wel` was the first, on 2026-10-05 — a reconstruction no
-text has — and "goodbye" is `wes hāl` now. The ledger test accepts a
+rest of the day an update lands. A word that was never the language, or
+never meant what it was taught for, leaves the other way: `WITHDRAWN`,
+beside `RENAMED`, keeps its cards where they are, moved by nothing and still
+exported, and the worker's `get-stats` leaves them out of the progress
+pages, which would list one with no English beside it. Old English `far wel`
+was the first, on 2026-10-05 — a reconstruction no text has — and "goodbye"
+is `wes hāl` now; `mē is lāþ`, taught for "sorry" and meaning "it is hateful
+to me", the second, the same day, and "sorry" is `mē hrēoweþ`. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -489,6 +507,77 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-05 — "sorry" is mē hrēoweþ, and an Old English phrase names the text it was read in
+
+The queue named Latin's second-form transcriptions, which #69 landed on
+2026-10-04, so the work was `TODO.md`'s topmost unchecked item: `mē is lāþ`,
+taught for "sorry", which Bosworth–Toller has as loathing. The task arrived
+at 11:49 and again at 14:48; the branch, the tree and `origin/main` were
+checked unchanged before anything else moved.
+
+**`hrēowan` was read first, as the item asked, and settled it.**
+Bosworth–Toller's `hreówan` (bt:19714) is "To rue, make sorry, grieve;
+often impers.", and glosses "hit him nó ne hreówþ" as "are not sorry for
+it"; its Supplement (bt:53179) quotes the pair itself, "Þæt mé on mínum hyge
+hreóweð" (Gen. 426). So "sorry" is `mē hrēoweþ`, "it rues me", whose verb
+etymonline and English Wiktionary both give as the source of *rue*; the
+learner's `mē is lāþ` card is withdrawn as `far wel`'s was, and *loath*
+sits at the etymon ledger's foot, true of its word and not to be moved onto
+the new one. `sāriġ`, which became *sorry* itself, was considered and not
+taken: the six other packs teach an apology formula for the row —
+*pardon*, *Entschuldigung*, *ignōsce* — and an adjective is not one.
+
+**The guard is the transferable half.** Two of the four Old English phrases
+were not what Old English said, and nothing had checked one against a
+text. `tools/seed/ang-phrases.tsv` gives every Old English interjection and
+every target of more than one word its Bosworth–Toller entry and the
+quotation printed there, and `tests/tools/phrases.test.ts`, 5 tests in 1
+suite, fails on a phrase with no line, a line naming no Bosworth–Toller
+entry, a quotation missing a word of its phrase, or a line outliving its
+row. Red first naming exactly `mē is lāþ` and the untaught `mē hrēoweþ`,
+the other four passing; five probes, restored by md5, each named. One thing
+the note bent to: the orthography guard reads the English *me* of "it rues
+me" as the headword's *mē* with its macron dropped unless the note writes
+*mē* as well, so it does.
+
+What moved: 4 of 7 161 fields of `en-ang.json`, `builtAt` already today and
+`index.json` untouched; one site page renamed, `/old-english/me-hreoweth`,
+and `main`'s build rewritten by the respelling differs from the branch's in
+2 of 720 files, that page and the descent hub's row. Tools 225 → **230** /
+62 → **63** suites, total 933 → **938**, in six places, `docs/LAUNCH.md:221`
+first, and a `CHANGELOG.md` paragraph, because the pack ships.
+
+**Regenerating the screenshots found the store generator unstable.** The
+first run moved the three `*-04-progress.png` by 41 113 to 50 272 pixels,
+the largest channel 201 apart: *arbre*, *église* and *route*, words the run
+met weaving `showcase.html`, stood above the seeded feed. Three more runs on
+the final `src/` reproduced the committed bytes exactly, so the committed
+shots stand and were stamped, and the race — the spec merges its plan into
+the run's own cards and never resets them — is the first item in `Next`.
+**A shot that moves once is not a change until a second run agrees.**
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **230 tools / 63 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **988 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**,
+the four phrases with no transcription; `npm run site` then `site:check`
+**715 pages / 16 142 links**, all resolving; `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that "it rues me" is as near as Old English
+comes to an apology, as Latin's *ignōsce* is "forgive"; that the
+unsyncopated *hrēoweþ* of Genesis and the Exeter Book serves a West Saxon
+pack, Alfredian prose writing *hrēowþ* and *hrīwþ*; that a quotation's word
+may be matched as the start of an inflected form; and that the ledger
+covers every interjection and multi-word target, *ġēa* among them, rather
+than only the phrases found wrong.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN at 14:53. `Next` holds three agent-shaped items, the
+store scene's flake first.
 
 ### 2026-10-05 — "goodbye" is wes hāl, and far wel is the first card nothing teaches
 
