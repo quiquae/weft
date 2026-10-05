@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **230 pass**, 63 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **233 pass**, 64 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -507,6 +507,49 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-05 — the store's progress shot photographs the plan, and fails rather than anything else
+
+The same session's second PR, the item the first one queued: one run in four
+of the store generator wrote the three `*-04-progress.png` with *arbre*,
+*église* and *route* — words scenes 1–3 met weaving `showcase.html` — above
+the seeded feed. `import-data` merges, so the run's own cards survived the
+import whenever a closing page's last write beat the dashboard to the store.
+
+**The fix is `screenshots.spec.ts`'s order, and a read-back it did not
+have.** After the last page that weaves: a 2 500 ms settle, then
+`reset-vocabulary`, then the import; and `expectStoreIsThePlan()` compares
+`get-stats`' card ids with the plan's before scene 4 is shot and after, so a
+late write fails the run instead of shipping in the listing art. A settle is
+a guess about timing, and the read-back is what turns the guess into a
+check. A new `describe` in `tests/tools/store-assets.test.ts`, 3 tests,
+holds the order in the spec's source, red first on the missing reset and
+the missing read-back.
+
+**Proved on the real generator rather than argued**, each probe restored by
+md5: the three words planted with `record-exposure` before the reset pass,
+all 15 shots byte-identical; with the reset removed, or the words planted
+after it as a late write would land, the run fails naming `fr:arbre`,
+`fr:route` and `fr:église`. Then two clean runs, 15 written and 0 changed
+each, and the store group stamped. Tools 230 → **233** / 63 → **64**
+suites, total 938 → **941**, in six places, `docs/LAUNCH.md:221` first. No
+`CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **233 tools / 64 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **988 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again; `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a — with the store group `ok` on its new stamp.
+
+Assumed, with nobody to ask: that the documentation and first-run sets need
+no such check, the first holding its plan already and the second seeding
+none; and that a run failing loudly on a late write is better than a longer
+settle, which would only move the odds.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, `camera` first.
 
 ### 2026-10-05 — "sorry" is mē hrēoweþ, and an Old English phrase names the text it was read in
 

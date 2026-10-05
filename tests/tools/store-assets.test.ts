@@ -195,3 +195,45 @@ describe('the store shots are framed on a section boundary', () => {
    * is stated once, over every spec with an `OUT` directory under `docs/`.
    */
 });
+
+/**
+ * Scene 4 photographs the seeded plan and nothing the run met on its own.
+ *
+ * Scenes 1–3 weave `showcase.html` nine times, once per frame, and every page
+ * that weaves records exposures, flushed to the worker as it closes — so the
+ * run makes cards of its own before the plan is imported. `import-data` merges
+ * rather than replaces, keeping what is there, so whether those cards reached
+ * the feed depended on whether the last flush landed before the dashboard read
+ * the store. On 2026-10-05 one run in four wrote all three `*-04-progress.png`
+ * with *arbre*, *église* and *route* above the seeded nineteen, 41 113 to 50 272
+ * pixels from the committed shots, and the other three matched them byte for
+ * byte. `tests/e2e/screenshots.spec.ts` closes the same race the same way: let
+ * the closing pages' writes land, reset the vocabulary, then seed.
+ */
+describe('the store progress shot holds the seeded plan and nothing else', () => {
+  const lastWeave = spec.lastIndexOf('/showcase.html`)');
+  const reset = spec.indexOf("type: 'reset-vocabulary'");
+  const seed = spec.indexOf("type: 'import-data'");
+  const shoot = spec.indexOf("capture('04-progress'");
+
+  test('the spec can still find what it orders', () => {
+    // A renamed page or message would leave every comparison below reading -1.
+    assert.ok(lastWeave > 0, 'no woven showcase.html page was found in store-assets.spec.ts');
+    assert.ok(seed > 0, 'store-assets.spec.ts no longer imports its plan through import-data');
+    assert.ok(shoot > seed, 'scene 4 is no longer captured after the plan is imported');
+  });
+
+  test('the vocabulary is reset after the last page that weaves, and before the plan', () => {
+    assert.ok(reset > 0, 'store-assets.spec.ts never resets the vocabulary, so the plan is merged into the run’s own cards');
+    assert.ok(reset > lastWeave, 'the vocabulary is reset before a page that weaves, which makes cards again');
+    assert.ok(reset < seed, 'the vocabulary is reset after the plan is imported, which wipes the plan');
+    const settle = spec.slice(lastWeave, reset);
+    assert.match(settle, /setTimeout\(resolve, \d{4,}\)/, 'nothing waits for the closing pages’ writes to land before the reset');
+  });
+
+  test('the store is read back as exactly the plan before and after scene 4 is shot', () => {
+    const checks = [...spec.matchAll(/expectStoreIsThePlan\(\)/g)].map((m) => m.index ?? -1);
+    assert.ok(checks.some((i) => i > seed && i < shoot), 'nothing checks the store is the plan before scene 4 is shot');
+    assert.ok(checks.some((i) => i > shoot), 'nothing checks the store is still the plan after scene 4 is shot');
+  });
+});
