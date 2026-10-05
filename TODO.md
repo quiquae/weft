@@ -8,7 +8,7 @@
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
 suites, **233** tool tests / 64 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 988 KB and passing `npm run validate`. The package grew
+packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
@@ -26,7 +26,10 @@ row, measured by building `main`'s three packages beside these; Firefox's,
 a few bytes larger, still rounds to 988 — and went back to 988 later the same
 day by 555 bytes, 433 of them `WITHDRAWN` and its filter in `background.js`
 and 122 the Old English pack's new note, measured against `main`'s Chrome
-package, 987.46 → 988.00 KB. `npm run test:all` exits 0 end to end.
+package, 987.46 → 988.00 KB — and to **989 KB** on 2026-10-05 by 584 bytes,
+346 of them `camera`'s `WITHDRAWN` line in `background.js` and 238 the Latin
+pack's notes, measured against `main`'s Chrome package, 988.40 → 988.97 KB.
+`npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
 was `far wel`, which English Wiktionary gives only as the reconstruction
@@ -3964,7 +3967,7 @@ registered**, and nothing below it can move until it is.
       `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
       ships moved.
 
-- [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
+- [x] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
       as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
       an arched roof, an arch", and no room. The pack's attribution says
       "Latin glosses checked against Lewis & Short" and the seed's header says
@@ -3981,6 +3984,63 @@ registered**, and nothing below it can move until it is.
       per row: a better headword (*conclāve*, *fortis*), or a note saying what
       the word really covers. `īnfāns` is also marked masculine where Lewis &
       Short has it of common gender.
+
+      **Done 2026-10-05: "room" is `conclāve`, `camera`'s card is withdrawn,
+      `īnfāns` is common, and three adjectives keep their glosses with a
+      note each.** The queue named `iūsiūrandum`'s plural, which #70 landed
+      and this file had ticked, so the work was this item. Every entry was
+      read in Lewis & Short, from the Perseus file still cached in
+      `/tmp/weft-la2/ls.xml` (`ls.py` beside it prints an entry by key);
+      `glosscheck.py` was gone with `/tmp/weft-la`.
+
+      - **`camera` is a vault and nothing else**: "a vault, an arched roof,
+        an arch", a vaulted ceiling in Varro and Cicero, a covered boat in
+        Tacitus. etymonline's `chamber` has the room as "Late Latin camera",
+        which gave French *chambre*. So "room" is `conclāve`, "a room,
+        chamber, dining hall, cage for animals, stall, coop, etc., that may
+        be locked up", from `clāvis`, its plural `conclāvia` cited from
+        Plautus and Cicero, and its English word `conclave`, which
+        etymonline derives from it quoting Lewis & Short's own gloss. Its
+        note: "a room that could be locked up: con- and clāvis, a key". A
+        different word is a different card, so `la:camera` went into
+        `WITHDRAWN` beside `far wel` and `mē is lāþ`, with its reason, and
+        `la conclāve` into the card ledger; the claim and the note
+        `camera` carried were true of camera, and sit at the foot of both
+        ledgers so nobody moves them onto the new row.
+      - **`īnfāns` is "com. gen."**, so its gender is `c`, which the type,
+        the builder and the tooltip ("common") already knew; nothing had
+        used it.
+      - **`audāx`, `fuscus` and `cānus` keep their glosses**, each borne out
+        by its entry: `audāx` is "bold, courageous", `fuscus` "tawny" among
+        its darks, and `cānus` is used "esp. freq. of the gray hair of the
+        aged" — the crude pass missed it on the spelling. What each covers
+        is wider, so each has a note, read in the same entries and in
+        etymonline where it names the etymon: "daring, and oftener in a bad
+        sense than a good one: rash, foolhardy"; "dark, dusky or tawny: to
+        obfuscate is to darken"; "white or hoary: of snow and frost, and
+        above all of the grey hair of age". None says "means" or "rather
+        than", which would have turned its feed line into a false friend —
+        the first draft of `fuscus`'s did. `fortis`, the item's suggestion
+        for "brave", already teaches "strong", and withdrawing a card whose
+        gloss its dictionary gives was not worth a better word.
+
+      Test-first, through the ledgers: the note, etymon and card-id lines
+      went in before the seed, and the three tests went red naming exactly
+      `camera`'s claims, `la:conclāve` and the four new notes; the seed
+      turned all green but `la:camera`, stranded, which `WITHDRAWN` cleared.
+      `tests/e2e/friction.spec.ts` seeded `la:camera` for the feed's
+      "simply" frame and went red, 3 rows of 4, until it took `via`; and
+      the unit fixture that built `room → camera` in memory builds
+      `road → via` now, for the reason the `iānua` fixture moved.
+
+      What moved: 17 of 7 055 fields of `en-la.json`, `builtAt` already
+      today, `index.json` untouched, the counts the same. The site, built
+      from `main` in a `/tmp` worktree and from the branch: `/latin/camera`
+      gone and `/latin/conclave` new, still **715** pages and **16 142**
+      links; five word pages, the Latin index, the descent hub,
+      `/old-english/rum`, which names its Latin counterpart, and the
+      sitemap. All 36 screenshots regenerated byte-identical, 14 + 15 + 7
+      written, and the three groups stamped. No test count moved.
 
 - [ ] **Commit the pixel diff: three sessions have each written their own
       and thrown it away.** Found 2026-10-03. Telling a renderer's drift
@@ -3999,10 +4059,43 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **two** unchecked items above, as of
-2026-10-05, both agent-shaped and neither waiting on B1. The order is the
-order to work them: `camera` first, a content question about the target;
-then the pixel diff, a tool. The Latin note on `vir`, the
+- [ ] **Latin genders have never been checked against a dictionary, and
+      four more nouns are common where the seed says masculine.** Found
+      2026-10-05 fixing `īnfāns`: Lewis & Short's heads mark `hostis`,
+      `mīles`, `mūs` and `canis` "comm." as well, and the seed gives all
+      four `m`. Do for Latin what `tools/seed/ang-genders.tsv` did for Old
+      English: a `la-genders.tsv` repeating each noun's gender beside the
+      Lewis & Short entry it was read in, and `tests/tools/genders.test.ts`
+      holding it as it holds the Old English one. Most of the ~178 heads
+      can be read by script from `/tmp/weft-la2/ls.pickle` (`ls.py`), but
+      not by the first one tried: a 160-character window missed the gender
+      of `caput`, `aqua` and most others, and any abbreviation in the head
+      matched, so collateral forms gave false answers — `vīnum` read as
+      masculine from "in vulg. lang. also vīnus, i, m.", `locus` neuter
+      from "lŏcum, i, n.". Take the first gender after the genitive, read
+      `bōs`, `diēs`, `serpēns` and `lapis` ("m. (f.: …)") by eye, and note
+      that "comm." is `c`, which the tooltip prints as "common". About an
+      hour; the four changes move four word pages.
+
+- [ ] **Latin glosses name no entry, and the only check on them is the crude
+      pass that found `camera`.** Found 2026-10-02 and confirmed 2026-10-05:
+      of the 356 Latin rows, the English lemma occurs in its headword's
+      Lewis & Short entry in 328, and the 2026-10-02 reading of the other
+      28 found `camera` alone false. Every other claim the Latin pack makes
+      about a word now names its entry — notes, etymons — and the gloss,
+      the claim every reader sees first, does not. A `la-glosses.tsv`
+      quoting, per row, the words of the entry that give the gloss, with
+      `ls:<key>`, and a test that fails on a row with no line, a line
+      naming no entry, or a quote that does not contain the English lemma
+      unless the line says which word of the entry stands for it — as
+      `cānus` gives "gray", which a check for "grey" misses. The 328 can be
+      drafted by script and read; the 28 by eye. About two hours, so split
+      it if needed: the script and the 28 first.
+
+`Now` is **empty** and `Next` holds **three** unchecked items above, as of
+2026-10-05, all agent-shaped and none waiting on B1. The order is the
+order to work them: the pixel diff, a tool; then the Latin genders and the
+Latin glosses, two ledgers of the kind the Old English genders got. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -4011,8 +4104,8 @@ the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
 genders, the plurals' dots, both languages' second forms' transcriptions,
-`iūsiūrandum`'s plural, `far wel`, `mē is lāþ` and the store scene's flake
-are done.
+`iūsiūrandum`'s plural, `far wel`, `mē is lāþ`, the store scene's flake
+and `camera` are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should

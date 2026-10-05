@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 988 KB unpacked for all three |
+| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 715 pages, 16 142 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -498,7 +498,9 @@ exported, and the worker's `get-stats` leaves them out of the progress
 pages, which would list one with no English beside it. Old English `far wel`
 was the first, on 2026-10-05 — a reconstruction no text has — and "goodbye"
 is `wes hāl` now; `mē is lāþ`, taught for "sorry" and meaning "it is hateful
-to me", the second, the same day, and "sorry" is `mē hrēoweþ`. The ledger test accepts a
+to me", the second, the same day, and "sorry" is `mē hrēoweþ`; Latin
+`camera`, taught for "room" and in Lewis & Short only a vault, the third,
+and "room" is `conclāve`. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -507,6 +509,54 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-05 — the Latin for "room" was a vault, and three adjectives say what they cover
+
+The queue named `iūsiūrandum`'s plural, which #70 landed and `TODO.md` had
+ticked, so the work was its topmost unchecked item: `camera`, taught for
+"room". Lewis & Short, read from the Perseus file still cached in
+`/tmp/weft-la2/`, has it as "a vault, an arched roof, an arch" and nothing
+else; etymonline's `chamber` puts the room in Late Latin.
+
+**So "room" is `conclāve`, and `camera`'s card is the third withdrawn.**
+`conclāve` is "a room, chamber … that may be locked up", from `clāvis`,
+its plural cited from Plautus and Cicero, and its English word *conclave*,
+which etymonline derives from it quoting Lewis & Short's own gloss. A
+different word is a different card, so `la:camera` went into `WITHDRAWN`
+with its reason and `la conclāve` into the card ledger. In the same entries:
+`īnfāns` is "com. gen.", so `c`, which the type, builder and tooltip
+already knew and no row had used; and `audāx`, `fuscus` and `cānus` keep
+glosses their entries bear out, each with a note saying what the word
+covers. The crude pass had flagged `cānus` only because it looked for
+"grey" where Lewis & Short writes "gray". **A note's wording picks the
+feed's frame**: the first draft of `fuscus`'s said "rather than", which
+`FALSE_FRIEND` matches, and would have told *obfuscate* as a false friend.
+
+Test-first through the ledgers: notes, etymons and card ids written before
+the seed went red on exactly the old rows; the seed left only `la:camera`
+stranded, which `WITHDRAWN` cleared. An e2e test seeded `la:camera` for the
+feed's "simply" frame and went red, 3 rows of 4, until it took `via`; the
+unit fixture building `room → camera` builds `road → via` now. 17 of 7 055
+pack fields moved; the site is still 715 pages and 16 142 links, with
+`/latin/conclave` for `/latin/camera`; all 36 screenshots regenerated
+byte-identical and the three groups stamped. The packages grew 584 bytes,
+988.40 → 988.97 KB, which prints **989**.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 233 tools / 64 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately `site:check` **715 pages / 16 142 links**,
+all resolving.
+
+Assumed, with nobody to ask: that a gloss Lewis & Short bears out stays,
+with a note, rather than costing a learner a card for a better word —
+`fortis` already teaches "strong"; and that the four other common-gender
+nouns wait for a Latin gender ledger rather than this item.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds three
+agent-shaped items: the pixel diff, then Latin genders and Latin glosses.
 
 ### 2026-10-05 — the store's progress shot photographs the plan, and fails rather than anything else
 
