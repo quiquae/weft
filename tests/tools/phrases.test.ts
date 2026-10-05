@@ -4,7 +4,7 @@
  * A single word is checked against a dictionary entry wherever the pack makes
  * a claim about it — its etymon, its gender — and a phrase had nothing. A
  * phrase is where this lexicon wrote Old English of its own, and of the four
- * interjections it taught for a speech act, two were never the language:
+ * interjections it taught for a speech act, two were not what Old English said:
  * `far wel`, goodbye, which English Wiktionary has only as the reconstruction
  * "*far wel!", and `mē is lāþ`, sorry, which Bosworth–Toller has as loathing
  * — "mé láð wæs" glosses Latin "multum detestatus sum", I greatly detested —

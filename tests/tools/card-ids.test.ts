@@ -21,7 +21,8 @@
  * card.
  *
  * A word may also leave a pack on purpose, when it turns out not to be the
- * language at all — Old English `far wel`, which no text has. Its cards cannot
+ * language at all — Old English `far wel`, which no text has — or not to mean
+ * what it was taught for, as `mē is lāþ` meant loathing and not sorry. Its cards cannot
  * follow it anywhere, a different word being a different card, so it is
  * listed in `WITHDRAWN` beside the reason, and the ledger accepts it there and
  * nowhere else.

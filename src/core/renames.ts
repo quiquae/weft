@@ -83,11 +83,14 @@ export const RENAMED: Renames = {
 export type Withdrawals = Readonly<Record<LangCode, Readonly<Record<string, string>>>>;
 
 /**
- * The words a pack has stopped teaching because they were never the language.
+ * The words a pack has stopped teaching because they were never the language,
+ * or never meant what they were taught for.
  *
  * A respelling keeps its word, so its cards follow it (`RENAMED`). This is
  * the other way a word leaves a pack: it turns out not to be a word of the
- * language at all, and the pack teaches another in its place. The cards
+ * language at all, as `far wel` was not, or not to say what the pack taught
+ * it for, as `mē is lāþ` said loathing and not sorry, and the pack teaches
+ * another in its place. The cards
  * cannot follow, because a different word is a different card — reviews of
  * one say nothing about the other — and they are not deleted, because they
  * are the learner's record of what they read, and an export carries them.

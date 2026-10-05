@@ -513,6 +513,18 @@ and an export still carries it, but it is a different word from *wes hāl*,
 so its reviews do not move there, and the progress page no longer lists or
 counts it.
 
+**And the Old English for "sorry" says regret, not loathing.** It was
+*mē is lāþ*, "it is hateful to me": Bosworth–Toller has the construction
+only as loathing — *mé láð wæs* glosses Latin *multum detestatus sum*, "I
+greatly detested". "sorry" is now *mē hrēoweþ*, "it rues me", which
+Bosworth–Toller quotes from Genesis, *þæt mé on mínum hyge hreóweð*, and
+whose verb became English *rue*. A learner's *mē is lāþ* card is kept and
+no longer listed, as *far wel*'s was. Of the four Old English phrases Weft
+taught for a greeting, a farewell, a request and an apology, one was in no
+text and one meant something else, so every Old English interjection and
+phrase now names the text it was read in, and the build fails on one that
+names none.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -533,7 +545,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 933 tests: 566 unit, 102 in jsdom, 225 over the build tools, and
+**Built with** 938 tests: 566 unit, 102 in jsdom, 230 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
