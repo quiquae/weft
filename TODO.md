@@ -6,7 +6,7 @@
 
 **State on 2026-10-05:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **230** tool tests / 63 suites, **40** e2e passing
+suites, **233** tool tests / 64 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -3924,7 +3924,7 @@ registered**, and nothing below it can move until it is.
       on the same tree reproduced the committed bytes exactly, so the
       change was not this one's, and the committed shots stand.
 
-- [ ] **The store generator's scene 4 sometimes shows words the run met
+- [x] **The store generator's scene 4 sometimes shows words the run met
       itself.** Found 2026-10-05: one run in three of `WEFT_STORE=1 npx
       playwright test store-assets` wrote all three `*-04-progress.png`
       with *arbre*, *église* and *route* above the seeded feed — words
@@ -3943,6 +3943,26 @@ registered**, and nothing below it can move until it is.
       bytes are the right ones, so a session that sees these three move
       should restore them from `HEAD` rather than commit them. About 30
       minutes.
+
+      **Done 2026-10-05, the same session's second PR: the spec resets the
+      vocabulary before it seeds, and reads the store back around the
+      shot.** After the last page that weaves, a 2 500 ms settle for the
+      closing pages' writes, then `reset-vocabulary`, then the import — the
+      order `screenshots.spec.ts` uses — and `expectStoreIsThePlan()`
+      compares `get-stats`' card ids with the plan's before scene 4 is shot
+      and after, so a write that still lands late fails the run rather than
+      shipping. A new `describe` in `tests/tools/store-assets.test.ts`, 3
+      tests, holds that order in the spec's source: red first on "never
+      resets the vocabulary" and "nothing checks the store is the plan".
+      Three probes against the real generator, each restored by md5: *arbre*,
+      *église* and *route* planted with `record-exposure` before the reset
+      pass, all 15 shots byte-identical; with the reset removed, or planted
+      after it as a late write would land, the run fails naming
+      `fr:arbre`, `fr:route` and `fr:église`. Then two clean runs, 15
+      written and 0 changed each, and the group stamped. Tools 230 →
+      **233** / 63 → **64** suites, total 938 → **941**, in six places,
+      `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
+      ships moved.
 
 - [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
       as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
@@ -3979,11 +3999,10 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **three** unchecked items above, as of
-2026-10-05, all agent-shaped and none waiting on B1. The order is the order
-to work them. The store generator's unstable scene first, because every
-session that regenerates the art meets it; then `camera`, a content
-question about the target; then the pixel diff, a tool. The Latin note on `vir`, the
+`Now` is **empty** and `Next` holds **two** unchecked items above, as of
+2026-10-05, both agent-shaped and neither waiting on B1. The order is the
+order to work them: `camera` first, a content question about the target;
+then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -3992,7 +4011,8 @@ the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
 genders, the plurals' dots, both languages' second forms' transcriptions,
-`iūsiūrandum`'s plural, `far wel` and `mē is lāþ` are done.
+`iūsiūrandum`'s plural, `far wel`, `mē is lāþ` and the store scene's flake
+are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should

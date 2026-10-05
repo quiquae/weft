@@ -163,6 +163,24 @@ test.describe('store assets', () => {
       await page.waitForTimeout(700);
     });
 
+    /*
+     * Wipe the cards scenes 1-3 just made, so the plan below is the store.
+     *
+     * Every page above wove `showcase.html` and recorded exposures, flushed to
+     * the worker as it closed, and `import-data` merges rather than replaces:
+     * `mergeCards` keeps what is there. So whether those words reached scene
+     * 4's feed depended on whether the last flush landed before the dashboard
+     * read the store, and on 2026-10-05 one run in four printed *arbre*,
+     * *église* and *route* above the seeded nineteen, 41 113 to 50 272 pixels
+     * from the committed shots. `screenshots.spec.ts` closes the same race
+     * the same way: let the closing pages' writes land, reset, then seed. And
+     * `expectStoreIsThePlan` reads the store back before scene 4 is shot and
+     * after, so a write that still lands late fails the run instead of
+     * shipping in the listing art.
+     */
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await rpc({ type: 'reset-vocabulary' });
+
     // Seed a plausible vocabulary through the real import path so the
     // progress shot shows a populated feed rather than an empty state.
     const day = 86_400_000;
@@ -257,11 +275,21 @@ test.describe('store assets', () => {
      * least interesting 800 pixels of it. The discoveries feed is the part
      * people repeat to someone else.
      */
+    /** The store holds the plan's cards and no others, or the run fails. */
+    const expectStoreIsThePlan = async () => {
+      const stats = await rpc<{ cards: { id: string }[] }>({ type: 'get-stats' });
+      expect(
+        stats.cards.map((card) => card.id).sort(),
+        'the store holds a card the plan did not seed, so scene 4 would photograph it',
+      ).toEqual(Object.keys(seeded).sort());
+    };
+    await expectStoreIsThePlan();
     await capture('04-progress', async (page) => {
       await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
       await page.waitForTimeout(1800);
       await frameOn(page, '.section:has(.finds)');
     });
+    await expectStoreIsThePlan();
 
     // 5. The friction, stated plainly. This is the screen-time claim, and
     //    burying it would be a listing that misrepresents the product.
