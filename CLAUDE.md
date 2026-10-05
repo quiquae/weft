@@ -555,7 +555,10 @@ record a restorer reads.
 
 What needs a human: unchanged, everything below **B1**, register
 `weft.study` — NXDOMAIN today. `Next` holds three agent-shaped items,
-`far wel` first.
+`far wel` first. Sized after the merge and not begun: `ang:far wel` is a
+shipped card id, and the card ledger refuses to let a word go by a letter
+change, so replacing it needs a decision about the learner's card first.
+That is written into the item.
 
 ### 2026-10-04 — every Latin plural and participle sounds like itself, and *iēns* begins with a vowel
 
