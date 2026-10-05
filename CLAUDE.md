@@ -55,10 +55,10 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **220 pass**, 61 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **225 pass**, 62 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 987 KB unpacked for chrome and safari, 988 for firefox |
@@ -243,14 +243,14 @@ package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
-builds and link-checks all 716 pages on every push but the deploy job is
+builds and link-checks all 715 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
 
 **Nothing self-promotes automatically.** `docs/LAUNCH.md` holds drafts per
 community, to be sent by a human. An automated account posting self-promotion
-earns a domain-level shadowban, which would destroy the 713-page search asset.
+earns a domain-level shadowban, which would destroy the 715-page search asset.
 That was a decision, not an omission.
 
 **A card is read back as a word in one place, and its story travels where

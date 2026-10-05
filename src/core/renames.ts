@@ -79,6 +79,46 @@ export const RENAMED: Renames = {
   },
 };
 
+/** Per language, a word a pack once taught and teaches no longer, with why. */
+export type Withdrawals = Readonly<Record<LangCode, Readonly<Record<string, string>>>>;
+
+/**
+ * The words a pack has stopped teaching because they were never the language.
+ *
+ * A respelling keeps its word, so its cards follow it (`RENAMED`). This is
+ * the other way a word leaves a pack: it turns out not to be a word of the
+ * language at all, and the pack teaches another in its place. The cards
+ * cannot follow, because a different word is a different card — reviews of
+ * one say nothing about the other — and they are not deleted, because they
+ * are the learner's record of what they read, and an export carries them.
+ * So they are kept, moved by nothing, and listed as vocabulary nowhere: no
+ * pack row reads them, so nothing weaves, quizzes or tells the story of one
+ * again, and the worker leaves them out of what `get-stats` reports, so the
+ * dashboard neither lists one with no English beside it nor counts it.
+ *
+ * An entry is permanent, for `RENAMED`'s reason. `tests/tools/card-ids.test.ts`
+ * accepts a ledger id no pack teaches when it is here, and refuses one here
+ * that a pack still teaches, never shipped, or is also renamed.
+ */
+export const WITHDRAWN: Withdrawals = {
+  ang: {
+    'far wel':
+      'Taught for "goodbye" until 2026-10-05 and found in no Old English text: English ' +
+      'Wiktionary gives it only as the reconstruction "*far wel!", and etymonline dates ' +
+      '"farewell" to Middle English, c. 1200. "goodbye" is "wes hāl" now, whose plural ' +
+      '"wesaþ hāle" glosses Latin "valete" (Bosworth–Toller, "wesan").',
+  },
+};
+
+/** Whether a card is filed under a word its pack withdrew. See `WITHDRAWN`. */
+export function isWithdrawn(
+  card: Pick<MemoryCard, 'target' | 'lemma'>,
+  withdrawn: Withdrawals = WITHDRAWN,
+): boolean {
+  const table = withdrawn[card.target];
+  return table !== undefined && Object.hasOwn(table, card.lemma);
+}
+
 /**
  * Where a word filed under `lemma` is filed now, if it has moved.
  *

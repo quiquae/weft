@@ -19,6 +19,7 @@ import { cardId, isRetirable, newCard, reviewCard } from '../core/fsrs.ts';
 import { effectiveLevel } from '../core/selector.ts';
 import { buildQuiz, quizPassed, quizScore } from '../core/quiz.ts';
 import { entriesByTarget } from '../core/lexicon.ts';
+import { isWithdrawn } from '../core/renames.ts';
 import { validateSettings } from '../core/settings.ts';
 import { clampToTier, exceedsTier, featureInfo } from '../core/entitlements.ts';
 import { describeLicence } from '../core/licence.ts';
@@ -472,7 +473,10 @@ const handlers: Handlers = {
 
   'get-stats': async () => {
     const snapshot = await store.load();
-    const cards = Object.values(await store.loadCards());
+    // A word a pack withdrew is kept, and exported, but it is no longer
+    // vocabulary, so nothing that reports progress lists or counts it: the
+    // dashboard would show it with no English beside it. See WITHDRAWN.
+    const cards = Object.values(await store.loadCards()).filter((c) => !isWithdrawn(c));
     return {
       tier: snapshot.tier,
       network: await store.loadNetworkLog(),

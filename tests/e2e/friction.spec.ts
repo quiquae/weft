@@ -562,6 +562,45 @@ test.describe('taking your data with you', () => {
     expect(cards['ang:sēċan']?.reps, 'the reviews did not follow the word').toBe(7);
   });
 
+  test('a word the pack has withdrawn keeps its card, and is not counted as vocabulary', async ({ rpc }) => {
+    // Old English "far wel" was taught for goodbye and is in no Old English
+    // text, so the pack teaches "wes hāl" there now. A learner's far wel card
+    // is a different word's and cannot follow it, and it is their record, so
+    // it is kept and exported — but the progress pages must not list it as a
+    // word they are learning, with no English beside it. See WITHDRAWN.
+    const now = Date.now();
+    const day = 86_400_000;
+    const record = (lemma: string, reps: number) => ({
+      id: `ang:${lemma}`,
+      target: 'ang',
+      lemma,
+      stability: 9,
+      difficulty: 5,
+      lastReview: now - 2 * day,
+      reps,
+      lapses: 0,
+      exposures: 30,
+      firstSeen: now - 20 * day,
+    });
+    await rpc({
+      type: 'import-data',
+      payload: {
+        format: 'weft-export/1',
+        settings: {},
+        cards: { 'ang:far wel': record('far wel', 5), 'ang:wes hāl': record('wes hāl', 4) },
+      },
+    });
+
+    const stats = await rpc<{ cards: { id: string }[] }>({ type: 'get-stats' });
+    const listed = stats.cards.map((c) => c.id);
+    expect(listed, 'the word beside it is missing too, so this proves nothing').toContain('ang:wes hāl');
+    expect(listed, 'a withdrawn word is still reported as vocabulary').not.toContain('ang:far wel');
+
+    const exported = await rpc<{ payload: Record<string, unknown> }>({ type: 'export-data' });
+    const cards = exported.payload['cards'] as Record<string, { reps: number }>;
+    expect(cards['ang:far wel']?.reps, 'the withdrawn card was not kept').toBe(5);
+  });
+
   test('importing a file cannot clear a cooldown', async ({ rpc }) => {
     /*
      * An export carries the lock state, including anything queued. Import

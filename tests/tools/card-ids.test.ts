@@ -20,6 +20,12 @@
  * rename may change marks only, because a different word is a different
  * card.
  *
+ * A word may also leave a pack on purpose, when it turns out not to be the
+ * language at all — Old English `far wel`, which no text has. Its cards cannot
+ * follow it anywhere, a different word being a different card, so it is
+ * listed in `WITHDRAWN` beside the reason, and the ledger accepts it there and
+ * nowhere else.
+ *
  * The ledger was taken on 2026-10-04 from the packs as they stood, which hold
  * every id the published 1.0.0 packs did — measured against `git show
  * v1.0.0:src/lexicon/packs/…`, no id had been lost since — and the four
@@ -31,7 +37,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { entriesByTarget, spelling } from '../../src/core/lexicon.ts';
-import { RENAMED } from '../../src/core/renames.ts';
+import { RENAMED, WITHDRAWN } from '../../src/core/renames.ts';
 import type { LexEntry } from '../../src/core/types.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
@@ -90,9 +96,10 @@ describe('the ledger of card ids', () => {
     );
   });
 
-  test('names only words a pack still teaches, or one RENAMED moves to one', () => {
+  test('names only words a pack still teaches, or one RENAMED moves to one, or one WITHDRAWN', () => {
     const lost = ledger
       .filter(({ id }) => !live.has(id))
+      .filter(({ target, lemma }) => WITHDRAWN[target]?.[lemma] === undefined)
       .filter(({ target, lemma }) => {
         const { to } = follow(target, lemma);
         return to === lemma || !live.has(`${target}:${to}`);
@@ -103,7 +110,8 @@ describe('the ledger of card ids', () => {
       [],
       `${lost.length} card id(s) were shipped and no pack reads them any more, so every card a ` +
         'learner has for them is stranded. A respelt word needs its old spelling in RENAMED, ' +
-        `src/core/renames.ts: ${lost.join(', ')}`,
+        'src/core/renames.ts, and a word taken out because it was never the language needs ' +
+        `a line in WITHDRAWN, with why: ${lost.join(', ')}`,
     );
   });
 
@@ -164,6 +172,53 @@ describe('the rename table', () => {
       respelt.map(({ target, from, to }) => `${target}:${from} → ${to}`),
       [],
       'a rename that changes letters joins two words into one card',
+    );
+  });
+});
+
+describe('the withdrawn table', () => {
+  const withdrawals = Object.entries(WITHDRAWN).flatMap(([target, table]) =>
+    Object.entries(table).map(([lemma, why]) => ({ target, lemma, why })),
+  );
+
+  test('has something in it, or nothing below tests a real withdrawal', () => {
+    assert.ok(withdrawals.length > 0);
+  });
+
+  test('withdraws only words a pack really taught', () => {
+    // A mistyped word withdraws nothing, and the ledger line it was meant
+    // for goes on failing above under a name nobody recognises.
+    const unknown = withdrawals.filter(({ target, lemma }) => !recorded.has(`${target}:${lemma}`));
+    assert.deepEqual(
+      unknown.map(({ target, lemma }) => `${target}:${lemma}`),
+      [],
+      'WITHDRAWN names a word tools/seed/card-ids.tsv has never recorded',
+    );
+  });
+
+  test('withdraws no word a pack still teaches', () => {
+    const taught = withdrawals.filter(({ target, lemma }) => live.has(`${target}:${lemma}`));
+    assert.deepEqual(
+      taught.map(({ target, lemma }) => `${target}:${lemma}`),
+      [],
+      'a withdrawn word is hidden from the vocabulary list, so withdrawing one still taught hides a word the learner is being shown',
+    );
+  });
+
+  test('withdraws no word it also renames, so a card is moved or kept, never both', () => {
+    const both = withdrawals.filter(({ target, lemma }) => RENAMED[target]?.[lemma] !== undefined);
+    assert.deepEqual(
+      both.map(({ target, lemma }) => `${target}:${lemma}`),
+      [],
+    );
+  });
+
+  test('says why, in a sentence a later reader can check', () => {
+    const bare = withdrawals.filter(({ why }) => why.trim().length < 40);
+    assert.deepEqual(
+      bare.map(({ target, lemma }) => `${target}:${lemma}`),
+      [],
+      'a withdrawal with no reason is a word nobody can restore with confidence',
     );
   });
 });
