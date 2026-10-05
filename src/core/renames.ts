@@ -107,6 +107,11 @@ export const WITHDRAWN: Withdrawals = {
       'Wiktionary gives it only as the reconstruction "*far wel!", and etymonline dates ' +
       '"farewell" to Middle English, c. 1200. "goodbye" is "wes hāl" now, whose plural ' +
       '"wesaþ hāle" glosses Latin "valete" (Bosworth–Toller, "wesan").',
+    'mē is lāþ':
+      'Taught for "sorry" until 2026-10-05, and Old English for loathing, not regret: ' +
+      'Bosworth–Toller\'s "láð" has "mé láð wæs" glossing Latin "multum detestatus sum", ' +
+      'I greatly detested. "sorry" is "mē hrēoweþ" now, "it rues me", which its "hreówan" ' +
+      'quotes from Genesis as "Þæt mé on mínum hyge hreóweð".',
   },
 };
 

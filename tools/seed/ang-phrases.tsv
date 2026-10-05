@@ -1,0 +1,45 @@
+# Where each Old English interjection in lex-ang.tsv, and each target of more
+# than one word, was read in a text.
+#
+# lemma | pos | tgt | sources | quotation
+#
+# A single word is checked against a dictionary entry wherever the pack makes
+# a claim about it: its etymon in ang-etymons.tsv, its gender in
+# ang-genders.tsv. A phrase had nothing, and a phrase is where this lexicon
+# wrote Old English of its own. Of the four interjections it taught for a
+# speech act, two were never the language. far wel, goodbye, is in English
+# Wiktionary only as the reconstruction "*far wel!", and was withdrawn on
+# 2026-10-05 for wes hāl. mē is lāþ, sorry, is well formed, and
+# Bosworth–Toller has it as loathing, not regret — "Ðá wæs ic swíðe
+# onscúniende and mé láð wæs" glosses Latin "multum detestatus sum", I
+# greatly detested (bt:21202). It was withdrawn the same day for mē hrēoweþ,
+# "it rues me", the impersonal hrēowan, which the dictionary glosses "to rue,
+# make sorry, grieve; often impers." and quotes with mē in Genesis.
+#
+# The quotation is the text the phrase was read in, as Bosworth–Toller prints
+# it, with where it is from. tests/tools/phrases.test.ts requires each word
+# of the phrase to stand in it, accents and macrons aside and ð read as þ, as
+# a word or the start of one, so an inflected form counts: goodbye's line
+# quotes the plural, "Wesaþ hále", because that is the form that glosses
+# Latin "valete", farewell, where hello's is a greeting. It cannot tell a text
+# somebody read from one somebody typed, the limit every ledger here has;
+# but a phrase no text has cannot be given a quotation honestly, which is
+# what the column is for.
+#
+# The sources field
+# -----------------
+# Each line names the entries the quotation was read in, separated by
+# spaces, and at least one is Bosworth–Toller's:
+#
+#   bt:<id>            https://bosworthtoller.com/<id>
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#
+# A line is never the only check on its phrase: its etymon, if it has one,
+# is held by ang-etymons.tsv, and its card by card-ids.tsv. A phrase that
+# leaves the pack keeps its card through WITHDRAWN in src/core/renames.ts.
+#
+yes	intj	ġēa	bt:13355	Geá, Drihten, ðú wást ðæt ic ðé lufige (Jn. Bos. 21, 15)
+hello	intj	wes hāl	bt:18028 bt:35422	Hál wes ðú Iudéa cyning (Mt. Kmbl. 27, 29)
+goodbye	intj	wes hāl	bt:35422	Wesaþ hále valete (Wrt. Voc. ii. 88, 61)
+please	intj	iċ bidde	bt:4228	Ic bidde ðé mín Drihten, quæso Domine mi (Gen. 19, 18)
+sorry	intj	mē hrēoweþ	bt:53179 bt:19714	Þæt mé on mínum hyge hreóweð, þæt hié heofonríce ágan (Gen. 426)
