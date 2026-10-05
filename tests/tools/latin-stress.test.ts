@@ -82,7 +82,6 @@ const RESPELT: Record<string, string> = {
   calceus: 'calcĕus',
   caeruleus: 'caerŭlĕus',
   iūsiūrandum: 'iūsjūrandum', // "jus-jūrandum"
-  iūsiūranda: 'iūsjūranda',
   iēns: 'ĭēns',
 };
 

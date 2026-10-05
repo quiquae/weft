@@ -42,13 +42,13 @@ LA_EU_DIPHTHONG = {'ceu', 'heu', 'neu', 'seu'}
 Words whose spelling hides which i is the consonant, respelled as Lewis &
 Short prints them. An i between a consonant and a vowel is otherwise a vowel,
 fī-li-us; a compound whose second part begins with the consonant cannot say
-so in this spelling, and iūsiūrandum came out with a syllable too many, as
-its second form does. And an i before a vowel at the start of a word is
-otherwise the consonant, iānua, but iēns, the participle of īre, begins with
-the verb's stem vowel — Wiktionary writes {{la-IPA|ïēns}} — short before a
-vowel (A&G §10a), so it is respelled with a breve.
+so in this spelling, and iūsiūrandum came out with a syllable too many. And
+an i before a vowel at the start of a word is otherwise the consonant, iānua,
+but iēns, the participle of īre, begins with the verb's stem vowel —
+Wiktionary writes {{la-IPA|ïēns}} — short before a vowel (A&G §10a), so it is
+respelled with a breve.
 """
-LA_RESPELT = {'iūsiūrandum': 'iūsjūrandum', 'iūsiūranda': 'iūsjūranda', 'iēns': 'ĭēns'}
+LA_RESPELT = {'iūsiūrandum': 'iūsjūrandum', 'iēns': 'ĭēns'}
 LA_CONSONANTS = {
     'b': 'b', 'c': 'k', 'd': 'd', 'f': 'f', 'g': 'ɡ', 'h': 'h', 'k': 'k',
     'l': 'l', 'm': 'm', 'n': 'n', 'p': 'p', 'r': 'r', 's': 's', 't': 't',
@@ -425,7 +425,7 @@ if __name__ == '__main__':
         ('amāns', '/ˈamaːns/'), ('aedificāns', '/ae̯ˈdɪfɪkaːns/'), ('capiēns', '/ˈkapɪeːns/'),
         ('quaestiōnēs', '/kʷae̯stɪˈoːneːs/'), ('uxōrēs', '/ʊkˈsoːreːs/'),
         # And the i of iēns is the verb's stem vowel, not the consonant.
-        ('iēns', '/ˈɪeːns/'), ('iūsiūranda', '/juːsjuːˈranda/'),
+        ('iēns', '/ˈɪeːns/'),
     ]
     checks_ang = [
         ('hūs', '/ˈhuːs/'), ('stān', '/ˈstɑːn/'), ('cyning', '/ˈkyniŋɡ/'),

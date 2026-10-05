@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-04:** every automatable check is green, measured at the end
+**State on 2026-10-05:** every automatable check is green, measured at the end
 of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
-suites, **218** tool tests / 60 suites, **39** e2e passing
+suites, **220** tool tests / 61 suites, **39** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 988 KB and passing `npm run validate`. The package grew
+packages built at 987–988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
@@ -20,8 +20,11 @@ measured by building `main`'s two callers and this branch's in turn — and
 night by 4 545 bytes, the Latin pack giving up the 223 transcriptions it
 printed under second forms (−4 854) and the Old English one writing its own
 (+309) — and grew back 983 → 988 KB later that night by 5 069 bytes, all of
-them the Latin pack writing its second forms' own. `npm run test:all` exits
-0 end to end.
+them the Latin pack writing its second forms' own — and Chrome's and Safari's
+fell back to 987 KB on 2026-10-05 by 196 bytes, the Latin pack's `oaths`
+row, measured by building `main`'s three packages beside these; Firefox's,
+a few bytes larger, still rounds to 988. `npm run test:all` exits 0 end to
+end.
 
 **And as of 2026-10-04 a woven plural or participle sounds like itself.**
 The tooltip printed a row's one transcription, its headword's, under every
@@ -3707,7 +3710,7 @@ registered**, and nothing below it can move until it is.
       suites, total
       920 → **921**, in six places, `docs/LAUNCH.md:221` first.
 
-- [ ] **`iūsiūrandum`'s plural is woven in its Medieval form.** Found
+- [x] **`iūsiūrandum`'s plural is woven in its Medieval form.** Found
       2026-10-04 transcribing it. The seed weaves "oaths" as `iūsiūranda`,
       declining only the second part; English Wiktionary's entry says "In
       Classical Latin, both parts decline, but in Medieval Latin sometimes
@@ -3719,6 +3722,50 @@ registered**, and nothing below it can move until it is.
       the correct outcome for a plural never woven. No card moves: the card
       is `tgtLemma`. About 20 minutes, most of it looking for the plural in
       a text.
+
+      **Done 2026-10-05, as the blank, because the plural a text has is a
+      different word's.** The queue named the Old English second forms'
+      transcriptions, which #68 landed and this file had ticked, so the work
+      was this item. Lewis & Short's *jusjurandum*, read from the Perseus
+      file still cached in `/tmp/weft-la2/ls.xml`, ends "—Plur.: jura, Paul.
+      ex Fest. 132, 29": bare *iūra*, which is `iūs`'s own plural, rights
+      and laws, and no *iūraiūranda*. English Wiktionary, read raw, prints
+      both plurals from one template, `((iūs/iūr<3.N>iūrandum<2>,iūsiūrandum<2>))`,
+      quoting neither, and its `ius iurandum` and `iura` entries have no
+      plural of the oath either; a web search found none. So `tgt2` and
+      `ipa2` are blank and "oaths" stays English, as "milk" and "gold" do —
+      a form no Classical text was found to use is not taught, and *iūra*
+      would teach the word for laws. The seed's header says so beside its
+      rule for a blank.
+
+      Test-first: a new `describe` in `tests/tools/lexicon-orthography.test.ts`,
+      2 tests, holds each Latin word made of two declined words — `COMPOUNDS`,
+      `iūsiūrandum` alone, the seed's only one — to the second form its
+      dictionary gives, or none, with what was read as the failure message,
+      and refuses a listed word the pack does not teach or its parts do not
+      spell. Red on exactly `en-la oaths → iūsiūranda`. Blanking the seed
+      then turned `latin-stress.test.ts` red by itself, naming `iūsiūranda`
+      as respelt and no longer a form, so both `RESPELT` tables and the
+      generator's self-check lost it: 0 mismatches, and `fill_ipa.py` wrote
+      nothing, both seeds unchanged by md5. Two probes, restored by md5: the
+      listed word misspelt fails the stale test by name, and `iūraiūranda`
+      written into the seed fails the first, so the rule-formed plural
+      cannot pass for an answer either.
+
+      What moved: `en-la.json` lost its `oaths` row, 196 bytes, with its
+      `entryCount` 584 → 583 and `builtAt` 10-04 → 10-05; `index.json` the
+      same count and its own date. The Latin pack is 583 entries across 578
+      surface forms, so the ranges read **583–588** and **578–583** in
+      `README.md`, `CHANGELOG.md` and `CLAUDE.md`; the seven packs are
+      669 526 bytes, still 654 KB, and each package is 196 bytes lighter,
+      which takes Chrome's and Safari's to **987 KB** and leaves Firefox's
+      at 988. The site, built from `main` in a `/tmp`
+      worktree and from the branch: 2 of 721 files, `/latin/iusiurandum`
+      without its "Plural" row and `sitemap.xml`, 704 dates moved by the
+      pack's. All 36 screenshots regenerated byte-identical, 14 + 15 + 7
+      written, and the three groups stamped. Tools 218 → **220** / 60 →
+      **61** suites, total 921 → **923**, in six places, `docs/LAUNCH.md:221`
+      first.
 
 - [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
@@ -3768,11 +3815,10 @@ registered**, and nothing below it can move until it is.
       search box stops short of the text. About 30 minutes, with tests in
       `tests/tools/`.
 
-`Now` is **empty** and `Next` holds **four** unchecked items above, as of
-2026-10-04, all agent-shaped and none waiting on B1. The order is the order
-to work them. `iūsiūranda` first, a form the seed writes in Medieval Latin;
-then `far wel` and `camera`, content questions; then the pixel diff, a
-tool. The Latin note on `vir`, the
+`Now` is **empty** and `Next` holds **three** unchecked items above, as of
+2026-10-05, all agent-shaped and none waiting on B1. The order is the order
+to work them. `far wel` and `camera` first, content questions about the
+target; then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -3780,8 +3826,8 @@ the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
 the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
-genders, the plurals' dots and both languages' second forms'
-transcriptions are done.
+genders, the plurals' dots, both languages' second forms' transcriptions
+and `iūsiūrandum`'s plural are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
