@@ -285,7 +285,8 @@ describe('an Old English second form keeps its headword’s dots', () => {
  * Latin is Classical in its second forms too, and a word made of two declined
  * words is where the two periods part. `iūsiūrandum`, an oath, is `iūs` and
  * the gerundive `iūrandum` written as one, and Classical Latin declines both:
- * Lewis & Short gives its genitive as "jurisjurandi", from Cicero. Medieval
+ * Lewis & Short gives its genitive as "jurisjurandi" and cites Cicero writing
+ * it apart, "jurisque jurandi". Medieval
  * Latin sometimes declines only the second, as English Wiktionary's
  * declension note says in as many words, and that is how the seed came to
  * weave "oaths" as `iūsiūranda` until 2026-10-05. The Classical plural by the

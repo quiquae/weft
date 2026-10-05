@@ -522,8 +522,9 @@ unchanged by md5. Two probes, restored by md5: the listed word misspelt, and
 `builtAt` 10-04 → 10-05; `index.json` the same count and its own date. Latin
 is 583 entries across 578 surface forms, so the ranges read 583–588 and
 578–583 in `README.md`, `CHANGELOG.md`'s 1.0.1 paragraph and the summary at
-the top of this file; the 1.0.0 entry keeps 1.0.0's. The seven packs are
-669 526 bytes, still 654 KB. But each package is 196 bytes lighter, and
+the top of this file; the 1.0.0 entry keeps 1.0.0's. `README.md`'s
+`test:e2e` line said 38 tests, missed by the 38 → 39 sweep of 2026-10-04,
+and says 39 now. The seven packs are 669 526 bytes, still 654 KB. But each package is 196 bytes lighter, and
 `toFixed(0)` takes Chrome's from 987.65 KB to 987.46 and Safari's alike, so
 they print **987** where they printed 988, while Firefox's, 987.53, still
 prints 988 — measured by building `main`'s three in the `/tmp` worktree.
