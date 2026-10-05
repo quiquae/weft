@@ -7,7 +7,9 @@
 # tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
 #       a noun means the English plural is never woven, which is the
 #       correct outcome: weaving a singular target under an English
-#       plural teaches a form that does not exist.
+#       plural teaches a form that does not exist. iūsiūrandum's is blank
+#       because no Classical text found has its plural: see
+#       tests/tools/lexicon-orthography.test.ts before writing one.
 # ipa   the transcription of tgt, and ipa2 of tgt2: the tooltip prints a
 #       row's under the form it wove, so virī is /ˈwɪriː/, not vir's /ˈwɪr/,
 #       and amāns is stressed on its first syllable, where amāre is stressed
@@ -219,7 +221,7 @@ fear	noun	timor	timōrēs	m	/ˈtɪmɔr/	timorous		/tɪˈmoːreːs/
 hope	noun	spēs	spēs	f	/ˈspeːs/	despair	“despair” is to be out of spēs	/ˈspeːs/
 joy	noun	gaudium	gaudia	n	/ˈɡau̯dɪʊm/	joy		/ˈɡau̯dɪa/
 anger	noun	īra	īrae	f	/ˈiːra/	irate		/ˈiːrae̯/
-oath	noun	iūsiūrandum	iūsiūranda	n	/juːsjuːˈrandʊm/			/juːsjuːˈranda/
+oath	noun	iūsiūrandum		n	/juːsjuːˈrandʊm/			
 gift	noun	dōnum	dōna	n	/ˈdoːnʊm/	donate		/ˈdoːna/
 good	adj	bonus			/ˈbɔnʊs/	bonus		
 bad	adj	malus			/ˈmalʊs/	malice		
