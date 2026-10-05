@@ -3780,6 +3780,20 @@ registered**, and nothing below it can move until it is.
       (sorry), which are well-formed Old English but may be this lexicon's
       own phrasings rather than attested ones.
 
+      **Sized 2026-10-05 and not begun: the first fix the item names moves a
+      card the ledger will not let go.** `ang:far wel` is a shipped card id,
+      `tools/seed/card-ids.tsv:69`, and `tests/tools/card-ids.test.ts` fails
+      on a ledger id no pack teaches unless `RENAMED` moves it to one that
+      does, while `RENAMED` refuses a rename that changes letters rather than
+      marks, a different word being a different card. So an attested
+      formula cannot replace `far wel` by a seed edit. Decide first what a
+      learner's `ang:far wel` card becomes: kept and inert, its reviews
+      merged into the new word's card, or still taught with a note saying
+      the phrase is a reconstruction — the last needs no new mechanism, the
+      other two a retirement path in `src/core/renames.ts` and the ledger
+      test. Then read Bosworth–Toller. `iċ bidde` and `mē is lāþ` are in the
+      ledger too, lines 156 and 186.
+
 - [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
       as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
       an arched roof, an arch", and no room. The pack's attribution says
