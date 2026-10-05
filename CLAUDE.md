@@ -391,6 +391,22 @@ dictionaries disagree, as on `þorp`, Bosworth–Toller decides, being the one
 the pack's attribution names. On 2026-10-04 that read all 178 nouns and found
 one wrong: `wīfmann` is masculine, because `mann` is.
 
+**And an Old English phrase names the text it was read in.** A single word
+is held to a dictionary wherever the pack claims something about it; a
+phrase is where this lexicon wrote Old English of its own, and of the four
+it taught for a greeting, a farewell, a request and an apology, one was in
+no text (`far wel`) and one meant something else (`mē is lāþ`, loathing,
+not regret). So `tools/seed/ang-phrases.tsv` gives every Old English
+interjection, and every target of more than one word, the Bosworth–Toller
+entry it was read in and the quotation printed there, and
+`tests/tools/phrases.test.ts` fails on a phrase with no line, a line naming
+no Bosworth–Toller entry, a quotation missing a word of its phrase — accents
+off, ð read as þ, an inflected form counting — or a line outliving its row.
+The quotation is the check: it cannot tell a text somebody read from one
+somebody typed, but a phrase no text has cannot be given one honestly. Do
+not loosen it to a citation alone to land a phrase quickly; a reference is
+what `far wel` could have been given.
+
 **A Latin transcription is held to the grammar, not to the generator.**
 `tests/tools/latin-stress.test.ts` works every headword's syllables, stress
 and the stressed syllable's first consonant out of its spelling by Allen &
@@ -475,12 +491,14 @@ different word is a different card. Never delete a `RENAMED` line or a
 ledger line: an install that has not loaded its cards since, or an export
 from before, still holds the old id. Today's `introduced` list holds bare
 lemmas and is not renamed, which costs at most one new-word slot for the
-rest of the day an update lands. A word that was never the language leaves
-the other way: `WITHDRAWN`, beside `RENAMED`, keeps its cards where they are,
-moved by nothing and still exported, and the worker's `get-stats` leaves
-them out of the progress pages, which would list one with no English beside
-it. Old English `far wel` was the first, on 2026-10-05 — a reconstruction no
-text has — and "goodbye" is `wes hāl` now. The ledger test accepts a
+rest of the day an update lands. A word that was never the language, or
+never meant what it was taught for, leaves the other way: `WITHDRAWN`,
+beside `RENAMED`, keeps its cards where they are, moved by nothing and still
+exported, and the worker's `get-stats` leaves them out of the progress
+pages, which would list one with no English beside it. Old English `far wel`
+was the first, on 2026-10-05 — a reconstruction no text has — and "goodbye"
+is `wes hāl` now; `mē is lāþ`, taught for "sorry" and meaning "it is hateful
+to me", the second, the same day, and "sorry" is `mē hrēoweþ`. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
