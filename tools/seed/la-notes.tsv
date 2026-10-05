@@ -60,7 +60,7 @@ cow	noun	vacca	the vaccine is named after the cowpox Jenner used	ls:vacca1 ls:va
 mouse	noun	mūs	“muscle” is a little mouse, from the shape	ls:mus1 ls:musculus etym:muscle
 apple	noun	mālum	“mālum” apple and “malum” evil differ only in vowel length	ls:malum2 ls:malum1
 door	noun	iānua	a iānitor kept the iānua	ls:janua ls:janitor etym:janitor
-room	noun	camera	a vaulted chamber; the photographic sense came much later	ls:camera etym:camera
+room	noun	conclāve	a room that could be locked up: con- and clāvis, a key	ls:conclave ls:clavis etym:conclave
 key	noun	clāvis	medieval Latin called the collarbone “clāvicula”, a little key	ls:clavis ls:clavicula etym:clavicle wikt:la:clavicula wikt:en:clavicle
 silver	noun	argentum	Argentina is named for the metal	ls:argentum etym:argentina
 shadow	noun	umbra	“umbrella” is a little shade	ls:umbra ls:umbella etym:umbrella
@@ -68,6 +68,9 @@ money	noun	pecūnia	from “pecus”, cattle: the original wealth	ls:pecunia ls:
 song	noun	carmen	a carmen was a song and a spell alike	ls:carmen1 etym:charm
 music	noun	mūsica	the art of the Muses	ls:musica etym:music
 hope	noun	spēs	“despair” is to be out of spēs	ls:spes ls:despero etym:despair
+brave	adj	audāx	daring, and oftener in a bad sense than a good one: rash, foolhardy	ls:audax etym:audacious
+grey	adj	cānus	white or hoary: of snow and frost, and above all of the grey hair of age	ls:canus
+brown	adj	fuscus	dark, dusky or tawny: to obfuscate is to darken	ls:fuscus1 etym:obfuscate
 tomorrow	adv	crās	to put it off until crās	ls:cras ls:procrastino etym:procrastinate
 almost	adv	paene	paene īnsula, almost an island	ls:paene ls:paeninsula etym:peninsula
 truly	adv	vērē	“very” descends from vērus, true	ls:vere ls:verus etym:very
@@ -115,3 +118,12 @@ goodbye	intj	valē	literally “be strong”	ls:vale ls:valeo etym:valediction
 #                    from iānua, and the note was left talking about a word the row no longer
 #                    names. ls:janitor: "jānĭtor, ōris, m. [janua], a door-keeper, porter";
 #                    etym:janitor: "from Latin ianitor "doorkeeper, porter," from ianua".
+#
+# Withdrawn on 2026-10-05: the note stood, and its row did not
+# ------------------------------------------------------------
+#   room    camera   "a vaulted chamber; the photographic sense came much later"
+#                    Read on 2026-10-02 and true of camera. But the row taught camera for
+#                    "room", and ls:camera has "a vault, an arched roof, an arch" and no room,
+#                    which is Late Latin (etym:chamber: "from Late Latin camera "a chamber,
+#                    room""). The row is conclāve now, ls:conclave "a room, chamber … that may
+#                    be locked up", and the card is in WITHDRAWN, src/core/renames.ts.

@@ -61,7 +61,7 @@ son	noun	fīlius	fīliī	m	/ˈfiːlɪʊs/	filial		/ˈfiːlɪiː/
 daughter	noun	fīlia	fīliae	f	/ˈfiːlɪa/	filial		/ˈfiːlɪae̯/
 wife	noun	uxor	uxōrēs	f	/ˈʊksɔr/	uxorious		/ʊkˈsoːreːs/
 husband	noun	marītus	marītī	m	/maˈriːtʊs/	marital		/maˈriːtiː/
-baby	noun	īnfāns	īnfantēs	m	/ˈiːnfaːns/	infant	literally “not speaking”	/iːnˈfanteːs/
+baby	noun	īnfāns	īnfantēs	c	/ˈiːnfaːns/	infant	literally “not speaking”	/iːnˈfanteːs/
 king	noun	rēx	rēgēs	m	/ˈreːks/	regal		/ˈreːɡeːs/
 queen	noun	rēgīna	rēgīnae	f	/reːˈɡiːna/	regina		/reːˈɡiːnae̯/
 lord	noun	dominus	dominī	m	/ˈdɔmɪnʊs/	dominate		/ˈdɔmɪniː/
@@ -131,7 +131,7 @@ window	noun	fenestra	fenestrae	f	/fɛˈnɛstra/	defenestrate		/fɛˈnɛstrae̯/
 wall	noun	mūrus	mūrī	m	/ˈmuːrʊs/	mural		/ˈmuːriː/
 roof	noun	tēctum	tēcta	n	/ˈteːktʊm/			/ˈteːkta/
 floor	noun	solum	sola	n	/ˈsɔlʊm/	sole		/ˈsɔla/
-room	noun	camera	camerae	f	/ˈkamɛra/	camera	a vaulted chamber; the photographic sense came much later	/ˈkamɛrae̯/
+room	noun	conclāve	conclāvia	n	/kɔŋˈklaːwɛ/	conclave	a room that could be locked up: con- and clāvis, a key	/kɔŋˈklaːwɪa/
 table	noun	mēnsa	mēnsae	f	/ˈmeːnsa/			/ˈmeːnsae̯/
 chair	noun	sella	sellae	f	/ˈsɛlːa/			/ˈsɛlːae̯/
 bed	noun	lectus	lectī	m	/ˈlɛktʊs/			/ˈlɛktiː/
@@ -263,7 +263,7 @@ easy	adj	facilis			/ˈfakɪlɪs/	facile
 difficult	adj	difficilis			/dɪfˈfɪkɪlɪs/	difficult		
 free	adj	līber			/ˈliːbɛr/	liberty		
 wise	adj	sapiēns			/ˈsapɪeːns/	sapient		
-brave	adj	audāx			/ˈau̯daːks/	audacious		
+brave	adj	audāx			/ˈau̯daːks/	audacious	daring, and oftener in a bad sense than a good one: rash, foolhardy	
 holy	adj	sacer			/ˈsakɛr/	sacred		
 deep	adj	profundus			/prɔˈfʊndʊs/	profound		
 wide	adj	lātus			/ˈlaːtʊs/	latitude		
@@ -278,8 +278,8 @@ red	adj	ruber			/ˈrʊbɛr/	rubric
 green	adj	viridis			/ˈwɪrɪdɪs/	verdant		
 blue	adj	caeruleus			/kae̯ˈrʊlɛʊs/	cerulean		
 yellow	adj	flāvus			/ˈflaːwʊs/	flavine		
-grey	adj	cānus			/ˈkaːnʊs/			
-brown	adj	fuscus			/ˈfʊskʊs/	obfuscate		
+grey	adj	cānus			/ˈkaːnʊs/		white or hoary: of snow and frost, and above all of the grey hair of age	
+brown	adj	fuscus			/ˈfʊskʊs/	obfuscate	dark, dusky or tawny: to obfuscate is to darken	
 have	verb	habēre	habēns		/haˈbeːrɛ/	habit		/ˈhabeːns/
 say	verb	dīcere	dīcēns		/ˈdiːkɛrɛ/	dictate		/ˈdiːkeːns/
 go	verb	īre	iēns		/ˈiːrɛ/	exit		/ˈɪeːns/

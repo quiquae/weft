@@ -358,7 +358,7 @@ test.describe('the progress page', () => {
       payload: {
         format: 'weft-export/1',
         settings: {},
-        cards: Object.fromEntries(['rēx', 'aqua', 'lūna', 'camera'].map((w) => [`la:${w}`, card(w)])),
+        cards: Object.fromEntries(['rēx', 'aqua', 'lūna', 'via'].map((w) => [`la:${w}`, card(w)])),
       },
     });
     await configure({ 'learning.activeTarget': 'la', 'learning.targetLangs': ['la'] });

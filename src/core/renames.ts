@@ -89,8 +89,8 @@ export type Withdrawals = Readonly<Record<LangCode, Readonly<Record<string, stri
  * A respelling keeps its word, so its cards follow it (`RENAMED`). This is
  * the other way a word leaves a pack: it turns out not to be a word of the
  * language at all, as `far wel` was not, or not to say what the pack taught
- * it for, as `mē is lāþ` said loathing and not sorry, and the pack teaches
- * another in its place. The cards
+ * it for, as `mē is lāþ` said loathing and not sorry and Latin `camera` a
+ * vault and not a room, and the pack teaches another in its place. The cards
  * cannot follow, because a different word is a different card — reviews of
  * one say nothing about the other — and they are not deleted, because they
  * are the learner's record of what they read, and an export carries them.
@@ -115,6 +115,13 @@ export const WITHDRAWN: Withdrawals = {
       'Bosworth–Toller\'s "láð" has "mé láð wæs" glossing Latin "multum detestatus sum", ' +
       'I greatly detested. "sorry" is "mē hrēoweþ" now, "it rues me", which its "hreówan" ' +
       'quotes from Genesis as "Þæt mé on mínum hyge hreóweð".',
+  },
+  la: {
+    camera:
+      'Taught for "room" until 2026-10-05, and in Classical Latin a vault, not a room: ' +
+      'Lewis & Short\'s "camera" is "a vault, an arched roof, an arch", and the room is ' +
+      'Late Latin, the "camera" that gave French "chambre" (etymonline, "chamber"). "room" ' +
+      'is "conclāve" now, "a room, chamber … that may be locked up", from "clāvis", a key.',
   },
 };
 

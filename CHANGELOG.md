@@ -525,6 +525,18 @@ text and one meant something else, so every Old English interjection and
 phrase now names the text it was read in, and the build fails on one that
 names none.
 
+**And the Latin for "room" is a word Classical Latin used for one.** It was
+*camera*, which Lewis & Short gives only as "a vault, an arched roof, an
+arch"; the room is Late Latin, the *camera* that gave French *chambre*,
+whence English *chamber*. "room" is now *conclāve*, "a room, chamber … that
+may be locked up", from *clāvis*, a key — the word English took as
+*conclave*. A learner's *camera* card is kept and no longer listed, as
+*far wel*'s was. Read in the same dictionary, *īnfāns* is of common gender,
+not masculine, and *audāx*, *fuscus* and *cānus* keep their glosses, each
+with a note saying what the word covers: *audāx* daring, and oftener in a
+bad sense than a good one; *fuscus* dark, dusky or tawny; *cānus* the white
+of snow and frost, and above all the grey hair of age.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
