@@ -55,15 +55,15 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **562 pass**, 136 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **220 pass**, 61 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **225 pass**, 62 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 987 KB unpacked for chrome and safari, 988 for firefox |
+| `npm run build:all` | chrome + firefox + safari | 988 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 715 pages, 16 142 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -243,14 +243,14 @@ package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
-builds and link-checks all 716 pages on every push but the deploy job is
+builds and link-checks all 715 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
 
 **Nothing self-promotes automatically.** `docs/LAUNCH.md` holds drafts per
 community, to be sent by a human. An automated account posting self-promotion
-earns a domain-level shadowban, which would destroy the 713-page search asset.
+earns a domain-level shadowban, which would destroy the 715-page search asset.
 That was a decision, not an omission.
 
 **A card is read back as a word in one place, and its story travels where
@@ -475,12 +475,86 @@ different word is a different card. Never delete a `RENAMED` line or a
 ledger line: an install that has not loaded its cards since, or an export
 from before, still holds the old id. Today's `introduced` list holds bare
 lemmas and is not renamed, which costs at most one new-word slot for the
-rest of the day an update lands.
+rest of the day an update lands. A word that was never the language leaves
+the other way: `WITHDRAWN`, beside `RENAMED`, keeps its cards where they are,
+moved by nothing and still exported, and the worker's `get-stats` leaves
+them out of the progress pages, which would list one with no English beside
+it. Old English `far wel` was the first, on 2026-10-05 — a reconstruction no
+text has — and "goodbye" is `wes hāl` now. The ledger test accepts a
+withdrawn id and refuses one still taught, never shipped, or also renamed.
+Do not call it retiring: a retired card is one stable enough to stay in the
+target language.
 
 ## Journal
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-05 — "goodbye" is wes hāl, and far wel is the first card nothing teaches
+
+The queue gave no item, so the work was `TODO.md`'s topmost unchecked one:
+`far wel`, taught as the Old English for "goodbye", which English Wiktionary
+gives only as the reconstruction `*far wel!`. The run before had sized it and
+stopped at the card question, so that was settled first.
+
+**Bosworth–Toller had the answer, found by searching its English.** Its
+search matches the English and Latin of the citations as well as the
+headwords, so `s farewell` and `s valete` found both formulas: the `wesan`
+entry cites "Wesaþ hále valete, Wrt. Voc. ii. 88, 61", the plural of the
+pack's own greeting glossing Latin's farewell, and the Supplement's
+`ge-sund` (bt:49855) has "Farað nú gesunde" among its "valedictory
+expressions". The second is a plural imperative whose singular no text
+found has, so it was not taken. "goodbye" became a second row of the
+`ang:wes hāl` card, with a note saying the formula was said at parting too.
+
+**A rename was the wrong tool, and a deletion was worse.** A learner's
+`far wel` reviews say nothing about `wes hāl`, and the ledger refuses a
+rename that changes letters for exactly that reason; deleting the card
+destroys their record, and an export must carry it. So the card is
+*withdrawn*: `WITHDRAWN` in `src/core/renames.ts`, a line with its reason,
+keeps it, moved by nothing. A card no pack reads was already inert —
+`buildDiscoveries` and `buildQuiz` skip it, the selector weaves only pack
+rows — except on the dashboard, which listed it with "—" for its English.
+The filter is in the worker's `get-stats`, so the help page agrees and an
+e2e test reads it over `rpc`. "Retired" was not available: it already means
+a card stable enough to stay in the target language.
+
+Test-first: 4 unit tests red on the missing export; the ledger test red on
+"withdraws no word a pack still teaches" until the seed moved, then green
+with 5 new tests holding the table to the ledger; one e2e test red on
+`["ang:far wel", "ang:wes hāl"]` from `get-stats` before the filter.
+`iċ bidde` was read and holds — `biddan` cites "Ic bidde ðé mín Drihten
+quæso Domine mi" — and `mē is lāþ`, which `láð` attests as loathing rather
+than regret, is queued, being a content call.
+
+What moved: 4 fields of `en-ang.json`; `index.json` untouched. The site,
+built from `main` in a `/tmp` worktree and from the branch: one page gone,
+716 → **715**, four word pages and the index without it, and `/latin/vale`
+without an Old English counterpart, because the site indexes a word by its
+first gloss. All 36 screenshots regenerated byte-identical, 14 + 15 + 7
+written, and the three groups stamped. The packages grew by 555 bytes and
+all three print **988 KB**. Counts moved 923 → **933** — unit 562 → **566**
+/ 136 → **137**, tools 220 → **225** / 61 → **62**, e2e 39 → **40** — in
+six places, `docs/LAUNCH.md:221` first; the page count in seven, three of
+which still said 713.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, **566** unit / 137 suites,
+102 jsdom / 23 suites, **225 tools / 62 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **988 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**,
+the same four interjections; `npm run site` then `site:check` **715 pages /
+16 142 links**, all resolving; `artefacts:check` **8 groups, 1 stale**,
+exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that a formula attested as a greeting in the
+singular and a farewell in the plural may be taught for both; that a
+withdrawn word belongs out of the progress counts as well as the list; and
+that a site page naming only a word's first gloss is a silence to leave.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study`. `Next` holds three agent-shaped items, `mē is lāþ` first.
 
 ### 2026-10-05 — the Latin for "oaths" was Medieval, and the plural a text has is another word's
 

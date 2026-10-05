@@ -1,6 +1,6 @@
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { RENAMED, renameCards, type Renames } from '../../src/core/renames.ts';
+import { RENAMED, WITHDRAWN, isWithdrawn, renameCards, type Renames } from '../../src/core/renames.ts';
 import type { MemoryCard } from '../../src/core/types.ts';
 
 /**
@@ -204,5 +204,50 @@ describe('a card an older version filed under the old spelling', () => {
     assert.deepEqual(Object.keys(cards), ['ang:sēċan']);
     assert.equal(cards['ang:sēċan']?.reps, 8);
     assert.equal(cards['ang:sēċan']?.exposures, 20);
+  });
+});
+
+/**
+ * A word a pack taught and stopped teaching, because it was not the language.
+ *
+ * Old English `far wel` was taught for "goodbye", and no Old English text has
+ * it: English Wiktionary gives it only as a reconstruction, `*far wel!`. It
+ * cannot be renamed to the formula that replaced it, because a different word
+ * is a different card, and its card cannot be deleted, because it is the
+ * learner's record of what they read. So it is withdrawn: kept, carried by an
+ * export, moved by nothing, and listed as vocabulary nowhere.
+ */
+describe('a word a pack no longer teaches', () => {
+  test('is withdrawn in its own language, and nothing beside it is', () => {
+    assert.equal(isWithdrawn(card('ang', 'far wel')), true);
+    assert.equal(isWithdrawn(card('ang', 'wes hāl')), false, 'the formula that replaced it');
+    assert.equal(isWithdrawn(card('la', 'far wel')), false, 'the same letters in another language');
+    assert.equal(isWithdrawn(card('ang', 'far')), false, 'a word inside the phrase');
+  });
+
+  test('reads only the table it is given', () => {
+    assert.equal(isWithdrawn(card('ang', 'far wel'), {}), false);
+    assert.equal(isWithdrawn(card('fr', 'pomme'), { fr: { pomme: 'a test' } }), true);
+  });
+
+  test('is never also renamed, so nothing moves its card', () => {
+    for (const [target, table] of Object.entries(WITHDRAWN)) {
+      for (const lemma of Object.keys(table)) {
+        assert.equal(RENAMED[target]?.[lemma], undefined, `${target}:${lemma} is renamed and withdrawn`);
+        const given = { [`${target}:${lemma}`]: card(target, lemma) };
+        const { cards, moved } = renameCards(given);
+        assert.equal(moved, 0);
+        assert.equal(cards, given, `${target}:${lemma} was moved`);
+      }
+    }
+  });
+
+  test('keeps its card in what an install loads and in what it exports', async () => {
+    const kept = card('ang', 'far wel', { reps: 3, exposures: 12 });
+    const store = await install({ 'ang:far wel': kept });
+
+    assert.deepEqual((await store.loadCards())['ang:far wel'], kept);
+    const exported = (await store.exportAll()) as { cards: Record<string, MemoryCard> };
+    assert.deepEqual(exported.cards['ang:far wel'], kept);
   });
 });

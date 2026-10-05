@@ -9,8 +9,8 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 562 unit tests, 102 jsdom tests, 220 tool tests, the
-compatibility audit, all three builds, the package validator, and 39 end-to-end
+runs typecheck, 566 unit tests, 102 jsdom tests, 225 tool tests, the
+compatibility audit, all three builds, the package validator, and 40 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
 
@@ -68,7 +68,7 @@ These block each other, so the order matters.
    button to. `npm run site:check` fails if either page is missing.
 
    This means putting the site up, which is deliberately **not** automatic.
-   The `Site` workflow builds and link-checks all 716 pages on every push,
+   The `Site` workflow builds and link-checks all 715 pages on every push,
    but only deploys when told:
 
    ```bash
@@ -263,5 +263,5 @@ precisely why that check is written down.
   not been executed and will need a look the first time it runs.
 - **Post to Reddit, Hacker News or anywhere else.** Drafts are in
   `LAUNCH.md`. An automated account posting self-promotion gets the domain
-  shadowbanned, which would cost the 713-page search asset. That was a
+  shadowbanned, which would cost the 715-page search asset. That was a
   decision, not an omission.

@@ -503,6 +503,16 @@ laws, and the Classical plural the rule would give, *iūraiūranda*, is in no
 text found. So "oaths" now stays in English, as "milk" and "gold" do, and
 "oath" is woven as before.
 
+**And the Old English for "goodbye" is one an Old English text has.** It was
+*far wel*, which no text has: English Wiktionary gives it only as the
+reconstruction *\*far wel!*, and *farewell* is first found in Middle English.
+"goodbye" is now *wes hāl*, the greeting already woven for "hello", which
+was said on parting too — Bosworth–Toller cites its plural, *wesaþ hāle*,
+glossing Latin *valete*, farewell. A learner's card for *far wel* is kept,
+and an export still carries it, but it is a different word from *wes hāl*,
+so its reviews do not move there, and the progress page no longer lists or
+counts it.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -523,8 +533,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 923 tests: 562 unit, 102 in jsdom, 220 over the build tools, and
-39 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 933 tests: 566 unit, 102 in jsdom, 225 over the build tools, and
+40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 583–588 entries across 578–583 surface

@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-10-05:** every automatable check is green, measured at the end
-of this session — typecheck clean, **562** unit / 136 suites, **102** jsdom / 23
-suites, **220** tool tests / 61 suites, **39** e2e passing
+of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
+suites, **225** tool tests / 62 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 987–988 KB and passing `npm run validate`. The package grew
+packages built at 988 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
 English pack's 1 541, its notes having grown longer than its etymons shrank,
@@ -23,8 +23,18 @@ printed under second forms (−4 854) and the Old English one writing its own
 them the Latin pack writing its second forms' own — and Chrome's and Safari's
 fell back to 987 KB on 2026-10-05 by 196 bytes, the Latin pack's `oaths`
 row, measured by building `main`'s three packages beside these; Firefox's,
-a few bytes larger, still rounds to 988. `npm run test:all` exits 0 end to
-end.
+a few bytes larger, still rounds to 988 — and went back to 988 later the same
+day by 555 bytes, 433 of them `WITHDRAWN` and its filter in `background.js`
+and 122 the Old English pack's new note, measured against `main`'s Chrome
+package, 987.46 → 988.00 KB. `npm run test:all` exits 0 end to end.
+
+**And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
+was `far wel`, which English Wiktionary gives only as the reconstruction
+`*far wel!`; it is `wes hāl` now, the greeting the pack weaves for "hello",
+whose plural *wesaþ hāle* glosses Latin *valete* in Bosworth–Toller. A
+learner's `far wel` card is the first card no pack teaches: `WITHDRAWN` in
+`src/core/renames.ts` keeps it and the progress pages leave it out. See the
+ticked item in `Next`.
 
 **And as of 2026-10-04 a woven plural or participle sounds like itself.**
 The tooltip printed a row's one transcription, its headword's, under every
@@ -100,13 +110,13 @@ with the pack's own words blanked out, and fails on a verb of descent. Of
 says "Source of English" since the session after — see the ticked item
 there.
 
-**The three gates `test:all` leaves out, re-measured on 2026-10-03, each with
+**The three gates `test:all` leaves out, re-measured on 2026-10-05, each with
 npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
 |---|---|---|
-| `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 584–588 entries across 579–583 surface forms |
-| `npm run site:check` | **0** | **716** pages, **16 165** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 583–588 entries across 578–583 surface forms |
+| `npm run site:check` | **0** | **715** pages, **16 142** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -3767,7 +3777,7 @@ registered**, and nothing below it can move until it is.
       **61** suites, total 921 → **923**, in six places, `docs/LAUNCH.md:221`
       first.
 
-- [ ] **The lexicon teaches `far wel` as Old English for "goodbye", and it
+- [x] **The lexicon teaches `far wel` as Old English for "goodbye", and it
       may not be Old English.** Found 2026-10-01 while checking its etymon.
       etymonline dates *farewell* to a Middle English phrase "attested by c.
       1200"; English Wiktionary derives it only "possibly" from Old English
@@ -3793,6 +3803,64 @@ registered**, and nothing below it can move until it is.
       other two a retirement path in `src/core/renames.ts` and the ledger
       test. Then read Bosworth–Toller. `iċ bidde` and `mē is lāþ` are in the
       ledger too, lines 156 and 186.
+
+      **Done 2026-10-05: "goodbye" is `wes hāl`, and `far wel`'s card is
+      withdrawn, kept and listed nowhere.** Bosworth–Toller, read by `curl`
+      (the note under the genders item says how): its `wesan` entry,
+      bt:35422, cites "Wesaþ hále valete, Wrt. Voc. ii. 88, 61", the
+      formula's plural glossing Latin's farewell, and `hál` is "often used in
+      salutation", "Wes þú, Hróðgár, hál, B. 407". So the health formula the
+      pack already weaves for "hello" was said on parting too, and "goodbye"
+      became a second row of the `ang:wes hāl` card, with a note saying so. The other attested
+      valediction, `ġe-sund` in the Supplement (bt:49855), "Farað nú
+      gesunde", is a plural imperative, and its singular is in no text
+      found; not taken, for the rule `iūsiūranda` set. Wiktionary's
+      `farewell` gives the Old English only as `*far wel!`; it has no
+      `wes hāl` page.
+
+      The card question was settled before the seed moved. A learner's
+      `far wel` reviews say nothing about `wes hāl`, so a rename is out, and
+      deleting a card destroys the learner's record, so it is **withdrawn**:
+      `WITHDRAWN` in `src/core/renames.ts`, one line with its reason, keeps
+      the card, moves it nowhere, and the worker's `get-stats` leaves it out,
+      so the dashboard neither lists it with "—" for its English nor counts
+      it; an export still carries it. Not called "retired", which here means
+      a card stable enough to stay in the target language. The ledger test
+      accepts a withdrawn id and refuses one still taught, never shipped, or
+      also renamed, and wants a reason of a sentence. Test-first: 4 unit
+      tests red on the missing export, the ledger red on "withdraws no word a
+      pack still teaches" until the seed moved, and one e2e test red on
+      `["ang:far wel", "ang:wes hāl"]` from `get-stats` before the filter.
+
+      `iċ bidde` holds: `biddan` (bt:4228) cites "Ic bidde ðé mín Drihten
+      quæso Domine mi, Gen. 19, 18", Latin's own "please". `mē is lāþ` is
+      the next item.
+
+      What moved: 4 fields of `en-ang.json` — the `goodbye` row's `tgt`,
+      `tgtLemma` and a new `note`, and `builtAt` 10-04 → 10-05; `index.json`
+      untouched. The site, built from `main` in a `/tmp` worktree and from
+      the branch: `/old-english/far-wel` gone, 716 → **715** pages, four word
+      pages losing it from their interjection lists, the index 353 → 352,
+      and `/latin/vale` losing "Old English says far wel" — the site indexes
+      a word by its first gloss, hello, so nothing says *wes hāl* there. All
+      36 screenshots regenerated byte-identical, 14 + 15 + 7 written, and the
+      three groups stamped. Unit 562 → **566** / 136 → **137**, tools 220 →
+      **225** / 61 → **62**, e2e 39 → **40**, total 923 → **933**, in six
+      places, `docs/LAUNCH.md:221` first.
+
+- [ ] **`mē is lāþ` is taught for "sorry", and Bosworth–Toller has it as
+      loathing, not regret.** Found 2026-10-05 finishing `far wel`. `láð`
+      (bt:21202) cites "Ðá wæs ic swíðe onscúniende and mé láð wæs multum
+      detestatus sum, Bd. 5, 12" and "Him wæs láð tó ámyrrene his ágenne
+      folgaþ", he was loath to: the construction is attested, and means "it
+      is hateful to me", "I am loath". Whether that is "sorry" is a content
+      call, not a defect with one answer: the English word is also "sad,
+      regretful", and Old English had no apology formula. Read
+      `hrēowan` first — "mē hrēoweþ", it rues me, is the candidate for
+      regret — and decide; a replacement withdraws `ang:mē is lāþ` the way
+      `far wel` was (one line in `WITHDRAWN`, the new card a ledger line,
+      the etymon "loath" and its line in `tools/seed/ang-etymons.tsv` moving
+      with it). About 40 minutes with the screenshots.
 
 - [ ] **`camera` is taught as the Latin for "room", and Lewis & Short gives it
       as a vault.** Found 2026-10-02 reading the entry for its note: "a vault,
@@ -3831,7 +3899,7 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **three** unchecked items above, as of
 2026-10-05, all agent-shaped and none waiting on B1. The order is the order
-to work them. `far wel` and `camera` first, content questions about the
+to work them. `mē is lāþ` and `camera` first, content questions about the
 target; then the pixel diff, a tool. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
@@ -3840,8 +3908,8 @@ the tooltip's "Ancestor of English", the dashboard's date, the `iānua` note,
 the landing page's tables, the site key's quote marks, the pronunciation
 keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
-genders, the plurals' dots, both languages' second forms' transcriptions
-and `iūsiūrandum`'s plural are done.
+genders, the plurals' dots, both languages' second forms' transcriptions,
+`iūsiūrandum`'s plural and `far wel` are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should
@@ -4202,6 +4270,29 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
+Ticked in `Next`. Four things a later run would be sorry not to know:
+
+1. **"Retired" is taken.** A retired card is one stable enough to stay in
+   the target language (`retiredAt`, `isRetirable`, "words you now simply
+   read"), so a word a pack stops teaching is *withdrawn*: `WITHDRAWN` in
+   `src/core/renames.ts`. Do not name anything about removal "retire".
+2. **A card no pack reads was already inert, except on the dashboard.**
+   `buildDiscoveries` and `buildQuiz` skip a card with no entry, and the
+   selector only weaves pack rows; the vocabulary list was the one surface
+   that showed it, as its spelling beside "—". The filter is in the
+   worker's `get-stats`, not the page, so the help page's diagnostics and
+   the dashboard agree and an e2e test can read it over `rpc`.
+3. **The site indexes each word by its first gloss.** `wes hāl` is
+   "hello" on its page, and its "goodbye" row appears nowhere on the site;
+   `/latin/vale`, which said "Old English says far wel", now has no Old
+   English counterpart. Silence rather than a false claim, so left; a page
+   listing every gloss a word has is a builder change of its own.
+4. **`/tmp/weft-farewel/bt.py s <query>` and `e <id>`** fetch and strip a
+   Bosworth–Toller search or entry, cached beside it. A search matches the
+   English and Latin of the citations too, so `s farewell` and `s valete`
+   are how the two farewell formulas were found.
 
 **2026-10-04 — the plurals' dots, finished by a later run.** Ticked in
 `Next`. Three things a later run would be sorry not to know:
