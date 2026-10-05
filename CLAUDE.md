@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **39 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 988 KB unpacked per target |
+| `npm run build:all` | chrome + firefox + safari | 987 KB unpacked for chrome and safari, 988 for firefox |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 716 pages, 16 165 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -481,6 +481,80 @@ rest of the day an update lands.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-05 — the Latin for "oaths" was Medieval, and the plural a text has is another word's
+
+The queue named the Old English second forms' transcriptions, which #68 and
+#69 landed on 2026-10-04 and `TODO.md` had ticked, so the work was its
+topmost unchecked item: `iūsiūrandum`'s plural, woven as `iūsiūranda`, which
+declines only the second of its two words. The clock read 04:50 at this
+run's first commit and 07:58 at its next command, the task re-sent between;
+the branch, the tree and `origin/main` were checked unchanged before
+anything else moved.
+
+**Looking for the plural in a text found a different word's.** Lewis &
+Short's *jusjurandum*, read from the Perseus file the 2026-10-03 session
+left in `/tmp/weft-la2/ls.xml`, ends "—Plur.: jura, Paul. ex Fest. 132, 29":
+bare *iūra*, which is `iūs`'s own plural, rights and laws. English
+Wiktionary prints `iūraiūranda` and `iūsiūranda` from one template and
+quotes neither; its `ius iurandum` and `iura` entries have no plural of the
+oath, and a web search found none. So the row's `tgt2` and `ipa2` are blank
+and "oaths" stays English, as "milk" and "gold" do: the plural the rule
+gives is a form no text was found to use, and the one a text has would teach
+the word for laws. **A blank was preferred to a regular form nobody has
+seen**, by the rule the French pass set.
+
+**The guard keeps the reason beside the blank.** A new `describe` in
+`tests/tools/lexicon-orthography.test.ts`, 2 tests: each Latin word made of
+two declined words, in `COMPOUNDS` — `iūsiūrandum` alone, the seed's only
+one, found by listing every long or spaced headword — is woven only in the
+second form its dictionary gives, or none, with what was read as the
+failure message; a listed word the pack does not teach, or its parts do not
+spell, fails too. Red on exactly `en-la oaths → iūsiūranda`. Blanking the
+seed then turned `latin-stress.test.ts` red unasked, naming `iūsiūranda` as
+respelt and no longer a form, so both `RESPELT` tables and the generator's
+self-check lost it: 0 mismatches, `fill_ipa.py` wrote nothing, both seeds
+unchanged by md5. Two probes, restored by md5: the listed word misspelt, and
+`iūraiūranda` written into the seed, each failing by name.
+
+**What moved: one row and its count, and one size nobody predicted.**
+`en-la.json` lost its `oaths` row, 196 bytes, `entryCount` 584 → 583 and
+`builtAt` 10-04 → 10-05; `index.json` the same count and its own date. Latin
+is 583 entries across 578 surface forms, so the ranges read 583–588 and
+578–583 in `README.md`, `CHANGELOG.md`'s 1.0.1 paragraph and the summary at
+the top of this file; the 1.0.0 entry keeps 1.0.0's. The seven packs are
+669 526 bytes, still 654 KB. But each package is 196 bytes lighter, and
+`toFixed(0)` takes Chrome's from 987.65 KB to 987.46 and Safari's alike, so
+they print **987** where they printed 988, while Firefox's, 987.53, still
+prints 988 — measured by building `main`'s three in the `/tmp` worktree.
+**A rounded figure can move on a change too small to look for**, so read
+the gate's sizes rather than carrying the last session's. The site: 2 of
+721 files, `/latin/iusiurandum` without its "Plural" row and `sitemap.xml`,
+704 dates moved by the pack's. All 36 screenshots regenerated
+byte-identical, 14 + 15 + 7 written, and the three groups stamped. Tools
+218 → **220** / 60 → **61** suites, total 921 → **923**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because the pack
+ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 562 unit / 136 suites, 102
+jsdom / 23 suites, **220 tools / 61 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **987 / 988 / 987
+KB** passing `validate`, **39 e2e passed and 3 skipped in 1.4 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 4
+warnings**; `npm run site` then `site:check` **716 pages / 16 165 links**,
+all resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that the *jura* Lewis & Short cites is the
+oath's plural and still not to be woven, being `iūs`'s; that a regular form
+no text was found to use is what the header's rule for a blank covers; and
+that a guard over one listed word earns its two tests, its message being the
+record a restorer reads.
+
+What needs a human: unchanged, everything below **B1**, register
+`weft.study` — NXDOMAIN today. `Next` holds three agent-shaped items,
+`far wel` first.
 
 ### 2026-10-04 — every Latin plural and participle sounds like itself, and *iēns* begins with a vowel
 
