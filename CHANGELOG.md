@@ -494,6 +494,15 @@ where the grammar moves it: *amāre* is stressed on its second syllable and
 *iēns*, the participle of *īre*, has two syllables, its *i* the verb's own
 vowel rather than the consonant that begins *iānua*.
 
+**And the Latin for "oaths" is no longer a Medieval word.** It was woven as
+*iūsiūranda*, declining only the second of the two words *iūsiūrandum* is
+made of, which English Wiktionary's declension note calls Medieval; Classical
+Latin declines both, as in the genitive *iūrisiūrandī*. Lewis & Short gives
+the plural only as bare *iūra*, which is also the plural of *iūs*, rights and
+laws, and the Classical plural the rule would give, *iūraiūranda*, is in no
+text found. So "oaths" now stays in English, as "milk" and "gold" do, and
+"oath" is woven as before.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -514,11 +523,11 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 921 tests: 562 unit, 102 in jsdom, 218 over the build tools, and
+**Built with** 923 tests: 562 unit, 102 in jsdom, 220 over the build tools, and
 39 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
-`WEFT_FIRSTRUN=1`. The lexicons are 584–588 entries across 579–583 surface
+`WEFT_FIRSTRUN=1`. The lexicons are 583–588 entries across 578–583 surface
 forms per language, 654 KB for all seven.
 
 ## 1.0.0
