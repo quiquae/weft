@@ -558,6 +558,85 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-07 — every Old English noun's gloss names its entry, and "baby" was a swaddling-cloth
+
+The queue named no item, so the work was `TODO.md`'s topmost unchecked
+one: the Old English glosses, a ledger of the Latin kind, two hours by its
+own estimate and to be split, nouns first. The nouns are this PR.
+
+**The guard is the Latin one with two rules added.**
+`tests/tools/ang-glosses.test.ts`, 8 tests in a new suite, holds
+`tools/seed/ang-glosses.tsv` to `la-glosses.tsv`'s six — a row with no
+line, a source neither `bt:<id>` nor the word's own Wiktionary title, a
+quote holding neither its English word nor a named stand-in, a stand-in
+named where the word is there, a noun glossed from another entry than its
+gender, a line outliving its row — and to two more: a quote carries no
+wikitext, because a draft from raw text would be checked against link
+targets and template names no reader sees; and neither table that excuses
+a line may outlive it. `HELD` names the parts of speech held, `['noun']`,
+so the other 178 rows can land one part of speech at a time.
+
+**Twelve nouns' own pages define nothing.** Wiktionary files Old English
+under its þ spelling, so its `broðor`, `muð`, `toð`, `clað`, `eorðe`,
+`monað` and `deað` say only "Alternative form of" the þ entry, and
+`meoluc`, `wall`, `hæt`, `wolcen` and `wicu` the same of `meolc`, `weall`,
+`hætt`, `wolcn` and `wice`. The gender ledger could cite those pages,
+whose headers carry a gender; a gloss needs the definition. So those
+lines quote the entry named and cite the word's own beside it, and
+`FORM_OF` in the test lists the twelve, a hand table with a stale check,
+because what a page names is not derivable offline.
+
+**And one gloss neither dictionary gives.** `ċildclāð` is woven for
+"baby", and Wiktionary's `cildclāþ` is "swaddling cloth; (in the plural),
+swaddling clothes"; Bosworth–Toller's Supplement, where its gender was
+read, has no English at all, only the Latin its plural glosses, *cunae*,
+a cradle, and *panni infantiae*. So "babies" has been woven as swaddling
+clothes, with no note. Changing the word moves a card, the pack, a page
+and the screenshots, so it is the first item in `Next`, with the likely
+fix — Wiktionary's `cild` gives "baby" — and `QUEUED` in the test names
+the row until then, failing the day its quote gives the word. A stand-in
+would have passed it and is refused in the ledger's header: a stand-in is
+a word of the entry that means the English, and none does.
+
+Six rows name one: `hund` "dog" for hound, `setl` "seat" for chair,
+`mentel` "mantle" for coat — as Latin's `paenula` is "a woollen outer
+garment" — `rīċe` "kingdom" for country, `fyrhtu` "fright" for fear, and
+`hūsbonda` "master of the house" for husband, the loosest, whose note
+already says "the householder, not yet the spouse". `þorp` quotes
+Wiktionary's "village" and cites Bosworth–Toller beside it, whose head,
+where the gender was read, gives no one English word.
+
+169 Wiktionary pages, the twelve they name, `cildclāþ`, `þorp` and 8
+Bosworth–Toller entries were fetched into `/tmp/weft-angg/`, with a User-Agent naming no person; a
+script rendered each `# ` line and drafted 153 quotes, and every one was
+read, the 17 pages holding two words of a spelling by etymology. Red first
+on a header-only ledger, naming all 178; then on the drafted ledger,
+naming exactly the twelve and the baby, before the two tables existed.
+Seven planted defects, each restored by md5, each failing its own test by
+name. Nothing that ships moved — no pack, page or screenshot — so nothing
+was regenerated. Counts moved 966 → **974** and tools 258 → **266** / 70
+→ **71** suites, in six places, `docs/LAUNCH.md:221` first;
+`docs/THIRD-PARTY.md` says where the nouns' glosses are read.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **266 tools / 71 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 2.6 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**.
+`site:check` and `artefacts:check` were not re-run: no pack, page or image
+moved.
+
+Assumed, with nobody to ask: that a page saying only "Alternative form of"
+lets its line quote the entry it names; that Wiktionary's "village" may
+stand for `þorp` while Bosworth–Toller, which decided its gender, is cited
+beside it; that a Bosworth–Toller quote is the page's visible text with
+the spaces its markup leaves before a comma closed up; and that
+`ċildclāð` is a call for its own PR rather than this slice's.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, `ċildclāð` first.
+
 ### 2026-10-06 — the Latin for "coat" is a cloak, and tunica is the fourth card withdrawn
 
 The same session's third PR, the second item the gloss ledger queued:

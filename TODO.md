@@ -49,6 +49,14 @@ household's slaves, and "coat" is `paenula`, a cloak for journeys and rain,
 where it was `tunica`, an under-garment, whose card is the fourth withdrawn.
 See the ticked items in `Next`.
 
+**And as of 2026-10-07 every Old English noun's gloss quotes its entry.**
+`tools/seed/ang-glosses.tsv` holds all 178 noun rows as `la-glosses.tsv`
+holds the Latin, quoting English Wiktionary or, where the gender was read
+there, Bosworth–Toller, and `tests/tools/ang-glosses.test.ts` fails on a
+noun with none. Reading them found one neither dictionary bears out:
+`ċildclāð`, woven for "baby", is a swaddling-cloth. It is the first item in
+`Next`, and the other parts of speech are the second.
+
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
 was `far wel`, which English Wiktionary gives only as the reconstruction
 `*far wel!`; it is `wes hāl` now, the greeting the pack weaves for "hello",
