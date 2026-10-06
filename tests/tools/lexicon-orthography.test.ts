@@ -333,3 +333,37 @@ describe('a Latin word made of two declined words is woven as Classical Latin de
     assert.deepEqual(stale, [], stale.join('\n'));
   });
 });
+
+/**
+ * And a Latin noun its dictionary gives no plural to weave is woven in the
+ * singular only. `vesper`'s head in Lewis & Short says "the plur. not used",
+ * and `caelum`'s gives only "plur. caeli, only poet." — masculine, so the
+ * row's neuter could not be printed under it either. The seed wove "evenings"
+ * as `vesperēs` and "skies" as `caela`, regular forms neither entry gives,
+ * until 2026-10-06; reading every Latin noun's head for "plur." when the
+ * genders were read found the two. The reason is kept here, as `COMPOUNDS`
+ * keeps `iūsiūrandum`'s, so a plural put back fails saying what was read.
+ */
+const SINGULAR: ReadonlyMap<string, string> = new Map([
+  ['vesper', 'Lewis & Short: “(in class. prose mostly acc. vesperum, and abl. vespere, or adverb. vesperi; the plur. not used), m.”'],
+  ['caelum', 'Lewis & Short: “plur. caeli, only poet., Lucr. 2, 1097” — a masculine plural, under a neuter row'],
+]);
+
+describe('a Latin noun its dictionary gives no plural to weave is woven in the singular', () => {
+  const entries = pack('la') as Array<Form & { pos?: string }>;
+
+  test('no second form is woven for it', () => {
+    const offenders = entries.flatMap((e) => {
+      const head = spelling(e.tgtLemma ?? '');
+      const read = SINGULAR.get(head);
+      return read && e.tgt && e.tgt !== head ? [`en-la ${e.src} → ${e.tgt}, of ${head}: ${read}`] : [];
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} Latin plurals are forms the dictionary does not give:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('every listed word is a noun the pack teaches', () => {
+    const taught = new Set(entries.filter((e) => e.pos === 'noun').map((e) => spelling(e.tgtLemma ?? '')));
+    const stale = [...SINGULAR.keys()].filter((w) => !taught.has(w)).map((w) => `${w} is listed, and the Latin pack teaches no such noun`);
+    assert.deepEqual(stale, [], stale.join('\n'));
+  });
+});
