@@ -15,7 +15,7 @@ the attention you actually spend on the page. Point at a woven word and the
 tooltip hands back the English, with part of speech, gender, pronunciation,
 and — for Latin and Old English — the English word it became. Seven languages
 ship with a lexicon: French, Spanish, German, Italian, Portuguese, Latin, Old
-English (356 checked English lemmas each, 578–583 surface forms per pack). It
+English (356 checked English lemmas each, 576–583 surface forms per pack). It
 is for someone who wants the browsing time they were going to lose anyway to
 buy them vocabulary. There is no account, no server and no telemetry; it works
 offline, and it installs with **no** host permissions until the user names
@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **250 pass**, 68 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **252 pass**, 69 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -405,7 +405,11 @@ Every noun in `tools/seed/lex-la.tsv` has a line in
 generally masc. in prose". A row carries one gender for both its forms, so a
 noun whose plural takes another gender weaves a plural of its own gender or
 none: `locus` is masculine and `loca` neuter, so "places" is `locī`. On
-2026-10-06 that read all 178 nouns and found seven wrong.
+2026-10-06 that read all 178 nouns and found seven wrong. A plural the
+dictionary refuses is woven not at all — `vesper`'s is "not used", and
+`caelum`'s only a poetic masculine `caeli` — and `SINGULAR` in
+`tests/tools/lexicon-orthography.test.ts` keeps each with what its entry
+prints.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a

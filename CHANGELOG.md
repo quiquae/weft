@@ -548,6 +548,13 @@ form is labelled with a gender it does not have. Every Latin noun's gender
 now names the entry it was read in, and the build fails on one that does
 not, as it does for Old English.
 
+**And no Latin plural is one the dictionary says Latin does not use.**
+Reading every noun's entry for what it says about the plural found two.
+"evenings" was *vesperēs*, and Lewis & Short says of *vesper* "the plur.
+not used"; "skies" was *caela*, and its only plural for *caelum* is *caeli*,
+masculine and "only poet.". Both now stay English in the plural, as "oaths"
+does, and the build fails if either plural comes back.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -568,11 +575,11 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 958 tests: 566 unit, 102 in jsdom, 250 over the build tools, and
+**Built with** 960 tests: 566 unit, 102 in jsdom, 252 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
-`WEFT_FIRSTRUN=1`. The lexicons are 583–588 entries across 578–583 surface
+`WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface
 forms per language, 654 KB for all seven.
 
 ## 1.0.0
