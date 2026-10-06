@@ -36,6 +36,7 @@
     "site:check": "node tools/check-links.mjs",
     "artefacts:check": "node tools/check-artefacts.mjs",
     "artefacts:verify": "node tools/verify-artefact.mjs",
+    "png:diff": "node --experimental-strip-types tools/png-diff.mjs",
     "build:safari": "node build.mjs --target=safari",
     "compat": "node tools/compat-audit.mjs",
     "safari": "node tools/safari.mjs",

@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **233 pass**, 64 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **246 pass**, 67 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -79,7 +79,10 @@ social card, is `tools/brand.ts`; after changing it run `icons`,
 (wrap in an Xcode project — needs full Xcode, not the CLT),
 `npm run release -- --version=X.Y.Z` (bump, rebuild, package, write notes),
 `npm run verify:release` (download what GitHub actually serves and load it in
-a browser), `npm run licence -- --name="..." --tier=pro` (mint a key).
+a browser), `npm run png:diff -- <file.png>…` (each working file against its
+`HEAD` blob: how many pixels differ, the largest channel difference, and the
+box they sit in; `--region=x0,y0,x1,y1` counts inside a box too),
+`npm run licence -- --name="..." --tier=pro` (mint a key).
 
 The three skipped e2e tests are asset *generators*, not assertions. Turn them
 on deliberately: `WEFT_STORE=1`, `WEFT_SCREENS=1`, `WEFT_FIRSTRUN=1`.
@@ -218,7 +221,10 @@ no channel more than 47 apart, the mark's rectangles and every CSS rule
 untouched — and the whole set was recommitted in a commit that changed
 nothing else. When every such image moves at once and no glyph does, run
 `softwareupdate --history` against the date of the last regeneration that
-agreed, before reading anything else. Then rebaseline the whole set in a
+agreed, before reading anything else. Whether a glyph did is what
+`npm run png:diff` answers: a channel tens apart is antialiasing, a hundred
+and seventy or more is paper turning to ink, and `--region` says whether any
+of it is inside the box a change was meant to move. Then rebaseline the whole set in a
 commit of its own, ahead of any change that moves a shot for a real reason,
 so that change arrives as a clean diff rather than mixed into the renderer's.
 
@@ -509,6 +515,65 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-06 — the pixel diff is a command, and it agrees with the readings made by hand
+
+The queue named `far wel`, which #72 landed on 2026-10-05, and `mē is lāþ`
+with it, which #73 did; `TODO.md` had both ticked, so the work was its
+topmost unchecked item: the pixel diff three sessions had each written and
+thrown away.
+
+**`npm run png:diff -- <file.png>…`** compares each working file with its
+`HEAD` blob and prints byte-identical, or the pixels differing, the largest
+difference in any one channel, and the box every difference sits inside,
+written as `--region=x0,y0,x1,y1` takes it, so the box can be passed back to
+count inside it. Exit 0 when the pixels are `HEAD`'s, a re-encoding
+included; 1 when they differ; 2 when a file cannot be compared, the rest
+still reported, as diff(1) does. The decoder moved from `tests/tools/png.ts`
+to `tools/png.ts`, because a tool does not import from `tests/`, and gained
+`decodePng()` for a blob that never touches the disk; the comparison is
+pure, in `tools/png-diff.ts`.
+
+**Two choices are the traps a scratch decoder walks into.** Channels are
+compared as RGBA whatever each file stores, because a re-encode that adds an
+opaque alpha channel changes the stride, and raw buffers compared would call
+every pixel changed. And a region that does not fit inside the image is
+refused rather than clipped: clipped, a typo counts nothing, and "0 differ"
+is exactly the answer a drift check hopes for.
+
+**It reproduces the readings made by hand.** The Edge logo as at `97fefd9^`,
+before #52's rebaseline, differs from `HEAD` in **36** pixels — the number
+#52 recorded — the largest channel **13** apart, all inside the wordmark and
+0 of 60 000 inside the mark's box. As at `e0f3eb4^`, before #39 redrew the
+mark, it differs in 2 624, 2 588 of them inside the mark, the largest **186**
+apart. One number tells a renderer from a redraw.
+
+Test-first: `tests/tools/png-diff.test.ts`, 13 tests in 3 suites, red on
+`ERR_MODULE_NOT_FOUND`, with the command run in a throwaway git repository
+on fixtures encoded by hand. Seven mutations, each restored by md5, each
+failing the test named for it. Counts moved 941 → **954** and tools 233 →
+**246** / 64 → **67** suites, in six places, `docs/LAUNCH.md:221` first. No
+`CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **246 tools / 67 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. `packs:verify` and `site:check` were not re-run: no
+pack, seed, site builder or `src/` moved. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that repointing three imports beats the
+re-export the item suggested, there being nothing for a shim to protect;
+that diff(1)'s exit codes suit a tool sessions will chain; and that a file
+whose bytes differ and pixels do not exits 0, the tool's question being
+pixels.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, the Latin genders first; `/tmp/weft-la2/` is gone, so
+it starts by fetching Lewis & Short again, from the address in `TODO.md`'s
+Notes.
 
 ### 2026-10-05 — the Latin for "room" was a vault, and three adjectives say what they cover
 

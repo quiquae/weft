@@ -12,7 +12,7 @@
  * weft — in whatever units the source is in: pixels for a bitmap, viewBox
  * units for markup. Not a `.test.ts`, so the test glob does not run it.
  */
-import type { Bitmap } from './png.ts';
+import type { Bitmap } from '../../tools/png.ts';
 
 /** An axis-aligned box, `x1`/`y1` exclusive. */
 export interface Box {
