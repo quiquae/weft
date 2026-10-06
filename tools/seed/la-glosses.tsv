@@ -38,9 +38,10 @@
 # entry: Lewis & Short spells "gray", "neighbor" and "to-day", has no "doctor"
 # but "physician", no "hello" before the word existed, and glosses some words
 # by a near synonym. Twenty rows need one, and each is a reading of how near:
-# canis for "hound" is "a dog", carō for "meat" is "flesh", tunica for "coat"
-# is "an under-garment of the Romans worn by both sexes, a tunic", the
-# loosest of them; TODO.md has the item.
+# canis for "hound" is "a dog", carō for "meat" is "flesh", paenula for "coat"
+# "a woollen outer garment". The loosest was tunica for "coat", "an
+# under-garment of the Romans worn by both sexes, a tunic", and it was
+# withdrawn for paenula the same day: see WITHDRAWN in src/core/renames.ts.
 #
 # tests/tools/la-glosses.test.ts requires every row of lex-la.tsv to have a
 # line here, every line to cite Lewis & Short, every quote to hold its English
@@ -156,7 +157,7 @@ stone	noun	lapis	ls:lapis	a stone
 glass	noun	vitrum	ls:vitrum	glass
 cloth	noun	pannus	ls:pannus	a cloth, a garment
 shoe	noun	calceus	ls:calceus	a shoe, a half-boot
-coat	noun	tunica	ls:tunica	an under-garment of the Romans worn by both sexes, a tunic	tunic
+coat	noun	paenula	ls:paenula	a woollen outer garment covering the whole body, a kind of cloak or mantle, worn on journeys, and also in the city in rainy weather	outer garment
 hat	noun	petasus	ls:petasus	a travelling hat
 sun	noun	sōl	ls:sol	the sun
 moon	noun	lūna	ls:luna1	the moon
