@@ -4,12 +4,15 @@
  * Shared, because "open the file and look" is the only check that has ever
  * found a wrong committed image in this repository — a blank half-sheet, a
  * clipped row, a superseded mark — and each test that automates it needs the
- * same forty lines. Not a `.test.ts`, so the `tests/tools/*.test.ts` glob
- * does not run it as a suite of nothing.
+ * same forty lines. It lives under `tools/` rather than beside those tests
+ * because `npm run png:diff` reads with it too, and a tool does not import
+ * from `tests/`.
  */
 import assert from 'node:assert/strict';
 import { inflateSync } from 'node:zlib';
 import { readFileSync } from 'node:fs';
+
+const SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 export interface Bitmap {
   width: number;
@@ -27,7 +30,15 @@ export interface Bitmap {
  * repository is — anything else throws rather than being guessed at.
  */
 export function decode(path: string): Bitmap {
-  const file = readFileSync(path);
+  return decodePng(readFileSync(path), path);
+}
+
+/**
+ * The same, from bytes already in memory — a blob read out of git, which
+ * never touches the disk. `label` names the image in what is thrown.
+ */
+export function decodePng(file: Buffer, label: string): Bitmap {
+  assert.ok(file.subarray(0, 8).equals(SIGNATURE), `${label}: not a PNG`);
   const idat: Buffer[] = [];
   let width = 0;
   let height = 0;
@@ -43,9 +54,9 @@ export function decode(path: string): Bitmap {
       height = data.readUInt32BE(4);
       const depth = data[8];
       colourType = data[9]!;
-      assert.equal(depth, 8, `${path}: only 8-bit PNGs are decoded here`);
-      assert.ok(colourType === 2 || colourType === 6, `${path}: colour type ${colourType}`);
-      assert.equal(data[12], 0, `${path}: interlaced`);
+      assert.equal(depth, 8, `${label}: only 8-bit PNGs are decoded here`);
+      assert.ok(colourType === 2 || colourType === 6, `${label}: colour type ${colourType}`);
+      assert.equal(data[12], 0, `${label}: interlaced`);
     } else if (type === 'IDAT') {
       idat.push(Buffer.from(data));
     } else if (type === 'IEND') {

@@ -49,7 +49,7 @@ import {
   LEAD_PAIRS,
 } from '../../tools/brand.ts';
 import { artefactsFor } from '../../tools/artefacts.ts';
-import { decode } from './png.ts';
+import { decode } from '../../tools/png.ts';
 import {
   markInPixels,
   markInSvg,
