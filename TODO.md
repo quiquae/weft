@@ -28,7 +28,10 @@ day by 555 bytes, 433 of them `WITHDRAWN` and its filter in `background.js`
 and 122 the Old English pack's new note, measured against `main`'s Chrome
 package, 987.46 → 988.00 KB — and to **989 KB** on 2026-10-05 by 584 bytes,
 346 of them `camera`'s `WITHDRAWN` line in `background.js` and 238 the Latin
-pack's notes, measured against `main`'s Chrome package, 988.40 → 988.97 KB.
+pack's notes, measured against `main`'s Chrome package, 988.40 → 988.97 KB —
+and stayed there on 2026-10-06 through the Latin genders, 3 bytes, and the
+two plurals no longer woven, −409, Chrome's 988.97 → 988.57 KB and
+Firefox's 988.64, all three still printing 989.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
