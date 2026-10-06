@@ -9,7 +9,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 566 unit tests, 102 jsdom tests, 258 tool tests, the
+runs typecheck, 566 unit tests, 102 jsdom tests, 266 tool tests, the
 compatibility audit, all three builds, the package validator, and 40 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
