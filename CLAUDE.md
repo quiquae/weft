@@ -561,6 +561,65 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-07 — every Old English gloss but the adverbs names its entry, and "low" was Norse
+
+The same session's third PR, the slice the first one queued: the 178 rows
+that are not nouns. 156 landed — every verb, adjective, numeral and
+interjection — and the 22 adverbs are queued, because one of them stuck.
+
+**The drafting carried over; the reading did not.** 173 more Wiktionary
+pages were fetched and a script drafted 154 quotes from their definition
+lines, `## ` sub-senses now joined to their parent. Reading them found
+eight more pages that define nothing and name another form, so `FORM_OF`
+lists twenty — and one false hit worth knowing: `siex`'s page says
+"Alternative form of six", and the script took the Old English *six* for
+the English word. **A quote that holds the English word is not proof it
+glosses it**; reading every quote is what the ledger is for. Ten more rows
+name a stand-in, seven verbs and three phrases, which Bosworth–Toller
+glosses only in Latin or not at all: "goodbye"'s is *valete*, the Latin.
+
+**The phrases cite the entry their text was read in**, a ninth test: a
+line for a row `ang-phrases.tsv` holds must cite one of its entries, as a
+noun must cite its gender's. Red on a planted `bt:18028` under "goodbye".
+
+**`lāh`, woven for "low", is not Old English.** Wiktionary's `lah` is a
+past tense of `lēon`, to lend; Bosworth–Toller's (bt:21055) is a noun,
+"Law"; and Wiktionary derives English *low* "From Middle English lah …
+from Old Norse lágr". `QUEUED` names it, its line quoting "Law", and the
+fix is the next item. And **`tōmorgen` has no entry under that spelling**
+in either dictionary: Wiktionary's `tomorgen` redirects to a Middle English
+page, and its English *tomorrow* comes "from Old English tō morgne", two
+words in the dative — so the adverbs wait for that to be read. Three rows
+are woven for a sense their word gained later — `hūsbonda` husband,
+`wealcan` walk, `winnan` win — each with a note saying so; recorded in
+`TODO.md` as a teaching call, not changed. etymonline answered 403 to a
+fetch this time, so Wiktionary's own etymology of *low* was read instead.
+
+Four planted defects, each restored by md5, each failing its own test by
+name. Nothing that ships moved. Counts moved 974 → **975** and tools 266 →
+**267** in six places, `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md`
+says the adverbs are not yet read.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **267 tools / 71 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 2.9 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**.
+`site:check` and `artefacts:check` were not re-run: no pack, page or image
+moved.
+
+Assumed, with nobody to ask: that a Latin word Bosworth–Toller glosses a
+phrase with may stand for the English one, named; that "salutation" stands
+for "hello" because the entry says the word is "often used in
+salutation"; that a ledger line may carry a known false gloss while it is
+queued, as long as it quotes what the entry does say; and that the
+adverbs belonged in the next slice rather than this one with `tōmorgen`
+unread.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, `lāh` first.
+
 ### 2026-10-07 — the Old English for "baby" is ċild, and ċildclāð is the fifth card withdrawn
 
 The same session's second PR, the item the first one queued: `ċildclāð`,
