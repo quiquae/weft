@@ -516,6 +516,65 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-06 — the pixel diff is a command, and it agrees with the readings made by hand
+
+The queue named `far wel`, which #72 landed on 2026-10-05, and `mē is lāþ`
+with it, which #73 did; `TODO.md` had both ticked, so the work was its
+topmost unchecked item: the pixel diff three sessions had each written and
+thrown away.
+
+**`npm run png:diff -- <file.png>…`** compares each working file with its
+`HEAD` blob and prints byte-identical, or the pixels differing, the largest
+difference in any one channel, and the box every difference sits inside,
+written as `--region=x0,y0,x1,y1` takes it, so the box can be passed back to
+count inside it. Exit 0 when the pixels are `HEAD`'s, a re-encoding
+included; 1 when they differ; 2 when a file cannot be compared, the rest
+still reported, as diff(1) does. The decoder moved from `tests/tools/png.ts`
+to `tools/png.ts`, because a tool does not import from `tests/`, and gained
+`decodePng()` for a blob that never touches the disk; the comparison is
+pure, in `tools/png-diff.ts`.
+
+**Two choices are the traps a scratch decoder walks into.** Channels are
+compared as RGBA whatever each file stores, because a re-encode that adds an
+opaque alpha channel changes the stride, and raw buffers compared would call
+every pixel changed. And a region that does not fit inside the image is
+refused rather than clipped: clipped, a typo counts nothing, and "0 differ"
+is exactly the answer a drift check hopes for.
+
+**It reproduces the readings made by hand.** The Edge logo as at `97fefd9^`,
+before #52's rebaseline, differs from `HEAD` in **36** pixels — the number
+#52 recorded — the largest channel **13** apart, all inside the wordmark and
+0 of 60 000 inside the mark's box. As at `e0f3eb4^`, before #39 redrew the
+mark, it differs in 2 624, 2 588 of them inside the mark, the largest **186**
+apart. One number tells a renderer from a redraw.
+
+Test-first: `tests/tools/png-diff.test.ts`, 13 tests in 3 suites, red on
+`ERR_MODULE_NOT_FOUND`, with the command run in a throwaway git repository
+on fixtures encoded by hand. Seven mutations, each restored by md5, each
+failing the test named for it. Counts moved 941 → **954** and tools 233 →
+**246** / 64 → **67** suites, in six places, `docs/LAUNCH.md:221` first. No
+`CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **246 tools / 67 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. `packs:verify` and `site:check` were not re-run: no
+pack, seed, site builder or `src/` moved. Zero iCloud conflict copies.
+
+Assumed, with nobody to ask: that repointing three imports beats the
+re-export the item suggested, there being nothing for a shim to protect;
+that diff(1)'s exit codes suit a tool sessions will chain; and that a file
+whose bytes differ and pixels do not exits 0, the tool's question being
+pixels.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, the Latin genders first; `/tmp/weft-la2/` is gone, so
+it starts by fetching Lewis & Short again, from the address in `TODO.md`'s
+Notes.
+
 ### 2026-10-05 — the Latin for "room" was a vault, and three adjectives say what they cover
 
 The queue named `iūsiūrandum`'s plural, which #70 landed and `TODO.md` had

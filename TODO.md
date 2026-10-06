@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-05:** every automatable check is green, measured at the end
+**State on 2026-10-06:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
 suites, **246** tool tests / 67 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -4105,8 +4105,10 @@ registered**, and nothing below it can move until it is.
       English: a `la-genders.tsv` repeating each noun's gender beside the
       Lewis & Short entry it was read in, and `tests/tools/genders.test.ts`
       holding it as it holds the Old English one. Most of the ~178 heads
-      can be read by script from `/tmp/weft-la2/ls.pickle` (`ls.py`), but
-      not by the first one tried: a 160-character window missed the gender
+      can be read by script from the Perseus file — `/tmp/weft-la2/` is
+      gone as of 2026-10-06, so fetch it again from the address in the
+      Notes paragraph "Lewis & Short is one file" — but not by the first
+      script tried: a 160-character window missed the gender
       of `caput`, `aqua` and most others, and any abbreviation in the head
       matched, so collateral forms gave false answers — `vīnum` read as
       masculine from "in vulg. lang. also vīnus, i, m.", `locus` neuter
