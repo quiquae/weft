@@ -154,7 +154,6 @@ iron	noun	ferrum	ferrous	etym:ferrous
 stone	noun	lapis	lapidary	etym:lapidary
 glass	noun	vitrum	vitreous	etym:vitreous
 cloth	noun	pannus	pane	etym:pane
-coat	noun	tunica	tunic	etym:tunic
 sun	noun	sōl	solar	etym:solar
 moon	noun	lūna	lunar	etym:lunar
 star	noun	stēlla	stellar	etym:stellar
@@ -402,3 +401,4 @@ goodbye	intj	valē	valediction	etym:valediction
 # Withdrawn on 2026-10-05: true of its word, and the row left for its gloss
 # --------------------------------------------------------------------------
 #   room      camera     camera                        etym:camera — "from Latin camera "a vault, vaulted room"", and true. The row taught camera for "room", where ls:camera is "a vault, an arched roof, an arch" and the room is Late Latin (etym:chamber), so the row is conclāve now and the card is in WITHDRAWN, src/core/renames.ts. Do not move this claim onto conclāve, whose English word is conclave
+#   coat      tunica     tunic                         etym:tunic — from Latin tunica, and true. The row taught tunica for "coat", where ls:tunica is "an under-garment of the Romans worn by both sexes, a tunic", so on 2026-10-06 the row became paenula, "a woollen outer garment … worn on journeys, and also in the city in rainy weather", and the card went into WITHDRAWN, src/core/renames.ts. paenula has no English descendant, so the row has no etymon; do not move tunic onto it

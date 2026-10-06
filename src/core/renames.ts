@@ -122,6 +122,12 @@ export const WITHDRAWN: Withdrawals = {
       'Lewis & Short\'s "camera" is "a vault, an arched roof, an arch", and the room is ' +
       'Late Latin, the "camera" that gave French "chambre" (etymonline, "chamber"). "room" ' +
       'is "conclāve" now, "a room, chamber … that may be locked up", from "clāvis", a key.',
+    tunica:
+      'Taught for "coat" until 2026-10-06, and in Classical Latin a garment worn under ' +
+      'others: Lewis & Short\'s "tunica" is "an under-garment of the Romans worn by both ' +
+      'sexes, a tunic". "coat" is "paenula" now, "a woollen outer garment covering the ' +
+      'whole body, a kind of cloak or mantle, worn on journeys, and also in the city in ' +
+      'rainy weather".',
   },
 };
 
