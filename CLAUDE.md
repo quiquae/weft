@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **258 pass**, 70 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **266 pass**, 71 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -422,6 +422,20 @@ check. Do not loosen it to "the English word occurs in the entry", the
 2026-10-02 pass that found `camera`: the word is in `canis`'s, as the
 etymology's "Engl. hound". A noun cites the entry its gender was read in, so
 the two ledgers cannot choose different homographs.
+
+**So does an Old English noun's, and a page that only names another form
+is not a definition.** `tools/seed/ang-glosses.tsv` quotes English
+Wiktionary, or Bosworth–Toller where the gender was read there, for every
+Old English noun, held by `tests/tools/ang-glosses.test.ts` to the Latin
+rules; `HELD` in the test names the parts of speech read, nouns so far.
+Wiktionary files Old English under its þ spelling, so its page for a ð
+spelling — `brōðor`, `dēað` — says only "Alternative form of" the þ one, and
+a line quotes the entry named and cites the word's own beside it; `FORM_OF`
+lists the twelve. A quote is the page's words, never its wikitext. Where
+neither dictionary gives the gloss, the line still quotes what they do say
+and `QUEUED` names the row until it is taught differently: `ċildclāð`,
+"baby", is a swaddling-cloth. Do not give such a row a stand-in to pass:
+a stand-in is a word of the entry that means the English, and none does.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a

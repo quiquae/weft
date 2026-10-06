@@ -1,0 +1,244 @@
+# Where each gloss in lex-ang.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word an Old English word is woven for, and the
+# tooltip and the word page print it back: it is the claim every reader meets
+# first. Every other claim the pack makes about a word names its entry —
+# etymons in ang-etymons.tsv, genders in ang-genders.tsv, phrases in
+# ang-phrases.tsv — and the gloss named none until 2026-10-07, as the Latin
+# glosses named none until la-glosses.tsv.
+#
+# The nouns are read so far, all 178 rows; the other parts of speech are the
+# next item in TODO.md. On 2026-10-07 every noun was read against English
+# Wiktionary's Old English entry, from its raw text, and against
+# Bosworth–Toller wherever ang-genders.tsv read the gender there. A script
+# drafted a quote for each row from the entry's definition lines, links and
+# labels read as the page prints them, and every quote was read against its
+# entry; where a page holds more than one word of a spelling — hund, a dog
+# and a hundred; lagu, the sea and the law — the quote is from the
+# etymology that is this word, as the genders were.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was read in, separated by spaces, the one
+# the quote is from first:
+#
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#                      (the title drops macrons and the dots of ċ and ġ)
+#   bt:<id>            https://bosworthtoller.com/<id>
+#
+# A noun cites the entry its gender was read in, so the two ledgers cannot
+# read different words. Wiktionary files most Old English words under their
+# þ spelling, and its page for brōðor, mūð or dēað says only "Alternative
+# form of" the þ one; so does its page for meoluc, wall, hæt, wolcen and
+# wicu, of meolc, weall, hætt, wolcn and wice. Those twelve lines quote the
+# entry named and cite the word's own beside it, and FORM_OF in the test
+# lists them. þorp is quoted from Wiktionary, "village", because
+# Bosworth–Toller's head, where its gender was read, gives no one English
+# word: "the idea at first connected with the words is that of an
+# assemblage", then of workers on an estate, and of the estate.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in the
+# entry. Six rows need one: hund for "hound" is "dog", setl for "chair" "seat,
+# bench, throne", mentel for "coat" "mantle (kind of cloak)", rīċe for
+# "country" "kingdom, empire", fyrhtu for "fear" "fright", and hūsbonda for
+# "husband" "master of the house" — the loosest, whose note already says
+# "the householder, not yet the spouse".
+#
+# One row has no gloss in either dictionary. ċildclāð, woven for "baby", is
+# Wiktionary's cildclāþ, "swaddling cloth; (in the plural), swaddling
+# clothes", and Bosworth–Toller's Supplement, where its gender was read, has
+# no English at all, only the Latin its plural glosses: "cunae", a cradle,
+# and "panni infantiae", an infant's cloths. Its line quotes the first,
+# QUEUED in the test names it, and changing the word is the item after this
+# one in TODO.md.
+#
+# tests/tools/ang-glosses.test.ts requires every row of a part of speech it
+# holds to have a line here, every line to cite Bosworth–Toller or the word's
+# own Wiktionary entry, every quote to hold its English word or name the word
+# standing for it, no quote to carry wikitext, and every noun to cite the
+# entry its gender was read in. It cannot tell a quote somebody copied from
+# the entry from one somebody typed, nor an entry somebody read from one
+# somebody named.
+man	noun	mann	wikt:ang:mann	man (adult male)
+woman	noun	wīfmann	bt:35615 wikt:ang:wifmann	a woman
+child	noun	ċild	wikt:ang:cild	child
+boy	noun	cnapa	wikt:ang:cnapa	boy; lad; young man
+girl	noun	mæġden	wikt:ang:mægden	girl
+person	noun	mann	wikt:ang:mann	person
+friend	noun	frēond	wikt:ang:freond	friend
+family	noun	hīwsċipe	bt:19147	A family, household, house
+mother	noun	mōdor	wikt:ang:modor	mother
+father	noun	fæder	wikt:ang:fæder	father
+brother	noun	brōðor	wikt:ang:broþor wikt:ang:broðor	brother
+sister	noun	sweostor	wikt:ang:sweostor	sister
+son	noun	sunu	wikt:ang:sunu	son, male child
+daughter	noun	dohtor	wikt:ang:dohtor	daughter
+wife	noun	wīf	wikt:ang:wif	wife
+husband	noun	hūsbonda	wikt:ang:husbonda	master of the house	master of the house
+baby	noun	ċildclāð	bt:41645	Cildcláðas cunae
+king	noun	cyning	wikt:ang:cyning	king
+queen	noun	cwēn	wikt:ang:cwen	queen (a ruling female monarch or a king's wife)
+lord	noun	hlāford	wikt:ang:hlaford	lord, master of servants or slaves
+neighbour	noun	nēahġebūr	wikt:ang:neahgebur	neighbour
+stranger	noun	fremde	wikt:ang:fremde	a stranger
+enemy	noun	fēond	wikt:ang:feond	enemy, foe
+soldier	noun	ċempa	wikt:ang:cempa	soldier, warrior
+teacher	noun	lārēow	wikt:ang:lareow	teacher
+doctor	noun	lǣċe	wikt:ang:læce	doctor (physician)
+farmer	noun	ierþling	wikt:ang:ierþling	farmer, husbandman, ploughman
+sailor	noun	sǣmann	wikt:ang:sæmann	sailor
+head	noun	hēafod	wikt:ang:heafod	head
+hand	noun	hand	wikt:ang:hand	hand
+eye	noun	ēage	wikt:ang:eage	eye
+ear	noun	ēare	wikt:ang:eare	ear (organ of hearing)
+mouth	noun	mūð	wikt:ang:muþ wikt:ang:muð	mouth
+nose	noun	nosu	wikt:ang:nosu	nose
+tooth	noun	tōð	wikt:ang:toþ wikt:ang:toð	tooth
+hair	noun	hǣr	wikt:ang:hær	hair
+heart	noun	heorte	wikt:ang:heorte	heart (muscle)
+blood	noun	blōd	wikt:ang:blod	blood
+bone	noun	bān	wikt:ang:ban	bone
+arm	noun	earm	wikt:ang:earm	arm
+leg	noun	sċanca	wikt:ang:scanca	leg
+foot	noun	fōt	wikt:ang:fot	a foot, in the following senses:
+finger	noun	finger	wikt:ang:finger	finger
+face	noun	onsīen	bt:1954	a face, countenance
+body	noun	līċ	wikt:ang:lic	(rare outside of poetry) body (living or dead)
+skin	noun	hȳd	wikt:ang:hyd	skin, hide
+voice	noun	stefn	wikt:ang:stefn	voice
+dog	noun	hund	wikt:ang:hund	dog
+cat	noun	catt	wikt:ang:catt	cat
+horse	noun	hors	wikt:ang:hors	horse
+bird	noun	fugol	wikt:ang:fugol	bird
+fish	noun	fisċ	wikt:ang:fisc	fish
+cow	noun	cū	wikt:ang:cu	cow
+sheep	noun	sċēap	wikt:ang:sceap	sheep
+pig	noun	swīn	wikt:ang:swin	pig
+wolf	noun	wulf	wikt:ang:wulf	wolf
+bear	noun	bera	wikt:ang:bera	bear
+lion	noun	lēo	wikt:ang:leo	a lion
+mouse	noun	mūs	wikt:ang:mus	mouse
+snake	noun	nǣdre	wikt:ang:nædre	snake
+bee	noun	bēo	wikt:ang:beo	bee
+worm	noun	wyrm	wikt:ang:wyrm	any crawling animal, especially: worm
+raven	noun	hræfn	wikt:ang:hræfn	raven
+hound	noun	hund	wikt:ang:hund	dog	dog
+ox	noun	oxa	wikt:ang:oxa	ox
+goat	noun	gāt	wikt:ang:gat	goat
+food	noun	mete	wikt:ang:mete	food
+bread	noun	hlāf	wikt:ang:hlaf	bread
+water	noun	wæter	wikt:ang:wæter	water
+wine	noun	wīn	wikt:ang:win	wine
+milk	noun	meoluc	wikt:ang:meolc wikt:ang:meoluc	milk
+meat	noun	flǣsċ	wikt:ang:flæsc	meat
+fruit	noun	wæstm	wikt:ang:wæstm	fruit
+apple	noun	æppel	wikt:ang:æppel	apple
+salt	noun	sealt	wikt:ang:sealt	common salt (sodium chloride)
+honey	noun	huniġ	wikt:ang:hunig	honey
+cheese	noun	ċīese	wikt:ang:ciese	cheese
+egg	noun	ǣġ	wikt:ang:æg	egg
+fire	noun	fȳr	wikt:ang:fyr	fire
+house	noun	hūs	wikt:ang:hus	house
+home	noun	hām	wikt:ang:ham	home
+door	noun	duru	wikt:ang:duru	door
+window	noun	ēagþȳrel	wikt:ang:eagþyrel	window
+wall	noun	wall	wikt:ang:weall wikt:ang:wall	wall
+roof	noun	hrōf	wikt:ang:hrof	roof
+floor	noun	flōr	wikt:ang:flor	pavement, floor
+room	noun	rūm	wikt:ang:rum	room, space
+table	noun	bēod	wikt:ang:beod	table
+chair	noun	setl	wikt:ang:setl	seat, bench, throne	seat
+bed	noun	bedd	wikt:ang:bedd	bed
+book	noun	bōc	wikt:ang:boc	book
+word	noun	word	wikt:ang:word	word
+letter	noun	bōcstæf	wikt:ang:bocstæf	written character, letter
+name	noun	nama	wikt:ang:nama	name
+key	noun	ċǣġ	wikt:ang:cæg	key
+bridge	noun	brycg	wikt:ang:brycg	bridge
+church	noun	ċiriċe	wikt:ang:cirice	church
+ship	noun	sċip	wikt:ang:scip	ship
+boat	noun	bāt	wikt:ang:bat	boat
+sword	noun	sweord	wikt:ang:sweord	sword
+shield	noun	sċield	wikt:ang:scield	shield
+ring	noun	hring	wikt:ang:hring	ring (circular band)
+gold	noun	gold	wikt:ang:gold	gold
+silver	noun	seolfor	wikt:ang:seolfor	silver
+iron	noun	īren	bt:20749	Iron, an iron weapon
+stone	noun	stān	wikt:ang:stan	stone
+glass	noun	glæs	wikt:ang:glæs	glass
+cloth	noun	clāð	wikt:ang:claþ wikt:ang:clað	cloth
+shoe	noun	sċōh	wikt:ang:scoh	shoe
+coat	noun	mentel	wikt:ang:mentel	mantle (kind of cloak)	mantle
+hat	noun	hæt	wikt:ang:hætt wikt:ang:hæt	hat
+sun	noun	sunne	wikt:ang:sunne	sun
+moon	noun	mōna	wikt:ang:mona	moon
+star	noun	steorra	wikt:ang:steorra	star
+sky	noun	heofon	wikt:ang:heofon	sky
+earth	noun	eorðe	wikt:ang:eorþe wikt:ang:eorðe	the planet Earth
+land	noun	land	wikt:ang:land	land (dry portion of the Earth's surface)
+sea	noun	sǣ	wikt:ang:sæ	sea
+river	noun	ēa	wikt:ang:ea	river
+lake	noun	mere	wikt:ang:mere	lake
+mountain	noun	beorg	wikt:ang:beorg	mountain, hill
+hill	noun	hyll	wikt:ang:hyll	hill
+forest	noun	weald	wikt:ang:weald	forest
+tree	noun	trēow	wikt:ang:treow	tree
+leaf	noun	lēaf	wikt:ang:leaf	leaf
+flower	noun	blōstma	wikt:ang:blostma	flower, blossom
+grass	noun	græs	wikt:ang:græs	grass
+field	noun	feld	wikt:ang:feld	field
+road	noun	weġ	wikt:ang:weg	road
+path	noun	pæð	bt:25120	A path, track
+city	noun	burg	wikt:ang:burg	city or town
+town	noun	tūn	wikt:ang:tun	a village or town
+village	noun	þorp	wikt:ang:þorp bt:31961	village
+world	noun	weorold	wikt:ang:weorold	world
+country	noun	rīċe	wikt:ang:rice	kingdom, empire	kingdom
+place	noun	stōw	wikt:ang:stow	a place
+rain	noun	reġn	wikt:ang:regn	rain
+snow	noun	snāw	wikt:ang:snaw	snow
+wind	noun	wind	wikt:ang:wind	wind
+cloud	noun	wolcen	wikt:ang:wolcn wikt:ang:wolcen	cloud
+ice	noun	īs	wikt:ang:is	ice
+light	noun	lēoht	wikt:ang:leoht	light
+shadow	noun	sċeadu	wikt:ang:sceadu	shadow
+time	noun	tīma	wikt:ang:tima	a time, hour (period of time)
+day	noun	dæġ	wikt:ang:dæg	day, as a period from sunrise to sunset and as a 24-hour period from sunrise to sunrise
+night	noun	niht	wikt:ang:niht	night
+year	noun	ġēar	wikt:ang:gear	year
+month	noun	mōnað	wikt:ang:monaþ wikt:ang:monað	month
+week	noun	wicu	wikt:ang:wice wikt:ang:wicu	week
+hour	noun	tīd	wikt:ang:tid	the hour, the moment determined by a sundial or other device marking the division between the tides or hours
+morning	noun	morgen	wikt:ang:morgen	morning
+evening	noun	ǣfen	wikt:ang:æfen	evening
+summer	noun	sumor	wikt:ang:sumor	summer
+winter	noun	winter	wikt:ang:winter	winter
+autumn	noun	hærfest	wikt:ang:hærfest	autumn, fall
+life	noun	līf	wikt:ang:lif	life
+death	noun	dēað	wikt:ang:deaþ wikt:ang:deað	death
+love	noun	lufu	wikt:ang:lufu	love
+war	noun	wīġ	wikt:ang:wig	(poetic or in compounds) war, battle
+peace	noun	friþ	wikt:ang:friþ	peace
+truth	noun	sōþ	wikt:ang:soþ	truth
+law	noun	lagu	wikt:ang:lagu	law
+work	noun	weorc	wikt:ang:weorc	work, in various senses, including:
+money	noun	feoh	wikt:ang:feoh	money
+price	noun	weorþ	wikt:ang:weorþ	worth, price, value
+question	noun	āscung	wikt:ang:ascung	question
+answer	noun	andswaru	wikt:ang:andswaru	answer
+story	noun	spell	wikt:ang:spell	story
+song	noun	sang	wikt:ang:sang	song
+music	noun	drēam	wikt:ang:dream	that which causes merriment: musical instrument, music, melody, song, harmony
+game	noun	gamen	wikt:ang:gamen	game, sport, or pastime
+dream	noun	swefn	wikt:ang:swefn	dream
+fear	noun	fyrhtu	wikt:ang:fyrhtu	fright	fright
+hope	noun	hopa	wikt:ang:hopa	hope
+joy	noun	blis	bt:4686	BLISS, joy, gladness, exultation, pleasure
+anger	noun	ierre	wikt:ang:ierre	anger, wrath, ire, rage
+oath	noun	āþ	wikt:ang:aþ	an oath
+gift	noun	ġiefu	wikt:ang:giefu	present, gift
