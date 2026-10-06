@@ -537,6 +537,17 @@ with a note saying what the word covers: *audāx* daring, and oftener in a
 bad sense than a good one; *fuscus* dark, dusky or tawny; *cānus* the white
 of snow and frost, and above all the grey hair of age.
 
+**And every Latin noun's gender is the one Lewis & Short gives it.** Nothing
+had checked one, and the tooltip and the word pages print them. All 178 were
+read, and seven were wrong: *hostis*, *mīles*, *canis* (as dog and as hound),
+*mūs* and *bōs* are of common gender, not masculine, and *locus* is
+masculine, not neuter — neuter is its plural *loca*, which Weft wove under
+the same label. A row carries one gender for both its forms, so "places" is
+now *locī*, the plural Lewis & Short gives for "single places", and neither
+form is labelled with a gender it does not have. Every Latin noun's gender
+now names the entry it was read in, and the build fails on one that does
+not, as it does for Old English.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -557,7 +568,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 954 tests: 566 unit, 102 in jsdom, 246 over the build tools, and
+**Built with** 958 tests: 566 unit, 102 in jsdom, 250 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

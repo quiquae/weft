@@ -1,0 +1,216 @@
+# Where each Latin noun's gender in lex-la.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, and its word page prints it
+# in the Gender row and the page's description. On 2026-10-06 every noun was
+# read against its own entry in Lewis & Short, from the Perseus text, which
+# tags the gender in an entry's head. The first gender an entry gives is the
+# headword's, except where a parenthesis about another form comes first —
+# solum's collateral sŏlus, m., lūx's old forms "also used as m.", sāl's
+# plural sales, m. — so those were read by eye, as was every homograph and
+# every word given inside another word's entry.
+#
+# Seven disagreed with the seed. hostis, mīles, canis (dog and hound), mūs
+# and bōs are "comm." in Lewis & Short, the gender c, which the tooltip
+# prints as "common", and the seed gave all six m; bōs's head goes on
+# "generally masc. in prose", which says how the gender is used, not what it
+# is. And locus is "i, m. (… plur. loci, single places; loca, places
+# connected with each other, a region)", which the seed gave n, the gender of
+# the plural it wove. A row carries one gender for both its forms, so the
+# plural is locī now, whose gender is the headword's: a reader is told
+# masculine under locus and under locī, and neither is false.
+#
+# The sources field
+# -----------------
+#   ls:<key>   Lewis & Short, by the entry's key in the Perseus text: no
+#              macrons, j for a consonantal i, a digit for a homograph (os1
+#              the mouth, os2 the bone, canis1 the dog).
+#
+# A word Lewis & Short gives inside another entry cites both: serpēns at the
+# end of serpo, patria under patrius, marītus under the adjective maritus,
+# respōnsum under respondeo. Two headwords are filed under another spelling,
+# autumnus under auctumnus ("correctly aut-") and iūsiūrandum under
+# jusjurandum, and tests/tools/genders.test.ts lists both.
+#
+# That test requires every noun in lex-la.tsv to have a line here with the
+# same gender, every line to cite its own entry, and every line to have a
+# noun. It cannot tell an entry somebody read from one somebody typed.
+man	vir	m	ls:vir
+woman	fēmina	f	ls:femina
+child	puer	m	ls:puer
+boy	puer	m	ls:puer
+girl	puella	f	ls:puella
+person	persōna	f	ls:persona
+friend	amīcus	m	ls:amicus2
+family	familia	f	ls:familia
+mother	māter	f	ls:mater
+father	pater	m	ls:pater
+brother	frāter	m	ls:frater
+sister	soror	f	ls:soror
+son	fīlius	m	ls:filius
+daughter	fīlia	f	ls:filia
+wife	uxor	f	ls:uxor
+husband	marītus	m	ls:maritus2 ls:maritus1
+baby	īnfāns	c	ls:infans
+king	rēx	m	ls:rex1
+queen	rēgīna	f	ls:regina
+lord	dominus	m	ls:dominus
+neighbour	vīcīnus	m	ls:vicinus
+stranger	aliēnus	m	ls:alienus
+enemy	hostis	c	ls:hostis
+soldier	mīles	c	ls:miles
+teacher	magister	m	ls:magister
+doctor	medicus	m	ls:medicus1
+farmer	agricola	m	ls:agricola1
+sailor	nauta	m	ls:nauta
+head	caput	n	ls:caput
+hand	manus	f	ls:manus1
+eye	oculus	m	ls:oculus
+ear	auris	f	ls:auris
+mouth	ōs	n	ls:os1
+nose	nāsus	m	ls:nasus1
+tooth	dēns	m	ls:dens
+hair	capillus	m	ls:capillus
+heart	cor	n	ls:cor
+blood	sanguis	m	ls:sanguis
+bone	os	n	ls:os2
+arm	bracchium	n	ls:bracchium
+leg	crūs	n	ls:crus
+foot	pēs	m	ls:pes
+finger	digitus	m	ls:digitus1
+face	faciēs	f	ls:facies
+body	corpus	n	ls:corpus
+skin	cutis	f	ls:cutis
+voice	vōx	f	ls:vox
+dog	canis	c	ls:canis1
+cat	fēlēs	f	ls:feles
+horse	equus	m	ls:equus
+bird	avis	f	ls:avis
+fish	piscis	m	ls:piscis
+cow	vacca	f	ls:vacca1
+sheep	ovis	f	ls:ovis
+pig	porcus	m	ls:porcus
+wolf	lupus	m	ls:lupus1
+bear	ursus	m	ls:ursus
+lion	leō	m	ls:leo2
+mouse	mūs	c	ls:mus1
+snake	serpēns	f	ls:serpens ls:serpo
+bee	apis	f	ls:apis1
+worm	vermis	m	ls:vermis
+raven	corvus	m	ls:corvus
+hound	canis	c	ls:canis1
+ox	bōs	c	ls:bos
+goat	capra	f	ls:capra
+food	cibus	m	ls:cibus
+bread	pānis	m	ls:panis
+water	aqua	f	ls:aqua
+wine	vīnum	n	ls:vinum
+milk	lac	n	ls:lac
+meat	carō	f	ls:caro2
+fruit	frūctus	m	ls:fructus2
+apple	mālum	n	ls:malum2
+salt	sāl	m	ls:sal
+honey	mel	n	ls:mel
+cheese	cāseus	m	ls:caseus
+egg	ōvum	n	ls:ovum
+fire	ignis	m	ls:ignis
+house	domus	f	ls:domus
+home	domus	f	ls:domus
+door	iānua	f	ls:janua
+window	fenestra	f	ls:fenestra
+wall	mūrus	m	ls:murus
+roof	tēctum	n	ls:tectum
+floor	solum	n	ls:solum1
+room	conclāve	n	ls:conclave
+table	mēnsa	f	ls:mensa
+chair	sella	f	ls:sella
+bed	lectus	m	ls:lectus2
+book	liber	m	ls:liber4
+word	verbum	n	ls:verbum
+letter	littera	f	ls:littera
+name	nōmen	n	ls:nomen
+key	clāvis	f	ls:clavis
+bridge	pōns	m	ls:pons1
+church	ecclēsia	f	ls:ecclesia
+ship	nāvis	f	ls:navis
+boat	scapha	f	ls:scapha
+sword	gladius	m	ls:gladius
+shield	scūtum	n	ls:scutum
+ring	ānulus	m	ls:anulus1
+gold	aurum	n	ls:aurum
+silver	argentum	n	ls:argentum
+iron	ferrum	n	ls:ferrum
+stone	lapis	m	ls:lapis
+glass	vitrum	n	ls:vitrum
+cloth	pannus	m	ls:pannus
+shoe	calceus	m	ls:calceus
+coat	tunica	f	ls:tunica
+hat	petasus	m	ls:petasus
+sun	sōl	m	ls:sol
+moon	lūna	f	ls:luna1
+star	stēlla	f	ls:stella
+sky	caelum	n	ls:caelum2
+earth	terra	f	ls:terra
+land	terra	f	ls:terra
+sea	mare	n	ls:mare
+river	flūmen	n	ls:flumen
+lake	lacus	m	ls:lacus
+mountain	mōns	m	ls:mons
+hill	collis	m	ls:collis
+forest	silva	f	ls:silva
+tree	arbor	f	ls:arbor1
+leaf	folium	n	ls:folium
+flower	flōs	m	ls:flos
+grass	herba	f	ls:herba
+field	ager	m	ls:ager
+road	via	f	ls:via
+path	sēmita	f	ls:semita
+city	urbs	f	ls:urbs
+town	oppidum	n	ls:oppidum
+village	vīcus	m	ls:vicus
+world	mundus	m	ls:mundus2
+country	patria	f	ls:patria ls:patrius1
+place	locus	m	ls:locus
+rain	pluvia	f	ls:pluvia
+snow	nix	f	ls:nix
+wind	ventus	m	ls:ventus
+cloud	nūbēs	f	ls:nubes
+ice	glaciēs	f	ls:glacies
+light	lūx	f	ls:lux
+shadow	umbra	f	ls:umbra
+time	tempus	n	ls:tempus
+day	diēs	m	ls:dies
+night	nox	f	ls:nox
+year	annus	m	ls:annus
+month	mēnsis	m	ls:mensis
+week	hebdomas	f	ls:hebdomas
+hour	hōra	f	ls:hora1
+morning	māne	n	ls:mane
+evening	vesper	m	ls:vesper
+summer	aestās	f	ls:aestas
+winter	hiems	f	ls:hiems
+autumn	autumnus	m	ls:auctumnus1
+life	vīta	f	ls:vita
+death	mors	f	ls:mors
+love	amor	m	ls:amor
+war	bellum	n	ls:bellum
+peace	pāx	f	ls:pax1
+truth	vēritās	f	ls:veritas
+law	lēx	f	ls:lex
+work	labor	m	ls:labor2
+money	pecūnia	f	ls:pecunia
+price	pretium	n	ls:pretium
+question	quaestiō	f	ls:quaestio
+answer	respōnsum	n	ls:responsum ls:respondeo
+story	fābula	f	ls:fabula1
+song	carmen	n	ls:carmen1
+music	mūsica	f	ls:musica
+game	lūdus	m	ls:ludus
+dream	somnium	n	ls:somnium
+fear	timor	m	ls:timor
+hope	spēs	f	ls:spes
+joy	gaudium	n	ls:gaudium
+anger	īra	f	ls:ira
+oath	iūsiūrandum	n	ls:jusjurandum
+gift	dōnum	n	ls:donum

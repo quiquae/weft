@@ -21,6 +21,12 @@
  * in `tools/seed/la-notes.tsv`: an edit leaves the gender unsourced until
  * somebody reads again. It cannot tell an entry somebody read from one
  * somebody typed; the entries cited should be the ones actually opened.
+ *
+ * Latin's genders are held the same way, by `tools/seed/la-genders.tsv`. On
+ * 2026-10-06 all 178 Latin nouns were read in Lewis & Short, and seven
+ * disagreed: `hostis`, `mīles`, `canis` twice, `mūs` and `bōs` are "comm.",
+ * common, where the seed said masculine, and `locus` is masculine where the
+ * seed said neuter, the gender of the plural *loca* it wove.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -40,17 +46,22 @@ const tsv = (path: string): Array<{ line: number; f: string[] }> =>
     .split('\n')
     .flatMap((text, i) => (text && !text.startsWith('#') ? [{ line: i + 1, f: text.split('\t') }] : []));
 
-const nouns: Noun[] = tsv(LEXICON)
-  .filter(({ f }) => f[1] === 'noun')
-  .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', gender: f[4] ?? '' }));
+const readNouns = (path: string): Noun[] =>
+  tsv(path)
+    .filter(({ f }) => f[1] === 'noun')
+    .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', gender: f[4] ?? '' }));
 
-const ledger: Entry[] = tsv(LEDGER).map(({ line, f }) => ({
-  line,
-  lemma: f[0] ?? '',
-  tgt: f[1] ?? '',
-  gender: f[2] ?? '',
-  sources: (f[3] ?? '').split(' ').filter(Boolean),
-}));
+const readLedger = (path: string): Entry[] =>
+  tsv(path).map(({ line, f }) => ({
+    line,
+    lemma: f[0] ?? '',
+    tgt: f[1] ?? '',
+    gender: f[2] ?? '',
+    sources: (f[3] ?? '').split(' ').filter(Boolean),
+  }));
+
+const nouns = readNouns(LEXICON);
+const ledger = readLedger(LEDGER);
 
 const key = (lemma: string, tgt: string): string => `${lemma}\t${tgt}`;
 const byKey = new Map(ledger.map((e) => [key(e.lemma, e.tgt), e]));
@@ -126,5 +137,77 @@ describe('every Old English gender names the entry it was read in', () => {
     assert.deepEqual([...genders].sort(), ['f', 'm', 'n'], 'the seed should use all three genders');
     const dictionary = ledger.filter((e) => e.sources.some((s) => s.startsWith('bt:')));
     assert.ok(dictionary.length >= 5, `only ${dictionary.length} lines name Bosworth–Toller`);
+  });
+});
+
+const LA_LEXICON = join(ROOT, 'tools/seed/lex-la.tsv');
+const LA_LEDGER = join(ROOT, 'tools/seed/la-genders.tsv');
+const laNouns = readNouns(LA_LEXICON);
+const laLedger = readLedger(LA_LEDGER);
+const laByKey = new Map(laLedger.map((e) => [key(e.lemma, e.tgt), e]));
+
+/**
+ * Lewis & Short's key for a headword, as `la-notes.test.ts` derives it: no
+ * macrons, and `j` where the pack writes a consonantal `i`.
+ */
+const lewisAndShort = (tgt: string): string =>
+  tgt
+    .normalize('NFD')
+    .replace(/\u0304/g, '')
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/^i(?=[aeiou])/, 'j');
+
+/** Headwords Lewis & Short files under another spelling, and what it prints. */
+const FILED: Record<string, { key: string; prints: string }> = {
+  autumnus: { key: 'auctumnus', prints: 'auctumnus (correctly aut-), i, m.' },
+  iūsiūrandum: { key: 'jusjurandum', prints: 'jus-jūrandum, jurisjurandi … n.' },
+};
+
+describe('every Latin gender names the entry it was read in', () => {
+  test('every noun has the gender its ledger line gives', () => {
+    const offenders = laNouns.flatMap((n) => {
+      const e = laByKey.get(key(n.lemma, n.tgt));
+      if (!e) return [`lex-la.tsv:${n.line} ${n.lemma} → ${n.tgt} (${n.gender}): no line in la-genders.tsv`];
+      return e.gender === n.gender
+        ? []
+        : [`lex-la.tsv:${n.line} ${n.lemma} → ${n.tgt} is ${n.gender}, where la-genders.tsv:${e.line} read ${e.gender}`];
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} Latin genders are unsourced:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('every ledger line cites Lewis & Short, its own headword’s entry among them', () => {
+    const offenders = laLedger.flatMap((e) => {
+      if (!['m', 'f', 'n', 'c'].includes(e.gender)) return [`la-genders.tsv:${e.line} ${e.tgt}: “${e.gender}” is not m, f, n or c`];
+      const unreadable = e.sources.filter((s) => !/^ls:[a-z]+\d?$/.test(s));
+      if (unreadable.length) return [`la-genders.tsv:${e.line} ${e.tgt}: ${unreadable.map((s) => `“${s}”`).join(' ')} is not ls:<key>`];
+      const own = FILED[e.tgt]?.key ?? lewisAndShort(e.tgt);
+      return e.sources.some((s) => new RegExp(`^ls:${own}\\d?$`).test(s))
+        ? []
+        : [`la-genders.tsv:${e.line} ${e.tgt} cites ${e.sources.join(' ') || 'nothing'}; it needs ls:${own}, its own entry`];
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('no ledger line outlives its noun, and no spelling is listed that needs no listing', () => {
+    const taught = new Set(laNouns.map((n) => key(n.lemma, n.tgt)));
+    const seen = new Set<string>();
+    const offenders = laLedger.flatMap((e) => {
+      const k = key(e.lemma, e.tgt);
+      if (!taught.has(k)) return [`la-genders.tsv:${e.line} ${e.lemma} → ${e.tgt}: lex-la.tsv no longer teaches it`];
+      return seen.has(k) || !seen.add(k) ? [`la-genders.tsv:${e.line} ${e.lemma} → ${e.tgt}: a second line`] : [];
+    });
+    const tgts = new Set(laNouns.map((n) => n.tgt));
+    for (const [tgt, { key: filed }] of Object.entries(FILED)) {
+      if (!tgts.has(tgt)) offenders.push(`FILED lists ${tgt}, which lex-la.tsv does not teach`);
+      if (filed === lewisAndShort(tgt)) offenders.push(`FILED lists ${tgt}, whose key ${filed} needs no listing`);
+    }
+    assert.deepEqual(offenders, []);
+  });
+
+  test('the ledger has something to hold', () => {
+    assert.ok(laNouns.length > 150, `only ${laNouns.length} Latin nouns were read from lex-la.tsv`);
+    const genders = new Set(laNouns.map((n) => n.gender));
+    assert.deepEqual([...genders].sort(), ['c', 'f', 'm', 'n'], 'the seed should use all four genders');
   });
 });

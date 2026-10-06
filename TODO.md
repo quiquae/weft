@@ -6,7 +6,7 @@
 
 **State on 2026-10-06:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **246** tool tests / 67 suites, **40** e2e passing
+suites, **250** tool tests / 68 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -4097,7 +4097,7 @@ registered**, and nothing below it can move until it is.
       of them in the mark, largest **186** — the redrawn weft. The one
       number tells the two apart.
 
-- [ ] **Latin genders have never been checked against a dictionary, and
+- [x] **Latin genders have never been checked against a dictionary, and
       four more nouns are common where the seed says masculine.** Found
       2026-10-05 fixing `īnfāns`: Lewis & Short's heads mark `hostis`,
       `mīles`, `mūs` and `canis` "comm." as well, and the seed gives all
@@ -4117,6 +4117,68 @@ registered**, and nothing below it can move until it is.
       that "comm." is `c`, which the tooltip prints as "common". About an
       hour; the four changes move four word pages.
 
+      **Done 2026-10-06, and it was seven.** All 178 nouns were read in
+      Lewis & Short, from the Perseus text refetched into `/tmp/weft-la3/`.
+      The text tags gender, `<gen>m.</gen>`, so the first tag in an entry is
+      its headword's gender — on 144 nouns with one entry and that tag
+      agreeing with the seed, a parenthesis count showing only `sāl`'s tag
+      inside one, and `sāl` still `m.` after it. The other 34 were read by
+      eye: homographs (`amicus2`, `leo2`, `liber4`, `caelum2` …), words given
+      inside another's entry (`serpēns` in *serpo*, `patria` under
+      *patrius*, `marītus` under the adjective, `respōnsum` under
+      *respondeo*), and the two filed under another spelling, `autumnus` as
+      *auctumnus*, "correctly aut-", and `iūsiūrandum` as *jusjurandum*.
+      `solum`'s first tag is its collateral *sŏlus*, m., and `lūx`'s its
+      old forms "also used as m."; both are what the seed says, `n` and `f`.
+
+      Six are "comm.", where the seed said `m`: `hostis`, `mīles`, `canis`
+      as dog and as hound, `mūs`, and `bōs`, whose head goes on "generally
+      masc. in prose". And `locus` is "i, m. (… plur. loci, single places;
+      loca, places connected with each other, a region)", where the seed
+      said `n`, the gender of the plural `loca` it wove. A row has one
+      gender for both its forms, so the plural is `locī` now, transcribed
+      /ˈlɔkiː/ by the generator and held to Allen & Greenough by the
+      existing guard, and neither form is told a gender it lacks.
+
+      `tools/seed/la-genders.tsv` repeats each gender beside the entries
+      read, and `tests/tools/genders.test.ts` holds it beside the Old
+      English ledger, 4 tests in a new suite: red first on exactly the
+      seven, green with the seed. A line must cite its own headword's key,
+      derived as `la-notes.test.ts` derives it, unless `FILED` lists the
+      spelling Lewis & Short uses, and `FILED` fails on a word it need not
+      list. 17 fields of `en-la.json` moved — 14 genders, `places`' form
+      and transcription, and its date; the site, built from `main` in a
+      `/tmp` worktree and from the branch, differs in the six word pages
+      and the sitemap's dates; all 36 screenshots regenerated
+      byte-identical, `npm run png:diff` saying so of each, and the three
+      groups stamped.
+
+      **Two calls a human may want to look at**, each one cell of
+      `tools/seed/lex-la.tsv` and its ledger line: `bōs`, taught for "ox",
+      is common now, as its head says, though "generally masc. in prose"
+      and an ox is male; and "places" weaves `locī`, Lewis & Short's
+      "single places", rather than `loca`, the more usual plural, which
+      would want a gender of its own — a tenth seed column, `gender2`,
+      printed under the second form as `ipa2` is.
+
+- [ ] **Two Latin plurals are forms Lewis & Short says Latin does not use.**
+      Found 2026-10-06 reading the genders. "evenings" is woven `vesperēs`,
+      and `vesper`'s head says "(in class. prose mostly acc. vesperum, and
+      abl. vespere, or adverb. vesperi; the plur. not used)"; "skies" is
+      woven `caela`, and `caelum`'s says "plur. caeli, only poet., Lucr. 2,
+      1097" — masculine, so the row's `n` could not be printed under it
+      either. Blank both rows' `tgt2` and `ipa2`, as `iūsiūrandum`'s were
+      in #70, so "evenings" and "skies" stay English; the Latin pack then
+      has two entries fewer, which moves the entry ranges in `README.md`,
+      `CHANGELOG.md`'s 1.0.1 paragraph and `CLAUDE.md`'s summary, as #70's
+      one did. Guard it as #70 did `iūsiūrandum`: a list beside `COMPOUNDS`
+      in `tests/tools/lexicon-orthography.test.ts` of words whose
+      dictionary gives no plural to weave, each with the words of its
+      entry, failing if the pack weaves one. The scan that found them read
+      every noun's head for "plur." — 46 remarks, nearly all about
+      genitive endings, `faciēs`'s "very rare" not a refusal. About 30
+      minutes, with the 36 screenshots regenerated.
+
 - [ ] **Latin glosses name no entry, and the only check on them is the crude
       pass that found `camera`.** Found 2026-10-02 and confirmed 2026-10-05:
       of the 356 Latin rows, the English lemma occurs in its headword's
@@ -4134,8 +4196,8 @@ registered**, and nothing below it can move until it is.
 
 `Now` is **empty** and `Next` holds **two** unchecked items above, as of
 2026-10-06, both agent-shaped and neither waiting on B1. The order is the
-order to work them: the Latin genders, then the Latin glosses, two ledgers
-of the kind the Old English genders got. The Latin note on `vir`, the
+order to work them: the two Latin plurals Lewis & Short refuses, then the Latin
+glosses, a ledger of the kind the genders got. The Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden
 etymologies, the Old English homographs, the feed's Latin frames, the Latin
 descent pass, the Latin index's "became", the screenshots' renderer drift,
@@ -4145,7 +4207,7 @@ keys, the reason line's grammar, French `mort`, Old English stress, the
 undotted *g*, the eleven dots, the compounds' fricatives, the Old English
 genders, the plurals' dots, both languages' second forms' transcriptions,
 `iūsiūrandum`'s plural, `far wel`, `mē is lāþ`, the store scene's flake,
-`camera` and the pixel diff are done.
+`camera`, the pixel diff and the Latin genders are done.
 Everything in Blocked
 needs Creagh — B1 an identity and a payment method, B2 onwards a decision that
 is not reversible the way a commit is. A session picking this file up should

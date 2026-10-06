@@ -67,8 +67,8 @@ queen	noun	rēgīna	rēgīnae	f	/reːˈɡiːna/	regina		/reːˈɡiːnae̯/
 lord	noun	dominus	dominī	m	/ˈdɔmɪnʊs/	dominate		/ˈdɔmɪniː/
 neighbour	noun	vīcīnus	vīcīnī	m	/wiːˈkiːnʊs/	vicinity		/wiːˈkiːniː/
 stranger	noun	aliēnus	aliēnī	m	/alɪˈeːnʊs/	alien		/alɪˈeːniː/
-enemy	noun	hostis	hostēs	m	/ˈhɔstɪs/	hostile		/ˈhɔsteːs/
-soldier	noun	mīles	mīlitēs	m	/ˈmiːlɛs/	military		/ˈmiːlɪteːs/
+enemy	noun	hostis	hostēs	c	/ˈhɔstɪs/	hostile		/ˈhɔsteːs/
+soldier	noun	mīles	mīlitēs	c	/ˈmiːlɛs/	military		/ˈmiːlɪteːs/
 teacher	noun	magister	magistrī	m	/maˈɡɪstɛr/	magisterial		/maˈɡɪstriː/
 doctor	noun	medicus	medicī	m	/ˈmɛdɪkʊs/	medical		/ˈmɛdɪkiː/
 farmer	noun	agricola	agricolae	m	/aˈɡrɪkɔla/		a rare masculine first-declension noun	/aˈɡrɪkɔlae̯/
@@ -92,7 +92,7 @@ face	noun	faciēs	faciēs	f	/ˈfakɪeːs/	facial		/ˈfakɪeːs/
 body	noun	corpus	corpora	n	/ˈkɔrpʊs/	corporeal		/ˈkɔrpɔra/
 skin	noun	cutis	cutēs	f	/ˈkʊtɪs/	cuticle		/ˈkʊteːs/
 voice	noun	vōx	vōcēs	f	/ˈwoːks/	vocal		/ˈwoːkeːs/
-dog	noun	canis	canēs	m	/ˈkanɪs/	canine		/ˈkaneːs/
+dog	noun	canis	canēs	c	/ˈkanɪs/	canine		/ˈkaneːs/
 cat	noun	fēlēs	fēlēs	f	/ˈfeːleːs/	feline		/ˈfeːleːs/
 horse	noun	equus	equī	m	/ˈɛkʷʊs/	equine		/ˈɛkʷiː/
 bird	noun	avis	avēs	f	/ˈawɪs/	aviary		/ˈaweːs/
@@ -103,13 +103,13 @@ pig	noun	porcus	porcī	m	/ˈpɔrkʊs/	pork		/ˈpɔrkiː/
 wolf	noun	lupus	lupī	m	/ˈlʊpʊs/	lupine		/ˈlʊpiː/
 bear	noun	ursus	ursī	m	/ˈʊrsʊs/	ursine		/ˈʊrsiː/
 lion	noun	leō	leōnēs	m	/ˈlɛoː/	lion		/lɛˈoːneːs/
-mouse	noun	mūs	mūrēs	m	/ˈmuːs/	muscle	“muscle” is a little mouse, from the shape	/ˈmuːreːs/
+mouse	noun	mūs	mūrēs	c	/ˈmuːs/	muscle	“muscle” is a little mouse, from the shape	/ˈmuːreːs/
 snake	noun	serpēns	serpentēs	f	/ˈsɛrpeːns/	serpent		/sɛrˈpɛnteːs/
 bee	noun	apis	apēs	f	/ˈapɪs/	apiary		/ˈapeːs/
 worm	noun	vermis	vermēs	m	/ˈwɛrmɪs/	vermin		/ˈwɛrmeːs/
 raven	noun	corvus	corvī	m	/ˈkɔrwʊs/	corvine		/ˈkɔrwiː/
-hound	noun	canis	canēs	m	/ˈkanɪs/	canine		/ˈkaneːs/
-ox	noun	bōs	bovēs	m	/ˈboːs/	bovine		/ˈbɔweːs/
+hound	noun	canis	canēs	c	/ˈkanɪs/	canine		/ˈkaneːs/
+ox	noun	bōs	bovēs	c	/ˈboːs/	bovine		/ˈbɔweːs/
 goat	noun	capra	caprae	f	/ˈkapra/			/ˈkaprae̯/
 food	noun	cibus	cibī	m	/ˈkɪbʊs/			/ˈkɪbiː/
 bread	noun	pānis	pānēs	m	/ˈpaːnɪs/	pantry		/ˈpaːneːs/
@@ -180,7 +180,7 @@ town	noun	oppidum	oppida	n	/ˈɔpːɪdʊm/			/ˈɔpːɪda/
 village	noun	vīcus	vīcī	m	/ˈwiːkʊs/	vicinity		/ˈwiːkiː/
 world	noun	mundus	mundī	m	/ˈmʊndʊs/	mundane		/ˈmʊndiː/
 country	noun	patria	patriae	f	/ˈpatrɪa/	repatriate		/ˈpatrɪae̯/
-place	noun	locus	loca	n	/ˈlɔkʊs/	local		/ˈlɔka/
+place	noun	locus	locī	m	/ˈlɔkʊs/	local		/ˈlɔkiː/
 rain	noun	pluvia	pluviae	f	/ˈplʊwɪa/	pluvial		/ˈplʊwɪae̯/
 snow	noun	nix	nivēs	f	/ˈnɪks/			/ˈnɪweːs/
 wind	noun	ventus	ventī	m	/ˈwɛntʊs/	ventilate		/ˈwɛntiː/
