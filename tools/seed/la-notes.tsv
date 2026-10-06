@@ -43,8 +43,12 @@
 # A source that contradicts it, hedges what it states flatly, or says less
 # than it does, and the note is rewritten to what the entry says. A loose
 # paraphrase of an entry stands: "in Latin it includes the household slaves"
-# is weaker than Lewis & Short, for whom familia is first of all "the slaves in
-# a household", and it is true.
+# was weaker than Lewis & Short, for whom familia is first of all "the slaves
+# in a household", and it was true. It was rewritten on 2026-10-06 all the
+# same, because reading the glosses found the head going on "(not = family,
+# i. e. wife and children, domus, or mei, tui, sui, etc.)" and giving the
+# household sense the row is woven for as "(rare)": a note is the one place a
+# reader of "my family" can be told that, so it says it now.
 #
 # The etymon column of lex-la.tsv is not covered here. It wants a ledger of
 # its own, and TODO.md has the item.
@@ -52,7 +56,7 @@
 man	noun	vir	a man as opposed to a woman, and often a husband; a human being is “homō”	ls:vir ls:homo wikt:la:vir wikt:la:homo
 child	noun	puer	“puer” covers boy and child alike	ls:puer
 person	noun	persōna	originally an actor’s mask	ls:persona etym:person
-family	noun	familia	in Latin it includes the household slaves	ls:familia etym:family
+family	noun	familia	it meant first of all a household’s slaves; a man’s wife and children were his “domus”	ls:familia ls:domus
 baby	noun	īnfāns	literally “not speaking”	ls:infans etym:infant
 farmer	noun	agricola	a rare masculine first-declension noun	ls:agricola1 ag:42
 bone	noun	os	distinct from “ōs”, mouth, only by vowel length	ls:os2 ls:os1
