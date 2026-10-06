@@ -555,6 +555,16 @@ not used"; "skies" was *caela*, and its only plural for *caelum* is *caeli*,
 masculine and "only poet.". Both now stay English in the plural, as "oaths"
 does, and the build fails if either plural comes back.
 
+**And *familia* says what it was first of all.** Lewis & Short gives it as
+"the slaves in a household … (not = family, i. e. wife and children)", and
+the household Weft weaves it for as a rare sense. Its note said "in Latin it
+includes the household slaves", which was true and said less than that; it
+now says the word meant first of all a household's slaves, and that a man's
+wife and children were his *domus*, so the discoveries feed tells it as the
+false friend it is. Every Latin gloss now quotes the entry that gives it,
+and where the English word is not there — "gray", "neighbor", "physician"
+for doctor — names the word that stands for it.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
