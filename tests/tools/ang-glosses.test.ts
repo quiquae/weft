@@ -64,12 +64,7 @@ const FORM_OF = new Map([
  * differently, with what the entries say the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  */
-const QUEUED = new Map([
-  [
-    'baby\tnoun\tċildclāð',
-    'a swaddling-cloth: Wiktionary’s cildclāþ is “swaddling cloth; (in the plural), swaddling clothes”, and Bosworth–Toller’s Supplement has only the Latin its plural glosses, “cunae”, a cradle, and “panni infantiae”',
-  ],
-]);
+const QUEUED = new Map<string, string>([]);
 
 type Row = { line: number; lemma: string; pos: string; tgt: string };
 type Gloss = Row & { sources: string[]; quote: string; stands: string };

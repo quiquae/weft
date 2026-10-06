@@ -573,6 +573,16 @@ also in the city in rainy weather" — the Latin beside the Old English
 *mentel*, a mantle, that Weft already weaves for the same word. A learner's
 *tunica* card is kept and no longer listed, as *camera*'s was.
 
+**And the Old English for "baby" is a child, not its swaddling.** It was
+*ċildclāð*, and "babies" *ċildclāðas*, which both dictionaries give as a
+swaddling-cloth: English Wiktionary's "swaddling cloth; (in the plural),
+swaddling clothes", Bosworth–Toller's "a child-cloth, a swaddling-cloth".
+"baby" is now *ċild*, which Bosworth–Toller gives as "a child, infant" and
+Wiktionary as "child" and "baby", and "babies" *ċildru* — the same word,
+and the same card, Weft already weaves for "child". A learner's *ċildclāð*
+card is kept and no longer listed. Every Old English noun now quotes the
+entry that gives its gloss, which is how this one was found.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

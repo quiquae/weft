@@ -34,8 +34,10 @@ two plurals no longer woven, −409, Chrome's 988.97 → 988.57 KB and
 Firefox's 988.64, all three still printing 989 — and through `familia`'s
 note the same night, +106, Chrome's 988.57 → 988.67 KB, and `paenula`, +317,
 347 of them `tunica`'s `WITHDRAWN` line in `background.js` and −30 the pack,
-measured against `main`'s Chrome package, 988.67 → 988.98 KB; Firefox's is
-989.05, so the next half kilobyte prints 990.
+measured against `main`'s Chrome package, 988.67 → 988.98 KB — and on
+2026-10-07 by 323 bytes, `ċildclāð`'s `WITHDRAWN` line in `background.js`
+(+326) and the Old English pack (−3), Chrome's 988.98 → 989.29 KB; Firefox's
+is 989.36, so the next 137 bytes print 990.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
@@ -54,8 +56,9 @@ See the ticked items in `Next`.
 holds the Latin, quoting English Wiktionary or, where the gender was read
 there, Bosworth–Toller, and `tests/tools/ang-glosses.test.ts` fails on a
 noun with none. Reading them found one neither dictionary bears out:
-`ċildclāð`, woven for "baby", is a swaddling-cloth. It is the first item in
-`Next`, and the other parts of speech are the second.
+`ċildclāð`, woven for "baby", is a swaddling-cloth. It was withdrawn the
+same night, the fifth card `WITHDRAWN` keeps, and "baby" is `ċild`, a second
+row of the child's card. The other parts of speech are the item in `Next`.
 
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
 was `far wel`, which English Wiktionary gives only as the reconstruction
@@ -156,7 +159,7 @@ npm's own exit status captured rather than a pipe's:**
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 581–588 entries across 576–583 surface forms |
-| `npm run site:check` | **0** | **715** pages, **16 141** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
+| `npm run site:check` | **0** | **714** pages, **16 118** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
@@ -4411,7 +4414,7 @@ registered**, and nothing below it can move until it is.
       md5, each failing its own test by name. Nothing that ships moved: no
       pack, page or screenshot.
 
-- [ ] **`ċildclāð` is woven for "baby", and both dictionaries have it as a
+- [x] **`ċildclāð` is woven for "baby", and both dictionaries have it as a
       swaddling-cloth.** Found 2026-10-07 by the gloss ledger above.
       Wiktionary's `cildclāþ` is "swaddling cloth; (in the plural),
       swaddling clothes"; Bosworth–Toller's Supplement (bt:41645), where
@@ -4433,6 +4436,30 @@ registered**, and nothing below it can move until it is.
       first: if it does not give an infant sense, `lȳtling`, "a little one,
       an infant", is the other candidate, a new card. About an hour.
 
+      **Done 2026-10-07, the same night, as `ċild`.** Bosworth–Toller's
+      `CILD` (bt:6138) is "A CHILD, infant; infans, puer", and its main
+      `cild-cláþ` (bt:6142) "A child-cloth, a swaddling-cloth; infantilis
+      pannus", quoting Luke 2:7. So "baby" and "babies" are a second row of
+      the `ang:ċild` card, `ċild` and `ċildru`, etymon *child*, as "person"
+      is a second row of `mann`; `ang:ċildclāð` is the fifth `WITHDRAWN`
+      card, with its reason, and the card ledger keeps its id. Test-first
+      through the ledgers: the gender, gloss and etymon lines written before
+      the seed went red on exactly the baby rows; the seed and `npm run
+      packs` left the card ledger naming `ang:ċildclāð` stranded and the
+      stress guard's `COMPOUNDED` naming a headword gone, and `WITHDRAWN` and
+      the deleted entry cleared both. `QUEUED` in
+      `tests/tools/ang-glosses.test.ts` is empty, kept for the next.
+
+      Two entries of `en-ang.json` moved, `baby` and `babies`, and its
+      `builtAt`, the UTC date; `index.json` none. The site, built from
+      `main` in a `/tmp` worktree and from the branch, differs in four
+      files: `/old-english/cildclath` gone, so **714** pages and **16 118**
+      links; the Old English index's count, 352 → 351 words; two sitemap
+      dates; and `/latin/infans`, which loses its "same idea in Old English"
+      line, the site indexing a word by its first gloss, as `/latin/vale`
+      did after #72. All 36 screenshots regenerated byte-identical, 14 + 15
+      + 7 written, and the three groups stamped.
+
 - [ ] **The rest of the Old English glosses: 178 rows that are not nouns.**
       The second slice of the item above: 81 verbs, 57 adjectives, 22
       adverbs, 13 numerals and 5 interjections, read as the nouns were, and
@@ -4449,9 +4476,9 @@ registered**, and nothing below it can move until it is.
       Wiktionary definition begins "to", so a quote holds the English
       lemma as a word. About ninety minutes, verbs first.
 
-`Now` is **empty** and `Next` holds **two** unchecked items above, as of
-2026-10-07, agent-shaped and not waiting on B1: `ċildclāð` for "baby", then
-the Old English glosses that are not nouns. The Old English noun glosses,
+`Now` is **empty** and `Next` holds **one** unchecked item above, as of
+2026-10-07, agent-shaped and not waiting on B1: the Old English glosses that
+are not nouns. `ċildclāð` for "baby", the Old English noun glosses,
 `tunica`, `familia`'s note, the Latin
 glosses, the Latin note on `vir`, the
 22 Old English addresses, the thirty Latin pronunciations, the feed's hidden

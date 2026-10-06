@@ -23,11 +23,11 @@
 # onsīen (an-sýn), pæð and blis have no Wiktionary entry under those titles;
 # īren's Wiktionary header says masculine and its own declension table a
 # neuter a-stem, and Bosworth–Toller has "íren, es; n."; þorp is neuter in
-# Wiktionary and "þorp, þrop, es; m." in Bosworth–Toller; and ċildclāð is
-# neuter in the main dictionary and "m. (not n.)" in its Supplement, which
-# corrects it, and which is the entry cited. fremde is an adjective, used as
-# a noun for a stranger, and Wiktionary gives that sense; masculine, as of a
-# man.
+# Wiktionary and "þorp, þrop, es; m." in Bosworth–Toller. ċildclāð, which
+# the pack taught for "baby" until 2026-10-07, was neuter in the main
+# dictionary and "m. (not n.)" in its Supplement; it is a swaddling-cloth,
+# and "baby" is ċild now. fremde is an adjective, used as a noun for a
+# stranger, and Wiktionary gives that sense; masculine, as of a man.
 #
 # The sources field
 # -----------------
@@ -57,7 +57,7 @@ son	sunu	m	wikt:ang:sunu
 daughter	dohtor	f	wikt:ang:dohtor
 wife	wīf	n	wikt:ang:wif
 husband	hūsbonda	m	wikt:ang:husbonda
-baby	ċildclāð	m	bt:41645
+baby	ċild	n	wikt:ang:cild
 king	cyning	m	wikt:ang:cyning
 queen	cwēn	f	wikt:ang:cwen
 lord	hlāford	m	wikt:ang:hlaford
