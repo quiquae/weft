@@ -45,6 +45,11 @@
 # English word it explains, and tests/tools/la-notes.test.ts fails on a note
 # that names none, or that has been reworded since it was read.
 #
+# So is the gloss, the English word a row is woven for. Every row quotes the
+# Lewis & Short entry that gives it in tools/seed/la-glosses.tsv, and
+# tests/tools/la-glosses.test.ts fails on a row that quotes none, or a quote
+# holding neither the English word nor a word named to stand for it.
+#
 man	noun	vir	virī	m	/ˈwɪr/	virile	a man as opposed to a woman, and often a husband; a human being is “homō”	/ˈwɪriː/
 woman	noun	fēmina	fēminae	f	/ˈfeːmɪna/	feminine		/ˈfeːmɪnae̯/
 child	noun	puer	puerī	m	/ˈpʊɛr/	puerile	“puer” covers boy and child alike	/ˈpʊɛriː/

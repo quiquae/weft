@@ -1,0 +1,405 @@
+# Where each gloss in lex-la.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word a Latin word is woven for, and the tooltip and
+# the word page print it back: it is the claim every reader meets first. Every
+# other claim the pack makes about a word names its entry — notes in
+# la-notes.tsv, etymons in la-etymons.tsv, genders in la-genders.tsv — and the
+# gloss did not until 2026-10-06. The only check on it had been a pass on
+# 2026-10-02 asking whether the English word occurs anywhere in the headword's
+# Lewis & Short entry, which is how camera, taught for "room" and in Lewis &
+# Short only a vault, was found and withdrawn.
+#
+# On 2026-10-06 every row was read against Lewis & Short, from the Perseus
+# text. A script drafted a quote for each row from the entry's own glosses,
+# the italic English Lewis & Short gives a word, and every quote was read
+# against its entry and checked verbatim against the entry's text. Where the
+# first gloss holding the English word was a phrase or a citation's
+# translation — aliēnus's "to be a stranger to a thing", exspectāre's "I must
+# wait a year" — the quote is the gloss the word itself is given.
+#
+# The sources field
+# -----------------
+#   ls:<key>   Lewis & Short, by the entry's key in the Perseus text: no
+#              macrons, j for a consonantal i, a digit for a homograph (dico2
+#              to say, dico1 to dedicate), a verb by its first person (amo).
+#
+# A word Lewis & Short gives inside another entry cites both, its own entry
+# first: falsus, sapiēns and mortuus are participles given under fallo, sapio
+# and morior; lentē, celeriter, vērē and valdē adverbs given under lentus,
+# celer, vērus and validus; salvē and valē under salveo and valeo. A noun cites
+# the entries la-genders.tsv read its gender in, homographs and all.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in the
+# entry: Lewis & Short spells "gray", "neighbor" and "to-day", has no "doctor"
+# but "physician", no "hello" before the word existed, and glosses some words
+# by a near synonym. Twenty rows need one, and each is a reading of how near:
+# canis for "hound" is "a dog", carō for "meat" is "flesh", tunica for "coat"
+# is "an under-garment of the Romans worn by both sexes, a tunic", the
+# loosest of them; TODO.md has the item.
+#
+# tests/tools/la-glosses.test.ts requires every row of lex-la.tsv to have a
+# line here, every line to cite Lewis & Short, every quote to hold its English
+# word or name the word standing for it, and every noun to cite the entry its
+# gender was read in. It cannot tell a quote somebody copied from the entry
+# from one somebody typed, nor an entry somebody read from one somebody named.
+man	noun	vir	ls:vir	a male person, a man
+woman	noun	fēmina	ls:femina	a female, woman
+child	noun	puer	ls:puer	a child
+boy	noun	puer	ls:puer	A male child, a boy, lad, young man
+girl	noun	puella	ls:puella	a female child, a girl, maiden, lass
+person	noun	persōna	ls:persona	A human being who performs any function, plays any part, a person, personage
+friend	noun	amīcus	ls:amicus2	A friend
+family	noun	familia	ls:familia	In gen., a family, the members of a household, = domus (rare)
+mother	noun	māter	ls:mater	a mother
+father	noun	pater	ls:pater	a father, sire
+brother	noun	frāter	ls:frater	a brother
+sister	noun	soror	ls:soror	a sister
+son	noun	fīlius	ls:filius	a son
+daughter	noun	fīlia	ls:filia	a daughter
+wife	noun	uxor	ls:uxor	a wife, spouse, consort
+husband	noun	marītus	ls:maritus2 ls:maritus1	a married man, husband
+baby	noun	īnfāns	ls:infans	a young or little child, an infant, babe	babe
+king	noun	rēx	ls:rex1	a king
+queen	noun	rēgīna	ls:regina	a queen
+lord	noun	dominus	ls:dominus	a master, possessor, ruler, lord, proprietor, owner
+neighbour	noun	vīcīnus	ls:vicinus	Substt. vīcīnus, i, m., a neighbor	neighbor
+stranger	noun	aliēnus	ls:alienus	a stranger. One not belonging to one's house, family, or country
+enemy	noun	hostis	ls:hostis	an enemy
+soldier	noun	mīles	ls:miles	a soldier
+teacher	noun	magister	ls:magister	A teacher, instructor
+doctor	noun	medicus	ls:medicus1	A medical man, physician, surgeon	physician
+farmer	noun	agricola	ls:agricola1	a farmer, ploughman, countryman, boor, peasant
+sailor	noun	nauta	ls:nauta	a sailor, seaman, mariner
+head	noun	caput	ls:caput	The head
+hand	noun	manus	ls:manus1	a hand
+eye	noun	oculus	ls:oculus	an eye
+ear	noun	auris	ls:auris	the ear
+mouth	noun	ōs	ls:os1	the mouth
+nose	noun	nāsus	ls:nasus1	the nose
+tooth	noun	dēns	ls:dens	tooth
+hair	noun	capillus	ls:capillus	the hair of the head, the hair
+heart	noun	cor	ls:cor	the heart
+blood	noun	sanguis	ls:sanguis	blood
+bone	noun	os	ls:os2	a bone
+arm	noun	bracchium	ls:bracchium	the arm
+leg	noun	crūs	ls:crus	the leg, shank, shin
+foot	noun	pēs	ls:pes	a foot
+finger	noun	digitus	ls:digitus1	a finger
+face	noun	faciēs	ls:facies	face, visage, countenance
+body	noun	corpus	ls:corpus	any object composed of materials perceptible by the senses, body
+skin	noun	cutis	ls:cutis	the skin
+voice	noun	vōx	ls:vox	a voice, sound, tone, cry, call
+dog	noun	canis	ls:canis1	a dog
+cat	noun	fēlēs	ls:feles	a cat
+horse	noun	equus	ls:equus	a horse, steed, charger
+bird	noun	avis	ls:avis	a bird
+fish	noun	piscis	ls:piscis	a fish
+cow	noun	vacca	ls:vacca1	a cow
+sheep	noun	ovis	ls:ovis	a sheep
+pig	noun	porcus	ls:porcus	a tame swine, a hog, pig
+wolf	noun	lupus	ls:lupus1	a wolf
+bear	noun	ursus	ls:ursus	a bear
+lion	noun	leō	ls:leo2	a lion
+mouse	noun	mūs	ls:mus1	a mouse
+snake	noun	serpēns	ls:serpens ls:serpo	a snake, serpent
+bee	noun	apis	ls:apis1	a bee
+worm	noun	vermis	ls:vermis	a worm
+raven	noun	corvus	ls:corvus	a raven
+hound	noun	canis	ls:canis1	Lit., a dog	dog
+ox	noun	bōs	ls:bos	An ox, a bull, a cow
+goat	noun	capra	ls:capra	a she-goat
+food	noun	cibus	ls:cibus	food
+bread	noun	pānis	ls:panis	bread, a loaf
+water	noun	aqua	ls:aqua	Water
+wine	noun	vīnum	ls:vinum	wine
+milk	noun	lac	ls:lac	milk
+meat	noun	carō	ls:caro2	flesh (animal or vegetable)	flesh
+fruit	noun	frūctus	ls:fructus2	proceeds, produce, product, fruit, profit, income
+apple	noun	mālum	ls:malum2	an apple
+salt	noun	sāl	ls:sal	salt
+honey	noun	mel	ls:mel	honey
+cheese	noun	cāseus	ls:caseus	cheese
+egg	noun	ōvum	ls:ovum	an egg
+fire	noun	ignis	ls:ignis	fire
+house	noun	domus	ls:domus	a house, home
+home	noun	domus	ls:domus	a house, home
+door	noun	iānua	ls:janua	a door, house-door
+window	noun	fenestra	ls:fenestra	an opening in the wall to admit the light, a window
+wall	noun	mūrus	ls:murus	a wall
+roof	noun	tēctum	ls:tectum	A roof
+floor	noun	solum	ls:solum1	the floor
+room	noun	conclāve	ls:conclave	a room, chamber, dining hall, cage for animals, stall, coop
+table	noun	mēnsa	ls:mensa	a table
+chair	noun	sella	ls:sella	a seat, settle, chair, stool
+bed	noun	lectus	ls:lectus2	a couch, bed
+book	noun	liber	ls:liber4	a book, work, treatise
+word	noun	verbum	ls:verbum	a word
+letter	noun	littera	ls:littera	a letter, a written sign
+name	noun	nōmen	ls:nomen	a name, appellation
+key	noun	clāvis	ls:clavis	a key
+bridge	noun	pōns	ls:pons1	a bridge
+church	noun	ecclēsia	ls:ecclesia	A religious assembly of Christians, a Christian congregation, a church
+ship	noun	nāvis	ls:navis	a ship
+boat	noun	scapha	ls:scapha	a light boat, a skiff
+sword	noun	gladius	ls:gladius	a sword
+shield	noun	scūtum	ls:scutum	An oblong shield
+ring	noun	ānulus	ls:anulus1	a ring
+gold	noun	aurum	ls:aurum	Gold
+silver	noun	argentum	ls:argentum	silver
+iron	noun	ferrum	ls:ferrum	iron
+stone	noun	lapis	ls:lapis	a stone
+glass	noun	vitrum	ls:vitrum	glass
+cloth	noun	pannus	ls:pannus	a cloth, a garment
+shoe	noun	calceus	ls:calceus	a shoe, a half-boot
+coat	noun	tunica	ls:tunica	an under-garment of the Romans worn by both sexes, a tunic	tunic
+hat	noun	petasus	ls:petasus	a travelling hat
+sun	noun	sōl	ls:sol	the sun
+moon	noun	lūna	ls:luna1	the moon
+star	noun	stēlla	ls:stella	a star
+sky	noun	caelum	ls:caelum2	the sky, heaven, the heavens, the vault of heaven
+earth	noun	terra	ls:terra	the earth
+land	noun	terra	ls:terra	land, ground, soil
+sea	noun	mare	ls:mare	the sea
+river	noun	flūmen	ls:flumen	a river
+lake	noun	lacus	ls:lacus	a lake, pond
+mountain	noun	mōns	ls:mons	a mountain, mount
+hill	noun	collis	ls:collis	high ground, a hill
+forest	noun	silva	ls:silva	a wood, forest, woodland
+tree	noun	arbor	ls:arbor1	A tree
+leaf	noun	folium	ls:folium	a leaf
+flower	noun	flōs	ls:flos	a blossom, flower
+grass	noun	herba	ls:herba	springing vegetation, grass, green stalks
+field	noun	ager	ls:ager	productive land, a field
+road	noun	via	ls:via	a highway, road, path, street
+path	noun	sēmita	ls:semita	a narrow way, a path, foot - path, lane, by - way
+city	noun	urbs	ls:urbs	a walled town, a city
+town	noun	oppidum	ls:oppidum	A town
+village	noun	vīcus	ls:vicus	A village, hamlet, a country-seat
+world	noun	mundus	ls:mundus2	the universe, the world
+country	noun	patria	ls:patria ls:patrius1	country, native place
+place	noun	locus	ls:locus	a place, spot
+rain	noun	pluvia	ls:pluvia	Rain
+snow	noun	nix	ls:nix	snow
+wind	noun	ventus	ls:ventus	wind
+cloud	noun	nūbēs	ls:nubes	a cloud
+ice	noun	glaciēs	ls:glacies	ice
+light	noun	lūx	ls:lux	light
+shadow	noun	umbra	ls:umbra	a shade, shadow
+time	noun	tempus	ls:tempus	period of time, a time
+day	noun	diēs	ls:dies	a day
+night	noun	nox	ls:nox	night
+year	noun	annus	ls:annus	a year
+month	noun	mēnsis	ls:mensis	a month
+week	noun	hebdomas	ls:hebdomas	the number seven, seven days	seven days
+hour	noun	hōra	ls:hora1	An hour
+morning	noun	māne	ls:mane	The morning, morn
+evening	noun	vesper	ls:vesper	the evening, even, eve, even-tide
+summer	noun	aestās	ls:aestas	the summer season, as one half of the year
+winter	noun	hiems	ls:hiems	the winter, winter time, rainy season
+autumn	noun	autumnus	ls:auctumnus1	The season of abundance, the autumn
+life	noun	vīta	ls:vita	life
+death	noun	mors	ls:mors	death
+love	noun	amor	ls:amor	love
+war	noun	bellum	ls:bellum	war
+peace	noun	pāx	ls:pax1	peace
+truth	noun	vēritās	ls:veritas	truth, truthfulness, verity
+law	noun	lēx	ls:lex	A bill which has become a law
+work	noun	labor	ls:labor2	Work, workmanship
+money	noun	pecūnia	ls:pecunia	money
+price	noun	pretium	ls:pretium	worth, value, price
+question	noun	quaestiō	ls:quaestio	an inquiry, investigation, a questioning, question, subject of inquiry
+answer	noun	respōnsum	ls:responsum ls:respondeo	an answer, reply, response
+story	noun	fābula	ls:fabula1	a narration, narrative, account, story
+song	noun	carmen	ls:carmen1	a tune, song
+music	noun	mūsica	ls:musica	the art of music, music
+game	noun	lūdus	ls:ludus	a play, game, diversion, pastime
+dream	noun	somnium	ls:somnium	a dream
+fear	noun	timor	ls:timor	fear, dread, apprehension, alarm, anxiety
+hope	noun	spēs	ls:spes	hope
+joy	noun	gaudium	ls:gaudium	inward joy, joy, gladness, delight
+anger	noun	īra	ls:ira	anger, wrath, rage, ire
+oath	noun	iūsiūrandum	ls:jusjurandum	an oath
+gift	noun	dōnum	ls:donum	a gift, present
+good	adj	bonus	ls:bonus	good
+bad	adj	malus	ls:malus1	bad
+big	adj	magnus	ls:magnus1	Lit., of physical size or quantity, great, large	large
+small	adj	parvus	ls:parvus	little, small, petty, puny, inconsiderable
+great	adj	magnus	ls:magnus1	great, large
+little	adj	parvus	ls:parvus	little, small, petty, puny, inconsiderable
+long	adj	longus	ls:longus	long
+short	adj	brevis	ls:brevis	short, little, of small extent
+high	adj	altus	ls:altus1	high
+low	adj	humilis	ls:humilis	low, lowly, small, slight
+old	adj	vetus	ls:vetus	Old
+young	adj	iuvenis	ls:juvenis	a young person, a young man, a young woman
+new	adj	novus	ls:novus	new, not old, young, fresh, recent
+hot	adj	calidus	ls:calidus	warm, hot
+cold	adj	frīgidus	ls:frigidus	cold, cool, chill, chilling
+warm	adj	tepidus	ls:tepidus	moderately warm, lukewarm, tepid
+heavy	adj	gravis	ls:gravis	heavy, weighty, ponderous, burdensome
+strong	adj	fortis	ls:fortis	strong, powerful
+weak	adj	dēbilis	ls:debilis	lame, disabled, crippled, infirm, debilitated, feeble, frail, weak
+hard	adj	dūrus	ls:durus	hard
+soft	adj	mollis	ls:mollis	soft, tender, delicate, gentle, mild, pleasant
+quick	adj	celer	ls:celer1	swift, fleet, quick, speedy
+slow	adj	tardus	ls:tardus	slow, not swift, sluggish, tardy
+true	adj	vērus	ls:verus	true, real, actual, genuine
+false	adj	falsus	ls:falsus ls:fallo	falsus, a, um, P. a., deceptive, pretended, feigned, deceitful, spurious, false
+rich	adj	dīves	ls:dives	rich
+poor	adj	pauper	ls:pauper	poor
+happy	adj	fēlīx	ls:felix1	Lucky, happy, fortunate
+sad	adj	trīstis	ls:tristis	sad, sorrowful, mournful, dejected, melancholy, disconsolate, trist
+tired	adj	fessus	ls:fessus	wearied, tired, fatigued
+full	adj	plēnus	ls:plenus	full, filled
+empty	adj	vacuus	ls:vacuus	empty, void, free, clear, devoid of, without
+clean	adj	pūrus	ls:purus	clean, pure
+dirty	adj	sordidus	ls:sordidus	dirty, unclean, foul, filthy, squalid, sordid
+beautiful	adj	pulcher	ls:pulcher1	beautiful, beauteous, fair, handsome
+ugly	adj	turpis	ls:turpis	ugly, unsightly, unseemly, foul, filthy
+easy	adj	facilis	ls:facilis	easy to do, easy, without difficulty
+difficult	adj	difficilis	ls:difficilis	hard, difficult, troublesome
+free	adj	līber	ls:liber1	free, unrestricted, unrestrained, unimpeded, unshackled
+wise	adj	sapiēns	ls:sapiens ls:sapio	P. a. (acc. to II.), wise, knowing, sensible, well-advised, discreet, judicious
+brave	adj	audāx	ls:audax	daring, in a good, but oftener in a bad sense, bold, courageous, spirited	courageous
+holy	adj	sacer	ls:sacer	consecrated to a divinity, holy, sacred
+deep	adj	profundus	ls:profundus	deep, profound, vast
+wide	adj	lātus	ls:latus1	broad, wide
+narrow	adj	angustus	ls:angustus	narrow, strait
+dead	adj	mortuus	ls:mortuus ls:morior	mŏrtŭus, a, um, P. a., dead
+alive	adj	vīvus	ls:vivus	alive, living, that has life
+sick	adj	aeger	ls:aeger	ill, sick, unwell, diseased, suffering
+whole	adj	tōtus	ls:totus1	the whole, entire, total
+white	adj	albus	ls:albus	white
+black	adj	niger	ls:niger1	adj., black, sable, dark, dusky
+red	adj	ruber	ls:ruber	Red, ruddy
+green	adj	viridis	ls:viridis	green
+blue	adj	caeruleus	ls:caeruleus1	dark-colored, dark blue, dark green, cerulean, azure
+yellow	adj	flāvus	ls:flavus	golden yellow, reddish yellow, flaxen-colored
+grey	adj	cānus	ls:canus	Esp. freq. of the gray hair of the aged	gray
+brown	adj	fuscus	ls:fuscus1	dark, swarthy, dusky, tawny	tawny
+have	verb	habēre	ls:habeo	to have
+say	verb	dīcere	ls:dico2	to say, tell, mention, relate, affirm, declare, state
+go	verb	īre	ls:eo1	to go
+come	verb	venīre	ls:venio	to come
+see	verb	vidēre	ls:video	to see, perceive
+know	verb	scīre	ls:scio	to know
+think	verb	putāre	ls:puto	to judge, suppose, account, suspect, believe, think, imagine
+take	verb	capere	ls:capio1	to take in hand, take hold of, lay hold of, take, seize, grasp
+give	verb	dare	ls:do1	to give
+make	verb	facere	ls:facio	to make
+find	verb	invenīre	ls:invenio	to find, meet with
+want	verb	velle	ls:volo1	to wish, want, intend, purpose, propose, be willing, consent, mean
+tell	verb	nārrāre	ls:narro	to tell, relate, narrate, report, recount, set forth
+ask	verb	rogāre	ls:rogo	to ask, question, interrogate
+work	verb	labōrāre	ls:laboro	Neutr., to labor, take pains, exert one's self, strive	labor
+play	verb	lūdere	ls:ludo	to play
+run	verb	currere	ls:curro	to run, to move quickly
+walk	verb	ambulāre	ls:ambulo	to go about, to walk
+speak	verb	loquī	ls:loquor	to speak, talk, say
+read	verb	legere	ls:lego2	to read
+write	verb	scrībere	ls:scribo	to write, draw
+eat	verb	edere	ls:edo1	to eat
+drink	verb	bibere	ls:bibo1	to drink
+sleep	verb	dormīre	ls:dormio	to sleep
+sit	verb	sedēre	ls:sedeo	to sit
+stand	verb	stāre	ls:sto	to stand
+live	verb	vīvere	ls:vivo	to live, be alive, have life
+die	verb	morī	ls:morior	to die
+love	verb	amāre	ls:amo	to like, to love
+hate	verb	ōdisse	ls:odi	To hate
+fear	verb	timēre	ls:timeo	to fear, be afraid of, to dread, apprehend
+hear	verb	audīre	ls:audio	to hear, to perceive
+feel	verb	sentīre	ls:sentio	to feel, hear, see
+hold	verb	tenēre	ls:teneo	Act., to hold, keep, have
+carry	verb	portāre	ls:porto	to bear or carry along; to convey any thing heavy
+bring	verb	ferre	ls:fero	to bear, carry, bring
+send	verb	mittere	ls:mitto	to cause to go, let go, send, to send off, despatch
+buy	verb	emere	ls:emo	to buy, purchase
+sell	verb	vēndere	ls:vendo	to sell, vend
+pay	verb	solvere	ls:solvo	of obligations, to fulfil. To pay
+build	verb	aedificāre	ls:aedifico	to erect a building, to build
+break	verb	frangere	ls:frango	to break, break in pieces, dash to pieces, shiver, break in two
+open	verb	aperīre	ls:aperio	To unclose, open
+close	verb	claudere	ls:claudo1	To shut something that is open, to close, shut up
+begin	verb	incipere	ls:incipio	to begin
+help	verb	iuvāre	ls:juvo	to help, aid, assist, support, benefit
+learn	verb	discere	ls:disco	to learn, to learn to know, to become acquainted with
+teach	verb	docēre	ls:doceo	to teach, instruct, inform, show, tell
+remember	verb	meminisse	ls:memini	to remember, recollect, to think of, be mindful of
+forget	verb	oblīvīscī	ls:obliviscor	to forget
+win	verb	vincere	ls:vinco	to conquer, overcome, get the better of, defeat, subdue, vanquish, be victorious	be victorious
+lose	verb	āmittere	ls:amitto	to let go, let fall, to drop, lose
+fight	verb	pugnāre	ls:pugno	to fight
+swim	verb	natāre	ls:nato	to swim, to float
+fly	verb	volāre	ls:volo2	to fly
+ride	verb	vehī	ls:veho	Pass., to be carried or borne, to ride, sail, go
+sing	verb	canere	ls:cano	Neutr., to utter melodious notes, to sing, sound, play
+laugh	verb	rīdēre	ls:rideo	Neutr., to laugh
+cry	verb	flēre	ls:fleo	to weep, cry, shed tears
+wait	verb	exspectāre	ls:exspecto	to await, expect something that is to come or to take place, to be waiting for	await
+watch	verb	spectāre	ls:specto	to gaze at, watch, observe
+look	verb	aspicere	ls:aspicio	to look to or upon a person or thing, to behold, look at, see
+show	verb	mōnstrāre	ls:monstro	to show, point out, to indicate, intimate, inform, advise, teach
+call	verb	vocāre	ls:voco	to call
+put	verb	pōnere	ls:pono	to put
+keep	verb	servāre	ls:servo	to save, deliver, keep unharmed, preserve, protect
+leave	verb	relinquere	ls:relinquo	To leave behind
+follow	verb	sequī	ls:sequor	to follow, to come
+seek	verb	quaerere	ls:quaero	to seek
+choose	verb	ēligere	ls:eligo	to pick out, choose, elect
+change	verb	mūtāre	ls:muto1	Act., to alter, change
+grow	verb	crēscere	ls:cresco	to come forth, grow, to arise, spring, be born, become visible, appear
+fall	verb	cadere	ls:cado	to fall down, be precipitated, sink down, go down, sink, fall
+rise	verb	surgere	ls:surgo	Neutr., to rise, arise, to get up, stand up
+turn	verb	vertere	ls:verto	Act., to turn, to turn round
+move	verb	movēre	ls:moveo	Act., to move, stir, set in motion
+throw	verb	iacere	ls:jacio	to throw, cast, fling, hurl
+catch	verb	capere	ls:capio1	to catch, hunt down, take
+cut	verb	secāre	ls:seco	to cut, cut off, cut up
+wash	verb	lavāre	ls:lavo	to wash, bathe, lave
+cook	verb	coquere	ls:coquo	to cook, to prepare by cooking, to bake, boil, roast, parch, steep
+always	adv	semper	ls:semper	ever, always, at all times, forever
+never	adv	numquam	ls:numquam	at no time, never
+often	adv	saepe	ls:saepe	Often, oft, oftentimes, many times, frequently
+sometimes	adv	interdum	ls:interdum	sometimes, occasionally, now and then
+today	adv	hodiē	ls:hodie	on this day, to-day	to-day
+tomorrow	adv	crās	ls:cras	to-morrow	to-morrow
+yesterday	adv	herī	ls:heri	yesterday
+now	adv	nunc	ls:nunc	now, at present, at this time
+soon	adv	mox	ls:mox	soon, anon, directly, presently
+already	adv	iam	ls:jam	already, so soon
+almost	adv	paene	ls:paene	nearly, almost, as I may say
+together	adv	simul	ls:simul	at the same time, together, at once, as soon as
+alone	adv	sōlus	ls:solus1	alone, only, single, sole
+again	adv	iterum	ls:iterum	again, a second time, once more, anew
+here	adv	hīc	ls:hic	adv. loci, in this place, here
+everywhere	adv	ubīque	ls:ubique	wherever, wheresoever, in any place whatever, anywhere, everywhere
+nowhere	adv	nusquam	ls:nusquam	nowhere, in no place
+slowly	adv	lentē	ls:lente ls:lentus	adv.: lentē, slowly, without haste, leisurely
+quickly	adv	celeriter	ls:celeriter ls:celer1	Adv., quickly, speedily
+truly	adv	vērē	ls:vere ls:verus	vērē, according to truth, truly, really, in fact
+perhaps	adv	forsitan	ls:forsitan	perhaps, peradventure
+very	adv	valdē	ls:valde ls:validus	valdē, an intens. adv., strongly, vehemently, energetically, vigorously, intensely, very
+one	num	ūnus	ls:unus	one, a single
+two	num	duo	ls:duo	Two
+three	num	trēs	ls:tres	Three
+four	num	quattuor	ls:quattuor	four
+five	num	quīnque	ls:quinque1	five
+six	num	sex	ls:sex	six
+seven	num	septem	ls:septem	seven
+eight	num	octō	ls:octo	eight
+nine	num	novem	ls:novem	nine
+ten	num	decem	ls:decem	ten
+hundred	num	centum	ls:centum	A hundred
+thousand	num	mīlle	ls:mille	a thousand, thousands
+first	num	prīmus	ls:primus	the first, first
+yes	intj	ita	ls:ita	yes, it is so, just so, true
+hello	intj	salvē	ls:salve2 ls:salveo	Salve, salveto, salvete, God save you; how are you? I hope you are well	God save you
+goodbye	intj	valē	ls:vale ls:valeo	Vale or valeas, in leave-taking, farewell, adieu	farewell
+please	intj	quaesō	ls:quaeso	quaeso, quaesumus, I (or we) pray, beg, beseech; freq. as a mere intensive expression, prithee	prithee
+sorry	intj	ignōsce	ls:ignosco	to pardon, forgive, excuse, overlook	forgive
