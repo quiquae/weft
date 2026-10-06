@@ -565,6 +565,14 @@ false friend it is. Every Latin gloss now quotes the entry that gives it,
 and where the English word is not there — "gray", "neighbor", "physician"
 for doctor — names the word that stands for it.
 
+**And the Latin for "coat" is a garment worn over others.** It was
+*tunica*, which Lewis & Short gives as "an under-garment of the Romans worn
+by both sexes, a tunic". "coat" is now *paenula*, "a woollen outer garment
+covering the whole body, a kind of cloak or mantle, worn on journeys, and
+also in the city in rainy weather" — the Latin beside the Old English
+*mentel*, a mantle, that Weft already weaves for the same word. A learner's
+*tunica* card is kept and no longer listed, as *camera*'s was.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

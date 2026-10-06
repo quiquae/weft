@@ -63,7 +63,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 715 pages, 16 142 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 715 pages, 16 141 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -532,7 +532,9 @@ was the first, on 2026-10-05 — a reconstruction no text has — and "goodbye"
 is `wes hāl` now; `mē is lāþ`, taught for "sorry" and meaning "it is hateful
 to me", the second, the same day, and "sorry" is `mē hrēoweþ`; Latin
 `camera`, taught for "room" and in Lewis & Short only a vault, the third,
-and "room" is `conclāve`. The ledger test accepts a
+and "room" is `conclāve`; Latin `tunica`, taught for "coat" and in Lewis &
+Short "an under-garment", the fourth, on 2026-10-06, and "coat" is
+`paenula`, a cloak for journeys and rain. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -541,6 +543,64 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-06 — the Latin for "coat" is a cloak, and tunica is the fourth card withdrawn
+
+The same session's third PR, the second item the gloss ledger queued:
+`tunica`, taught for "coat", is in Lewis & Short "an under-garment of the
+Romans worn by both sexes, a tunic", and "coat" is not in the entry. The
+item called it a choice of word; six entries were read before choosing.
+`lacerna` was worn over the toga in bad weather and "to wear a lacerna in
+common was regarded as disgraceful"; `laena` was the flamens'; `sagum`,
+`amiculum` and `abolla` are a blanket, a wrap and a philosopher's robe.
+**`paenula` is the everyday one**, "a woollen outer garment covering the
+whole body, a kind of cloak or mantle, worn on journeys, and also in the
+city in rainy weather" — what a coat is for — and the Old English pack
+already weaves `mentel`, a mantle, for the same word, so the two now agree.
+
+`la:tunica` went into `WITHDRAWN` with its reason, the fourth after
+`far wel`, `mē is lāþ` and `camera`, and `la paenula` into the card
+ledger. Test-first through the ledgers, as #75 did: card ids, genders,
+glosses and etymons written for `paenula` before the seed went red on six
+tests; the seed and `npm run packs` left only the card ledger red, and its
+message is worth knowing — **before the packs were rebuilt it named
+`la:paenula` as shipped and unread**, because the test reads the shipped
+packs, not the seed; after, `la:tunica` as stranded, which `WITHDRAWN`
+cleared. `tunica → tunic`, true of its word, sits at the foot of
+`la-etymons.tsv`; `paenula` has no English descendant and claims none.
+
+8 fields of `en-la.json` moved and `index.json` none. The site is still
+715 pages, with `/latin/paenula` for `/latin/tunica`, and 16 142 → **16 141**
+links, the descent hub's row gone; the Latin index, `/old-english/mentel`
+and the sitemap moved with it. All 36 screenshots regenerated
+byte-identical, 15 + 14 + 7 written, and the three groups stamped. The
+package grew 317 bytes, `background.js` +347 and the pack −30, measured
+against `main`'s Chrome package built in a `/tmp` worktree: 988.67 →
+988.98 KB, Firefox's 989.05, all still printing 989. A first measurement
+with `git stash` compared the branch with itself, the change being
+committed; **build the other tree, never a stash, to measure a committed
+change.** A `CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 258 tools / 70 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **715 pages / 16 141 links**, all
+resolving; `artefacts:check` 1 stale once the stamps are committed, the
+release notes, B2a.
+
+Assumed, with nobody to ask: that a cloak worn against rain is nearer a
+coat than a tunic is, though Latin has no sleeved overcoat; that `paenula`
+needs no note, its gloss saying what it was; and that the queued item's
+"a call before it is a change" was this session's to make, as `camera` →
+`conclāve` was #75's.
+
+What needs a human: unchanged, everything below **B1**. One call to look
+at rather than do: "coat" → `paenula` is a choice among cloaks, reversible
+by the same steps. `Next` holds one agent-shaped item, the Old English
+glosses.
 
 ### 2026-10-06 — familia says what it was first of all
 
