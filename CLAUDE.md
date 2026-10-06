@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **266 pass**, 71 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **267 pass**, 71 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -423,15 +423,15 @@ check. Do not loosen it to "the English word occurs in the entry", the
 etymology's "Engl. hound". A noun cites the entry its gender was read in, so
 the two ledgers cannot choose different homographs.
 
-**So does an Old English noun's, and a page that only names another form
-is not a definition.** `tools/seed/ang-glosses.tsv` quotes English
-Wiktionary, or Bosworth–Toller where the gender was read there, for every
-Old English noun, held by `tests/tools/ang-glosses.test.ts` to the Latin
-rules; `HELD` in the test names the parts of speech read, nouns so far.
-Wiktionary files Old English under its þ spelling, so its page for a ð
-spelling — `brōðor`, `dēað` — says only "Alternative form of" the þ one, and
-a line quotes the entry named and cites the word's own beside it; `FORM_OF`
-lists the twelve. A quote is the page's words, never its wikitext. Where
+**So does an Old English one, and a page that only names another form is
+not a definition.** `tools/seed/ang-glosses.tsv` quotes English Wiktionary,
+or Bosworth–Toller where a noun's gender or a phrase's text was read there,
+for every Old English row but the 22 adverbs, held by
+`tests/tools/ang-glosses.test.ts` to the Latin rules; `HELD` in the test
+names the parts of speech read. Wiktionary files Old English under its þ
+spelling, so its page for a ð spelling — `brōðor`, `dēað` — says only
+"Alternative form of" the þ one, and a line quotes the entry named and
+cites the word's own beside it; `FORM_OF` lists the twenty. A quote is the page's words, never its wikitext. Where
 neither dictionary gives the gloss, the line still quotes what they do say
 and `QUEUED` names the row until it is taught differently, as `ċildclāð`,
 "baby", a swaddling-cloth, was named for a night. Do not give such a row a
@@ -560,6 +560,65 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-07 — every Old English gloss but the adverbs names its entry, and "low" was Norse
+
+The same session's third PR, the slice the first one queued: the 178 rows
+that are not nouns. 156 landed — every verb, adjective, numeral and
+interjection — and the 22 adverbs are queued, because one of them stuck.
+
+**The drafting carried over; the reading did not.** 173 more Wiktionary
+pages were fetched and a script drafted 154 quotes from their definition
+lines, `## ` sub-senses now joined to their parent. Reading them found
+eight more pages that define nothing and name another form, so `FORM_OF`
+lists twenty — and one false hit worth knowing: `siex`'s page says
+"Alternative form of six", and the script took the Old English *six* for
+the English word. **A quote that holds the English word is not proof it
+glosses it**; reading every quote is what the ledger is for. Ten more rows
+name a stand-in, seven verbs and three phrases, which Bosworth–Toller
+glosses only in Latin or not at all: "goodbye"'s is *valete*, the Latin.
+
+**The phrases cite the entry their text was read in**, a ninth test: a
+line for a row `ang-phrases.tsv` holds must cite one of its entries, as a
+noun must cite its gender's. Red on a planted `bt:18028` under "goodbye".
+
+**`lāh`, woven for "low", is not Old English.** Wiktionary's `lah` is a
+past tense of `lēon`, to lend; Bosworth–Toller's (bt:21055) is a noun,
+"Law"; and Wiktionary derives English *low* "From Middle English lah …
+from Old Norse lágr". `QUEUED` names it, its line quoting "Law", and the
+fix is the next item. And **`tōmorgen` has no entry under that spelling**
+in either dictionary: Wiktionary's `tomorgen` redirects to a Middle English
+page, and its English *tomorrow* comes "from Old English tō morgne", two
+words in the dative — so the adverbs wait for that to be read. Three rows
+are woven for a sense their word gained later — `hūsbonda` husband,
+`wealcan` walk, `winnan` win — each with a note saying so; recorded in
+`TODO.md` as a teaching call, not changed. etymonline answered 403 to a
+fetch this time, so Wiktionary's own etymology of *low* was read instead.
+
+Four planted defects, each restored by md5, each failing its own test by
+name. Nothing that ships moved. Counts moved 974 → **975** and tools 266 →
+**267** in six places, `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md`
+says the adverbs are not yet read.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **267 tools / 71 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 2.9 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**.
+`site:check` and `artefacts:check` were not re-run: no pack, page or image
+moved.
+
+Assumed, with nobody to ask: that a Latin word Bosworth–Toller glosses a
+phrase with may stand for the English one, named; that "salutation" stands
+for "hello" because the entry says the word is "often used in
+salutation"; that a ledger line may carry a known false gloss while it is
+queued, as long as it quotes what the entry does say; and that the
+adverbs belonged in the next slice rather than this one with `tōmorgen`
+unread.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, `lāh` first.
 
 ### 2026-10-07 — the Old English for "baby" is ċild, and ċildclāð is the fifth card withdrawn
 

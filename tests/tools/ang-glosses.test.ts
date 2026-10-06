@@ -21,8 +21,8 @@
  * against it when it was written, and the entries cited should be the ones
  * actually opened.
  *
- * The ledger holds the nouns so far. The other parts of speech are the next
- * item in `TODO.md`, and `HELD` grows as each is read.
+ * The ledger holds every part of speech but the adverbs, which are the next
+ * item in `TODO.md`; `HELD` grows as each is read.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -34,9 +34,10 @@ const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const LEXICON = join(ROOT, 'tools/seed/lex-ang.tsv');
 const LEDGER = join(ROOT, 'tools/seed/ang-glosses.tsv');
 const GENDERS = join(ROOT, 'tools/seed/ang-genders.tsv');
+const PHRASES = join(ROOT, 'tools/seed/ang-phrases.tsv');
 
 /** The parts of speech whose every row the ledger holds. */
-const HELD = new Set(['noun']);
+const HELD = new Set(['noun', 'verb', 'adj', 'num', 'intj']);
 
 /**
  * Words whose own Wiktionary entry gives no definition but names the entry it
@@ -57,6 +58,14 @@ const FORM_OF = new Map([
   ['hæt', 'hætt'],
   ['wolcen', 'wolcn'],
   ['wicu', 'wice'],
+  ['sceort', 'scort'],
+  ['niwe', 'niewe'],
+  ['softe', 'sefte'],
+  ['æmettig', 'æmtig'],
+  ['eaþe', 'ieþe'],
+  ['bald', 'beald'],
+  ['þreo', 'þri'],
+  ['siex', 'six'],
 ]);
 
 /**
@@ -64,7 +73,12 @@ const FORM_OF = new Map([
  * differently, with what the entries say the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  */
-const QUEUED = new Map<string, string>([]);
+const QUEUED = new Map<string, string>([
+  [
+    'low\tadj\tlāh',
+    'no adjective: Wiktionary’s lah is only a past tense of lēon, to lend, and Bosworth–Toller’s lah a noun, “Law”; English low is Middle English lah, from Old Norse lágr (English Wiktionary, low)',
+  ],
+]);
 
 type Row = { line: number; lemma: string; pos: string; tgt: string };
 type Gloss = Row & { sources: string[]; quote: string; stands: string };
@@ -89,6 +103,11 @@ const ledger: Gloss[] = tsv(LEDGER).map(({ line, f }) => ({
 /** A noun's entries as its gender was read, by the same key. */
 const genders = new Map(
   tsv(GENDERS).map(({ f }) => [`${f[0]}\t${f[1]}`, (f[3] ?? '').split(' ').filter(Boolean)] as const),
+);
+
+/** A phrase's entries as its text was read, by the same key as a row. */
+const phrases = new Map<string, string[]>(
+  tsv(PHRASES).map(({ f }) => [`${f[0]}\t${f[1]}\t${f[2]}`, (f[3] ?? '').split(' ').filter(Boolean)] as const),
 );
 
 const key = (r: Row): string => `${r.lemma}\t${r.pos}\t${r.tgt}`;
@@ -179,6 +198,20 @@ describe('every Old English gloss names the entry that gives it', () => {
         : [`ang-glosses.tsv:${g.line} ${g.tgt} cites ${g.sources.join(' ')}, where its gender was read in ${read[0]}`];
     });
     assert.deepEqual(offenders, [], `${offenders.length} nouns are glossed from another entry:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('a phrase’s gloss is read in an entry its text was read in', () => {
+    // ang-phrases.tsv names the Bosworth–Toller entries each interjection and
+    // each target of more than one word was found in a text under; a gloss
+    // read anywhere else could be a reading of some other use of the words.
+    const offenders = ledger.flatMap((g) => {
+      const read = phrases.get(key(g));
+      if (!read) return [];
+      return g.sources.some((s) => read.includes(s))
+        ? []
+        : [`ang-glosses.tsv:${g.line} ${g.tgt} cites ${g.sources.join(' ')}, where its text was read in ${read.join(' ')}`];
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} phrases are glossed from another entry:\n  ${offenders.join('\n  ')}`);
   });
 
   test('every alternative form and every queued gloss is still one a line needs', () => {

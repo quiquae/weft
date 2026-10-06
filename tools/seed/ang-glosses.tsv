@@ -9,10 +9,13 @@
 # ang-phrases.tsv — and the gloss named none until 2026-10-07, as the Latin
 # glosses named none until la-glosses.tsv.
 #
-# The nouns are read so far, all 178 rows; the other parts of speech are the
-# next item in TODO.md. On 2026-10-07 every noun was read against English
+# Every row but the 22 adverbs is read: the 178 nouns, and the 81 verbs, 57
+# adjectives, 13 numerals and 5 interjections, on 2026-10-07. The adverbs are
+# the next item in TODO.md, because tōmorgen, tomorrow, has an entry in
+# neither dictionary under that spelling. Each row was read against English
 # Wiktionary's Old English entry, from its raw text, and against
-# Bosworth–Toller wherever ang-genders.tsv read the gender there. A script
+# Bosworth–Toller wherever ang-genders.tsv read a noun's gender there and
+# ang-phrases.tsv a phrase's text. A script
 # drafted a quote for each row from the entry's definition lines, links and
 # labels read as the page prints them, and every quote was read against its
 # entry; where a page holds more than one word of a spelling — hund, a dog
@@ -32,9 +35,12 @@
 # read different words. Wiktionary files most Old English words under their
 # þ spelling, and its page for brōðor, mūð or dēað says only "Alternative
 # form of" the þ one; so does its page for meoluc, wall, hæt, wolcen and
-# wicu, of meolc, weall, hætt, wolcn and wice. Those twelve lines quote the
-# entry named and cite the word's own beside it, and FORM_OF in the test
-# lists them. þorp is quoted from Wiktionary, "village", because
+# wicu, of meolc, weall, hætt, wolcn and wice, and so does its page for the
+# adjectives sceort, nīwe, sōfte, ǣmettiġ, ēaþe and bald, and the numerals
+# þrēo and siex, of scort, nīewe, sēfte, æmtiġ, īeþe, beald, þrī and six —
+# the Old English six, which only looks like the English word. Those twenty
+# lines quote the entry named and cite the word's own beside it, and FORM_OF
+# in the test lists them. þorp is quoted from Wiktionary, "village", because
 # Bosworth–Toller's head, where its gender was read, gives no one English
 # word: "the idea at first connected with the words is that of an
 # assemblage", then of workers on an estate, and of the estate.
@@ -43,11 +49,25 @@
 # ----------------
 # Blank where the quote holds the row's English word. Otherwise it names the
 # word of the quote that stands for it, because the English word is not in the
-# entry. Six rows need one: hund for "hound" is "dog", setl for "chair" "seat,
-# bench, throne", mentel for "coat" "mantle (kind of cloak)", rīċe for
-# "country" "kingdom, empire", fyrhtu for "fear" "fright", and hūsbonda for
-# "husband" "master of the house" — the loosest, whose note already says
-# "the householder, not yet the spouse".
+# entry. Sixteen rows need one. Six are nouns: hund for "hound" is "dog",
+# setl for "chair" "seat, bench, throne", mentel for "coat" "mantle (kind of
+# cloak)", rīċe for "country" "kingdom, empire", fyrhtu for "fear" "fright",
+# and hūsbonda for "husband" "master of the house". Seven are verbs:
+# ondrǣdan "to be scared", losian "to be lost", wēpan "to weep", weardian "to
+# guard", settan "to set, establish, place", wealcan "to move around" and
+# winnan "to struggle". Three are phrases, read in the Bosworth–Toller entry
+# ang-phrases.tsv names, which has no English for them: wes hāl for "hello"
+# is hál "often used in salutation"; for "goodbye" it is "Wesaþ hále
+# valete", whose stand-in is the Latin, valete, farewell, because the
+# dictionary glosses the phrase in nothing else; and iċ bidde for "please"
+# is biddan "To ask, pray", as "pray" was English for please.
+#
+# Three of those rows are woven for a sense their word gained after Old
+# English, and their notes say so: hūsbonda for "husband", "the householder,
+# not yet the spouse"; wealcan for "walk", "it meant to roll or toss"; and
+# winnan for "win", "meant to struggle or toil". Their stand-ins are the
+# loosest in the ledger, and whether to weave them at all is a call written
+# in TODO.md.
 #
 # One row had no gloss in either dictionary. ċildclāð, woven for "baby"
 # until 2026-10-07, is Wiktionary's cildclāþ, "swaddling cloth; (in the
@@ -57,13 +77,18 @@
 # same night: "baby" is ċild now, which Wiktionary gives as "child" and
 # "baby" and Bosworth–Toller as "a child, infant" (bt:6138). QUEUED in the
 # test is for a row like it: one whose line quotes what its entry does say,
-# named there until the row is taught differently.
+# named there until the row is taught differently. It names one: lāh, woven
+# for "low", is no adjective in either dictionary — Wiktionary's lah is only
+# a past tense of lēon, to lend, and Bosworth–Toller's lah (bt:21055) a noun,
+# "Law" — and English Wiktionary derives low from Middle English lah, from
+# Old Norse lágr. Its line quotes Bosworth–Toller's, and changing the word is
+# an item in TODO.md.
 #
 # tests/tools/ang-glosses.test.ts requires every row of a part of speech it
 # holds to have a line here, every line to cite Bosworth–Toller or the word's
 # own Wiktionary entry, every quote to hold its English word or name the word
-# standing for it, no quote to carry wikitext, and every noun to cite the
-# entry its gender was read in. It cannot tell a quote somebody copied from
+# standing for it, no quote to carry wikitext, every noun to cite the entry
+# its gender was read in, and every phrase an entry its text was read in. It cannot tell a quote somebody copied from
 # the entry from one somebody typed, nor an entry somebody read from one
 # somebody named.
 man	noun	mann	wikt:ang:mann	man (adult male)
@@ -244,3 +269,159 @@ joy	noun	blis	bt:4686	BLISS, joy, gladness, exultation, pleasure
 anger	noun	ierre	wikt:ang:ierre	anger, wrath, ire, rage
 oath	noun	āþ	wikt:ang:aþ	an oath
 gift	noun	ġiefu	wikt:ang:giefu	present, gift
+good	adj	gōd	wikt:ang:god	good
+bad	adj	yfel	wikt:ang:yfel	bad
+big	adj	miċel	wikt:ang:micel	big, large; great, physical context
+small	adj	smæl	wikt:ang:smæl	small; not large
+great	adj	grēat	wikt:ang:great	great, massive
+little	adj	lȳtel	wikt:ang:lytel	small, little
+long	adj	lang	wikt:ang:lang	long
+short	adj	sċeort	wikt:ang:scort wikt:ang:sceort	short
+high	adj	hēah	wikt:ang:heah	high, tall
+low	adj	lāh	bt:21055	Law
+old	adj	eald	wikt:ang:eald	old
+young	adj	ġeong	wikt:ang:geong	young
+new	adj	nīwe	wikt:ang:niewe wikt:ang:niwe	new
+hot	adj	hāt	wikt:ang:hat	hot
+cold	adj	ċeald	wikt:ang:ceald	cold
+warm	adj	wearm	wikt:ang:wearm	warm
+heavy	adj	hefiġ	wikt:ang:hefig	heavy
+strong	adj	strang	wikt:ang:strang	strong
+weak	adj	wāc	wikt:ang:wac	weak
+hard	adj	heard	wikt:ang:heard	hard, harsh, austere, severe, rigorous, stern, stubborn, firm, hardy, brave
+soft	adj	sōfte	wikt:ang:sefte wikt:ang:softe	soft, luxurious
+quick	adj	swift	wikt:ang:swift	swift, quick
+slow	adj	slāw	wikt:ang:slaw	slow, inert
+true	adj	sōþ	wikt:ang:soþ	true, real
+false	adj	lēas	wikt:ang:leas	false
+rich	adj	rīċe²	wikt:ang:rice	rich
+poor	adj	earm²	wikt:ang:earm	poor, miserable
+happy	adj	ēadiġ	wikt:ang:eadig	happy, prosperous, blessed
+sad	adj	unrōt	wikt:ang:unrot	sorrowful, sad
+tired	adj	wēriġ	wikt:ang:werig	weary, tired, exhausted, fatigued
+full	adj	full	wikt:ang:full	full
+empty	adj	ǣmettiġ	wikt:ang:æmtig wikt:ang:æmettig	empty, vacant
+clean	adj	clǣne	wikt:ang:clæne	clean
+dirty	adj	fūl	wikt:ang:ful	foul (dirty, stinking, vile, corrupt)
+beautiful	adj	wlitiġ	wikt:ang:wlitig	beautiful, fair
+ugly	adj	unwlitiġ	bt:34005	Not beautiful, ugly, foul
+easy	adj	ēaþe	wikt:ang:ieþe wikt:ang:eaþe	easy
+difficult	adj	earfoþe	wikt:ang:earfoþe	hard, difficult
+free	adj	frēo	wikt:ang:freo	free, at liberty; exempt
+wise	adj	wīs	wikt:ang:wis	wise
+brave	adj	bald	wikt:ang:beald wikt:ang:bald	brave, bold
+holy	adj	hāliġ	wikt:ang:halig	holy, sacred
+deep	adj	dēop	wikt:ang:deop	deep
+wide	adj	wīd	wikt:ang:wid	wide, far
+narrow	adj	nearu	wikt:ang:nearu	narrow
+dead	adj	dēad	wikt:ang:dead	dead
+alive	adj	cwic	wikt:ang:cwic	alive; live, living
+sick	adj	sēoc	wikt:ang:seoc	sick
+whole	adj	hāl	wikt:ang:hal	whole, undivided
+white	adj	hwīt	wikt:ang:hwit	white
+black	adj	blæc	wikt:ang:blæc	black
+red	adj	rēad	wikt:ang:read	red
+green	adj	grēne	wikt:ang:grene	green
+blue	adj	hǣwen	wikt:ang:hæwen	blue, azure, purple
+yellow	adj	ġeolu	wikt:ang:geolu	yellow
+grey	adj	grǣġ	wikt:ang:græg	grey
+brown	adj	brūn	wikt:ang:brun	brown (color/colour)
+have	verb	habban	wikt:ang:habban	to have, possess
+say	verb	secgan	wikt:ang:secgan	to say, tell
+go	verb	gān	wikt:ang:gan	to go
+come	verb	cuman	wikt:ang:cuman	to come
+see	verb	sēon	wikt:ang:seon	to see, look
+know	verb	witan	wikt:ang:witan	to know, be aware of
+think	verb	þenċan	wikt:ang:þencan	to think
+take	verb	niman	wikt:ang:niman	to take
+give	verb	ġiefan	wikt:ang:giefan	to give
+make	verb	macian	wikt:ang:macian	to make or create:
+find	verb	findan	wikt:ang:findan	to find
+want	verb	willan	wikt:ang:willan	to want, desire
+tell	verb	tellan	wikt:ang:tellan	to tell, narrate, recount
+ask	verb	āscian	wikt:ang:ascian	to ask (+ genitive a question) (+ accusative a person) (+ genitive about something)
+work	verb	wyrċan	wikt:ang:wyrcan	to work
+play	verb	plegian	wikt:ang:plegian	to play
+run	verb	rinnan	wikt:ang:rinnan	to run
+walk	verb	wealcan	wikt:ang:wealcan	to move around	move around
+speak	verb	sprecan	wikt:ang:sprecan	to speak, talk
+read	verb	rǣdan	wikt:ang:rædan	to read
+write	verb	wrītan	wikt:ang:writan	to write
+eat	verb	etan	wikt:ang:etan	to eat
+drink	verb	drincan	wikt:ang:drincan	to drink
+sleep	verb	slǣpan	wikt:ang:slæpan	to sleep
+sit	verb	sittan	wikt:ang:sittan	to sit
+stand	verb	standan	wikt:ang:standan	to stand
+live	verb	libban	wikt:ang:libban	to live
+die	verb	steorfan	wikt:ang:steorfan	to die
+love	verb	lufian	wikt:ang:lufian	to love
+hate	verb	hatian	wikt:ang:hatian	to hate
+fear	verb	ondrǣdan	wikt:ang:ondrædan	to be scared	scared
+hear	verb	hīeran	wikt:ang:hieran	to hear
+feel	verb	fēlan	wikt:ang:felan	to feel
+hold	verb	healdan	wikt:ang:healdan	to hold fast, to grasp
+carry	verb	beran	wikt:ang:beran	to carry, bear, hold
+bring	verb	bringan	wikt:ang:bringan	to bring
+send	verb	sendan	wikt:ang:sendan	to send
+buy	verb	bycgan	wikt:ang:bycgan	to buy
+sell	verb	sellan	wikt:ang:sellan	to sell
+pay	verb	ġieldan	wikt:ang:gieldan	to pay
+build	verb	timbran	wikt:ang:timbran	to build
+break	verb	brecan	wikt:ang:brecan	to break
+open	verb	openian	wikt:ang:openian	to open
+close	verb	clȳsan	wikt:ang:clysan	to close, shut
+begin	verb	beginnan	wikt:ang:beginnan	to begin
+help	verb	helpan	wikt:ang:helpan	to help
+learn	verb	leornian	wikt:ang:leornian	to learn
+teach	verb	tǣċan	wikt:ang:tæcan	to teach
+remember	verb	ġemunan	wikt:ang:gemunan	to remember
+forget	verb	forġietan	wikt:ang:forgietan	to forget
+win	verb	winnan	wikt:ang:winnan	to struggle, suffer, contend	struggle
+lose	verb	losian	wikt:ang:losian	to be lost; stray	lost
+fight	verb	feohtan	wikt:ang:feohtan	to fight
+swim	verb	swimman	wikt:ang:swimman	to swim
+fly	verb	flēogan	wikt:ang:fleogan	to fly
+ride	verb	rīdan	wikt:ang:ridan	to ride
+sing	verb	singan	wikt:ang:singan	to sing, chant
+laugh	verb	hlīehhan	wikt:ang:hliehhan	to laugh (+ genitive of thing laughed at)
+cry	verb	wēpan	wikt:ang:wepan	to weep	weep
+wait	verb	ābīdan	wikt:ang:abidan	to wait (+genitive for something)
+watch	verb	weardian	wikt:ang:weardian	to guard, protect	guard
+look	verb	lōcian	wikt:ang:locian	to look, see; gaze
+show	verb	sċēawian	wikt:ang:sceawian	to show (+accusative)
+call	verb	clipian	wikt:ang:clipian	to make a vocal sound; to call, call out, cry; to address, invoke, appeal
+put	verb	settan	wikt:ang:settan	to set, establish, place, make	place
+keep	verb	cēpan	wikt:ang:cepan	to keep (an eye on); observe; regard
+leave	verb	lǣfan	wikt:ang:læfan	to leave
+follow	verb	folgian	wikt:ang:folgian	to follow
+seek	verb	sēċan	wikt:ang:secan	to look for, seek
+choose	verb	ċēosan	wikt:ang:ceosan	to choose, select
+change	verb	wendan	wikt:ang:wendan	to change
+grow	verb	grōwan	wikt:ang:growan	to grow
+fall	verb	feallan	wikt:ang:feallan	to fall
+rise	verb	rīsan	wikt:ang:risan	to rise
+turn	verb	tyrnan	wikt:ang:tyrnan	to turn, revolve
+move	verb	styrian	wikt:ang:styrian	to move
+throw	verb	weorpan	wikt:ang:weorpan	to throw
+catch	verb	fōn	wikt:ang:fon	to catch, capture; seize
+cut	verb	ċeorfan	wikt:ang:ceorfan	to cut
+wash	verb	wasċan	wikt:ang:wascan	to wash
+cook	verb	sēoþan	wikt:ang:seoþan	to cook
+one	num	ān	wikt:ang:an	one
+two	num	twēġen	wikt:ang:twegen	two
+three	num	þrēo	wikt:ang:þri wikt:ang:þreo	three
+four	num	fēower	wikt:ang:feower	four
+five	num	fīf	wikt:ang:fif	five
+six	num	siex	wikt:ang:six wikt:ang:siex	six
+seven	num	seofon	wikt:ang:seofon	seven
+eight	num	eahta	wikt:ang:eahta	eight
+nine	num	nigon	wikt:ang:nigon	nine
+ten	num	tīen	wikt:ang:tien	ten
+hundred	num	hund²	wikt:ang:hund	hundred
+thousand	num	þūsend	wikt:ang:þusend	thousand
+first	num	forma	wikt:ang:forma	first
+yes	intj	ġēa	wikt:ang:gea bt:13355	yes, yeah, yea
+hello	intj	wes hāl	bt:18028	often used in salutation	salutation
+goodbye	intj	wes hāl	bt:35422	Wesaþ hále valete	valete
+please	intj	iċ bidde	bt:4228	To ask, pray, intreat, beseech, BID, order, require	pray
+sorry	intj	mē hrēoweþ	bt:19714 bt:53179	To rue, make sorry, grieve
