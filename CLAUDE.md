@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **252 pass**, 69 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **258 pass**, 70 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -411,6 +411,18 @@ dictionary refuses is woven not at all — `vesper`'s is "not used", and
 `tests/tools/lexicon-orthography.test.ts` keeps each with what its entry
 prints.
 
+**And a Latin gloss quotes its entry, naming the word that stands in where
+the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
+in `tools/seed/la-glosses.tsv` quoting Lewis & Short's own words for its
+gloss, and `tests/tools/la-glosses.test.ts` fails on a row with none. A
+quote holds the row's English word, or the line names the word of the quote
+standing for it — "gray" for grey, "physician" for doctor — and naming one
+where the word is there fails too, so a stand-in is never a way round the
+check. Do not loosen it to "the English word occurs in the entry", the
+2026-10-02 pass that found `camera`: the word is in `canis`'s, as the
+etymology's "Engl. hound". A noun cites the entry its gender was read in, so
+the two ledgers cannot choose different homographs.
+
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
 phrase is where this lexicon wrote Old English of its own, and of the four
@@ -529,6 +541,74 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-06 — every Latin gloss quotes its entry, and twenty name a stand-in
+
+The queue named `mē is lāþ`, which #73 landed on 2026-10-05 and `TODO.md`
+had ticked, so the work was its topmost unchecked item: the Latin glosses,
+the one claim the pack made about a word that named no entry. Estimated at
+two hours and to be split; it took under an hour whole, because the gloss
+turned out to have a tag.
+
+**Lewis & Short sets the English it gives a word in italics.** In the
+Perseus text that is `<hi rend="ital">`, and a citation's translation is
+`<tr>`, so a scratch script in `/tmp/weft-gloss/` took, per row, the first
+run of those holding the English word — from `la-genders.tsv`'s key for a
+noun, from the first person for a verb (`amo`, `eo1`, `dico2`), from the
+headword otherwise. It placed 333 of 356. Every quote was read against its
+entry and checked verbatim against the entry's text, and 19 of the 333 were
+redrawn where the first run holding the word was a phrase, a citation's
+translation, another sense or a fragment: `aliēnus`'s "to be a stranger to
+a thing", `exspectāre`'s "I must wait a year", the pronoun's "this ...
+here" for `hīc`, `persōna`'s "a masked person". Seven of the other 23 are
+given inside another entry — `falsus` under `fallo`, `valdē` under
+`validus` — and cite both. **Twenty name a stand-in**, the word of the
+quote standing for an English word the entry lacks: "gray", "neighbor",
+"to-day", "physician" for doctor, "flesh" for meat, "God save you" for
+hello.
+
+The guard is `tests/tools/la-glosses.test.ts`, 6 tests in a new suite: a
+row with no line, a line citing no `ls:<key>`, a quote holding neither its
+English word nor a named stand-in, a stand-in named where the word is
+there, a noun glossed from another entry than its gender was read in, a
+line outliving its row. Red first on a header-only ledger, all 356 named;
+seven planted defects, restored by md5, each named by its own test.
+**Counting the English word anywhere in the entry, the 2026-10-02 pass,
+would have passed `canis` for "hound" on the etymology's "Engl. hound"**,
+which is why a line quotes the gloss rather than asserting one exists.
+
+**Reading the stand-ins found two glosses to look at**, queued rather than
+changed, each a content call that moves the pack: `familia`'s head says it
+is "not = family, i. e. wife and children", the household sense being
+"(rare)", and its note says less; and `tunica`, taught for "coat", is "an
+under-garment of the Romans".
+
+Nothing that ships moved: the ledger, the test, a paragraph of
+`lex-la.tsv`'s header, and `npm run packs` moved no pack. Counts moved 960
+→ **966** and tools 252 → **258** / 69 → **70** suites, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md`, which said glosses were
+"checked against" Lewis & Short, now says where. No `CHANGELOG.md`
+paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **258 tools / 70 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`site:check` was not re-run: no pack and no site builder moved. Zero iCloud
+conflict copies.
+
+Assumed, with nobody to ask: that a near synonym the entry gives may stand
+for the English word, named, where an entry has none — `canis` "a dog" for
+"hound" — and that "tunic" for "coat" is honest enough to record while it
+is queued; that a participle or adverb given inside its parent's entry
+cites both, as the genders do `serpēns`; and that the two findings were
+items rather than this one's to settle.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items, `familia`'s note first.
 
 ### 2026-10-06 — two Latin plurals the dictionary refuses are woven no more
 

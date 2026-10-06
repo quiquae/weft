@@ -37,6 +37,10 @@ Glosses checked against:
 - **Lewis & Short**, *A Latin Dictionary* (Oxford, 1879) — public domain
 - **Whitaker's Words** — public domain
 
+Every gloss quotes the Lewis & Short entry that gives it, from the Perseus
+text, in `tools/seed/la-glosses.tsv`, and `tests/tools/la-glosses.test.ts`
+fails on a row that quotes none.
+
 Classical pronunciation follows the standard reconstruction as set out in
 W. Sidney Allen, *Vox Latina* (Cambridge, 1965). Transcriptions are derived
 from the orthography by `tools/seed/_ipa.py`, which is near-deterministic once
