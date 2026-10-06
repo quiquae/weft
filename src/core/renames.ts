@@ -115,6 +115,11 @@ export const WITHDRAWN: Withdrawals = {
       'Bosworth–Toller\'s "láð" has "mé láð wæs" glossing Latin "multum detestatus sum", ' +
       'I greatly detested. "sorry" is "mē hrēoweþ" now, "it rues me", which its "hreówan" ' +
       'quotes from Genesis as "Þæt mé on mínum hyge hreóweð".',
+    ċildclāð:
+      'Taught for "baby" until 2026-10-07, and a swaddling-cloth, not a baby: ' +
+      'Bosworth–Toller\'s "cild-cláþ" is "a child-cloth, a swaddling-cloth", and English ' +
+      'Wiktionary\'s "cildclāþ" "swaddling cloth; (in the plural), swaddling clothes". ' +
+      '"baby" is "ċild" now, which Bosworth–Toller gives as "a child, infant".',
   },
   la: {
     camera:

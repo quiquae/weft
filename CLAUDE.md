@@ -63,7 +63,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
 | `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 715 pages, 16 141 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -249,14 +249,14 @@ package unchanged, so a `--target=edge` would be a fourth thing to keep in
 sync for no difference in output.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
-builds and link-checks all 715 pages on every push but the deploy job is
+builds and link-checks all 714 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
 
 **Nothing self-promotes automatically.** `docs/LAUNCH.md` holds drafts per
 community, to be sent by a human. An automated account posting self-promotion
-earns a domain-level shadowban, which would destroy the 715-page search asset.
+earns a domain-level shadowban, which would destroy the 714-page search asset.
 That was a decision, not an omission.
 
 **A card is read back as a word in one place, and its story travels where
@@ -433,9 +433,10 @@ spelling — `brōðor`, `dēað` — says only "Alternative form of" the þ one
 a line quotes the entry named and cites the word's own beside it; `FORM_OF`
 lists the twelve. A quote is the page's words, never its wikitext. Where
 neither dictionary gives the gloss, the line still quotes what they do say
-and `QUEUED` names the row until it is taught differently: `ċildclāð`,
-"baby", is a swaddling-cloth. Do not give such a row a stand-in to pass:
-a stand-in is a word of the entry that means the English, and none does.
+and `QUEUED` names the row until it is taught differently, as `ċildclāð`,
+"baby", a swaddling-cloth, was named for a night. Do not give such a row a
+stand-in to pass: a stand-in is a word of the entry that means the
+English, and none does.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
@@ -548,7 +549,9 @@ to me", the second, the same day, and "sorry" is `mē hrēoweþ`; Latin
 `camera`, taught for "room" and in Lewis & Short only a vault, the third,
 and "room" is `conclāve`; Latin `tunica`, taught for "coat" and in Lewis &
 Short "an under-garment", the fourth, on 2026-10-06, and "coat" is
-`paenula`, a cloak for journeys and rain. The ledger test accepts a
+`paenula`, a cloak for journeys and rain; Old English `ċildclāð`, taught
+for "baby" and a swaddling-cloth in both dictionaries, the fifth, on
+2026-10-07, and "baby" is `ċild`, a second row of its card. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -557,6 +560,62 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-07 — the Old English for "baby" is ċild, and ċildclāð is the fifth card withdrawn
+
+The same session's second PR, the item the first one queued: `ċildclāð`,
+woven for "baby", is a swaddling-cloth in both dictionaries. The item
+asked for Bosworth–Toller's `cild` to be read first, and it settled the
+choice: `CILD` (bt:6138) is "A CHILD, infant; infans, puer", and its main
+`cild-cláþ` (bt:6142) "A child-cloth, a swaddling-cloth; infantilis
+pannus", quoting Luke 2:7. Wiktionary's `cild` gives "child" and "baby".
+So "baby" is a second row of the `ang:ċild` card, `ċild` and `ċildru`,
+etymon *child* — the shape of "person" under `mann` — and `lȳtling`, a new
+card, was not needed. `ang:ċildclāð` is the fifth `WITHDRAWN` card.
+
+Test-first through the ledgers, as #81 did: the gender, gloss and etymon
+lines rewritten first went red on exactly the baby rows, both ways; the
+seed and `npm run packs` then left two reds, both worth knowing — the card
+ledger naming `ang:ċildclāð (card-ids.tsv:354)` stranded, and the stress
+guard's `COMPOUNDED` refusing a listed word no longer a headword. The
+`WITHDRAWN` line and the deleted entry cleared them. `QUEUED` in
+`tests/tools/ang-glosses.test.ts`, written an hour before for exactly this
+row, is empty now and kept, its stale check having been the plan.
+
+What moved: two entries of `en-ang.json`, `baby` and `babies`, and its
+`builtAt`, which is the UTC date and so says 10-06 at half past midnight
+in London. The site, built from `main` in a `/tmp` worktree and from the
+branch, differs in four files: `/old-english/cildclath` gone, 715 →
+**714** pages and 16 141 → **16 118** links; the Old English index, 352 →
+351 words; two sitemap dates; and `/latin/infans`, whose "The same idea in
+Old English" line goes because the site indexes a word by its first gloss
+and `ċild`'s is "child" — the silence `/latin/vale` took after #72. All
+36 screenshots regenerated byte-identical, 14 + 15 + 7 written, and the
+three groups stamped after the last edit to `src/`. The package grew 323
+bytes, `background.js` +326 and the pack −3, measured against `main`'s
+three packages built in the worktree: Chrome 988.98 → 989.29 KB, Firefox
+989.36, all printing 989, and Firefox 137 bytes from 990. The page count
+moved in seven places, `git grep 715` finding them; no test count moved.
+A `CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 266 tools / 71 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 2.7 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 4 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a — with the three screenshot groups `ok` on their new stamps.
+
+Assumed, with nobody to ask: that a second row of an existing card beats a
+new word, the dictionaries giving `ċild` the infant sense; that "babies"
+may be `ċildru`, the child row's own plural; that the row needs no note,
+its gloss and etymon saying what it is; and that the Latin page's lost
+counterpart line is the silence to leave, as it was for `vale`.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item, the Old English glosses that are not nouns.
 
 ### 2026-10-07 — every Old English noun's gloss names its entry, and "baby" was a swaddling-cloth
 

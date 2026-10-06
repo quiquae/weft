@@ -49,13 +49,15 @@
 # "husband" "master of the house" — the loosest, whose note already says
 # "the householder, not yet the spouse".
 #
-# One row has no gloss in either dictionary. ċildclāð, woven for "baby", is
-# Wiktionary's cildclāþ, "swaddling cloth; (in the plural), swaddling
-# clothes", and Bosworth–Toller's Supplement, where its gender was read, has
-# no English at all, only the Latin its plural glosses: "cunae", a cradle,
-# and "panni infantiae", an infant's cloths. Its line quotes the first,
-# QUEUED in the test names it, and changing the word is the item after this
-# one in TODO.md.
+# One row had no gloss in either dictionary. ċildclāð, woven for "baby"
+# until 2026-10-07, is Wiktionary's cildclāþ, "swaddling cloth; (in the
+# plural), swaddling clothes", and Bosworth–Toller's "a child-cloth, a
+# swaddling-cloth" (bt:6142); its Supplement, where the gender was read, has
+# no English at all. Reading this ledger found it, and it was withdrawn the
+# same night: "baby" is ċild now, which Wiktionary gives as "child" and
+# "baby" and Bosworth–Toller as "a child, infant" (bt:6138). QUEUED in the
+# test is for a row like it: one whose line quotes what its entry does say,
+# named there until the row is taught differently.
 #
 # tests/tools/ang-glosses.test.ts requires every row of a part of speech it
 # holds to have a line here, every line to cite Bosworth–Toller or the word's
@@ -80,7 +82,7 @@ son	noun	sunu	wikt:ang:sunu	son, male child
 daughter	noun	dohtor	wikt:ang:dohtor	daughter
 wife	noun	wīf	wikt:ang:wif	wife
 husband	noun	hūsbonda	wikt:ang:husbonda	master of the house	master of the house
-baby	noun	ċildclāð	bt:41645	Cildcláðas cunae
+baby	noun	ċild	wikt:ang:cild	baby
 king	noun	cyning	wikt:ang:cyning	king
 queen	noun	cwēn	wikt:ang:cwen	queen (a ruling female monarch or a king's wife)
 lord	noun	hlāford	wikt:ang:hlaford	lord, master of servants or slaves

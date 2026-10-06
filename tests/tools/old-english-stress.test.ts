@@ -126,7 +126,6 @@ const COMPOUNDED: Record<string, Divided> = {
   wīfmann: { first: 'wīf', stressed: 'first', grown: 'Sievers §193.2, Bülbring §342: LOE wimman, from wifmon' },
   hūsbonda: { first: 'hūs', stressed: 'first' }, // Luick §639 Anm. 3: taken in in the 10th or 11th century
   sǣmann: { first: 'sǣ', stressed: 'first' },
-  ċildclāð: { first: 'ċild', stressed: 'first' },
   nēahġebūr: { first: 'nēah', stressed: 'first' },
   ēagþȳrel: { first: 'ēag', stressed: 'first' }, // "eye-hole"
   bōcstæf: { first: 'bōc', stressed: 'first' },
