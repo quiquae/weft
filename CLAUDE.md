@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **233 pass**, 64 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **246 pass**, 67 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -79,7 +79,10 @@ social card, is `tools/brand.ts`; after changing it run `icons`,
 (wrap in an Xcode project — needs full Xcode, not the CLT),
 `npm run release -- --version=X.Y.Z` (bump, rebuild, package, write notes),
 `npm run verify:release` (download what GitHub actually serves and load it in
-a browser), `npm run licence -- --name="..." --tier=pro` (mint a key).
+a browser), `npm run png:diff -- <file.png>…` (each working file against its
+`HEAD` blob: how many pixels differ, the largest channel difference, and the
+box they sit in; `--region=x0,y0,x1,y1` counts inside a box too),
+`npm run licence -- --name="..." --tier=pro` (mint a key).
 
 The three skipped e2e tests are asset *generators*, not assertions. Turn them
 on deliberately: `WEFT_STORE=1`, `WEFT_SCREENS=1`, `WEFT_FIRSTRUN=1`.
@@ -218,7 +221,10 @@ no channel more than 47 apart, the mark's rectangles and every CSS rule
 untouched — and the whole set was recommitted in a commit that changed
 nothing else. When every such image moves at once and no glyph does, run
 `softwareupdate --history` against the date of the last regeneration that
-agreed, before reading anything else. Then rebaseline the whole set in a
+agreed, before reading anything else. Whether a glyph did is what
+`npm run png:diff` answers: a channel tens apart is antialiasing, a hundred
+and seventy or more is paper turning to ink, and `--region` says whether any
+of it is inside the box a change was meant to move. Then rebaseline the whole set in a
 commit of its own, ahead of any change that moves a shot for a real reason,
 so that change arrives as a clean diff rather than mixed into the renderer's.
 
