@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **246 pass**, 67 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **250 pass**, 68 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
@@ -396,6 +396,16 @@ holds every word of one spelling, so read the etymology that is this word:
 dictionaries disagree, as on `þorp`, Bosworth–Toller decides, being the one
 the pack's attribution names. On 2026-10-04 that read all 178 nouns and found
 one wrong: `wīfmann` is masculine, because `mann` is.
+
+**And so does a Latin one, and a row's gender is true of both its forms.**
+Every noun in `tools/seed/lex-la.tsv` has a line in
+`tools/seed/la-genders.tsv` naming its Lewis & Short entry, and the same
+`tests/tools/genders.test.ts` holds both ledgers. "comm." is `c`, printed
+"common", whatever the head goes on to say about use — `bōs` is "comm.;
+generally masc. in prose". A row carries one gender for both its forms, so a
+noun whose plural takes another gender weaves a plural of its own gender or
+none: `locus` is masculine and `loca` neuter, so "places" is `locī`. On
+2026-10-06 that read all 178 nouns and found seven wrong.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
