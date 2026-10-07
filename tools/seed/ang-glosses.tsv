@@ -77,12 +77,14 @@
 # same night: "baby" is ċild now, which Wiktionary gives as "child" and
 # "baby" and Bosworth–Toller as "a child, infant" (bt:6138). QUEUED in the
 # test is for a row like it: one whose line quotes what its entry does say,
-# named there until the row is taught differently. It names one: lāh, woven
-# for "low", is no adjective in either dictionary — Wiktionary's lah is only
-# a past tense of lēon, to lend, and Bosworth–Toller's lah (bt:21055) a noun,
-# "Law" — and English Wiktionary derives low from Middle English lah, from
-# Old Norse lágr. Its line quotes Bosworth–Toller's, and changing the word is
-# an item in TODO.md.
+# named there until the row is taught differently. It named a second the
+# same night: lāh, woven for "low", is no adjective in either dictionary —
+# Wiktionary's lah is only a past tense of lēon, to lend, and
+# Bosworth–Toller's lah (bt:21055) a noun, "Law" — and English Wiktionary
+# derives low from Middle English lah, from Old Norse lágr. "low" is hēan
+# now, Wiktionary's "low, mean, abject, humble", whose source is
+# Proto-Germanic *hauniz and not hēah's, high; lāh's card is the sixth
+# WITHDRAWN keeps.
 #
 # tests/tools/ang-glosses.test.ts requires every row of a part of speech it
 # holds to have a line here, every line to cite Bosworth–Toller or the word's
@@ -278,7 +280,7 @@ little	adj	lȳtel	wikt:ang:lytel	small, little
 long	adj	lang	wikt:ang:lang	long
 short	adj	sċeort	wikt:ang:scort wikt:ang:sceort	short
 high	adj	hēah	wikt:ang:heah	high, tall
-low	adj	lāh	bt:21055	Law
+low	adj	hēan	wikt:ang:hean	low, mean, abject, humble
 old	adj	eald	wikt:ang:eald	old
 young	adj	ġeong	wikt:ang:geong	young
 new	adj	nīwe	wikt:ang:niewe wikt:ang:niwe	new

@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
-| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
+| `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -551,7 +551,9 @@ and "room" is `conclāve`; Latin `tunica`, taught for "coat" and in Lewis &
 Short "an under-garment", the fourth, on 2026-10-06, and "coat" is
 `paenula`, a cloak for journeys and rain; Old English `ċildclāð`, taught
 for "baby" and a swaddling-cloth in both dictionaries, the fifth, on
-2026-10-07, and "baby" is `ċild`, a second row of its card. The ledger test accepts a
+2026-10-07, and "baby" is `ċild`, a second row of its card; Old English
+`lāh`, taught for "low" and Middle English from Norse, the sixth, the same
+night, and "low" is `hēan`. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
