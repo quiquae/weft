@@ -48,9 +48,11 @@
 # ----------------
 # Blank where the quote holds the row's English word. Otherwise it names the
 # word of the quote that stands for it, because the English word is not in the
-# entry. Nineteen rows need one. Three are adverbs: ǣfre for "always" is
-# "ever", sōna for "soon" "immediately", whose note says so, and wēnunga for
-# "perhaps" "possibly, perchance, maybe". Six are nouns: hund for "hound" is "dog",
+# entry. Twenty rows need one. Four are adverbs: ǣfre for "always" is
+# "ever", sōna for "soon" "immediately", whose note says so, wēnunga for
+# "perhaps" "possibly, perchance, maybe", and tō morgen for "tomorrow"
+# "to-morrow", the dictionary's spelling of the word, as Latin crās's line
+# in la-glosses.tsv names it. Six are nouns: hund for "hound" is "dog",
 # setl for "chair" "seat, bench, throne", mentel for "coat" "mantle (kind of
 # cloak)", rīċe for "country" "kingdom, empire", fyrhtu for "fear" "fright",
 # and hūsbonda for "husband" "master of the house". Seven are verbs:
@@ -85,12 +87,15 @@
 # derives low from Middle English lah, from Old Norse lágr. "low" is hēan
 # now, Wiktionary's "low, mean, abject, humble", whose source is
 # Proto-Germanic *hauniz and not hēah's, high; lāh's card is the sixth
-# WITHDRAWN keeps. And it names tōmorgen, tomorrow, which has no entry under
+# WITHDRAWN keeps. And it named tōmorgen, tomorrow, which has no entry under
 # that spelling in either dictionary: Wiktionary's tomorgen redirects to a
-# Middle English page, Bosworth–Toller prints none, and Wiktionary derives
-# English tomorrow from Old English tō morgne, two words, the dative of
-# morgen. Its line quotes morgen's entry, "morning, morn" (bt:23129), and
-# which form to teach is an item in TODO.md.
+# Middle English page, and Bosworth–Toller writes it as two words. Its
+# morgen (bt:23129) has a second sense below the first, "the morning of the
+# next day, morrow", quoting "Gá and cum tó morgenne go, and come to-morrow"
+# from the Pastoral Care and "Tó morgen cras" from Exodus and the Gospels;
+# the first reading of the entry stopped above it. So the pack teaches tō
+# morgen, a phrase ang-phrases.tsv holds, its card renamed rather than
+# withdrawn because its letters are the same, and QUEUED is empty again.
 #
 # tests/tools/ang-glosses.test.ts requires every row of a part of speech it
 # holds to have a line here, every line to cite Bosworth–Toller or the word's
@@ -420,7 +425,7 @@ never	adv	nǣfre	wikt:ang:næfre	never
 often	adv	oft	wikt:ang:oft	often, oft
 sometimes	adv	hwīlum	wikt:ang:hwilum	sometimes
 today	adv	tōdæġ	wikt:ang:todæg	today
-tomorrow	adv	tōmorgen	bt:23129	morning, morn
+tomorrow	adv	tō morgen	bt:23129	Gá and cum tó morgenne go, and come to-morrow	to-morrow
 yesterday	adv	ġiestrandæġ	wikt:ang:giestrandæg	yesterday
 now	adv	nū	wikt:ang:nu	now
 soon	adv	sōna	wikt:ang:sona	immediately, straightaway	immediately

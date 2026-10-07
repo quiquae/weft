@@ -17,8 +17,8 @@
  * respelling would otherwise forget. And the table itself must be safe to
  * run against a real learner's cards: it may never move a card off a word a
  * pack still teaches, it must name spellings a pack really used, and a
- * rename may change marks only, because a different word is a different
- * card.
+ * rename may change marks and where a word divides only, because a
+ * different word is a different card.
  *
  * A word may also leave a pack on purpose, when it turns out not to be the
  * language at all — Old English `far wel`, which no text has — or not to mean
@@ -81,9 +81,15 @@ function follow(target: string, lemma: string): { to?: string; loop?: string[] }
   return { to: trail.at(-1) as string };
 }
 
-/** A spelling's letters, with its marks and any homograph number off. */
+/**
+ * A spelling's letters, with its marks, the spaces between its words and any
+ * homograph number off. Where a word divides is an editor's choice, as a mark
+ * is: Bosworth–Toller prints "Tó morgen" where the pack wrote `tōmorgen`, the
+ * same letters for the same word, and a learner's reviews of one are reviews
+ * of the other.
+ */
 function letters(lemma: string): string {
-  return spelling(lemma).normalize('NFD').replace(/\p{M}/gu, '');
+  return spelling(lemma).normalize('NFD').replace(/[\p{M}\s]/gu, '');
 }
 
 describe('the ledger of card ids', () => {
@@ -167,7 +173,11 @@ describe('the rename table', () => {
     assert.deepEqual(bad, []);
   });
 
-  test('changes marks, never letters', () => {
+  test('changes marks, or where a word divides, never letters', () => {
+    // Taking the spaces out must not take the letters with them: a second
+    // form of the same phrase, morgenne for morgen, is still another spelling.
+    assert.equal(letters('tōmorgen'), letters('tō morgen'));
+    assert.notEqual(letters('tōmorgen'), letters('tō morgenne'));
     const respelt = renames.filter(({ from, to }) => letters(from) !== letters(to));
     assert.deepEqual(
       respelt.map(({ target, from, to }) => `${target}:${from} → ${to}`),

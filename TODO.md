@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-06:** every automatable check is green, measured at the end
+**State on 2026-10-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
 suites, **267** tool tests / 71 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -39,7 +39,9 @@ measured against `main`'s Chrome package, 988.67 → 988.98 KB — and on
 (+326) and the Old English pack (−3), Chrome's 988.98 → 989.29 KB — and to
 **990 KB** the same night by 315 bytes, `lāh`'s `WITHDRAWN` line (+311) and
 the pack (+4), Chrome's 989.29 → 989.60 KB, Firefox's 989.67 and Safari's
-989.61, measured against `main`'s three packages built in a `/tmp` worktree.
+989.61, measured against `main`'s three packages built in a `/tmp` worktree
+— and by 1 byte later that night, `tō morgen`'s `RENAMED` line in
+`background.js` (+23) and the pack (−22), Chrome's 989.61 KB either side.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
@@ -64,9 +66,10 @@ row of the child's card. The same night every verb, adjective, numeral and
 interjection gained its line too, 334 rows in all; the 22 adverbs are
 left, and reading the adjectives found `lāh`, woven for "low", to be Middle
 English from Norse. "low" is `hēan` now, `lāh` the sixth card withdrawn.
-The adverbs followed, so every one of the pack's 356 rows names its entry;
-the one left queued is `tōmorgen`, which no dictionary prints, and which
-form to teach is the item in `Next`.
+The adverbs followed, so every one of the pack's 356 rows names its entry.
+The one they left queued, `tōmorgen`, is `tō morgen` now: Bosworth–Toller's
+`morgen` prints it as two words, "Tó morgen cras", in a sense the first
+reading of the entry stopped short of, and the card followed the spelling.
 
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
 was `far wel`, which English Wiktionary gives only as the reconstruction
@@ -166,7 +169,7 @@ npm's own exit status captured rather than a pipe's:**
 
 | Gate | Exit | Result |
 |---|---|---|
-| `npm run packs:verify` | **0** | 0 errors, 4 warnings — the four Old English interjections with no IPA, unchanged. 356 rows per seed; built packs 581–588 entries across 576–583 surface forms |
+| `npm run packs:verify` | **0** | 0 errors, 5 warnings — the Old English phrases with no IPA: the four interjections and, since 2026-10-07, `tō morgen`. 356 rows per seed; built packs 581–588 entries across 576–583 surface forms |
 | `npm run site:check` | **0** | **714** pages, **16 118** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
 | `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
 
@@ -4570,7 +4573,7 @@ registered**, and nothing below it can move until it is.
       adverbs held with no lines, `tōmorgen` unqueued, and `wēnunga`'s
       form unlisted, each failing its own test by name.
 
-- [ ] **`tōmorgen` is woven for "tomorrow", and no dictionary prints that
+- [x] **`tōmorgen` is woven for "tomorrow", and no dictionary prints that
       spelling.** Found 2026-10-07 by the gloss ledger, whose `QUEUED`
       names it. English Wiktionary has no `tōmorgen` (its `tomorgen`
       redirects to `to-morgen`, a Middle English page) and derives
@@ -4591,9 +4594,41 @@ registered**, and nothing below it can move until it is.
       source does print `tōmorgen` as one word, cite it and empty
       `QUEUED`. About an hour either way.
 
-`Now` is **empty** and `Next` holds **one** unchecked item above, as of
-2026-10-07, agent-shaped and not waiting on B1: which form of "tomorrow" to
-teach, `tōmorgen` having no entry. The Old English adverb glosses, `lāh`
+      **Done 2026-10-07: `tō morgen`, and the card renamed, not
+      withdrawn.** Bosworth–Toller's `morgen` (bt:23129) does print it, in
+      a second sense, "the morning of the next day, morrow", that begins at
+      character 1 073 of the entry's 1 756 — past the 700 that
+      `/tmp/weft-angg/bttext.py` printed, which is all the last reading
+      saw: "Gá and cum tó morgenne go, and come to-morrow, Past. Swt. 325,
+      1 … Tó morgen cras, Ex. 8, 23: Mt. Kmbl. 6, 30: Kent. Gl. 54: … Gen.
+      2438. Tó morhgen (morgen, MS. A.), Lk. Skt. 13, 32, 33". Its `tó`
+      (bt:30587) has "tó morgen" once more, glossing Latin *mane*, in the
+      morning (Ex. 16, 12), under *tó* with the accusative, "marking
+      time", beside "Tó dæg hodie" — so the uninflected form is the
+      accusative of time, `tō dæġ`'s construction, not a dropped ending.
+      English Wiktionary's `morgen` glosses the noun "tomorrow" in a second
+      sense and lists the dative, `tō morgne`, among its derived terms. So
+      the pack teaches `tō morgen`, the form Exodus, the West Saxon
+      Gospels, the Kentish Glosses and Genesis have, where only the
+      Pastoral Care has `morgenne`; `ang-phrases.tsv` quotes
+      "Tó morgen cras (Ex. 8, 23: Mt. Kmbl. 6, 30)", the gloss line quotes
+      "Gá and cum tó morgenne go, and come to-morrow" and names
+      "to-morrow", as Latin `crās`'s line does, and `QUEUED` is empty. **The item said withdraw; the card was renamed
+      instead**, because `WITHDRAWN` is for a word that was never the
+      language or never meant what it was taught for, and `tōmorgen` and
+      `tō morgen` have the same letters: a learner who reviewed one knows
+      the other. `RENAMED` gained `tōmorgen: 'tō morgen'`, and
+      `card-ids.test.ts`'s `letters()` takes spaces out with the marks,
+      with a probe in the same test that `tō morgenne` is still another
+      spelling. As the item said, `tōmorgen` left the stress guard's
+      `COMPOUNDED`, whose *tō*-adverb floor went 3 → 2, and `_ipa.py`'s
+      `ANG_PREFIXED` and self-check; the phrase has no transcription, so
+      `packs:verify` warns 5 times. Both of the night's withdrawals were
+      checked against the same trap and stand: `lah` (bt:21055) and
+      `cild-cláþ` (bt:6142) are shorter than 700 characters, read whole.
+
+`Now` is **empty** and `Next` holds **no** unchecked item, as of
+2026-10-07. The form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old
 English noun glosses,
@@ -7432,9 +7467,10 @@ rewrote this file. Changed nothing else; read-mostly by instruction.
   packages, writes `RELEASE-X.Y.Z.md`, and prints the git commands for you.
 - The three "skipped" e2e tests are not broken. They are asset generators
   behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`.
-- `npm run packs:verify` reports 4 warnings, and they are expected: four Old
-  English interjections (`hello`, `goodbye`, `please`, `sorry`) have no IPA
-  because they are multi-word phrases and Old English has no speech-synthesis
+- `npm run packs:verify` reports 5 warnings, and they are expected: four Old
+  English interjections (`hello`, `goodbye`, `please`, `sorry`) and the
+  adverb `tō morgen` (`tomorrow`) have no IPA because they are multi-word
+  phrases and Old English has no speech-synthesis
   voice on any platform. Not a bug to chase.
 - The loose `weft-*.zip` files and the `dist/` tree in the working directory
   are build output and are gitignored. Several carry iCloud duplicate suffixes

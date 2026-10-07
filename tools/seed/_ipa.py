@@ -232,7 +232,7 @@ correct and auditable; a rule would be neither.
 """
 ANG_PREFIXED = {
     'ābīdan': 'ā', 'beginnan': 'be', 'forġietan': 'for', 'ġemunan': 'ġe', 'ondrǣdan': 'on',
-    'tōdæġ': 'tō', 'tōgædere': 'tō', 'tōmorgen': 'tō',
+    'tōdæġ': 'tō', 'tōgædere': 'tō',
 }
 
 """
@@ -434,7 +434,7 @@ if __name__ == '__main__':
         ('wæter', '/ˈwæter/'), ('nigon', '/ˈniɣon/'), ('dagas', '/ˈdɑɣɑs/'),
         ('dæġ', '/ˈdæj/'), ('ċild', '/ˈtʃild/'),  ('cwēn', '/ˈkweːn/'),
         # An adverb of tō and a noun is stressed on the noun, whose g is a stop.
-        ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'), ('tōmorgen', '/toːˈmorɣen/'),
+        ('tōdæġ', '/toːˈdæj/'), ('tōgædere', '/toːˈɡædere/'),
         # A compound's second element begins with the sound a word begins with.
         ('andswaru', '/ˈɑndswɑru/'), ('onsīen', '/ˈonsiːen/'), ('ēagþȳrel', '/ˈæːɑxθyːrel/'),
         # And its first element ends with the sound the simple word ends with,
