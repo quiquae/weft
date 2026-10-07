@@ -63,8 +63,10 @@ same night, the fifth card `WITHDRAWN` keeps, and "baby" is `ċild`, a second
 row of the child's card. The same night every verb, adjective, numeral and
 interjection gained its line too, 334 rows in all; the 22 adverbs are
 left, and reading the adjectives found `lāh`, woven for "low", to be Middle
-English from Norse. "low" is `hēan` now, `lāh` the sixth card withdrawn,
-and the adverbs are the item in `Next`.
+English from Norse. "low" is `hēan` now, `lāh` the sixth card withdrawn.
+The adverbs followed, so every one of the pack's 356 rows names its entry;
+the one left queued is `tōmorgen`, which no dictionary prints, and which
+form to teach is the item in `Next`.
 
 **And as of 2026-10-05 the Old English for "goodbye" is one a text has.** It
 was `far wel`, which English Wiktionary gives only as the reconstruction
@@ -4538,7 +4540,7 @@ registered**, and nothing below it can move until it is.
       written, and the three groups stamped. The package grew 315 bytes
       and prints **990 KB** now.
 
-- [ ] **The 22 Old English adverbs' glosses, and `tōmorgen` is not the
+- [x] **The 22 Old English adverbs' glosses, and `tōmorgen` is not the
       word Wiktionary gives.** The last slice of the gloss ledger: add
       `adv` to `HELD` in `tests/tools/ang-glosses.test.ts` and a line per
       adverb, as the other parts of speech were read. One is known to
@@ -4554,9 +4556,45 @@ registered**, and nothing below it can move until it is.
       the mechanical part: the drafting script is described in the ledger's
       header. About an hour with `tōmorgen`, half that without.
 
+      **Done 2026-10-07 for the ledger; `tōmorgen`'s form is the next
+      item.** `HELD` holds every part of speech, `adv` included, and the
+      ledger every one of the pack's 356 rows. Eighteen adverbs drafted
+      cleanly; `ǣfre` names "ever" for always and `sōna` "immediately" for
+      soon, its note already saying so; `wēnunga` is another page that
+      only names `wēninga`, "possibly, perchance, maybe", so `FORM_OF`
+      lists twenty-one and the line names "maybe". Bosworth–Toller's `tó`
+      (bt:30587), `morgen` (bt:23129), its Supplement (bt:55583), `morne`
+      (bt:23154) and `margen` (bt:22411) were read for "to-morrow", and
+      none prints it; so `tōmorgen`'s line quotes `morgen`'s "morning,
+      morn" and `QUEUED` names it. Three probes, each restored by md5:
+      adverbs held with no lines, `tōmorgen` unqueued, and `wēnunga`'s
+      form unlisted, each failing its own test by name.
+
+- [ ] **`tōmorgen` is woven for "tomorrow", and no dictionary prints that
+      spelling.** Found 2026-10-07 by the gloss ledger, whose `QUEUED`
+      names it. English Wiktionary has no `tōmorgen` (its `tomorgen`
+      redirects to `to-morgen`, a Middle English page) and derives
+      English *tomorrow* "from Old English tō morgne … from tō + morgne
+      (dative of morgen, morning)"; Bosworth–Toller's `tó`, `morgen`,
+      Supplement `morgen`, `morne` and `margen` do not print "to-morrow".
+      So read before choosing: Bosworth–Toller's `tó` entry in full, which
+      may set the phrase under a sense of the preposition the text
+      extraction did not reach, and Wiktionary's `morgen` for its dative
+      forms (`morgne`, `morgenne`). If the Old English is two words, the
+      row becomes a phrase — `ang-phrases.tsv` must hold it with a
+      quotation a text has, as `mē hrēoweþ` was held — and changes
+      letters, so `tōmorgen`'s card goes into `WITHDRAWN` and the new one
+      into the card ledger; `old-english-stress.test.ts` lists `tōmorgen`
+      among its *tō* adverbs (`:114`), as `tools/seed/_ipa.py` does in
+      `ANG_PREFIXED` and its self-check, and `fill_ipa.py` writes no transcription
+      for a phrase, so `packs:verify`'s warnings go from 4 to 5. If a
+      source does print `tōmorgen` as one word, cite it and empty
+      `QUEUED`. About an hour either way.
+
 `Now` is **empty** and `Next` holds **one** unchecked item above, as of
-2026-10-07, agent-shaped and not waiting on B1: the Old English adverbs'
-glosses, with `tōmorgen`. `lāh` for "low", the Old English verb,
+2026-10-07, agent-shaped and not waiting on B1: which form of "tomorrow" to
+teach, `tōmorgen` having no entry. The Old English adverb glosses, `lāh`
+for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old
 English noun glosses,
 `tunica`, `familia`'s note, the Latin

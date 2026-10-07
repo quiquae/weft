@@ -9,10 +9,9 @@
 # ang-phrases.tsv — and the gloss named none until 2026-10-07, as the Latin
 # glosses named none until la-glosses.tsv.
 #
-# Every row but the 22 adverbs is read: the 178 nouns, and the 81 verbs, 57
-# adjectives, 13 numerals and 5 interjections, on 2026-10-07. The adverbs are
-# the next item in TODO.md, because tōmorgen, tomorrow, has an entry in
-# neither dictionary under that spelling. Each row was read against English
+# Every row is read, all 356, on 2026-10-07: the 178 nouns, 81 verbs, 57
+# adjectives, 22 adverbs, 13 numerals and 5 interjections. Each was read
+# against English
 # Wiktionary's Old English entry, from its raw text, and against
 # Bosworth–Toller wherever ang-genders.tsv read a noun's gender there and
 # ang-phrases.tsv a phrase's text. A script
@@ -38,9 +37,9 @@
 # wicu, of meolc, weall, hætt, wolcn and wice, and so does its page for the
 # adjectives sceort, nīwe, sōfte, ǣmettiġ, ēaþe and bald, and the numerals
 # þrēo and siex, of scort, nīewe, sēfte, æmtiġ, īeþe, beald, þrī and six —
-# the Old English six, which only looks like the English word. Those twenty
-# lines quote the entry named and cite the word's own beside it, and FORM_OF
-# in the test lists them. þorp is quoted from Wiktionary, "village", because
+# the Old English six, which only looks like the English word, and the
+# adverb wēnunga, of wēninga. Those twenty-one lines quote the entry named
+# and cite the word's own beside it, and FORM_OF in the test lists them. þorp is quoted from Wiktionary, "village", because
 # Bosworth–Toller's head, where its gender was read, gives no one English
 # word: "the idea at first connected with the words is that of an
 # assemblage", then of workers on an estate, and of the estate.
@@ -49,7 +48,9 @@
 # ----------------
 # Blank where the quote holds the row's English word. Otherwise it names the
 # word of the quote that stands for it, because the English word is not in the
-# entry. Sixteen rows need one. Six are nouns: hund for "hound" is "dog",
+# entry. Nineteen rows need one. Three are adverbs: ǣfre for "always" is
+# "ever", sōna for "soon" "immediately", whose note says so, and wēnunga for
+# "perhaps" "possibly, perchance, maybe". Six are nouns: hund for "hound" is "dog",
 # setl for "chair" "seat, bench, throne", mentel for "coat" "mantle (kind of
 # cloak)", rīċe for "country" "kingdom, empire", fyrhtu for "fear" "fright",
 # and hūsbonda for "husband" "master of the house". Seven are verbs:
@@ -84,7 +85,12 @@
 # derives low from Middle English lah, from Old Norse lágr. "low" is hēan
 # now, Wiktionary's "low, mean, abject, humble", whose source is
 # Proto-Germanic *hauniz and not hēah's, high; lāh's card is the sixth
-# WITHDRAWN keeps.
+# WITHDRAWN keeps. And it names tōmorgen, tomorrow, which has no entry under
+# that spelling in either dictionary: Wiktionary's tomorgen redirects to a
+# Middle English page, Bosworth–Toller prints none, and Wiktionary derives
+# English tomorrow from Old English tō morgne, two words, the dative of
+# morgen. Its line quotes morgen's entry, "morning, morn" (bt:23129), and
+# which form to teach is an item in TODO.md.
 #
 # tests/tools/ang-glosses.test.ts requires every row of a part of speech it
 # holds to have a line here, every line to cite Bosworth–Toller or the word's
@@ -409,6 +415,28 @@ catch	verb	fōn	wikt:ang:fon	to catch, capture; seize
 cut	verb	ċeorfan	wikt:ang:ceorfan	to cut
 wash	verb	wasċan	wikt:ang:wascan	to wash
 cook	verb	sēoþan	wikt:ang:seoþan	to cook
+always	adv	ǣfre	wikt:ang:æfre	ever	ever
+never	adv	nǣfre	wikt:ang:næfre	never
+often	adv	oft	wikt:ang:oft	often, oft
+sometimes	adv	hwīlum	wikt:ang:hwilum	sometimes
+today	adv	tōdæġ	wikt:ang:todæg	today
+tomorrow	adv	tōmorgen	bt:23129	morning, morn
+yesterday	adv	ġiestrandæġ	wikt:ang:giestrandæg	yesterday
+now	adv	nū	wikt:ang:nu	now
+soon	adv	sōna	wikt:ang:sona	immediately, straightaway	immediately
+already	adv	ǣr	wikt:ang:ær	already
+almost	adv	fulnēah	wikt:ang:fulneah	almost
+together	adv	tōgædere	wikt:ang:togædere	together
+alone	adv	āna	wikt:ang:ana	alone
+again	adv	eft	wikt:ang:eft	again
+here	adv	hēr	wikt:ang:her	here
+everywhere	adv	ǣġhwǣr	wikt:ang:æghwær	everywhere
+nowhere	adv	nāhwǣr	wikt:ang:nahwær	nowhere (in no place)
+slowly	adv	slāwlīċe	wikt:ang:slawlice	slowly, sluggishly
+quickly	adv	hrædlīċe	wikt:ang:hrædlice	quickly
+truly	adv	sōþlīċe	wikt:ang:soþlice	truly, really, certainly
+perhaps	adv	wēnunga	wikt:ang:weninga wikt:ang:wenunga	possibly, perchance, maybe	maybe
+very	adv	swīþe	wikt:ang:swiþe	very
 one	num	ān	wikt:ang:an	one
 two	num	twēġen	wikt:ang:twegen	two
 three	num	þrēo	wikt:ang:þri wikt:ang:þreo	three

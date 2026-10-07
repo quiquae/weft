@@ -426,17 +426,18 @@ the two ledgers cannot choose different homographs.
 **So does an Old English one, and a page that only names another form is
 not a definition.** `tools/seed/ang-glosses.tsv` quotes English Wiktionary,
 or Bosworth–Toller where a noun's gender or a phrase's text was read there,
-for every Old English row but the 22 adverbs, held by
-`tests/tools/ang-glosses.test.ts` to the Latin rules; `HELD` in the test
-names the parts of speech read. Wiktionary files Old English under its þ
-spelling, so its page for a ð spelling — `brōðor`, `dēað` — says only
-"Alternative form of" the þ one, and a line quotes the entry named and
-cites the word's own beside it; `FORM_OF` lists the twenty. A quote is the page's words, never its wikitext. Where
-neither dictionary gives the gloss, the line still quotes what they do say
-and `QUEUED` names the row until it is taught differently, as `ċildclāð`,
-"baby", a swaddling-cloth, was named for a night. Do not give such a row a
-stand-in to pass: a stand-in is a word of the entry that means the
-English, and none does.
+for every one of the Old English pack's 356 rows, held by
+`tests/tools/ang-glosses.test.ts` to the Latin rules. Wiktionary files Old
+English under its þ spelling, so its page for a ð spelling — `brōðor`,
+`dēað` — says only "Alternative form of" the þ one, and a line quotes the
+entry named and cites the word's own beside it; `FORM_OF` lists twenty-one.
+A quote is the page's words, never its wikitext. Where neither dictionary
+gives the gloss, the line still quotes what they do say and `QUEUED` names
+the row until it is taught differently, as `ċildclāð`, "baby", a
+swaddling-cloth, and `lāh`, "low", Middle English, were each named for a
+night; it names `tōmorgen` now, which has no entry under that spelling. Do
+not give such a row a stand-in to pass: a stand-in is a word of the entry
+that means the English, and none does.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
