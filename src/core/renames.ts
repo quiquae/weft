@@ -120,6 +120,11 @@ export const WITHDRAWN: Withdrawals = {
       'Bosworth–Toller\'s "cild-cláþ" is "a child-cloth, a swaddling-cloth", and English ' +
       'Wiktionary\'s "cildclāþ" "swaddling cloth; (in the plural), swaddling clothes". ' +
       '"baby" is "ċild" now, which Bosworth–Toller gives as "a child, infant".',
+    lāh:
+      'Taught for "low" until 2026-10-07, and not Old English: English Wiktionary\'s ' +
+      '"lah" is only a past tense of "lēon", to lend, and Bosworth–Toller\'s a noun, ' +
+      '"Law"; English "low" is Middle English "lah", from Old Norse "lágr". "low" is ' +
+      '"hēan" now, which Wiktionary gives as "low, mean, abject, humble".',
   },
   la: {
     camera:

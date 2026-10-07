@@ -73,12 +73,7 @@ const FORM_OF = new Map([
  * differently, with what the entries say the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  */
-const QUEUED = new Map<string, string>([
-  [
-    'low\tadj\tlāh',
-    'no adjective: Wiktionary’s lah is only a past tense of lēon, to lend, and Bosworth–Toller’s lah a noun, “Law”; English low is Middle English lah, from Old Norse lágr (English Wiktionary, low)',
-  ],
-]);
+const QUEUED = new Map<string, string>([]);
 
 type Row = { line: number; lemma: string; pos: string; tgt: string };
 type Gloss = Row & { sources: string[]; quote: string; stands: string };

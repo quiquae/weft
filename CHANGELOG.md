@@ -583,6 +583,15 @@ and the same card, Weft already weaves for "child". A learner's *ċildclāð*
 card is kept and no longer listed. Every Old English noun now quotes the
 entry that gives its gloss, which is how this one was found.
 
+**And the Old English for "low" is Old English.** It was *lāh*, which is
+early Middle English, taken from Old Norse *lágr*: English Wiktionary has
+Old English *lah* only as a past tense of *lēon*, to lend, and
+Bosworth–Toller only as a noun, "law". "low" is now *hēan*, "low, mean,
+abject, humble" — the Old English beside the Latin *humilis* Weft already
+weaves for the same word. A learner's *lāh* card is kept and no longer
+listed. Every Old English verb, adjective, numeral and interjection now
+quotes the entry that gives its gloss too.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
