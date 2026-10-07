@@ -64,12 +64,11 @@ Every noun's gender was read against English Wiktionary's Old English entry
 and, where Wiktionary has none or disagrees with itself, against
 Bosworth–Toller in the online edition of Charles University, Prague
 (<https://bosworthtoller.com>), whose data are "free for any purpose";
-`tools/seed/ang-genders.tsv` names the entry for each. Every gloss but the
-adverbs' quotes the entry that gives it in `tools/seed/ang-glosses.tsv` — a
-noun's citing beside it the entry its gender was read in, a phrase's the
-entry `tools/seed/ang-phrases.tsv` read its text in — and
-`tests/tools/ang-glosses.test.ts` fails on a row with none; the 22 adverbs
-are not yet read.
+`tools/seed/ang-genders.tsv` names the entry for each. Every gloss quotes
+the entry that gives it in `tools/seed/ang-glosses.tsv` — a noun's citing
+beside it the entry its gender was read in, a phrase's the entry
+`tools/seed/ang-phrases.tsv` read its text in — and
+`tests/tools/ang-glosses.test.ts` fails on a row with none.
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair

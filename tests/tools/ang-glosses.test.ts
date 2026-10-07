@@ -21,8 +21,8 @@
  * against it when it was written, and the entries cited should be the ones
  * actually opened.
  *
- * The ledger holds every part of speech but the adverbs, which are the next
- * item in `TODO.md`; `HELD` grows as each is read.
+ * The ledger holds every part of speech the Old English pack has, each
+ * added to `HELD` as it was read.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -37,7 +37,7 @@ const GENDERS = join(ROOT, 'tools/seed/ang-genders.tsv');
 const PHRASES = join(ROOT, 'tools/seed/ang-phrases.tsv');
 
 /** The parts of speech whose every row the ledger holds. */
-const HELD = new Set(['noun', 'verb', 'adj', 'num', 'intj']);
+const HELD = new Set(['noun', 'verb', 'adj', 'adv', 'num', 'intj']);
 
 /**
  * Words whose own Wiktionary entry gives no definition but names the entry it
@@ -66,6 +66,7 @@ const FORM_OF = new Map([
   ['bald', 'beald'],
   ['þreo', 'þri'],
   ['siex', 'six'],
+  ['wenunga', 'weninga'],
 ]);
 
 /**
@@ -73,7 +74,12 @@ const FORM_OF = new Map([
  * differently, with what the entries say the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  */
-const QUEUED = new Map<string, string>([]);
+const QUEUED = new Map<string, string>([
+  [
+    'tomorrow\tadv\ttōmorgen',
+    'no entry under this spelling: Wiktionary’s tomorgen redirects to a Middle English page, Bosworth–Toller prints none, and Wiktionary derives English tomorrow from Old English tō morgne, two words, the dative of morgen, “morning”',
+  ],
+]);
 
 type Row = { line: number; lemma: string; pos: string; tgt: string };
 type Gloss = Row & { sources: string[]; quote: string; stands: string };
