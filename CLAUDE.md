@@ -564,6 +564,50 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-07 — every Old English gloss names its entry, and tomorrow has no entry at all
+
+The same session's fifth PR, the ledger's last slice: the 22 adverbs.
+Eighteen drafted cleanly from the pages fetched for the fourth. Three name
+a stand-in — `ǣfre` "ever" for always, `sōna` "immediately" for soon, whose
+note already says so, and `wēnunga` "maybe" for perhaps — and `wēnunga`'s
+page only names `wēninga`, so `FORM_OF` lists twenty-one. **Every one of
+the Old English pack's 356 rows now names the entry its gloss was read
+in**, and `HELD` holds every part of speech the pack has.
+
+**The one that stuck is `tōmorgen`.** No dictionary prints it: English
+Wiktionary's `tomorgen` redirects to `to-morgen`, a Middle English page,
+and derives English *tomorrow* "from Old English tō morgne", two words,
+the dative of *morgen*; and five Bosworth–Toller entries read for
+"to-morrow" — `tó`, `morgen`, its Supplement, `morne` and `margen` — print
+none. So its line quotes `morgen`'s "morning, morn" (bt:23129) and
+`QUEUED` names it, the third row the table has named in one night and the
+first left there. Which form to teach is the next item, written with every
+file a two-word answer would touch: `ang-phrases.tsv`, `WITHDRAWN`, the
+card ledger, the stress test's `:114` and `_ipa.py`'s `ANG_PREFIXED`.
+
+Not test-first in order — the lines and `HELD` went in together — so the
+red side was shown afterwards, three probes each restored by md5: adverbs
+held with their lines removed fails coverage; `tōmorgen` unqueued fails
+the quote rule naming "morning, morn"; `wēnunga`'s form unlisted fails the
+source rule. Nothing that ships moved. No test count moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 267 tools / 71 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 4 warnings**.
+`site:check` and `artefacts:check` were not re-run: no pack, page or image
+moved.
+
+Assumed, with nobody to ask: that a row whose word no dictionary prints
+belongs in `QUEUED`, quoting the entry for the word inside it, rather than
+being left out of `HELD`; and that "maybe" stands for "perhaps" where
+Wiktionary's line is "possibly, perchance, maybe".
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item, the form of "tomorrow".
+
 ### 2026-10-07 — the Old English for "low" is hēan, and lāh is the sixth card withdrawn
 
 The same session's fourth PR, the item the third queued: `lāh`, woven for
