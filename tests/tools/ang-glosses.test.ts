@@ -73,13 +73,13 @@ const FORM_OF = new Map([
  * Rows whose gloss no entry gives, each queued in `TODO.md` to be taught
  * differently, with what the entries say the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
+ *
+ * Empty since 2026-10-07. It named three rows that night and saw each
+ * changed: `ċildclāð` for "baby", `lāh` for "low", and `tōmorgen` for
+ * "tomorrow", which Bosworth–Toller's `morgen` prints as two words, "Tó
+ * morgen cras", and the pack teaches as `tō morgen` now.
  */
-const QUEUED = new Map<string, string>([
-  [
-    'tomorrow\tadv\ttōmorgen',
-    'no entry under this spelling: Wiktionary’s tomorgen redirects to a Middle English page, Bosworth–Toller prints none, and Wiktionary derives English tomorrow from Old English tō morgne, two words, the dative of morgen, “morning”',
-  ],
-]);
+const QUEUED = new Map<string, string>([]);
 
 type Row = { line: number; lemma: string; pos: string; tgt: string };
 type Gloss = Row & { sources: string[]; quote: string; stands: string };

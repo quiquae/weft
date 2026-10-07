@@ -592,6 +592,17 @@ weaves for the same word. A learner's *lāh* card is kept and no longer
 listed. Every Old English verb, adjective, numeral and interjection now
 quotes the entry that gives its gloss too.
 
+**And the Old English for "tomorrow" is written as its texts write it.** It
+was *tōmorgen*, one word, which neither dictionary prints. Bosworth–Toller's
+*morgen* gives "the morning of the next day, morrow" and quotes the phrase
+in two words: "Tó morgen cras" from Exodus and the West Saxon Gospels, and
+"Gá and cum tó morgenne", "go, and come to-morrow", from the Pastoral Care.
+"tomorrow" is now *tō morgen*. Its letters are the ones it had, so a
+learner's card follows the new spelling and keeps its reviews. Like the
+other Old English phrases, it shows no pronunciation for now. Every Old
+English adverb now quotes the entry that gives its gloss, so every row of
+the pack does.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

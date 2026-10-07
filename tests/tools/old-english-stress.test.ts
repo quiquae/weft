@@ -111,7 +111,8 @@ const COMPOUNDED: Record<string, Divided> = {
   // §15: an adverb made of tō and the noun it governs is stressed on the noun.
   tōdæġ: { first: 'tō', stressed: 'second' },
   tōgædere: { first: 'tō', stressed: 'second' }, // §15, "tōgǽdere, together"
-  tōmorgen: { first: 'tō', stressed: 'second' },
+  // tōmorgen was the third until 2026-10-07: Bosworth–Toller prints it as
+  // two words, "Tó morgen cras", and a phrase carries no transcription.
   // §§11, 568–569, 588: a noun or adjective is stressed on its particle.
   andswaru: { first: 'and', stressed: 'first' }, // §569, "andswaru, answer"
   onsīen: { first: 'on', stressed: 'first' }, // §568, "ansīen, countenance": an-, the stressed on
@@ -364,7 +365,8 @@ describe('every Old English transcription is stressed and voiced where the gramm
     assert.ok(checked.length > 300, `only ${checked.length} of ${rows.length} Old English rows were read`);
     assert.ok(second.length > 200, `only ${second.length} second forms were read beside their headwords`);
     assert.ok(unstressed.length >= 8, `only ${unstressed.length} headwords begin with an unstressed particle`);
-    assert.ok(adverbs.length >= 3, `only ${adverbs.length} adverbs are made of tō and a noun`);
+    // Two: tōdæġ and tōgædere. tō morgen is two words, and not transcribed.
+    assert.ok(adverbs.length >= 2, `only ${adverbs.length} adverbs are made of tō and a noun`);
     assert.ok(voiced > 30, `only ${voiced} f, s or þ stand between voiced sounds`);
     assert.ok(atSecond.length >= 3, `only ${atSecond.length} compounds begin their second element with f, s or þ`);
     assert.ok(

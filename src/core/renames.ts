@@ -21,8 +21,8 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * the table to the packs and to `tools/seed/card-ids.tsv`, the ledger of
  * every card id a pack has carried: no entry may move a card off a word a
  * pack still teaches, every one must end at a word a pack does teach, and a
- * rename may change only marks, never letters, because a different word is a
- * different card.
+ * rename may change only marks and where a word divides, never letters,
+ * because a different word is a different card.
  *
  * Today's introduced list (`Introduced` in `src/background/storage.ts`) holds
  * bare lemmas and is not renamed. The cost is bounded and accepted: a word
@@ -61,6 +61,14 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * vowel or diphthong". Bosworth–Toller prints it short, "æg … pl. ægru", and
  * is outvoted. Its plural, which the pack wove undotted as `ǣgru`, is
  * `ǣġru`.
+ *
+ * **And a word divided, 2026-10-07.** `tōmorgen`, tomorrow, is in no
+ * dictionary as one word. Bosworth–Toller's `morgen` gives "the morning of
+ * the next day, morrow" and prints the phrase in two, "Tó morgen cras", from
+ * Exodus and the West Saxon Gospels; English Wiktionary has no Old English
+ * entry for it. The pack writes `tō morgen` now. Its letters are the ones
+ * it had, and a learner who knew `tōmorgen` knows `tō morgen`, so the card
+ * follows the spelling rather than being withdrawn.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -76,6 +84,7 @@ export const RENAMED: Renames = {
     fisc: 'fisċ',
     flǣsc: 'flǣsċ',
     æġ: 'ǣġ',
+    tōmorgen: 'tō morgen',
   },
 };
 

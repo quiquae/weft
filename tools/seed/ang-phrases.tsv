@@ -16,6 +16,13 @@
 # "it rues me", the impersonal hrēowan, which the dictionary glosses "to rue,
 # make sorry, grieve; often impers." and quotes with mē in Genesis.
 #
+# And one adverb. tōmorgen, woven for "tomorrow" until 2026-10-07, is one
+# word in neither dictionary: Bosworth–Toller's morgen (bt:23129) prints
+# "Tó morgen cras" from Exodus and the West Saxon Gospels, and "Gá and cum
+# tó morgenne go, and come to-morrow" from the Pastoral Care. The pack
+# writes tō morgen, the form all the other texts there have, and the card
+# was renamed to it, its letters being the same.
+#
 # The quotation is the text the phrase was read in, as Bosworth–Toller prints
 # it, with where it is from. tests/tools/phrases.test.ts requires each word
 # of the phrase to stand in it, accents and macrons aside and ð read as þ, as
@@ -43,3 +50,4 @@ hello	intj	wes hāl	bt:18028 bt:35422	Hál wes ðú Iudéa cyning (Mt. Kmbl. 27,
 goodbye	intj	wes hāl	bt:35422	Wesaþ hále valete (Wrt. Voc. ii. 88, 61)
 please	intj	iċ bidde	bt:4228	Ic bidde ðé mín Drihten, quæso Domine mi (Gen. 19, 18)
 sorry	intj	mē hrēoweþ	bt:53179 bt:19714	Þæt mé on mínum hyge hreóweð, þæt hié heofonríce ágan (Gen. 426)
+tomorrow	adv	tō morgen	bt:23129	Tó morgen cras (Ex. 8, 23: Mt. Kmbl. 6, 30)

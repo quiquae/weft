@@ -60,7 +60,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **267 pass**, 71 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
-| `npm run packs:verify` | sanity-check the lexicons | 0 errors, 4 warnings (missing IPA on 4 Old English interjections) |
+| `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
@@ -435,7 +435,11 @@ A quote is the page's words, never its wikitext. Where neither dictionary
 gives the gloss, the line still quotes what they do say and `QUEUED` names
 the row until it is taught differently, as `ċildclāð`, "baby", a
 swaddling-cloth, and `lāh`, "low", Middle English, were each named for a
-night; it names `tōmorgen` now, which has no entry under that spelling. Do
+night, and `tōmorgen`, "tomorrow", until Bosworth–Toller's `morgen` was
+read to its end: a second sense, below where the first reading stopped,
+prints it as two words, "Tó morgen cras", and the pack teaches `tō morgen`.
+`QUEUED` is empty. A line saying an entry does not print something is a
+claim about the whole entry, so read the whole entry before writing it. Do
 not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
@@ -534,10 +538,12 @@ carried, taken 2026-10-04 when no id had been lost since 1.0.0, and
 `tests/tools/card-ids.test.ts` fails on a ledger id no pack teaches unless
 `RENAMED` moves it to one that does, on a word a pack teaches with no ledger
 line, on a rename whose old spelling is still taught or was never shipped,
-and on a rename that changes letters rather than marks, because a
-different word is a different card. Never delete a `RENAMED` line or a
-ledger line: an install that has not loaded its cards since, or an export
-from before, still holds the old id. Today's `introduced` list holds bare
+and on a rename that changes letters rather than marks or where a word
+divides, because a different word is a different card. A word divided is
+respelt, not withdrawn: `tōmorgen`, which no dictionary prints as one word,
+is `tō morgen` since 2026-10-07, the same letters, and its cards followed
+it. Never delete a `RENAMED` line or a ledger line: an install that has not
+loaded its cards since, or an export from before, still holds the old id. Today's `introduced` list holds bare
 lemmas and is not renamed, which costs at most one new-word slot for the
 rest of the day an update lands. A word that was never the language, or
 never meant what it was taught for, leaves the other way: `WITHDRAWN`,
@@ -563,6 +569,94 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-07 — "tomorrow" was in Bosworth–Toller, past where the reading stopped
+
+The queue named the pixel diff, which #76 landed on 2026-10-06 and
+`TODO.md` had ticked, so the work was its one unchecked item: `tōmorgen`,
+woven for "tomorrow", which the session before found in no dictionary.
+
+**It is in one, below where that reading ended.** Bosworth–Toller was read
+through a script cached in `/tmp/weft-angg/bttext.py`, which prints the
+first 700 characters of an entry. `morgen` (bt:23129) runs to 1 756, and
+its second sense, "the morning of the next day, morrow", begins at 1 073:
+"Gá and cum tó morgenne go, and come to-morrow, Past. Swt. 325, 1 … Tó
+morgen cras, Ex. 8, 23: Mt. Kmbl. 6, 30: Kent. Gl. 54: … Gen. 2438. Tó
+morhgen (morgen, MS. A.), Lk. Skt. 13, 32, 33". **"An entry does not print
+it" is a claim about the whole entry**, and the first 700 characters can
+only support claims about what is in them. Of the 23 entries cached, 14
+are longer than that; the night's two withdrawals rest on absences too,
+and both stand, `lah` (bt:21055) and `cild-cláþ` (bt:6142) being read whole.
+
+**So the pack teaches `tō morgen`**, the form Exodus, the West Saxon
+Gospels, the Kentish Glosses and Genesis have, where only the Pastoral
+Care has the dative `morgenne`. It is not a dropped ending: Bosworth–Toller
+files it under *tó* with the accusative, "marking time", beside "Tó dæg
+hodie", so it is `tō dæġ`'s construction. English Wiktionary's `morgen`,
+read as the item asked, glosses the noun "tomorrow" in a second sense and
+lists the dative, `tō morgne`, among its derived terms: two words there
+too. Being two words, it is a phrase:
+`ang-phrases.tsv` quotes "Tó morgen cras (Ex. 8, 23: Mt. Kmbl. 6, 30)",
+the gloss line quotes the Pastoral Care and names "to-morrow" as Latin
+`crās`'s line does, and `QUEUED` is empty, kept with a note of the three
+rows it named in one night.
+
+**The item said withdraw; the card was renamed.** `WITHDRAWN` is for a
+word that was never the language or never meant what it was taught for,
+and `tōmorgen` is neither: it is `tō morgen` written solid, the same
+letters, and a learner who reviewed one knows the other. The card ledger
+refused the rename on the space alone, `letters()` having stripped only
+marks, so it strips spaces too, where a word divides being an editor's
+choice as a mark is, with a probe in the same test that `tō morgenne`, a
+different form, is still refused. Test-first through the ledgers: the four
+lines written first went red on exactly the tomorrow row in five suites;
+the seed and `npm run packs` left only `ang:tōmorgen` stranded; the
+`RENAMED` line turned that into "changes marks, never letters", red on the
+space; the amended rule cleared it. A probe blanking `letters()` fails the
+new assertion, and the file was restored by md5.
+
+As the item said: `tōmorgen` left the stress guard's `COMPOUNDED`, whose
+*tō*-adverb floor goes 3 → 2, and `_ipa.py`'s `ANG_PREFIXED` and
+self-check, still 0 mismatches; `fill_ipa.py` writes nothing for a phrase,
+5 skipped where there were 4, both seeds unchanged by md5; and
+`packs:verify` warns 5 times, swept in this file's command table and three
+places in `TODO.md`. The word's transcription is the cost, as for the four
+interjections, which `TODO.md` calls expected.
+
+What moved: 3 fields of `en-ang.json`, `tgt`, `tgtLemma` and `ipa`, its
+`builtAt` already today and `index.json` untouched. The site, built from
+`main` in a `/tmp` worktree and from the branch, is still 714 pages: one
+address moves, `/old-english/tomorgen` → `/old-english/to-morgen`, and
+`main`'s build rewritten with the new address and spelling, 50
+occurrences in 19 files, leaves only that page differing, by its
+pronunciation. All 36 screenshots regenerated byte-identical, 14 + 15 + 7
+written, and the three groups stamped after the last edit to `src/`. The
+packages moved by 1 byte, `background.js` +23 and the pack −22, Chrome's
+989.61 KB either side, and print 990 KB. No test count moved. A
+`CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 267 tools / 71 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. A comment in `src/core/renames.ts` was rewrapped after that
+run, so the shots were regenerated again, 14 + 15 + 7 written and none
+changed, the groups stamped again, and typecheck, unit, jsdom, tools and
+`validate` run once more: all exit 0.
+
+Assumed, with nobody to ask: that a space is not a letter for the rename
+rule, as a mark is not; that `tō morgen`, the accusative, beats the
+datives, the Pastoral Care's `tō morgenne` and Wiktionary's `tō morgne`, on
+the count of texts, though the Pastoral Care's is the one Bosworth–Toller
+renders in English; that losing the transcription is the cost the item accepted; and
+that the row wants no note.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds no
+unchecked item.
 
 ### 2026-10-07 — every Old English gloss names its entry, and tomorrow has no entry at all
 
