@@ -1,0 +1,180 @@
+# Where each woven Old English plural in lex-ang.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. Each modern plural has named
+# the headword line that prints it since 2026-10-08; an Old English headword
+# line prints no plural, but English Wiktionary declines every Old English
+# noun in a table whose cells carry a class per slot. On 2026-10-08 every
+# woven plural was read in the rendered table (action=render) of its entry:
+# the cell classed nom|p, the nominative plural, quoted as the table prints
+# it with every form the cell holds, "nominative plural frīend, frēond,
+# frēondas". tests/tools/ang-forms.test.ts fails on a plural changed in one
+# file and not the other, a line citing an entry its gloss was not read in, a
+# quote from another cell or not printing its plural, and a line outliving
+# its row.
+#
+# A page holding more than one word of a spelling is read by sense: the
+# table under the etymology whose definitions give the gloss — lagu, the law,
+# "laga, lage", not the sea's "laga"; hund, the dog, "hundas", not the
+# hundred's "hund" — and where one etymology declines a noun in two genders,
+# the table of the gender ang-genders.tsv gives it: hyll, m, "hyllas", not the
+# feminine "hylla, hylle"; clāð, m, "clāðas", not the neuter "clāð".
+#
+# The sources field
+# -----------------
+# One entry per line, the one whose table the quote is from:
+#
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#                      (the title drops macrons and the dots of ċ and ġ)
+#
+# It is always an entry ang-glosses.tsv read the row's gloss in, so the two
+# ledgers cannot choose different words of one spelling. Where the gloss was
+# read in two, a ð spelling's page and the þ page it names, the line cites
+# the one whose table prints the woven form as the pack spells it.
+#
+# Two things the pack writes otherwise than the tables, on every word, are
+# read as one: ð, which the pack keeps where a teaching edition prints it and
+# Wiktionary files under þ, and the doubled palatal, which the pack writes
+# cg, "dg" in its pronunciation key, where the tables write ċġ.
+#
+# 26 woven plurals are not here, because the table of their entry prints
+# another form, or their entry has no table, or their gloss was read in
+# Bosworth–Toller alone: QUEUED in tests/tools/ang-forms.test.ts names each
+# with what its table prints, until a grammar or Bosworth–Toller is read for
+# it. Wright's Old English Grammar (1914) prints some that the tables do
+# not: setl's "setlu beside setl" (§ 349), mete's "mettas" (§ 386), winter's
+# "wintru beside winter" (§ 397).
+man	mann	menn	wikt:ang:mann	nominative plural menn
+woman	wīfmann	wīfmenn	wikt:ang:wifmann	nominative plural wīfmenn
+child	ċild	ċildru	wikt:ang:cild	nominative plural ċildru
+boy	cnapa	cnapan	wikt:ang:cnapa	nominative plural cnapan
+girl	mæġden	mæġdenu	wikt:ang:mægden	nominative plural mæġdenu
+person	mann	menn	wikt:ang:mann	nominative plural menn
+friend	frēond	frīend	wikt:ang:freond	nominative plural frīend, frēond, frēondas
+mother	mōdor	mōdru	wikt:ang:modor	nominative plural mōdra, mōdru
+father	fæder	fæderas	wikt:ang:fæder	nominative plural fæderas
+brother	brōðor	brōðru	wikt:ang:broðor	nominative plural brōðor, ġebrōðor, brōðra, ġebrōðra, brōðru, ġebrōðru
+son	sunu	suna	wikt:ang:sunu	nominative plural suna
+daughter	dohtor	dohtru	wikt:ang:dohtor	nominative plural dohtor, dohtra, dohtru
+wife	wīf	wīf	wikt:ang:wif	nominative plural wīf
+baby	ċild	ċildru	wikt:ang:cild	nominative plural ċildru
+king	cyning	cyningas	wikt:ang:cyning	nominative plural cyningas
+queen	cwēn	cwēna	wikt:ang:cwen	nominative plural cwēne, cwēna
+lord	hlāford	hlāfordas	wikt:ang:hlaford	nominative plural hlāfordas
+neighbour	nēahġebūr	nēahġebūras	wikt:ang:neahgebur	nominative plural nēahġebūras
+enemy	fēond	fīend	wikt:ang:feond	nominative plural fīend
+teacher	lārēow	lārēowas	wikt:ang:lareow	nominative plural lārēowas
+doctor	lǣċe	lǣċas	wikt:ang:læce	nominative plural lǣċas
+farmer	ierþling	ierþlingas	wikt:ang:ierþling	nominative plural ierþlingas
+sailor	sǣmann	sǣmenn	wikt:ang:sæmann	nominative plural sǣmenn
+hand	hand	handa	wikt:ang:hand	nominative plural handa
+eye	ēage	ēagan	wikt:ang:eage	nominative plural ēagan
+ear	ēare	ēaran	wikt:ang:eare	nominative plural ēaran
+mouth	mūð	mūðas	wikt:ang:muð	nominative plural mūðas
+nose	nosu	nosa	wikt:ang:nosu	nominative plural nosa
+tooth	tōð	tēð	wikt:ang:toð	nominative plural tēð
+hair	hǣr	hǣr	wikt:ang:hær	nominative plural hǣr
+heart	heorte	heortan	wikt:ang:heorte	nominative plural heortan
+bone	bān	bān	wikt:ang:ban	nominative plural bān
+arm	earm	earmas	wikt:ang:earm	nominative plural earmas
+leg	sċanca	sċancan	wikt:ang:scanca	nominative plural sċancan
+foot	fōt	fēt	wikt:ang:fot	nominative plural fēt
+finger	finger	fingras	wikt:ang:finger	nominative plural fingras
+skin	hȳd	hȳda	wikt:ang:hyd	nominative plural hȳde, hȳda
+voice	stefn	stefna	wikt:ang:stefn	nominative plural stefna, stefne
+dog	hund	hundas	wikt:ang:hund	nominative plural hundas
+cat	catt	cattas	wikt:ang:catt	nominative plural cattas
+horse	hors	hors	wikt:ang:hors	nominative plural hors
+bird	fugol	fuglas	wikt:ang:fugol	nominative plural fuglas
+fish	fisċ	fiscas	wikt:ang:fisc	nominative plural fiscas
+cow	cū	cȳ	wikt:ang:cu	nominative plural cȳ
+sheep	sċēap	sċēap	wikt:ang:sceap	nominative plural sċēap
+pig	swīn	swīn	wikt:ang:swin	nominative plural swīn
+wolf	wulf	wulfas	wikt:ang:wulf	nominative plural wulfas
+bear	bera	beran	wikt:ang:bera	nominative plural beran
+lion	lēo	lēon	wikt:ang:leo	nominative plural lēon
+mouse	mūs	mȳs	wikt:ang:mus	nominative plural mȳs
+snake	nǣdre	nǣdran	wikt:ang:nædre	nominative plural nǣdran
+bee	bēo	bēon	wikt:ang:beo	nominative plural bēon
+worm	wyrm	wyrmas	wikt:ang:wyrm	nominative plural wyrmas
+raven	hræfn	hræfnas	wikt:ang:hræfn	nominative plural hræfnas
+hound	hund	hundas	wikt:ang:hund	nominative plural hundas
+ox	oxa	oxan	wikt:ang:oxa	nominative plural oxan
+goat	gāt	gǣt	wikt:ang:gat	nominative plural gǣt
+bread	hlāf	hlāfas	wikt:ang:hlaf	nominative plural hlāfas
+wine	wīn	wīn	wikt:ang:win	nominative plural wīn
+fruit	wæstm	wæstmas	wikt:ang:wæstm	nominative plural wæstmas
+apple	æppel	æpplas	wikt:ang:æppel	nominative plural æppla, æpplas
+egg	ǣġ	ǣġru	wikt:ang:æg	nominative plural ǣġru
+fire	fȳr	fȳr	wikt:ang:fyr	nominative plural fȳr
+house	hūs	hūs	wikt:ang:hus	nominative plural hūs
+home	hām	hāmas	wikt:ang:ham	nominative plural hāmas
+door	duru	dura	wikt:ang:duru	nominative plural dura
+window	ēagþȳrel	ēagþȳrlu	wikt:ang:eagþyrel	nominative plural ēagþȳrlu
+wall	wall	wallas	wikt:ang:wall	nominative plural wallas
+roof	hrōf	hrōfas	wikt:ang:hrof	nominative plural hrōfas
+room	rūm	rūm	wikt:ang:rum	nominative plural rūm
+table	bēod	bēodas	wikt:ang:beod	nominative plural bēodas
+bed	bedd	bedd	wikt:ang:bedd	nominative plural bedd
+word	word	word	wikt:ang:word	nominative plural word
+letter	bōcstæf	bōcstafas	wikt:ang:bocstæf	nominative plural bōcstafas
+name	nama	naman	wikt:ang:nama	nominative plural naman
+bridge	brycg	brycga	wikt:ang:brycg	nominative plural bryċġa, bryċġe
+ship	sċip	sċipu	wikt:ang:scip	nominative plural sċipu
+boat	bāt	bātas	wikt:ang:bat	nominative plural bātas
+sword	sweord	sweord	wikt:ang:sweord	nominative plural sweord
+shield	sċield	sċieldas	wikt:ang:scield	nominative plural sċielda, sċieldas
+ring	hring	hringas	wikt:ang:hring	nominative plural hringas
+stone	stān	stānas	wikt:ang:stan	nominative plural stānas
+glass	glæs	glasu	wikt:ang:glæs	nominative plural glasu
+cloth	clāð	clāðas	wikt:ang:clað	nominative plural clāðas
+shoe	sċōh	sċōs	wikt:ang:scoh	nominative plural sċōs
+sun	sunne	sunnan	wikt:ang:sunne	nominative plural sunnan
+moon	mōna	mōnan	wikt:ang:mona	nominative plural mōnan
+star	steorra	steorran	wikt:ang:steorra	nominative plural steorran
+sky	heofon	heofonas	wikt:ang:heofon	nominative plural heofonas
+earth	eorðe	eorðan	wikt:ang:eorðe	nominative plural eorðan
+land	land	land	wikt:ang:land	nominative plural land
+sea	sǣ	sǣs	wikt:ang:sæ	nominative plural sǣs
+river	ēa	ēan	wikt:ang:ea	nominative plural ēa, ēan
+lake	mere	meras	wikt:ang:mere	nominative plural meras
+mountain	beorg	beorgas	wikt:ang:beorg	nominative plural beorgas
+hill	hyll	hyllas	wikt:ang:hyll	nominative plural hyllas
+forest	weald	wealdas	wikt:ang:weald	nominative plural wealdas
+leaf	lēaf	lēaf	wikt:ang:leaf	nominative plural lēaf
+flower	blōstma	blōstman	wikt:ang:blostma	nominative plural blōstman
+field	feld	feldas	wikt:ang:feld	nominative plural felda, feldas
+town	tūn	tūnas	wikt:ang:tun	nominative plural tūnas
+world	weorold	weorolde	wikt:ang:weorold	nominative plural weorolde, weorolda
+country	rīċe	rīċu	wikt:ang:rice	nominative plural rīċu
+place	stōw	stōwa	wikt:ang:stow	nominative plural stōwa, stōwe
+wind	wind	windas	wikt:ang:wind	nominative plural windas
+cloud	wolcen	wolcnu	wikt:ang:wolcn	nominative plural wolcnu
+light	lēoht	lēoht	wikt:ang:leoht	nominative plural lēoht
+shadow	sċeadu	sċeadwa	wikt:ang:sceadu	nominative plural sċeadwa, sċeadwe, sċeada, sċeade
+time	tīma	tīman	wikt:ang:tima	nominative plural tīman
+day	dæġ	dagas	wikt:ang:dæg	nominative plural dagas
+night	niht	niht	wikt:ang:niht	nominative plural niht
+year	ġēar	ġēar	wikt:ang:gear	nominative plural ġēar
+month	mōnað	mōnðas	wikt:ang:monaþ	nominative plural mōnþas
+week	wicu	wican	wikt:ang:wice	nominative plural wican
+hour	tīd	tīde	wikt:ang:tid	nominative plural tīde, tīda
+morning	morgen	morgnas	wikt:ang:morgen	nominative plural morgnas
+summer	sumor	sumoras	wikt:ang:sumor	nominative plural sumoras
+autumn	hærfest	hærfestas	wikt:ang:hærfest	nominative plural hærfestas
+life	līf	līf	wikt:ang:lif	nominative plural līf
+death	dēað	dēaðas	wikt:ang:deað	nominative plural dēaðas
+love	lufu	lufa	wikt:ang:lufu	nominative plural lufa, lufe
+law	lagu	laga	wikt:ang:lagu	nominative plural laga, lage
+work	weorc	weorc	wikt:ang:weorc	nominative plural weorc
+question	āscung	āscunga	wikt:ang:ascung	nominative plural āscunga, āscunge
+answer	andswaru	andswara	wikt:ang:andswaru	nominative plural andswara, andsware
+story	spell	spell	wikt:ang:spell	nominative plural spell
+song	sang	sangas	wikt:ang:sang	nominative plural sangas
+music	drēam	drēamas	wikt:ang:dream	nominative plural drēamas
+game	gamen	gamen	wikt:ang:gamen	nominative plural gamen
+hope	hopa	hopan	wikt:ang:hopa	nominative plural hopan
+oath	āþ	āðas	wikt:ang:aþ	nominative plural āþas
+gift	ġiefu	ġiefa	wikt:ang:giefu	nominative plural ġiefa, ġiefe

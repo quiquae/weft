@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **394** tool tests / 96 suites, **40** e2e passing
+suites, **409** tool tests / 99 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -71,6 +71,18 @@ of the noun's English Wiktionary entry, and two were wrong: Spanish wove
 Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
+
+**And as of 2026-10-08 every woven Old English plural and participle but
+thirty names the table that prints it.** None had been read against a
+dictionary: their dots were held to their headwords and their sounds to
+Wright, and nothing to a paradigm. English Wiktionary's Old English entries
+decline and conjugate every word in a table whose cells carry a class per
+slot, and 132 of the 158 woven plurals and 77 of the 81 present participles
+are among the forms their entry's table prints; `tools/seed/ang-plurals.tsv`
+and `ang-verb-forms.tsv` quote the cell for each, and
+`tests/tools/ang-forms.test.ts` fails on one with none. The thirty others
+are named in that test's `QUEUED` with what their table prints, and reading
+them is the first item in `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -5094,8 +5106,113 @@ registered**, and nothing below it can move until it is.
       md5. Tools 386 → **394** / 95 → **96** suites, total 1094 →
       **1102**, in six places. Nothing that ships moved.
 
-`Now` is **empty** and `Next` holds **no** unchecked item, as of
-2026-10-08. The Italian, German, Portuguese, Spanish and French glosses,
+- [x] **No woven Old English plural or participle has been read against a
+      dictionary.** Found 2026-10-08, when the queue sent a run at the
+      modern plurals, which #90 had landed that morning: `Next` was empty,
+      and counting which claims still named no entry found the second forms
+      of the two packs read in their own dictionaries — 158 Old English
+      plurals, 81 present participles, and Latin's 244. Their dots were held
+      to their headwords and their sounds to Wright; their spellings to
+      nothing. **Done 2026-10-08 for Old English, but thirty.** English
+      Wiktionary's Old English entries decline and conjugate every word in a
+      table whose cells carry a class per slot, `nom|p` and `pres|part`, so
+      the rendered page of every entry `ang-glosses.tsv` read a woven row's
+      gloss in was fetched, 244 pages, one request a second between two
+      fetchers, a User-Agent naming no person, into `/tmp/weft-ang2/render/`;
+      `/tmp/weft-ang2/forms.py` read the slot's cells and `gen.py` wrote the
+      ledgers. A page holding two words of a spelling was read by sense, the
+      etymology whose definitions give the gloss: `lagu`, the law, "laga,
+      lage", where the first draft took the sea's "laga" because the word
+      "law" also stood in the sea's quotations; and where one etymology
+      declines a noun in two genders, the table of the seed's gender —
+      `hyll`, m, "hyllas"; `clāð`, m, "clāðas"; `rūm`, n, "rūm". 132 of 158
+      plurals and 77 of 81 participles are among the forms their table
+      prints, once two pack-wide spellings are read as one: ð, which
+      Wiktionary files under þ, and cg, which its tables write ċġ.
+
+      Test-first: `tests/tools/ang-forms.test.ts`, 15 tests in 3 suites, red
+      on "158 Old English plurals are unsourced" and "81 … present
+      participles", then green with the two ledgers and `QUEUED`. Six probes,
+      each restored by md5 and each failing its own test by name: a seed
+      plural changed, another word's entry cited, another cell quoted, a
+      quote without its form, a queued row given a line, and the folding
+      removed. Three of the six printed nothing on the first try — a Perl
+      pattern holding *ċ* matched no line without `-Mutf8` — and were rerun
+      until the file had changed and the message was read. Nothing that
+      ships moved. Tools 394 → **409** / 96 → **99** suites, total 1102 →
+      **1117**, in six places, `docs/LAUNCH.md:221` first.
+
+- [ ] **Thirty Old English second forms are not what their table prints.**
+      Found 2026-10-08 by the item above, and named in `QUEUED` in
+      `tests/tools/ang-forms.test.ts` with what each table prints. They are
+      four kinds, and only the first is plainly the pack's to fix:
+
+      1. **A dot before a back vowel.** "roads" is woven `weġas`, where the
+         table prints `wegas`: a *g* before a back vowel is the guttural, as
+         the pack itself writes `dæġ`, `dagas`, and the orthography guard
+         allows the dot to go. The fix moves `tgt2`, `ipa2` and nothing
+         else; no card moves, a card being its headword's.
+      2. **A form a grammar prints and the table does not.** Wright's *Old
+         English Grammar* (1914), read in the archive.org text
+         `oldenglishgramma00wrig`, prints `setl`'s "setlu beside setl"
+         (§ 349), `hēafod`'s "hēafdu beside older … hēafodu" and `wæter`'s
+         "wæt(e)ru beside older … wæter" (§ 347), `mete`'s "mettas"
+         (§ 386), `winter`'s "wintru beside winter" (§ 397), and `burg`'s
+         "nom. plural byrig beside byrg"; so `setl`, `hēafodu`, `wæter`,
+         `mettas`, `wintru` and `byriġ` want a line citing Wright, which
+         means a `wright:§N` source the test does not accept yet. The OCR
+         reads "pl." as "pi." and drops every macron, so quote the page
+         image, not the text. `sweostru` (the table prints only the ġe-
+         forms), `trēow`, `swefn`, `ǣfnas`, `hattas`, `flōras` (the table
+         is feminine), `þorpas` (the table is neuter, and `þorp`'s gender
+         was read in Bosworth–Toller, which decided it masculine) and
+         `gangende` (the table prints `gān`'s own `gānde`) want the same
+         reading; Bosworth–Toller, where the gender or gloss was read there,
+         as for `hīwsċipe`, `onsīen` and `pæð`, whose glosses cite no
+         Wiktionary entry at all. `hūsbonda` and `mentel` have no table on
+         their pages, and `fremde`'s is the adjective's, whose cells the
+         reader did not look for: "strangers" is woven in its weak plural,
+         `fremdan`.
+      3. **A dot where the ending was lost.** The tables print `līc` for
+         `līċ`'s plural and `wīg` for `wīġ`'s, war's — presumably because
+         the long-stemmed neuter's lost ending was a back vowel — where the
+         pack weaves the singular's spelling; the orthography guard refuses a dot
+         dropped where no back vowel follows, so the guard and the forms
+         move together or not at all. `bōc`'s `bēc` (the table `bēċ`) and
+         `ċiriċe`'s `ċirican` (the table `ċiriċan`) are the same question
+         the other way.
+      4. **A headword's own marks.** `ċempa` and `ċǣġ` dot a *c* that the
+         tables leave bare — the vowel after it is an umlaut, later than the
+         palatalisation, as in `cyning` and `cēpan`, which the pack writes
+         bare; `cǣġ` is from Proto-West Germanic *\*kaiju*, Wiktionary
+         transcribes it /kæːj/ where the pack prints /ˈtʃæːj/, and the
+         descendants are English *kemp* and *key* — and `hlīehhan` marks a vowel long
+         that the table, `hliehhan`, does not, and `wasċan` dots what the
+         table, `wascan`, does not. Their second forms differ by the same
+         marks, so they are right if their headwords are. A headword's mark
+         is its card's id, so each is a `RENAMED` line, the card ledger and
+         the transcription; `beginnan`'s *g*, which the table dots, is
+         already decided bare by Wright §§313–314 in
+         `tests/tools/old-english-stress.test.ts`.
+
+      Read each kind before changing any; about an hour for 1 and 2, more
+      for 3 and 4, which are about sounds the pack prints.
+
+- [ ] **No woven Latin plural or participle has been read against a
+      dictionary.** Found 2026-10-08 with the item above: 165 plurals and 79
+      present participles, which Allen & Greenough's rules hold the sounds
+      of and nothing the spellings of — `iūsiūranda` and `loca` were each
+      found by chance. Lewis & Short prints a noun's genitive and gender,
+      not its plural, so the source is English Wiktionary's declension and
+      conjugation tables, whose cells carry a class per slot (`nom|p`,
+      `pres|act|part` — read one before relying on it), as the Old English
+      ones did; the gloss ledger's `ls:` keys do not name Wiktionary titles,
+      so fetch by the headword with its macrons dropped. The same test shape
+      as `ang-forms.test.ts`, its own file. About an hour.
+
+`Now` is **empty** and `Next` holds **two** unchecked items, as of
+2026-10-08: the thirty Old English second forms their tables do not print,
+and Latin's second forms. The Old English second forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
