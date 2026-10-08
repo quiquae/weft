@@ -5268,17 +5268,41 @@ registered**, and nothing below it can move until it is.
       - **Kind 4**, a headword's own marks: `ċempa`, `ċǣġ`, `hlīehhan`,
         `wasċan`, and `beginnan`, which Wright decides.
 
-      The next step, about an hour: read a second grammar for `ǣfnas`,
-      `þorpas`, `onsīene`, `hūsbondan` and `mentlas`, whose own
-      Bosworth–Toller entries are read whole and print none of them —
-      Sievers (tr. Cook, 1903) and Bülbring (1902) are whole on archive.org,
-      as the compounds item found — and decide `hattas` and `gangende`.
-      For `gangende`, Bosworth–Toller's main *gán* (bt:13263), read
-      2026-10-09, heads "GÁN, to gánne; ic gá, ðú gǽst, he gǽþ; … pp. gán"
-      and prints no present participle, and the Supplement's (bt:62409)
-      ends "Similar entries v. út-gánde", a participle in -gánde, which
-      is the table's `gānde` shape: weaving `gānde` is the likely cure,
-      once `út-gánde` is read. Kinds 3 and 4 move sounds and cards, and
+      **Read on 2026-10-09, and printing none of them.** Sievers, *An Old
+      English Grammar* (tr. Cook, 1903), whole on archive.org as
+      `oldenglishgramma00sievrich`, read in its `_djvu.txt`, whose OCR
+      drops the macrons restored below and reads þ as "J?" — so quote the
+      page images, not these, before citing any of it:
+
+      - `ǣfnas`: § 248.2 declines ǣfen "like wēsten", a neuter, "(also
+        masc.)", and its Note 2 prints only ǣfen's syncopated genitive,
+        "ǣfnes, beside ǣfenes and ǣfennes", and wēsten's plural, "wēstnu,
+        beside wēstenu and wēstennu" — a neuter's, not -as.
+      - `onsīene`: § 269 note 4 prints "onsiene" as the Vespasian
+        Psalter's accusative *singular*, "according to the a-declension",
+        not a plural.
+      - `gangende`: everything free has been read, and the call is a
+        dialect's. Bosworth–Toller's main *gán* (bt:13263) heads "GÁN, to
+        gánne; ic gá, ðú gǽst, he gǽþ; … pp. gán" and prints no present
+        participle; Sievers § 430 conjugates *gān* in West Saxon with none
+        either, and its Note 3 says that in the Vespasian Psalter, Mercian,
+        "the pres. part. is gande"; § 396 note 2 says only that *gangan*'s
+        preterite gives way to *eode* in prose. Bosworth–Toller's
+        *út-gánde* (bt:60111) quotes "þǽre útgándan (-gangendan, v.l.)
+        sáwle" (Gr. D. 269, 8) and *út-gangende* (bt:60113) "þá
+        útgangendan sáwle" (268, 4): one text, both shapes. So `gānde`,
+        the table's, is the only form printed for *gān* itself, and it is
+        Mercian; `gangende` is *gangan*'s, which West Saxon prose merges
+        with *gān*. Weaving `gānde` clears the queue and moves the pack, a
+        transcription and the three screenshot groups; keeping `gangende`
+        wants a teaching edition that prints it as *gān*'s, and none read
+        is free. A call, not a check.
+
+      The next step: read Bülbring (1902, archive.org) or Wright's
+      *Elementary* grammar for `þorpas`, `hūsbondan` and `mentlas` — their
+      own Bosworth–Toller entries are read whole and print none — and
+      decide `hattas` and `gangende`, each of which has its evidence
+      above and in the bullets. Kinds 3 and 4 move sounds and cards, and
       want their own PRs.
 
       **Done 2026-10-09 for one more: a noun whose entry is an adjective's

@@ -750,12 +750,18 @@ Nothing that ships moved, and `npm run packs` left the tree clean. Tools
 426 → **428**, total 1134 → **1136**, in six places, `docs/LAUNCH.md:221`
 first; `docs/THIRD-PARTY.md` says sixteen and one.
 
-**`gangende` got a lead, not a fix.** Bosworth–Toller's main *gán*
-(bt:13263) heads "GÁN, to gánne; ic gá, ðú gǽst, he gǽþ; … pp. gán" and
-prints no present participle; the Supplement's (bt:62409) ends "Similar
-entries v. út-gánde", a participle in -gánde, the table's `gānde` shape.
-Written into the item: weaving `gānde` is the likely cure, once `út-gánde`
-is read.
+**`gangende` was read to the end of what is free, and is a call.**
+Bosworth–Toller's main *gán* (bt:13263) prints no present participle;
+Sievers (tr. Cook, 1903) § 430 conjugates *gān* in West Saxon with none,
+and its Note 3 gives the Vespasian Psalter's, Mercian, as "gande"; and
+*út-gánde* (bt:60111) quotes "útgándan (-gangendan, v.l.)", one text with
+both shapes. So `gānde` is the only form printed for *gān* itself and
+`gangende` is *gangan*'s; which a West Saxon pack should weave is written
+into the item as a call, not changed here. The same Sievers prints no
+plural of `ǣfen` (§ 248.2, a neuter "like wēsten", genitive "ǣfnes") or
+`onsīen` (§ 269 note 4's "onsiene" is an accusative singular), so the
+queue's next reading is Bülbring or Wright's *Elementary* grammar for the
+last three.
 
 Measured at the end, on Node 26.7, with npm's own exit status captured:
 `npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
