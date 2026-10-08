@@ -332,6 +332,7 @@ const MODERN: ReadonlyArray<{ lang: string; name: string }> = [
   { lang: 'fr', name: 'French' },
   { lang: 'es', name: 'Spanish' },
   { lang: 'pt', name: 'Portuguese' },
+  { lang: 'de', name: 'German' },
 ];
 
 for (const { lang, name } of MODERN) {

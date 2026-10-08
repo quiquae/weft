@@ -1,0 +1,210 @@
+# Where each German noun's gender in lex-de.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, der, die or das being the
+# first thing a learner says. On 2026-10-08 every German noun was read
+# against English Wiktionary's German entry, fetched raw, and none was
+# wrong: 167 of the 178 rows carry the gender of their page's one German
+# noun, and the 11 others were read by sense.
+#
+# A Wiktionary page holds every word of one spelling, so a line citing it
+# means the gender of this word's own noun there. Eight pages hold more than
+# one: der See, lake, beside die See, sea; der Schild, shield, beside das
+# Schild, sign; der Hut, hat, beside die Hut, guard; der Morgen, morning,
+# beside das Morgen, tomorrow; der Mund, mouth, beside an obsolete feminine
+# Mund, protection; der Bauer, farmer, beside der or das Bauer, a birdcage;
+# der Ort, place, beside obsolete and mining nouns of either gender; and
+# die Hand beside a football clipping of Handspiel.
+#
+# Where Wiktionary gives one word two genders, the seed's is one of them, as
+# the Old English and French ledgers have it: Monat, month, is masculine or
+# neuter, and Wurm, worm, neuter only when it means "baby, mite". Fremder,
+# stranger, is an adjective used as a noun, and the strong form the seed
+# writes, ein Fremder, is the masculine one.
+#
+# The sources field
+# -----------------
+#   wikt:de:<title>    https://en.wiktionary.org/wiki/<title>#German
+#
+# tests/tools/genders.test.ts requires every noun in lex-de.tsv to have a
+# line here giving the gender the seed gives, citing the noun's own entry,
+# and fails on a line outliving its noun.
+man	Mann	m	wikt:de:Mann
+woman	Frau	f	wikt:de:Frau
+child	Kind	n	wikt:de:Kind
+boy	Junge	m	wikt:de:Junge
+girl	Mädchen	n	wikt:de:Mädchen
+person	Person	f	wikt:de:Person
+friend	Freund	m	wikt:de:Freund
+family	Familie	f	wikt:de:Familie
+mother	Mutter	f	wikt:de:Mutter
+father	Vater	m	wikt:de:Vater
+brother	Bruder	m	wikt:de:Bruder
+sister	Schwester	f	wikt:de:Schwester
+son	Sohn	m	wikt:de:Sohn
+daughter	Tochter	f	wikt:de:Tochter
+wife	Ehefrau	f	wikt:de:Ehefrau
+husband	Ehemann	m	wikt:de:Ehemann
+baby	Baby	n	wikt:de:Baby
+king	König	m	wikt:de:König
+queen	Königin	f	wikt:de:Königin
+lord	Herr	m	wikt:de:Herr
+neighbour	Nachbar	m	wikt:de:Nachbar
+stranger	Fremder	m	wikt:de:Fremder
+enemy	Feind	m	wikt:de:Feind
+soldier	Soldat	m	wikt:de:Soldat
+teacher	Lehrer	m	wikt:de:Lehrer
+doctor	Arzt	m	wikt:de:Arzt
+farmer	Bauer	m	wikt:de:Bauer
+sailor	Seemann	m	wikt:de:Seemann
+head	Kopf	m	wikt:de:Kopf
+hand	Hand	f	wikt:de:Hand
+eye	Auge	n	wikt:de:Auge
+ear	Ohr	n	wikt:de:Ohr
+mouth	Mund	m	wikt:de:Mund
+nose	Nase	f	wikt:de:Nase
+tooth	Zahn	m	wikt:de:Zahn
+hair	Haar	n	wikt:de:Haar
+heart	Herz	n	wikt:de:Herz
+blood	Blut	n	wikt:de:Blut
+bone	Knochen	m	wikt:de:Knochen
+arm	Arm	m	wikt:de:Arm
+leg	Bein	n	wikt:de:Bein
+foot	Fuß	m	wikt:de:Fuß
+finger	Finger	m	wikt:de:Finger
+face	Gesicht	n	wikt:de:Gesicht
+body	Körper	m	wikt:de:Körper
+skin	Haut	f	wikt:de:Haut
+voice	Stimme	f	wikt:de:Stimme
+dog	Hund	m	wikt:de:Hund
+cat	Katze	f	wikt:de:Katze
+horse	Pferd	n	wikt:de:Pferd
+bird	Vogel	m	wikt:de:Vogel
+fish	Fisch	m	wikt:de:Fisch
+cow	Kuh	f	wikt:de:Kuh
+sheep	Schaf	n	wikt:de:Schaf
+pig	Schwein	n	wikt:de:Schwein
+wolf	Wolf	m	wikt:de:Wolf
+bear	Bär	m	wikt:de:Bär
+lion	Löwe	m	wikt:de:Löwe
+mouse	Maus	f	wikt:de:Maus
+snake	Schlange	f	wikt:de:Schlange
+bee	Biene	f	wikt:de:Biene
+worm	Wurm	m	wikt:de:Wurm
+raven	Rabe	m	wikt:de:Rabe
+hound	Jagdhund	m	wikt:de:Jagdhund
+ox	Ochse	m	wikt:de:Ochse
+goat	Ziege	f	wikt:de:Ziege
+food	Essen	n	wikt:de:Essen
+bread	Brot	n	wikt:de:Brot
+water	Wasser	n	wikt:de:Wasser
+wine	Wein	m	wikt:de:Wein
+milk	Milch	f	wikt:de:Milch
+meat	Fleisch	n	wikt:de:Fleisch
+fruit	Frucht	f	wikt:de:Frucht
+apple	Apfel	m	wikt:de:Apfel
+salt	Salz	n	wikt:de:Salz
+honey	Honig	m	wikt:de:Honig
+cheese	Käse	m	wikt:de:Käse
+egg	Ei	n	wikt:de:Ei
+fire	Feuer	n	wikt:de:Feuer
+house	Haus	n	wikt:de:Haus
+home	Heim	n	wikt:de:Heim
+door	Tür	f	wikt:de:Tür
+window	Fenster	n	wikt:de:Fenster
+wall	Wand	f	wikt:de:Wand
+roof	Dach	n	wikt:de:Dach
+floor	Boden	m	wikt:de:Boden
+room	Zimmer	n	wikt:de:Zimmer
+table	Tisch	m	wikt:de:Tisch
+chair	Stuhl	m	wikt:de:Stuhl
+bed	Bett	n	wikt:de:Bett
+book	Buch	n	wikt:de:Buch
+word	Wort	n	wikt:de:Wort
+letter	Brief	m	wikt:de:Brief
+name	Name	m	wikt:de:Name
+key	Schlüssel	m	wikt:de:Schlüssel
+bridge	Brücke	f	wikt:de:Brücke
+church	Kirche	f	wikt:de:Kirche
+ship	Schiff	n	wikt:de:Schiff
+boat	Boot	n	wikt:de:Boot
+sword	Schwert	n	wikt:de:Schwert
+shield	Schild	m	wikt:de:Schild
+ring	Ring	m	wikt:de:Ring
+gold	Gold	n	wikt:de:Gold
+silver	Silber	n	wikt:de:Silber
+iron	Eisen	n	wikt:de:Eisen
+stone	Stein	m	wikt:de:Stein
+glass	Glas	n	wikt:de:Glas
+cloth	Stoff	m	wikt:de:Stoff
+shoe	Schuh	m	wikt:de:Schuh
+coat	Mantel	m	wikt:de:Mantel
+hat	Hut	m	wikt:de:Hut
+sun	Sonne	f	wikt:de:Sonne
+moon	Mond	m	wikt:de:Mond
+star	Stern	m	wikt:de:Stern
+sky	Himmel	m	wikt:de:Himmel
+earth	Erde	f	wikt:de:Erde
+land	Land	n	wikt:de:Land
+sea	Meer	n	wikt:de:Meer
+river	Fluss	m	wikt:de:Fluss
+lake	See	m	wikt:de:See
+mountain	Berg	m	wikt:de:Berg
+hill	Hügel	m	wikt:de:Hügel
+forest	Wald	m	wikt:de:Wald
+tree	Baum	m	wikt:de:Baum
+leaf	Blatt	n	wikt:de:Blatt
+flower	Blume	f	wikt:de:Blume
+grass	Gras	n	wikt:de:Gras
+field	Feld	n	wikt:de:Feld
+road	Straße	f	wikt:de:Straße
+path	Pfad	m	wikt:de:Pfad
+city	Stadt	f	wikt:de:Stadt
+town	Stadt	f	wikt:de:Stadt
+village	Dorf	n	wikt:de:Dorf
+world	Welt	f	wikt:de:Welt
+country	Land	n	wikt:de:Land
+place	Ort	m	wikt:de:Ort
+rain	Regen	m	wikt:de:Regen
+snow	Schnee	m	wikt:de:Schnee
+wind	Wind	m	wikt:de:Wind
+cloud	Wolke	f	wikt:de:Wolke
+ice	Eis	n	wikt:de:Eis
+light	Licht	n	wikt:de:Licht
+shadow	Schatten	m	wikt:de:Schatten
+time	Zeit	f	wikt:de:Zeit
+day	Tag	m	wikt:de:Tag
+night	Nacht	f	wikt:de:Nacht
+year	Jahr	n	wikt:de:Jahr
+month	Monat	m	wikt:de:Monat
+week	Woche	f	wikt:de:Woche
+hour	Stunde	f	wikt:de:Stunde
+morning	Morgen	m	wikt:de:Morgen
+evening	Abend	m	wikt:de:Abend
+summer	Sommer	m	wikt:de:Sommer
+winter	Winter	m	wikt:de:Winter
+autumn	Herbst	m	wikt:de:Herbst
+life	Leben	n	wikt:de:Leben
+death	Tod	m	wikt:de:Tod
+love	Liebe	f	wikt:de:Liebe
+war	Krieg	m	wikt:de:Krieg
+peace	Frieden	m	wikt:de:Frieden
+truth	Wahrheit	f	wikt:de:Wahrheit
+law	Gesetz	n	wikt:de:Gesetz
+work	Arbeit	f	wikt:de:Arbeit
+money	Geld	n	wikt:de:Geld
+price	Preis	m	wikt:de:Preis
+question	Frage	f	wikt:de:Frage
+answer	Antwort	f	wikt:de:Antwort
+story	Geschichte	f	wikt:de:Geschichte
+song	Lied	n	wikt:de:Lied
+music	Musik	f	wikt:de:Musik
+game	Spiel	n	wikt:de:Spiel
+dream	Traum	m	wikt:de:Traum
+fear	Angst	f	wikt:de:Angst
+hope	Hoffnung	f	wikt:de:Hoffnung
+joy	Freude	f	wikt:de:Freude
+anger	Wut	f	wikt:de:Wut
+oath	Eid	m	wikt:de:Eid
+gift	Geschenk	n	wikt:de:Geschenk
