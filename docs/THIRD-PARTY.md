@@ -91,6 +91,16 @@ they disagree, the grammar: *ǣġ*, egg, is long in Wiktionary and in Sievers
 Public-domain sources impose no conditions. They are listed for scholarly
 honesty rather than for compliance.
 
+### French, Spanish, Portuguese, German and Italian
+
+Every noun's gender was read against English Wiktionary's entry for the
+word in its language, and `tools/seed/fr-genders.tsv`, `es-genders.tsv`,
+`pt-genders.tsv`, `de-genders.tsv` and `it-genders.tsv` name the entry for
+each; `tests/tools/genders.test.ts` fails on a noun with none. The French
+etymology claims cite etymonline and Wiktionary in
+`tools/seed/fr-cousins.tsv`. Nothing else in these five packs names its
+entry yet: their glosses and plurals cite nothing.
+
 ### Extending coverage
 
 `npm run packs` builds from the curated seed files only. To go beyond the

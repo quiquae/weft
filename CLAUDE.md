@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **272 pass**, 73 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **293 pass**, 78 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -422,8 +422,16 @@ all five are woven in the singular only, because the masculine plurals
 English Wiktionary gives four of them are figurative or count the parts one
 at a time; `ITALIAN_OTHER_GENDER` keeps each with what its entry prints, and
 the same file refuses a masculine Italian noun woven in a plural in -a or
--e, the endings of a feminine one. Beyond that, no modern pack's gender has
-been read against a dictionary.
+-e, the endings of a feminine one. And every modern noun's gender names
+its entry, as Old English's and Latin's do: `tools/seed/fr-genders.tsv`,
+`es-`, `pt-`, `de-` and `it-genders.tsv` cite English Wiktionary's entry for
+the word in its language, and the same file holds them, deriving the
+languages from the shipped packs, so a sixth pack fails until its genders
+are read. On 2026-10-08 all 890 were read and, the Italian five aside, none
+was wrong. Where Wiktionary gives one word two genders the seed's is one of
+them, as the Old English ledger has it — French `enfant`, Spanish `médico`,
+masculine or feminine by the person meant, print "masculine" — and whether
+those should print Latin's "common" is a call written up in `TODO.md`.
 
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
@@ -583,6 +591,54 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every modern gender names its entry, and only Italian's five were wrong
+
+The same session's second PR, the item the first one queued: the 890
+modern nouns no dictionary had read. The fetch the first PR started for
+sizing finished while its checks ran — every noun's English Wiktionary
+entry, raw, one request a second, into `/tmp/weft-it/wikt/` — so the pass
+was reading, not fetching. Spanish 169 of 178 agreed outright, Portuguese
+171, German 167, French 167 and Italian 177, and every row left over was
+right by sense: a second noun of one spelling (*der See*, lake, beside *die
+See*, sea; *coração*, heart, beside *coração*, blushing) or one word given
+two genders, which takes the Old English ledger's rule that the seed's is
+one of them. **None was wrong** beyond the five the first PR fixed.
+
+German needed its own reader, because `{{de-noun}}` writes the gender
+inside a declension spec — `m,(e)s,^er`, `m.weak`, `((<m,…>,<m,…>))`, and
+`+` for an adjective used as a noun — and the generic one called *Soldat*
+`m.weak` and disagreed with every weak noun. Read by the wrong parser, a
+correct seed looks wrong; that is a reason to print what a parser read
+before believing what it concluded.
+
+Five ledgers, each written by a script that refused any noun whose seed
+gender was not among its page's, and each red first on a header-only file.
+The test is one loop in `tests/tools/genders.test.ts` over the shipped
+packs, not a hand list, with a test of its own that fails when a shipped
+pack has no ledger — probed by moving `pt-genders.tsv` away. Two probes on
+the French ledger restored by md5. Nothing that ships moved. Tools 272 →
+**293** / 73 → **78** suites, total 980 → **1001**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` gained a section for the
+five languages, which says what in them names its entry and what does not.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **293 tools / 78 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 5 warnings** and
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`site:check` was not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that the eleven nouns masculine or feminine by
+sense, or given both, print "masculine" rather than Latin's "common" — the
+call is written up in `TODO.md`; and that an Italian plural's gender read
+from its template's `<g:…>` mark is enough to say none now differs.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item: the 868 woven modern plurals, which only the rendered
+pages can check, the raw templates naming 14.
 
 ### 2026-10-08 — Italian has two genders, and the pack printed three
 

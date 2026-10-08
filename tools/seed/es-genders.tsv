@@ -1,0 +1,208 @@
+# Where each Spanish noun's gender in lex-es.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, under both forms a row
+# weaves. On 2026-10-08 every Spanish noun was read against English
+# Wiktionary's Spanish entry, fetched raw, and none was wrong: 169 of the 178
+# rows carry the gender of their page's one Spanish noun, and the 9 others
+# were read by sense.
+#
+# A Wiktionary page holds every word of one spelling, so a line citing it
+# means the gender of this word's own noun there. Five pages hold two: pez,
+# fish, is masculine where pez, pitch, is feminine; mañana, morning, is
+# feminine where mañana, the near future, is masculine; and cabeza, head,
+# mano, hand, and espada, sword, are feminine beside a noun for a person,
+# masculine or by sense.
+#
+# Where Wiktionary gives one word two genders, the seed's is one of them, as
+# the Old English and French ledgers have it: soldado, soldier, and médico,
+# doctor, are masculine or feminine by the person meant, bebé, baby, is
+# given both, and mar, sea, both in one sense. The seed prints all four
+# "masculine".
+#
+# The sources field
+# -----------------
+#   wikt:es:<title>    https://en.wiktionary.org/wiki/<title>#Spanish
+#
+# tests/tools/genders.test.ts requires every noun in lex-es.tsv to have a
+# line here giving the gender the seed gives, citing the noun's own entry,
+# and fails on a line outliving its noun.
+man	hombre	m	wikt:es:hombre
+woman	mujer	f	wikt:es:mujer
+child	niño	m	wikt:es:niño
+boy	chico	m	wikt:es:chico
+girl	chica	f	wikt:es:chica
+person	persona	f	wikt:es:persona
+friend	amigo	m	wikt:es:amigo
+family	familia	f	wikt:es:familia
+mother	madre	f	wikt:es:madre
+father	padre	m	wikt:es:padre
+brother	hermano	m	wikt:es:hermano
+sister	hermana	f	wikt:es:hermana
+son	hijo	m	wikt:es:hijo
+daughter	hija	f	wikt:es:hija
+wife	esposa	f	wikt:es:esposa
+husband	esposo	m	wikt:es:esposo
+baby	bebé	m	wikt:es:bebé
+king	rey	m	wikt:es:rey
+queen	reina	f	wikt:es:reina
+lord	señor	m	wikt:es:señor
+neighbour	vecino	m	wikt:es:vecino
+stranger	extraño	m	wikt:es:extraño
+enemy	enemigo	m	wikt:es:enemigo
+soldier	soldado	m	wikt:es:soldado
+teacher	maestro	m	wikt:es:maestro
+doctor	médico	m	wikt:es:médico
+farmer	granjero	m	wikt:es:granjero
+sailor	marinero	m	wikt:es:marinero
+head	cabeza	f	wikt:es:cabeza
+hand	mano	f	wikt:es:mano
+eye	ojo	m	wikt:es:ojo
+ear	oreja	f	wikt:es:oreja
+mouth	boca	f	wikt:es:boca
+nose	nariz	f	wikt:es:nariz
+tooth	diente	m	wikt:es:diente
+hair	pelo	m	wikt:es:pelo
+heart	corazón	m	wikt:es:corazón
+blood	sangre	f	wikt:es:sangre
+bone	hueso	m	wikt:es:hueso
+arm	brazo	m	wikt:es:brazo
+leg	pierna	f	wikt:es:pierna
+foot	pie	m	wikt:es:pie
+finger	dedo	m	wikt:es:dedo
+face	cara	f	wikt:es:cara
+body	cuerpo	m	wikt:es:cuerpo
+skin	piel	f	wikt:es:piel
+voice	voz	f	wikt:es:voz
+dog	perro	m	wikt:es:perro
+cat	gato	m	wikt:es:gato
+horse	caballo	m	wikt:es:caballo
+bird	pájaro	m	wikt:es:pájaro
+fish	pez	m	wikt:es:pez
+cow	vaca	f	wikt:es:vaca
+sheep	oveja	f	wikt:es:oveja
+pig	cerdo	m	wikt:es:cerdo
+wolf	lobo	m	wikt:es:lobo
+bear	oso	m	wikt:es:oso
+lion	león	m	wikt:es:león
+mouse	ratón	m	wikt:es:ratón
+snake	serpiente	f	wikt:es:serpiente
+bee	abeja	f	wikt:es:abeja
+worm	gusano	m	wikt:es:gusano
+raven	cuervo	m	wikt:es:cuervo
+hound	sabueso	m	wikt:es:sabueso
+ox	buey	m	wikt:es:buey
+goat	cabra	f	wikt:es:cabra
+food	comida	f	wikt:es:comida
+bread	pan	m	wikt:es:pan
+water	agua	f	wikt:es:agua
+wine	vino	m	wikt:es:vino
+milk	leche	f	wikt:es:leche
+meat	carne	f	wikt:es:carne
+fruit	fruta	f	wikt:es:fruta
+apple	manzana	f	wikt:es:manzana
+salt	sal	f	wikt:es:sal
+honey	miel	f	wikt:es:miel
+cheese	queso	m	wikt:es:queso
+egg	huevo	m	wikt:es:huevo
+fire	fuego	m	wikt:es:fuego
+house	casa	f	wikt:es:casa
+home	hogar	m	wikt:es:hogar
+door	puerta	f	wikt:es:puerta
+window	ventana	f	wikt:es:ventana
+wall	pared	f	wikt:es:pared
+roof	tejado	m	wikt:es:tejado
+floor	suelo	m	wikt:es:suelo
+room	habitación	f	wikt:es:habitación
+table	mesa	f	wikt:es:mesa
+chair	silla	f	wikt:es:silla
+bed	cama	f	wikt:es:cama
+book	libro	m	wikt:es:libro
+word	palabra	f	wikt:es:palabra
+letter	carta	f	wikt:es:carta
+name	nombre	m	wikt:es:nombre
+key	llave	f	wikt:es:llave
+bridge	puente	m	wikt:es:puente
+church	iglesia	f	wikt:es:iglesia
+ship	barco	m	wikt:es:barco
+boat	bote	m	wikt:es:bote
+sword	espada	f	wikt:es:espada
+shield	escudo	m	wikt:es:escudo
+ring	anillo	m	wikt:es:anillo
+gold	oro	m	wikt:es:oro
+silver	plata	f	wikt:es:plata
+iron	hierro	m	wikt:es:hierro
+stone	piedra	f	wikt:es:piedra
+glass	vidrio	m	wikt:es:vidrio
+cloth	tela	f	wikt:es:tela
+shoe	zapato	m	wikt:es:zapato
+coat	abrigo	m	wikt:es:abrigo
+hat	sombrero	m	wikt:es:sombrero
+sun	sol	m	wikt:es:sol
+moon	luna	f	wikt:es:luna
+star	estrella	f	wikt:es:estrella
+sky	cielo	m	wikt:es:cielo
+earth	tierra	f	wikt:es:tierra
+land	tierra	f	wikt:es:tierra
+sea	mar	m	wikt:es:mar
+river	río	m	wikt:es:río
+lake	lago	m	wikt:es:lago
+mountain	montaña	f	wikt:es:montaña
+hill	colina	f	wikt:es:colina
+forest	bosque	m	wikt:es:bosque
+tree	árbol	m	wikt:es:árbol
+leaf	hoja	f	wikt:es:hoja
+flower	flor	f	wikt:es:flor
+grass	hierba	f	wikt:es:hierba
+field	campo	m	wikt:es:campo
+road	camino	m	wikt:es:camino
+path	sendero	m	wikt:es:sendero
+city	ciudad	f	wikt:es:ciudad
+town	pueblo	m	wikt:es:pueblo
+village	aldea	f	wikt:es:aldea
+world	mundo	m	wikt:es:mundo
+country	país	m	wikt:es:país
+place	lugar	m	wikt:es:lugar
+rain	lluvia	f	wikt:es:lluvia
+snow	nieve	f	wikt:es:nieve
+wind	viento	m	wikt:es:viento
+cloud	nube	f	wikt:es:nube
+ice	hielo	m	wikt:es:hielo
+light	luz	f	wikt:es:luz
+shadow	sombra	f	wikt:es:sombra
+time	tiempo	m	wikt:es:tiempo
+day	día	m	wikt:es:día
+night	noche	f	wikt:es:noche
+year	año	m	wikt:es:año
+month	mes	m	wikt:es:mes
+week	semana	f	wikt:es:semana
+hour	hora	f	wikt:es:hora
+morning	mañana	f	wikt:es:mañana
+evening	tarde	f	wikt:es:tarde
+summer	verano	m	wikt:es:verano
+winter	invierno	m	wikt:es:invierno
+autumn	otoño	m	wikt:es:otoño
+life	vida	f	wikt:es:vida
+death	muerte	f	wikt:es:muerte
+love	amor	m	wikt:es:amor
+war	guerra	f	wikt:es:guerra
+peace	paz	f	wikt:es:paz
+truth	verdad	f	wikt:es:verdad
+law	ley	f	wikt:es:ley
+work	trabajo	m	wikt:es:trabajo
+money	dinero	m	wikt:es:dinero
+price	precio	m	wikt:es:precio
+question	pregunta	f	wikt:es:pregunta
+answer	respuesta	f	wikt:es:respuesta
+story	historia	f	wikt:es:historia
+song	canción	f	wikt:es:canción
+music	música	f	wikt:es:música
+game	juego	m	wikt:es:juego
+dream	sueño	m	wikt:es:sueño
+fear	miedo	m	wikt:es:miedo
+hope	esperanza	f	wikt:es:esperanza
+joy	alegría	f	wikt:es:alegría
+anger	ira	f	wikt:es:ira
+oath	juramento	m	wikt:es:juramento
+gift	regalo	m	wikt:es:regalo
