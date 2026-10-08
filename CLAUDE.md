@@ -675,7 +675,9 @@ passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
 and validate again. Separately: `packs:verify` **0 errors / 5 warnings**,
 Spanish and Portuguese at 588 entries across 583 surface forms;
 `npm run site` then `site:check` **714 pages / 16 118 links**, all
-resolving.
+resolving; and, on the commit, `artefacts:check` **8 groups, 1 stale**, exit
+1 — the release notes, B2a — with the three screenshot groups `ok` on their
+stamps.
 
 Assumed, with nobody to ask: that "write a ledger only for what the pass
 finds worth holding" meant every plural, since a ledger of the exceptions
