@@ -30,9 +30,10 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spelling } from '../../src/core/lexicon.ts';
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url));
 const LEXICON = join(ROOT, 'tools/seed/lex-ang.tsv');
@@ -209,5 +210,110 @@ describe('every Latin gender names the entry it was read in', () => {
     assert.ok(laNouns.length > 150, `only ${laNouns.length} Latin nouns were read from lex-la.tsv`);
     const genders = new Set(laNouns.map((n) => n.gender));
     assert.deepEqual([...genders].sort(), ['c', 'f', 'm', 'n'], 'the seed should use all four genders');
+  });
+});
+
+/**
+ * A gender is one its language has, and it is true of every form a row
+ * weaves. The tooltip prints a pack entry's gender under the form that entry
+ * wove, and a seed row has one gender for both its forms, so a plural is
+ * printed with its singular's gender. These read the shipped packs, because
+ * the printed gender is the claim.
+ *
+ * Italian has two genders, and until 2026-10-08 the pack printed a third:
+ * `orecchio`, ear, was marked neuter, because its plural `orecchie` is
+ * feminine. Four more rows were the same kind of word marked the other way —
+ * `osso`, `braccio`, `dito` and `uovo` are masculine and were woven in their
+ * feminine plurals, `ossa`, `braccia`, `dita` and `uova`, printed
+ * "masculine". The rule Latin's `locus` set on 2026-10-06 decides them: a
+ * noun whose plural takes another gender weaves a plural of its own gender or
+ * none. Each masculine plural Wiktionary gives these words is figurative or
+ * means the parts one at a time, so none is woven.
+ */
+const PACKS = join(ROOT, 'src/lexicon/packs');
+
+type Woven = { src: string; tgt: string; tgtLemma: string; pos?: string; gender?: string; num?: string };
+
+const woven = (lang: string): Woven[] =>
+  Object.values(JSON.parse(readFileSync(join(PACKS, `en-${lang}.json`), 'utf8')).entries as Record<string, Woven[]>).flat();
+
+const shipped = readdirSync(PACKS).flatMap((f) => /^en-([a-z]+)\.json$/.exec(f)?.slice(1, 2) ?? []);
+
+/** The genders each language's nouns are given, by its grammar. */
+const INVENTORY: ReadonlyMap<string, { name: string; genders: string; grammar: string }> = new Map([
+  ['ang', { name: 'Old English', genders: 'mfn', grammar: 'masculine, feminine and neuter' }],
+  ['de', { name: 'German', genders: 'mfn', grammar: 'der, die and das' }],
+  ['es', { name: 'Spanish', genders: 'mf', grammar: 'masculine and feminine; the Latin neuter is gone' }],
+  ['fr', { name: 'French', genders: 'mf', grammar: 'masculine and feminine; the Latin neuter is gone' }],
+  ['it', { name: 'Italian', genders: 'mf', grammar: 'masculine and feminine; the Latin neuter is gone' }],
+  ['la', { name: 'Latin', genders: 'mfnc', grammar: 'masculine, feminine, neuter, and Lewis & Short’s “comm.”, common' }],
+  ['pt', { name: 'Portuguese', genders: 'mf', grammar: 'masculine and feminine; the Latin neuter is gone' }],
+]);
+
+describe('a gender is one its language has', () => {
+  test('every gender a pack prints is one of its language’s', () => {
+    const offenders = shipped.flatMap((lang) => {
+      const known = INVENTORY.get(lang);
+      if (!known) return [`en-${lang}.json ships, and INVENTORY gives ${lang} no genders`];
+      return woven(lang).flatMap((e) =>
+        e.gender && !known.genders.includes(e.gender)
+          ? [`en-${lang} ${e.src} → ${e.tgt} is printed “${e.gender}”, and ${known.name} has ${known.grammar}`]
+          : [],
+      );
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} printed genders are not their language’s:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('every language listed is one a pack ships', () => {
+    const stale = [...INVENTORY.keys()].filter((lang) => !shipped.includes(lang)).map((lang) => `INVENTORY lists ${lang}, and no pack ships`);
+    assert.deepEqual(stale, [], stale.join('\n'));
+    assert.ok(shipped.length >= 7, `only ${shipped.length} packs were found under src/lexicon/packs`);
+  });
+});
+
+/**
+ * Italian masculine nouns whose plural is feminine, and what English
+ * Wiktionary's Italian entry prints. A row is woven in the singular only,
+ * masculine: the feminine plural would be printed "masculine", and the
+ * masculine one is not the plural English means by the word.
+ */
+const ITALIAN_OTHER_GENDER: ReadonlyMap<string, string> = new Map([
+  ['orecchio', 'orecchio m (plural (in the literal meaning) orecchie f or (figuratively) orecchi m)'],
+  ['osso', 'osso m (plural (collective) ossa f or (individual) ossi m)'],
+  ['braccio', 'braccio m (plural (in most meanings 1, 2, 4) braccia f or (in the figurative meanings …) bracci m'],
+  ['dito', 'dito m (plural (considered individually) diti m or (collectively) dita f'],
+  ['uovo', 'uovo m (plural uova f'],
+]);
+
+describe('an Italian plural of another gender is not printed with its singular’s', () => {
+  const entries = woven('it').filter((e) => e.pos === 'noun');
+
+  test('no masculine noun is woven in a plural that ends as a feminine one does', () => {
+    // A plural in -a that is not its singular unchanged is feminine, the old
+    // Latin neuter plural, uova beside uovo; so is one in -e, the plural of a
+    // feminine noun in -a. A masculine plural ends in -i, or is its singular.
+    const offenders = entries.flatMap((e) =>
+      e.num === 'pl' && e.gender === 'm' && e.tgt !== spelling(e.tgtLemma) && /[ae]$/.test(e.tgt)
+        ? [`en-it ${e.src} → ${e.tgt} is printed “m”, the gender of ${spelling(e.tgtLemma)}; a plural in -${e.tgt.slice(-1)} is feminine`]
+        : [],
+    );
+    assert.deepEqual(offenders, [], `${offenders.length} Italian plurals are printed a gender they do not have:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('a listed word is a masculine noun the pack weaves in the singular only', () => {
+    const offenders = [...ITALIAN_OTHER_GENDER].flatMap(([word, prints]) => {
+      const forms = entries.filter((e) => spelling(e.tgtLemma) === word);
+      if (!forms.length) return [`${word} is listed, and the Italian pack teaches no such noun`];
+      return forms.flatMap((e) => [
+        ...(e.gender === 'm' ? [] : [`en-it ${e.src} → ${e.tgt} is printed “${e.gender}”; Wiktionary: ${prints}`]),
+        ...(e.tgt === word ? [] : [`en-it ${e.src} → ${e.tgt} weaves a plural of ${word}; Wiktionary: ${prints}`]),
+      ]);
+    });
+    assert.deepEqual(offenders, [], `${offenders.length} listed Italian nouns are woven against their entries:\n  ${offenders.join('\n  ')}`);
+  });
+
+  test('the rule has something to police', () => {
+    const plurals = entries.filter((e) => e.num === 'pl' && e.gender === 'm' && e.tgt !== spelling(e.tgtLemma));
+    assert.ok(plurals.length > 50, `only ${plurals.length} masculine Italian plurals were found to read`);
   });
 });
