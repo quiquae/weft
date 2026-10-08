@@ -622,6 +622,15 @@ the French ledger restored by md5. Nothing that ships moved. Tools 272 →
 `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` gained a section for the
 five languages, which says what in them names its entry and what does not.
 
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **293 tools / 78 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 5 warnings** and
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`site:check` was not re-run: no pack, page or image moved.
+
 Assumed, with nobody to ask: that the eleven nouns masculine or feminine by
 sense, or given both, print "masculine" rather than Latin's "common" — the
 call is written up in `TODO.md`; and that an Italian plural's gender read
