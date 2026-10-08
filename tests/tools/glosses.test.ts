@@ -37,10 +37,14 @@ const SEED = join(ROOT, 'tools/seed');
 const PACKS = join(ROOT, 'src/lexicon/packs');
 
 /** The languages whose every row the ledgers hold. */
-const READ = new Set(['fr', 'es', 'pt', 'de']);
+const READ = new Set(['fr', 'es', 'pt', 'de', 'it']);
 
-/** The modern languages whose glosses are not read yet, each an item in `TODO.md`. */
-const UNREAD = new Set(['it']);
+/**
+ * The modern languages whose glosses are not read yet, each an item in
+ * `TODO.md`. Empty since 2026-10-08, when Italian, the last, was read; a
+ * pack added later goes here until its glosses are.
+ */
+const UNREAD = new Set<string>([]);
 
 /**
  * Words whose own Wiktionary entry gives no definition of the word the row
@@ -72,7 +76,9 @@ const FORM_OF: ReadonlyMap<string, string> = new Map([
  * `muitas vezes`, `em todo lugar` and `em nenhum lugar`. A word the phrase
  * inflects is cited by the entry it is a form of — `muitas` is "feminine
  * plural of muito", `vezes` "plural of vez" — and `de pé`, "up; standing",
- * is one entry of two words.
+ * is one entry of two words. Italian has one, `in nessun luogo`, whose
+ * `nessun` is "apocopic form of nessuno"; `da nessuna parte`, an entry,
+ * "nowhere", is the variant, and teaching it instead is a call in `TODO.md`.
  */
 const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
   ['es\ten_ningún_lugar', ['en', 'ningún', 'lugar']],
@@ -80,6 +86,7 @@ const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
   ['pt\tmuitas_vezes', ['muito', 'vez']],
   ['pt\tem_todo_lugar', ['em', 'todo', 'lugar']],
   ['pt\tem_nenhum_lugar', ['em', 'nenhum', 'lugar']],
+  ['it\tin_nessun_luogo', ['in', 'nessuno', 'luogo']],
 ]);
 
 /**

@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **386 pass**, 95 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **394 pass**, 96 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -502,16 +502,17 @@ not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
 **And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`,
-`es-glosses.tsv`, `pt-glosses.tsv` and `de-glosses.tsv` quote, for every row
-of the French, Spanish, Portuguese and German packs,
+`es-glosses.tsv`, `pt-glosses.tsv`, `de-glosses.tsv` and `it-glosses.tsv`
+quote, for every row of the five modern packs,
 the definition line of the word's own English Wiktionary entry that gives
 its gloss, read in the rendered page and held by
 `tests/tools/glosses.test.ts` to the Latin and Old English
 rules: the row's English word or a named stand-in, never wikitext, a noun's
 line citing the entry its gender was read in, `FORM_OF` and `QUEUED` with
 stale checks. `READ` names the languages read and `UNREAD` those waiting,
-so a pack added later fails until it is one or the other; French, Spanish,
-Portuguese and German were read on 2026-10-08, and Italian waits. Read a
+so a pack added later fails until it is one or the other; all five were
+read on 2026-10-08, and `UNREAD` is empty — typed `Set<string>`, since an
+empty literal is a `Set<never>` that `tsc` will not ask `has()` of. Read a
 German page by its exact title: `Essen` and `essen` are two entries and,
 on a case-insensitive disk, one cached file.
 A phrase no entry gives whole — Spanish `en ningún lugar`, "nowhere", has
@@ -659,6 +660,67 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every Italian gloss names its entry, and every modern claim now does
+
+The same run's last slice, Italian, which finishes the item "no modern
+gloss names its entry": 101 pages fetched beside the 250 the noun and verb
+passes left, every page opened under its exact-case name after German's
+lesson, 348 of 356 drafted, all read.
+
+Two drafts were another sense: `luna`'s line holding "moon" is "(archaic,
+literary) a month, moon", and Wiktionary files the Moon itself under
+`Luna`, so the line quotes lowercase `luna`'s "(colloquial, astronomy, by
+extension of Luna) a natural satellite" and names "natural satellite" to
+stand for "moon"; and `molto`'s first line holding "very" is the one with
+verbs, "much, very much, a lot", where the row's is "very, really, very
+much (with adjectives or adverbs)". Six rows name a stand-in, two of them
+`terra`'s, whose entry is three lines, "ground", "soil" and "planet":
+"soil" for earth, "ground" for land. `sedersi`, which `TODO.md` predicted
+would need `FORM_OF` like Spanish `sentarse`, defines itself, "to sit, sit
+down, take a seat". `in nessun luogo` has no entry and is `COMPOSED`, citing
+`nessuno` for its apocopic `nessun`; its variant `da nessuna parte` is an
+entry, "nowhere", and teaching it instead is a call in `TODO.md`. `capello`
+is one hair, as `cheveu` is, added to that call. None is false.
+
+**So every claim the five modern packs make about a word now names its
+entry**: gloss, gender, woven plural, woven verb form, and French's
+etymologies — the four other packs carry no etymon, note or transcription,
+which was counted before `docs/THIRD-PARTY.md` was made to say so. `UNREAD`
+is empty and typed `Set<string>`: an empty literal is a `Set<never>`, and
+`tsc` refuses `has(lang)` on it, which a two-line file checked before the
+claim went into `TODO.md`.
+
+Test-first: Italian moved from `UNREAD` to `READ`, red on "356 Italian
+glosses name no entry", then green. Three probes, restored by md5:
+`in nessun luogo` out of `COMPOSED`, `luna`'s stand-in dropped, and Italian
+read nowhere, which names `en-it.json` as neither read nor waiting. Two of
+the three printed nothing on the first try — a `sed` pattern that matched
+no line and a `grep` that missed a `+ '` prefix — and were rerun until the
+file had changed and the message was read: **a probe that prints nothing
+has not fired, it has not run.** Nothing that ships moved. Tools 386 →
+**394** / 95 → **96** suites, total 1094 → **1102**, in six places,
+`docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **394 tools / 96 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. `site:check` was not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that "a natural satellite" may stand for
+"moon" where Wiktionary keeps the Moon's own name for the capital; that
+`terra`'s thin entry warrants stand-ins rather than a queue, the word being
+the land and the earth in any Italian dictionary; and that a correct phrase
+with no entry is `COMPOSED` even when a variant has one.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds no
+agent-shaped item. Five calls are written up in `TODO.md` to look at rather
+than do, three of them new today: `serão` over `noite`, `da nessuna parte`
+over `in nessun luogo`, and `capello` beside `cheveu`.
 
 ### 2026-10-08 — every German gloss names its entry, and the disk could not tell Essen from essen
 

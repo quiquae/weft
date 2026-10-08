@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **386** tool tests / 95 suites, **40** e2e passing
+suites, **394** tool tests / 96 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -72,10 +72,9 @@ Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
-**And as of 2026-10-08 every French, Spanish, Portuguese and German gloss
-quotes the entry that gives it.** `tools/seed/fr-glosses.tsv`,
-`es-glosses.tsv`, `pt-glosses.tsv` and `de-glosses.tsv` hold, for all 356
-rows of each, the definition line of the word's own English
+**And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
+`tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
+`de-glosses.tsv` and `it-glosses.tsv` hold, for all 356 rows of each, the definition line of the word's own English
 Wiktionary entry that gives its gloss, naming the word that stands for it
 where the English is not there — "seaman" for sailor, "fabric" for cloth,
 "overcoat" for *abrigo* — and `tests/tools/glosses.test.ts` fails on a row
@@ -87,7 +86,9 @@ debout`'s card is the seventh `WITHDRAWN` keeps, the first in a modern pack.
 Spanish's found none false. Portuguese's found `tarde`, woven for
 "evening", which its entry gives only as "afternoon"; "evening" is `serão`
 now, the page whose noun is "evening", and `tarde`'s card is the eighth
-withdrawn. German's found none false. Italian is the last slice.
+withdrawn. German's and Italian's found none false. So every claim the
+five modern packs make about a word — its gloss, gender, woven plural or
+verb form, and French's etymologies — names the entry it was read in.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -518,10 +519,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds one
-agent-shaped item, not waiting on B1.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
+unchecked item.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides that one needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -5075,37 +5076,27 @@ registered**, and nothing below it can move until it is.
       **95** suites, total 1085 → **1094**, in six places. Nothing that
       ships moved.
 
-- [ ] **No Italian gloss names its entry.** The last slice of the modern
-      glosses, 356 rows. The four slices before it are the plan: move
-      `it` from `UNREAD` to `READ` in `tests/tools/glosses.test.ts`, which
-      goes red naming all 356. An empty `UNREAD` must be typed,
-      `new Set<string>()`: `new Set([])` is a `Set<never>`, and `tsc`
-      refuses `UNREAD.has(lang)` on it. Write `tools/seed/it-glosses.tsv`
-      and read every draft. The tooling
-      is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py it`
-      fetches the pages the noun and verb passes did not (about 95, a
-      minute and a half), `defs.py` reads a page's definition lines per
-      heading and opens a page only under its exact-case filename,
-      `draft.py it` drafts and lists the rows needing a decision, and
-      `fr-`, `es-`, `pt-` and `de-header.txt` are headers to adapt. Read
-      the drafts, not only the misses: the first line holding a word was
-      another sense in one French draft of 345, two Spanish of 343, five
-      Portuguese of 341 and three German of 353. A page that names another
-      form goes in `FORM_OF`; a phrase with no entry, after its variants
-      are tried, in `COMPOSED`; a gloss no definition gives in `QUEUED`,
-      and a TODO item to teach it differently. Italian's pronominal
-      `sedersi` will want `FORM_OF` to `sedere`, as Spanish `sentarse` did.
-      If `/tmp` is gone, the three scripts are short to write again: the
-      pages are `action=render`, a definition line is an `<li>` of the
-      first `<ol>` after a part of speech's heading, its `<dl>` and `<ul>`
-      set aside — and check each file's name against `os.listdir`, not
-      `os.path.exists`. About 30 minutes with the tooling, two hours
-      without it.
+- [x] **No Italian gloss names its entry.** Done 2026-10-08, the last of
+      the five slices, in the run that landed Spanish, Portuguese and
+      German — which finishes "no modern gloss names its entry". 101 pages
+      fetched beside the 250 the noun and verb passes left; 348 of 356
+      drafted, all read, every page opened under its exact-case name. Two
+      drafts were another sense: `luna`'s line holding "moon" is "(archaic,
+      literary) a month, moon", so its line quotes "a natural satellite"
+      with that standing for "moon", Wiktionary filing the Moon under
+      `Luna`; and `molto`'s first "very" is the one with verbs. Six name a
+      stand-in, two of them `terra`'s, whose entry is only "ground",
+      "soil" and "planet". `sedersi` defines itself and needed no
+      `FORM_OF`; `in nessun luogo` has no entry and is `COMPOSED`, its
+      variant `da nessuna parte` being an entry, "nowhere" — a call below.
+      None is false. `UNREAD` is empty, typed `Set<string>`. Red first on
+      "356 Italian glosses name no entry"; three probes, each restored by
+      md5. Tools 386 → **394** / 95 → **96** suites, total 1094 →
+      **1102**, in six places. Nothing that ships moved.
 
-`Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the Italian glosses. The German glosses, `tarde`,
-the Portuguese glosses, the
-Spanish glosses, `tenir debout`, the French glosses, the modern verb forms, the
+`Now` is **empty** and `Next` holds **no** unchecked item, as of
+2026-10-08. The Italian, German, Portuguese, Spanish and French glosses,
+`tarde`, `tenir debout`, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
@@ -5177,6 +5168,16 @@ rather than changed:
    its reflexive's, "to remember, to be reminded of"; "she remembered"
    woven `erinnern` says she reminded someone.
 
+**One Italian call a human may want to look at**, recorded on 2026-10-08
+rather than changed: "nowhere" is woven `in nessun luogo`, which English
+Wiktionary has no entry for, where `da nessuna parte` is an entry,
+"nowhere", and the everyday phrase. The first is correct Italian, so its
+line is `COMPOSED` from the entries of its words and nothing is false.
+Teaching `da nessuna parte` instead is a different word and so a different
+card: `it:in nessun luogo` into `WITHDRAWN`, the new id into the card
+ledger, the seed row and its gloss line — and `COMPOSED` loses its Italian
+entry, the new line citing its own.
+
 **One Portuguese call a human may want to look at**, taken on 2026-10-08
 without anyone to ask: "evening" is `serão`, a new card, where it was
 `tarde`, whose entry is only "afternoon". The everyday way to say good
@@ -5193,7 +5194,9 @@ plural and card lines, and `WITHDRAWN`.
 "a headhair", and its entry's usage note says English's mass noun is
 French's plural: "For the mass noun hair, use the plural cheveux". So
 "her hair is long" woven in the singular says she has one. The row
-weaves *cheveux* only under "hairs". Weaving *cheveux* under "hair"
+weaves *cheveux* only under "hairs". Italian *capello* is the same shape,
+read the same day: "a single hair (on the head)", where English's mass
+"hair" is *capelli*. Weaving *cheveux* under "hair"
 breaks the rule every seed's header states — a plural target under an
 English singular — and blanking the row's singular leaves "hair" woven
 nowhere; either is a choice, and the second is a line of
@@ -5584,9 +5587,8 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-10-08 — the French, Spanish, Portuguese and German glosses, and what
-the last slice needs.** Ticked in `Next`. Eight things a later run would be
-sorry not to know:
+**2026-10-08 — the five modern gloss ledgers.** Ticked in `Next`. Eight
+things a later run would be sorry not to know:
 
 1. **A source writes a space as an underscore and a curly apostrophe
    straight.** The sources field is space-separated, so `au revoir` is
