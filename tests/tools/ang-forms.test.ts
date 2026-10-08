@@ -168,11 +168,9 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table'],
-  ['noun\tsoldier\tċempa', 'its table prints cempan'],
   ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, whose quotations are singular; Wright § 390 declines ansīen like cwēn, plural cwēne (§ 389)'],
   ['noun\tbody\tlīċ', 'its table prints līc'],
   ['noun\tbook\tbōc', 'its table prints bēċ; bōca, bōce'],
-  ['noun\tkey\tċǣġ', 'its table prints cǣġa, cǣġe'],
   ['noun\tchurch\tċiriċe', 'its table prints ċiriċan'],
   ['noun\tcoat\tmentel', 'its entry has no table'],
   ['noun\that\thæt', 'its table prints hættas; Bosworth–Toller (bt:17964) prints no plural, and Wright § 57 keeps a before a double consonant when a back vowel followed (catte, sacc)'],

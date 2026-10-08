@@ -69,6 +69,15 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * entry for it. The pack writes `tō morgen` now. Its letters are the ones
  * it had, and a learner who knew `tōmorgen` knows `tō morgen`, so the card
  * follows the spelling rather than being withdrawn.
+ *
+ * **And two dots taken off, 2026-10-09.** Wright §309: Germanic *k*
+ * "remained a guttural … before the guttural vowels … and their umlauts",
+ * the umlaut being later than the palatalisation; §310 lists "cēlan from
+ * \*kōljan, to cool … cēpan, to keep … cyning, king … camp, battle; cempa,
+ * warrior" among the guttural *c*. `cǣġ`, key, is \*kaiju, its *ǣ* the
+ * umlaut of *ā*. The pack had dotted both and printed /tʃ/; English
+ * Wiktionary writes `cempa` and `cǣġ`, transcribes the second /kæːj/, and
+ * the words became *kemp* and *key*.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -85,6 +94,8 @@ export const RENAMED: Renames = {
     flǣsc: 'flǣsċ',
     æġ: 'ǣġ',
     tōmorgen: 'tō morgen',
+    ċempa: 'cempa',
+    ċǣġ: 'cǣġ',
   },
 };
 
