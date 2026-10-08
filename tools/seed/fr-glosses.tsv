@@ -51,12 +51,16 @@
 # salutation)", holds the word, and is the word as a thing one says, "dire
 # bonjour"; the row is the interjection.
 #
-# One row no definition gives. tenir debout, woven for "stand", is
-# "(informal) to hold water, to be valid, to make sense": what an argument
-# does, "ça ne tient pas debout", that doesn't hold water. A person standing
-# is debout, "standing, stood up, upright", and the verb for it, se tenir
-# debout, has no entry. QUEUED in tests/tools/glosses.test.ts names the row
-# until it is taught differently; see TODO.md.
+# One row no definition gave. tenir debout, woven for "stand" until
+# 2026-10-08, is "(informal) to hold water, to be valid, to make sense":
+# what an argument does, "ça ne tient pas debout", that doesn't hold water,
+# and not what a person does. A person standing is debout, "standing, stood
+# up, upright", and "stand" is être debout now, whose own entry is "stand
+# (be upright, support oneself on the feet in an erect position)", the shape
+# of Spanish estar de pie, Italian stare in piedi and Portuguese estar de pé.
+# se tenir debout has no entry, and lever's reflexive, "to rise, stand up",
+# is standing up, not standing. The learner's tenir debout card is
+# withdrawn: WITHDRAWN in src/core/renames.ts keeps it.
 #
 # Three quotes are true and say less than the row is woven for, and are
 # recorded rather than changed. cheveu is one hair, and its entry's usage
@@ -330,7 +334,7 @@ eat	verb	manger	wikt:fr:manger	(transitive) to eat
 drink	verb	boire	wikt:fr:boire	(ambitransitive) to drink
 sleep	verb	dormir	wikt:fr:dormir	(intransitive) to sleep
 sit	verb	asseoir	wikt:fr:asseoir	(transitive) to sit (someone) down, to seat, make sit
-stand	verb	tenir debout	wikt:fr:tenir_debout	(informal) to hold water, to be valid, to make sense
+stand	verb	être debout	wikt:fr:être_debout	stand (be upright, support oneself on the feet in an erect position)
 live	verb	vivre	wikt:fr:vivre	to live
 die	verb	mourir	wikt:fr:mourir	(intransitive) to die; to be dying
 love	verb	aimer	wikt:fr:aimer	to love (usually of a person, otherwise the meaning is closer to English like)

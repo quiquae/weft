@@ -53,10 +53,13 @@ const FORM_OF: ReadonlyMap<string, string> = new Map([]);
  * Rows whose gloss no definition gives, each queued in `TODO.md` to be taught
  * differently, with what the entry says the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
+ *
+ * Empty since 2026-10-08. It named French `tenir debout`, woven for "stand"
+ * and "(informal) to hold water, to be valid, to make sense", for the night
+ * it was found; "stand" is `être debout` now, and `tenir debout`'s card is
+ * withdrawn.
  */
-const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['fr\tstand\tverb\ttenir debout', '“(informal) to hold water, to be valid, to make sense”: a claim that stands up, not a person'],
-]);
+const QUEUED: ReadonlyMap<string, string> = new Map([]);
 
 const NAME: Readonly<Record<string, string>> = {
   de: 'German',
