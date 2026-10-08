@@ -18,9 +18,13 @@
  * hold the files together: a form changed in the seed and not in the ledger
  * fails, as does a line citing an entry its gloss was not read in, a quote
  * from another cell, or a line outliving its row. Where the table prints
- * another form than the one woven, `QUEUED` names the row with what the
- * table prints, until a grammar or Bosworth–Toller is read for it; a queued
- * row that gains a line fails, so the list can only shrink.
+ * another form than the one woven, the line may cite instead the section of
+ * Joseph and Elizabeth Mary Wright's *Old English Grammar* (1914) that prints
+ * it, quoting its words: the paradigm of `wæter` and `hēafod` gives their
+ * plurals as "wæter" and "hēafodu" (§ 347) where the tables print only the
+ * later "wætru" and "hēafdu". A row neither prints, `QUEUED` names with what
+ * its table prints, until a grammar or Bosworth–Toller is read for it; a
+ * queued row that gains a line fails, so the list can only shrink.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -90,6 +94,18 @@ const printed = (quote: string, pos: Pos): string[] | undefined => {
     .filter(Boolean);
 };
 
+/** A source naming a section of Wright's *Old English Grammar*. */
+const WRIGHT = /^wright:§\d+$/;
+
+/**
+ * The words of a quote from Wright, read as the pack spells them: Wright
+ * prints no dots on ċ and ġ, where the pack dots every palatal, so a Wright
+ * quote is compared with the dots set aside. "nom. plural byrig beside
+ * byrg" holds byriġ.
+ */
+const wrightWords = (quote: string): string[] => quote.split(/[^\p{L}\p{M}]+/u).filter(Boolean).map((w) => fold(w));
+const undotted = (form: string): string => fold(form).replaceAll('ċ', 'c').replaceAll('ġ', 'g');
+
 /**
  * A woven form the table of its entry does not print, with what it prints
  * instead: waiting for a grammar or Bosworth–Toller to say which is right.
@@ -101,25 +117,18 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table'],
   ['noun\tstranger\tfremde', 'its entry has no table'],
   ['noun\tsoldier\tċempa', 'its table prints cempan'],
-  ['noun\thead\thēafod', 'its table prints hēafdu'],
   ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, and no Wiktionary table was read'],
   ['noun\tbody\tlīċ', 'its table prints līc'],
-  ['noun\tfood\tmete', 'its table prints metas'],
-  ['noun\twater\twæter', 'its table prints wætru'],
   ['noun\tfloor\tflōr', 'its table prints flōra; flōra, flōre'],
-  ['noun\tchair\tsetl', 'its table prints setlas; setlu'],
   ['noun\tbook\tbōc', 'its table prints bēċ; bōca, bōce'],
   ['noun\tkey\tċǣġ', 'its table prints cǣġa, cǣġe'],
   ['noun\tchurch\tċiriċe', 'its table prints ċiriċan'],
   ['noun\tcoat\tmentel', 'its entry has no table'],
   ['noun\that\thæt', 'its table prints hættas'],
   ['noun\ttree\ttrēow', 'its table prints trēowa, trēowe; trēowu'],
-  ['noun\troad\tweġ', 'its table prints wegas'],
   ['noun\tpath\tpæð', 'its gloss was read in Bosworth–Toller, and no Wiktionary table was read'],
-  ['noun\tcity\tburg', 'its table prints byrġ'],
   ['noun\tvillage\tþorp', 'its table prints þorp'],
   ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
-  ['noun\twinter\twinter', 'its table prints wintras'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
   ['noun\tdream\tswefn', 'its table prints swefnu'],
   ['verb\tgo\tgān', 'its table prints gānde'],
@@ -148,6 +157,14 @@ describe('the woven cell of an Old English table is read as a reader reads it', 
     assert.equal(printed('past participle boren', 'verb'), undefined);
   });
 
+  test('a Wright quote holds a form as one of its words, its dots set aside', () => {
+    const quote = 'burg, burh (OS. OHG. burg), city; but dat. sing. and nom. plural byrig beside byrg';
+    assert.ok(wrightWords(quote).map(undotted).includes(undotted('byriġ')));
+    assert.ok(!wrightWords('mete (pl. mettas), food').map(undotted).includes(undotted('metas')));
+    assert.ok(WRIGHT.test('wright:§386'));
+    assert.ok(!WRIGHT.test('wright:386'));
+  });
+
   test('ð is þ and cg is ċġ, and nothing else is folded', () => {
     assert.equal(fold('mōnðas'), fold('mōnþas'));
     assert.equal(fold('bryċġa'), 'brycga');
@@ -174,18 +191,22 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], `${offenders.length} Old English ${NAME[pos]}s are unsourced:\n  ${offenders.join('\n  ')}`);
     });
 
-    test('every ledger line cites one entry, and its gloss was read there', () => {
+    test('every ledger line cites one entry, its gloss’s or a section of Wright', () => {
       const offenders = ledger.flatMap((e) => {
         const read = glossEntries.get(`${pos}\t${key(e.lemma, e.tgt)}`) ?? [];
         if (e.sources.length !== 1) return [`${file}:${e.line} ${e.tgt} cites ${e.sources.length} entries, where it wants the one its table is in`];
         const [source = ''] = e.sources;
-        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'})`];
+        if (WRIGHT.test(source)) return [];
+        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'}), nor a section of Wright`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
     });
 
-    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell`, () => {
+    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell or in Wright’s words`, () => {
       const offenders = ledger.flatMap((e) => {
+        if (e.sources.some((s) => WRIGHT.test(s))) {
+          return wrightWords(e.quote).map(undotted).includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Wright’s “${e.quote}” does not print ${e.tgt2}`];
+        }
         const forms = printed(e.quote, pos);
         if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${SLOT[pos]} cell`];
         return forms.map(fold).includes(fold(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${forms.join(', ')}, not ${e.tgt2}`];
