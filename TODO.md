@@ -5410,6 +5410,14 @@ registered**, and nothing below it can move until it is.
       the grammar before choosing. About half an hour to read, and an hour
       more if the seed moves: a `RENAMED` line, the card ledger, both
       transcriptions, the pack, the site and the three screenshot groups.
+      **Lewis & Short does not decide it**, read 2026-10-09 at Perseus: it
+      heads the verb "narro, āvi, ātum, 1, v. a. for gnarigo (gnarigavit,
+      Fest. p. 95) from gnarus" and marks no quantity on the first vowel,
+      which is in a heavy syllable either way. The seed's long ā is the
+      etymology's, *gnārus*; Wiktionary's short one is a claim about hidden
+      quantity, so the source to read is one that marks hidden quantities —
+      Allen's *Vox Latina* or the *Oxford Latin Dictionary* — not another
+      table.
 
       **Done 2026-10-09 for `aliēnus`**, with Old English `fremde`: an
       adjective used as a noun, Lewis & Short's "II. Subst. 1. ălĭēnus, i,
