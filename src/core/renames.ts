@@ -156,6 +156,12 @@ export const WITHDRAWN: Withdrawals = {
       'whole body, a kind of cloak or mantle, worn on journeys, and also in the city in ' +
       'rainy weather".',
   },
+  pt: {
+    tarde:
+      'Taught for "evening" until 2026-10-08, and in English Wiktionary only "afternoon": ' +
+      'its noun is "afternoon" and nothing more, its adverb "late". "evening" is "serão" ' +
+      'now, the page whose noun is "evening", beside "overtime".',
+  },
 };
 
 /** Whether a card is filed under a word its pack withdrew. See `WITHDRAWN`. */

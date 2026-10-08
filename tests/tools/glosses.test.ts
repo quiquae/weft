@@ -87,15 +87,13 @@ const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
  * differently, with what the entry says the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  *
- * It named French `tenir debout`, woven for "stand" and "(informal) to hold
- * water, to be valid, to make sense", for the night it was found; "stand" is
- * `être debout` now, and `tenir debout`'s card is withdrawn. It names
- * Portuguese `tarde`, woven for "evening", whose entry gives only
- * "afternoon", until it is taught differently.
+ * Empty since 2026-10-08. It named French `tenir debout`, woven for "stand"
+ * and "(informal) to hold water, to be valid, to make sense", and Portuguese
+ * `tarde`, woven for "evening" and in its entry only "afternoon", each for
+ * the night it was found; "stand" is `être debout` now and "evening"
+ * `serão`, and both old cards are withdrawn.
  */
-const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['pt\tevening\tnoun\ttarde', '“afternoon”, and nothing more: the evening is “serão” to Wiktionary, and after dark “noite”'],
-]);
+const QUEUED: ReadonlyMap<string, string> = new Map([]);
 
 const NAME: Readonly<Record<string, string>> = {
   de: 'German',

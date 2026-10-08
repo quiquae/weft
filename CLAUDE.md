@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
+| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for Chrome and Safari, 990 for Firefox |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -522,8 +522,9 @@ space-separated, and a curly apostrophe straight, as Wiktionary titles
 has it, and from the first line of it giving the row's sense, which is not
 always the first line holding the word: `question`'s is torture. `QUEUED`
 named French `tenir debout`, "stand", for the night it was found — "to hold
-water, to make sense" — until `être debout` was taught instead, and names
-Portuguese `tarde`, "evening", whose entry gives only "afternoon".
+water, to make sense" — and Portuguese `tarde`, "evening", whose entry gives
+only "afternoon", each for the night it was found; `être debout` and
+`serão` are taught instead, and `QUEUED` is empty.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
@@ -645,7 +646,9 @@ for "baby" and a swaddling-cloth in both dictionaries, the fifth, on
 night, and "low" is `hēan`; and French `tenir debout`, taught for "stand"
 and in English Wiktionary "to hold water, to make sense", what an argument
 does, the seventh, on 2026-10-08, and "stand" is `être debout`, the first
-outside Old English and Latin. The ledger test accepts a
+outside Old English and Latin; and Portuguese `tarde`, taught for "evening"
+and in English Wiktionary only "afternoon", the eighth, the same day, and
+"evening" is `serão`. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -654,6 +657,59 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — the Portuguese for "evening" is serão, and tarde the eighth card withdrawn
+
+The same run's next PR, the item the Portuguese pass queued: `tarde`, woven
+for "evening", is in English Wiktionary "afternoon" and nothing more, its
+adverb "late". **`serão` is the fix the ledgers allow**: its page's noun is
+"evening", beside "overtime", m, "plural serões or (dated) serãos". A second
+row of `noite`, the night card, was the other shape, and Portuguese does
+say "boa noite" for good evening, but `noite` is "night (period between
+sunset and sunrise)", and a stand-in for "evening" would have had to be
+"night" or "sunset", neither of which means it. `serão` is chiefly the
+European word, the evening after dinner; the pack already mixes the two
+varieties.
+
+The shape was `être debout`'s, with two more ledgers, since this row is a
+noun with a plural: the gloss, gender, plural and card-ledger lines went red
+first on exactly the `evening` rows; the seed and `npm run packs` moved 6
+fields of `en-pt.json` — both rows' gender, form and card — its `builtAt`
+already today, so `index.json` and every sitemap date stood still; the card
+ledger then named `pt:tarde` stranded, and `WITHDRAWN` took it, its first
+Portuguese line. `QUEUED` is empty again.
+
+What moved: the site, built from `main` and from the branch into `/tmp`, is
+byte-identical, 714 pages and 16 118 links, Portuguese having no word pages
+and the pack's date not moving. All 36 screenshots regenerated
+byte-identical, 14 + 15 + 7 written by mtime, and the three groups stamped
+after the last edit to `src/`. The package grew 241 bytes, 237 of them
+`background.js` and 4 the pack: Chrome's 989.21 → 989.44 KB and Safari's
+989.45 still print 989, and **Firefox's 989.51 prints 990**, which the
+gate's `validate` said and nothing predicted — swept in this file's command
+table and `TODO.md`'s state line. No test count moved. A `CHANGELOG.md`
+paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 377 tools / 94 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**, Portuguese at 588 entries across 583 surface forms;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a.
+
+Assumed, with nobody to ask: that a word whose entry gives "evening" beats
+the everyday word for after dark whose entry does not, the ledgers being
+the standard; that a European word suits a pack that mixes varieties; and
+that the row needs no note.
+
+What needs a human: unchanged, everything below **B1**. One call to look at
+rather than do: "evening" → `serão` over a second row of `noite`,
+reversible by the same steps. `Next` holds one agent-shaped item, the
+German and Italian glosses.
 
 ### 2026-10-08 — every Portuguese gloss names its entry, and "evening" was the afternoon
 
