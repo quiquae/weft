@@ -628,6 +628,84 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-08 — every woven modern verb form is one its table prints
+
+The queue sent this run at `tōmorgen`, which #87 landed on 2026-10-07:
+`QUEUED` in `tests/tools/ang-glosses.test.ts` is empty and the seed teaches
+`tō morgen`. So the work was `TODO.md`'s one unchecked item, the 400 verb
+forms the five modern packs weave, which no dictionary had read. The task
+arrived a second time at 02:59; the branch, the tree and `origin/main` were
+checked unchanged before anything else moved.
+
+**The tables were read, by class.** No verb's headword line labels these
+forms — Portuguese *vir*'s prints "past participle vindo", which is the
+gerund's spelling too — so the rendered page of each of the 349 distinct
+infinitives was fetched (`action=render`, two fetchers, about a request a
+second, 6 minutes; *dire*, *ver* and *ir* are one page for two packs).
+Every conjugation table marks its cells with a class per slot — `ppr` in
+French, `pres|part` in German, `gerund-<verb>` in Spanish and Portuguese,
+`ger` in Italian — so a reader in `/tmp/weft-vb/` took the cell by class and
+its label from the nearest row header, French's "simple" skipped. The class
+alone also caught Spanish's clitic table, "with gerund diciendo", which the
+label then refused.
+
+**398 of the 400 are the form their own verb's table prints, and the two
+that are not are right.** Both are pronominal: Spanish *sentarse*, whose
+page says only "infinitive of sentar combined with se", and Italian
+*sedersi*, whose own table prints "sedèndosi". Each weaves the gerund
+without the pronoun, *sentando*, *sedendo*, the form the verb without it
+prints, and a reader meets it where the pronoun stands before the
+auxiliary, "se está sentando", "si sta sedendo". `PRONOMINAL` in the test
+names both, and their lines cite both entries. Whether to weave
+*sentándose* instead is a call written up in `TODO.md`, with the other
+question the item named: which English *-ing* a participle answers to,
+since none of the five forms is a noun and the selector cannot tell which
+use it met.
+
+**Italian prints a stress mark its spelling does not.** Its tables give
+"avèndo", "dicèndo", where the spelling writes an accent only on a final
+vowel, so the test sets a mark on any other vowel aside, and a probe
+removing that rule fails all 80 Italian lines. The rule's first draft held
+the two combining marks literally inside its character class, which reads
+as `[]` on screen; it is `[̀́]` now. Write an invisible
+character as an escape.
+
+Test-first: `tests/tools/verb-forms.test.ts`, 30 tests in 6 suites, red on
+the five missing ledgers; then the ledgers, written straight off the pages
+by a script that refuses a row whose form its table does not print — none
+refused — and green. Seven probes, each restored by md5 and each failing
+its own test by name: a seed form changed, a quote from the past
+participle's cell, another verb's entry cited, `sedersi` taken out of
+`PRONOMINAL`, an Italian quote from the present participle's cell, a line
+outliving its row, and the stress rule removed. The seed headers of
+`lex-es`, `lex-pt` and `lex-it.tsv` said "present participle for verbs",
+true of French and German only, and say "the gerund" now; `npm run packs`
+moved nothing, so no pack, page or screenshot did. Tools 321 → **351** /
+84 → **90** suites, total 1029 → **1059**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says the verb forms name
+their tables. No `CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **351 tools / 90 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a — with the three screenshot groups `ok`, `src/` being untouched.
+Zero iCloud conflict copies, `test-results/`'s attribute set again first.
+
+Assumed, with nobody to ask: that the bare gerund is right for a pronominal
+verb, since the pronoun may stand before the auxiliary in both languages;
+that a table's cell is the source for a verb form as a headword line is
+for a plural; and that the *-ing* question is a teaching call for a human
+rather than a check, so it is written up and nothing moved for it.
+
+What needs a human: unchanged, everything below **B1**. Two verb calls are
+in `TODO.md`. `Next` holds one agent-shaped item: the 1 780 modern glosses,
+French first, with the rendered noun and verb pages still in `/tmp`.
+
 ### 2026-10-08 — every woven modern plural is one its entry prints
 
 The queue sent this run at the Old English glosses, which #82, #84 and #86
