@@ -1,0 +1,417 @@
+# Where each gloss in lex-de.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word a German word is woven for, and the tooltip
+# prints it back: it is the claim every reader meets first. Every other
+# claim the pack makes about a word names its entry — genders in
+# de-genders.tsv, plurals in de-plurals.tsv, verb forms in de-verb-forms.tsv
+# — and the gloss named none until 2026-10-08, the night fr-, es- and
+# pt-glosses.tsv were written the same way.
+#
+# Every row is read, all 356: the 178 nouns, 81 verbs, 57 adjectives, 22
+# adverbs, 13 numerals and 5 interjections. Each was read in the rendered
+# page of the word's English Wiktionary entry, in its German section: a
+# script took the definition lines under each heading of the row's part of
+# speech, examples, quotations and synonyms set aside, and drafted the first
+# that holds the row's English word, and every quote was read against its
+# page. Three drafts were another sense, and their lines quote the row's:
+# Schild's page holds two nouns, das Schild, a sign, whose third line is a
+# "(nonstandard or informal …) alternative form of Schild", and der Schild,
+# "shield, buckler", the seed's masculine; haben's first line is the
+# auxiliary; and suchen's line holding "seek" is its formal sense, "to seek,
+# to strive, to intend, to try", where the row's is "to search, to look for".
+#
+# German titles keep their capitals, and the disk the pages were read from
+# does not: Essen.html and essen.html are one file there, so Essen, food,
+# first read as the verb essen, arm, poor, as the noun Arm, and leben and
+# morgen as Leben and Morgen. Each was read again from its own page before
+# any line was written.
+#
+# A page holds every word of one spelling, so a quote is from this word's
+# own part of speech where the page has it. Two rows' words have none of
+# theirs, and their lines quote the heading the page gives them: erste,
+# "first", is an ordinal adjective, and bitte, "please", gives the word as
+# an adverb, its interjections being "you're welcome", "excuse me" and
+# "here you are".
+#
+# The sources field
+# -----------------
+#   wikt:de:<title>    https://en.wiktionary.org/wiki/<title>#German
+#
+# The title is the word as Wiktionary's address writes it, capitals kept and
+# an underscore for a space: wikt:de:auf_Wiedersehen. A noun cites the entry
+# its gender was read in, which for every German noun is its own.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in
+# the entry, or is there only in another sense. Two rows need one: suchen
+# for "seek" is "to search, to look for", and wirklich for "truly" "really,
+# actually".
+#
+# None is false. One says less than the row is woven for, and is recorded
+# rather than changed: erinnern alone is "(transitive) to remind", and
+# "remember" is its reflexive's, "to remember, to be reminded of", as French
+# asseoir's "sit" is s'asseoir's; see TODO.md.
+#
+# tests/tools/glosses.test.ts requires every row of lex-de.tsv to have a line
+# here citing its own word's entry, whose quote holds its English word or the
+# stand-in it names, and fails on a line outliving its row.
+man	noun	Mann	wikt:de:Mann	man, male human being
+woman	noun	Frau	wikt:de:Frau	woman (adult female human)
+child	noun	Kind	wikt:de:Kind	kid; child (young person)
+boy	noun	Junge	wikt:de:Junge	(Germany) boy
+girl	noun	Mädchen	wikt:de:Mädchen	girl
+person	noun	Person	wikt:de:Person	person, individual
+friend	noun	Freund	wikt:de:Freund	friend
+family	noun	Familie	wikt:de:Familie	family
+mother	noun	Mutter	wikt:de:Mutter	mother
+father	noun	Vater	wikt:de:Vater	father
+brother	noun	Bruder	wikt:de:Bruder	brother
+sister	noun	Schwester	wikt:de:Schwester	sister
+son	noun	Sohn	wikt:de:Sohn	son
+daughter	noun	Tochter	wikt:de:Tochter	daughter
+wife	noun	Ehefrau	wikt:de:Ehefrau	married woman, wife
+husband	noun	Ehemann	wikt:de:Ehemann	married man, husband
+baby	noun	Baby	wikt:de:Baby	baby (infant)
+king	noun	König	wikt:de:König	king (monarch, chess, card games)
+queen	noun	Königin	wikt:de:Königin	queen
+lord	noun	Herr	wikt:de:Herr	(archaic) sir, lord; address of subservient respect
+neighbour	noun	Nachbar	wikt:de:Nachbar	neighbour
+stranger	noun	Fremder	wikt:de:Fremder	stranger (someone whom one does not know) (male or of unspecified gender)
+enemy	noun	Feind	wikt:de:Feind	enemy, fiend, foe (male or of unspecified gender)
+soldier	noun	Soldat	wikt:de:Soldat	soldier
+teacher	noun	Lehrer	wikt:de:Lehrer	agent noun of lehren: one who teaches, teacher, instructor, especially a school teacher
+doctor	noun	Arzt	wikt:de:Arzt	doctor, physician (male or of unspecified gender) (without necessarily having a postgraduate degree)
+farmer	noun	Bauer	wikt:de:Bauer	farmer (male or of unspecified gender)
+sailor	noun	Seemann	wikt:de:Seemann	sailor (worker on a ship)
+head	noun	Kopf	wikt:de:Kopf	(anatomy) head
+hand	noun	Hand	wikt:de:Hand	hand
+eye	noun	Auge	wikt:de:Auge	(anatomy) eye
+ear	noun	Ohr	wikt:de:Ohr	(anatomy) ear (the auditory organ)
+mouth	noun	Mund	wikt:de:Mund	mouth of a person
+nose	noun	Nase	wikt:de:Nase	nose
+tooth	noun	Zahn	wikt:de:Zahn	tooth
+hair	noun	Haar	wikt:de:Haar	hair (a singular hair, not limited to the head)
+heart	noun	Herz	wikt:de:Herz	heart
+blood	noun	Blut	wikt:de:Blut	blood
+bone	noun	Knochen	wikt:de:Knochen	bone
+arm	noun	Arm	wikt:de:Arm	(anatomy) an arm
+leg	noun	Bein	wikt:de:Bein	leg of a person, animal, or object
+foot	noun	Fuß	wikt:de:Fuß	foot (body part)
+finger	noun	Finger	wikt:de:Finger	finger
+face	noun	Gesicht	wikt:de:Gesicht	(anatomy) face
+body	noun	Körper	wikt:de:Körper	body (of a person, animal, etc.)
+skin	noun	Haut	wikt:de:Haut	skin, hide of a person, animal or (part of a) plant
+voice	noun	Stimme	wikt:de:Stimme	voice (speaking or singing), call of an animal
+dog	noun	Hund	wikt:de:Hund	dog, hound
+cat	noun	Katze	wikt:de:Katze	house cat, Felis silvestris catus
+horse	noun	Pferd	wikt:de:Pferd	horse
+bird	noun	Vogel	wikt:de:Vogel	a bird
+fish	noun	Fisch	wikt:de:Fisch	(countable) fish (cold-blooded vertebrates living in water)
+cow	noun	Kuh	wikt:de:Kuh	cow (female bovine animal at or near adulthood)
+sheep	noun	Schaf	wikt:de:Schaf	sheep
+pig	noun	Schwein	wikt:de:Schwein	swine, pig
+wolf	noun	Wolf	wikt:de:Wolf	wolf
+bear	noun	Bär	wikt:de:Bär	bear (animal)
+lion	noun	Löwe	wikt:de:Löwe	lion
+mouse	noun	Maus	wikt:de:Maus	mouse (animal)
+snake	noun	Schlange	wikt:de:Schlange	snake
+bee	noun	Biene	wikt:de:Biene	bee
+worm	noun	Wurm	wikt:de:Wurm	(biology) worm
+raven	noun	Rabe	wikt:de:Rabe	raven
+hound	noun	Jagdhund	wikt:de:Jagdhund	(hunting) hound, hunting dog
+ox	noun	Ochse	wikt:de:Ochse	ox (castrated bull; castrated male bovine animal)
+goat	noun	Ziege	wikt:de:Ziege	goat
+food	noun	Essen	wikt:de:Essen	food
+bread	noun	Brot	wikt:de:Brot	(usually uncountable) bread
+water	noun	Wasser	wikt:de:Wasser	water (H₂O)
+wine	noun	Wein	wikt:de:Wein	wine
+milk	noun	Milch	wikt:de:Milch	milk (white liquid produced by female mammals for their young to consume)
+meat	noun	Fleisch	wikt:de:Fleisch	meat
+fruit	noun	Frucht	wikt:de:Frucht	(countable) fruit (seed-bearing part of a plant)
+apple	noun	Apfel	wikt:de:Apfel	apple (fruit)
+salt	noun	Salz	wikt:de:Salz	(uncountable) salt, table salt, sal
+honey	noun	Honig	wikt:de:Honig	honey
+cheese	noun	Käse	wikt:de:Käse	cheese
+egg	noun	Ei	wikt:de:Ei	egg (all biological senses)
+fire	noun	Feuer	wikt:de:Feuer	fire (chemical process)
+house	noun	Haus	wikt:de:Haus	house, building
+home	noun	Heim	wikt:de:Heim	(in compounds and expressions, otherwise chiefly poetic) home, one’s dwelling, the place where one is at home
+door	noun	Tür	wikt:de:Tür	door (rigid plane on a hinge)
+window	noun	Fenster	wikt:de:Fenster	window
+wall	noun	Wand	wikt:de:Wand	wall, partition
+roof	noun	Dach	wikt:de:Dach	roof
+floor	noun	Boden	wikt:de:Boden	(countable) floor
+room	noun	Zimmer	wikt:de:Zimmer	room (separate part of a building, enclosed by walls, a floor and a ceiling)
+table	noun	Tisch	wikt:de:Tisch	table (a piece of furniture with a relatively deep surface at roughly waist or knee level); specific uses include:
+chair	noun	Stuhl	wikt:de:Stuhl	a chair (to sit on)
+bed	noun	Bett	wikt:de:Bett	bed (piece of furniture, usually flat and soft, for resting or sleeping on; one's place of sleep or rest)
+book	noun	Buch	wikt:de:Buch	book (collection of sheets of paper bound together to hinge at one edge; long work fit for publication)
+word	noun	Wort	wikt:de:Wort	(plural Wörter) word as an isolated unit
+letter	noun	Brief	wikt:de:Brief	letter (written message)
+name	noun	Name	wikt:de:Name	name (forename, Christian name, given name)
+key	noun	Schlüssel	wikt:de:Schlüssel	a key
+bridge	noun	Brücke	wikt:de:Brücke	bridge
+church	noun	Kirche	wikt:de:Kirche	church (building)
+ship	noun	Schiff	wikt:de:Schiff	(nautical) ship
+boat	noun	Boot	wikt:de:Boot	boat
+sword	noun	Schwert	wikt:de:Schwert	sword
+shield	noun	Schild	wikt:de:Schild	shield, buckler (defensive weapon)
+ring	noun	Ring	wikt:de:Ring	a ring (a circular and hollow object, made of any material.)
+gold	noun	Gold	wikt:de:Gold	gold (chemical element, Au)
+silver	noun	Silber	wikt:de:Silber	silver (chemical element with the symbol Ag)
+iron	noun	Eisen	wikt:de:Eisen	iron (chemical element, Fe)
+stone	noun	Stein	wikt:de:Stein	stone, rock
+glass	noun	Glas	wikt:de:Glas	(material) glass
+cloth	noun	Stoff	wikt:de:Stoff	cloth, fabric, material
+shoe	noun	Schuh	wikt:de:Schuh	shoe
+coat	noun	Mantel	wikt:de:Mantel	coat, overcoat (long jacket that covers at least part of the thighs)
+hat	noun	Hut	wikt:de:Hut	hat
+sun	noun	Sonne	wikt:de:Sonne	(astronomy) a sun (a star, especially when being the center of a solar system)
+moon	noun	Mond	wikt:de:Mond	(astronomy) moon (a natural satellite that is orbiting its corresponding planet)
+star	noun	Stern	wikt:de:Stern	a star; a small luminous dot that can be seen on the night sky
+sky	noun	Himmel	wikt:de:Himmel	sky
+earth	noun	Erde	wikt:de:Erde	earth
+land	noun	Land	wikt:de:Land	land (real estate or landed property)
+sea	noun	Meer	wikt:de:Meer	sea
+river	noun	Fluss	wikt:de:Fluss	river
+lake	noun	See	wikt:de:See	lake
+mountain	noun	Berg	wikt:de:Berg	a mountain, hill
+hill	noun	Hügel	wikt:de:Hügel	hill
+forest	noun	Wald	wikt:de:Wald	forest; woods; woodland
+tree	noun	Baum	wikt:de:Baum	tree
+leaf	noun	Blatt	wikt:de:Blatt	(botany) leaf (green and flat organ of a plant)
+flower	noun	Blume	wikt:de:Blume	(general usage) flower (small, often woodless plant with blossoms; a stalk thereof)
+grass	noun	Gras	wikt:de:Gras	grass (plant)
+field	noun	Feld	wikt:de:Feld	field (plot of open land, especially one used to grow crops)
+road	noun	Straße	wikt:de:Straße	street; road (a way wide enough to be passable for vehicles, generally paved, in or outside a settlement)
+path	noun	Pfad	wikt:de:Pfad	path
+city	noun	Stadt	wikt:de:Stadt	city (a large settlement)
+town	noun	Stadt	wikt:de:Stadt	town (a settlement larger than a village)
+village	noun	Dorf	wikt:de:Dorf	village (rural habitation of size between a hamlet and a town)
+world	noun	Welt	wikt:de:Welt	world
+country	noun	Land	wikt:de:Land	country (territory of a nation)
+place	noun	Ort	wikt:de:Ort	place, location, point, position
+rain	noun	Regen	wikt:de:Regen	rain
+snow	noun	Schnee	wikt:de:Schnee	(uncountable, meteorology) snow
+wind	noun	Wind	wikt:de:Wind	wind; the movement of air usually caused by convection or differences of air pressure
+cloud	noun	Wolke	wikt:de:Wolke	cloud (a visible mass of water droplets suspended in the air)
+ice	noun	Eis	wikt:de:Eis	(uncountable) ice
+light	noun	Licht	wikt:de:Licht	light (electromagnetic radiation in the visible spectrum)
+shadow	noun	Schatten	wikt:de:Schatten	shade, shadow
+time	noun	Zeit	wikt:de:Zeit	time (as a concept)
+day	noun	Tag	wikt:de:Tag	(countable) day (a 24-hour period)
+night	noun	Nacht	wikt:de:Nacht	night
+year	noun	Jahr	wikt:de:Jahr	year (solar year, the time it takes the Earth to complete one orbit of the Sun)
+month	noun	Monat	wikt:de:Monat	month (division of a year, usually one twelfth ≈ 30 days)
+week	noun	Woche	wikt:de:Woche	week (period of seven days counting from Monday to Sunday, or from Sunday to Saturday)
+hour	noun	Stunde	wikt:de:Stunde	hour (unit of time consisting of 60 minutes)
+morning	noun	Morgen	wikt:de:Morgen	morning (part of the day from dawn to noon)
+evening	noun	Abend	wikt:de:Abend	evening; the time from dusk until midnight
+summer	noun	Sommer	wikt:de:Sommer	summer
+winter	noun	Winter	wikt:de:Winter	winter
+autumn	noun	Herbst	wikt:de:Herbst	autumn, fall
+life	noun	Leben	wikt:de:Leben	life; being alive
+death	noun	Tod	wikt:de:Tod	death
+love	noun	Liebe	wikt:de:Liebe	(uncountable) love (tender feeling of affection)
+war	noun	Krieg	wikt:de:Krieg	war, warfare
+peace	noun	Frieden	wikt:de:Frieden	peace
+truth	noun	Wahrheit	wikt:de:Wahrheit	truth
+law	noun	Gesetz	wikt:de:Gesetz	law, legal act, bill, statute
+work	noun	Arbeit	wikt:de:Arbeit	toil, regularly performed work, regularly pursued economic activity, labor, job, employment, occupation
+money	noun	Geld	wikt:de:Geld	money
+price	noun	Preis	wikt:de:Preis	price
+question	noun	Frage	wikt:de:Frage	question (interrogative sentence or phrase) [with zu (+ dative) ‘regarding something’ and an (+ accusative) ‘for someone’]
+answer	noun	Antwort	wikt:de:Antwort	answer
+story	noun	Geschichte	wikt:de:Geschichte	(countable) story
+song	noun	Lied	wikt:de:Lied	(music) song (musical composition sung with vocals or vocal lyrics)
+music	noun	Musik	wikt:de:Musik	(uncountable) music
+game	noun	Spiel	wikt:de:Spiel	(countable) a game (instance or way of playing)
+dream	noun	Traum	wikt:de:Traum	dream
+fear	noun	Angst	wikt:de:Angst	fear; fright; anxiety
+hope	noun	Hoffnung	wikt:de:Hoffnung	hope, the belief or expectation that something wished for can or will really happen.
+joy	noun	Freude	wikt:de:Freude	joy, delight, glee
+anger	noun	Wut	wikt:de:Wut	anger; usually “strong, hateful anger” in literary German, but not necessarily in the vernacular
+oath	noun	Eid	wikt:de:Eid	(especially official, law, politics, military) oath
+gift	noun	Geschenk	wikt:de:Geschenk	present, gift
+good	adj	gut	wikt:de:gut	good (acting in the interest of what is beneficial, ethical, or moral)
+bad	adj	schlecht	wikt:de:schlecht	bad, evil, wicked (the opposite of good; immoral)
+big	adj	groß	wikt:de:groß	big, large, large-scale
+small	adj	klein	wikt:de:klein	small, little, wee (in physical size or extent)
+great	adj	groß	wikt:de:groß	great, grand
+little	adj	klein	wikt:de:klein	small, little, wee (in physical size or extent)
+long	adj	lang	wikt:de:lang	long; lengthy (in space or time)
+short	adj	kurz	wikt:de:kurz	(temporal) short, quick, brief
+high	adj	hoch	wikt:de:hoch	high, tall
+low	adj	niedrig	wikt:de:niedrig	low
+old	adj	alt	wikt:de:alt	old
+young	adj	jung	wikt:de:jung	young
+new	adj	neu	wikt:de:neu	new
+hot	adj	heiß	wikt:de:heiß	hot (having a high temperature)
+cold	adj	kalt	wikt:de:kalt	cold, chilly; the physical perception of something (objects, weather, body etc.) to have a low temperature
+warm	adj	warm	wikt:de:warm	warm; mildly hot
+heavy	adj	schwer	wikt:de:schwer	heavy, weighty
+strong	adj	stark	wikt:de:stark	strong (intense, powerful, unyielding)
+weak	adj	schwach	wikt:de:schwach	weak, lacking in strength
+hard	adj	hart	wikt:de:hart	hard
+soft	adj	weich	wikt:de:weich	soft
+quick	adj	schnell	wikt:de:schnell	quick, fast
+slow	adj	langsam	wikt:de:langsam	slow (taking a long time to move or travel; not happening in a short time)
+true	adj	wahr	wikt:de:wahr	true, real
+false	adj	falsch	wikt:de:falsch	false, unfactual, untrue
+rich	adj	reich	wikt:de:reich	rich, wealthy (having a lot of money and possessions)
+poor	adj	arm	wikt:de:arm	poor (having little money)
+happy	adj	glücklich	wikt:de:glücklich	(of living beings) happy; both momentarily and generally in life
+sad	adj	traurig	wikt:de:traurig	sad
+tired	adj	müde	wikt:de:müde	tired
+full	adj	voll	wikt:de:voll	full; filled
+empty	adj	leer	wikt:de:leer	empty
+clean	adj	sauber	wikt:de:sauber	clean
+dirty	adj	schmutzig	wikt:de:schmutzig	dirty, filthy, grimy
+beautiful	adj	schön	wikt:de:schön	beautiful, lovely, pretty, handsome
+ugly	adj	hässlich	wikt:de:hässlich	ugly
+easy	adj	leicht	wikt:de:leicht	easy (not difficult)
+difficult	adj	schwierig	wikt:de:schwierig	difficult, hard, challenging, tough
+free	adj	frei	wikt:de:frei	free; unenslaved; unimprisoned
+wise	adj	weise	wikt:de:weise	wise
+brave	adj	tapfer	wikt:de:tapfer	brave, dauntless, hardy, tough (strong in the face of hardship, pain, danger)
+holy	adj	heilig	wikt:de:heilig	holy
+deep	adj	tief	wikt:de:tief	deep (having a long distance to the bottom; of bodies of water, wells, etc.)
+wide	adj	breit	wikt:de:breit	broad, wide
+narrow	adj	eng	wikt:de:eng	narrow, tight
+dead	adj	tot	wikt:de:tot	dead, deceased
+alive	adj	lebendig	wikt:de:lebendig	living, alive, animate
+sick	adj	krank	wikt:de:krank	ill, sick (in bad health)
+whole	adj	ganz	wikt:de:ganz	entire, whole, complete
+white	adj	weiß	wikt:de:weiß	white
+black	adj	schwarz	wikt:de:schwarz	black, reflecting little or no light
+red	adj	rot	wikt:de:rot	red (colour)
+green	adj	grün	wikt:de:grün	green (in colour)
+blue	adj	blau	wikt:de:blau	blue (color/colour)
+yellow	adj	gelb	wikt:de:gelb	yellow
+grey	adj	grau	wikt:de:grau	grey, gray
+brown	adj	braun	wikt:de:braun	brown
+have	verb	haben	wikt:de:haben	(transitive) to have; to own (to possess, have ownership of; to possess a certain characteristic)
+say	verb	sagen	wikt:de:sagen	(transitive) to say (to pronounce; communicate verbally)
+go	verb	gehen	wikt:de:gehen	(intransitive) to go, to walk
+come	verb	kommen	wikt:de:kommen	to come; to arrive
+see	verb	sehen	wikt:de:sehen	(intransitive) to see; to have sight
+know	verb	wissen	wikt:de:wissen	(transitive or intransitive) to know; to be aware of (a fact)
+think	verb	denken	wikt:de:denken	(intransitive or rarely transitive) to think [with an (+ accusative) ‘about something’ or (rare) accusative ‘something, e.g. a thought’]
+take	verb	nehmen	wikt:de:nehmen	(transitive) to take (something into one's possession or on one's body)
+give	verb	geben	wikt:de:geben	(ditransitive) to give (changing ownership) [with dative ‘someone’ and accusative ‘something’]
+make	verb	machen	wikt:de:machen	(transitive) to make, to produce, to create (an object, arrangement, situation, etc.)
+find	verb	finden	wikt:de:finden	(transitive) to find; to discover
+want	verb	wollen	wikt:de:wollen	(transitive or intransitive) to want; to wish; to desire; to demand
+tell	verb	erzählen	wikt:de:erzählen	(transitive) to tell, to narrate, to recount [with accusative ‘something’ and dative ‘to someone’]
+ask	verb	fragen	wikt:de:fragen	(transitive) to ask [with accusative ‘someone’ and accusative ‘something’]
+work	verb	arbeiten	wikt:de:arbeiten	(intransitive) to work (to do a specific task by employing physical or mental powers) [with an (+ dative)]
+play	verb	spielen	wikt:de:spielen	(intransitive) to play (engage in some activity for fun or entertainment) [with mit (+ dative) ‘with someone/something’]
+run	verb	laufen	wikt:de:laufen	(transitive or intransitive) to walk; to jog; to run (to move on foot; either at a normal or an increased speed)
+walk	verb	gehen	wikt:de:gehen	(intransitive) to go, to walk
+speak	verb	sprechen	wikt:de:sprechen	(transitive) to speak (some language, the truth, etc.)
+read	verb	lesen	wikt:de:lesen	(transitive or intransitive) to read (to look at and understand symbols, words, or data)
+write	verb	schreiben	wikt:de:schreiben	(transitive) to write, to write out (use letters to make words and texts)
+eat	verb	essen	wikt:de:essen	(transitive) to eat
+drink	verb	trinken	wikt:de:trinken	(transitive) to drink (to drink liquids (in bottles, glasses, etc.) by mouth)
+sleep	verb	schlafen	wikt:de:schlafen	to sleep
+sit	verb	sitzen	wikt:de:sitzen	(intransitive) to sit; to perch [auxiliary haben or sein]
+stand	verb	stehen	wikt:de:stehen	(intransitive) to stand (to be upright, support oneself in an erect position)
+live	verb	leben	wikt:de:leben	(intransitive) to live, to be alive
+die	verb	sterben	wikt:de:sterben	(intransitive) to die
+love	verb	lieben	wikt:de:lieben	(usually transitive, sometimes intransitive) to love, to have a strong affection for (someone or something)
+hate	verb	hassen	wikt:de:hassen	(transitive) to hate
+fear	verb	fürchten	wikt:de:fürchten	(transitive) to fear
+hear	verb	hören	wikt:de:hören	(transitive or intransitive) to hear (to perceive sounds (or a sound) through the ear)
+feel	verb	fühlen	wikt:de:fühlen	(transitive) to feel (a thing, sensation, emotion - a noun)
+hold	verb	halten	wikt:de:halten	(transitive) to hold (an object in one's hands)
+carry	verb	tragen	wikt:de:tragen	(transitive) to carry, to bear (something on one's person)
+bring	verb	bringen	wikt:de:bringen	(transitive) to bring, to fetch, to take, to convey, to bear
+send	verb	senden	wikt:de:senden	(transitive, chiefly literary) to send
+buy	verb	kaufen	wikt:de:kaufen	(transitive) to buy, to purchase
+sell	verb	verkaufen	wikt:de:verkaufen	(transitive) to sell (something in exchange for money)
+pay	verb	zahlen	wikt:de:zahlen	(transitive or intransitive) to pay [with accusative ‘money, etc.’ and an (+ accusative) ‘to someone/something’]
+build	verb	bauen	wikt:de:bauen	(transitive) to build, to construct
+break	verb	brechen	wikt:de:brechen	(transitive) to break [auxiliary haben]
+open	verb	öffnen	wikt:de:öffnen	(transitive) to open (to make something accessible or allow for passage by moving from a shut position)
+close	verb	schließen	wikt:de:schließen	(transitive or intransitive) to shut; to close; to shut down
+begin	verb	beginnen	wikt:de:beginnen	(intransitive) to begin; to commence; to be started
+help	verb	helfen	wikt:de:helfen	to help (someone); to assist; to aid [with dative ‘someone’ and bei (+ dative) ‘with’]
+learn	verb	lernen	wikt:de:lernen	(ambitransitive) to learn, to acquire knowledge
+teach	verb	lehren	wikt:de:lehren	(transitive or intransitive) to teach (a class, a subject); to be a teacher
+remember	verb	erinnern	wikt:de:erinnern	(reflexive) to remember, to be reminded of [with an (+ accusative) or (higher register) genitive ‘someone/something’]
+forget	verb	vergessen	wikt:de:vergessen	(transitive) to forget (lose remembrance of)
+win	verb	gewinnen	wikt:de:gewinnen	(intransitive) to win; to be victorious
+lose	verb	verlieren	wikt:de:verlieren	(transitive) to lose (something, or a game)
+fight	verb	kämpfen	wikt:de:kämpfen	to fight, to struggle
+swim	verb	schwimmen	wikt:de:schwimmen	(intransitive) to swim (to use swimming motions to move in the water) [auxiliary sein]
+fly	verb	fliegen	wikt:de:fliegen	(intransitive) to fly; to travel by air [auxiliary sein]
+ride	verb	reiten	wikt:de:reiten	(intransitive) to ride; to do horseriding [auxiliary sein]
+sing	verb	singen	wikt:de:singen	to sing
+laugh	verb	lachen	wikt:de:lachen	(intransitive) to laugh
+cry	verb	weinen	wikt:de:weinen	to weep, cry
+wait	verb	warten	wikt:de:warten	(intransitive) to wait (for) [with auf (+ accusative)]
+watch	verb	beobachten	wikt:de:beobachten	(transitive) to watch, to observe
+look	verb	schauen	wikt:de:schauen	(intransitive, copulative, chiefly Austria, Bavaria, Southern Germany) to look (at something, at a certain location, in a certain direction, in a certain way)
+show	verb	zeigen	wikt:de:zeigen	to show, make see
+call	verb	rufen	wikt:de:rufen	(intransitive) to call out, to shout, to cry (of a person or animal)
+put	verb	setzen	wikt:de:setzen	(transitive) causative of sitzen: to set; to put [auxiliary haben]
+keep	verb	behalten	wikt:de:behalten	(transitive) to keep, to retain (money, items, etc. in one's possession)
+leave	verb	verlassen	wikt:de:verlassen	(transitive) to leave, to abandon; to depart, to forsake
+follow	verb	folgen	wikt:de:folgen	to follow (on the same path or in a sequence) [with dative ‘someone’]
+seek	verb	suchen	wikt:de:suchen	(transitive or intransitive) to search, to look for [with accusative or nach (+ dative) ‘something/someone’]	look for
+choose	verb	wählen	wikt:de:wählen	(ambitransitive) to choose, to select
+change	verb	ändern	wikt:de:ändern	(transitive) to change, to alter
+grow	verb	wachsen	wikt:de:wachsen	(intransitive) to grow
+fall	verb	fallen	wikt:de:fallen	to fall, to drop
+rise	verb	steigen	wikt:de:steigen	(intransitive) to ascend, to climb, to rise
+turn	verb	drehen	wikt:de:drehen	(transitive) to turn
+move	verb	bewegen	wikt:de:bewegen	(transitive or reflexive) to move; to stir
+throw	verb	werfen	wikt:de:werfen	(transitive, intransitive) to throw
+catch	verb	fangen	wikt:de:fangen	(transitive) to catch (grab something flying in the air)
+cut	verb	schneiden	wikt:de:schneiden	(transitive or intransitive) to cut; to carve; to slice
+wash	verb	waschen	wikt:de:waschen	(intransitive or transitive or reflexive or ditransitive) to wash
+cook	verb	kochen	wikt:de:kochen	(intransitive, of a person) to cook, to prepare food (chiefly hot food for lunch or supper)
+always	adv	immer	wikt:de:immer	always
+never	adv	nie	wikt:de:nie	never, never at all (referring to an indefinite period of time)
+often	adv	oft	wikt:de:oft	often
+sometimes	adv	manchmal	wikt:de:manchmal	sometimes
+today	adv	heute	wikt:de:heute	today
+tomorrow	adv	morgen	wikt:de:morgen	tomorrow
+yesterday	adv	gestern	wikt:de:gestern	yesterday
+now	adv	jetzt	wikt:de:jetzt	now (at this moment, right now)
+soon	adv	bald	wikt:de:bald	soon (near in time)
+already	adv	schon	wikt:de:schon	already (happening rather early, continuing rather long)
+almost	adv	fast	wikt:de:fast	almost; nearly
+together	adv	zusammen	wikt:de:zusammen	together, jointly
+alone	adv	allein	wikt:de:allein	alone
+again	adv	wieder	wikt:de:wieder	again; indicates that the action taking place has happened before
+here	adv	hier	wikt:de:hier	(location) here; in this place; refers to an environment one is currently in, or to something within reach
+everywhere	adv	überall	wikt:de:überall	everywhere
+nowhere	adv	nirgendwo	wikt:de:nirgendwo	nowhere (in no place)
+slowly	adv	langsam	wikt:de:langsam	slowly (at a slow pace), gradually, carefully
+quickly	adv	schnell	wikt:de:schnell	quickly
+truly	adv	wirklich	wikt:de:wirklich	really, actually	really
+perhaps	adv	vielleicht	wikt:de:vielleicht	perhaps, maybe
+very	adv	sehr	wikt:de:sehr	very
+one	num	eins	wikt:de:eins	(cardinal number) one (numerical value represented by the Arabic numeral 1; first positive number in the set of natural numbers)
+two	num	zwei	wikt:de:zwei	(cardinal number) two (numerical value represented by the Arabic numeral 2; or describing a set with two components)
+three	num	drei	wikt:de:drei	(cardinal number) three (numerical value represented by the Arabic numeral 3; or describing a set with three elements)
+four	num	vier	wikt:de:vier	(cardinal number) four (numerical value represented by the Arabic numeral 4; or describing a set with four elements)
+five	num	fünf	wikt:de:fünf	(cardinal number) five (numerical value represented by the Arabic numeral 5; or describing a set with five elements)
+six	num	sechs	wikt:de:sechs	(cardinal number) six (numerical value represented by the Arabic numeral 6; or describing a set with six elements)
+seven	num	sieben	wikt:de:sieben	(cardinal number) seven (numerical value represented by the Arabic numeral 7; or describing a set with seven elements)
+eight	num	acht	wikt:de:acht	(cardinal number) eight (numerical value represented by the Arabic numeral 8; or describing a set with eight elements)
+nine	num	neun	wikt:de:neun	(cardinal number) nine
+ten	num	zehn	wikt:de:zehn	(cardinal number) ten (numerical value represented in Arabic numerals as 10)
+hundred	num	hundert	wikt:de:hundert	(cardinal number) one hundred
+thousand	num	tausend	wikt:de:tausend	(cardinal number) thousand
+first	num	erste	wikt:de:erste	(ordinal number) first
+yes	intj	ja	wikt:de:ja	yes; yea; yeah; aye
+hello	intj	hallo	wikt:de:hallo	hello
+goodbye	intj	auf Wiedersehen	wikt:de:auf_Wiedersehen	goodbye
+please	intj	bitte	wikt:de:bitte	please, if you please (used to make a polite request or affirm an offer)
+sorry	intj	Entschuldigung	wikt:de:Entschuldigung	excuse me, pardon, sorry

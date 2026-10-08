@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **377** tool tests / 94 suites, **40** e2e passing
+suites, **386** tool tests / 95 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -72,9 +72,10 @@ Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
-**And as of 2026-10-08 every French, Spanish and Portuguese gloss quotes
-the entry that gives it.** `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`
-and `pt-glosses.tsv` hold, for all 356 rows of each, the definition line of the word's own English
+**And as of 2026-10-08 every French, Spanish, Portuguese and German gloss
+quotes the entry that gives it.** `tools/seed/fr-glosses.tsv`,
+`es-glosses.tsv`, `pt-glosses.tsv` and `de-glosses.tsv` hold, for all 356
+rows of each, the definition line of the word's own English
 Wiktionary entry that gives its gloss, naming the word that stands for it
 where the English is not there — "seaman" for sailor, "fabric" for cloth,
 "overcoat" for *abrigo* — and `tests/tools/glosses.test.ts` fails on a row
@@ -86,7 +87,7 @@ debout`'s card is the seventh `WITHDRAWN` keeps, the first in a modern pack.
 Spanish's found none false. Portuguese's found `tarde`, woven for
 "evening", which its entry gives only as "afternoon"; "evening" is `serão`
 now, the page whose noun is "evening", and `tarde`'s card is the eighth
-withdrawn. German and Italian are the last two slices.
+withdrawn. German's found none false. Italian is the last slice.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -5055,33 +5056,55 @@ registered**, and nothing below it can move until it is.
       empties. Portuguese has no word pages; regenerate the screenshots,
       `src/core/renames.ts` being under `src/`. About 40 minutes.
 
-- [ ] **No German or Italian gloss names its entry.** The last two
-      slices of the modern glosses, 356 rows a language, German next.
-      The French, Spanish and Portuguese slices' shape is the plan: move
-      the language from `UNREAD` to `READ` in
-      `tests/tools/glosses.test.ts`, which goes red naming all 356, write
-      `tools/seed/<lang>-glosses.tsv`, and read every draft. The tooling
-      is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py <lang>`
-      fetches the pages the noun and verb passes did not (about 95 a
-      language, a minute and a half), `defs.py` reads a page's definition
-      lines per heading, `draft.py <lang>` drafts and lists the rows
-      needing a decision, and `fr-`, `es-` and `pt-header.txt` are the
-      headers to adapt. Read the drafts, not only the misses: the first
-      line holding a word was another sense in one French draft of 345,
-      two Spanish of 343 and five Portuguese of 341. A page that names
-      another form goes in `FORM_OF`; a phrase with no entry, after its
-      variants are tried, in `COMPOSED`; a gloss no definition gives in
-      `QUEUED`, and a TODO item to teach it differently. German's
-      capitalised nouns are titled as written, `Haus`; check that
-      `title()` leaves them so. If `/tmp` is gone, the three scripts are
-      short to write again: the pages are `action=render`, a definition
-      line is an `<li>` of the first `<ol>` after a part of speech's
-      heading, its `<dl>` and `<ul>` set aside. About 30 minutes a
-      language with the tooling, two hours without it.
+- [x] **No German gloss names its entry.** Done 2026-10-08, the fourth of
+      the five slices, in the run that landed Spanish and Portuguese. 106
+      pages fetched beside the 250 the noun and verb passes left; 353 of
+      356 drafted, all read. **The cache was case-blind**: the disk is
+      case-insensitive, so `Essen.html` and `essen.html` are one file, and
+      the first draft read `Essen`, food, as the verb `essen`, `arm` as
+      the noun `Arm`, and `leben` and `morgen` as `Leben` and `Morgen`.
+      `defs.py` now opens a page only under its exact-case filename and
+      fetches a missing one under a case-safe name, `^Essen.html`; each of
+      the four was read again before any line was written. Three drafts
+      were another sense (`Schild`'s sign, `haben`'s auxiliary, `suchen`'s
+      formal "to strive"); two rows name a stand-in (`suchen` "look for",
+      `wirklich` "really"), so the stand-in floor in
+      `tests/tools/glosses.test.ts` moved from each ledger to all of them
+      together. None is false. Red first on "356 German glosses name no
+      entry"; two probes, each restored by md5. Tools 377 → **386** / 94 →
+      **95** suites, total 1085 → **1094**, in six places. Nothing that
+      ships moved.
+
+- [ ] **No Italian gloss names its entry.** The last slice of the modern
+      glosses, 356 rows. The four slices before it are the plan: move
+      `it` from `UNREAD` to `READ` in `tests/tools/glosses.test.ts`, which
+      goes red naming all 356. An empty `UNREAD` must be typed,
+      `new Set<string>()`: `new Set([])` is a `Set<never>`, and `tsc`
+      refuses `UNREAD.has(lang)` on it. Write `tools/seed/it-glosses.tsv`
+      and read every draft. The tooling
+      is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py it`
+      fetches the pages the noun and verb passes did not (about 95, a
+      minute and a half), `defs.py` reads a page's definition lines per
+      heading and opens a page only under its exact-case filename,
+      `draft.py it` drafts and lists the rows needing a decision, and
+      `fr-`, `es-`, `pt-` and `de-header.txt` are headers to adapt. Read
+      the drafts, not only the misses: the first line holding a word was
+      another sense in one French draft of 345, two Spanish of 343, five
+      Portuguese of 341 and three German of 353. A page that names another
+      form goes in `FORM_OF`; a phrase with no entry, after its variants
+      are tried, in `COMPOSED`; a gloss no definition gives in `QUEUED`,
+      and a TODO item to teach it differently. Italian's pronominal
+      `sedersi` will want `FORM_OF` to `sedere`, as Spanish `sentarse` did.
+      If `/tmp` is gone, the three scripts are short to write again: the
+      pages are `action=render`, a definition line is an `<li>` of the
+      first `<ol>` after a part of speech's heading, its `<dl>` and `<ul>`
+      set aside — and check each file's name against `os.listdir`, not
+      `os.path.exists`. About 30 minutes with the tooling, two hours
+      without it.
 
 `Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the German and Italian glosses. `tarde`, the
-Portuguese glosses, the
+above, as of 2026-10-08: the Italian glosses. The German glosses, `tarde`,
+the Portuguese glosses, the
 Spanish glosses, `tenir debout`, the French glosses, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
@@ -5149,7 +5172,10 @@ rather than changed:
    reflexive, "to sit down, sit up, take a seat". So "she sat" woven
    *asseoir* says she seated someone; *s’asseoir* is a new card, the
    seed's `asseoir` row, its verb-form line and its gloss
-   line moving together.
+   line moving together. German `erinnern` is the same shape, read on
+   2026-10-08: alone it is "(transitive) to remind", and "remember" is
+   its reflexive's, "to remember, to be reminded of"; "she remembered"
+   woven `erinnern` says she reminded someone.
 
 **One Portuguese call a human may want to look at**, taken on 2026-10-08
 without anyone to ask: "evening" is `serão`, a new card, where it was
@@ -5558,8 +5584,8 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-10-08 — the French, Spanish and Portuguese glosses, and what the
-last two slices need.** Ticked in `Next`. Seven things a later run would be
+**2026-10-08 — the French, Spanish, Portuguese and German glosses, and what
+the last slice needs.** Ticked in `Next`. Eight things a later run would be
 sorry not to know:
 
 1. **A source writes a space as an underscore and a curly apostrophe
@@ -5606,6 +5632,16 @@ sorry not to know:
    `FORM_OF` to `desculpar`, "to forgive", with "forgive" standing for
    "sorry" — the shape `la-glosses.tsv` gave Latin `ignōsce`. Read the
    whole page before deciding a formula has no line.
+8. **This disk is case-insensitive, and German is not.** `Essen.html` and
+   `essen.html` are one file here, so a cache keyed by title returns
+   whichever case was written first, and `os.path.exists` says yes to
+   both. The first German draft read four rows from the wrong word's
+   page — `Essen` as `essen`, `arm` as `Arm`, `leben` as `Leben`,
+   `morgen` as `Morgen` — and three of them still found a line holding
+   their English word, so a draft looking right is no evidence the page
+   was. `defs.py` checks each name against `os.listdir` and stores a
+   page under a case-safe name, `^Essen.html`. Any cache of Wiktionary
+   pages here needs the same.
 
 **2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
 Ticked in `Next`. Four things a later run would be sorry not to know:

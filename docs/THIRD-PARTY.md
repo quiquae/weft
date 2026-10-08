@@ -107,12 +107,12 @@ in Spanish, Portuguese and Italian — and `tools/seed/fr-verb-forms.tsv`,
 `es-verb-forms.tsv`, `pt-verb-forms.tsv`, `de-verb-forms.tsv` and
 `it-verb-forms.tsv` quote that cell for each; `tests/tools/verb-forms.test.ts`
 fails on a form with none. The French etymology claims cite etymonline and
-Wiktionary in `tools/seed/fr-cousins.tsv`. Every French, Spanish and
-Portuguese gloss quotes the definition line of its word's own entry that
-gives it, in `tools/seed/fr-glosses.tsv`, `es-glosses.tsv` and
-`pt-glosses.tsv`, and `tests/tools/glosses.test.ts` fails on a row with
-none. Nothing else in these five packs names its entry yet: the German and
-Italian glosses cite nothing.
+Wiktionary in `tools/seed/fr-cousins.tsv`. Every French, Spanish,
+Portuguese and German gloss quotes the definition line of its word's own
+entry that gives it, in `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`,
+`pt-glosses.tsv` and `de-glosses.tsv`, and `tests/tools/glosses.test.ts`
+fails on a row with none. Nothing else in these five packs names its entry
+yet: the Italian glosses cite nothing.
 
 ### Extending coverage
 
