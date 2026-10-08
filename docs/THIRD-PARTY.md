@@ -71,9 +71,11 @@ beside it the entry its gender was read in, a phrase's the entry
 `tests/tools/ang-glosses.test.ts` fails on a row with none. Every woven plural
 and present participle is quoted from the declension or conjugation table of
 the Wiktionary entry its gloss was read in, in `tools/seed/ang-plurals.tsv`
-and `ang-verb-forms.tsv`, but thirty whose table prints another form or none,
-which `tests/tools/ang-forms.test.ts` names until they are read in a grammar;
-it fails on any other with no line.
+and `ang-verb-forms.tsv`; six whose table prints another form quote instead
+the section of Wright's *Old English Grammar* that prints the woven one, read
+in the archive.org page images, and twenty-three that neither prints are named
+in `tests/tools/ang-forms.test.ts` until they are read. It fails on any other
+with no line.
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair

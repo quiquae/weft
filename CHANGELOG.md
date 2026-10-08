@@ -638,6 +638,14 @@ word whose entry is "evening", masculine, plural *serões*. A learner's
 *tarde* card is kept and no longer listed. Every Spanish and Portuguese
 word now quotes the definition that gives its gloss too.
 
+**And the Old English for "roads" is spelled as it sounds.** It was
+*weġas*, a dot before a back vowel, and the tooltip printed it /ˈwejɑs/; the
+*g* of a plural in *-as* is the guttural, as in *dagas*, "days", and Wright's
+*Old English Grammar* prints the pair together, "pl. dagas, days; wegas,
+ways" (§320). It is *wegas* now, /ˈweɣɑs/. Every woven Old English plural
+and participle but twenty-three names the declension or conjugation table
+that prints it, or the section of Wright's grammar.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -658,7 +666,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1117 tests: 566 unit, 102 in jsdom, 409 over the build tools, and
+**Built with** 1118 tests: 566 unit, 102 in jsdom, 410 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

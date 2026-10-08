@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **409** tool tests / 99 suites, **40** e2e passing
+suites, **410** tool tests / 99 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -73,16 +73,19 @@ corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
 **And as of 2026-10-08 every woven Old English plural and participle but
-thirty names the table that prints it.** None had been read against a
+twenty-three names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
 slot, and 132 of the 158 woven plurals and 77 of the 81 present participles
 are among the forms their entry's table prints; `tools/seed/ang-plurals.tsv`
 and `ang-verb-forms.tsv` quote the cell for each, and
-`tests/tools/ang-forms.test.ts` fails on one with none. The thirty others
-are named in that test's `QUEUED` with what their table prints, and reading
-them is the first item in `Next`.
+`tests/tools/ang-forms.test.ts` fails on one with none. Of the thirty
+others, six are woven in a form Wright's *Old English Grammar* prints and
+the table does not, and cite him; one was wrong, "roads" woven `weġas`,
+where Wright § 320 prints "wegas, ways", and is `wegas` now. The last
+twenty-three are named in that test's `QUEUED` with what their table
+prints, and reading them is the first item in `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -5142,7 +5145,7 @@ registered**, and nothing below it can move until it is.
       ships moved. Tools 394 → **409** / 96 → **99** suites, total 1102 →
       **1117**, in six places, `docs/LAUNCH.md:221` first.
 
-- [ ] **Thirty Old English second forms are not what their table prints.**
+- [x] **Thirty Old English second forms are not what their table prints.**
       Found 2026-10-08 by the item above, and named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints. They are
       four kinds, and only the first is plainly the pack's to fix:
@@ -5198,6 +5201,52 @@ registered**, and nothing below it can move until it is.
       Read each kind before changing any; about an hour for 1 and 2, more
       for 3 and 4, which are about sounds the pack prints.
 
+      **Done 2026-10-08 for seven: kind 1, and six of kind 2.** Wright's
+      pages were read in their archive.org images
+      (`/page/n<N>_w1200.jpg`, n being the printed page plus 19), because
+      the OCR drops every macron. § 320 prints "pl. dagas, days; wegas,
+      ways" under the guttural, so "roads" is `wegas` now, /ˈweɣɑs/, which
+      `fill_ipa.py` wrote and the stress guard holds; 3 fields of
+      `en-ang.json` moved, `tgt`, `ipa` and `builtAt`, and the site's
+      `/old-english/weg` its plural cell. And six woven plurals are Wright's
+      where the table's are other: § 347's paradigm prints `wæter` and
+      `hēafodu`, a note calling the tables' `wætru` and `hēafdu` later;
+      § 349 "setl, seat, pl. setlu beside setl"; § 386 "mete (pl. mettas),
+      food"; § 397 "winter (pl. neut. wintru beside winter)"; § 220 "nom.
+      plural byrig beside byrg", Wright printing no dots. So
+      `ang-plurals.tsv` gained a source, `wright:§<n>`, and the test reads a
+      Wright quote as a sentence holding the form, with the pack's dots set
+      aside. Test-first: seven rows out of `QUEUED`, red on exactly seven;
+      the lines, red on `weġas` alone; the seed, green. Three probes on the
+      Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
+      **1118**, in six places.
+
+- [ ] **Twenty-three Old English second forms are still not what their
+      table prints.** The remainder of the item above, named in `QUEUED`
+      in `tests/tools/ang-forms.test.ts` with what each table prints:
+
+      - **Another form, and no grammar read yet prints the woven one:**
+        `sweostru`, where the table prints only the ġe- forms and the OCR
+        of Wright's § 415 paradigm reads the plural as `sweostor` (read the
+        page, n219); `trēow`, `swefn`, `ǣfnas`, `hattas`, `flōras` (the
+        table is feminine; Wright § 398 lists `flōr` among the feminine
+        u-stems, "also masc."), `þorpas` (the table neuter, Bosworth–Toller
+        masculine), and `gangende`, where `gān`'s table prints `gānde` and
+        Wright's § 550 paradigm of `gān` is the place to look.
+      - **No Wiktionary table read:** `hīwsċipas`, `onsīene` and `paðas`,
+        whose glosses were read in Bosworth–Toller; `hūsbondan` and
+        `mentlas`, whose pages have none; and `fremdan`, the weak plural of
+        an adjective, whose page's table is the adjective's.
+      - **Kind 3**, a dot where an ending was lost: `līċ`, `wīġ`, `bēc`,
+        `ċirican`, as written above.
+      - **Kind 4**, a headword's own marks: `ċempa`, `ċǣġ`, `hlīehhan`,
+        `wasċan`, and `beginnan`, which Wright decides.
+
+      A Wright line is the cheapest cure where he prints the woven form;
+      where he prints another, the seed moves, as `wegas` did. About an
+      hour for the first two groups; kinds 3 and 4 move sounds and cards,
+      and want their own PRs.
+
 - [ ] **No woven Latin plural or participle has been read against a
       dictionary.** Found 2026-10-08 with the item above: 165 plurals and 79
       present participles, which Allen & Greenough's rules hold the sounds
@@ -5211,8 +5260,9 @@ registered**, and nothing below it can move until it is.
       as `ang-forms.test.ts`, its own file. About an hour.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-08: the thirty Old English second forms their tables do not print,
-and Latin's second forms. The Old English second forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
+2026-10-08: the twenty-three Old English second forms their tables do not
+print, and Latin's second forms. Seven of the thirty, the Old English second
+forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
