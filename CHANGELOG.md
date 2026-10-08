@@ -632,6 +632,12 @@ Italian and Portuguese already weave: *estar de pie*, *stare in piedi*,
 listed. Every French word now quotes the definition that gives its gloss,
 which is how this one was found.
 
+**And the Portuguese for "evening" is the evening.** It was *tarde*, which
+English Wiktionary gives only as "afternoon". "evening" is now *serão*, the
+word whose entry is "evening", masculine, plural *serões*. A learner's
+*tarde* card is kept and no longer listed. Every Spanish and Portuguese
+word now quotes the definition that gives its gloss too.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames

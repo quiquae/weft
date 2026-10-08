@@ -6,7 +6,9 @@
 # weaves. On 2026-10-08 every Portuguese noun was read against English
 # Wiktionary's Portuguese entry, fetched raw, and none was wrong: 171 of the
 # 178 rows carry the gender of their page's one Portuguese noun, and the 7
-# others were read by sense.
+# others were read by sense. The same day "evening" became serão, "serão m
+# (plural serões or (dated) serãos)", where it had been tarde, f, whose
+# entry gives only "afternoon".
 #
 # A Wiktionary page holds every word of one spelling, so a line citing it
 # means the gender of this word's own noun there. Five pages hold more than
@@ -178,7 +180,7 @@ month	mês	m	wikt:pt:mês
 week	semana	f	wikt:pt:semana
 hour	hora	f	wikt:pt:hora
 morning	manhã	f	wikt:pt:manhã
-evening	tarde	f	wikt:pt:tarde
+evening	serão	m	wikt:pt:serão
 summer	verão	m	wikt:pt:verão
 winter	inverno	m	wikt:pt:inverno
 autumn	outono	m	wikt:pt:outono

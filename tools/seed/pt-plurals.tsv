@@ -12,7 +12,8 @@
 # woven chões, a form English Wiktionary has no page for, where its line
 # prints "chão m (plural chãos)": a noun in -ão takes -ãos, -ães or -ões by
 # its history, and chão takes -ãos, as mão is mãos. It weaves chãos since
-# this pass.
+# this pass. And serão, woven for "evening" since the same day in place of
+# tarde, prints "plural serões or (dated) serãos", and weaves the first.
 #
 # quote is the clause of that line which prints the plural, its qualifiers
 # kept, or "invariable" where the line says the plural is the singular. A
@@ -179,7 +180,7 @@ month	mês	meses	wikt:pt:mês	plural meses
 week	semana	semanas	wikt:pt:semana	plural semanas
 hour	hora	horas	wikt:pt:hora	plural horas
 morning	manhã	manhãs	wikt:pt:manhã	plural manhãs
-evening	tarde	tardes	wikt:pt:tarde	plural tardes
+evening	serão	serões	wikt:pt:serão	plural serões or (dated) serãos
 summer	verão	verões	wikt:pt:verão	plural verões or (dated) verãos
 winter	inverno	invernos	wikt:pt:inverno	plural invernos
 autumn	outono	outonos	wikt:pt:outono	plural outonos

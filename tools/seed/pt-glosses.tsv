@@ -73,11 +73,13 @@
 # entry that gives "warm" is quente's, "hot, warm", which the pack weaves
 # for "hot".
 #
-# One row no definition gives. tarde, woven for "evening", is in its entry
-# "afternoon" and nothing more; the adverb tarde is "late". Wiktionary's
-# "evening" is serão, beside "overtime", and after dark it is noite, "night
-# (period between sunset and sunrise)". QUEUED in tests/tools/glosses.test.ts
-# names the row until it is taught differently; see TODO.md.
+# One row no definition gave. tarde, woven for "evening" until 2026-10-08,
+# is in its entry "afternoon" and nothing more; the adverb tarde is "late".
+# "evening" is serão now, the page whose noun is "evening", beside
+# "overtime": a second row of noite, "night (period between sunset and
+# sunrise)", would have needed a stand-in for "evening", and neither "night"
+# nor "sunset" means it. The learner's tarde card is withdrawn: WITHDRAWN in
+# src/core/renames.ts keeps it.
 #
 # tests/tools/glosses.test.ts requires every row of lex-pt.tsv to have a line
 # here citing its own word's entry, whose quote holds its English word or the
@@ -233,7 +235,7 @@ month	noun	mês	wikt:pt:mês	month (each of the twelve periods into which the ye
 week	noun	semana	wikt:pt:semana	week (period of seven days)
 hour	noun	hora	wikt:pt:hora	hour (period of sixty minutes)
 morning	noun	manhã	wikt:pt:manhã	morning
-evening	noun	tarde	wikt:pt:tarde	afternoon
+evening	noun	serão	wikt:pt:serão	evening
 summer	noun	verão	wikt:pt:verão	summer
 winter	noun	inverno	wikt:pt:inverno	winter (the coldest of the four seasons)
 autumn	noun	outono	wikt:pt:outono	autumn
