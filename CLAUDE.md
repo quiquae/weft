@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **369 pass**, 93 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **377 pass**, 94 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -501,16 +501,17 @@ claim about the whole entry, so read the whole entry before writing it. Do
 not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
-**And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`
-and `es-glosses.tsv` quote, for every row of the French and Spanish packs,
+**And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`,
+`es-glosses.tsv` and `pt-glosses.tsv` quote, for every row of the French,
+Spanish and Portuguese packs,
 the definition line of the word's own English Wiktionary entry that gives
 its gloss, read in the rendered page and held by
 `tests/tools/glosses.test.ts` to the Latin and Old English
 rules: the row's English word or a named stand-in, never wikitext, a noun's
 line citing the entry its gender was read in, `FORM_OF` and `QUEUED` with
 stale checks. `READ` names the languages read and `UNREAD` those waiting,
-so a pack added later fails until it is one or the other; French and
-Spanish were read on 2026-10-08, and Portuguese, German and Italian wait.
+so a pack added later fails until it is one or the other; French, Spanish
+and Portuguese were read on 2026-10-08, and German and Italian wait.
 A phrase no entry gives whole — Spanish `en ningún lugar`, "nowhere", has
 none, nor has any variant of it — is `COMPOSED`: its line cites the entry of
 each of its words, quotes a line of each joined by " / ", and names no
@@ -521,7 +522,8 @@ space-separated, and a curly apostrophe straight, as Wiktionary titles
 has it, and from the first line of it giving the row's sense, which is not
 always the first line holding the word: `question`'s is torture. `QUEUED`
 named French `tenir debout`, "stand", for the night it was found — "to hold
-water, to make sense" — and is empty again, `être debout` taught instead.
+water, to make sense" — until `être debout` was taught instead, and names
+Portuguese `tarde`, "evening", whose entry gives only "afternoon".
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
@@ -652,6 +654,67 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every Portuguese gloss names its entry, and "evening" was the afternoon
+
+The run that landed Spanish took the next slice, Portuguese, with the
+tooling still in `/tmp/weft-gl/`: 96 pages fetched beside the 250 the noun
+and verb passes left, 341 of 356 drafted, all read.
+
+**Five drafts were another sense**, against French's one and Spanish's
+two, which is the argument for reading the hits and not only the misses:
+`dedo`'s first line holding "finger" is a unit of length, `ovo`'s a cell,
+`terra`'s "ground", `trabalho`'s "job; task" and `pássaro`'s "passerine",
+and each line quotes the row's sense instead. `pássaro`'s general sense is
+labelled "(colloquial, somewhat proscribed)", and `sozinho`'s adverb "(rare,
+nonstandard)"; both lines quote what the page prints.
+
+**One is false.** `tarde`, woven for "evening", is in its entry "afternoon"
+and nothing more. `QUEUED` names it, and the fix is the next item:
+`serão`, the page whose noun is "evening", because a second row of `noite`
+would need a stand-in for "evening" and neither "night" nor "sunset" means
+it.
+
+**A formula can be another part of speech's form.** `desculpa`, "sorry",
+has no interjection: its page is a noun, "excuse; apology", and
+`desculpar`'s second-person imperative, which is the word said. So its line
+goes through `FORM_OF` to `desculpar`, "to forgive", with "forgive"
+standing for "sorry", the shape `la-glosses.tsv` gave Latin `ignōsce`.
+`juntos` joins it as Spanish's did. Four phrases have no entry —
+`estar de pé`, `muitas vezes`, `em todo lugar`, `em nenhum lugar`, with
+`estar em pé`, `ficar de pé`, `em toda parte`, `por toda parte`,
+`em todo lado` and `em todo o lado` tried — and are `COMPOSED`; a word a
+phrase inflects is cited by the entry it is a form of, `muitas` by `muito`
+and `vezes` by `vez`, whose own pages say only that. Seven rows name a
+stand-in.
+
+Test-first: Portuguese moved from `UNREAD` to `READ`, red on "356
+Portuguese glosses name no entry", then green. Three probes, restored by
+md5, each failing its own test by name: `desculpa` out of `FORM_OF`,
+`muitas vezes` out of `COMPOSED`, and `tarde` unqueued. Nothing that ships
+moved. Tools 369 → **377** / 93 → **94** suites, total 1077 → **1085**, in
+six places, `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says
+Portuguese's glosses name their entries. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **377 tools / 94 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`site:check` was not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that the imperative is the reading of
+`desculpa` a learner meets for "sorry", so `FORM_OF` may point past the
+page's noun; that "lukewarm" may stand for "warm", `morno` being the warm
+of water and `quente`, "hot, warm", already "hot"; and that a draft quoting
+a "(rare, nonstandard)" adverb is right to keep it, the row being an
+adverb.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: `tarde` for "evening", then the German and Italian
+glosses.
 
 ### 2026-10-08 — every Spanish gloss names its entry, and "nowhere" has no entry to name
 

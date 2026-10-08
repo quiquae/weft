@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **369** tool tests / 93 suites, **40** e2e passing
+suites, **377** tool tests / 94 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -67,9 +67,9 @@ Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
-**And as of 2026-10-08 every French and Spanish gloss quotes the entry
-that gives it.** `tools/seed/fr-glosses.tsv` and `es-glosses.tsv` hold, for
-all 356 rows of each, the definition line of the word's own English
+**And as of 2026-10-08 every French, Spanish and Portuguese gloss quotes
+the entry that gives it.** `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`
+and `pt-glosses.tsv` hold, for all 356 rows of each, the definition line of the word's own English
 Wiktionary entry that gives its gloss, naming the word that stands for it
 where the English is not there — "seaman" for sailor, "fabric" for cloth,
 "overcoat" for *abrigo* — and `tests/tools/glosses.test.ts` fails on a row
@@ -78,8 +78,9 @@ waiting. Reading them found one false: `tenir debout`, woven for "stand",
 is "to hold water, to make sense". "stand" is `être debout` now, "stand (be
 upright …)", as Spanish, Italian and Portuguese weave it, and `tenir
 debout`'s card is the seventh `WITHDRAWN` keeps, the first in a modern pack.
-Spanish's found none false; Portuguese, German and Italian are the next
-three slices.
+Spanish's found none false. Portuguese's found `tarde`, woven for
+"evening", which its entry gives only as "afternoon", and it is queued.
+German and Italian are the last two slices.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -510,10 +511,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds one
-agent-shaped item, not waiting on B1.** The code is not
+**So the whole of B0 is closed and `Now` is empty. `Next` holds two
+agent-shaped items, neither waiting on B1.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides that one needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining item besides those two needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -4999,30 +5000,73 @@ registered**, and nothing below it can move until it is.
       each restored by md5. Tools 361 → **369** / 92 → **93** suites,
       total 1069 → **1077**, in six places. Nothing that ships moved.
 
-- [ ] **No Portuguese, German or Italian gloss names its entry.** The
-      rest of the modern glosses, 356 rows a language, one language a
-      slice, Portuguese next. The French and Spanish slices' shape is the
-      plan: move the language from `UNREAD` to `READ` in
+- [x] **No Portuguese gloss names its entry.** Done 2026-10-08, the third
+      of the four slices, in the run that landed Spanish. 96 pages fetched
+      beside the 250 the noun and verb passes left; 341 of 356 drafted,
+      all read. **Five drafts were another sense**, more than French's one
+      and Spanish's two: `dedo`'s first "finger" line is a unit of length,
+      `ovo`'s a cell, `terra`'s "ground", `trabalho`'s "job; task" and
+      `pássaro`'s "passerine", and each line quotes the row's sense. Seven
+      name a stand-in (`vizinho` "neighbor", `pequeno` "small", `morno`
+      "lukewarm", `rápido` "fast", `subir` "go up", `dedo` "digit", and
+      `desculpa` "forgive"). `FORM_OF` gains `juntos` → `junto` and
+      `desculpa` → `desculpar`, whose imperative is the word said for
+      "sorry", as Latin's `ignōsce` is quoted as "forgive"; `COMPOSED` gains
+      four phrases with no entry, `estar de pé`, `muitas vezes`,
+      `em todo lugar` and `em nenhum lugar`, citing a word the phrase
+      inflects by the entry it is a form of. **One is false**: `tarde`,
+      the next item. Red first on "356 Portuguese glosses name no entry";
+      three probes, each restored by md5. Tools 369 → **377** / 93 →
+      **94** suites, total 1077 → **1085**, in six places. Nothing that
+      ships moved.
+
+- [ ] **`tarde` is not "evening".** Found 2026-10-08 by the Portuguese
+      gloss pass. English Wiktionary's Portuguese `tarde` is, as a noun,
+      "afternoon" and nothing more; its adverb is "late". The page whose
+      noun is "evening" is `serão` — "evening" beside "overtime", m,
+      "plural serões or (dated) serãos" — and after dark Portuguese says
+      `noite`, "night (period between sunset and sunrise)", which the
+      pack weaves for "night". Read in `/tmp/weft-gl/render/pt-extra/`.
+      **The fix the ledgers allow is `serão`**: a second row of `noite`
+      would need a stand-in for "evening", and neither "night" nor
+      "sunset" means it. `serão` is chiefly the European word, the
+      evening after dinner, and Brazilian for overtime; the pack already
+      mixes the two varieties (`bebé`, `cinzento` beside `marrom`). A
+      different word is a different card, so `pt:tarde` goes into
+      `WITHDRAWN` with its reason, `pt serão` into `card-ids.tsv`, and the
+      seed row becomes `evening noun serão serões m`, with a line each in
+      `pt-glosses.tsv` ("evening"), `pt-genders.tsv` (m) and
+      `pt-plurals.tsv` ("plural serões or (dated) serãos"); `QUEUED`
+      empties. Portuguese has no word pages; regenerate the screenshots,
+      `src/core/renames.ts` being under `src/`. About 40 minutes.
+
+- [ ] **No German or Italian gloss names its entry.** The last two
+      slices of the modern glosses, 356 rows a language, German next.
+      The French, Spanish and Portuguese slices' shape is the plan: move
+      the language from `UNREAD` to `READ` in
       `tests/tools/glosses.test.ts`, which goes red naming all 356, write
       `tools/seed/<lang>-glosses.tsv`, and read every draft. The tooling
       is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py <lang>`
       fetches the pages the noun and verb passes did not (about 95 a
       language, a minute and a half), `defs.py` reads a page's definition
       lines per heading, `draft.py <lang>` drafts and lists the rows
-      needing a decision, and `fr-header.txt` and `es-header.txt` are the
+      needing a decision, and `fr-`, `es-` and `pt-header.txt` are the
       headers to adapt. Read the drafts, not only the misses: the first
-      line holding a word can be another sense, as `question`'s, `ley`'s
-      and `pelo`'s were. A page that names another form goes in
-      `FORM_OF`; a phrase with no entry, after its variants are tried, in
-      `COMPOSED`; a gloss no definition gives in `QUEUED`, and a TODO item
-      to teach it differently. If `/tmp` is gone, the three scripts are
+      line holding a word was another sense in one French draft of 345,
+      two Spanish of 343 and five Portuguese of 341. A page that names
+      another form goes in `FORM_OF`; a phrase with no entry, after its
+      variants are tried, in `COMPOSED`; a gloss no definition gives in
+      `QUEUED`, and a TODO item to teach it differently. German's
+      capitalised nouns are titled as written, `Haus`; check that
+      `title()` leaves them so. If `/tmp` is gone, the three scripts are
       short to write again: the pages are `action=render`, a definition
       line is an `<li>` of the first `<ol>` after a part of speech's
       heading, its `<dl>` and `<ul>` set aside. About 30 minutes a
       language with the tooling, two hours without it.
 
-`Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the Portuguese, German and Italian glosses. The
+`Now` is **empty** and `Next` holds **two** unchecked items, the last
+two above, as of 2026-10-08: `tarde` for "evening", then the German and
+Italian glosses. The Portuguese glosses, the
 Spanish glosses, `tenir debout`, the French glosses, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
@@ -5488,9 +5532,9 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-10-08 — the French and Spanish glosses, and what the other three
-slices need.** Ticked in `Next`. Six things a later run would be sorry not
-to know:
+**2026-10-08 — the French, Spanish and Portuguese glosses, and what the
+last two slices need.** Ticked in `Next`. Seven things a later run would be
+sorry not to know:
 
 1. **A source writes a space as an underscore and a curly apostrophe
    straight.** The sources field is space-separated, so `au revoir` is
@@ -5529,6 +5573,13 @@ to know:
    "teach it differently": `COMPOSED` cites its words' entries instead.
    Try a phrase's variants before deciding it has none; a variant with an
    entry would be a better word to teach.
+7. **A word said as a formula can be another part of speech's form.**
+   Portuguese `desculpa`, "sorry", has no interjection: its page is a
+   noun, "excuse; apology", and the verb `desculpar`'s second-person
+   imperative. The imperative is the word said, so its line goes through
+   `FORM_OF` to `desculpar`, "to forgive", with "forgive" standing for
+   "sorry" — the shape `la-glosses.tsv` gave Latin `ignōsce`. Read the
+   whole page before deciding a formula has no line.
 
 **2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
 Ticked in `Next`. Four things a later run would be sorry not to know:

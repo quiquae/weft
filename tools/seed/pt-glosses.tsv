@@ -1,0 +1,440 @@
+# Where each gloss in lex-pt.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word a Portuguese word is woven for, and the
+# tooltip prints it back: it is the claim every reader meets first. Every
+# other claim the pack makes about a word names its entry — genders in
+# pt-genders.tsv, plurals in pt-plurals.tsv, verb forms in pt-verb-forms.tsv
+# — and the gloss named none until 2026-10-08, the night fr-glosses.tsv and
+# es-glosses.tsv were written the same way.
+#
+# Every row is read, all 356: the 178 nouns, 81 verbs, 57 adjectives, 22
+# adverbs, 13 numerals and 5 interjections. Each was read in the rendered
+# page of the word's English Wiktionary entry, in its Portuguese section: a
+# script took the definition lines under each heading of the row's part of
+# speech, examples, quotations and synonyms set aside, and drafted the first
+# that holds the row's English word, and every quote was read against its
+# page. Five drafts were another sense, and their lines quote the row's:
+# dedo's first line holding "finger" is a unit of length, the width of one;
+# ovo's is a cell, where the row is the egg with a shell; terra's is
+# "ground", where "earth; soil" is the row's; trabalho's is "job; task",
+# where "work; toil; labour" is; and pássaro's is "passerine", where its
+# general sense, "(colloquial, somewhat proscribed) bird", is the row's.
+#
+# A page holds every word of one spelling, so a quote is from this word's
+# own part of speech where the page has it. Three numerals are adjectives on
+# theirs, and their lines quote those: cem, "hundred", mil, "thousand", and
+# primeiro, "first". sozinho, woven for "alone" among the adverbs, has an
+# adverb, and its line quotes it, though the page calls that use "(rare,
+# nonstandard)": its adjective, "alone; by oneself", is the word's usual one.
+#
+# The sources field
+# -----------------
+#   wikt:pt:<title>    https://en.wiktionary.org/wiki/<title>#Portuguese
+#
+# The title is the word as Wiktionary's address writes it, with an
+# underscore for a space, so that each source stays one word of the field:
+# wikt:pt:às_vezes. A noun cites the entry its gender was read in, which for
+# every Portuguese noun is its own.
+#
+# Two pages name another form for the word the row weaves, so their lines
+# quote the entry named and cite the word's own beside it, the quoted entry
+# first. juntos is "masculine plural of junto", and its line quotes junto's
+# adverb, "together (at the same time, in the same place)". And desculpa,
+# woven for "sorry", is beside a noun — "excuse, pretext" and "apology" —
+# the second-person imperative of desculpar, which is what a Portuguese
+# speaker says it as; its line quotes desculpar's "(transitive) to forgive"
+# and names "forgive" to stand for it, as la-glosses.tsv quotes Latin
+# ignōsce. FORM_OF in tests/tools/glosses.test.ts lists both.
+#
+# Four phrases have no entry of their own, so each line cites the entries
+# of its words and quotes a line of each, joined by " / ", naming no
+# stand-in; COMPOSED in the test lists each with its words. estar de pé,
+# "stand", is estar, "to be" of a passing state, and de pé, "up; standing",
+# itself an entry of two words; estar em pé and ficar de pé have none.
+# muitas vezes, "often", is muito, "much; many", and vez, "time; occasion" —
+# its own words are inflected forms, muitas "feminine plural of muito" and
+# vezes "plural of vez", so it cites the entries they are forms of; the one
+# word frequentemente is "frequently, often". em todo lugar, "everywhere",
+# and em nenhum lugar, "nowhere", are em, todo or nenhum, and lugar, and no
+# variant tried has an entry: em toda parte, por toda parte, em todo lado,
+# em todo o lado.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in
+# the entry. Seven rows need one: vizinho for "neighbour" is "neighbor",
+# pequeno for "little" "small", morno for "warm" "lukewarm, tepid", rápido
+# for "quick" "fast", subir for "rise" "to ascend, to go up", dedo for
+# "finger" "digit, a part of the body inclusive of fingers or toes", and
+# desculpa for "sorry" "forgive", above. morno says less than "warm": the
+# entry that gives "warm" is quente's, "hot, warm", which the pack weaves
+# for "hot".
+#
+# One row no definition gives. tarde, woven for "evening", is in its entry
+# "afternoon" and nothing more; the adverb tarde is "late". Wiktionary's
+# "evening" is serão, beside "overtime", and after dark it is noite, "night
+# (period between sunset and sunrise)". QUEUED in tests/tools/glosses.test.ts
+# names the row until it is taught differently; see TODO.md.
+#
+# tests/tools/glosses.test.ts requires every row of lex-pt.tsv to have a line
+# here citing its own word's entry, whose quote holds its English word or the
+# stand-in it names, and fails on a line outliving its row.
+man	noun	homem	wikt:pt:homem	(specifically) man (adult male human)
+woman	noun	mulher	wikt:pt:mulher	woman (adult female human)
+child	noun	criança	wikt:pt:criança	child (young person)
+boy	noun	menino	wikt:pt:menino	boy (a young male)
+girl	noun	menina	wikt:pt:menina	girl (female child)
+person	noun	pessoa	wikt:pt:pessoa	person (an individual being, especially a human)
+friend	noun	amigo	wikt:pt:amigo	friend (person whose company one enjoys)
+family	noun	família	wikt:pt:família	family; nuclear family (a father, mother and their sons and daughters)
+mother	noun	mãe	wikt:pt:mãe	mother (female who gives birth to or parents a child)
+father	noun	pai	wikt:pt:pai	father (male who sires a child)
+brother	noun	irmão	wikt:pt:irmão	brother (male sibling)
+sister	noun	irmã	wikt:pt:irmã	sister
+son	noun	filho	wikt:pt:filho	son (male offspring)
+daughter	noun	filha	wikt:pt:filha	daughter
+wife	noun	esposa	wikt:pt:esposa	female equivalent of esposo: wife
+husband	noun	marido	wikt:pt:marido	husband (male partner in a married couple)
+baby	noun	bebé	wikt:pt:bebé	baby
+king	noun	rei	wikt:pt:rei	king (male monarch)
+queen	noun	rainha	wikt:pt:rainha	queen (a monarch or the wife of a king)
+lord	noun	senhor	wikt:pt:senhor	(historical) feudal lord
+neighbour	noun	vizinho	wikt:pt:vizinho	neighbor (person who lives next to another)	neighbor
+stranger	noun	estranho	wikt:pt:estranho	stranger (unknown person)
+enemy	noun	inimigo	wikt:pt:inimigo	enemy
+soldier	noun	soldado	wikt:pt:soldado	(military) soldier (member of an army)
+teacher	noun	professor	wikt:pt:professor	teacher (a person who teaches professionally)
+doctor	noun	médico	wikt:pt:médico	doctor, physician
+farmer	noun	agricultor	wikt:pt:agricultor	farmer
+sailor	noun	marinheiro	wikt:pt:marinheiro	sailor, seaman
+head	noun	cabeça	wikt:pt:cabeça	(anatomy) head (part of the body)
+hand	noun	mão	wikt:pt:mão	hand
+eye	noun	olho	wikt:pt:olho	(anatomy) eye
+ear	noun	orelha	wikt:pt:orelha	(anatomy) ear
+mouth	noun	boca	wikt:pt:boca	(anatomy) mouth (the opening of a creature through which food is ingested)
+nose	noun	nariz	wikt:pt:nariz	nose (a protuberance on the face housing the nostrils, which are used to breathe or smell)
+tooth	noun	dente	wikt:pt:dente	tooth (hard structure found in the jaws of most vertebrates)
+hair	noun	cabelo	wikt:pt:cabelo	hair, head of hair
+heart	noun	coração	wikt:pt:coração	heart (organ of the body)
+blood	noun	sangue	wikt:pt:sangue	blood (vital liquid flowing in human and animal bodies)
+bone	noun	osso	wikt:pt:osso	(anatomy) bone
+arm	noun	braço	wikt:pt:braço	arm (upper limb)
+leg	noun	perna	wikt:pt:perna	(anatomy) leg (limb)
+foot	noun	pé	wikt:pt:pé	(anatomy) foot, part of the human body
+finger	noun	dedo	wikt:pt:dedo	digit, a part of the body inclusive of fingers or toes	digit
+face	noun	rosto	wikt:pt:rosto	face (part of head)
+body	noun	corpo	wikt:pt:corpo	(anatomy) body
+skin	noun	pele	wikt:pt:pele	skin (outer protective layer of the body of a person or animal)
+voice	noun	voz	wikt:pt:voz	voice (all senses)
+dog	noun	cão	wikt:pt:cão	dog
+cat	noun	gato	wikt:pt:gato	cat (domestic cat: Felis silvestris catus)
+horse	noun	cavalo	wikt:pt:cavalo	horse (Equus ferus caballus)
+bird	noun	pássaro	wikt:pt:pássaro	(colloquial, somewhat proscribed) bird (any member of the class Aves, especially a small one)
+fish	noun	peixe	wikt:pt:peixe	fish (cold-blooded vertebrate animal that lives in water, moving with the help of fins and breathing with gills)
+cow	noun	vaca	wikt:pt:vaca	a cow
+sheep	noun	ovelha	wikt:pt:ovelha	a female sheep; a ewe
+pig	noun	porco	wikt:pt:porco	pig (the domesticated farm animal Sus scrofa)
+wolf	noun	lobo	wikt:pt:lobo	wolf (a wild canid)
+bear	noun	urso	wikt:pt:urso	bear (a member of the family Ursidae)
+lion	noun	leão	wikt:pt:leão	lion (mammal)
+mouse	noun	rato	wikt:pt:rato	mouse (any rodent of the genus Mus)
+snake	noun	cobra	wikt:pt:cobra	snake; serpent (any reptile of the suborder Serpentes)
+bee	noun	abelha	wikt:pt:abelha	bee (insect)
+worm	noun	verme	wikt:pt:verme	worm
+raven	noun	corvo	wikt:pt:corvo	crow, raven (bird of the genus Corvus)
+hound	noun	sabujo	wikt:pt:sabujo	hound (dog breed with a good sense of smell developed for hunting)
+ox	noun	boi	wikt:pt:boi	ox
+goat	noun	cabra	wikt:pt:cabra	she-goat; nanny goat (female goat)
+food	noun	comida	wikt:pt:comida	food, something edible
+bread	noun	pão	wikt:pt:pão	bread
+water	noun	água	wikt:pt:água	(uncountable) water (H₂O)
+wine	noun	vinho	wikt:pt:vinho	wine
+milk	noun	leite	wikt:pt:leite	milk (white liquid produced by the mammary glands)
+meat	noun	carne	wikt:pt:carne	meat
+fruit	noun	fruta	wikt:pt:fruta	(uncountable) fruit (as a collective)
+apple	noun	maçã	wikt:pt:maçã	apple (fruit)
+salt	noun	sal	wikt:pt:sal	salt (sodium chloride, a substance used as a condiment and preservative)
+honey	noun	mel	wikt:pt:mel	honey
+cheese	noun	queijo	wikt:pt:queijo	cheese (dairy product)
+egg	noun	ovo	wikt:pt:ovo	(biology) egg (rounded body produced by oviparous females consisting of a membrane and outer shell that contains the embryo)
+fire	noun	fogo	wikt:pt:fogo	(uncountable) fire (chemical reaction producing a flame)
+house	noun	casa	wikt:pt:casa	house
+home	noun	lar	wikt:pt:lar	(endearing) home (place or building where one dwells)
+door	noun	porta	wikt:pt:porta	door
+window	noun	janela	wikt:pt:janela	window
+wall	noun	parede	wikt:pt:parede	wall (of a house or building)
+roof	noun	telhado	wikt:pt:telhado	roof
+floor	noun	chão	wikt:pt:chão	floor
+room	noun	quarto	wikt:pt:quarto	room (subdivision within a building)
+table	noun	mesa	wikt:pt:mesa	table (item of furniture)
+chair	noun	cadeira	wikt:pt:cadeira	chair (item of furniture)
+bed	noun	cama	wikt:pt:cama	bed (furniture for sleeping on)
+book	noun	livro	wikt:pt:livro	book
+word	noun	palavra	wikt:pt:palavra	word
+letter	noun	carta	wikt:pt:carta	letter (written message)
+name	noun	nome	wikt:pt:nome	name (word or phrase which identifies an individual person, place, class, or thing)
+key	noun	chave	wikt:pt:chave	key (object that opens and closes a lock)
+bridge	noun	ponte	wikt:pt:ponte	bridge (construction or natural feature that spans a divide)
+church	noun	igreja	wikt:pt:igreja	church (a house of worship)
+ship	noun	navio	wikt:pt:navio	ship (large water vessel)
+boat	noun	barco	wikt:pt:barco	boat (water craft)
+sword	noun	espada	wikt:pt:espada	(countable) sword (a long bladed weapon with a grip and typically a pommel and crossguard (together forming a hilt), which is designed to cut, stab, slash and/or hack)
+shield	noun	escudo	wikt:pt:escudo	shield
+ring	noun	anel	wikt:pt:anel	ring (round piece of metal worn around the finger)
+gold	noun	ouro	wikt:pt:ouro	(chemistry) gold (chemical element)
+silver	noun	prata	wikt:pt:prata	(chemistry) silver (chemical element)
+iron	noun	ferro	wikt:pt:ferro	iron (metal)
+stone	noun	pedra	wikt:pt:pedra	stone (as a material)
+glass	noun	vidro	wikt:pt:vidro	glass (the material)
+cloth	noun	tecido	wikt:pt:tecido	fabric; textile; cloth
+shoe	noun	sapato	wikt:pt:sapato	shoe
+coat	noun	casaco	wikt:pt:casaco	coat
+hat	noun	chapéu	wikt:pt:chapéu	hat (head covering)
+sun	noun	sol	wikt:pt:sol	sun; sunlight, sunshine (the light and heat which are received from the sun)
+moon	noun	lua	wikt:pt:lua	(astronomy) moon (any substantially sized natural satellite of a planet)
+star	noun	estrela	wikt:pt:estrela	(astronomy) star (apparently fixed star that has its own light and heat)
+sky	noun	céu	wikt:pt:céu	sky
+earth	noun	terra	wikt:pt:terra	earth; soil (mixture of sand and organic material found on the ground)
+land	noun	terra	wikt:pt:terra	land; region; territory (area associated with something)
+sea	noun	mar	wikt:pt:mar	sea
+river	noun	rio	wikt:pt:rio	river (a large and often winding stream which drains a land mass, carrying water down from higher areas to a lower point, oftentimes ending in another body of water, such as an ocean or in an inland sea)
+lake	noun	lago	wikt:pt:lago	lake
+mountain	noun	montanha	wikt:pt:montanha	(geography) mountain
+hill	noun	colina	wikt:pt:colina	hill (elevated location)
+forest	noun	floresta	wikt:pt:floresta	forest (dense collection of trees)
+tree	noun	árvore	wikt:pt:árvore	tree
+leaf	noun	folha	wikt:pt:folha	leaf (green plant organ)
+flower	noun	flor	wikt:pt:flor	flower
+grass	noun	erva	wikt:pt:erva	grass
+field	noun	campo	wikt:pt:campo	field (large open area, especially one where crops are grown or sports are played)
+road	noun	estrada	wikt:pt:estrada	road
+path	noun	caminho	wikt:pt:caminho	path
+city	noun	cidade	wikt:pt:cidade	city, town
+town	noun	vila	wikt:pt:vila	town
+village	noun	aldeia	wikt:pt:aldeia	village (small settlement)
+world	noun	mundo	wikt:pt:mundo	(uncountable, with article o) world (the Universe)
+country	noun	país	wikt:pt:país	country; nation (a sovereign polity)
+place	noun	lugar	wikt:pt:lugar	place (a location or position)
+rain	noun	chuva	wikt:pt:chuva	rain
+snow	noun	neve	wikt:pt:neve	snow
+wind	noun	vento	wikt:pt:vento	wind (moving air)
+cloud	noun	nuvem	wikt:pt:nuvem	cloud (mass of dust, steam or smoke)
+ice	noun	gelo	wikt:pt:gelo	(uncountable) ice (frozen water)
+light	noun	luz	wikt:pt:luz	light (medium within which vision is possible)
+shadow	noun	sombra	wikt:pt:sombra	shadow
+time	noun	tempo	wikt:pt:tempo	(uncountable) time (the progression from the present into the future)
+day	noun	dia	wikt:pt:dia	day
+night	noun	noite	wikt:pt:noite	night (period between sunset and sunrise)
+year	noun	ano	wikt:pt:ano	year
+month	noun	mês	wikt:pt:mês	month (each of the twelve periods into which the year is divided)
+week	noun	semana	wikt:pt:semana	week (period of seven days)
+hour	noun	hora	wikt:pt:hora	hour (period of sixty minutes)
+morning	noun	manhã	wikt:pt:manhã	morning
+evening	noun	tarde	wikt:pt:tarde	afternoon
+summer	noun	verão	wikt:pt:verão	summer
+winter	noun	inverno	wikt:pt:inverno	winter (the coldest of the four seasons)
+autumn	noun	outono	wikt:pt:outono	autumn
+life	noun	vida	wikt:pt:vida	life
+death	noun	morte	wikt:pt:morte	death (cessation of life)
+love	noun	amor	wikt:pt:amor	love
+war	noun	guerra	wikt:pt:guerra	war (organised, large-scale armed conflict)
+peace	noun	paz	wikt:pt:paz	peace
+truth	noun	verdade	wikt:pt:verdade	(uncountable) truth (conformity to fact or reality)
+law	noun	lei	wikt:pt:lei	law
+work	noun	trabalho	wikt:pt:trabalho	(uncountable) work; toil; labour; effort
+money	noun	dinheiro	wikt:pt:dinheiro	(uncountable) money (means of exchange and measure of value)
+price	noun	preço	wikt:pt:preço	price (cost required to gain possession of something)
+question	noun	pergunta	wikt:pt:pergunta	question
+answer	noun	resposta	wikt:pt:resposta	answer, response
+story	noun	história	wikt:pt:história	story
+song	noun	canção	wikt:pt:canção	song
+music	noun	música	wikt:pt:música	(uncountable) music (melodic and rhythmic sounds made as art)
+game	noun	jogo	wikt:pt:jogo	game; sport
+dream	noun	sonho	wikt:pt:sonho	dream (imaginary events seen while sleeping)
+fear	noun	medo	wikt:pt:medo	fear (emotion caused by actual or perceived danger or threat)
+hope	noun	esperança	wikt:pt:esperança	hope
+joy	noun	alegria	wikt:pt:alegria	joy, happiness
+anger	noun	raiva	wikt:pt:raiva	anger (a strong feeling of displeasure, hostility or antagonism towards someone or something)
+oath	noun	juramento	wikt:pt:juramento	an oath
+gift	noun	presente	wikt:pt:presente	present, gift
+good	adj	bom	wikt:pt:bom	good
+bad	adj	mau	wikt:pt:mau	bad
+big	adj	grande	wikt:pt:grande	large; great; big (of great size or extent)
+small	adj	pequeno	wikt:pt:pequeno	small
+great	adj	grande	wikt:pt:grande	large; great; big (of great size or extent)
+little	adj	pequeno	wikt:pt:pequeno	small	small
+long	adj	longo	wikt:pt:longo	long
+short	adj	curto	wikt:pt:curto	short (having a small distance between ends or edges)
+high	adj	alto	wikt:pt:alto	high
+low	adj	baixo	wikt:pt:baixo	low
+old	adj	velho	wikt:pt:velho	old; ancient (having existed for a long period of time)
+young	adj	jovem	wikt:pt:jovem	young, youthful
+new	adj	novo	wikt:pt:novo	(of things) new
+hot	adj	quente	wikt:pt:quente	hot, warm
+cold	adj	frio	wikt:pt:frio	cold
+warm	adj	morno	wikt:pt:morno	lukewarm, tepid	lukewarm
+heavy	adj	pesado	wikt:pt:pesado	heavy (having great weight)
+strong	adj	forte	wikt:pt:forte	capable of producing great force; strong; forceful
+weak	adj	fraco	wikt:pt:fraco	weak (lacking in force or ability)
+hard	adj	duro	wikt:pt:duro	hard (resistant to pressure; not soft)
+soft	adj	macio	wikt:pt:macio	soft
+quick	adj	rápido	wikt:pt:rápido	fast (occurring or happening within a short time)	fast
+slow	adj	lento	wikt:pt:lento	slow (not quick in motion)
+true	adj	verdadeiro	wikt:pt:verdadeiro	true; loyal; faithful
+false	adj	falso	wikt:pt:falso	false; untrue; not factual; wrong
+rich	adj	rico	wikt:pt:rico	rich, wealthy
+poor	adj	pobre	wikt:pt:pobre	poor
+happy	adj	feliz	wikt:pt:feliz	happy
+sad	adj	triste	wikt:pt:triste	(of a person) sad; unhappy; down
+tired	adj	cansado	wikt:pt:cansado	sleepy, tired
+full	adj	cheio	wikt:pt:cheio	full, filled, completed
+empty	adj	vazio	wikt:pt:vazio	devoid of content; empty
+clean	adj	limpo	wikt:pt:limpo	clean (not dirty)
+dirty	adj	sujo	wikt:pt:sujo	containing unpleasant substances such as dirt or grime; dirty; unclean
+beautiful	adj	belo	wikt:pt:belo	beautiful; attractive (having beauty)
+ugly	adj	feio	wikt:pt:feio	ugly (visually unpleasant)
+easy	adj	fácil	wikt:pt:fácil	easy (requiring little skill or effort)
+difficult	adj	difícil	wikt:pt:difícil	difficult, hard, unlikely
+free	adj	livre	wikt:pt:livre	free
+wise	adj	sábio	wikt:pt:sábio	wise; sage
+brave	adj	corajoso	wikt:pt:corajoso	courageous, brave, bold, intrepid
+holy	adj	santo	wikt:pt:santo	holy, sacred
+deep	adj	profundo	wikt:pt:profundo	deep
+wide	adj	largo	wikt:pt:largo	wide; broad (having a large width)
+narrow	adj	estreito	wikt:pt:estreito	narrow (having a small width)
+dead	adj	morto	wikt:pt:morto	dead (no longer living)
+alive	adj	vivo	wikt:pt:vivo	alive (having life; not dead)
+sick	adj	doente	wikt:pt:doente	sick (in poor health)
+whole	adj	inteiro	wikt:pt:inteiro	whole; entire; in full (with nothing missing)
+white	adj	branco	wikt:pt:branco	white (color)
+black	adj	preto	wikt:pt:preto	black; black in colour
+red	adj	vermelho	wikt:pt:vermelho	red (having red as its color)
+green	adj	verde	wikt:pt:verde	green (color/colour)
+blue	adj	azul	wikt:pt:azul	blue
+yellow	adj	amarelo	wikt:pt:amarelo	yellow in colour
+grey	adj	cinzento	wikt:pt:cinzento	grey (colour)
+brown	adj	marrom	wikt:pt:marrom	(chiefly Brazil) brown
+have	verb	ter	wikt:pt:ter	to have
+say	verb	dizer	wikt:pt:dizer	to say
+go	verb	ir	wikt:pt:ir	to go (to move to a destination) [with para or a or em ‘to somewhere’; or with até ‘as far as somewhere’]
+come	verb	vir	wikt:pt:vir	(intransitive) to come (to move towards the speaker or the agent)
+see	verb	ver	wikt:pt:ver	(transitive) to see; to observe (to perceive with one’s eyes)
+know	verb	saber	wikt:pt:saber	to know
+think	verb	pensar	wikt:pt:pensar	to think (communicate to oneself in one’s mind)
+take	verb	tomar	wikt:pt:tomar	(transitive) to take (to get something into one’s possession or control)
+give	verb	dar	wikt:pt:dar	(ditransitive) to give
+make	verb	fazer	wikt:pt:fazer	(transitive) to make
+find	verb	encontrar	wikt:pt:encontrar	(transitive) to find; to locate
+want	verb	querer	wikt:pt:querer	(transitive, intransitive) to want; to wish; to desire
+tell	verb	contar	wikt:pt:contar	(transitive) to tell (to convey given information) [with que ‘that’]
+ask	verb	perguntar	wikt:pt:perguntar	(transitive) to ask (request an answer)
+work	verb	trabalhar	wikt:pt:trabalhar	to work (to do a specific task)
+play	verb	jogar	wikt:pt:jogar	(transitive or intransitive) to play (to participate in a sport or game)
+run	verb	correr	wikt:pt:correr	(intransitive) to run (to move quickly on one’s feet)
+walk	verb	andar	wikt:pt:andar	(intransitive) to walk (to move on one’s feet)
+speak	verb	falar	wikt:pt:falar	(intransitive) to speak; to talk (to say words out loud)
+read	verb	ler	wikt:pt:ler	to read (to look at and interpret written information)
+write	verb	escrever	wikt:pt:escrever	to write (to form letters, etc.)
+eat	verb	comer	wikt:pt:comer	(ambitransitive) to eat
+drink	verb	beber	wikt:pt:beber	(transitive) to drink (something)
+sleep	verb	dormir	wikt:pt:dormir	(intransitive) to sleep; to be asleep (to rest in a state of reduced consciousness)
+sit	verb	sentar	wikt:pt:sentar	(ambitransitive, reflexive) to sit
+stand	verb	estar de pé	wikt:pt:estar wikt:pt:de_pé	(copulative) to be (denotes a transient quality; a quality expected to change) [with adjective] / up; standing (in an erect position)
+live	verb	viver	wikt:pt:viver	(intransitive) to live; to have life
+die	verb	morrer	wikt:pt:morrer	(intransitive) to die (to stop living)
+love	verb	amar	wikt:pt:amar	(transitive) to love, to have great affection for
+hate	verb	odiar	wikt:pt:odiar	to hate, to loathe
+fear	verb	temer	wikt:pt:temer	(intransitive, transitive) to fear (to feel fear about something)
+hear	verb	ouvir	wikt:pt:ouvir	(transitive) to hear (to perceive with the ear, without necessarily paying attention to it)
+feel	verb	sentir	wikt:pt:sentir	(transitive) to sense; to feel (to perceive by means of biological senses)
+hold	verb	segurar	wikt:pt:segurar	to hold; to grasp
+carry	verb	levar	wikt:pt:levar	(transitive) to carry (to have in one’s immediate possession)
+bring	verb	trazer	wikt:pt:trazer	bring (to transport toward somebody/somewhere)
+send	verb	enviar	wikt:pt:enviar	to send
+buy	verb	comprar	wikt:pt:comprar	(transitive) to buy
+sell	verb	vender	wikt:pt:vender	(transitive) to sell
+pay	verb	pagar	wikt:pt:pagar	to pay
+build	verb	construir	wikt:pt:construir	to build
+break	verb	quebrar	wikt:pt:quebrar	(ambitransitive) to break (end up or cause to end up in two or more pieces that cannot easily be reassembled)
+open	verb	abrir	wikt:pt:abrir	(transitive) to open
+close	verb	fechar	wikt:pt:fechar	(transitive) to close
+begin	verb	começar	wikt:pt:começar	(intransitive) to start; to begin; to commence
+help	verb	ajudar	wikt:pt:ajudar	to help, aid; to assist
+learn	verb	aprender	wikt:pt:aprender	(transitive) to learn, to acquire knowledge
+teach	verb	ensinar	wikt:pt:ensinar	(transitive) to teach (to pass on knowledge to)
+remember	verb	lembrar	wikt:pt:lembrar	(intransitive or pronominal) to remember [with de ‘someone/something’ or de (+ personal infinitive) ‘to do something’]
+forget	verb	esquecer	wikt:pt:esquecer	(ambitransitive) to forget
+win	verb	ganhar	wikt:pt:ganhar	to win (to achieve victory in a game, a war, etc)
+lose	verb	perder	wikt:pt:perder	to lose (an object, a job, interest etc.)
+fight	verb	lutar	wikt:pt:lutar	(intransitive or transitive) to fight (participate in a conflict) [with em or (less common) transitive ‘in a battle/conflict/etc.’]
+swim	verb	nadar	wikt:pt:nadar	(intransitive) to swim (support oneself and move on the surface or within a liquid, through coordinated movements of arms and legs)
+fly	verb	voar	wikt:pt:voar	to fly
+ride	verb	montar	wikt:pt:montar	to mount, to ride
+sing	verb	cantar	wikt:pt:cantar	(intransitive) to sing (express sounds musically through the voice)
+laugh	verb	rir	wikt:pt:rir	(pronominal) to laugh (to express mirth or derision by emitting chuckling sounds) [with de ‘at someone/something’]
+cry	verb	chorar	wikt:pt:chorar	(intransitive) to cry; to weep (to shed tears from the eyes)
+wait	verb	esperar	wikt:pt:esperar	to wait
+watch	verb	observar	wikt:pt:observar	(transitive) to observe, watch
+look	verb	olhar	wikt:pt:olhar	to look
+show	verb	mostrar	wikt:pt:mostrar	(transitive) to show
+call	verb	chamar	wikt:pt:chamar	(transitive) to call; to summon (to ask someone to come)
+put	verb	pôr	wikt:pt:pôr	(transitive) to put; to place
+keep	verb	guardar	wikt:pt:guardar	to save, keep, retain, preserve
+leave	verb	partir	wikt:pt:partir	(formal, intransitive) to depart; to leave; to go away
+follow	verb	seguir	wikt:pt:seguir	to follow (to go or come after in physical space)
+seek	verb	procurar	wikt:pt:procurar	(transitive) to search; to seek; to look for [with direct object or por ‘for something’]
+choose	verb	escolher	wikt:pt:escolher	to choose
+change	verb	mudar	wikt:pt:mudar	to change (to become or cause to become something different)
+grow	verb	crescer	wikt:pt:crescer	(intransitive) to grow (become bigger or taller)
+fall	verb	cair	wikt:pt:cair	to fall; to fall down; to drop
+rise	verb	subir	wikt:pt:subir	to ascend, to go up	go up
+turn	verb	virar	wikt:pt:virar	(ergative) to turn (to change direction)
+move	verb	mover	wikt:pt:mover	to move (change position)
+throw	verb	lançar	wikt:pt:lançar	(transitive) to throw, shoot (with force)
+catch	verb	pegar	wikt:pt:pegar	(transitive) to catch
+cut	verb	cortar	wikt:pt:cortar	(transitive) to cut (to split using a sharp instrument)
+wash	verb	lavar	wikt:pt:lavar	to wash
+cook	verb	cozinhar	wikt:pt:cozinhar	to cook (food), to bake
+always	adv	sempre	wikt:pt:sempre	always (at all times)
+never	adv	nunca	wikt:pt:nunca	never (at no time; not ever)
+often	adv	muitas vezes	wikt:pt:muito wikt:pt:vez	much; many; a lot of; lots of / time; occasion
+sometimes	adv	às vezes	wikt:pt:às_vezes	sometimes (on certain occasions, but not always)
+today	adv	hoje	wikt:pt:hoje	today (in the current day)
+tomorrow	adv	amanhã	wikt:pt:amanhã	tomorrow (in the day after today)
+yesterday	adv	ontem	wikt:pt:ontem	yesterday
+now	adv	agora	wikt:pt:agora	now; right now (at the present time)
+soon	adv	em breve	wikt:pt:em_breve	soon (in a short time)
+already	adv	já	wikt:pt:já	(usually preceding verbs in the past tense) already (indicating that something has happened before)
+almost	adv	quase	wikt:pt:quase	almost (very close to)
+together	adv	juntos	wikt:pt:junto wikt:pt:juntos	together (at the same time, in the same place)
+alone	adv	sozinho	wikt:pt:sozinho	(rare, nonstandard) alone; by oneself; on one's own
+again	adv	outra vez	wikt:pt:outra_vez	again, once more
+here	adv	aqui	wikt:pt:aqui	here (in this place)
+everywhere	adv	em todo lugar	wikt:pt:em wikt:pt:todo wikt:pt:lugar	in; at (located in a location) / every; all (all of a group) / place (a location or position)
+nowhere	adv	em nenhum lugar	wikt:pt:em wikt:pt:nenhum wikt:pt:lugar	in; at (located in a location) / no, none / place (a location or position)
+slowly	adv	lentamente	wikt:pt:lentamente	slowly
+quickly	adv	rapidamente	wikt:pt:rapidamente	rapidly, quickly
+truly	adv	verdadeiramente	wikt:pt:verdadeiramente	truly, truthfully
+perhaps	adv	talvez	wikt:pt:talvez	perhaps; maybe (indicates possibility or doubt)
+very	adv	muito	wikt:pt:muito	very; a lot; very much (to a great extent or degree)
+one	num	um	wikt:pt:um	one
+two	num	dois	wikt:pt:dois	two (cardinal number 2)
+three	num	três	wikt:pt:três	(cardinal number) three (cardinal number 3)
+four	num	quatro	wikt:pt:quatro	four
+five	num	cinco	wikt:pt:cinco	five
+six	num	seis	wikt:pt:seis	six
+seven	num	sete	wikt:pt:sete	seven
+eight	num	oito	wikt:pt:oito	(cardinal number) eight (cardinal number 8)
+nine	num	nove	wikt:pt:nove	nine
+ten	num	dez	wikt:pt:dez	ten
+hundred	num	cem	wikt:pt:cem	one hundred (100)
+thousand	num	mil	wikt:pt:mil	one thousand; a thousand; 1000
+first	num	primeiro	wikt:pt:primeiro	first (ordinal form of um (“one”))
+yes	intj	sim	wikt:pt:sim	yes (affirmative answer)
+hello	intj	olá	wikt:pt:olá	hello; hi (greeting)
+goodbye	intj	adeus	wikt:pt:adeus	goodbye (farewell)
+please	intj	por favor	wikt:pt:por_favor	please (interjection to make commands more polite)
+sorry	intj	desculpa	wikt:pt:desculpar wikt:pt:desculpa	(transitive) to forgive	forgive

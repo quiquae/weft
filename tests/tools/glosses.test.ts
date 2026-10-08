@@ -37,22 +37,28 @@ const SEED = join(ROOT, 'tools/seed');
 const PACKS = join(ROOT, 'src/lexicon/packs');
 
 /** The languages whose every row the ledgers hold. */
-const READ = new Set(['fr', 'es']);
+const READ = new Set(['fr', 'es', 'pt']);
 
 /** The modern languages whose glosses are not read yet, each an item in `TODO.md`. */
-const UNREAD = new Set(['pt', 'de', 'it']);
+const UNREAD = new Set(['de', 'it']);
 
 /**
- * Words whose own Wiktionary entry gives no definition but names the entry it
- * is a form of, keyed by language and title. A line for one of these cites
- * both entries, quoting the second. None of French's is such a page; three of
- * Spanish's are: `sentarse` is "infinitive of sentar combined with se",
- * `juntos` "masculine plural of junto", `quizás` "alternative form of quizá".
+ * Words whose own Wiktionary entry gives no definition of the word the row
+ * weaves but names the entry it is a form of, keyed by language and title. A
+ * line for one of these cites both entries, quoting the second. None of
+ * French's is such a page; three of Spanish's are — `sentarse` is "infinitive
+ * of sentar combined with se", `juntos` "masculine plural of junto", `quizás`
+ * "alternative form of quizá" — and two of Portuguese's: `juntos`, the same,
+ * and `desculpa`, which beside a noun, "excuse" and "apology", is the
+ * imperative of `desculpar`, "to forgive", the word said for "sorry", as
+ * Latin's `ignōsce` is quoted as "forgive".
  */
 const FORM_OF: ReadonlyMap<string, string> = new Map([
   ['es\tsentarse', 'sentar'],
   ['es\tjuntos', 'junto'],
   ['es\tquizás', 'quizá'],
+  ['pt\tjuntos', 'junto'],
+  ['pt\tdesculpa', 'desculpar'],
 ]);
 
 /**
@@ -62,10 +68,18 @@ const FORM_OF: ReadonlyMap<string, string> = new Map([
  * `en ningún sitio`: it is "in", "not any" and "place". Its line cites each
  * word's entry and quotes each word's line, joined by " / ", and names no
  * stand-in, since no one word of it means "nowhere"; the phrase's meaning is
- * the words', not a dictionary's.
+ * the words', not a dictionary's. Portuguese has four: `estar de pé`,
+ * `muitas vezes`, `em todo lugar` and `em nenhum lugar`. A word the phrase
+ * inflects is cited by the entry it is a form of — `muitas` is "feminine
+ * plural of muito", `vezes` "plural of vez" — and `de pé`, "up; standing",
+ * is one entry of two words.
  */
 const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
   ['es\ten_ningún_lugar', ['en', 'ningún', 'lugar']],
+  ['pt\testar_de_pé', ['estar', 'de_pé']],
+  ['pt\tmuitas_vezes', ['muito', 'vez']],
+  ['pt\tem_todo_lugar', ['em', 'todo', 'lugar']],
+  ['pt\tem_nenhum_lugar', ['em', 'nenhum', 'lugar']],
 ]);
 
 /**
@@ -73,12 +87,15 @@ const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
  * differently, with what the entry says the word is. Their lines quote the
  * entry all the same, so the ledger says what is wrong rather than nothing.
  *
- * Empty since 2026-10-08. It named French `tenir debout`, woven for "stand"
- * and "(informal) to hold water, to be valid, to make sense", for the night
- * it was found; "stand" is `être debout` now, and `tenir debout`'s card is
- * withdrawn.
+ * It named French `tenir debout`, woven for "stand" and "(informal) to hold
+ * water, to be valid, to make sense", for the night it was found; "stand" is
+ * `être debout` now, and `tenir debout`'s card is withdrawn. It names
+ * Portuguese `tarde`, woven for "evening", whose entry gives only
+ * "afternoon", until it is taught differently.
  */
-const QUEUED: ReadonlyMap<string, string> = new Map([]);
+const QUEUED: ReadonlyMap<string, string> = new Map([
+  ['pt\tevening\tnoun\ttarde', '“afternoon”, and nothing more: the evening is “serão” to Wiktionary, and after dark “noite”'],
+]);
 
 const NAME: Readonly<Record<string, string>> = {
   de: 'German',
