@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **272** tool tests / 73 suites, **40** e2e passing
+suites, **293** tool tests / 78 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -51,8 +51,9 @@ have.** `orecchio`, ear, printed "neuter", and the feminine plurals `ossa`,
 `braccia`, `dita` and `uova` printed their masculine singulars' gender. All
 five are masculine and woven in the singular only now, and
 `tests/tools/genders.test.ts` refuses a printed gender a pack's language does
-not have. No modern pack's gender has been read against a dictionary
-otherwise; that is the item in `Next`.
+not have. The same night every modern noun's gender was read in English
+Wiktionary, 890 in all, and none else was wrong; `tools/seed/<lang>-genders.tsv`
+names the entry for each, as the Old English and Latin ledgers do.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -4689,7 +4690,7 @@ registered**, and nothing below it can move until it is.
       **980**, in six places, `docs/LAUNCH.md:221` first, and a
       `CHANGELOG.md` paragraph, because the pack ships.
 
-- [ ] **No modern pack's gender has been read against a dictionary.** Found
+- [x] **No modern pack's gender has been read against a dictionary.** Found
       2026-10-08 by the Italian item above. French, Spanish, Italian,
       Portuguese and German teach 178 nouns each, and the tooltip prints
       every one's gender; the Old English and Latin genders were each read
@@ -4724,8 +4725,63 @@ registered**, and nothing below it can move until it is.
       one decision the French pass has to make, and if it is, `INVENTORY`
       gives French a `c` with the reason.
 
+      **Done 2026-10-08, all five, in the same session's second PR.** The
+      fetch finished while the first PR's checks ran, and every language
+      read the way French had: Spanish 169 of 178 outright, Portuguese 171,
+      German 167 and Italian 177, the rest right by sense on every one —
+      *der See*, lake, beside *die See*, sea; *der Schild*, shield, beside
+      *das Schild*, sign; Spanish *pez*, fish, beside *la pez*, pitch;
+      *coração*, heart, beside *coração*, blushing. Where Wiktionary gives
+      one word two genders, the seed's is one of them, the Old English
+      ledger's rule: by sense, *enfant*, *médecin*, Portuguese *bebé*,
+      *soldado* in both languages, *médico* and *insegnante*; both
+      outright, *amour*, Spanish *bebé* and *mar*, and German *Monat*. German's `{{de-noun}}` writes the gender inside a
+      declension spec (`m,(e)s,^er`, `m.weak`, `((<m,…>,<m,…>))`, `+` for an
+      adjective used as a noun), so it was read by its own parser, which
+      sits in `/tmp/weft-it/de_genders.py` for as long as `/tmp` does. Every
+      woven Italian plural was then read against the plural forms its
+      template marks with a gender: none now differs, and on the seed
+      before #88 the same check names exactly `ossa`, `braccia`, `dita`
+      and `uova`.
+
+      Five ledgers, `tools/seed/{fr,es,pt,de,it}-genders.tsv`, each written
+      by a script that refused any noun whose seed gender was not among its
+      page's, each red first on a header-only file — "178 <language>
+      genders are unsourced" — and green with its lines. The test is one
+      loop in `tests/tools/genders.test.ts` over every shipped pack but
+      Old English and Latin, with a test of its own that fails when a
+      shipped pack has no ledger: probed by moving `pt-genders.tsv` away,
+      which names `en-pt.json`. Two more probes on the French ledger, each
+      restored by md5: `livre` read `f` names `lex-fr.tsv:116`, and
+      `wikt:fr:livres` is "not wikt:fr:livre". Nothing that ships moved.
+      Tools 272 → **293** / 73 → **78** suites, total 980 → **1001**, in six
+      places, `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says where
+      the modern genders were read.
+
+- [ ] **No woven modern plural has been read against a dictionary.** Found
+      2026-10-08 by the gender pass. The five modern packs weave 868
+      second forms — 178 French, 178 Spanish, 178 Portuguese, 161 German,
+      173 Italian — and the Italian five were wrong in gender, not in
+      spelling, so nothing says the spellings hold either. The raw
+      templates will not answer it: of the 868, only 14 name their plural;
+      the rest leave it to Wiktionary's module, which works it out
+      (`{{es-noun|m}}`, German's `^er` for an umlaut and *-er*). The
+      rendered page does: `action=render` prints the headword line as a
+      reader sees it, "uovo m (plural uova f", which is how the Italian
+      five were quoted. So fetch the rendered page for each noun (one
+      request a second, a User-Agent naming no person; about half an hour
+      for all five), read each headword line's plurals, and list every
+      woven second form that is not among them. Expect some to be a
+      second plural a usage note gives (`ossi`), or a form Wiktionary
+      does not print but a grammar does; read those by eye, and write a
+      ledger only for what the pass finds worth holding. Verbs' second
+      forms, present participles, are a separate question: Spanish and
+      Portuguese weave a gerund, Italian a participle, and which English
+      *-ing* each answers to is a call, not a lookup.
+
 `Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08. The Italian genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
+above, as of 2026-10-08: the modern plurals. The modern genders, the Italian
+genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old
 English noun glosses,
@@ -4756,6 +4812,18 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**One gender call a human may want to look at**, taken on 2026-10-08
+without anyone to ask: eleven modern nouns are masculine or feminine by the
+person meant, or given both, and print "masculine" — French *enfant* and
+*médecin*, Spanish *bebé*, *soldado* and *médico*, Portuguese *bebé* and
+*soldado*, Italian *insegnante*, and *amour*, *mar* and *Monat*, given two
+genders outright. Latin prints its "comm." nouns as "common", and these
+could print the same; the ledgers took the Old English rule instead, that
+the seed's gender is one of the two its entry gives. If "common" is wanted,
+`INVENTORY` in `tests/tools/genders.test.ts` gives those languages a `c`
+with the reason, the seed rows and their ledger lines change together, and
+the tooltip already prints `c` as "common".
 
 **One Italian call a human may want to look at**, taken on 2026-10-08
 without anyone to ask: "ears", "bones", "arms", "fingers" and "eggs" are no
