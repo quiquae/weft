@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **321** tool tests / 84 suites, **40** e2e passing
+suites, **351** tool tests / 90 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -4835,7 +4835,7 @@ registered**, and nothing below it can move until it is.
       `docs/LAUNCH.md:221` first; a `CHANGELOG.md` paragraph, because the
       packs ship.
 
-- [ ] **No woven modern verb form has been read against a dictionary.**
+- [x] **No woven modern verb form has been read against a dictionary.**
       Found 2026-10-08 by the plurals pass, which the item above left it
       to. The five modern packs weave 400 verb second forms under an
       English *-ing* — 79 French, 80 Spanish, 80 Portuguese, 81 German, 80
@@ -4858,9 +4858,70 @@ registered**, and nothing below it can move until it is.
       ledger per language held as `tests/tools/plurals.test.ts` holds the
       plurals, or the plural ledgers widened to verbs.
 
+      **Done 2026-10-08, the first question; the second is a call, below.**
+      349 rendered pages, one per distinct infinitive — *dire*, *ver* and
+      *ir* are one page for two packs — fetched by two fetchers at about a
+      request a second, 6 minutes. Every table marks its cells with a
+      class, so the reader took the slot's cell by class and its label
+      from the row header: `ppr` under "present participle or gerund" in
+      French, `pres|part` under "present participle" in German,
+      `gerund-<verb>` under "gerund" in Spanish and "Gerund" in Portuguese,
+      `ger` under "gerund" in Italian, whose table also has a present
+      participle, *dicente*, which is not woven. **398 of the 400 are the
+      form their own verb's table prints, and none was changed.** The two
+      left are pronominal and woven without their pronoun: Spanish
+      *sentarse*, whose page says only "infinitive of sentar combined with
+      se", and Italian *sedersi*, whose table prints "sedèndosi". Each bare
+      gerund is the one the verb without the pronoun prints, *sentando*
+      and *sedèndo*, and the reader meets it where the pronoun stands
+      before the verb that carries it, "se está sentando", "si sta
+      sedendo", so `PRONOMINAL` in the test names both and their lines
+      cite both entries. No verb's headword line labels either form —
+      Portuguese *vir*'s prints "past participle vindo", the gerund's
+      spelling too — which is why the tables were read.
+
+      `tools/seed/<lang>-verb-forms.tsv` × 5, 400 lines, each the verb's
+      own entry and the cell as printed: "present participle or gerund
+      assoyant or asseyant", "gerund avèndo". Italian's tables mark the
+      stressed vowel, which the spelling writes only on a final vowel, so
+      the test sets a mark on any other vowel aside. The seed headers of
+      `lex-es`, `lex-pt` and `lex-it.tsv` said "present participle for
+      verbs" and say "the gerund" now; `npm run packs` moved nothing.
+      Test-first: `tests/tools/verb-forms.test.ts`, 30 tests in 6 suites,
+      red on the five missing ledgers, then green on the ledgers written
+      straight off the pages, none refused. Seven probes, each restored by
+      md5 and each failing its own test by name: a seed form changed, a
+      quote from the past participle's cell, another verb's entry cited,
+      `sedersi` taken out of `PRONOMINAL`, an Italian quote from the
+      present participle's cell, a line outliving its row, and the stress
+      rule removed, which fails all 80 Italian lines. Nothing that ships
+      moved. Tools 321 → **351** / 84 → **90** suites, total 1029 →
+      **1059**, in six places, `docs/LAUNCH.md:221` first.
+
+- [ ] **No modern gloss names its entry.** Found 2026-10-08 by the verb-form
+      pass: `docs/THIRD-PARTY.md` now says the five modern packs' glosses
+      are the one claim in them that cites nothing. 1 780 rows, 356 a
+      language — 178 nouns, 81 verbs, 57 adjectives, 22 adverbs, 13
+      numerals, 5 interjections — each teaching that its English word is
+      the target word, and none quoting a dictionary that says so. Shape
+      as Old English's (`tests/tools/ang-glosses.test.ts`): a ledger per
+      language quoting English Wiktionary's definition line for the
+      target in its language, holding the row's English word or naming
+      the word of the quote that stands for it, a page that only names
+      another form citing the entry it names, and a row no definition
+      gives named in a `QUEUED` table until it is taught differently.
+      About two hours a language, so split by language, French first.
+      The rendered pages of every noun are in `/tmp/weft-pl/render/<lang>/`
+      and of every verb in `/tmp/weft-vb/render/` for as long as `/tmp`
+      lasts, with `/tmp/weft-pl/plurals.py`'s section reader; adjectives,
+      adverbs, numerals and interjections, 97 a language, need fetching.
+      A definition line is a `<li>` in the part of speech's `<ol>`, and a
+      page holds every word of one spelling, so read the sense that is
+      this row's part of speech.
+
 `Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the modern verb forms. The modern plurals, the
-modern genders, the Italian
+above, as of 2026-10-08: the modern glosses. The modern verb forms, the
+modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old
@@ -4892,6 +4953,35 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**Two verb calls a human may want to look at**, recorded on 2026-10-08
+rather than changed:
+
+1. **Which English *-ing* a woven verb form answers to.** The pack weaves
+   each verb's second form under every *-ing* of its English verb, and the
+   selector cannot tell which use it met. English *-ing* is a progressive
+   ("she is reading"), a participle ("a reading lamp", "reading on, she
+   …") and a noun ("reading is fun"). None of the five woven forms is a
+   noun — each language says that with its infinitive, *lire*, *leer*,
+   *ler*, *leggere*, *das Lesen* — and the French and German participles
+   make no progressive either: French says *en train de lire*, German *ich
+   lese gerade*. Spanish, Portuguese and Italian gerunds make the progressive,
+   though European Portuguese prefers *estar a ler*. `confidenceFor()` in
+   `tools/build-pack.mjs` already docks a woven *-ing* 0.02; whether to
+   dock more, per language, or to stop weaving *-ing* in French and German
+   is a teaching call, and nothing here measured how often each use
+   occurs on a page.
+2. **Two pronominal verbs are woven without their pronoun.** "sitting" is
+   Spanish *sentando* under *sentarse* and Italian *sedendo* under
+   *sedersi*, the gerunds of *sentar* and *sedere*, which a reader meets
+   when the pronoun stands before the verb carrying it, "se está
+   sentando", "si sta sedendo". Each could instead weave the form with the
+   pronoun joined, *sentándose*, *sedendosi*, which is what *sedersi*'s
+   own table prints; a row in `lex-es.tsv` or `lex-it.tsv`, its ledger
+   line, and `PRONOMINAL` in `tests/tools/verb-forms.test.ts` move
+   together, and the pack and the screenshots with them; no card moves,
+   a card being its infinitive's. Portuguese weaves *sentar* itself, French *asseoir*, German
+   *sitzen*.
 
 **One gender call a human may want to look at**, taken on 2026-10-08
 without anyone to ask: eleven modern nouns are masculine or feminine by the

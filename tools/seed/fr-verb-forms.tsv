@@ -1,0 +1,109 @@
+# Where each woven French verb form in lex-fr.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. French weaves the present
+# participle, which English Wiktionary's conjugation table prints in a row
+# it calls "present participle or gerund", the gérondif being that form
+# after en. On 2026-10-08 every woven French form was read in that row of
+# the table on English Wiktionary's French entry for its verb, rendered as
+# a reader sees it, because a verb's headword line prints none of its
+# forms. All 79 are the form their verb's table prints, and none was
+# changed.
+#
+# quote is the row's label and its cell, as printed. asseoir's cell prints
+# two forms, "assoyant or asseyant", and the pack weaves the second.
+#
+# Whether that form answers to every English -ing it is woven under — the
+# progressive's participle, or a gerund used as a noun, "reading is fun" —
+# is a call about the language rather than a lookup, written up in TODO.md
+# and not held here.
+#
+# The sources field
+# -----------------
+#   wikt:fr:<title>    https://en.wiktionary.org/wiki/<title>#French
+#
+# tests/tools/verb-forms.test.ts requires every verb lex-fr.tsv weaves in
+# a second form to have a line here with that form, citing the verb's own
+# entry, its quote printing the form in the "present participle or gerund" cell, and fails on a
+# line outliving its row.
+have	avoir	ayant	wikt:fr:avoir	present participle or gerund ayant
+say	dire	disant	wikt:fr:dire	present participle or gerund disant
+go	aller	allant	wikt:fr:aller	present participle or gerund allant
+come	venir	venant	wikt:fr:venir	present participle or gerund venant
+see	voir	voyant	wikt:fr:voir	present participle or gerund voyant
+know	savoir	sachant	wikt:fr:savoir	present participle or gerund sachant
+think	penser	pensant	wikt:fr:penser	present participle or gerund pensant
+take	prendre	prenant	wikt:fr:prendre	present participle or gerund prenant
+give	donner	donnant	wikt:fr:donner	present participle or gerund donnant
+make	faire	faisant	wikt:fr:faire	present participle or gerund faisant
+find	trouver	trouvant	wikt:fr:trouver	present participle or gerund trouvant
+want	vouloir	voulant	wikt:fr:vouloir	present participle or gerund voulant
+tell	dire	disant	wikt:fr:dire	present participle or gerund disant
+ask	demander	demandant	wikt:fr:demander	present participle or gerund demandant
+work	travailler	travaillant	wikt:fr:travailler	present participle or gerund travaillant
+play	jouer	jouant	wikt:fr:jouer	present participle or gerund jouant
+run	courir	courant	wikt:fr:courir	present participle or gerund courant
+walk	marcher	marchant	wikt:fr:marcher	present participle or gerund marchant
+speak	parler	parlant	wikt:fr:parler	present participle or gerund parlant
+read	lire	lisant	wikt:fr:lire	present participle or gerund lisant
+write	écrire	écrivant	wikt:fr:écrire	present participle or gerund écrivant
+eat	manger	mangeant	wikt:fr:manger	present participle or gerund mangeant
+drink	boire	buvant	wikt:fr:boire	present participle or gerund buvant
+sleep	dormir	dormant	wikt:fr:dormir	present participle or gerund dormant
+sit	asseoir	asseyant	wikt:fr:asseoir	present participle or gerund assoyant or asseyant
+live	vivre	vivant	wikt:fr:vivre	present participle or gerund vivant
+die	mourir	mourant	wikt:fr:mourir	present participle or gerund mourant
+love	aimer	aimant	wikt:fr:aimer	present participle or gerund aimant
+hate	haïr	haïssant	wikt:fr:haïr	present participle or gerund haïssant
+fear	craindre	craignant	wikt:fr:craindre	present participle or gerund craignant
+hear	entendre	entendant	wikt:fr:entendre	present participle or gerund entendant
+feel	sentir	sentant	wikt:fr:sentir	present participle or gerund sentant
+hold	tenir	tenant	wikt:fr:tenir	present participle or gerund tenant
+carry	porter	portant	wikt:fr:porter	present participle or gerund portant
+bring	apporter	apportant	wikt:fr:apporter	present participle or gerund apportant
+send	envoyer	envoyant	wikt:fr:envoyer	present participle or gerund envoyant
+buy	acheter	achetant	wikt:fr:acheter	present participle or gerund achetant
+sell	vendre	vendant	wikt:fr:vendre	present participle or gerund vendant
+pay	payer	payant	wikt:fr:payer	present participle or gerund payant
+build	construire	construisant	wikt:fr:construire	present participle or gerund construisant
+break	casser	cassant	wikt:fr:casser	present participle or gerund cassant
+open	ouvrir	ouvrant	wikt:fr:ouvrir	present participle or gerund ouvrant
+close	fermer	fermant	wikt:fr:fermer	present participle or gerund fermant
+begin	commencer	commençant	wikt:fr:commencer	present participle or gerund commençant
+help	aider	aidant	wikt:fr:aider	present participle or gerund aidant
+learn	apprendre	apprenant	wikt:fr:apprendre	present participle or gerund apprenant
+teach	enseigner	enseignant	wikt:fr:enseigner	present participle or gerund enseignant
+forget	oublier	oubliant	wikt:fr:oublier	present participle or gerund oubliant
+win	gagner	gagnant	wikt:fr:gagner	present participle or gerund gagnant
+lose	perdre	perdant	wikt:fr:perdre	present participle or gerund perdant
+fight	combattre	combattant	wikt:fr:combattre	present participle or gerund combattant
+swim	nager	nageant	wikt:fr:nager	present participle or gerund nageant
+fly	voler	volant	wikt:fr:voler	present participle or gerund volant
+ride	monter	montant	wikt:fr:monter	present participle or gerund montant
+sing	chanter	chantant	wikt:fr:chanter	present participle or gerund chantant
+laugh	rire	riant	wikt:fr:rire	present participle or gerund riant
+cry	pleurer	pleurant	wikt:fr:pleurer	present participle or gerund pleurant
+wait	attendre	attendant	wikt:fr:attendre	present participle or gerund attendant
+watch	regarder	regardant	wikt:fr:regarder	present participle or gerund regardant
+look	regarder	regardant	wikt:fr:regarder	present participle or gerund regardant
+show	montrer	montrant	wikt:fr:montrer	present participle or gerund montrant
+call	appeler	appelant	wikt:fr:appeler	present participle or gerund appelant
+put	mettre	mettant	wikt:fr:mettre	present participle or gerund mettant
+keep	garder	gardant	wikt:fr:garder	present participle or gerund gardant
+leave	partir	partant	wikt:fr:partir	present participle or gerund partant
+follow	suivre	suivant	wikt:fr:suivre	present participle or gerund suivant
+seek	chercher	cherchant	wikt:fr:chercher	present participle or gerund cherchant
+choose	choisir	choisissant	wikt:fr:choisir	present participle or gerund choisissant
+change	changer	changeant	wikt:fr:changer	present participle or gerund changeant
+grow	grandir	grandissant	wikt:fr:grandir	present participle or gerund grandissant
+fall	tomber	tombant	wikt:fr:tomber	present participle or gerund tombant
+rise	monter	montant	wikt:fr:monter	present participle or gerund montant
+turn	tourner	tournant	wikt:fr:tourner	present participle or gerund tournant
+move	bouger	bougeant	wikt:fr:bouger	present participle or gerund bougeant
+throw	jeter	jetant	wikt:fr:jeter	present participle or gerund jetant
+catch	attraper	attrapant	wikt:fr:attraper	present participle or gerund attrapant
+cut	couper	coupant	wikt:fr:couper	present participle or gerund coupant
+wash	laver	lavant	wikt:fr:laver	present participle or gerund lavant
+cook	cuisiner	cuisinant	wikt:fr:cuisiner	present participle or gerund cuisinant
