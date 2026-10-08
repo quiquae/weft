@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-08:** every automatable check is green, measured at the end
+**State on 2026-10-09:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **426** tool tests / 102 suites, **40** e2e passing
+suites, **428** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -5236,7 +5236,7 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Seventeen Old English second forms are still not what their
+- [ ] **Sixteen Old English second forms are still not what their
       table prints.** The remainder of the item above, named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints, and
       what Wright and Bosworth–Toller were found to print on 2026-10-08:
@@ -5258,23 +5258,43 @@ registered**, and nothing below it can move until it is.
       - **No Wiktionary table read:** `onsīene`, whose Bosworth–Toller
         entry's quotations are all singular, and which Wright § 390
         declines like `cwēn`, plural `cwēne` (§ 389);
-        `hūsbondan` and `mentlas`, whose pages have no table and whose
-        Bosworth–Toller entries (bt:19998 and bt:53417; bt:22625 and
-        bt:55269), read whole, print no plural; and `fremdan`, the weak
-        plural of an adjective, whose page's weak table prints "fremdan" in
-        its masculine nominative plural, a cell the test does not read.
+        and `hūsbondan` and `mentlas`, whose pages have no table — the
+        cached renders hold no declension cell at all, checked again on
+        2026-10-09 after `fremde`'s "no table" turned out to be the
+        reader's — and whose Bosworth–Toller entries (bt:19998 and
+        bt:53417; bt:22625 and bt:55269), read whole, print no plural.
       - **Kind 3**, a dot where an ending was lost: `līċ`, `wīġ`, `bēc`,
         `ċirican`, as written above.
       - **Kind 4**, a headword's own marks: `ċempa`, `ċǣġ`, `hlīehhan`,
         `wasċan`, and `beginnan`, which Wright decides.
 
-      The next step, about half an hour: let a noun listed as an adjective
-      read its adjective's weak nominative plural, "fremdan", as the Latin
-      `aliēnus` item proposes for its cell. Then read Bosworth–Toller or a
-      second grammar for `ǣfnas`, `þorpas`, `onsīene`, `hūsbondan`,
-      `mentlas` and `gangende`, which the `bt:` source can now cite where a
-      quotation prints them, and decide `hattas`. Kinds 3 and 4 move sounds
-      and cards, and want their own PRs.
+      The next step, about an hour: read a second grammar for `ǣfnas`,
+      `þorpas`, `onsīene`, `hūsbondan` and `mentlas`, whose own
+      Bosworth–Toller entries are read whole and print none of them —
+      Sievers (tr. Cook, 1903) and Bülbring (1902) are whole on archive.org,
+      as the compounds item found — and decide `hattas` and `gangende`.
+      For `gangende`, Bosworth–Toller's main *gán* (bt:13263), read
+      2026-10-09, heads "GÁN, to gánne; ic gá, ðú gǽst, he gǽþ; … pp. gán"
+      and prints no present participle, and the Supplement's (bt:62409)
+      ends "Similar entries v. út-gánde", a participle in -gánde, which
+      is the table's `gānde` shape: weaving `gānde` is the likely cure,
+      once `út-gánde` is read. Kinds 3 and 4 move sounds and cards, and
+      want their own PRs.
+
+      **Done 2026-10-09 for one more: a noun whose entry is an adjective's
+      reads the adjective's cell.** `fremde`, "stranger", was queued as
+      "its entry has no table", and it has one: Wiktionary gives the word
+      no noun section and declines the adjective strong and weak, in cells
+      classed `str|nom|m|p` and `wk|nom|m|p`, which a reader looking for
+      `nom|p` cannot see. `ADJECTIVE` in `tests/tools/ang-forms.test.ts`
+      names it, and its line quotes the nominative plural of the row's own
+      gender, strong or weak, by the table's labels: "weak masculine
+      nominative plural fremdan", the form woven. Latin's `aliēnus` took
+      the same rule in the same PR. Test-first: a reader test and the row
+      out of `QUEUED`, red on both; the reader and the line, green. Two
+      probes, each restored by md5: `ADJECTIVE` emptied, and the feminine
+      cell quoted. Nothing that ships moved. Tools 426 → **428**, total
+      1134 → **1136**, in six places.
 
       **Done 2026-10-09 for two more: `ang-plurals.tsv` cites
       Bosworth–Toller.** A `bt:<id>` line quotes the entry's head as the
@@ -5357,21 +5377,27 @@ registered**, and nothing below it can move until it is.
       suites, total 1118 → **1133**, in six places. Nothing that ships
       moved.
 
-- [ ] **Two Latin second forms are not what their table prints.** Named in
-      `QUEUED` in `tests/tools/la-forms.test.ts`. `aliēnus`, "stranger", is
-      an adjective used as a noun, and its page declines it as one: the
-      masculine cell, `nom|m|p`, prints "aliēnī", the form woven, so the cure
-      is the test reading that cell for a listed noun. `nārrāre`, "tell", is
+- [ ] **One Latin second form is not what its table prints.** Named in
+      `QUEUED` in `tests/tools/la-forms.test.ts`. `nārrāre`, "tell", is
       woven `nārrāns` where the table prints "narrāns": Wiktionary marks the
       first vowel short and the seed long, a question of the headword's own
       length, not the participle's, which moves the headword's card and
       transcription if the seed is wrong; read Lewis & Short's *narro* and
-      the grammar before choosing. About half an
-      hour, most of it the second.
+      the grammar before choosing. About half an hour to read, and an hour
+      more if the seed moves: a `RENAMED` line, the card ledger, both
+      transcriptions, the pack, the site and the three screenshot groups.
+
+      **Done 2026-10-09 for `aliēnus`**, with Old English `fremde`: an
+      adjective used as a noun, Lewis & Short's "II. Subst. 1. ălĭēnus, i,
+      m., a stranger", which also quotes the plural, "apud me cenant alieni
+      novem" (Plaut. Stich. 3, 2, 21). `ADJECTIVE` in the test names it,
+      and its line quotes the cell of its gender, "masculine nominative
+      plural aliēnī". All 165 Latin plurals now name their table.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-09: the seventeen Old English second forms their tables do not
-print, and the two Latin ones. Six more of the Old English thirty, Latin's
+2026-10-09: the sixteen Old English second forms their tables do not
+print, and the one Latin one, `nārrāre`. `fremdan` and `aliēnī`, the
+adjectives' cells, six more of the Old English thirty, Latin's
 second forms but two, seven of the thirty, the Old English second
 forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the

@@ -42,9 +42,10 @@ text, in `tools/seed/la-glosses.tsv`, and `tests/tools/la-glosses.test.ts`
 fails on a row that quotes none. Lewis & Short prints a noun's genitive and a
 verb's principal parts, not the plural or participle a row weaves, so those
 are quoted from the declension or conjugation table of English Wiktionary's
-entry in `tools/seed/la-plurals.tsv` and `la-verb-forms.tsv`, all but two,
-which `tests/tools/la-forms.test.ts` names until they are read; it fails on
-any other with no line.
+entry in `tools/seed/la-plurals.tsv` and `la-verb-forms.tsv` — a noun
+whose entry is an adjective's, as *aliēnus* is, from the cell of its own
+gender — all but one, which `tests/tools/la-forms.test.ts` names until it is
+read; it fails on any other with no line.
 
 Classical pronunciation follows the standard reconstruction as set out in
 W. Sidney Allen, *Vox Latina* (Cambridge, 1965). Transcriptions are derived
@@ -76,10 +77,11 @@ beside it the entry its gender was read in, a phrase's the entry
 `tests/tools/ang-glosses.test.ts` fails on a row with none. Every woven plural
 and present participle is quoted from the declension or conjugation table of
 the Wiktionary entry its gloss was read in, in `tools/seed/ang-plurals.tsv`
-and `ang-verb-forms.tsv`; eight quote instead the section of Wright's *Old
-English Grammar* that prints the woven form, read in the archive.org page
-images, two the Bosworth–Toller entry whose quotations print it, and the
-seventeen that none of them prints are named in
+and `ang-verb-forms.tsv`, a noun whose entry is an adjective's, as *fremde*
+is, from the cell of its own gender; eight quote instead the section of
+Wright's *Old English Grammar* that prints the woven form, read in the
+archive.org page images, two the Bosworth–Toller entry whose quotations
+print it, and the sixteen that none of them prints are named in
 `tests/tools/ang-forms.test.ts` until they are read. It fails on any other
 with no line.
 

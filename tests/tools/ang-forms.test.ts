@@ -82,16 +82,27 @@ const NAME: Readonly<Record<Pos, string>> = { noun: 'plural', verb: 'present par
  */
 const fold = (form: string): string => form.replaceAll('ð', 'þ').replaceAll('ċġ', 'cg');
 
+const GENDER: Readonly<Record<string, string>> = { m: 'masculine', f: 'feminine', n: 'neuter' };
+
 /**
- * The forms a quote prints in its part of speech's woven cell: "nominative
- * plural frīend, frēond, frēondas" prints all three. Undefined for a quote
- * from any other cell of the table.
+ * The labels of the cell a row's form is read in: its part of speech's, or,
+ * for a noun read as an adjective, the nominative plural of the row's gender
+ * in the strong declension or the weak, each a form the table prints.
  */
-const printed = (quote: string, pos: Pos): string[] | undefined => {
-  const label = `${SLOT[pos]} `;
-  if (!quote.startsWith(label)) return undefined;
+const labels = (pos: Pos, adjective?: string): string[] =>
+  adjective === undefined ? [SLOT[pos]] : ['strong', 'weak'].map((d) => `${d} ${GENDER[adjective] ?? adjective} ${SLOT[pos]}`);
+
+/**
+ * The forms a quote prints in its row's woven cell: "nominative plural
+ * frīend, frēond, frēondas" prints all three, and, for a noun read as a
+ * masculine adjective, "weak masculine nominative plural fremdan" prints
+ * fremdan. Undefined for a quote from any other cell of the table.
+ */
+const printed = (quote: string, pos: Pos, adjective?: string): string[] | undefined => {
+  const label = labels(pos, adjective).find((l) => quote.startsWith(`${l} `));
+  if (label === undefined) return undefined;
   return quote
-    .slice(label.length)
+    .slice(label.length + 1)
     .split(/\s*,\s*|\s+or\s+/)
     .map((form) => form.trim())
     .filter(Boolean);
@@ -157,7 +168,6 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table'],
-  ['noun\tstranger\tfremde', 'its entry has no table'],
   ['noun\tsoldier\tċempa', 'its table prints cempan'],
   ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, whose quotations are singular; Wright § 390 declines ansīen like cwēn, plural cwēne (§ 389)'],
   ['noun\tbody\tlīċ', 'its table prints līc'],
@@ -174,6 +184,15 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['verb\tlaugh\thlīehhan', 'its table prints hliehhende'],
   ['verb\twash\twasċan', 'its table prints wascende'],
 ]);
+
+/**
+ * Nouns whose entry is an adjective's, declined as one: English Wiktionary
+ * gives `fremde`, "a stranger", no noun section, and its table declines the
+ * adjective strong and weak. Such a row's line quotes the nominative plural
+ * of the row's own gender, in either declension, by the labels the table
+ * prints: "weak masculine nominative plural fremdan".
+ */
+const ADJECTIVE: ReadonlySet<string> = new Set(['noun\tstranger\tfremde']);
 
 /** The Wiktionary titles each row's gloss line names: the entries its gloss was read in. */
 const glossEntries = new Map(
@@ -193,6 +212,14 @@ describe('the woven cell of an Old English table is read as a reader reads it', 
     assert.equal(printed('genitive plural manna', 'noun'), undefined);
     assert.equal(printed('nominative plural berende', 'verb'), undefined);
     assert.equal(printed('past participle boren', 'verb'), undefined);
+  });
+
+  test('a noun read as an adjective prints its own gender’s nominative plural, strong or weak', () => {
+    assert.deepEqual(printed('weak masculine nominative plural fremdan', 'noun', 'm'), ['fremdan']);
+    assert.deepEqual(printed('strong masculine nominative plural fremde', 'noun', 'm'), ['fremde']);
+    assert.equal(printed('weak feminine nominative plural fremdan', 'noun', 'm'), undefined);
+    assert.equal(printed('nominative plural fremdan', 'noun', 'm'), undefined);
+    assert.equal(printed('weak masculine nominative plural fremdan', 'noun'), undefined);
   });
 
   test('a Wright quote holds a form as one of its words, its dots set aside', () => {
@@ -269,8 +296,10 @@ for (const pos of ['noun', 'verb'] as const) {
         if (e.sources.some((s) => WRIGHT.test(s))) {
           return wrightWords(e.quote).map(undotted).includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Wright’s “${e.quote}” does not print ${e.tgt2}`];
         }
-        const forms = printed(e.quote, pos);
-        if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${SLOT[pos]} cell`];
+        const k = key(e.lemma, e.tgt);
+        const adjective = ADJECTIVE.has(`${pos}\t${k}`) ? (byRow.get(k)?.gender ?? '') : undefined;
+        const forms = printed(e.quote, pos, adjective);
+        if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${labels(pos, adjective).join(' or ')} cell`];
         return forms.map(fold).includes(fold(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${forms.join(', ')}, not ${e.tgt2}`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} quotes do not print their form:\n  ${offenders.join('\n  ')}`);
@@ -288,11 +317,12 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], offenders.join('\n'));
     });
 
-    test('nothing is queued that the pack no longer weaves', () => {
+    test('nothing is queued, or read as an adjective, that the pack no longer weaves', () => {
       const taught = new Set(rows.map((r) => key(r.lemma, r.tgt)));
-      const offenders = [...QUEUED.keys()]
-        .filter((k) => k.startsWith(`${pos}\t`))
-        .flatMap((k) => (taught.has(k.slice(pos.length + 1)) ? [] : [`QUEUED ${k.replace(/\t/g, ' ')}: ${LEXICON} weaves no ${NAME[pos]} of it`]));
+      const listed = [...[...QUEUED.keys()].map((k) => ['QUEUED', k]), ...[...ADJECTIVE].map((k) => ['ADJECTIVE', k])];
+      const offenders = listed
+        .filter(([, k = '']) => k.startsWith(`${pos}\t`))
+        .flatMap(([table, k = '']) => (taught.has(k.slice(pos.length + 1)) ? [] : [`${table} ${k.replace(/\t/g, ' ')}: ${LEXICON} weaves no ${NAME[pos]} of it`]));
       assert.deepEqual(offenders, [], offenders.join('\n'));
     });
 
