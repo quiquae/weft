@@ -1,0 +1,202 @@
+# Where each woven Latin plural in lex-la.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. Its sound has been held to
+# Allen & Greenough since 2026-10-04, and its spelling to nothing: Lewis &
+# Short prints a noun's genitive and gender, not its plural. English
+# Wiktionary declines every Latin noun in a table whose cells carry a class
+# per slot, and on 2026-10-08 every woven plural was read in the rendered
+# table (action=render) of its entry: the cell classed nom|p, quoted as the
+# table prints it with every form the cell holds, "nominative plural locī".
+# tests/tools/la-forms.test.ts fails on a plural changed in one file and not
+# the other, a line citing another word's entry, a quote from another cell or
+# not printing its plural, and a line outliving its row.
+#
+# The sources field
+# -----------------
+# One entry per line, the one whose table the quote is from:
+#
+#   wikt:la:<title>   https://en.wiktionary.org/wiki/<title>#Latin
+#                     (the title drops the macrons)
+#
+# A noun's is its headword's. Wiktionary files a verb under its first
+# person, the key Lewis & Short files it under in la-glosses.tsv, so a verb's
+# is that key's, j written i and the homograph number dropped: dīcere is
+# wikt:la:dico, from ls:dico2.
+#
+# A page holding more than one word of a spelling is read by the table whose
+# headword is this one, Wiktionary marking each table's with its vowel
+# lengths: ōs, the mouth, "ōra", beside os, the bone, "ossa, ossua"; liber,
+# the book, "librī", beside līber, free.
+#
+# 164 of the 165 are among the forms their table prints. aliēnus, woven for
+# "stranger", is an adjective used as a noun, and its page declines it as
+# one: its masculine cell, nom|m|p, prints "aliēnī", the form woven, and
+# QUEUED in tests/tools/la-forms.test.ts names it until the test reads that
+# cell for a noun.
+man	vir	virī	wikt:la:vir	nominative plural virī
+woman	fēmina	fēminae	wikt:la:femina	nominative plural fēminae
+child	puer	puerī	wikt:la:puer	nominative plural puerī
+boy	puer	puerī	wikt:la:puer	nominative plural puerī
+girl	puella	puellae	wikt:la:puella	nominative plural puellae
+person	persōna	persōnae	wikt:la:persona	nominative plural persōnae
+friend	amīcus	amīcī	wikt:la:amicus	nominative plural amīcī
+family	familia	familiae	wikt:la:familia	nominative plural familiae
+mother	māter	mātrēs	wikt:la:mater	nominative plural mātrēs
+father	pater	patrēs	wikt:la:pater	nominative plural patrēs
+brother	frāter	frātrēs	wikt:la:frater	nominative plural frātrēs
+sister	soror	sorōrēs	wikt:la:soror	nominative plural sorōrēs
+son	fīlius	fīliī	wikt:la:filius	nominative plural fīliī
+daughter	fīlia	fīliae	wikt:la:filia	nominative plural fīliae
+wife	uxor	uxōrēs	wikt:la:uxor	nominative plural uxōrēs
+husband	marītus	marītī	wikt:la:maritus	nominative plural marītī
+baby	īnfāns	īnfantēs	wikt:la:infans	nominative plural īnfantēs
+king	rēx	rēgēs	wikt:la:rex	nominative plural rēgēs
+queen	rēgīna	rēgīnae	wikt:la:regina	nominative plural rēgīnae
+lord	dominus	dominī	wikt:la:dominus	nominative plural dominī
+neighbour	vīcīnus	vīcīnī	wikt:la:vicinus	nominative plural vīcīnī
+enemy	hostis	hostēs	wikt:la:hostis	nominative plural hostēs
+soldier	mīles	mīlitēs	wikt:la:miles	nominative plural mīlitēs
+teacher	magister	magistrī	wikt:la:magister	nominative plural magistrī
+doctor	medicus	medicī	wikt:la:medicus	nominative plural medicī
+farmer	agricola	agricolae	wikt:la:agricola	nominative plural agricolae
+sailor	nauta	nautae	wikt:la:nauta	nominative plural nautae
+head	caput	capita	wikt:la:caput	nominative plural capita
+hand	manus	manūs	wikt:la:manus	nominative plural manūs
+eye	oculus	oculī	wikt:la:oculus	nominative plural oculī
+ear	auris	aurēs	wikt:la:auris	nominative plural aurēs
+mouth	ōs	ōra	wikt:la:os	nominative plural ōra
+nose	nāsus	nāsī	wikt:la:nasus	nominative plural nāsī
+tooth	dēns	dentēs	wikt:la:dens	nominative plural dentēs
+hair	capillus	capillī	wikt:la:capillus	nominative plural capillī
+heart	cor	corda	wikt:la:cor	nominative plural corda
+bone	os	ossa	wikt:la:os	nominative plural ossa, ossua
+arm	bracchium	bracchia	wikt:la:bracchium	nominative plural bracchia
+leg	crūs	crūra	wikt:la:crus	nominative plural crūra
+foot	pēs	pedēs	wikt:la:pes	nominative plural pedēs
+finger	digitus	digitī	wikt:la:digitus	nominative plural digitī
+face	faciēs	faciēs	wikt:la:facies	nominative plural faciēs
+body	corpus	corpora	wikt:la:corpus	nominative plural corpora
+skin	cutis	cutēs	wikt:la:cutis	nominative plural cutēs
+voice	vōx	vōcēs	wikt:la:vox	nominative plural vōcēs
+dog	canis	canēs	wikt:la:canis	nominative plural canēs
+cat	fēlēs	fēlēs	wikt:la:feles	nominative plural fēlēs
+horse	equus	equī	wikt:la:equus	nominative plural equī
+bird	avis	avēs	wikt:la:avis	nominative plural avēs
+fish	piscis	piscēs	wikt:la:piscis	nominative plural piscēs
+cow	vacca	vaccae	wikt:la:vacca	nominative plural vaccae
+sheep	ovis	ovēs	wikt:la:ovis	nominative plural ovēs
+pig	porcus	porcī	wikt:la:porcus	nominative plural porcī
+wolf	lupus	lupī	wikt:la:lupus	nominative plural lupī
+bear	ursus	ursī	wikt:la:ursus	nominative plural ursī
+lion	leō	leōnēs	wikt:la:leo	nominative plural leōnēs
+mouse	mūs	mūrēs	wikt:la:mus	nominative plural mūrēs
+snake	serpēns	serpentēs	wikt:la:serpens	nominative plural serpentēs
+bee	apis	apēs	wikt:la:apis	nominative plural apēs
+worm	vermis	vermēs	wikt:la:vermis	nominative plural vermēs
+raven	corvus	corvī	wikt:la:corvus	nominative plural corvī
+hound	canis	canēs	wikt:la:canis	nominative plural canēs
+ox	bōs	bovēs	wikt:la:bos	nominative plural bovēs
+goat	capra	caprae	wikt:la:capra	nominative plural caprae
+food	cibus	cibī	wikt:la:cibus	nominative plural cibī
+bread	pānis	pānēs	wikt:la:panis	nominative plural pānēs
+water	aqua	aquae	wikt:la:aqua	nominative plural aquae
+wine	vīnum	vīna	wikt:la:vinum	nominative plural vīna
+meat	carō	carnēs	wikt:la:caro	nominative plural carnēs
+fruit	frūctus	frūctūs	wikt:la:fructus	nominative plural frūctūs
+apple	mālum	māla	wikt:la:malum	nominative plural māla
+cheese	cāseus	cāseī	wikt:la:caseus	nominative plural cāseī
+egg	ōvum	ōva	wikt:la:ovum	nominative plural ōva
+fire	ignis	ignēs	wikt:la:ignis	nominative plural ignēs
+house	domus	domūs	wikt:la:domus	nominative plural domūs
+home	domus	domūs	wikt:la:domus	nominative plural domūs
+door	iānua	iānuae	wikt:la:ianua	nominative plural iānuae
+window	fenestra	fenestrae	wikt:la:fenestra	nominative plural fenestrae
+wall	mūrus	mūrī	wikt:la:murus	nominative plural mūrī
+roof	tēctum	tēcta	wikt:la:tectum	nominative plural tēcta
+floor	solum	sola	wikt:la:solum	nominative plural sola
+room	conclāve	conclāvia	wikt:la:conclave	nominative plural conclāvia
+table	mēnsa	mēnsae	wikt:la:mensa	nominative plural mēnsae
+chair	sella	sellae	wikt:la:sella	nominative plural sellae
+bed	lectus	lectī	wikt:la:lectus	nominative plural lectī
+book	liber	librī	wikt:la:liber	nominative plural librī
+word	verbum	verba	wikt:la:verbum	nominative plural verba
+letter	littera	litterae	wikt:la:littera	nominative plural litterae
+name	nōmen	nōmina	wikt:la:nomen	nominative plural nōmina
+key	clāvis	clāvēs	wikt:la:clavis	nominative plural clāvēs
+bridge	pōns	pontēs	wikt:la:pons	nominative plural pontēs
+church	ecclēsia	ecclēsiae	wikt:la:ecclesia	nominative plural ecclēsiae
+ship	nāvis	nāvēs	wikt:la:navis	nominative plural nāvēs
+boat	scapha	scaphae	wikt:la:scapha	nominative plural scaphae
+sword	gladius	gladiī	wikt:la:gladius	nominative plural gladiī
+shield	scūtum	scūta	wikt:la:scutum	nominative plural scūta
+ring	ānulus	ānulī	wikt:la:anulus	nominative plural ānulī
+stone	lapis	lapidēs	wikt:la:lapis	nominative plural lapidēs
+cloth	pannus	pannī	wikt:la:pannus	nominative plural pannī
+shoe	calceus	calceī	wikt:la:calceus	nominative plural calceī
+coat	paenula	paenulae	wikt:la:paenula	nominative plural paenulae
+hat	petasus	petasī	wikt:la:petasus	nominative plural petasī
+sun	sōl	sōlēs	wikt:la:sol	nominative plural sōlēs
+moon	lūna	lūnae	wikt:la:luna	nominative plural lūnae
+star	stēlla	stēllae	wikt:la:stella	nominative plural stēllae
+earth	terra	terrae	wikt:la:terra	nominative plural terrae
+land	terra	terrae	wikt:la:terra	nominative plural terrae
+sea	mare	maria	wikt:la:mare	nominative plural maria
+river	flūmen	flūmina	wikt:la:flumen	nominative plural flūmina
+lake	lacus	lacūs	wikt:la:lacus	nominative plural lacūs
+mountain	mōns	montēs	wikt:la:mons	nominative plural montēs
+hill	collis	collēs	wikt:la:collis	nominative plural collēs
+forest	silva	silvae	wikt:la:silva	nominative plural silvae
+tree	arbor	arborēs	wikt:la:arbor	nominative plural arborēs
+leaf	folium	folia	wikt:la:folium	nominative plural folia
+flower	flōs	flōrēs	wikt:la:flos	nominative plural flōrēs
+grass	herba	herbae	wikt:la:herba	nominative plural herbae
+field	ager	agrī	wikt:la:ager	nominative plural agrī
+road	via	viae	wikt:la:via	nominative plural viae
+path	sēmita	sēmitae	wikt:la:semita	nominative plural sēmitae
+city	urbs	urbēs	wikt:la:urbs	nominative plural urbēs, urbīs
+town	oppidum	oppida	wikt:la:oppidum	nominative plural oppida
+village	vīcus	vīcī	wikt:la:vicus	nominative plural vīcī
+world	mundus	mundī	wikt:la:mundus	nominative plural mundī
+country	patria	patriae	wikt:la:patria	nominative plural patriae
+place	locus	locī	wikt:la:locus	nominative plural locī
+rain	pluvia	pluviae	wikt:la:pluvia	nominative plural pluviae
+snow	nix	nivēs	wikt:la:nix	nominative plural nivēs
+wind	ventus	ventī	wikt:la:ventus	nominative plural ventī
+cloud	nūbēs	nūbēs	wikt:la:nubes	nominative plural nūbēs
+ice	glaciēs	glaciēs	wikt:la:glacies	nominative plural glaciēs
+light	lūx	lūcēs	wikt:la:lux	nominative plural lūcēs
+shadow	umbra	umbrae	wikt:la:umbra	nominative plural umbrae
+time	tempus	tempora	wikt:la:tempus	nominative plural tempora
+day	diēs	diēs	wikt:la:dies	nominative plural diēs
+night	nox	noctēs	wikt:la:nox	nominative plural noctēs
+year	annus	annī	wikt:la:annus	nominative plural annī
+month	mēnsis	mēnsēs	wikt:la:mensis	nominative plural mēnsēs
+week	hebdomas	hebdomadēs	wikt:la:hebdomas	nominative plural hebdomadēs
+hour	hōra	hōrae	wikt:la:hora	nominative plural hōrae
+summer	aestās	aestātēs	wikt:la:aestas	nominative plural aestātēs
+winter	hiems	hiemēs	wikt:la:hiems	nominative plural hiemēs
+autumn	autumnus	autumnī	wikt:la:autumnus	nominative plural autumnī
+life	vīta	vītae	wikt:la:vita	nominative plural vītae
+death	mors	mortēs	wikt:la:mors	nominative plural mortēs
+love	amor	amōrēs	wikt:la:amor	nominative plural amōrēs
+war	bellum	bella	wikt:la:bellum	nominative plural bella
+peace	pāx	pācēs	wikt:la:pax	nominative plural pācēs
+truth	vēritās	vēritātēs	wikt:la:veritas	nominative plural vēritātēs
+law	lēx	lēgēs	wikt:la:lex	nominative plural lēgēs
+work	labor	labōrēs	wikt:la:labor	nominative plural labōrēs
+money	pecūnia	pecūniae	wikt:la:pecunia	nominative plural pecūniae
+price	pretium	pretia	wikt:la:pretium	nominative plural pretia
+question	quaestiō	quaestiōnēs	wikt:la:quaestio	nominative plural quaestiōnēs
+answer	respōnsum	respōnsa	wikt:la:responsum	nominative plural respōnsa
+story	fābula	fābulae	wikt:la:fabula	nominative plural fābulae
+song	carmen	carmina	wikt:la:carmen	nominative plural carmina
+game	lūdus	lūdī	wikt:la:ludus	nominative plural lūdī
+dream	somnium	somnia	wikt:la:somnium	nominative plural somnia
+fear	timor	timōrēs	wikt:la:timor	nominative plural timōrēs
+hope	spēs	spēs	wikt:la:spes	nominative plural spēs
+joy	gaudium	gaudia	wikt:la:gaudium	nominative plural gaudia
+anger	īra	īrae	wikt:la:ira	nominative plural īrae
+gift	dōnum	dōna	wikt:la:donum	nominative plural dōna

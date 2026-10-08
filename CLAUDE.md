@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **410 pass**, 99 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **425 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -490,6 +490,20 @@ its table prints; a queued row that gains a line fails, so the list only
 shrinks. On 2026-10-08 that held 216 of 239, corrected `weġas` to `wegas`
 (Wright §320, "wegas, ways", the guttural), and left 23 for `TODO.md`.
 
+**And a Latin one, read in its table and filed under its first person.**
+Lewis & Short prints a noun's genitive and a verb's principal parts, never
+the plural or participle a row weaves, so `tools/seed/la-plurals.tsv` and
+`la-verb-forms.tsv` quote the `nom|p` and `pres|act|part` cells of English
+Wiktionary's tables, and `tests/tools/la-forms.test.ts` holds them, with the
+Old English test's `QUEUED`. A noun's entry is its headword's, macrons
+dropped. A verb's is its first person, because Wiktionary files a Latin
+verb there and its infinitive's page only names it: the test derives it
+from the `ls:` key `la-glosses.tsv` read the verb under, *j* written *i*
+and the homograph number dropped, so `dīcere` is `wikt:la:dico`, from
+`ls:dico2`. Do not cite the infinitive's page: it prints no table. On
+2026-10-08 that held 242 of 244, none wrong, and queued `aliēnus`, an
+adjective's table, and `nārrāns`, whose table writes the first vowel short.
+
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
 in `tools/seed/la-glosses.tsv` quoting Lewis & Short's own words for its
@@ -681,6 +695,58 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every woven Latin plural and participle names its table, but two
+
+The same run's third PR: the Latin half of what the first found, 165 woven
+plurals and 79 present participles whose sounds Allen & Greenough holds and
+whose spellings nothing did.
+
+**A Latin verb is filed under its first person.** The first fetch asked
+for each verb by its infinitive, and `movēre`'s page is twelve kilobytes
+saying "present active infinitive of moveō": no table. Wiktionary files the
+verb under `moveō`, which is also the key Lewis & Short files it under, so
+the right title was already in `la-glosses.tsv`'s `ls:` keys, *j* written
+*i* and the number dropped, and the test derives each verb's entry that way
+rather than listing them. 238 pages, then the 77 first persons, two fetchers
+together under one request a second, into `/tmp/weft-la4/render/`.
+
+**242 of 244 are what their table prints, with nothing folded.** A page
+holding two words of a spelling was read by the table whose headword is
+this one, Wiktionary marking each with its vowel lengths — `ōs`, "ōra",
+beside `os`, "ossa, ossua"; `liber`, "librī", beside `līber`; `dīcere`'s
+`dīcō`, "dīcēns", beside `dicō`'s "dicāns" — and a cell whose forms a line
+break divides, `os`'s, is quoted with a comma. The two queued: `aliēnus`,
+"stranger", an adjective's page whose masculine cell prints the woven
+`aliēnī`; and `nārrāns`, where the table writes "narrāns", the first vowel
+short, which is the headword's own length to read. No form was wrong, so
+nothing that ships moved.
+
+Test-first: `tests/tools/la-forms.test.ts`, 15 tests in 3 suites, red on
+"165 Latin plurals are unsourced" and "79 … present participles", then
+green with the two ledgers. Four probes, each restored by md5, each failing
+its own test by name: a seed plural changed, another noun's entry cited, a
+verb cited by its infinitive, and another cell quoted. Tools 410 → **425** /
+99 → **102** suites, total 1118 → **1133**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says where the forms are
+read. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **425 tools / 102 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then
+build and validate again. `packs:verify`, `site:check` and
+`artefacts:check` were not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that Wiktionary's macrons are evidence enough
+to tell two words of a spelling apart; that an adjective's page is not yet
+a noun's source, so `aliēnus` waits; and that a vowel length the table and
+the seed disagree on is the headword's question, not the participle's.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the twenty-three queued Old English forms, then the two
+Latin ones.
 
 ### 2026-10-08 — "roads" is wegas, and six Old English plurals cite Wright
 
