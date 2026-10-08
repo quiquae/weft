@@ -213,57 +213,6 @@ describe('every Latin gender names the entry it was read in', () => {
   });
 });
 
-const FR_LEXICON = join(ROOT, 'tools/seed/lex-fr.tsv');
-const FR_LEDGER = join(ROOT, 'tools/seed/fr-genders.tsv');
-const frNouns = readNouns(FR_LEXICON);
-const frLedger = readLedger(FR_LEDGER);
-const frByKey = new Map(frLedger.map((e) => [key(e.lemma, e.tgt), e]));
-
-/**
- * French's genders are held the same way, by `tools/seed/fr-genders.tsv`. On
- * 2026-10-08 all 178 French nouns were read in English Wiktionary's French
- * entries, which keep a word's accents in their titles, and none was wrong.
- */
-describe('every French gender names the entry it was read in', () => {
-  test('every noun has the gender its ledger line gives', () => {
-    const offenders = frNouns.flatMap((n) => {
-      const e = frByKey.get(key(n.lemma, n.tgt));
-      if (!e) return [`lex-fr.tsv:${n.line} ${n.lemma} → ${n.tgt} (${n.gender}): no line in fr-genders.tsv`];
-      return e.gender === n.gender
-        ? []
-        : [`lex-fr.tsv:${n.line} ${n.lemma} → ${n.tgt} is ${n.gender}, where fr-genders.tsv:${e.line} read ${e.gender}`];
-    });
-    assert.deepEqual(offenders, [], `${offenders.length} French genders are unsourced:\n  ${offenders.join('\n  ')}`);
-  });
-
-  test('every ledger line cites its own word’s French entry', () => {
-    const offenders = frLedger.flatMap((e) => {
-      if (!['m', 'f'].includes(e.gender)) return [`fr-genders.tsv:${e.line} ${e.tgt}: “${e.gender}” is not m or f`];
-      const own = `wikt:fr:${e.tgt}`;
-      const other = e.sources.filter((s) => s !== own);
-      if (other.length) return [`fr-genders.tsv:${e.line} ${e.tgt}: ${other.map((s) => `“${s}”`).join(' ')} is not ${own}`];
-      return e.sources.length ? [] : [`fr-genders.tsv:${e.line} ${e.tgt} cites nothing; it needs ${own}`];
-    });
-    assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
-  });
-
-  test('no ledger line outlives its noun', () => {
-    const taught = new Set(frNouns.map((n) => key(n.lemma, n.tgt)));
-    const seen = new Set<string>();
-    const offenders = frLedger.flatMap((e) => {
-      const k = key(e.lemma, e.tgt);
-      if (!taught.has(k)) return [`fr-genders.tsv:${e.line} ${e.lemma} → ${e.tgt}: lex-fr.tsv no longer teaches it`];
-      return seen.has(k) || !seen.add(k) ? [`fr-genders.tsv:${e.line} ${e.lemma} → ${e.tgt}: a second line`] : [];
-    });
-    assert.deepEqual(offenders, [], offenders.join('\n'));
-  });
-
-  test('the ledger has something to hold', () => {
-    assert.ok(frNouns.length > 150, `only ${frNouns.length} French nouns were read from lex-fr.tsv`);
-    assert.deepEqual([...new Set(frNouns.map((n) => n.gender))].sort(), ['f', 'm'], 'the seed should use both genders');
-  });
-});
-
 /**
  * A gender is one its language has, and it is true of every form a row
  * weaves. The tooltip prints a pack entry's gender under the form that entry
@@ -368,3 +317,65 @@ describe('an Italian plural of another gender is not printed with its singular�
     assert.ok(plurals.length > 50, `only ${plurals.length} masculine Italian plurals were found to read`);
   });
 });
+
+/**
+ * The modern packs' genders are held the same way, a ledger per language
+ * citing English Wiktionary's entry for the word in that language, whose
+ * title keeps the word's accents and capitals. On 2026-10-08 every noun of
+ * each was read there, fetched raw: a page holds every word of one spelling,
+ * so a line means the gender of this word's own noun, and where Wiktionary
+ * gives one word two genders — French `enfant`, masculine or feminine by
+ * the person meant — the seed's is one of them, as in the Old English
+ * ledger.
+ */
+const MODERN: ReadonlyArray<{ lang: string; name: string }> = [
+  { lang: 'fr', name: 'French' },
+  { lang: 'es', name: 'Spanish' },
+];
+
+for (const { lang, name } of MODERN) {
+  const lexicon = `lex-${lang}.tsv`;
+  const file = `${lang}-genders.tsv`;
+  const modernNouns = readNouns(join(ROOT, 'tools/seed', lexicon));
+  const modernLedger = readLedger(join(ROOT, 'tools/seed', file));
+  const modernByKey = new Map(modernLedger.map((e) => [key(e.lemma, e.tgt), e]));
+
+  describe(`every ${name} gender names the entry it was read in`, () => {
+    test('every noun has the gender its ledger line gives', () => {
+      const offenders = modernNouns.flatMap((n) => {
+        const e = modernByKey.get(key(n.lemma, n.tgt));
+        if (!e) return [`${lexicon}:${n.line} ${n.lemma} → ${n.tgt} (${n.gender}): no line in ${file}`];
+        return e.gender === n.gender ? [] : [`${lexicon}:${n.line} ${n.lemma} → ${n.tgt} is ${n.gender}, where ${file}:${e.line} read ${e.gender}`];
+      });
+      assert.deepEqual(offenders, [], `${offenders.length} ${name} genders are unsourced:\n  ${offenders.join('\n  ')}`);
+    });
+
+    test('every ledger line cites its own word’s entry, with a gender the language has', () => {
+      const genders = INVENTORY.get(lang)?.genders ?? '';
+      const offenders = modernLedger.flatMap((e) => {
+        if (!genders.includes(e.gender) || !e.gender) return [`${file}:${e.line} ${e.tgt}: “${e.gender}” is not one of ${name}’s genders, ${genders}`];
+        const own = `wikt:${lang}:${e.tgt}`;
+        const other = e.sources.filter((s) => s !== own);
+        if (other.length) return [`${file}:${e.line} ${e.tgt}: ${other.map((s) => `“${s}”`).join(' ')} is not ${own}`];
+        return e.sources.length ? [] : [`${file}:${e.line} ${e.tgt} cites nothing; it needs ${own}`];
+      });
+      assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
+    });
+
+    test('no ledger line outlives its noun', () => {
+      const taught = new Set(modernNouns.map((n) => key(n.lemma, n.tgt)));
+      const seen = new Set<string>();
+      const offenders = modernLedger.flatMap((e) => {
+        const k = key(e.lemma, e.tgt);
+        if (!taught.has(k)) return [`${file}:${e.line} ${e.lemma} → ${e.tgt}: ${lexicon} no longer teaches it`];
+        return seen.has(k) || !seen.add(k) ? [`${file}:${e.line} ${e.lemma} → ${e.tgt}: a second line`] : [];
+      });
+      assert.deepEqual(offenders, [], offenders.join('\n'));
+    });
+
+    test('the ledger has something to hold', () => {
+      assert.ok(modernNouns.length > 150, `only ${modernNouns.length} ${name} nouns were read from ${lexicon}`);
+      assert.ok(modernLedger.length > 150, `only ${modernLedger.length} lines were read from ${file}`);
+    });
+  });
+}
