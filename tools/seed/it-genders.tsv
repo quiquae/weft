@@ -1,0 +1,205 @@
+# Where each Italian noun's gender in lex-it.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, under both forms a row
+# weaves. On 2026-10-08 every Italian noun was read against English
+# Wiktionary's Italian entry, fetched raw: 177 of the 178 rows carry the
+# gender of their page's Italian noun, and insegnante, teacher, masculine
+# or feminine by the person meant, carries one of the two, as the Old
+# English and French ledgers have it.
+#
+# The same reading found five wrong earlier that night, and they are right
+# now: orecchio, ear, was neuter, a gender Italian does not have, and osso,
+# braccio, dito and uovo were woven in their feminine plurals, ossa,
+# braccia, dita and uova, under the masculine their singulars print. All
+# five are masculine and woven in the singular only; see the header of
+# lex-it.tsv. Every plural the seed weaves was then read against the
+# plural forms its entry marks with a gender, and none now differs from
+# its row's.
+#
+# The sources field
+# -----------------
+#   wikt:it:<title>    https://en.wiktionary.org/wiki/<title>#Italian
+#
+# tests/tools/genders.test.ts requires every noun in lex-it.tsv to have a
+# line here giving the gender the seed gives, citing the noun's own entry,
+# and fails on a line outliving its noun.
+man	uomo	m	wikt:it:uomo
+woman	donna	f	wikt:it:donna
+child	bambino	m	wikt:it:bambino
+boy	ragazzo	m	wikt:it:ragazzo
+girl	ragazza	f	wikt:it:ragazza
+person	persona	f	wikt:it:persona
+friend	amico	m	wikt:it:amico
+family	famiglia	f	wikt:it:famiglia
+mother	madre	f	wikt:it:madre
+father	padre	m	wikt:it:padre
+brother	fratello	m	wikt:it:fratello
+sister	sorella	f	wikt:it:sorella
+son	figlio	m	wikt:it:figlio
+daughter	figlia	f	wikt:it:figlia
+wife	moglie	f	wikt:it:moglie
+husband	marito	m	wikt:it:marito
+baby	bambino	m	wikt:it:bambino
+king	re	m	wikt:it:re
+queen	regina	f	wikt:it:regina
+lord	signore	m	wikt:it:signore
+neighbour	vicino	m	wikt:it:vicino
+stranger	straniero	m	wikt:it:straniero
+enemy	nemico	m	wikt:it:nemico
+soldier	soldato	m	wikt:it:soldato
+teacher	insegnante	m	wikt:it:insegnante
+doctor	medico	m	wikt:it:medico
+farmer	contadino	m	wikt:it:contadino
+sailor	marinaio	m	wikt:it:marinaio
+head	testa	f	wikt:it:testa
+hand	mano	f	wikt:it:mano
+eye	occhio	m	wikt:it:occhio
+ear	orecchio	m	wikt:it:orecchio
+mouth	bocca	f	wikt:it:bocca
+nose	naso	m	wikt:it:naso
+tooth	dente	m	wikt:it:dente
+hair	capello	m	wikt:it:capello
+heart	cuore	m	wikt:it:cuore
+blood	sangue	m	wikt:it:sangue
+bone	osso	m	wikt:it:osso
+arm	braccio	m	wikt:it:braccio
+leg	gamba	f	wikt:it:gamba
+foot	piede	m	wikt:it:piede
+finger	dito	m	wikt:it:dito
+face	faccia	f	wikt:it:faccia
+body	corpo	m	wikt:it:corpo
+skin	pelle	f	wikt:it:pelle
+voice	voce	f	wikt:it:voce
+dog	cane	m	wikt:it:cane
+cat	gatto	m	wikt:it:gatto
+horse	cavallo	m	wikt:it:cavallo
+bird	uccello	m	wikt:it:uccello
+fish	pesce	m	wikt:it:pesce
+cow	vacca	f	wikt:it:vacca
+sheep	pecora	f	wikt:it:pecora
+pig	maiale	m	wikt:it:maiale
+wolf	lupo	m	wikt:it:lupo
+bear	orso	m	wikt:it:orso
+lion	leone	m	wikt:it:leone
+mouse	topo	m	wikt:it:topo
+snake	serpente	m	wikt:it:serpente
+bee	ape	f	wikt:it:ape
+worm	verme	m	wikt:it:verme
+raven	corvo	m	wikt:it:corvo
+hound	segugio	m	wikt:it:segugio
+ox	bue	m	wikt:it:bue
+goat	capra	f	wikt:it:capra
+food	cibo	m	wikt:it:cibo
+bread	pane	m	wikt:it:pane
+water	acqua	f	wikt:it:acqua
+wine	vino	m	wikt:it:vino
+milk	latte	m	wikt:it:latte
+meat	carne	f	wikt:it:carne
+fruit	frutto	m	wikt:it:frutto
+apple	mela	f	wikt:it:mela
+salt	sale	m	wikt:it:sale
+honey	miele	m	wikt:it:miele
+cheese	formaggio	m	wikt:it:formaggio
+egg	uovo	m	wikt:it:uovo
+fire	fuoco	m	wikt:it:fuoco
+house	casa	f	wikt:it:casa
+home	casa	f	wikt:it:casa
+door	porta	f	wikt:it:porta
+window	finestra	f	wikt:it:finestra
+wall	muro	m	wikt:it:muro
+roof	tetto	m	wikt:it:tetto
+floor	pavimento	m	wikt:it:pavimento
+room	stanza	f	wikt:it:stanza
+table	tavolo	m	wikt:it:tavolo
+chair	sedia	f	wikt:it:sedia
+bed	letto	m	wikt:it:letto
+book	libro	m	wikt:it:libro
+word	parola	f	wikt:it:parola
+letter	lettera	f	wikt:it:lettera
+name	nome	m	wikt:it:nome
+key	chiave	f	wikt:it:chiave
+bridge	ponte	m	wikt:it:ponte
+church	chiesa	f	wikt:it:chiesa
+ship	nave	f	wikt:it:nave
+boat	barca	f	wikt:it:barca
+sword	spada	f	wikt:it:spada
+shield	scudo	m	wikt:it:scudo
+ring	anello	m	wikt:it:anello
+gold	oro	m	wikt:it:oro
+silver	argento	m	wikt:it:argento
+iron	ferro	m	wikt:it:ferro
+stone	pietra	f	wikt:it:pietra
+glass	vetro	m	wikt:it:vetro
+cloth	stoffa	f	wikt:it:stoffa
+shoe	scarpa	f	wikt:it:scarpa
+coat	cappotto	m	wikt:it:cappotto
+hat	cappello	m	wikt:it:cappello
+sun	sole	m	wikt:it:sole
+moon	luna	f	wikt:it:luna
+star	stella	f	wikt:it:stella
+sky	cielo	m	wikt:it:cielo
+earth	terra	f	wikt:it:terra
+land	terra	f	wikt:it:terra
+sea	mare	m	wikt:it:mare
+river	fiume	m	wikt:it:fiume
+lake	lago	m	wikt:it:lago
+mountain	montagna	f	wikt:it:montagna
+hill	collina	f	wikt:it:collina
+forest	foresta	f	wikt:it:foresta
+tree	albero	m	wikt:it:albero
+leaf	foglia	f	wikt:it:foglia
+flower	fiore	m	wikt:it:fiore
+grass	erba	f	wikt:it:erba
+field	campo	m	wikt:it:campo
+road	strada	f	wikt:it:strada
+path	sentiero	m	wikt:it:sentiero
+city	città	f	wikt:it:città
+town	paese	m	wikt:it:paese
+village	villaggio	m	wikt:it:villaggio
+world	mondo	m	wikt:it:mondo
+country	paese	m	wikt:it:paese
+place	luogo	m	wikt:it:luogo
+rain	pioggia	f	wikt:it:pioggia
+snow	neve	f	wikt:it:neve
+wind	vento	m	wikt:it:vento
+cloud	nuvola	f	wikt:it:nuvola
+ice	ghiaccio	m	wikt:it:ghiaccio
+light	luce	f	wikt:it:luce
+shadow	ombra	f	wikt:it:ombra
+time	tempo	m	wikt:it:tempo
+day	giorno	m	wikt:it:giorno
+night	notte	f	wikt:it:notte
+year	anno	m	wikt:it:anno
+month	mese	m	wikt:it:mese
+week	settimana	f	wikt:it:settimana
+hour	ora	f	wikt:it:ora
+morning	mattina	f	wikt:it:mattina
+evening	sera	f	wikt:it:sera
+summer	estate	f	wikt:it:estate
+winter	inverno	m	wikt:it:inverno
+autumn	autunno	m	wikt:it:autunno
+life	vita	f	wikt:it:vita
+death	morte	f	wikt:it:morte
+love	amore	m	wikt:it:amore
+war	guerra	f	wikt:it:guerra
+peace	pace	f	wikt:it:pace
+truth	verità	f	wikt:it:verità
+law	legge	f	wikt:it:legge
+work	lavoro	m	wikt:it:lavoro
+money	denaro	m	wikt:it:denaro
+price	prezzo	m	wikt:it:prezzo
+question	domanda	f	wikt:it:domanda
+answer	risposta	f	wikt:it:risposta
+story	storia	f	wikt:it:storia
+song	canzone	f	wikt:it:canzone
+music	musica	f	wikt:it:musica
+game	gioco	m	wikt:it:gioco
+dream	sogno	m	wikt:it:sogno
+fear	paura	f	wikt:it:paura
+hope	speranza	f	wikt:it:speranza
+joy	gioia	f	wikt:it:gioia
+anger	rabbia	f	wikt:it:rabbia
+oath	giuramento	m	wikt:it:giuramento
+gift	regalo	m	wikt:it:regalo

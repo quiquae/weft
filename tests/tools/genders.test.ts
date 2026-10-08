@@ -30,7 +30,7 @@
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spelling } from '../../src/core/lexicon.ts';
@@ -328,14 +328,18 @@ describe('an Italian plural of another gender is not printed with its singularâ€
  * the person meant â€” the seed's is one of them, as in the Old English
  * ledger.
  */
-const MODERN: ReadonlyArray<{ lang: string; name: string }> = [
-  { lang: 'fr', name: 'French' },
-  { lang: 'es', name: 'Spanish' },
-  { lang: 'pt', name: 'Portuguese' },
-  { lang: 'de', name: 'German' },
-];
+// Every shipped pack but the two read in their own dictionaries above, so a
+// pack added later fails here until its genders are read too.
+const MODERN = shipped.filter((lang) => lang !== 'ang' && lang !== 'la');
 
-for (const { lang, name } of MODERN) {
+test('every modern pack has a gender ledger', () => {
+  const missing = MODERN.filter((lang) => !existsSync(join(ROOT, 'tools/seed', `${lang}-genders.tsv`)));
+  assert.deepEqual(missing.map((lang) => `en-${lang}.json ships, and tools/seed/${lang}-genders.tsv does not exist`), []);
+  assert.ok(MODERN.length >= 5, `only ${MODERN.length} modern packs were found`);
+});
+
+for (const lang of MODERN.filter((l) => existsSync(join(ROOT, 'tools/seed', `${l}-genders.tsv`)))) {
+  const name = INVENTORY.get(lang)?.name ?? lang;
   const lexicon = `lex-${lang}.tsv`;
   const file = `${lang}-genders.tsv`;
   const modernNouns = readNouns(join(ROOT, 'tools/seed', lexicon));
