@@ -1,0 +1,428 @@
+# Where each gloss in lex-fr.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word a French word is woven for, and the tooltip
+# prints it back: it is the claim every reader meets first. Every other claim
+# the pack makes about a word names its entry — genders in fr-genders.tsv,
+# plurals in fr-plurals.tsv, verb forms in fr-verb-forms.tsv, etymologies in
+# fr-cousins.tsv — and the gloss named none until 2026-10-08, as the Latin
+# and Old English glosses named none until la-glosses.tsv and ang-glosses.tsv.
+#
+# Every row is read, all 356: the 178 nouns, 81 verbs, 57 adjectives, 22
+# adverbs, 13 numerals and 5 interjections. Each was read in the rendered
+# page of the word's English Wiktionary entry, in its French section: a
+# script took the definition lines under each heading of the row's part of
+# speech — the items of the list below its headword line, with the usage
+# examples, quotations and synonyms beneath them set aside — and drafted the
+# first that holds the row's English word, and every quote was read against
+# its page. Where that first line is another sense, the quote is the row's:
+# question's first is "(historical, chiefly with the definite article)
+# question (interrogation by torture)", and its line quotes the sense that
+# asks.
+#
+# A page holds every word of one spelling, so a quote is from this word's
+# own part of speech where the page has it. Three rows' words have none of
+# theirs, and their lines quote the heading the page gives them: seul, woven
+# for "alone" among the adverbs, is an adjective in French, as English
+# "alone" is both; premier, "first", is an ordinal adjective, not a numeral;
+# and s’il vous plaît is a phrase, not an interjection.
+#
+# The sources field
+# -----------------
+#   wikt:fr:<title>    https://en.wiktionary.org/wiki/<title>#French
+#
+# The title is the word as Wiktionary's address writes it: without a
+# homograph's number — mort² is read in mort, under its adjective — with a
+# straight apostrophe, as Wiktionary titles aujourd'hui, and with an
+# underscore for a space, so that each source stays one word of the field:
+# wikt:fr:au_revoir, wikt:fr:s'il_vous_plaît. A noun cites the entry its
+# gender was read in, which for every French noun is its own.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in
+# the entry. Seven rows need one: marin for "sailor" is "seaman", cheveu for
+# "hair" "a headhair", limier for "hound" "sleuth; bloodhound, limer", tissu
+# for "cloth" "fabric", rapide for "quick" "fast, rapid", beau for
+# "beautiful" "handsome, fine, attractive", and bonjour for "hello" "good
+# day", its interjection's line. The page's noun, "greetings; hello (general
+# salutation)", holds the word, and is the word as a thing one says, "dire
+# bonjour"; the row is the interjection.
+#
+# One row no definition gives. tenir debout, woven for "stand", is
+# "(informal) to hold water, to be valid, to make sense": what an argument
+# does, "ça ne tient pas debout", that doesn't hold water. A person standing
+# is debout, "standing, stood up, upright", and the verb for it, se tenir
+# debout, has no entry. QUEUED in tests/tools/glosses.test.ts names the row
+# until it is taught differently; see TODO.md.
+#
+# Three quotes are true and say less than the row is woven for, and are
+# recorded rather than changed. cheveu is one hair, and its entry's usage
+# note says English's mass noun "hair" is French's plural, cheveux. asseoir
+# is "(transitive) to sit (someone) down, to seat, make sit", where English's
+# intransitive "sit" is the reflexive's, "to sit down, sit up, take a seat".
+# And monter, woven for "rise", gives the word only in a figurative sense,
+# "to rise (get to a higher figurative position ...)", where the climb is
+# "to ascend, go higher". The first two are calls in TODO.md.
+#
+# tests/tools/glosses.test.ts requires every row of lex-fr.tsv to have a line
+# here citing its own word's entry, whose quote holds its English word or the
+# stand-in it names, and fails on a line outliving its row.
+man	noun	homme	wikt:fr:homme	man (adult male human)
+woman	noun	femme	wikt:fr:femme	woman
+child	noun	enfant	wikt:fr:enfant	child (someone who is not yet an adult)
+boy	noun	garçon	wikt:fr:garçon	boy
+girl	noun	fille	wikt:fr:fille	girl
+person	noun	personne	wikt:fr:personne	person
+friend	noun	ami	wikt:fr:ami	friend (one who is affectionately attached to another)
+family	noun	famille	wikt:fr:famille	family (group of related people)
+mother	noun	mère	wikt:fr:mère	mother
+father	noun	père	wikt:fr:père	father (parent)
+brother	noun	frère	wikt:fr:frère	brother (son of the same parents as another person)
+sister	noun	sœur	wikt:fr:sœur	sister (a daughter of the same parents as another person; a female sibling)
+son	noun	fils	wikt:fr:fils	son
+daughter	noun	fille	wikt:fr:fille	daughter
+wife	noun	épouse	wikt:fr:épouse	female spouse, wife
+husband	noun	mari	wikt:fr:mari	husband
+baby	noun	bébé	wikt:fr:bébé	baby
+king	noun	roi	wikt:fr:roi	king
+queen	noun	reine	wikt:fr:reine	queen (a female monarch)
+lord	noun	seigneur	wikt:fr:seigneur	lord (aristocrat, man of high rank)
+neighbour	noun	voisin	wikt:fr:voisin	neighbour, neighbor
+stranger	noun	étranger	wikt:fr:étranger	stranger
+enemy	noun	ennemi	wikt:fr:ennemi	enemy
+soldier	noun	soldat	wikt:fr:soldat	soldier
+teacher	noun	professeur	wikt:fr:professeur	teacher
+doctor	noun	médecin	wikt:fr:médecin	physician; (medical) doctor
+farmer	noun	fermier	wikt:fr:fermier	farmer
+sailor	noun	marin	wikt:fr:marin	seaman	seaman
+head	noun	tête	wikt:fr:tête	head (part of the body)
+hand	noun	main	wikt:fr:main	hand
+eye	noun	œil	wikt:fr:œil	(anatomy, plural yeux) eye, organ that is sensitive to light, helping organisms to see
+ear	noun	oreille	wikt:fr:oreille	ear
+mouth	noun	bouche	wikt:fr:bouche	mouth
+nose	noun	nez	wikt:fr:nez	nose
+tooth	noun	dent	wikt:fr:dent	tooth
+hair	noun	cheveu	wikt:fr:cheveu	a headhair	headhair
+heart	noun	cœur	wikt:fr:cœur	(anatomy) heart (organ)
+blood	noun	sang	wikt:fr:sang	blood
+bone	noun	os	wikt:fr:os	bone
+arm	noun	bras	wikt:fr:bras	arm
+leg	noun	jambe	wikt:fr:jambe	leg
+foot	noun	pied	wikt:fr:pied	(anatomy) foot
+finger	noun	doigt	wikt:fr:doigt	finger
+face	noun	visage	wikt:fr:visage	face (of a human)
+body	noun	corps	wikt:fr:corps	body
+skin	noun	peau	wikt:fr:peau	skin of a person or animal
+voice	noun	voix	wikt:fr:voix	voice
+dog	noun	chien	wikt:fr:chien	dog
+cat	noun	chat	wikt:fr:chat	cat (feline)
+horse	noun	cheval	wikt:fr:cheval	horse
+bird	noun	oiseau	wikt:fr:oiseau	bird
+fish	noun	poisson	wikt:fr:poisson	fish (marine animal)
+cow	noun	vache	wikt:fr:vache	cow (bovine)
+sheep	noun	mouton	wikt:fr:mouton	sheep (animal)
+pig	noun	cochon	wikt:fr:cochon	pig
+wolf	noun	loup	wikt:fr:loup	wolf
+bear	noun	ours	wikt:fr:ours	bear
+lion	noun	lion	wikt:fr:lion	(zoology) lion
+mouse	noun	souris	wikt:fr:souris	mouse (rodent)
+snake	noun	serpent	wikt:fr:serpent	snake
+bee	noun	abeille	wikt:fr:abeille	bee, honey bee
+worm	noun	ver	wikt:fr:ver	worm
+raven	noun	corbeau	wikt:fr:corbeau	raven, crow (bird)
+hound	noun	limier	wikt:fr:limier	sleuth; bloodhound, limer	bloodhound
+ox	noun	bœuf	wikt:fr:bœuf	ox
+goat	noun	chèvre	wikt:fr:chèvre	goat (species)
+food	noun	nourriture	wikt:fr:nourriture	food, nourishment
+bread	noun	pain	wikt:fr:pain	bread
+water	noun	eau	wikt:fr:eau	water, a liquid that is transparent, colorless, odorless, and tasteless in its pure form, the primary constituent of lakes, rivers, seas, and oceans
+wine	noun	vin	wikt:fr:vin	wine
+milk	noun	lait	wikt:fr:lait	(uncountable) milk
+meat	noun	viande	wikt:fr:viande	meat
+fruit	noun	fruit	wikt:fr:fruit	fruit
+apple	noun	pomme	wikt:fr:pomme	apple (fruit)
+salt	noun	sel	wikt:fr:sel	table salt, i.e. sodium chloride (NaCl)
+honey	noun	miel	wikt:fr:miel	honey (sticky sweet substance)
+cheese	noun	fromage	wikt:fr:fromage	cheese
+egg	noun	œuf	wikt:fr:œuf	egg
+fire	noun	feu	wikt:fr:feu	fire
+house	noun	maison	wikt:fr:maison	house
+home	noun	foyer	wikt:fr:foyer	home, domicile
+door	noun	porte	wikt:fr:porte	door
+window	noun	fenêtre	wikt:fr:fenêtre	window
+wall	noun	mur	wikt:fr:mur	wall
+roof	noun	toit	wikt:fr:toit	roof
+floor	noun	sol	wikt:fr:sol	floor
+room	noun	pièce	wikt:fr:pièce	room in a house, etc.
+table	noun	table	wikt:fr:table	(countable) table (furniture with a top surface to accommodate a variety of uses)
+chair	noun	chaise	wikt:fr:chaise	chair, seat
+bed	noun	lit	wikt:fr:lit	bed
+book	noun	livre	wikt:fr:livre	book
+word	noun	mot	wikt:fr:mot	word
+letter	noun	lettre	wikt:fr:lettre	letter (written character)
+name	noun	nom	wikt:fr:nom	name
+key	noun	clé	wikt:fr:clé	key (device for unlocking)
+bridge	noun	pont	wikt:fr:pont	bridge
+church	noun	église	wikt:fr:église	(architecture, Christianity) church
+ship	noun	navire	wikt:fr:navire	ship
+boat	noun	bateau	wikt:fr:bateau	(nautical) a vessel of any size, a ship or boat
+sword	noun	épée	wikt:fr:épée	sword
+shield	noun	bouclier	wikt:fr:bouclier	shield (broad piece of defensive armor, held in hand, formerly in general use in war, for the protection of the body)
+ring	noun	anneau	wikt:fr:anneau	ring (circular shape)
+gold	noun	or	wikt:fr:or	gold
+silver	noun	argent	wikt:fr:argent	silver
+iron	noun	fer	wikt:fr:fer	iron
+stone	noun	pierre	wikt:fr:pierre	(uncountable) stone (substance)
+glass	noun	verre	wikt:fr:verre	(usually uncountable) glass (substance)
+cloth	noun	tissu	wikt:fr:tissu	fabric	fabric
+shoe	noun	chaussure	wikt:fr:chaussure	shoe
+coat	noun	manteau	wikt:fr:manteau	coat
+hat	noun	chapeau	wikt:fr:chapeau	hat
+sun	noun	soleil	wikt:fr:soleil	sun (star)
+moon	noun	lune	wikt:fr:lune	the Moon
+star	noun	étoile	wikt:fr:étoile	star
+sky	noun	ciel	wikt:fr:ciel	sky
+earth	noun	terre	wikt:fr:terre	earth; soil
+land	noun	terre	wikt:fr:terre	land, property (delimited area)
+sea	noun	mer	wikt:fr:mer	(countable) sea (large body of water)
+river	noun	rivière	wikt:fr:rivière	a river (a large, winding stream that flows into a lake, bay, larger river, etc., but not into an ocean or sea)
+lake	noun	lac	wikt:fr:lac	lake
+mountain	noun	montagne	wikt:fr:montagne	mountain
+hill	noun	colline	wikt:fr:colline	hill, downs
+forest	noun	forêt	wikt:fr:forêt	forest
+tree	noun	arbre	wikt:fr:arbre	tree (plant, diagram, anything in the form of a tree)
+leaf	noun	feuille	wikt:fr:feuille	(botany) leaf (of a plant)
+flower	noun	fleur	wikt:fr:fleur	(botany) flower; bloom; blossom; collectively, the reproductive organs and the envelope which surrounds them in angiosperms (also called "flowering plants")
+grass	noun	herbe	wikt:fr:herbe	grass (the plant)
+field	noun	champ	wikt:fr:champ	field in its various senses, including:
+road	noun	route	wikt:fr:route	road (sometimes route like "Route 66")
+path	noun	sentier	wikt:fr:sentier	path; pathway
+city	noun	ville	wikt:fr:ville	town, city
+town	noun	ville	wikt:fr:ville	town, city
+village	noun	village	wikt:fr:village	village
+world	noun	monde	wikt:fr:monde	world
+country	noun	pays	wikt:fr:pays	land; region; home ground; homeland; home country; country; nation
+place	noun	endroit	wikt:fr:endroit	place, spot (specified area)
+rain	noun	pluie	wikt:fr:pluie	rain
+snow	noun	neige	wikt:fr:neige	snow, crystalline frozen precipitation
+wind	noun	vent	wikt:fr:vent	wind
+cloud	noun	nuage	wikt:fr:nuage	cloud
+ice	noun	glace	wikt:fr:glace	ice
+light	noun	lumière	wikt:fr:lumière	light
+shadow	noun	ombre	wikt:fr:ombre	shade, shadow
+time	noun	temps	wikt:fr:temps	(uncountable) time (in general)
+day	noun	jour	wikt:fr:jour	day
+night	noun	nuit	wikt:fr:nuit	night
+year	noun	année	wikt:fr:année	year (period)
+month	noun	mois	wikt:fr:mois	month [from c. 1100]
+week	noun	semaine	wikt:fr:semaine	week
+hour	noun	heure	wikt:fr:heure	hour, time
+morning	noun	matin	wikt:fr:matin	morning
+evening	noun	soir	wikt:fr:soir	evening
+summer	noun	été	wikt:fr:été	summer
+winter	noun	hiver	wikt:fr:hiver	winter
+autumn	noun	automne	wikt:fr:automne	autumn, fall
+life	noun	vie	wikt:fr:vie	life, the state of organisms (organic beings) prior to death
+death	noun	mort	wikt:fr:mort	death
+love	noun	amour	wikt:fr:amour	love
+war	noun	guerre	wikt:fr:guerre	war
+peace	noun	paix	wikt:fr:paix	peace
+truth	noun	vérité	wikt:fr:vérité	truth
+law	noun	loi	wikt:fr:loi	law (legal code)
+work	noun	travail	wikt:fr:travail	work; labor
+money	noun	argent	wikt:fr:argent	money, cash
+price	noun	prix	wikt:fr:prix	price
+question	noun	question	wikt:fr:question	question (sentence, phrase or word which asks for information, reply or response)
+answer	noun	réponse	wikt:fr:réponse	response, answer, reply (a communication)
+story	noun	histoire	wikt:fr:histoire	story
+song	noun	chanson	wikt:fr:chanson	song
+music	noun	musique	wikt:fr:musique	music
+game	noun	jeu	wikt:fr:jeu	game (activity performed for amusement)
+dream	noun	rêve	wikt:fr:rêve	dream
+fear	noun	peur	wikt:fr:peur	(countable and uncountable) fear
+hope	noun	espoir	wikt:fr:espoir	(all senses) hope
+joy	noun	joie	wikt:fr:joie	joy (feeling of happiness or elation)
+anger	noun	colère	wikt:fr:colère	anger, rage
+oath	noun	serment	wikt:fr:serment	oath, pledge
+gift	noun	cadeau	wikt:fr:cadeau	present, gift
+good	adj	bon	wikt:fr:bon	good
+bad	adj	mauvais	wikt:fr:mauvais	bad
+big	adj	grand	wikt:fr:grand	big
+small	adj	petit	wikt:fr:petit	small
+great	adj	grand	wikt:fr:grand	great (i.e. important, outstanding, noble, fine, renowned)
+little	adj	petit	wikt:fr:petit	little
+long	adj	long	wikt:fr:long	long
+short	adj	court	wikt:fr:court	short
+high	adj	haut	wikt:fr:haut	high
+low	adj	bas	wikt:fr:bas	low
+old	adj	vieux	wikt:fr:vieux	old
+young	adj	jeune	wikt:fr:jeune	young
+new	adj	nouveau	wikt:fr:nouveau	new, novel
+hot	adj	chaud	wikt:fr:chaud	warm, hot
+cold	adj	froid	wikt:fr:froid	cold (temperature)
+warm	adj	chaud	wikt:fr:chaud	warm, hot
+heavy	adj	lourd	wikt:fr:lourd	heavy
+strong	adj	fort	wikt:fr:fort	strong; powerful
+weak	adj	faible	wikt:fr:faible	weak
+hard	adj	dur	wikt:fr:dur	hard, tough (difficult to penetrate)
+soft	adj	doux	wikt:fr:doux	soft
+quick	adj	rapide	wikt:fr:rapide	fast, rapid	fast
+slow	adj	lent	wikt:fr:lent	slow
+true	adj	vrai	wikt:fr:vrai	true
+false	adj	faux	wikt:fr:faux	false; untrue
+rich	adj	riche	wikt:fr:riche	rich (possessing wealth)
+poor	adj	pauvre	wikt:fr:pauvre	(after a noun) poor (financially deprived)
+happy	adj	heureux	wikt:fr:heureux	happy
+sad	adj	triste	wikt:fr:triste	sad
+tired	adj	fatigué	wikt:fr:fatigué	tired
+full	adj	plein	wikt:fr:plein	full, full up
+empty	adj	vide	wikt:fr:vide	empty
+clean	adj	propre	wikt:fr:propre	clean
+dirty	adj	sale	wikt:fr:sale	dirty
+beautiful	adj	beau	wikt:fr:beau	handsome, fine, attractive	attractive
+ugly	adj	laid	wikt:fr:laid	physically ugly
+easy	adj	facile	wikt:fr:facile	easy, simple
+difficult	adj	difficile	wikt:fr:difficile	difficult
+free	adj	libre	wikt:fr:libre	free, at liberty
+wise	adj	sage	wikt:fr:sage	(of a person) wise: prudent, cautious, and judicious
+brave	adj	courageux	wikt:fr:courageux	courageous, brave, daring
+holy	adj	saint	wikt:fr:saint	saintly (all meanings); holy
+deep	adj	profond	wikt:fr:profond	deep
+wide	adj	large	wikt:fr:large	wide, broad
+narrow	adj	étroit	wikt:fr:étroit	narrow
+dead	adj	mort²	wikt:fr:mort	dead
+alive	adj	vivant	wikt:fr:vivant	alive
+sick	adj	malade	wikt:fr:malade	ill, unwell, sick
+whole	adj	entier	wikt:fr:entier	whole
+white	adj	blanc	wikt:fr:blanc	white color
+black	adj	noir	wikt:fr:noir	black in colour
+red	adj	rouge	wikt:fr:rouge	red (of a red color)
+green	adj	vert	wikt:fr:vert	green
+blue	adj	bleu	wikt:fr:bleu	blue
+yellow	adj	jaune	wikt:fr:jaune	yellow
+grey	adj	gris	wikt:fr:gris	grey / gray
+brown	adj	brun	wikt:fr:brun	brown (color/colour)
+have	verb	avoir	wikt:fr:avoir	(transitive) to have; to own; to possess; to get
+say	verb	dire	wikt:fr:dire	(transitive) to say, to tell (to express through speech)
+go	verb	aller	wikt:fr:aller	to go [with à ‘to a location’]
+come	verb	venir	wikt:fr:venir	to come (to move from one place to another that is nearer the speaker)
+see	verb	voir	wikt:fr:voir	to see (visually)
+know	verb	savoir	wikt:fr:savoir	to know (something)
+think	verb	penser	wikt:fr:penser	(intransitive) to think, reflect, concentrate one's mind on something [late 10th century in Passion, ed. D'Arco Silvio Avalle, 55]
+take	verb	prendre	wikt:fr:prendre	(transitive) to take
+give	verb	donner	wikt:fr:donner	to give, to transfer the possession/holding of something to someone else
+make	verb	faire	wikt:fr:faire	(transitive) to make
+find	verb	trouver	wikt:fr:trouver	(transitive) to find; to retrieve something lost, turn up something hidden, or encounter something previously unknown to one
+want	verb	vouloir	wikt:fr:vouloir	(transitive) to want, wish, desire
+tell	verb	dire	wikt:fr:dire	(transitive) to say, to tell (to express through speech)
+ask	verb	demander	wikt:fr:demander	(transitive) to ask [with à ‘someone’]
+work	verb	travailler	wikt:fr:travailler	to work
+play	verb	jouer	wikt:fr:jouer	to play (engage in games or play) [with à]
+run	verb	courir	wikt:fr:courir	to run
+walk	verb	marcher	wikt:fr:marcher	to walk
+speak	verb	parler	wikt:fr:parler	(intransitive) to speak, talk
+read	verb	lire	wikt:fr:lire	(ambitransitive) to read
+write	verb	écrire	wikt:fr:écrire	to write
+eat	verb	manger	wikt:fr:manger	(transitive) to eat
+drink	verb	boire	wikt:fr:boire	(ambitransitive) to drink
+sleep	verb	dormir	wikt:fr:dormir	(intransitive) to sleep
+sit	verb	asseoir	wikt:fr:asseoir	(transitive) to sit (someone) down, to seat, make sit
+stand	verb	tenir debout	wikt:fr:tenir_debout	(informal) to hold water, to be valid, to make sense
+live	verb	vivre	wikt:fr:vivre	to live
+die	verb	mourir	wikt:fr:mourir	(intransitive) to die; to be dying
+love	verb	aimer	wikt:fr:aimer	to love (usually of a person, otherwise the meaning is closer to English like)
+hate	verb	haïr	wikt:fr:haïr	(transitive) to hate
+fear	verb	craindre	wikt:fr:craindre	(transitive) to fear
+hear	verb	entendre	wikt:fr:entendre	to hear
+feel	verb	sentir	wikt:fr:sentir	(transitive) to sense, feel (physical perception)
+hold	verb	tenir	wikt:fr:tenir	(transitive) to have; to hold
+carry	verb	porter	wikt:fr:porter	to carry
+bring	verb	apporter	wikt:fr:apporter	to bring (something)
+send	verb	envoyer	wikt:fr:envoyer	to send
+buy	verb	acheter	wikt:fr:acheter	to purchase; buy
+sell	verb	vendre	wikt:fr:vendre	(transitive, also figuratively) to sell
+pay	verb	payer	wikt:fr:payer	(transitive) to pay (for)
+build	verb	construire	wikt:fr:construire	to build
+break	verb	casser	wikt:fr:casser	to break
+open	verb	ouvrir	wikt:fr:ouvrir	(transitive) to open
+close	verb	fermer	wikt:fr:fermer	(transitive) to close
+begin	verb	commencer	wikt:fr:commencer	to begin, commence
+help	verb	aider	wikt:fr:aider	(transitive) to help; to aid
+learn	verb	apprendre	wikt:fr:apprendre	to learn
+teach	verb	enseigner	wikt:fr:enseigner	(transitive, with recipient as direct object) to teach, to instruct, to educate
+remember	verb	se souvenir	wikt:fr:se_souvenir	remember (to recall one's memory)
+forget	verb	oublier	wikt:fr:oublier	to forget
+win	verb	gagner	wikt:fr:gagner	to win
+lose	verb	perdre	wikt:fr:perdre	(transitive) to lose (be unable to find)
+fight	verb	combattre	wikt:fr:combattre	to fight, to combat (against)
+swim	verb	nager	wikt:fr:nager	to swim
+fly	verb	voler	wikt:fr:voler	(intransitive) to fly through the air
+ride	verb	monter	wikt:fr:monter	to ride (a horse)
+sing	verb	chanter	wikt:fr:chanter	(singing) to sing
+laugh	verb	rire	wikt:fr:rire	to laugh [with de ‘something’]
+cry	verb	pleurer	wikt:fr:pleurer	(intransitive) to cry, to weep; to shed tears
+wait	verb	attendre	wikt:fr:attendre	(transitive) to wait for, to await
+watch	verb	regarder	wikt:fr:regarder	(transitive) to watch
+look	verb	regarder	wikt:fr:regarder	(transitive) to look at
+show	verb	montrer	wikt:fr:montrer	to show
+call	verb	appeler	wikt:fr:appeler	(transitive) to call (out)
+put	verb	mettre	wikt:fr:mettre	(transitive) to put; to place
+keep	verb	garder	wikt:fr:garder	(transitive) to keep; to retain; to store; to save
+leave	verb	partir	wikt:fr:partir	(intransitive) to go away, leave, depart
+follow	verb	suivre	wikt:fr:suivre	to follow (literal sense)
+seek	verb	chercher	wikt:fr:chercher	(transitive) to look for, to seek
+choose	verb	choisir	wikt:fr:choisir	to choose
+change	verb	changer	wikt:fr:changer	(transitive) to change (money, a job, one's circumstances etc.)
+grow	verb	grandir	wikt:fr:grandir	(intransitive) to grow, get bigger
+fall	verb	tomber	wikt:fr:tomber	to fall
+rise	verb	monter	wikt:fr:monter	to rise (get to a higher figurative position (socially, or in a league/division etc.))
+turn	verb	tourner	wikt:fr:tourner	to turn; to change (direction); to rotate; to spin
+move	verb	bouger	wikt:fr:bouger	to move (in general)
+throw	verb	jeter	wikt:fr:jeter	(transitive) to throw
+catch	verb	attraper	wikt:fr:attraper	to catch (e.g. a ball)
+cut	verb	couper	wikt:fr:couper	to cut, cut up; to chop, to sever
+wash	verb	laver	wikt:fr:laver	to wash
+cook	verb	cuisiner	wikt:fr:cuisiner	(transitive) to cook (prepare food)
+always	adv	toujours	wikt:fr:toujours	always
+never	adv	jamais	wikt:fr:jamais	(ne... jamais) never
+often	adv	souvent	wikt:fr:souvent	often
+sometimes	adv	parfois	wikt:fr:parfois	sometimes
+today	adv	aujourd’hui	wikt:fr:aujourd'hui	today
+tomorrow	adv	demain	wikt:fr:demain	tomorrow
+yesterday	adv	hier	wikt:fr:hier	yesterday
+now	adv	maintenant	wikt:fr:maintenant	now, currently
+soon	adv	bientôt	wikt:fr:bientôt	soon
+already	adv	déjà	wikt:fr:déjà	already, before
+almost	adv	presque	wikt:fr:presque	almost
+together	adv	ensemble	wikt:fr:ensemble	together
+alone	adv	seul	wikt:fr:seul	alone
+again	adv	encore	wikt:fr:encore	again
+here	adv	ici	wikt:fr:ici	here
+everywhere	adv	partout	wikt:fr:partout	everywhere
+nowhere	adv	nulle part	wikt:fr:nulle_part	nowhere
+slowly	adv	lentement	wikt:fr:lentement	slowly
+quickly	adv	rapidement	wikt:fr:rapidement	speedily; quickly
+truly	adv	vraiment	wikt:fr:vraiment	truly, really, genuinely
+perhaps	adv	peut-être	wikt:fr:peut-être	maybe, perhaps
+very	adv	très	wikt:fr:très	very
+one	num	un	wikt:fr:un	one
+two	num	deux	wikt:fr:deux	two
+three	num	trois	wikt:fr:trois	three
+four	num	quatre	wikt:fr:quatre	four
+five	num	cinq	wikt:fr:cinq	five
+six	num	six	wikt:fr:six	six
+seven	num	sept	wikt:fr:sept	seven
+eight	num	huit	wikt:fr:huit	eight
+nine	num	neuf	wikt:fr:neuf	nine
+ten	num	dix	wikt:fr:dix	ten
+hundred	num	cent	wikt:fr:cent	hundred
+thousand	num	mille	wikt:fr:mille	thousand, one thousand, a thousand
+first	num	premier	wikt:fr:premier	(ordinal number) first
+yes	intj	oui	wikt:fr:oui	yes
+hello	intj	bonjour	wikt:fr:bonjour	good day; good afternoon	good day
+goodbye	intj	au revoir	wikt:fr:au_revoir	goodbye
+please	intj	s’il vous plaît	wikt:fr:s'il_vous_plaît	please, if you please
+sorry	intj	pardon	wikt:fr:pardon	sorry

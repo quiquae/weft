@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **351 pass**, 90 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **361 pass**, 92 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -501,6 +501,21 @@ claim about the whole entry, so read the whole entry before writing it. Do
 not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
+**And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`
+quotes, for every row of the French pack, the definition line of the word's
+own English Wiktionary entry that gives its gloss, read in the rendered
+page and held by `tests/tools/glosses.test.ts` to the Latin and Old English
+rules: the row's English word or a named stand-in, never wikitext, a noun's
+line citing the entry its gender was read in, `FORM_OF` and `QUEUED` with
+stale checks. `READ` names the languages read and `UNREAD` those waiting,
+so a pack added later fails until it is one or the other; French was read
+on 2026-10-08, and Spanish, Portuguese, German and Italian wait. A source
+writes a space as an underscore, `wikt:fr:au_revoir`, the field being
+space-separated, and a curly apostrophe straight, as Wiktionary titles
+`aujourd'hui`. A quote is from the row's own part of speech where the page
+has it, and from the first line of it giving the row's sense, which is not
+always the first line holding the word: `question`'s is torture.
+
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
 phrase is where this lexicon wrote Old English of its own, and of the four
@@ -627,6 +642,84 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every French gloss names its entry, and "stand" made sense
+
+The queue sent this run at `TODO.md`'s one unchecked item, the 1 780
+modern glosses, which it asked to be split by language, French first; so
+this is French, and the other four are the next item.
+
+**The pages were mostly on disk.** 250 of French's 345 titles were in
+`/tmp` from the plural and verb-form passes; the other 95 — adjectives,
+adverbs, numerals, interjections, and nouns weaving no plural — were
+fetched at a request a second, `action=render`, a User-Agent naming no
+person. A reader, `/tmp/weft-gl/defs.py`, takes the items of the first
+`<ol>` under each heading of the French section, nested senses kept and
+`<dl>`/`<ul>` examples, quotations and synonyms set aside, and `draft.py`
+drafted, per row, the first line of its part of speech holding its English
+word: 345 of 356.
+
+**All 345 were read, and one was the wrong sense.** `question`'s first line
+holding the word is "(historical, chiefly with the definite article)
+question (interrogation by torture)", and every test would have passed it;
+its line quotes the sense that asks. Seven rows name a stand-in — `marin`
+"seaman", `cheveu` "a headhair", `limier` "bloodhound", `tissu` "fabric",
+`rapide` "fast", `beau` "handsome, fine, attractive", and `bonjour`'s
+interjection "good day", the page's "hello" being its noun — and three
+quote the heading their page gives them: `seul` an adjective, `premier` an
+ordinal adjective, `s’il vous plaît` a phrase.
+
+**One is false.** `tenir debout`, woven for "stand", is "(informal) to hold
+water, to be valid, to make sense": an argument that stands up, "ça ne
+tient pas debout". `QUEUED` names it, and the fix is the next item:
+`être debout`, whose own entry is "stand (be upright, support oneself on
+the feet in an erect position)", the shape of Spanish `estar de pie`,
+Italian `stare in piedi` and Portuguese `estar de pé`. Two more say less
+than the row is woven for and are calls in `TODO.md`: `cheveu` is one hair,
+its usage note sending English's mass noun to the plural, and `asseoir`
+alone is "to sit (someone) down", the intransitive being the reflexive's.
+
+**The guard is one file for five languages.** `tests/tools/glosses.test.ts`,
+10 tests in 2 suites, holds `<lang>-glosses.tsv` to `ang-glosses.test.ts`'s
+rules; `READ` names the languages read, `UNREAD` the four waiting, and a
+sixth pack fails until it is one or the other. A source writes a space as
+an underscore, `wikt:fr:au_revoir`, because the field is space-separated
+and `ang-etymons.tsv` already cites `wikt:en:many_a_mickle_makes_a_muckle`
+so; the first draft cited `wikt:fr:au revoir`, and the source test named
+the five multi-word lines. Each was then checked to be an entry, not a
+redirect, by its rendered headword: `action=render` prints a redirect's
+target, as `se lever` prints `lever`.
+
+Test-first: red on "356 French glosses name no entry in fr-glosses.tsv";
+then the ledger, and green. Seven probes, each restored by md5, each
+failing its own test by name: a line removed, another word's entry cited
+(which the gender rule also names), a quote without its word, a needless
+stand-in, `tenir debout` unqueued, wikitext in a quote, and French moved to
+`UNREAD` with its ledger on disk. Nothing that ships moved. Tools 351 →
+**361** / 90 → **92** suites, total 1059 → **1069**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says French's glosses
+name their entries. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **361 tools / 92 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Documentation moved during that run, so `test:tools`
+was run again on the final tree: 361 of 361. Separately: `packs:verify`
+**0 errors / 5 warnings**; `artefacts:check` **8 groups, 1 stale**, exit 1
+— the release notes, B2a. `site:check` was not re-run: no pack, page or
+image moved.
+
+Assumed, with nobody to ask: that a quote comes from the row's own part of
+speech where the page has one, so `bonjour` quotes its interjection with a
+stand-in rather than its noun's "hello"; that an adjective's "alone" may
+gloss a row filed among the adverbs, English "alone" being both; and that
+the false gloss was a second item rather than this one's.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: `tenir debout` for "stand", then the Spanish,
+Portuguese, German and Italian glosses.
 
 ### 2026-10-08 — every woven modern verb form is one its table prints
 
