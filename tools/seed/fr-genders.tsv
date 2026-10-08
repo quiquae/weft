@@ -1,0 +1,209 @@
+# Where each French noun's gender in lex-fr.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, under both forms a row
+# weaves. On 2026-10-08 every French noun was read against English
+# Wiktionary's French entry, fetched raw, and none was wrong: 167 of the 178
+# rows carry the gender of their page's one French noun, and the 11 others
+# were read by sense.
+#
+# A Wiktionary page holds every word of one spelling, so a line citing it
+# means the gender of this word's own noun there. Eight pages hold two:
+# livre, a book, is masculine where livre, a pound, is feminine; souris, a
+# mouse, feminine where souris, an archaic smile, is masculine; mari,
+# husband, marin, sailor, chèvre, goat, ombre, shadow, mort, death, and
+# espoir, hope, the same.
+#
+# Where Wiktionary gives one word two genders, the seed's is one of them,
+# as the Old English ledger has it: enfant, child, and médecin, doctor, are
+# masculine or feminine by the person meant ("mfbysense"), and amour, love,
+# is given both. The seed prints all three "masculine". Whether a noun of
+# either gender by sense should print Latin's "common" instead is a call
+# recorded in TODO.md, not taken.
+#
+# The sources field
+# -----------------
+#   wikt:fr:<title>    https://en.wiktionary.org/wiki/<title>#French
+#
+# tests/tools/genders.test.ts requires every noun in lex-fr.tsv to have a
+# line here giving the gender the seed gives, citing the noun's own entry,
+# and fails on a line outliving its noun.
+man	homme	m	wikt:fr:homme
+woman	femme	f	wikt:fr:femme
+child	enfant	m	wikt:fr:enfant
+boy	garçon	m	wikt:fr:garçon
+girl	fille	f	wikt:fr:fille
+person	personne	f	wikt:fr:personne
+friend	ami	m	wikt:fr:ami
+family	famille	f	wikt:fr:famille
+mother	mère	f	wikt:fr:mère
+father	père	m	wikt:fr:père
+brother	frère	m	wikt:fr:frère
+sister	sœur	f	wikt:fr:sœur
+son	fils	m	wikt:fr:fils
+daughter	fille	f	wikt:fr:fille
+wife	épouse	f	wikt:fr:épouse
+husband	mari	m	wikt:fr:mari
+baby	bébé	m	wikt:fr:bébé
+king	roi	m	wikt:fr:roi
+queen	reine	f	wikt:fr:reine
+lord	seigneur	m	wikt:fr:seigneur
+neighbour	voisin	m	wikt:fr:voisin
+stranger	étranger	m	wikt:fr:étranger
+enemy	ennemi	m	wikt:fr:ennemi
+soldier	soldat	m	wikt:fr:soldat
+teacher	professeur	m	wikt:fr:professeur
+doctor	médecin	m	wikt:fr:médecin
+farmer	fermier	m	wikt:fr:fermier
+sailor	marin	m	wikt:fr:marin
+head	tête	f	wikt:fr:tête
+hand	main	f	wikt:fr:main
+eye	œil	m	wikt:fr:œil
+ear	oreille	f	wikt:fr:oreille
+mouth	bouche	f	wikt:fr:bouche
+nose	nez	m	wikt:fr:nez
+tooth	dent	f	wikt:fr:dent
+hair	cheveu	m	wikt:fr:cheveu
+heart	cœur	m	wikt:fr:cœur
+blood	sang	m	wikt:fr:sang
+bone	os	m	wikt:fr:os
+arm	bras	m	wikt:fr:bras
+leg	jambe	f	wikt:fr:jambe
+foot	pied	m	wikt:fr:pied
+finger	doigt	m	wikt:fr:doigt
+face	visage	m	wikt:fr:visage
+body	corps	m	wikt:fr:corps
+skin	peau	f	wikt:fr:peau
+voice	voix	f	wikt:fr:voix
+dog	chien	m	wikt:fr:chien
+cat	chat	m	wikt:fr:chat
+horse	cheval	m	wikt:fr:cheval
+bird	oiseau	m	wikt:fr:oiseau
+fish	poisson	m	wikt:fr:poisson
+cow	vache	f	wikt:fr:vache
+sheep	mouton	m	wikt:fr:mouton
+pig	cochon	m	wikt:fr:cochon
+wolf	loup	m	wikt:fr:loup
+bear	ours	m	wikt:fr:ours
+lion	lion	m	wikt:fr:lion
+mouse	souris	f	wikt:fr:souris
+snake	serpent	m	wikt:fr:serpent
+bee	abeille	f	wikt:fr:abeille
+worm	ver	m	wikt:fr:ver
+raven	corbeau	m	wikt:fr:corbeau
+hound	limier	m	wikt:fr:limier
+ox	bœuf	m	wikt:fr:bœuf
+goat	chèvre	f	wikt:fr:chèvre
+food	nourriture	f	wikt:fr:nourriture
+bread	pain	m	wikt:fr:pain
+water	eau	f	wikt:fr:eau
+wine	vin	m	wikt:fr:vin
+milk	lait	m	wikt:fr:lait
+meat	viande	f	wikt:fr:viande
+fruit	fruit	m	wikt:fr:fruit
+apple	pomme	f	wikt:fr:pomme
+salt	sel	m	wikt:fr:sel
+honey	miel	m	wikt:fr:miel
+cheese	fromage	m	wikt:fr:fromage
+egg	œuf	m	wikt:fr:œuf
+fire	feu	m	wikt:fr:feu
+house	maison	f	wikt:fr:maison
+home	foyer	m	wikt:fr:foyer
+door	porte	f	wikt:fr:porte
+window	fenêtre	f	wikt:fr:fenêtre
+wall	mur	m	wikt:fr:mur
+roof	toit	m	wikt:fr:toit
+floor	sol	m	wikt:fr:sol
+room	pièce	f	wikt:fr:pièce
+table	table	f	wikt:fr:table
+chair	chaise	f	wikt:fr:chaise
+bed	lit	m	wikt:fr:lit
+book	livre	m	wikt:fr:livre
+word	mot	m	wikt:fr:mot
+letter	lettre	f	wikt:fr:lettre
+name	nom	m	wikt:fr:nom
+key	clé	f	wikt:fr:clé
+bridge	pont	m	wikt:fr:pont
+church	église	f	wikt:fr:église
+ship	navire	m	wikt:fr:navire
+boat	bateau	m	wikt:fr:bateau
+sword	épée	f	wikt:fr:épée
+shield	bouclier	m	wikt:fr:bouclier
+ring	anneau	m	wikt:fr:anneau
+gold	or	m	wikt:fr:or
+silver	argent	m	wikt:fr:argent
+iron	fer	m	wikt:fr:fer
+stone	pierre	f	wikt:fr:pierre
+glass	verre	m	wikt:fr:verre
+cloth	tissu	m	wikt:fr:tissu
+shoe	chaussure	f	wikt:fr:chaussure
+coat	manteau	m	wikt:fr:manteau
+hat	chapeau	m	wikt:fr:chapeau
+sun	soleil	m	wikt:fr:soleil
+moon	lune	f	wikt:fr:lune
+star	étoile	f	wikt:fr:étoile
+sky	ciel	m	wikt:fr:ciel
+earth	terre	f	wikt:fr:terre
+land	terre	f	wikt:fr:terre
+sea	mer	f	wikt:fr:mer
+river	rivière	f	wikt:fr:rivière
+lake	lac	m	wikt:fr:lac
+mountain	montagne	f	wikt:fr:montagne
+hill	colline	f	wikt:fr:colline
+forest	forêt	f	wikt:fr:forêt
+tree	arbre	m	wikt:fr:arbre
+leaf	feuille	f	wikt:fr:feuille
+flower	fleur	f	wikt:fr:fleur
+grass	herbe	f	wikt:fr:herbe
+field	champ	m	wikt:fr:champ
+road	route	f	wikt:fr:route
+path	sentier	m	wikt:fr:sentier
+city	ville	f	wikt:fr:ville
+town	ville	f	wikt:fr:ville
+village	village	m	wikt:fr:village
+world	monde	m	wikt:fr:monde
+country	pays	m	wikt:fr:pays
+place	endroit	m	wikt:fr:endroit
+rain	pluie	f	wikt:fr:pluie
+snow	neige	f	wikt:fr:neige
+wind	vent	m	wikt:fr:vent
+cloud	nuage	m	wikt:fr:nuage
+ice	glace	f	wikt:fr:glace
+light	lumière	f	wikt:fr:lumière
+shadow	ombre	f	wikt:fr:ombre
+time	temps	m	wikt:fr:temps
+day	jour	m	wikt:fr:jour
+night	nuit	f	wikt:fr:nuit
+year	année	f	wikt:fr:année
+month	mois	m	wikt:fr:mois
+week	semaine	f	wikt:fr:semaine
+hour	heure	f	wikt:fr:heure
+morning	matin	m	wikt:fr:matin
+evening	soir	m	wikt:fr:soir
+summer	été	m	wikt:fr:été
+winter	hiver	m	wikt:fr:hiver
+autumn	automne	m	wikt:fr:automne
+life	vie	f	wikt:fr:vie
+death	mort	f	wikt:fr:mort
+love	amour	m	wikt:fr:amour
+war	guerre	f	wikt:fr:guerre
+peace	paix	f	wikt:fr:paix
+truth	vérité	f	wikt:fr:vérité
+law	loi	f	wikt:fr:loi
+work	travail	m	wikt:fr:travail
+money	argent	m	wikt:fr:argent
+price	prix	m	wikt:fr:prix
+question	question	f	wikt:fr:question
+answer	réponse	f	wikt:fr:réponse
+story	histoire	f	wikt:fr:histoire
+song	chanson	f	wikt:fr:chanson
+music	musique	f	wikt:fr:musique
+game	jeu	m	wikt:fr:jeu
+dream	rêve	m	wikt:fr:rêve
+fear	peur	f	wikt:fr:peur
+hope	espoir	m	wikt:fr:espoir
+joy	joie	f	wikt:fr:joie
+anger	colère	f	wikt:fr:colère
+oath	serment	m	wikt:fr:serment
+gift	cadeau	m	wikt:fr:cadeau
