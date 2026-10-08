@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **410** tool tests / 99 suites, **40** e2e passing
+suites, **425** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -71,6 +71,12 @@ of the noun's English Wiktionary entry, and two were wrong: Spanish wove
 Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
+
+**And as of 2026-10-08 every woven Latin plural and participle but two
+names the table that prints it**, 242 of 244 read in English Wiktionary's
+declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
+`la-verb-forms.tsv`, held by `tests/tools/la-forms.test.ts`; none of the 242
+was wrong, and the two are written up in `Next`.
 
 **And as of 2026-10-08 every woven Old English plural and participle but
 twenty-three names the table, or the section of a grammar, that prints it.** None had been read against a
@@ -5247,7 +5253,7 @@ registered**, and nothing below it can move until it is.
       hour for the first two groups; kinds 3 and 4 move sounds and cards,
       and want their own PRs.
 
-- [ ] **No woven Latin plural or participle has been read against a
+- [x] **No woven Latin plural or participle has been read against a
       dictionary.** Found 2026-10-08 with the item above: 165 plurals and 79
       present participles, which Allen & Greenough's rules hold the sounds
       of and nothing the spellings of — `iūsiūranda` and `loca` were each
@@ -5259,9 +5265,40 @@ registered**, and nothing below it can move until it is.
       so fetch by the headword with its macrons dropped. The same test shape
       as `ang-forms.test.ts`, its own file. About an hour.
 
+      **Done 2026-10-08, but two, in the same run as the Old English.** The
+      rendered page of each noun's headword and each verb's first person was
+      fetched, 238 pages and then the verbs' 77 first persons, into
+      `/tmp/weft-la4/render/`: Wiktionary files a Latin verb under its first
+      person, so the infinitive's page only says "present active infinitive
+      of moveō", and the first person is the key `la-glosses.tsv` read the
+      verb under in Lewis & Short, *j* written *i* and the number dropped —
+      a rule the test derives rather than lists. A page holding two words of
+      a spelling is read by the table whose headword is this one, Wiktionary
+      marking each with its vowel lengths: `ōs`, "ōra", beside `os`, "ossa,
+      ossua"; `liber`, "librī", beside `līber`. 164 of 165 plurals and 78 of
+      79 participles are what their table prints, read without folding
+      anything. Test-first: `tests/tools/la-forms.test.ts`, 15 tests in 3
+      suites, red on "165 Latin plurals are unsourced", then green; four
+      probes, each restored by md5. Tools 410 → **425** / 99 → **102**
+      suites, total 1118 → **1133**, in six places. Nothing that ships
+      moved.
+
+- [ ] **Two Latin second forms are not what their table prints.** Named in
+      `QUEUED` in `tests/tools/la-forms.test.ts`. `aliēnus`, "stranger", is
+      an adjective used as a noun, and its page declines it as one: the
+      masculine cell, `nom|m|p`, prints "aliēnī", the form woven, so the cure
+      is the test reading that cell for a listed noun. `nārrāre`, "tell", is
+      woven `nārrāns` where the table prints "narrāns": Wiktionary marks the
+      first vowel short and the seed long, a question of the headword's own
+      length, not the participle's, which moves the headword's card and
+      transcription if the seed is wrong; read Lewis & Short's *narro* and
+      the grammar before choosing. About half an
+      hour, most of it the second.
+
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
 2026-10-08: the twenty-three Old English second forms their tables do not
-print, and Latin's second forms. Seven of the thirty, the Old English second
+print, and the two Latin ones. Latin's second forms but two, seven of the
+thirty, the Old English second
 forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the
 modern plurals, the modern genders, the Italian

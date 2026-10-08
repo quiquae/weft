@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **410 pass**, 99 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **425 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -489,6 +489,20 @@ editions, which is Wright's. A row neither prints, `QUEUED` names with what
 its table prints; a queued row that gains a line fails, so the list only
 shrinks. On 2026-10-08 that held 216 of 239, corrected `weġas` to `wegas`
 (Wright §320, "wegas, ways", the guttural), and left 23 for `TODO.md`.
+
+**And a Latin one, read in its table and filed under its first person.**
+Lewis & Short prints a noun's genitive and a verb's principal parts, never
+the plural or participle a row weaves, so `tools/seed/la-plurals.tsv` and
+`la-verb-forms.tsv` quote the `nom|p` and `pres|act|part` cells of English
+Wiktionary's tables, and `tests/tools/la-forms.test.ts` holds them, with the
+Old English test's `QUEUED`. A noun's entry is its headword's, macrons
+dropped. A verb's is its first person, because Wiktionary files a Latin
+verb there and its infinitive's page only names it: the test derives it
+from the `ls:` key `la-glosses.tsv` read the verb under, *j* written *i*
+and the homograph number dropped, so `dīcere` is `wikt:la:dico`, from
+`ls:dico2`. Do not cite the infinitive's page: it prints no table. On
+2026-10-08 that held 242 of 244, none wrong, and queued `aliēnus`, an
+adjective's table, and `nārrāns`, whose table writes the first vowel short.
 
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line

@@ -39,7 +39,12 @@ Glosses checked against:
 
 Every gloss quotes the Lewis & Short entry that gives it, from the Perseus
 text, in `tools/seed/la-glosses.tsv`, and `tests/tools/la-glosses.test.ts`
-fails on a row that quotes none.
+fails on a row that quotes none. Lewis & Short prints a noun's genitive and a
+verb's principal parts, not the plural or participle a row weaves, so those
+are quoted from the declension or conjugation table of English Wiktionary's
+entry in `tools/seed/la-plurals.tsv` and `la-verb-forms.tsv`, all but two,
+which `tests/tools/la-forms.test.ts` names until they are read; it fails on
+any other with no line.
 
 Classical pronunciation follows the standard reconstruction as set out in
 W. Sidney Allen, *Vox Latina* (Cambridge, 1965). Transcriptions are derived
