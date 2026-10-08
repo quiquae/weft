@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **377 pass**, 94 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **386 pass**, 95 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -502,16 +502,18 @@ not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
 **And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`,
-`es-glosses.tsv` and `pt-glosses.tsv` quote, for every row of the French,
-Spanish and Portuguese packs,
+`es-glosses.tsv`, `pt-glosses.tsv` and `de-glosses.tsv` quote, for every row
+of the French, Spanish, Portuguese and German packs,
 the definition line of the word's own English Wiktionary entry that gives
 its gloss, read in the rendered page and held by
 `tests/tools/glosses.test.ts` to the Latin and Old English
 rules: the row's English word or a named stand-in, never wikitext, a noun's
 line citing the entry its gender was read in, `FORM_OF` and `QUEUED` with
 stale checks. `READ` names the languages read and `UNREAD` those waiting,
-so a pack added later fails until it is one or the other; French, Spanish
-and Portuguese were read on 2026-10-08, and German and Italian wait.
+so a pack added later fails until it is one or the other; French, Spanish,
+Portuguese and German were read on 2026-10-08, and Italian waits. Read a
+German page by its exact title: `Essen` and `essen` are two entries and,
+on a case-insensitive disk, one cached file.
 A phrase no entry gives whole — Spanish `en ningún lugar`, "nowhere", has
 none, nor has any variant of it — is `COMPOSED`: its line cites the entry of
 each of its words, quotes a line of each joined by " / ", and names no
@@ -657,6 +659,62 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every German gloss names its entry, and the disk could not tell Essen from essen
+
+The same run's next slice, German: 106 pages fetched beside the 250 the
+noun and verb passes left, and the first draft placed 349 of 356.
+
+**Three of its misses were the wrong page, not the wrong gloss.** `Essen`,
+food, had been read from the verb `essen`'s page, `arm`, poor, from the
+noun `Arm`'s, and `leben` from `Leben`'s: this disk is case-insensitive, so
+`Essen.html` and `essen.html` are one file, `os.path.exists` says yes to
+both, and the cache handed back whichever case the plural or verb pass had
+written. A check against `os.listdir` found `morgen` in the same state — a
+hit in the first draft, `Morgen`'s "tomorrow" noun line quoted for the
+adverb. **A draft that looks right is no evidence its page was**: three of
+the four found a line holding their English word. `defs.py` now opens a
+page only under its exact-case name and stores a fetched one under a
+case-safe name, `^Essen.html`; re-drafted, 353 of 356 placed, and all four
+lines come from their own pages. French, Spanish and Portuguese have no
+capitalised titles, so their ledgers could not have met this.
+
+Reading the 353 found three other senses — `Schild`'s page holds das
+Schild, a sign, whose third line is a nonstandard "alternative form of
+Schild", beside der Schild, "shield, buckler"; `haben`'s first line is the
+auxiliary; `suchen`'s line holding "seek" is its formal "to strive" — and
+each line quotes the row's sense. Two rows name a stand-in, `suchen` "look
+for" and `wirklich` "really", which the per-ledger floor of three refused,
+so the floor now counts every ledger read together: a closely glossed
+language is not a vacuous one. `erinnern` alone is "to remind", and
+"remember" is its reflexive's, written into the pronominal-verb call in
+`TODO.md` beside `asseoir`. None is false.
+
+Test-first: German moved from `UNREAD` to `READ`, red on "356 German
+glosses name no entry", then green. Two probes, restored by md5: `Haus`
+cited as `wikt:de:haus`, named by both the source rule and the gender rule,
+and `wirklich`'s stand-in dropped. Nothing that ships moved. Tools 377 →
+**386** / 94 → **95** suites, total 1085 → **1094**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says German's glosses
+name their entries. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **386 tools / 95 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. `site:check` was not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that `suchen`'s main sense, with a stand-in,
+is a truer record than its formal line holding the word; that `bitte`'s
+adverb is the line for an interjection row, its interjections being other
+uses; and that a floor over all the read ledgers keeps the stand-in rule
+from going vacuous as well as one per ledger did.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item, the Italian glosses, the last slice.
 
 ### 2026-10-08 — the Portuguese for "evening" is serão, and tarde the eighth card withdrawn
 
