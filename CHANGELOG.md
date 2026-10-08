@@ -654,8 +654,9 @@ Bosworth–Toller first; it is the feminine *flōra* now. And "dreams" was
 woven *swefn*, like its singular, where the table prints *swefnu* and
 Bosworth–Toller quotes "Swefnu gefremminge habbaþ", "dreams will have
 accomplishment"; it is *swefnu* now. Every woven Old English plural and
-participle but nineteen names the declension or conjugation table that
-prints it, or the section of Wright's grammar.
+participle but seventeen names the declension or conjugation table that
+prints it, the section of Wright's grammar, or the Bosworth–Toller entry
+that quotes it.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
