@@ -46,16 +46,27 @@
 # Wiktionary files under þ, and the doubled palatal, which the pack writes
 # cg, "dg" in its pronunciation key, where the tables write ċġ.
 #
-# Six woven plurals the tables do not print are Wright's, and cite him:
+# Eight woven plurals cite Wright. Six are forms the tables do not print:
 # water's and head's, "wæter" and "hēafodu", from his paradigm (§ 347),
 # which a note calls older than the tables' "wætru" and "hēafdu"; setl's,
 # "setlu beside setl" (§ 349); mete's "mettas" (§ 386), where the table
 # prints "metas"; winter's "wintru beside winter" (§ 397); and burg's
-# "byrig beside byrg" (§ 220). And one was wrong: "roads" was woven weġas,
-# a dot before a back vowel, where the table prints "wegas" and Wright § 320
-# "pl. dagas, days; wegas, ways", the guttural; it is wegas now.
+# "byrig beside byrg" (§ 220). Path's gloss was read in Bosworth–Toller
+# alone, and § 54 prints "the plural forms paþas, paþa, paþum". And sister's
+# is below.
 #
-# 19 woven plurals are not here, because the table of their entry prints
+# Three were wrong. "roads" was woven weġas, a dot before a back vowel,
+# where the table prints "wegas" and Wright § 320 "pl. dagas, days; wegas,
+# ways", the guttural; it is wegas now. "sisters" was woven sweostru, which
+# neither the table, whose plural is the collective ġesweostor, nor Wright
+# prints: his paradigm gives the plural as "sweostor" (§ 415), where
+# brōþor, mōdor and dohtor take -ru beside it, so it is sweostor now. And
+# "floors" was woven flōras, a masculine plural, under a row ang-genders.tsv
+# calls feminine, as Wiktionary does and Bosworth–Toller first ("f: flór,
+# es; m."); a row's gender is printed under both its forms, so it is the
+# table's feminine "flōra" now.
+#
+# 16 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until
@@ -199,6 +210,7 @@ story	spell	spell	wikt:ang:spell	nominative plural spell
 song	sang	sangas	wikt:ang:sang	nominative plural sangas
 music	drēam	drēamas	wikt:ang:dream	nominative plural drēamas
 game	gamen	gamen	wikt:ang:gamen	nominative plural gamen
+dream	swefn	swefnu	wikt:ang:swefn	nominative plural swefnu
 hope	hopa	hopan	wikt:ang:hopa	nominative plural hopan
 oath	āþ	āðas	wikt:ang:aþ	nominative plural āþas
 gift	ġiefu	ġiefa	wikt:ang:giefu	nominative plural ġiefa, ġiefe

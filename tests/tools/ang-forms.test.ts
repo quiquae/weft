@@ -127,7 +127,6 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”'],
   ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
-  ['noun\tdream\tswefn', 'its table prints swefnu'],
   ['verb\tgo\tgān', 'its table prints gānde, and Wright’s paradigm of gān (§ 550) prints no present participle'],
   ['verb\tbegin\tbeginnan', 'its table prints beġinnende'],
   ['verb\tlaugh\thlīehhan', 'its table prints hliehhende'],
