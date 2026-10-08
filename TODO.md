@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-07:** every automatable check is green, measured at the end
+**State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **267** tool tests / 71 suites, **40** e2e passing
+suites, **272** tool tests / 73 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -43,6 +43,14 @@ the pack (+4), Chrome's 989.29 → 989.60 KB, Firefox's 989.67 and Safari's
 — and by 1 byte later that night, `tō morgen`'s `RENAMED` line in
 `background.js` (+23) and the pack (−22), Chrome's 989.61 KB either side.
 `npm run test:all` exits 0 end to end.
+
+**And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
+have.** `orecchio`, ear, printed "neuter", and the feminine plurals `ossa`,
+`braccia`, `dita` and `uova` printed their masculine singulars' gender. All
+five are masculine and woven in the singular only now, and
+`tests/tools/genders.test.ts` refuses a printed gender a pack's language does
+not have. No modern pack's gender has been read against a dictionary
+otherwise; that is the item in `Next`.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -4627,8 +4635,78 @@ registered**, and nothing below it can move until it is.
       checked against the same trap and stand: `lah` (bt:21055) and
       `cild-cláþ` (bt:6142) are shorter than 700 characters, read whole.
 
-`Now` is **empty** and `Next` holds **no** unchecked item, as of
-2026-10-07. The form of "tomorrow", the Old English adverb glosses, `lāh`
+- [x] **The Italian tooltip printed a gender Italian does not have, and four
+      plurals their singulars' gender.** Found 2026-10-08, when the queue
+      sent a run at the Latin gloss ledger, which #79 had landed on
+      2026-10-06, and `Next` held nothing: counting every seed's genders
+      found Italian using three, `orecchio`, ear, being `n`. The tooltip
+      prints `GENDER_LABELS`' "neuter" for it, under `orecchio` and its
+      plural `orecchie` alike, and `tools/verify-packs.mjs` accepts any of
+      `mfnc` in any language. Reading English Wiktionary's Italian entries
+      for the rest of that word's kind found four more, printed
+      "masculine" under a feminine plural: "osso m (plural (collective)
+      ossa f or (individual) ossi m)", "braccio m (plural (in most meanings
+      1, 2, 4) braccia f or (in the figurative meanings …) bracci m", "dito
+      m (plural (considered individually) diti m or (collectively) dita
+      f", "uovo m (plural uova f", and "orecchio m (plural (in the literal
+      meaning) orecchie f or (figuratively) orecchi m)". **Done the same
+      night by `locus`'s rule**, which CLAUDE.md records as holding: a row
+      carries one gender for both its forms, so a noun whose plural takes
+      another gender weaves a plural of its own gender or none. All five
+      are `m` with a blank `tgt2`, so "ears", "bones", "arms", "fingers"
+      and "eggs" stay English. None takes its masculine plural, because each
+      is figurative or counts the parts one at a time, which is not what an
+      English plural usually means by the word — the opposite of `locī`,
+      where "single places" is.
+
+      Test-first in `tests/tools/genders.test.ts`, 5 tests in 2 new suites
+      reading the shipped packs: `INVENTORY` gives each language its
+      genders and fails on any other printed, or on a shipped pack it
+      gives none; a masculine Italian noun woven in a plural ending -a or
+      -e, which differs from its headword, is refused, those being the
+      feminine plural's endings; and `ITALIAN_OTHER_GENDER` keeps the five
+      with what their entries print, masculine and singular. Red first on
+      exactly `orecchio`/`orecchie` for the inventory and exactly `ossa`,
+      `braccia`, `dita`, `uova` for the rule, with none of the other
+      masculine plurals named. Two probes, restored by md5: `uovo` marked
+      `f` — the wrong fix, which would print "feminine" under the singular
+      — is named by the table, and Italian dropped from `INVENTORY` names
+      `en-it.json`. What moved: `en-it.json` lost five plural entries and
+      `ear`'s `n` became `m`, 588 → 583 entries, `builtAt` 09-26 → 10-08;
+      `index.json` the count and its date. The published ranges, 581–588
+      entries across 576–583 surface forms, do not move, Spanish and
+      Portuguese holding the top. The seven packs are 769 bytes lighter,
+      653.91 → 653.16 KB, which prints **653 KB** in `README.md` and
+      `CHANGELOG.md`. Italian has no site pages, and all 36 screenshots
+      regenerated byte-identical, 14 + 15 + 7 written, the three groups
+      stamped. Tools 267 → **272** / 71 → **73** suites, total 975 →
+      **980**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph, because the pack ships.
+
+- [ ] **No modern pack's gender has been read against a dictionary.** Found
+      2026-10-08 by the Italian item above. French, Spanish, Italian,
+      Portuguese and German teach 178 nouns each, and the tooltip prints
+      every one's gender; the Old English and Latin genders were each read
+      whole (`ang-genders.tsv`, `la-genders.tsv`) and found one and seven
+      wrong, and nothing has read these 890. German's is the costliest to
+      get wrong — *der*, *die* or *das* is the first thing a learner says.
+      Shape, as the Old English pass was: fetch each noun's English
+      Wiktionary entry raw (`action=raw`, a User-Agent naming no person,
+      one request a second — `/tmp/weft-it/fetch.py` did all five on
+      2026-10-08 into `/tmp/weft-it/wikt/<lang>/`, if `/tmp` still holds
+      it), compare the gender of the `{{fr-noun}}`, `{{es-noun}}`,
+      `{{it-noun}}`, `{{pt-noun}}` or `{{de-noun}}` headword, and read by eye
+      every disagreement and every page holding two nouns of one spelling.
+      Then a `tools/seed/<lang>-genders.tsv` per language, held by
+      `tests/tools/genders.test.ts` as the other two are, citing
+      `wikt:<title>`. Read the plural's gender too, where the template gives
+      it one (`<g:f>`), because the row's one gender is printed under both
+      forms — that is how the Italian five were found. About an hour a
+      language: do one or two per session, French first, since it leads
+      everywhere, then German.
+
+`Now` is **empty** and `Next` holds **one** unchecked item, the last
+above, as of 2026-10-08. The Italian genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old
 English noun glosses,
@@ -4659,6 +4737,17 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**One Italian call a human may want to look at**, taken on 2026-10-08
+without anyone to ask: "ears", "bones", "arms", "fingers" and "eggs" are no
+longer woven in Italian, because their plurals are feminine and a seed row
+has one gender. The alternative is a tenth seed column, `gender2`, the second
+form's gender: every pack entry already carries a gender of its own, so
+`tools/build-pack.mjs` could print `uova` feminine under a masculine `uovo`
+and the tooltip would need no change. Latin declined it for `locus` alone;
+these five are among the commonest nouns Italian weaves, and German, whose
+plurals take *die*, would never need it. Reversible in five rows of
+`tools/seed/lex-it.tsv` and `ITALIAN_OTHER_GENDER`.
 
 **Three Old English glosses a human may want to look at**, recorded on
 2026-10-07 rather than changed: three rows are woven for a sense their word

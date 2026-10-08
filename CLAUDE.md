@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **267 pass**, 71 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **272 pass**, 73 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -410,6 +410,20 @@ dictionary refuses is woven not at all — `vesper`'s is "not used", and
 `caelum`'s only a poetic masculine `caeli` — and `SINGULAR` in
 `tests/tools/lexicon-orthography.test.ts` keeps each with what its entry
 prints.
+
+**And a gender is one its language has, in every pack.** French, Spanish,
+Italian and Portuguese have two, German and Old English three, Latin four
+with "common"; `INVENTORY` in `tests/tools/genders.test.ts` says which, reads
+the shipped packs, and fails on a printed gender outside it or a pack it
+gives none. Italian `orecchio`, ear, printed "neuter" until 2026-10-08, and
+`ossa`, `braccia`, `dita` and `uova` — the feminine plurals of masculine
+`osso`, `braccio`, `dito` and `uovo` — printed "masculine". By `locus`'s rule
+all five are woven in the singular only, because the masculine plurals
+English Wiktionary gives four of them are figurative or count the parts one
+at a time; `ITALIAN_OTHER_GENDER` keeps each with what its entry prints, and
+the same file refuses a masculine Italian noun woven in a plural in -a or
+-e, the endings of a feminine one. Beyond that, no modern pack's gender has
+been read against a dictionary.
 
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
