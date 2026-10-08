@@ -135,6 +135,14 @@ export const WITHDRAWN: Withdrawals = {
       '"Law"; English "low" is Middle English "lah", from Old Norse "lágr". "low" is ' +
       '"hēan" now, which Wiktionary gives as "low, mean, abject, humble".',
   },
+  fr: {
+    'tenir debout':
+      'Taught for "stand" until 2026-10-08, and what an argument does, not a person: ' +
+      'English Wiktionary\'s "tenir debout" is "(informal) to hold water, to be valid, to ' +
+      'make sense", as in "ça ne tient pas debout". "stand" is "être debout" now, which ' +
+      'Wiktionary gives as "stand (be upright, support oneself on the feet in an erect ' +
+      'position)".',
+  },
   la: {
     camera:
       'Taught for "room" until 2026-10-05, and in Classical Latin a vault, not a room: ' +

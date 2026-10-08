@@ -45,7 +45,9 @@ the pack (+4), Chrome's 989.29 → 989.60 KB, Firefox's 989.67 and Safari's
 and back to **989 KB** on 2026-10-08 by 769 bytes, the Italian pack's five
 plurals that are no longer woven, Chrome's 989.61 → 988.86 KB, Firefox's
 988.92 and Safari's 988.86 — and stayed there the same night through the
-Spanish *países*, +2 bytes, and the Portuguese *chãos*, ±0.
+Spanish *países*, +2 bytes, and the Portuguese *chãos*, ±0, and
+`tenir debout`'s `WITHDRAWN` line, +357 bytes, all of them `background.js`,
+Chrome's 988.86 → 989.21 KB, Firefox's 989.27 and Safari's 989.21.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
@@ -72,7 +74,9 @@ word that stands for it where the English is not there — "seaman" for
 sailor, "fabric" for cloth — and `tests/tools/glosses.test.ts` fails on a
 row with none, and on a modern pack that is neither read nor listed as
 waiting. Reading them found one false: `tenir debout`, woven for "stand",
-is "to hold water, to make sense", and is queued to be `être debout`.
+is "to hold water, to make sense". "stand" is `être debout` now, "stand (be
+upright …)", as Spanish, Italian and Portuguese weave it, and `tenir
+debout`'s card is the seventh `WITHDRAWN` keeps, the first in a modern pack.
 Spanish, Portuguese, German and Italian are the next four slices.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
@@ -504,10 +508,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds two
-agent-shaped items, none of them waiting on B1.** The code is not
+**So the whole of B0 is closed and `Now` is empty. `Next` holds one
+agent-shaped item, not waiting on B1.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those two needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining item besides that one needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -4939,8 +4943,18 @@ registered**, and nothing below it can move until it is.
       `ang-etymons.tsv` cites `wikt:en:many_a_mickle_makes_a_muckle`,
       because the field is space-separated. Nothing that ships moved.
 
-- [ ] **`tenir debout` is not "stand".** Found 2026-10-08 by the French
-      gloss pass. English Wiktionary's `tenir debout` is "(informal) to
+- [x] **`tenir debout` is not "stand".** Done 2026-10-08, the same run
+      that found it, as written below, in about 25 minutes: the gloss line
+      and the card ledger's `fr être debout`, placed by code unit after
+      `été`, went red first on exactly the `stand` rows; the seed and
+      `npm run packs` moved 3 fields of `en-fr.json`, `tgt`, `tgtLemma` and
+      `builtAt`, the pack the same length; `WITHDRAWN` took `fr:tenir
+      debout`, its first French line, and `QUEUED` emptied. The site, built
+      from `main` and from the branch into `/tmp`, differs only in the
+      French hub's sitemap date, and all 36 screenshots regenerated
+      byte-identical, 14 + 15 + 7 written, the three groups stamped. The
+      package grew 357 bytes, all `background.js`. Found 2026-10-08 by
+      the French gloss pass. English Wiktionary's `tenir debout` is "(informal) to
       hold water, to be valid, to make sense", what an argument does — "ça
       ne tient pas debout", that doesn't hold water — and not what a
       person does. **The fix is `être debout`**, whose own entry is
@@ -4978,9 +4992,9 @@ registered**, and nothing below it can move until it is.
       its `<dl>` and `<ul>` set aside. About 30 minutes a language with
       the tooling, two hours without it.
 
-`Now` is **empty** and `Next` holds **two** unchecked items, the last
-two above, as of 2026-10-08: `tenir debout` for "stand", then the Spanish,
-Portuguese, German and Italian glosses. The French glosses, the modern verb forms, the
+`Now` is **empty** and `Next` holds **one** unchecked item, the last
+above, as of 2026-10-08: the Spanish, Portuguese, German and Italian
+glosses. `tenir debout`, the French glosses, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
@@ -5446,7 +5460,7 @@ Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
 **2026-10-08 — the French glosses, and what the other four slices need.**
-Ticked in `Next`. Four things a later run would be sorry not to know:
+Ticked in `Next`. Five things a later run would be sorry not to know:
 
 1. **A source writes a space as an underscore and a curly apostrophe
    straight.** The sources field is space-separated, so `au revoir` is
@@ -5472,6 +5486,12 @@ Ticked in `Next`. Four things a later run would be sorry not to know:
    pass none in 400; the French glosses found one in 356, `tenir debout`,
    and three that say less than the row is woven for, two written up as
    calls. Expect a few a language.
+5. **A French change moves no page.** French has no word pages
+   (`DEEP = ['la','ang']` in `tools/build-site.mjs`), so changing a French
+   row moves only the French hub's sitemap date, by the pack's `builtAt`;
+   `être debout` was shown that way, by building `main` and the branch
+   into `/tmp` and diffing. A withdrawal still costs a regeneration of the
+   three screenshot groups, because `src/core/renames.ts` is under `src/`.
 
 **2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
 Ticked in `Next`. Four things a later run would be sorry not to know:

@@ -514,7 +514,9 @@ writes a space as an underscore, `wikt:fr:au_revoir`, the field being
 space-separated, and a curly apostrophe straight, as Wiktionary titles
 `aujourd'hui`. A quote is from the row's own part of speech where the page
 has it, and from the first line of it giving the row's sense, which is not
-always the first line holding the word: `question`'s is torture.
+always the first line holding the word: `question`'s is torture. `QUEUED`
+named French `tenir debout`, "stand", for the night it was found — "to hold
+water, to make sense" — and is empty again, `être debout` taught instead.
 
 **And an Old English phrase names the text it was read in.** A single word
 is held to a dictionary wherever the pack claims something about it; a
@@ -633,7 +635,10 @@ Short "an under-garment", the fourth, on 2026-10-06, and "coat" is
 for "baby" and a swaddling-cloth in both dictionaries, the fifth, on
 2026-10-07, and "baby" is `ċild`, a second row of its card; Old English
 `lāh`, taught for "low" and Middle English from Norse, the sixth, the same
-night, and "low" is `hēan`. The ledger test accepts a
+night, and "low" is `hēan`; and French `tenir debout`, taught for "stand"
+and in English Wiktionary "to hold water, to make sense", what an argument
+does, the seventh, on 2026-10-08, and "stand" is `être debout`, the first
+outside Old English and Latin. The ledger test accepts a
 withdrawn id and refuses one still taught, never shipped, or also renamed.
 Do not call it retiring: a retired card is one stable enough to stay in the
 target language.
@@ -642,6 +647,53 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — the French for "stand" is être debout, and tenir debout the seventh card withdrawn
+
+The same run's second PR, the item the first queued: `tenir debout`, woven
+for "stand", is in English Wiktionary "(informal) to hold water, to be
+valid, to make sense". **`être debout` is the fix**, read before choosing:
+its own entry is "stand (be upright, support oneself on the feet in an
+erect position)", and it is the other packs' shape — Spanish `estar de
+pie`, Italian `stare in piedi`, Portuguese `estar de pé`. `debout` alone is
+"standing, stood up, upright", an adverb; `lever`'s reflexive, "to rise,
+stand up", is standing up, not standing; and `se tenir debout` has no
+entry.
+
+The shape was #83's: the gloss line and the card ledger's `fr être debout`,
+placed by code unit after `été`, went red first on exactly the `stand`
+rows; the seed and `npm run packs` moved 3 fields of `en-fr.json`, `tgt`,
+`tgtLemma` and `builtAt` 10-04 → 10-08, the pack the same length; the card
+ledger then named `fr:tenir debout` stranded, and `WITHDRAWN` took it, its
+first line outside Old English and Latin. `QUEUED` in
+`tests/tools/glosses.test.ts`, written an hour before for this row, is
+empty, its stale check having been the plan.
+
+What moved: the site, built from `main` and from the branch into `/tmp`,
+differs only in the French hub's sitemap date, French having no word
+pages; 714 pages and 16 118 links. All 36 screenshots regenerated
+byte-identical, 14 + 15 + 7 written by mtime, and the three groups stamped
+after the last edit to `src/`. The package grew 357 bytes, all of them
+`background.js`, Chrome's 988.86 → 989.21 KB, still printing 989. No test
+count moved. A `CHANGELOG.md` paragraph, because the pack ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 361 tools / 92 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**,
+French at 587 entries across 582 surface forms; `npm run site` then
+`site:check` **714 pages / 16 118 links**, all resolving;
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that `être debout`, a state, is the right
+"stand" for a pack that weaves it under every bare English "stand" it
+meets, the three Romance siblings weaving theirs the same way; and that
+the row needs no note.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item, the Spanish, Portuguese, German and Italian glosses.
 
 ### 2026-10-08 — every French gloss names its entry, and "stand" made sense
 

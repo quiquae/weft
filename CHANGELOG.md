@@ -622,6 +622,16 @@ the singular, where the plural is *países*, and Portuguese wove "floors" as
 corrected, and every plural the five modern packs weave, 868 of them, now
 names the English Wiktionary entry that prints it.
 
+**And the French for "stand" is what a person does.** It was *tenir
+debout*, which English Wiktionary gives as "to hold water, to be valid, to
+make sense" — what an argument does, as in *ça ne tient pas debout*, that
+doesn't hold water. "stand" is now *être debout*, "stand (be upright,
+support oneself on the feet in an erect position)", the shape Spanish,
+Italian and Portuguese already weave: *estar de pie*, *stare in piedi*,
+*estar de pé*. A learner's *tenir debout* card is kept and no longer
+listed. Every French word now quotes the definition that gives its gloss,
+which is how this one was found.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
