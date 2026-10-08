@@ -35,9 +35,22 @@
 #                      and reads "pl." as "pi.". Wright prints no dots on ċ
 #                      and ġ, so a quote of his is read with the pack's set
 #                      aside.
+#   bt:<id>            Bosworth–Toller, An Anglo-Saxon Dictionary (1898)
+#                      and its Supplement, https://bosworthtoller.com/<id>.
+#                      The quote opens with the entry's head as the
+#                      dictionary prints it, then " … " and the passage that
+#                      prints the form. Its acute accents are read as the
+#                      pack's macrons, a long diphthong's moved from its
+#                      second vowel to its first (treów is trēow), its
+#                      hyphens dropped and the pack's dots set aside. The
+#                      head must spell the headword and,
+#                      for a noun, name the gender the row has, since one
+#                      spelling can head two entries: "treów, es; n." is the
+#                      tree, "treów, e; f." faith.
 #
-# It is always an entry ang-glosses.tsv read the row's gloss in, so the two
-# ledgers cannot choose different words of one spelling. Where the gloss was
+# A wikt: source is always an entry ang-glosses.tsv read the row's gloss
+# in, so the two ledgers cannot choose different words of one spelling; a
+# bt: line shows which word it read by the head it quotes. Where the gloss was
 # read in two, a ð spelling's page and the þ page it names, the line cites
 # the one whose table prints the woven form as the pack spells it.
 #
@@ -55,6 +68,13 @@
 # alone, and § 54 prints "the plural forms paþas, paþa, paþum". And sister's
 # is below.
 #
+# Two cite Bosworth–Toller. Family's gloss was read there, and its entry
+# quotes "Ealle híwscipas þeóda". The tree's table prints "trēowu", and
+# Wright § 363 declines trēo(w) like cnēo, whose plural is cnēo (§ 361) — a
+# paradigm, which implies the form and does not print it — and the neuter
+# treów of Bosworth–Toller quotes "and óþre treów", other trees, beside
+# "treówa" and "Treówu".
+#
 # Four were wrong. "roads" was woven weġas, a dot before a back vowel,
 # where the table prints "wegas" and Wright § 320 "pl. dagas, days; wegas,
 # ways", the guttural; it is wegas now. "sisters" was woven sweostru, which
@@ -69,7 +89,7 @@
 # quotes "Swefnu gefremminge habbaþ, dreams will have accomplishment"; it
 # is swefnu now.
 #
-# 15 woven plurals are not here, because the table of their entry prints
+# 13 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until

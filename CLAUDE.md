@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **425 pass**, 102 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **426 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -487,12 +487,16 @@ later `wætru` and `hēafdu`. Do not take the table's form over the grammar's
 to clear the queue: the pack is the normalised Early West Saxon of teaching
 editions, which is Wright's. A row neither prints, `QUEUED` names with what
 its table prints; a queued row that gains a line fails, so the list only
-shrinks. On 2026-10-08 that held 220 of 239, corrected `weġas` to `wegas`
+shrinks. On 2026-10-08 that held 222 of 239, corrected `weġas` to `wegas`
 (Wright §320, "wegas, ways", the guttural), `sweostru` to `sweostor`
 (§415's paradigm), `swefn` to the table's `swefnu`, which Bosworth–Toller
-quotes, and a feminine row's masculine `flōras` to `flōra`, and left 19 for
+quotes, and a feminine row's masculine `flōras` to `flōra`, and left 17 for
 `TODO.md`. A form a grammar only implies, by declining a word "like" another,
-is not one it prints: `trēow` waits for Bosworth–Toller's "óþre treów".
+is not one it prints: `trēow` cites Bosworth–Toller's "óþre treów" instead.
+A Bosworth–Toller line, `bt:<id>`, quotes the entry's head before the
+passage, its accents read as length marks, and the head must spell the
+headword and name a noun's gender, because one spelling heads two entries:
+"treów, es; n." is the tree and "treów, e; f." faith.
 
 **And a Latin one, read in its table and filed under its first person.**
 Lewis & Short prints a noun's genitive and a verb's principal parts, never
