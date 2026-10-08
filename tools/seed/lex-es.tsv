@@ -4,7 +4,7 @@
 #
 # tgt   citation form: singular noun, infinitive verb, masculine
 #       singular adjective, nominative singular for Latin/Old English.
-# tgt2  plural for nouns, present participle for verbs. A blank tgt2 on
+# tgt2  plural for nouns, the gerund for verbs (diciendo). A blank tgt2 on
 #       a noun means the English plural is never woven, which is the
 #       correct outcome: weaving a singular target under an English
 #       plural teaches a form that does not exist.

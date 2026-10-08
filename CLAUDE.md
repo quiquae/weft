@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **321 pass**, 84 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **351 pass**, 90 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -451,6 +451,23 @@ the note of the scale is invariable. On 2026-10-08 two were wrong, and both
 are corrected: Spanish wove "countries" as `país`, the singular, where its
 line prints "plural países", and Portuguese "floors" as `chões`, where
 `chão` takes `chãos`.
+
+**And so does a woven modern verb form, read in its verb's table.** A verb
+row's second form is woven under an English *-ing*, and it is not one slot
+in every language: French and German weave the present participle,
+Spanish, Portuguese and Italian the gerund — Italian's present participle,
+*dicente*, is another word. `SLOT` in `tests/tools/verb-forms.test.ts`
+names the cell each language weaves by the label English Wiktionary's
+conjugation table prints, and `tools/seed/<lang>-verb-forms.tsv` repeats
+each form beside its verb's entry and that cell as printed. No headword line
+labels these forms, so read the table, whose cells carry a class per slot
+(`ppr`, `ger`, `pres|part`, `gerund-<verb>`). A pronominal infinitive
+weaves the gerund of its verb without the pronoun, which may stand before
+the verb carrying it, "se está sentando", so `PRONOMINAL` names it and its
+line cites both entries; Italian's tables mark the stressed vowel,
+"avèndo", and the test sets that mark aside. On 2026-10-08 all 400 were
+read, and none was wrong. Whether a participle answers to every *-ing* it
+is woven under is a teaching call in `TODO.md`, not a check.
 
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line

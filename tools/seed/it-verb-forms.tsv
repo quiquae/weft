@@ -1,0 +1,116 @@
+# Where each woven Italian verb form in lex-it.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. Italian weaves the gerund,
+# the gerundio of "sto dicendo". Its present participle is another word,
+# dicente, which the seed's header named for every language until
+# 2026-10-08 and which the pack does not weave. That day every woven
+# Italian form was read in the "gerund" row of the conjugation table on
+# English Wiktionary's Italian entry for its verb, rendered as a reader
+# sees it, because a verb's headword line prints none of its gerunds. All
+# 80 are the form a table prints, and none was changed.
+#
+# quote is the row's label and its cell, as printed. The table marks the
+# stressed vowel of every form, "dicèndo", where the spelling writes an
+# accent only on a final vowel, so the test sets a mark on any other vowel
+# aside. One infinitive is pronominal: sedersi's own table prints its gerund
+# with the pronoun joined, "sedèndosi", and the pack weaves the gerund
+# without it, sedendo, because si may stand before the verb that carries
+# it, "si sta sedendo", so its line cites sedersi's entry and sedere's,
+# whose table prints "gerund sedèndo".
+#
+# Whether that form answers to every English -ing it is woven under — the
+# progressive's participle, or a gerund used as a noun, "reading is fun" —
+# is a call about the language rather than a lookup, written up in TODO.md
+# and not held here.
+#
+# The sources field
+# -----------------
+#   wikt:it:<title>    https://en.wiktionary.org/wiki/<title>#Italian
+#
+# tests/tools/verb-forms.test.ts requires every verb lex-it.tsv weaves in
+# a second form to have a line here with that form, citing the verb's own
+# entry, its quote printing the form in the "gerund" cell, and fails on a
+# line outliving its row.
+have	avere	avendo	wikt:it:avere	gerund avèndo
+say	dire	dicendo	wikt:it:dire	gerund dicèndo
+go	andare	andando	wikt:it:andare	gerund andàndo
+come	venire	venendo	wikt:it:venire	gerund venèndo
+see	vedere	vedendo	wikt:it:vedere	gerund vedèndo
+know	sapere	sapendo	wikt:it:sapere	gerund sapèndo
+think	pensare	pensando	wikt:it:pensare	gerund pensàndo
+take	prendere	prendendo	wikt:it:prendere	gerund prendèndo
+give	dare	dando	wikt:it:dare	gerund dàndo
+make	fare	facendo	wikt:it:fare	gerund facèndo
+find	trovare	trovando	wikt:it:trovare	gerund trovàndo
+want	volere	volendo	wikt:it:volere	gerund volèndo
+tell	raccontare	raccontando	wikt:it:raccontare	gerund raccontàndo
+ask	chiedere	chiedendo	wikt:it:chiedere	gerund chiedèndo
+work	lavorare	lavorando	wikt:it:lavorare	gerund lavoràndo
+play	giocare	giocando	wikt:it:giocare	gerund giocàndo
+run	correre	correndo	wikt:it:correre	gerund corrèndo
+walk	camminare	camminando	wikt:it:camminare	gerund camminàndo
+speak	parlare	parlando	wikt:it:parlare	gerund parlàndo
+read	leggere	leggendo	wikt:it:leggere	gerund leggèndo
+write	scrivere	scrivendo	wikt:it:scrivere	gerund scrivèndo
+eat	mangiare	mangiando	wikt:it:mangiare	gerund mangiàndo
+drink	bere	bevendo	wikt:it:bere	gerund bevèndo
+sleep	dormire	dormendo	wikt:it:dormire	gerund dormèndo
+sit	sedersi	sedendo	wikt:it:sedersi wikt:it:sedere	gerund sedèndo
+live	vivere	vivendo	wikt:it:vivere	gerund vivèndo
+die	morire	morendo	wikt:it:morire	gerund morèndo
+love	amare	amando	wikt:it:amare	gerund amàndo
+hate	odiare	odiando	wikt:it:odiare	gerund odiàndo
+fear	temere	temendo	wikt:it:temere	gerund temèndo
+hear	sentire	sentendo	wikt:it:sentire	gerund sentèndo
+feel	sentire	sentendo	wikt:it:sentire	gerund sentèndo
+hold	tenere	tenendo	wikt:it:tenere	gerund tenèndo
+carry	portare	portando	wikt:it:portare	gerund portàndo
+bring	portare	portando	wikt:it:portare	gerund portàndo
+send	mandare	mandando	wikt:it:mandare	gerund mandàndo
+buy	comprare	comprando	wikt:it:comprare	gerund compràndo
+sell	vendere	vendendo	wikt:it:vendere	gerund vendèndo
+pay	pagare	pagando	wikt:it:pagare	gerund pagàndo
+build	costruire	costruendo	wikt:it:costruire	gerund costruèndo
+break	rompere	rompendo	wikt:it:rompere	gerund rompèndo
+open	aprire	aprendo	wikt:it:aprire	gerund aprèndo
+close	chiudere	chiudendo	wikt:it:chiudere	gerund chiudèndo
+begin	iniziare	iniziando	wikt:it:iniziare	gerund iniziàndo
+help	aiutare	aiutando	wikt:it:aiutare	gerund aiutàndo
+learn	imparare	imparando	wikt:it:imparare	gerund imparàndo
+teach	insegnare	insegnando	wikt:it:insegnare	gerund insegnàndo
+remember	ricordare	ricordando	wikt:it:ricordare	gerund ricordàndo
+forget	dimenticare	dimenticando	wikt:it:dimenticare	gerund dimenticàndo
+win	vincere	vincendo	wikt:it:vincere	gerund vincèndo
+lose	perdere	perdendo	wikt:it:perdere	gerund perdèndo
+fight	combattere	combattendo	wikt:it:combattere	gerund combattèndo
+swim	nuotare	nuotando	wikt:it:nuotare	gerund nuotàndo
+fly	volare	volando	wikt:it:volare	gerund volàndo
+ride	cavalcare	cavalcando	wikt:it:cavalcare	gerund cavalcàndo
+sing	cantare	cantando	wikt:it:cantare	gerund cantàndo
+laugh	ridere	ridendo	wikt:it:ridere	gerund ridèndo
+cry	piangere	piangendo	wikt:it:piangere	gerund piangèndo
+wait	aspettare	aspettando	wikt:it:aspettare	gerund aspettàndo
+watch	guardare	guardando	wikt:it:guardare	gerund guardàndo
+look	guardare	guardando	wikt:it:guardare	gerund guardàndo
+show	mostrare	mostrando	wikt:it:mostrare	gerund mostràndo
+call	chiamare	chiamando	wikt:it:chiamare	gerund chiamàndo
+put	mettere	mettendo	wikt:it:mettere	gerund mettèndo
+keep	tenere	tenendo	wikt:it:tenere	gerund tenèndo
+leave	partire	partendo	wikt:it:partire	gerund partèndo
+follow	seguire	seguendo	wikt:it:seguire	gerund seguèndo
+seek	cercare	cercando	wikt:it:cercare	gerund cercàndo
+choose	scegliere	scegliendo	wikt:it:scegliere	gerund sceglièndo
+change	cambiare	cambiando	wikt:it:cambiare	gerund cambiàndo
+grow	crescere	crescendo	wikt:it:crescere	gerund crescèndo
+fall	cadere	cadendo	wikt:it:cadere	gerund cadèndo
+rise	salire	salendo	wikt:it:salire	gerund salèndo
+turn	girare	girando	wikt:it:girare	gerund giràndo
+move	muovere	muovendo	wikt:it:muovere	gerund muovèndo, movèndo
+throw	lanciare	lanciando	wikt:it:lanciare	gerund lanciàndo
+catch	prendere	prendendo	wikt:it:prendere	gerund prendèndo
+cut	tagliare	tagliando	wikt:it:tagliare	gerund tagliàndo
+wash	lavare	lavando	wikt:it:lavare	gerund lavàndo
+cook	cucinare	cucinando	wikt:it:cucinare	gerund cucinàndo

@@ -1,0 +1,110 @@
+# Where each woven Portuguese verb form in lex-pt.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. Portuguese weaves the
+# gerund, the gerúndio of "estou dizendo", not a present participle: the
+# seed's header said "present participle" for every language until
+# 2026-10-08. That day every woven Portuguese form was read in the
+# "Gerund" row of the conjugation table on English Wiktionary's Portuguese
+# entry for its verb, rendered as a reader sees it, because a verb's
+# headword line prints none of its gerunds. All 80 are the form their
+# verb's table prints, and none was changed.
+#
+# quote is the row's label and its cell, as printed, the label capitalised
+# as the Portuguese table prints it.
+#
+# Whether that form answers to every English -ing it is woven under — the
+# progressive's participle, or a gerund used as a noun, "reading is fun" —
+# is a call about the language rather than a lookup, written up in TODO.md
+# and not held here.
+#
+# The sources field
+# -----------------
+#   wikt:pt:<title>    https://en.wiktionary.org/wiki/<title>#Portuguese
+#
+# tests/tools/verb-forms.test.ts requires every verb lex-pt.tsv weaves in
+# a second form to have a line here with that form, citing the verb's own
+# entry, its quote printing the form in the "Gerund" cell, and fails on a
+# line outliving its row.
+have	ter	tendo	wikt:pt:ter	Gerund tendo
+say	dizer	dizendo	wikt:pt:dizer	Gerund dizendo
+go	ir	indo	wikt:pt:ir	Gerund indo
+come	vir	vindo	wikt:pt:vir	Gerund vindo
+see	ver	vendo	wikt:pt:ver	Gerund vendo
+know	saber	sabendo	wikt:pt:saber	Gerund sabendo
+think	pensar	pensando	wikt:pt:pensar	Gerund pensando
+take	tomar	tomando	wikt:pt:tomar	Gerund tomando
+give	dar	dando	wikt:pt:dar	Gerund dando
+make	fazer	fazendo	wikt:pt:fazer	Gerund fazendo
+find	encontrar	encontrando	wikt:pt:encontrar	Gerund encontrando
+want	querer	querendo	wikt:pt:querer	Gerund querendo
+tell	contar	contando	wikt:pt:contar	Gerund contando
+ask	perguntar	perguntando	wikt:pt:perguntar	Gerund perguntando
+work	trabalhar	trabalhando	wikt:pt:trabalhar	Gerund trabalhando
+play	jogar	jogando	wikt:pt:jogar	Gerund jogando
+run	correr	correndo	wikt:pt:correr	Gerund correndo
+walk	andar	andando	wikt:pt:andar	Gerund andando
+speak	falar	falando	wikt:pt:falar	Gerund falando
+read	ler	lendo	wikt:pt:ler	Gerund lendo
+write	escrever	escrevendo	wikt:pt:escrever	Gerund escrevendo
+eat	comer	comendo	wikt:pt:comer	Gerund comendo
+drink	beber	bebendo	wikt:pt:beber	Gerund bebendo
+sleep	dormir	dormindo	wikt:pt:dormir	Gerund dormindo
+sit	sentar	sentando	wikt:pt:sentar	Gerund sentando
+live	viver	vivendo	wikt:pt:viver	Gerund vivendo
+die	morrer	morrendo	wikt:pt:morrer	Gerund morrendo
+love	amar	amando	wikt:pt:amar	Gerund amando
+hate	odiar	odiando	wikt:pt:odiar	Gerund odiando
+fear	temer	temendo	wikt:pt:temer	Gerund temendo
+hear	ouvir	ouvindo	wikt:pt:ouvir	Gerund ouvindo
+feel	sentir	sentindo	wikt:pt:sentir	Gerund sentindo
+hold	segurar	segurando	wikt:pt:segurar	Gerund segurando
+carry	levar	levando	wikt:pt:levar	Gerund levando
+bring	trazer	trazendo	wikt:pt:trazer	Gerund trazendo
+send	enviar	enviando	wikt:pt:enviar	Gerund enviando
+buy	comprar	comprando	wikt:pt:comprar	Gerund comprando
+sell	vender	vendendo	wikt:pt:vender	Gerund vendendo
+pay	pagar	pagando	wikt:pt:pagar	Gerund pagando
+build	construir	construindo	wikt:pt:construir	Gerund construindo
+break	quebrar	quebrando	wikt:pt:quebrar	Gerund quebrando
+open	abrir	abrindo	wikt:pt:abrir	Gerund abrindo
+close	fechar	fechando	wikt:pt:fechar	Gerund fechando
+begin	começar	começando	wikt:pt:começar	Gerund começando
+help	ajudar	ajudando	wikt:pt:ajudar	Gerund ajudando
+learn	aprender	aprendendo	wikt:pt:aprender	Gerund aprendendo
+teach	ensinar	ensinando	wikt:pt:ensinar	Gerund ensinando
+remember	lembrar	lembrando	wikt:pt:lembrar	Gerund lembrando
+forget	esquecer	esquecendo	wikt:pt:esquecer	Gerund esquecendo
+win	ganhar	ganhando	wikt:pt:ganhar	Gerund ganhando
+lose	perder	perdendo	wikt:pt:perder	Gerund perdendo
+fight	lutar	lutando	wikt:pt:lutar	Gerund lutando
+swim	nadar	nadando	wikt:pt:nadar	Gerund nadando
+fly	voar	voando	wikt:pt:voar	Gerund voando
+ride	montar	montando	wikt:pt:montar	Gerund montando
+sing	cantar	cantando	wikt:pt:cantar	Gerund cantando
+laugh	rir	rindo	wikt:pt:rir	Gerund rindo
+cry	chorar	chorando	wikt:pt:chorar	Gerund chorando
+wait	esperar	esperando	wikt:pt:esperar	Gerund esperando
+watch	observar	observando	wikt:pt:observar	Gerund observando
+look	olhar	olhando	wikt:pt:olhar	Gerund olhando
+show	mostrar	mostrando	wikt:pt:mostrar	Gerund mostrando
+call	chamar	chamando	wikt:pt:chamar	Gerund chamando
+put	pôr	pondo	wikt:pt:pôr	Gerund pondo
+keep	guardar	guardando	wikt:pt:guardar	Gerund guardando
+leave	partir	partindo	wikt:pt:partir	Gerund partindo
+follow	seguir	seguindo	wikt:pt:seguir	Gerund seguindo
+seek	procurar	procurando	wikt:pt:procurar	Gerund procurando
+choose	escolher	escolhendo	wikt:pt:escolher	Gerund escolhendo
+change	mudar	mudando	wikt:pt:mudar	Gerund mudando
+grow	crescer	crescendo	wikt:pt:crescer	Gerund crescendo
+fall	cair	caindo	wikt:pt:cair	Gerund caindo
+rise	subir	subindo	wikt:pt:subir	Gerund subindo
+turn	virar	virando	wikt:pt:virar	Gerund virando
+move	mover	movendo	wikt:pt:mover	Gerund movendo
+throw	lançar	lançando	wikt:pt:lançar	Gerund lançando
+catch	pegar	pegando	wikt:pt:pegar	Gerund pegando
+cut	cortar	cortando	wikt:pt:cortar	Gerund cortando
+wash	lavar	lavando	wikt:pt:lavar	Gerund lavando
+cook	cozinhar	cozinhando	wikt:pt:cozinhar	Gerund cozinhando

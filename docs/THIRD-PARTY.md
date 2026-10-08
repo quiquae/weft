@@ -100,10 +100,15 @@ each; `tests/tools/genders.test.ts` fails on a noun with none. Every woven
 plural was read in the headword line of the same entry, rendered as a reader
 sees it, and `tools/seed/fr-plurals.tsv`, `es-plurals.tsv`, `pt-plurals.tsv`,
 `de-plurals.tsv` and `it-plurals.tsv` quote the clause that prints each;
-`tests/tools/plurals.test.ts` fails on a plural with none. The French
-etymology claims cite etymonline and Wiktionary in
-`tools/seed/fr-cousins.tsv`. Nothing else in these five packs names its
-entry yet: their glosses and verb forms cite nothing.
+`tests/tools/plurals.test.ts` fails on a plural with none. Every woven verb
+form was read in the conjugation table of its verb's entry, in the cell
+the pack weaves — the present participle in French and German, the gerund
+in Spanish, Portuguese and Italian — and `tools/seed/fr-verb-forms.tsv`,
+`es-verb-forms.tsv`, `pt-verb-forms.tsv`, `de-verb-forms.tsv` and
+`it-verb-forms.tsv` quote that cell for each; `tests/tools/verb-forms.test.ts`
+fails on a form with none. The French etymology claims cite etymonline and
+Wiktionary in `tools/seed/fr-cousins.tsv`. Nothing else in these five packs
+names its entry yet: their glosses cite nothing.
 
 ### Extending coverage
 

@@ -269,7 +269,8 @@ async function buildPack(lang, core) {
       ...(spec.pos === 'noun' ? { num: 'sg' } : {}),
     });
 
-    // Second form: plural for nouns, present participle for verbs.
+    // Second form: plural for nouns; for verbs the present participle
+    // (French, German) or the gerund (Spanish, Portuguese, Italian).
     if (spec.pos === 'noun') {
       const plural = englishPlural(row.lemma, spec.plural);
       if (plural && row.tgt2) {

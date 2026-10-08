@@ -1,0 +1,114 @@
+# Where each woven Spanish verb form in lex-es.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. Spanish weaves the gerund,
+# the gerundio of "estoy diciendo", not a present participle: the seed's
+# header said "present participle" for every language until 2026-10-08.
+# That day every woven Spanish form was read in the "gerund" row of the
+# conjugation table on English Wiktionary's Spanish entry for its verb,
+# rendered as a reader sees it, because a verb's headword line prints none
+# of its gerunds. All 80 are the form their verb's table prints, and none
+# was changed.
+#
+# quote is the row's label and its cell, as printed. One infinitive is
+# pronominal and has no table of its own: sentarse's entry says only
+# "infinitive of sentar combined with se". The pack weaves the gerund
+# without the pronoun, sentando, because se may stand before the verb that
+# carries it, "se está sentando", so its line cites sentarse's entry and
+# sentar's, whose table prints "gerund sentando".
+#
+# Whether that form answers to every English -ing it is woven under — the
+# progressive's participle, or a gerund used as a noun, "reading is fun" —
+# is a call about the language rather than a lookup, written up in TODO.md
+# and not held here.
+#
+# The sources field
+# -----------------
+#   wikt:es:<title>    https://en.wiktionary.org/wiki/<title>#Spanish
+#
+# tests/tools/verb-forms.test.ts requires every verb lex-es.tsv weaves in
+# a second form to have a line here with that form, citing the verb's own
+# entry, its quote printing the form in the "gerund" cell, and fails on a
+# line outliving its row.
+have	tener	teniendo	wikt:es:tener	gerund teniendo
+say	decir	diciendo	wikt:es:decir	gerund diciendo
+go	ir	yendo	wikt:es:ir	gerund yendo
+come	venir	viniendo	wikt:es:venir	gerund viniendo
+see	ver	viendo	wikt:es:ver	gerund viendo
+know	saber	sabiendo	wikt:es:saber	gerund sabiendo
+think	pensar	pensando	wikt:es:pensar	gerund pensando
+take	tomar	tomando	wikt:es:tomar	gerund tomando
+give	dar	dando	wikt:es:dar	gerund dando
+make	hacer	haciendo	wikt:es:hacer	gerund haciendo
+find	encontrar	encontrando	wikt:es:encontrar	gerund encontrando
+want	querer	queriendo	wikt:es:querer	gerund queriendo
+tell	contar	contando	wikt:es:contar	gerund contando
+ask	preguntar	preguntando	wikt:es:preguntar	gerund preguntando
+work	trabajar	trabajando	wikt:es:trabajar	gerund trabajando
+play	jugar	jugando	wikt:es:jugar	gerund jugando
+run	correr	corriendo	wikt:es:correr	gerund corriendo
+walk	caminar	caminando	wikt:es:caminar	gerund caminando
+speak	hablar	hablando	wikt:es:hablar	gerund hablando
+read	leer	leyendo	wikt:es:leer	gerund leyendo
+write	escribir	escribiendo	wikt:es:escribir	gerund escribiendo
+eat	comer	comiendo	wikt:es:comer	gerund comiendo
+drink	beber	bebiendo	wikt:es:beber	gerund bebiendo
+sleep	dormir	durmiendo	wikt:es:dormir	gerund durmiendo
+sit	sentarse	sentando	wikt:es:sentarse wikt:es:sentar	gerund sentando
+live	vivir	viviendo	wikt:es:vivir	gerund viviendo
+die	morir	muriendo	wikt:es:morir	gerund muriendo
+love	amar	amando	wikt:es:amar	gerund amando
+hate	odiar	odiando	wikt:es:odiar	gerund odiando
+fear	temer	temiendo	wikt:es:temer	gerund temiendo
+hear	oír	oyendo	wikt:es:oír	gerund oyendo
+feel	sentir	sintiendo	wikt:es:sentir	gerund sintiendo
+hold	sostener	sosteniendo	wikt:es:sostener	gerund sosteniendo
+carry	llevar	llevando	wikt:es:llevar	gerund llevando
+bring	traer	trayendo	wikt:es:traer	gerund trayendo
+send	enviar	enviando	wikt:es:enviar	gerund enviando
+buy	comprar	comprando	wikt:es:comprar	gerund comprando
+sell	vender	vendiendo	wikt:es:vender	gerund vendiendo
+pay	pagar	pagando	wikt:es:pagar	gerund pagando
+build	construir	construyendo	wikt:es:construir	gerund construyendo
+break	romper	rompiendo	wikt:es:romper	gerund rompiendo
+open	abrir	abriendo	wikt:es:abrir	gerund abriendo
+close	cerrar	cerrando	wikt:es:cerrar	gerund cerrando
+begin	empezar	empezando	wikt:es:empezar	gerund empezando
+help	ayudar	ayudando	wikt:es:ayudar	gerund ayudando
+learn	aprender	aprendiendo	wikt:es:aprender	gerund aprendiendo
+teach	enseñar	enseñando	wikt:es:enseñar	gerund enseñando
+remember	recordar	recordando	wikt:es:recordar	gerund recordando
+forget	olvidar	olvidando	wikt:es:olvidar	gerund olvidando
+win	ganar	ganando	wikt:es:ganar	gerund ganando
+lose	perder	perdiendo	wikt:es:perder	gerund perdiendo
+fight	luchar	luchando	wikt:es:luchar	gerund luchando
+swim	nadar	nadando	wikt:es:nadar	gerund nadando
+fly	volar	volando	wikt:es:volar	gerund volando
+ride	montar	montando	wikt:es:montar	gerund montando
+sing	cantar	cantando	wikt:es:cantar	gerund cantando
+laugh	reír	riendo	wikt:es:reír	gerund riendo
+cry	llorar	llorando	wikt:es:llorar	gerund llorando
+wait	esperar	esperando	wikt:es:esperar	gerund esperando
+watch	mirar	mirando	wikt:es:mirar	gerund mirando
+look	mirar	mirando	wikt:es:mirar	gerund mirando
+show	mostrar	mostrando	wikt:es:mostrar	gerund mostrando
+call	llamar	llamando	wikt:es:llamar	gerund llamando
+put	poner	poniendo	wikt:es:poner	gerund poniendo
+keep	guardar	guardando	wikt:es:guardar	gerund guardando
+leave	salir	saliendo	wikt:es:salir	gerund saliendo
+follow	seguir	siguiendo	wikt:es:seguir	gerund siguiendo
+seek	buscar	buscando	wikt:es:buscar	gerund buscando
+choose	elegir	eligiendo	wikt:es:elegir	gerund eligiendo
+change	cambiar	cambiando	wikt:es:cambiar	gerund cambiando
+grow	crecer	creciendo	wikt:es:crecer	gerund creciendo
+fall	caer	cayendo	wikt:es:caer	gerund cayendo
+rise	subir	subiendo	wikt:es:subir	gerund subiendo
+turn	girar	girando	wikt:es:girar	gerund girando
+move	mover	moviendo	wikt:es:mover	gerund moviendo
+throw	lanzar	lanzando	wikt:es:lanzar	gerund lanzando
+catch	atrapar	atrapando	wikt:es:atrapar	gerund atrapando
+cut	cortar	cortando	wikt:es:cortar	gerund cortando
+wash	lavar	lavando	wikt:es:lavar	gerund lavando
+cook	cocinar	cocinando	wikt:es:cocinar	gerund cocinando

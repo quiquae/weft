@@ -1,0 +1,110 @@
+# Where each woven German verb form in lex-de.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. German weaves the present
+# participle, Partizip I. On 2026-10-08 every woven German form was read in
+# the "present participle" row of the conjugation table on English
+# Wiktionary's German entry for its verb, rendered as a reader sees it,
+# because a verb's headword line prints its past participle and not this
+# one. All 81 are the form their verb's table prints, and none was changed.
+#
+# quote is the row's label and its cell, as printed. wachsen and bewegen
+# each have two tables, one per verb of that spelling, and both print the
+# same participle.
+#
+# Whether that form answers to every English -ing it is woven under — the
+# progressive's participle, or a gerund used as a noun, "reading is fun" —
+# is a call about the language rather than a lookup, written up in TODO.md
+# and not held here.
+#
+# The sources field
+# -----------------
+#   wikt:de:<title>    https://en.wiktionary.org/wiki/<title>#German
+#
+# tests/tools/verb-forms.test.ts requires every verb lex-de.tsv weaves in
+# a second form to have a line here with that form, citing the verb's own
+# entry, its quote printing the form in the "present participle" cell, and fails on a
+# line outliving its row.
+have	haben	habend	wikt:de:haben	present participle habend
+say	sagen	sagend	wikt:de:sagen	present participle sagend
+go	gehen	gehend	wikt:de:gehen	present participle gehend
+come	kommen	kommend	wikt:de:kommen	present participle kommend
+see	sehen	sehend	wikt:de:sehen	present participle sehend
+know	wissen	wissend	wikt:de:wissen	present participle wissend
+think	denken	denkend	wikt:de:denken	present participle denkend
+take	nehmen	nehmend	wikt:de:nehmen	present participle nehmend
+give	geben	gebend	wikt:de:geben	present participle gebend
+make	machen	machend	wikt:de:machen	present participle machend
+find	finden	findend	wikt:de:finden	present participle findend
+want	wollen	wollend	wikt:de:wollen	present participle wollend
+tell	erzählen	erzählend	wikt:de:erzählen	present participle erzählend
+ask	fragen	fragend	wikt:de:fragen	present participle fragend
+work	arbeiten	arbeitend	wikt:de:arbeiten	present participle arbeitend
+play	spielen	spielend	wikt:de:spielen	present participle spielend
+run	laufen	laufend	wikt:de:laufen	present participle laufend
+walk	gehen	gehend	wikt:de:gehen	present participle gehend
+speak	sprechen	sprechend	wikt:de:sprechen	present participle sprechend
+read	lesen	lesend	wikt:de:lesen	present participle lesend
+write	schreiben	schreibend	wikt:de:schreiben	present participle schreibend
+eat	essen	essend	wikt:de:essen	present participle essend
+drink	trinken	trinkend	wikt:de:trinken	present participle trinkend
+sleep	schlafen	schlafend	wikt:de:schlafen	present participle schlafend
+sit	sitzen	sitzend	wikt:de:sitzen	present participle sitzend
+stand	stehen	stehend	wikt:de:stehen	present participle stehend
+live	leben	lebend	wikt:de:leben	present participle lebend
+die	sterben	sterbend	wikt:de:sterben	present participle sterbend
+love	lieben	liebend	wikt:de:lieben	present participle liebend
+hate	hassen	hassend	wikt:de:hassen	present participle hassend
+fear	fürchten	fürchtend	wikt:de:fürchten	present participle fürchtend
+hear	hören	hörend	wikt:de:hören	present participle hörend
+feel	fühlen	fühlend	wikt:de:fühlen	present participle fühlend
+hold	halten	haltend	wikt:de:halten	present participle haltend
+carry	tragen	tragend	wikt:de:tragen	present participle tragend
+bring	bringen	bringend	wikt:de:bringen	present participle bringend
+send	senden	sendend	wikt:de:senden	present participle sendend
+buy	kaufen	kaufend	wikt:de:kaufen	present participle kaufend
+sell	verkaufen	verkaufend	wikt:de:verkaufen	present participle verkaufend
+pay	zahlen	zahlend	wikt:de:zahlen	present participle zahlend
+build	bauen	bauend	wikt:de:bauen	present participle bauend
+break	brechen	brechend	wikt:de:brechen	present participle brechend
+open	öffnen	öffnend	wikt:de:öffnen	present participle öffnend
+close	schließen	schließend	wikt:de:schließen	present participle schließend
+begin	beginnen	beginnend	wikt:de:beginnen	present participle beginnend
+help	helfen	helfend	wikt:de:helfen	present participle helfend
+learn	lernen	lernend	wikt:de:lernen	present participle lernend
+teach	lehren	lehrend	wikt:de:lehren	present participle lehrend
+remember	erinnern	erinnernd	wikt:de:erinnern	present participle erinnernd
+forget	vergessen	vergessend	wikt:de:vergessen	present participle vergessend
+win	gewinnen	gewinnend	wikt:de:gewinnen	present participle gewinnend
+lose	verlieren	verlierend	wikt:de:verlieren	present participle verlierend
+fight	kämpfen	kämpfend	wikt:de:kämpfen	present participle kämpfend
+swim	schwimmen	schwimmend	wikt:de:schwimmen	present participle schwimmend
+fly	fliegen	fliegend	wikt:de:fliegen	present participle fliegend
+ride	reiten	reitend	wikt:de:reiten	present participle reitend
+sing	singen	singend	wikt:de:singen	present participle singend
+laugh	lachen	lachend	wikt:de:lachen	present participle lachend
+cry	weinen	weinend	wikt:de:weinen	present participle weinend
+wait	warten	wartend	wikt:de:warten	present participle wartend
+watch	beobachten	beobachtend	wikt:de:beobachten	present participle beobachtend
+look	schauen	schauend	wikt:de:schauen	present participle schauend
+show	zeigen	zeigend	wikt:de:zeigen	present participle zeigend
+call	rufen	rufend	wikt:de:rufen	present participle rufend
+put	setzen	setzend	wikt:de:setzen	present participle setzend
+keep	behalten	behaltend	wikt:de:behalten	present participle behaltend
+leave	verlassen	verlassend	wikt:de:verlassen	present participle verlassend
+follow	folgen	folgend	wikt:de:folgen	present participle folgend
+seek	suchen	suchend	wikt:de:suchen	present participle suchend
+choose	wählen	wählend	wikt:de:wählen	present participle wählend
+change	ändern	ändernd	wikt:de:ändern	present participle ändernd
+grow	wachsen	wachsend	wikt:de:wachsen	present participle wachsend
+fall	fallen	fallend	wikt:de:fallen	present participle fallend
+rise	steigen	steigend	wikt:de:steigen	present participle steigend
+turn	drehen	drehend	wikt:de:drehen	present participle drehend
+move	bewegen	bewegend	wikt:de:bewegen	present participle bewegend
+throw	werfen	werfend	wikt:de:werfen	present participle werfend
+catch	fangen	fangend	wikt:de:fangen	present participle fangend
+cut	schneiden	schneidend	wikt:de:schneiden	present participle schneidend
+wash	waschen	waschend	wikt:de:waschen	present participle waschend
+cook	kochen	kochend	wikt:de:kochen	present participle kochend
