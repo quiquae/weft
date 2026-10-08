@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **351** tool tests / 90 suites, **40** e2e passing
+suites, **361** tool tests / 92 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -64,6 +64,16 @@ of the noun's English Wiktionary entry, and two were wrong: Spanish wove
 Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
+
+**And as of 2026-10-08 every French gloss quotes the entry that gives it.**
+`tools/seed/fr-glosses.tsv` holds, for all 356 rows, the definition line of
+the word's own English Wiktionary entry that gives its gloss, naming the
+word that stands for it where the English is not there — "seaman" for
+sailor, "fabric" for cloth — and `tests/tools/glosses.test.ts` fails on a
+row with none, and on a modern pack that is neither read nor listed as
+waiting. Reading them found one false: `tenir debout`, woven for "stand",
+is "to hold water, to make sense", and is queued to be `être debout`.
+Spanish, Portuguese, German and Italian are the next four slices.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -494,10 +504,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed and `Now` is empty. `Next` holds four
+**So the whole of B0 is closed and `Now` is empty. `Next` holds two
 agent-shaped items, none of them waiting on B1.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item besides those four needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining item besides those two needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -4898,29 +4908,79 @@ registered**, and nothing below it can move until it is.
       moved. Tools 321 → **351** / 84 → **90** suites, total 1029 →
       **1059**, in six places, `docs/LAUNCH.md:221` first.
 
-- [ ] **No modern gloss names its entry.** Found 2026-10-08 by the verb-form
-      pass: `docs/THIRD-PARTY.md` now says the five modern packs' glosses
-      are the one claim in them that cites nothing. 1 780 rows, 356 a
-      language — 178 nouns, 81 verbs, 57 adjectives, 22 adverbs, 13
-      numerals, 5 interjections — each teaching that its English word is
-      the target word, and none quoting a dictionary that says so. Shape
-      as Old English's (`tests/tools/ang-glosses.test.ts`): a ledger per
-      language quoting English Wiktionary's definition line for the
-      target in its language, holding the row's English word or naming
-      the word of the quote that stands for it, a page that only names
-      another form citing the entry it names, and a row no definition
-      gives named in a `QUEUED` table until it is taught differently.
-      About two hours a language, so split by language, French first.
-      The rendered pages of every noun are in `/tmp/weft-pl/render/<lang>/`
-      and of every verb in `/tmp/weft-vb/render/` for as long as `/tmp`
-      lasts, with `/tmp/weft-pl/plurals.py`'s section reader; adjectives,
-      adverbs, numerals and interjections, 97 a language, need fetching.
-      A definition line is a `<li>` in the part of speech's `<ol>`, and a
-      page holds every word of one spelling, so read the sense that is
-      this row's part of speech.
+- [x] **No French gloss names its entry.** Done 2026-10-08, the first
+      slice of "no modern gloss names its entry", which was split by
+      language as it asked, French first. All 356 rows were read in the
+      rendered page of the word's own English Wiktionary entry, in its
+      French section: 250 pages were already in `/tmp` from the plural and
+      verb-form passes, and the other 95 — the adjectives, adverbs,
+      numerals, interjections, and nouns weaving no plural — were fetched
+      at a request a second. A reader in `/tmp/weft-gl/defs.py` takes the
+      items of the definition list under each heading of the row's part
+      of speech, examples, quotations and synonyms set aside, and
+      `draft.py` drafted the first holding the row's English word: 345 of
+      356. Every draft was read against its page; one was another sense —
+      `question`'s first line is "question (interrogation by torture)" —
+      and quotes the sense that asks. Seven name a stand-in (`marin`
+      "seaman", `cheveu` "a headhair", `limier` "bloodhound", `tissu`
+      "fabric", `rapide` "fast", `beau` "handsome, fine, attractive",
+      `bonjour`'s interjection "good day"); three quote the heading their
+      page gives them, `seul` an adjective, `premier` an ordinal
+      adjective, `s’il vous plaît` a phrase. **One is false**: `tenir
+      debout`, woven for "stand", is "(informal) to hold water, to be
+      valid, to make sense", and `QUEUED` in `tests/tools/glosses.test.ts`
+      names it — the next item. `tools/seed/fr-glosses.tsv` holds the 356,
+      and `tests/tools/glosses.test.ts`, 10 tests in 2 suites, holds every
+      modern pack: `READ` names the languages read, `UNREAD` the four
+      waiting, and a sixth pack fails until it is one or the other. Red
+      first on "356 French glosses name no entry"; seven probes, each
+      restored by md5, each failing its own test by name. A source writes
+      a space as an underscore, `wikt:fr:au_revoir`, as
+      `ang-etymons.tsv` cites `wikt:en:many_a_mickle_makes_a_muckle`,
+      because the field is space-separated. Nothing that ships moved.
 
-`Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the modern glosses. The modern verb forms, the
+- [ ] **`tenir debout` is not "stand".** Found 2026-10-08 by the French
+      gloss pass. English Wiktionary's `tenir debout` is "(informal) to
+      hold water, to be valid, to make sense", what an argument does — "ça
+      ne tient pas debout", that doesn't hold water — and not what a
+      person does. **The fix is `être debout`**, whose own entry is
+      "stand (be upright, support oneself on the feet in an erect
+      position)", and which is the other packs' shape exactly: Spanish
+      `estar de pie`, Italian `stare in piedi`, Portuguese `estar de pé`,
+      each "to be on foot". Read 2026-10-08 in `/tmp/weft-gl/render/extra/`
+      beside `debout`, "standing, stood up, upright", and `lever`, whose
+      reflexive is "to rise, stand up" — standing up, not standing;
+      `se tenir debout` has no entry. A different word is a different
+      card, so `fr:tenir debout` goes into `WITHDRAWN` in
+      `src/core/renames.ts` with its reason, `fr être debout` into
+      `tools/seed/card-ids.tsv`, the seed row and its `fr-glosses.tsv` line
+      change together, and `QUEUED` empties, its stale check being the
+      plan. No second form, IPA, etymon or note to write; French has no
+      word pages, so the site should not move; regenerate the screenshots
+      to show they do not. About 45 minutes.
+
+- [ ] **No Spanish, Portuguese, German or Italian gloss names its
+      entry.** The rest of the modern glosses, 356 rows a language,
+      split by language, Spanish next. The French slice's shape is the
+      plan: add the language to `READ` and take it out of `UNREAD` in
+      `tests/tools/glosses.test.ts`, which goes red naming all 356, write
+      `tools/seed/<lang>-glosses.tsv`, and read every draft. The tooling
+      is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py <lang>`
+      fetches the pages the noun and verb passes did not (about 95 a
+      language, a minute and a half), `defs.py` reads a page's definition
+      lines per heading, `draft.py <lang>` drafts and lists the rows
+      needing a decision, and `/tmp/weft-gl/fr-header.txt` is the
+      header to adapt. Read the drafts, not only the misses: the first
+      line holding a word can be another sense, as `question`'s was. If
+      `/tmp` is gone, the three scripts are short to write again from
+      that description: the pages are `action=render`, a definition line
+      is an `<li>` of the first `<ol>` after a part of speech's heading,
+      its `<dl>` and `<ul>` set aside. About 30 minutes a language with
+      the tooling, two hours without it.
+
+`Now` is **empty** and `Next` holds **two** unchecked items, the last
+two above, as of 2026-10-08: `tenir debout` for "stand", then the Spanish,
+Portuguese, German and Italian glosses. The French glosses, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
@@ -4981,7 +5041,24 @@ rather than changed:
    line, and `PRONOMINAL` in `tests/tools/verb-forms.test.ts` move
    together, and the pack and the screenshots with them; no card moves,
    a card being its infinitive's. Portuguese weaves *sentar* itself, French *asseoir*, German
-   *sitzen*.
+   *sitzen*. And French *asseoir* alone is causative: its entry's first
+   line, which `fr-glosses.tsv` quotes, is "(transitive) to sit (someone)
+   down, to seat, make sit", and English's intransitive "sit" is its
+   reflexive, "to sit down, sit up, take a seat". So "she sat" woven
+   *asseoir* says she seated someone; *s’asseoir* is a new card, the
+   seed's `asseoir` row, its verb-form line and its gloss
+   line moving together.
+
+**One French gloss call a human may want to look at**, recorded on
+2026-10-08 rather than changed: *cheveu*, woven for "hair", is one hair,
+"a headhair", and its entry's usage note says English's mass noun is
+French's plural: "For the mass noun hair, use the plural cheveux". So
+"her hair is long" woven in the singular says she has one. The row
+weaves *cheveux* only under "hairs". Weaving *cheveux* under "hair"
+breaks the rule every seed's header states — a plural target under an
+English singular — and blanking the row's singular leaves "hair" woven
+nowhere; either is a choice, and the second is a line of
+`tools/seed/lex-fr.tsv` and its ledger lines.
 
 **One gender call a human may want to look at**, taken on 2026-10-08
 without anyone to ask: eleven modern nouns are masculine or feminine by the
@@ -5367,6 +5444,34 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-08 — the French glosses, and what the other four slices need.**
+Ticked in `Next`. Four things a later run would be sorry not to know:
+
+1. **A source writes a space as an underscore and a curly apostrophe
+   straight.** The sources field is space-separated, so `au revoir` is
+   `wikt:fr:au_revoir`, the form of Wiktionary's own address and of
+   `ang-etymons.tsv`'s `wikt:en:many_a_mickle_makes_a_muckle`; and the
+   seed's `aujourd’hui` is titled `aujourd'hui`. `title()` in
+   `tests/tools/glosses.test.ts` does both. The first draft cited
+   `wikt:fr:au revoir` and the source test named five lines.
+2. **A multi-word target may have an entry of its own, and a redirect is
+   not one.** `au revoir`, `nulle part`, `se souvenir`, `tenir debout`
+   and `être debout` are entries with their own headwords; `se lever`
+   renders `lever`'s page, and `se tenir` and `se tenir debout` have
+   none. `action=render` on a redirect prints the target's page, so read
+   the headword — the `<strong class="Latn headword">`, whose words are
+   links — before citing a title.
+3. **The first definition holding the English word can be another
+   sense.** `question`'s first line is "(historical, chiefly with the
+   definite article) question (interrogation by torture)", and a draft
+   that took it would have passed every test. Read every draft, not only
+   the ones that missed; 345 drafted and one was wrong.
+4. **A gloss ledger finds false glosses, not only missing citations.**
+   The plural pass of 2026-10-08 found two wrong in 868 and the verb-form
+   pass none in 400; the French glosses found one in 356, `tenir debout`,
+   and three that say less than the row is woven for, two written up as
+   calls. Expect a few a language.
 
 **2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
 Ticked in `Next`. Four things a later run would be sorry not to know:
