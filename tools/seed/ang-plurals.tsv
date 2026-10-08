@@ -55,7 +55,7 @@
 # alone, and § 54 prints "the plural forms paþas, paþa, paþum". And sister's
 # is below.
 #
-# Three were wrong. "roads" was woven weġas, a dot before a back vowel,
+# Four were wrong. "roads" was woven weġas, a dot before a back vowel,
 # where the table prints "wegas" and Wright § 320 "pl. dagas, days; wegas,
 # ways", the guttural; it is wegas now. "sisters" was woven sweostru, which
 # neither the table, whose plural is the collective ġesweostor, nor Wright
@@ -64,9 +64,12 @@
 # "floors" was woven flōras, a masculine plural, under a row ang-genders.tsv
 # calls feminine, as Wiktionary does and Bosworth–Toller first ("f: flór,
 # es; m."); a row's gender is printed under both its forms, so it is the
-# table's feminine "flōra" now.
+# table's feminine "flōra" now. And "dreams" was woven swefn, like its
+# singular, where the table prints "swefnu" and Bosworth–Toller's swefen
+# quotes "Swefnu gefremminge habbaþ, dreams will have accomplishment"; it
+# is swefnu now.
 #
-# 16 woven plurals are not here, because the table of their entry prints
+# 15 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until

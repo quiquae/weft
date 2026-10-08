@@ -642,9 +642,20 @@ word now quotes the definition that gives its gloss too.
 *weġas*, a dot before a back vowel, and the tooltip printed it /ˈwejɑs/; the
 *g* of a plural in *-as* is the guttural, as in *dagas*, "days", and Wright's
 *Old English Grammar* prints the pair together, "pl. dagas, days; wegas,
-ways" (§320). It is *wegas* now, /ˈweɣɑs/. Every woven Old English plural
-and participle but twenty-three names the declension or conjugation table
-that prints it, or the section of Wright's grammar.
+ways" (§320). It is *wegas* now, /ˈweɣɑs/.
+
+**And three more Old English plurals are ones a source prints.** "sisters"
+was woven *sweostru*, which neither English Wiktionary's table nor Wright's
+grammar prints: his paradigm gives the plural as *sweostor*, like the
+singular, where *brōþor*, *mōdor* and *dohtor* take *-ru* beside theirs
+(§415). It is *sweostor* now. And "floors" was woven *flōras*, a masculine
+plural, under a word the tooltip calls feminine, as Wiktionary does and
+Bosworth–Toller first; it is the feminine *flōra* now. And "dreams" was
+woven *swefn*, like its singular, where the table prints *swefnu* and
+Bosworth–Toller quotes "Swefnu gefremminge habbaþ", "dreams will have
+accomplishment"; it is *swefnu* now. Every woven Old English plural and
+participle but nineteen names the declension or conjugation table that
+prints it, or the section of Wright's grammar.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
