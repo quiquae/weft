@@ -24,10 +24,17 @@
 #
 # The sources field
 # -----------------
-# One entry per line, the one whose table the quote is from:
+# One source per line, the one the quote is from:
 #
 #   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
 #                      (the title drops macrons and the dots of ċ and ġ)
+#   wright:§<n>        Joseph and Elizabeth Mary Wright, Old English Grammar
+#                      (Oxford, 2nd ed., 1914), the section that prints the
+#                      form; archive.org, oldenglishgramma00wrig. Read in the
+#                      page images, not the text, whose OCR drops every macron
+#                      and reads "pl." as "pi.". Wright prints no dots on ċ
+#                      and ġ, so a quote of his is read with the pack's set
+#                      aside.
 #
 # It is always an entry ang-glosses.tsv read the row's gloss in, so the two
 # ledgers cannot choose different words of one spelling. Where the gloss was
@@ -39,13 +46,20 @@
 # Wiktionary files under þ, and the doubled palatal, which the pack writes
 # cg, "dg" in its pronunciation key, where the tables write ċġ.
 #
-# 26 woven plurals are not here, because the table of their entry prints
-# another form, or their entry has no table, or their gloss was read in
-# Bosworth–Toller alone: QUEUED in tests/tools/ang-forms.test.ts names each
-# with what its table prints, until a grammar or Bosworth–Toller is read for
-# it. Wright's Old English Grammar (1914) prints some that the tables do
-# not: setl's "setlu beside setl" (§ 349), mete's "mettas" (§ 386), winter's
-# "wintru beside winter" (§ 397).
+# Six woven plurals the tables do not print are Wright's, and cite him:
+# water's and head's, "wæter" and "hēafodu", from his paradigm (§ 347),
+# which a note calls older than the tables' "wætru" and "hēafdu"; setl's,
+# "setlu beside setl" (§ 349); mete's "mettas" (§ 386), where the table
+# prints "metas"; winter's "wintru beside winter" (§ 397); and burg's
+# "byrig beside byrg" (§ 220). And one was wrong: "roads" was woven weġas,
+# a dot before a back vowel, where the table prints "wegas" and Wright § 320
+# "pl. dagas, days; wegas, ways", the guttural; it is wegas now.
+#
+# 19 woven plurals are not here, because the table of their entry prints
+# another form and no grammar read yet prints the woven one, or their entry
+# has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
+# tests/tools/ang-forms.test.ts names each with what its table prints, until
+# one is read for it.
 man	mann	menn	wikt:ang:mann	nominative plural menn
 woman	wīfmann	wīfmenn	wikt:ang:wifmann	nominative plural wīfmenn
 child	ċild	ċildru	wikt:ang:cild	nominative plural ċildru
@@ -69,6 +83,7 @@ teacher	lārēow	lārēowas	wikt:ang:lareow	nominative plural lārēowas
 doctor	lǣċe	lǣċas	wikt:ang:læce	nominative plural lǣċas
 farmer	ierþling	ierþlingas	wikt:ang:ierþling	nominative plural ierþlingas
 sailor	sǣmann	sǣmenn	wikt:ang:sæmann	nominative plural sǣmenn
+head	hēafod	hēafodu	wright:§347	Plur. Nom. Acc. tungol wæter hēafodu
 hand	hand	handa	wikt:ang:hand	nominative plural handa
 eye	ēage	ēagan	wikt:ang:eage	nominative plural ēagan
 ear	ēare	ēaran	wikt:ang:eare	nominative plural ēaran
@@ -103,7 +118,9 @@ raven	hræfn	hræfnas	wikt:ang:hræfn	nominative plural hræfnas
 hound	hund	hundas	wikt:ang:hund	nominative plural hundas
 ox	oxa	oxan	wikt:ang:oxa	nominative plural oxan
 goat	gāt	gǣt	wikt:ang:gat	nominative plural gǣt
+food	mete	mettas	wright:§386	mete (pl. mettas), food
 bread	hlāf	hlāfas	wikt:ang:hlaf	nominative plural hlāfas
+water	wæter	wæter	wright:§347	Plur. Nom. Acc. tungol wæter hēafodu
 wine	wīn	wīn	wikt:ang:win	nominative plural wīn
 fruit	wæstm	wæstmas	wikt:ang:wæstm	nominative plural wæstmas
 apple	æppel	æpplas	wikt:ang:æppel	nominative plural æppla, æpplas
@@ -117,6 +134,7 @@ wall	wall	wallas	wikt:ang:wall	nominative plural wallas
 roof	hrōf	hrōfas	wikt:ang:hrof	nominative plural hrōfas
 room	rūm	rūm	wikt:ang:rum	nominative plural rūm
 table	bēod	bēodas	wikt:ang:beod	nominative plural bēodas
+chair	setl	setl	wright:§349	setl, seat, pl. setlu beside setl
 bed	bedd	bedd	wikt:ang:bedd	nominative plural bedd
 word	word	word	wikt:ang:word	nominative plural word
 letter	bōcstæf	bōcstafas	wikt:ang:bocstæf	nominative plural bōcstafas
@@ -146,6 +164,8 @@ forest	weald	wealdas	wikt:ang:weald	nominative plural wealdas
 leaf	lēaf	lēaf	wikt:ang:leaf	nominative plural lēaf
 flower	blōstma	blōstman	wikt:ang:blostma	nominative plural blōstman
 field	feld	feldas	wikt:ang:feld	nominative plural felda, feldas
+road	weġ	wegas	wikt:ang:weg	nominative plural wegas
+city	burg	byriġ	wright:§220	burg, burh (OS. OHG. burg), city; but dat. sing. and nom. plural byrig beside byrg
 town	tūn	tūnas	wikt:ang:tun	nominative plural tūnas
 world	weorold	weorolde	wikt:ang:weorold	nominative plural weorolde, weorolda
 country	rīċe	rīċu	wikt:ang:rice	nominative plural rīċu
@@ -163,6 +183,7 @@ week	wicu	wican	wikt:ang:wice	nominative plural wican
 hour	tīd	tīde	wikt:ang:tid	nominative plural tīde, tīda
 morning	morgen	morgnas	wikt:ang:morgen	nominative plural morgnas
 summer	sumor	sumoras	wikt:ang:sumor	nominative plural sumoras
+winter	winter	wintru	wright:§397	winter (pl. neut. wintru beside winter), winter
 autumn	hærfest	hærfestas	wikt:ang:hærfest	nominative plural hærfestas
 life	līf	līf	wikt:ang:lif	nominative plural līf
 death	dēað	dēaðas	wikt:ang:deað	nominative plural dēaðas
