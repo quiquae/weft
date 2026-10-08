@@ -79,7 +79,7 @@ declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
 was wrong, and the two are written up in `Next`.
 
 **And as of 2026-10-08 every woven Old English plural and participle but
-twenty-three names the table, or the section of a grammar, that prints it.** None had been read against a
+nineteen names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -88,10 +88,17 @@ are among the forms their entry's table prints; `tools/seed/ang-plurals.tsv`
 and `ang-verb-forms.tsv` quote the cell for each, and
 `tests/tools/ang-forms.test.ts` fails on one with none. Of the thirty
 others, six are woven in a form Wright's *Old English Grammar* prints and
-the table does not, and cite him; one was wrong, "roads" woven `weġas`,
-where Wright § 320 prints "wegas, ways", and is `wegas` now. The last
-twenty-three are named in that test's `QUEUED` with what their table
-prints, and reading them is the first item in `Next`.
+the table does not, and cite him, and so does `pæð`, whose gloss was read
+in Bosworth–Toller and whose plural "paþas" § 54 prints. Four were wrong:
+"roads" woven `weġas`, where Wright § 320 prints "wegas, ways", and is
+`wegas` now; "sisters" woven `sweostru`, which nothing prints, where
+Wright's paradigm gives `sweostor` (§ 415), and is `sweostor` now; and
+"floors" woven in the masculine `flōras` under a feminine row, and is the
+table's `flōra` now; and "dreams" woven `swefn`, like its singular, where
+the table and Bosworth–Toller print `swefnu`, as it is now. The last
+nineteen are named in that test's `QUEUED`
+with what their table prints, and reading them is the first item in
+`Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -5227,31 +5234,86 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Twenty-three Old English second forms are still not what their
-      table prints.** The remainder of the item above, named in `QUEUED`
-      in `tests/tools/ang-forms.test.ts` with what each table prints:
+- [ ] **Nineteen Old English second forms are still not what their table
+      prints.** The remainder of the item above, named in `QUEUED` in
+      `tests/tools/ang-forms.test.ts` with what each table prints, and
+      what Wright and Bosworth–Toller were found to print on 2026-10-08:
 
-      - **Another form, and no grammar read yet prints the woven one:**
-        `sweostru`, where the table prints only the ġe- forms and the OCR
-        of Wright's § 415 paradigm reads the plural as `sweostor` (read the
-        page, n219); `trēow`, `swefn`, `ǣfnas`, `hattas`, `flōras` (the
-        table is feminine; Wright § 398 lists `flōr` among the feminine
-        u-stems, "also masc."), `þorpas` (the table neuter, Bosworth–Toller
-        masculine), and `gangende`, where `gān`'s table prints `gānde` and
-        Wright's § 550 paradigm of `gān` is the place to look.
-      - **No Wiktionary table read:** `hīwsċipas`, `onsīene` and `paðas`,
-        whose glosses were read in Bosworth–Toller; `hūsbondan` and
-        `mentlas`, whose pages have none; and `fremdan`, the weak plural of
-        an adjective, whose page's table is the adjective's.
+      - **Another form, or a source the ledger cannot cite yet:**
+        `trēow`, where the tree's table prints `trēowu` and Wright § 363
+        declines `trēo(w)` like `cnēo`, whose plural § 361 prints `cnēo` —
+        a paradigm, not the word — while Bosworth–Toller's neuter `treów`
+        (bt:30998) prints "and óþre treów" (Nar. 27, 26–29) beside
+        "treówa" and "Treówu"; `ǣfnas`, where the table prints
+        `ǣfennas` and Bosworth–Toller's two entries (bt:391, bt:37608)
+        print only the genitive plural "ǽfena"; `hattas`, where the table
+        prints `hættas`, Bosworth–Toller's `hæt` (bt:17964) prints no
+        plural, and Wright § 57 keeps *a* "in closed syllables before
+        double consonants … when the next syllable originally contained a
+        guttural vowel", "catte, … sacc", which would give `hattas` and
+        names neither — a judgement, so it waits; `þorpas`, where the table
+        is neuter and Bosworth–Toller, masculine, prints only the late "ealle
+        þa þorpes" (Chr. 963); and `gangende`, where `gān`'s table prints
+        `gānde` and Wright's paradigm of `gān` (§ 550, page 288) prints
+        "Infinitive gān. Past participle gegān." and no present participle
+        at all, so the pointer to § 550 is spent.
+      - **No Wiktionary table read:** `hīwsċipas`, whose gloss was read in
+        Bosworth–Toller, and whose entry there (bt:19147) prints "Ealle
+        híwscipas þeóda universæ familiæ gentium" (Ps. Lamb. 21, 28);
+        `onsīene`, whose entry's quotations are all singular, and which
+        Wright § 390 declines like `cwēn`, plural `cwēne` (§ 389);
+        `hūsbondan` and `mentlas`, whose pages have no table and whose
+        Bosworth–Toller entries (bt:19998 and bt:53417; bt:22625 and
+        bt:55269), read whole, print no plural; and `fremdan`, the weak
+        plural of an adjective, whose page's weak table prints "fremdan" in
+        its masculine nominative plural, a cell the test does not read.
       - **Kind 3**, a dot where an ending was lost: `līċ`, `wīġ`, `bēc`,
         `ċirican`, as written above.
       - **Kind 4**, a headword's own marks: `ċempa`, `ċǣġ`, `hlīehhan`,
         `wasċan`, and `beginnan`, which Wright decides.
 
-      A Wright line is the cheapest cure where he prints the woven form;
-      where he prints another, the seed moves, as `wegas` did. About an
-      hour for the first two groups; kinds 3 and 4 move sounds and cards,
-      and want their own PRs.
+      The next step, about an hour: let `ang-plurals.tsv` cite
+      Bosworth–Toller, `bt:<id>`, its quote holding the entry's head and a
+      passage that prints the form, read with its acute accents as length
+      marks and the dots set aside. The head is the check that the entry is
+      this word's: `treów, es; n.` is the tree where `treów, e; f.` is
+      faith, so the head should carry the gender the gender ledger gives.
+      That clears `hīwsċipas` and the tree's `trēow` at once. Then let a
+      noun listed as an adjective read its adjective's weak nominative
+      plural, as the Latin `aliēnus` item proposes for its cell. Kinds 3
+      and 4 move sounds and cards, and want their own PRs.
+
+      **Done 2026-10-08 for four, in a second run.** `pæð`'s gloss was read
+      in Bosworth–Toller, and Wright § 54, Note 3 (page 37, read in the page
+      image), prints "sing. gen. paþes, dat. paþe, beside pæþes, pæþe, due
+      to the plural forms paþas, paþa, paþum", so it cites him. Wright's
+      paradigm of the nouns of relationship (§ 415, page 200) gives
+      `sweostor`'s nominative plural as "sweostor" alone, where brōþor,
+      mōdor and dohtor take "-þru", "-dru" and "-tru" beside theirs, and the
+      table's plural is the collective `ġesweostor`: "sisters" was woven
+      `sweostru`, which neither prints, and is `sweostor` now. And `flōr`
+      is feminine in the gender ledger, in Wiktionary's header and first in
+      Bosworth–Toller ("FLÓR, gen. flóre; … f: flór, es; m."), and was
+      woven in the masculine `flōras`; a row's gender is printed under both
+      its forms, so it is the table's feminine `flōra` now, which Wright
+      § 398's feminine u-stems, "flōr (also masc.)", agree with. Reading
+      Bosworth–Toller whole for the rest found a fourth: `swefn`, "dreams",
+      was woven like its singular, where the table prints `swefnu` and
+      Bosworth–Toller's `swefen` (bt:29601) quotes "Swefnu gefremminge
+      habbaþ dreams will have accomplishment" and "Heó ádrǽfe swefnu", so
+      it is `swefnu` now, /ˈswevnu/. 6 of 7 163 fields of `en-ang.json`
+      moved, each row's form and transcription, `builtAt` already today;
+      the site differs from `main`'s in three cells, the Plural rows of
+      `/old-english/sweostor`, `/old-english/flor` and `/old-english/swefn`;
+      all 36 screenshots regenerated byte-identical, 14 + 15 + 7 written,
+      twice — the second time `options.png` moved by 40 pixels, no channel
+      more than 16 apart, on a page the pack does not feed, and a third run
+      of that set gave back the committed bytes — and the three groups
+      stamped. Test-first: four rows out of `QUEUED`, red naming exactly
+      four; the lines, red on the two seed forms alone; the seed, green;
+      then `swefn` the same way. `hæt` went back into `QUEUED` with its
+      reason, the only one of the four with a case both ways. Two probes on
+      the new lines, each restored by md5. No test count moved.
 
 - [x] **No woven Latin plural or participle has been read against a
       dictionary.** Found 2026-10-08 with the item above: 165 plurals and 79
@@ -5296,9 +5358,9 @@ registered**, and nothing below it can move until it is.
       hour, most of it the second.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-08: the twenty-three Old English second forms their tables do not
-print, and the two Latin ones. Latin's second forms but two, seven of the
-thirty, the Old English second
+2026-10-08: the nineteen Old English second forms their tables do not
+print, and the two Latin ones. Four more of the Old English thirty, Latin's
+second forms but two, seven of the thirty, the Old English second
 forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the
 modern plurals, the modern genders, the Italian

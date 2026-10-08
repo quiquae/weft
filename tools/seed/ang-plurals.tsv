@@ -46,16 +46,30 @@
 # Wiktionary files under þ, and the doubled palatal, which the pack writes
 # cg, "dg" in its pronunciation key, where the tables write ċġ.
 #
-# Six woven plurals the tables do not print are Wright's, and cite him:
+# Eight woven plurals cite Wright. Six are forms the tables do not print:
 # water's and head's, "wæter" and "hēafodu", from his paradigm (§ 347),
 # which a note calls older than the tables' "wætru" and "hēafdu"; setl's,
 # "setlu beside setl" (§ 349); mete's "mettas" (§ 386), where the table
 # prints "metas"; winter's "wintru beside winter" (§ 397); and burg's
-# "byrig beside byrg" (§ 220). And one was wrong: "roads" was woven weġas,
-# a dot before a back vowel, where the table prints "wegas" and Wright § 320
-# "pl. dagas, days; wegas, ways", the guttural; it is wegas now.
+# "byrig beside byrg" (§ 220). Path's gloss was read in Bosworth–Toller
+# alone, and § 54 prints "the plural forms paþas, paþa, paþum". And sister's
+# is below.
 #
-# 19 woven plurals are not here, because the table of their entry prints
+# Four were wrong. "roads" was woven weġas, a dot before a back vowel,
+# where the table prints "wegas" and Wright § 320 "pl. dagas, days; wegas,
+# ways", the guttural; it is wegas now. "sisters" was woven sweostru, which
+# neither the table, whose plural is the collective ġesweostor, nor Wright
+# prints: his paradigm gives the plural as "sweostor" (§ 415), where
+# brōþor, mōdor and dohtor take -ru beside it, so it is sweostor now. And
+# "floors" was woven flōras, a masculine plural, under a row ang-genders.tsv
+# calls feminine, as Wiktionary does and Bosworth–Toller first ("f: flór,
+# es; m."); a row's gender is printed under both its forms, so it is the
+# table's feminine "flōra" now. And "dreams" was woven swefn, like its
+# singular, where the table prints "swefnu" and Bosworth–Toller's swefen
+# quotes "Swefnu gefremminge habbaþ, dreams will have accomplishment"; it
+# is swefnu now.
+#
+# 15 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until
@@ -70,6 +84,7 @@ friend	frēond	frīend	wikt:ang:freond	nominative plural frīend, frēond, frēo
 mother	mōdor	mōdru	wikt:ang:modor	nominative plural mōdra, mōdru
 father	fæder	fæderas	wikt:ang:fæder	nominative plural fæderas
 brother	brōðor	brōðru	wikt:ang:broðor	nominative plural brōðor, ġebrōðor, brōðra, ġebrōðra, brōðru, ġebrōðru
+sister	sweostor	sweostor	wright:§415	Plur. Nom. Acc. dohtor, -tru, -tra sweostor
 son	sunu	suna	wikt:ang:sunu	nominative plural suna
 daughter	dohtor	dohtru	wikt:ang:dohtor	nominative plural dohtor, dohtra, dohtru
 wife	wīf	wīf	wikt:ang:wif	nominative plural wīf
@@ -132,6 +147,7 @@ door	duru	dura	wikt:ang:duru	nominative plural dura
 window	ēagþȳrel	ēagþȳrlu	wikt:ang:eagþyrel	nominative plural ēagþȳrlu
 wall	wall	wallas	wikt:ang:wall	nominative plural wallas
 roof	hrōf	hrōfas	wikt:ang:hrof	nominative plural hrōfas
+floor	flōr	flōra	wikt:ang:flor	nominative plural flōra
 room	rūm	rūm	wikt:ang:rum	nominative plural rūm
 table	bēod	bēodas	wikt:ang:beod	nominative plural bēodas
 chair	setl	setl	wright:§349	setl, seat, pl. setlu beside setl
@@ -165,6 +181,7 @@ leaf	lēaf	lēaf	wikt:ang:leaf	nominative plural lēaf
 flower	blōstma	blōstman	wikt:ang:blostma	nominative plural blōstman
 field	feld	feldas	wikt:ang:feld	nominative plural felda, feldas
 road	weġ	wegas	wikt:ang:weg	nominative plural wegas
+path	pæð	paðas	wright:§54	sing. gen. paþes, dat. paþe, beside pæþes, pæþe, due to the plural forms paþas, paþa, paþum
 city	burg	byriġ	wright:§220	burg, burh (OS. OHG. burg), city; but dat. sing. and nom. plural byrig beside byrg
 town	tūn	tūnas	wikt:ang:tun	nominative plural tūnas
 world	weorold	weorolde	wikt:ang:weorold	nominative plural weorolde, weorolda
@@ -196,6 +213,7 @@ story	spell	spell	wikt:ang:spell	nominative plural spell
 song	sang	sangas	wikt:ang:sang	nominative plural sangas
 music	drēam	drēamas	wikt:ang:dream	nominative plural drēamas
 game	gamen	gamen	wikt:ang:gamen	nominative plural gamen
+dream	swefn	swefnu	wikt:ang:swefn	nominative plural swefnu
 hope	hopa	hopan	wikt:ang:hopa	nominative plural hopan
 oath	āþ	āðas	wikt:ang:aþ	nominative plural āþas
 gift	ġiefu	ġiefa	wikt:ang:giefu	nominative plural ġiefa, ġiefe
