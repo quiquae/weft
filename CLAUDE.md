@@ -487,8 +487,12 @@ later `wætru` and `hēafdu`. Do not take the table's form over the grammar's
 to clear the queue: the pack is the normalised Early West Saxon of teaching
 editions, which is Wright's. A row neither prints, `QUEUED` names with what
 its table prints; a queued row that gains a line fails, so the list only
-shrinks. On 2026-10-08 that held 216 of 239, corrected `weġas` to `wegas`
-(Wright §320, "wegas, ways", the guttural), and left 23 for `TODO.md`.
+shrinks. On 2026-10-08 that held 220 of 239, corrected `weġas` to `wegas`
+(Wright §320, "wegas, ways", the guttural), `sweostru` to `sweostor`
+(§415's paradigm), `swefn` to the table's `swefnu`, which Bosworth–Toller
+quotes, and a feminine row's masculine `flōras` to `flōra`, and left 19 for
+`TODO.md`. A form a grammar only implies, by declining a word "like" another,
+is not one it prints: `trēow` waits for Bosworth–Toller's "óþre treów".
 
 **And a Latin one, read in its table and filed under its first person.**
 Lewis & Short prints a noun's genitive and a verb's principal parts, never
