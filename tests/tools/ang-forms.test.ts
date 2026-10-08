@@ -22,9 +22,12 @@
  * Joseph and Elizabeth Mary Wright's *Old English Grammar* (1914) that prints
  * it, quoting its words: the paradigm of `wæter` and `hēafod` gives their
  * plurals as "wæter" and "hēafodu" (§ 347) where the tables print only the
- * later "wætru" and "hēafdu". A row neither prints, `QUEUED` names with what
- * its table prints, until a grammar or Bosworth–Toller is read for it; a
- * queued row that gains a line fails, so the list can only shrink.
+ * later "wætru" and "hēafdu". Or it may cite the entry of Bosworth–Toller
+ * whose quotations print it, quoting the entry's head before the passage,
+ * because one spelling can head two entries: "treów, es; n." is the tree,
+ * "treów, e; f." faith. A row none prints, `QUEUED` names with what its
+ * table prints, until a grammar or Bosworth–Toller is read for it; a queued
+ * row that gains a line fails, so the list can only shrink.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -38,7 +41,7 @@ const LEXICON = 'lex-ang.tsv';
 const GLOSSES = 'ang-glosses.tsv';
 
 type Pos = 'noun' | 'verb';
-type Row = { line: number; lemma: string; tgt: string; tgt2: string };
+type Row = { line: number; lemma: string; tgt: string; tgt2: string; gender: string };
 type Form = { line: number; lemma: string; tgt: string; tgt2: string; sources: string[]; quote: string };
 
 const tsv = (file: string): Array<{ line: number; f: string[] }> =>
@@ -50,7 +53,7 @@ const tsv = (file: string): Array<{ line: number; f: string[] }> =>
 const woven = (pos: Pos): Row[] =>
   tsv(LEXICON)
     .filter(({ f }) => f[1] === pos && (f[3] ?? '') !== '')
-    .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', tgt2: f[3] ?? '' }));
+    .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', tgt2: f[3] ?? '', gender: f[4] ?? '' }));
 
 /** A ledger not yet written holds nothing, so every row it should hold is named. */
 const readLedger = (file: string): Form[] =>
@@ -106,13 +109,53 @@ const WRIGHT = /^wright:§\d+$/;
 const wrightWords = (quote: string): string[] => quote.split(/[^\p{L}\p{M}]+/u).filter(Boolean).map((w) => fold(w));
 const undotted = (form: string): string => fold(form).replaceAll('ċ', 'c').replaceAll('ġ', 'g');
 
+/** A source naming an entry of Bosworth–Toller's *Anglo-Saxon Dictionary*. */
+const BT = /^bt:\d+$/;
+
+/**
+ * A word of Bosworth–Toller's, read as the pack spells it: the dictionary
+ * marks a long vowel with an acute accent where the pack writes a macron,
+ * and a long diphthong on its second vowel where the pack marks the first —
+ * "treów" is trēow, "heáfod" hēafod — hyphenates a compound's head,
+ * "híw-scipe", capitalises a main entry's, and prints no dots.
+ */
+const ACUTE: Readonly<Record<string, string>> = { á: 'ā', é: 'ē', í: 'ī', ó: 'ō', ú: 'ū', ý: 'ȳ', ǽ: 'ǣ' };
+const DIPHTHONG: Readonly<Record<string, string>> = { eá: 'ēa', eó: 'ēo', ié: 'īe', ió: 'īo' };
+const btSpelling = (word: string): string =>
+  undotted(
+    word
+      .toLowerCase()
+      .replace(/eá|eó|ié|ió/gu, (d) => DIPHTHONG[d] ?? d)
+      .replace(/[áéíóúýǽ]/gu, (c) => ACUTE[c] ?? c)
+      .replaceAll('-', ''),
+  );
+
+/**
+ * A quote from Bosworth–Toller opens with the entry's head as the
+ * dictionary prints it and goes on, after " … ", to the passage that prints
+ * the form: "híw-scipe, híg-, es; m. … Ealle híwscipas þeóda". The head is
+ * how the line shows the entry is this word's, since one spelling can head
+ * two — "treów, es; n." is the tree, "treów, e; f." faith — so it must
+ * spell the headword and, for a noun, name the row's gender. Undefined for a
+ * quote with no head.
+ */
+const btQuote = (quote: string): { head: string; gender: string | undefined; words: string[] } | undefined => {
+  const at = quote.indexOf(' … ');
+  if (at < 0) return undefined;
+  const head = quote.slice(0, at);
+  return {
+    head: btSpelling(head.split(/[,\s]/u)[0] ?? ''),
+    gender: head.match(/\b([mfn])\.(?!\p{L})/u)?.[1],
+    words: quote.slice(at + 3).split(/[^\p{L}\p{M}-]+/u).filter(Boolean).map(btSpelling),
+  };
+};
+
 /**
  * A woven form the table of its entry does not print, with what it prints
  * instead: waiting for a grammar or Bosworth–Toller to say which is right.
  * Keyed by part of speech, English lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['noun\tfamily\thīwsċipe', 'its gloss was read in Bosworth–Toller, whose entry (bt:19147) prints “Ealle híwscipas þeóda”, and no Wiktionary table was read'],
   ['noun\thusband\thūsbonda', 'its entry has no table'],
   ['noun\tstranger\tfremde', 'its entry has no table'],
   ['noun\tsoldier\tċempa', 'its table prints cempan'],
@@ -123,7 +166,6 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\tchurch\tċiriċe', 'its table prints ċiriċan'],
   ['noun\tcoat\tmentel', 'its entry has no table'],
   ['noun\that\thæt', 'its table prints hættas; Bosworth–Toller (bt:17964) prints no plural, and Wright § 57 keeps a before a double consonant when a back vowel followed (catte, sacc)'],
-  ['noun\ttree\ttrēow', 'its table, the tree’s, prints trēowu; Wright § 363 declines trēo(w) like cnēo, plural cnēo (§ 361)'],
   ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”'],
   ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
@@ -161,6 +203,21 @@ describe('the woven cell of an Old English table is read as a reader reads it', 
     assert.ok(!WRIGHT.test('wright:386'));
   });
 
+  test('a Bosworth–Toller quote is read with its accents as length marks, its head naming the entry', () => {
+    const q = btQuote('híw-scipe, híg-, es; m. … Ealle híwscipas þeóda universæ familiæ gentium');
+    assert.equal(q?.head, undotted('hīwsċipe'));
+    assert.equal(q?.gender, 'm');
+    assert.ok(q?.words.includes(undotted('hīwsċipas')));
+    assert.equal(btQuote('treów, es; n. … and óþre treów')?.head, undotted('trēow'));
+    assert.ok(btQuote('treów, es; n. … and óþre treów')?.words.includes(undotted('trēow')));
+    assert.equal(btQuote('treów, e; f. … Treów wæs gecýþed')?.gender, 'f');
+    assert.equal(btQuote('ǼFEN, ǽfyn, éfen, es; m. … Ǽfena gehwám')?.head, undotted('ǣfen'));
+    assert.equal(btQuote('FLÓR, gen. flóre; f: flór, es; m. … On flóra')?.gender, 'm');
+    assert.equal(btQuote('Ealle híwscipas þeóda'), undefined);
+    assert.ok(BT.test('bt:19147'));
+    assert.ok(!BT.test('bt:'));
+  });
+
   test('ð is þ and cg is ċġ, and nothing else is folded', () => {
     assert.equal(fold('mōnðas'), fold('mōnþas'));
     assert.equal(fold('bryċġa'), 'brycga');
@@ -174,6 +231,7 @@ for (const pos of ['noun', 'verb'] as const) {
   const rows = woven(pos);
   const ledger = readLedger(file);
   const byKey = new Map(ledger.map((e) => [key(e.lemma, e.tgt), e]));
+  const byRow = new Map(rows.map((r) => [key(r.lemma, r.tgt), r]));
   const queued = (lemma: string, tgt: string): boolean => QUEUED.has(`${pos}\t${key(lemma, tgt)}`);
 
   describe(`every woven Old English ${NAME[pos]} names the table that prints it`, () => {
@@ -187,19 +245,27 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], `${offenders.length} Old English ${NAME[pos]}s are unsourced:\n  ${offenders.join('\n  ')}`);
     });
 
-    test('every ledger line cites one entry, its gloss’s or a section of Wright', () => {
+    test('every ledger line cites one entry: its gloss’s, a section of Wright, or Bosworth–Toller’s', () => {
       const offenders = ledger.flatMap((e) => {
         const read = glossEntries.get(`${pos}\t${key(e.lemma, e.tgt)}`) ?? [];
         if (e.sources.length !== 1) return [`${file}:${e.line} ${e.tgt} cites ${e.sources.length} entries, where it wants the one its table is in`];
         const [source = ''] = e.sources;
-        if (WRIGHT.test(source)) return [];
-        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'}), nor a section of Wright`];
+        if (WRIGHT.test(source) || BT.test(source)) return [];
+        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'}), a section of Wright, or an entry of Bosworth–Toller`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
     });
 
-    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell or in Wright’s words`, () => {
+    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell, in Wright’s words or in Bosworth–Toller’s`, () => {
       const offenders = ledger.flatMap((e) => {
+        if (e.sources.some((s) => BT.test(s))) {
+          const q = btQuote(e.quote);
+          if (q === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” does not open with the entry’s head and “ … ”`];
+          if (q.head !== undotted(e.tgt)) return [`${file}:${e.line} ${e.tgt}: the entry’s head spells ${q.head}, not ${e.tgt}`];
+          const gender = byRow.get(key(e.lemma, e.tgt))?.gender;
+          if (pos === 'noun' && q.gender !== gender) return [`${file}:${e.line} ${e.tgt}: the entry’s head names ${q.gender ?? 'no gender'}, where ${LEXICON} gives ${gender}`];
+          return q.words.includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Bosworth–Toller’s “${e.quote}” does not print ${e.tgt2}`];
+        }
         if (e.sources.some((s) => WRIGHT.test(s))) {
           return wrightWords(e.quote).map(undotted).includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Wright’s “${e.quote}” does not print ${e.tgt2}`];
         }

@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **425** tool tests / 102 suites, **40** e2e passing
+suites, **426** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -79,7 +79,7 @@ declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
 was wrong, and the two are written up in `Next`.
 
 **And as of 2026-10-08 every woven Old English plural and participle but
-nineteen names the table, or the section of a grammar, that prints it.** None had been read against a
+seventeen names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -95,8 +95,10 @@ in Bosworth–Toller and whose plural "paþas" § 54 prints. Four were wrong:
 Wright's paradigm gives `sweostor` (§ 415), and is `sweostor` now; and
 "floors" woven in the masculine `flōras` under a feminine row, and is the
 table's `flōra` now; and "dreams" woven `swefn`, like its singular, where
-the table and Bosworth–Toller print `swefnu`, as it is now. The last
-nineteen are named in that test's `QUEUED`
+the table and Bosworth–Toller print `swefnu`, as it is now. Two cite the
+Bosworth–Toller entry that prints them, the line quoting the entry's head:
+`hīwsċipas` and the tree's bare `trēow`. The last seventeen are named in
+that test's `QUEUED`
 with what their table prints, and reading them is the first item in
 `Next`.
 
@@ -5234,19 +5236,15 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Nineteen Old English second forms are still not what their table
-      prints.** The remainder of the item above, named in `QUEUED` in
+- [ ] **Seventeen Old English second forms are still not what their
+      table prints.** The remainder of the item above, named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints, and
       what Wright and Bosworth–Toller were found to print on 2026-10-08:
 
-      - **Another form, or a source the ledger cannot cite yet:**
-        `trēow`, where the tree's table prints `trēowu` and Wright § 363
-        declines `trēo(w)` like `cnēo`, whose plural § 361 prints `cnēo` —
-        a paradigm, not the word — while Bosworth–Toller's neuter `treów`
-        (bt:30998) prints "and óþre treów" (Nar. 27, 26–29) beside
-        "treówa" and "Treówu"; `ǣfnas`, where the table prints
-        `ǣfennas` and Bosworth–Toller's two entries (bt:391, bt:37608)
-        print only the genitive plural "ǽfena"; `hattas`, where the table
+      - **Another form, and no source read prints the woven one:**
+        `ǣfnas`, where the table prints `ǣfennas` and Bosworth–Toller's
+        two entries (bt:391, bt:37608) print only the genitive plural
+        "ǽfena"; `hattas`, where the table
         prints `hættas`, Bosworth–Toller's `hæt` (bt:17964) prints no
         plural, and Wright § 57 keeps *a* "in closed syllables before
         double consonants … when the next syllable originally contained a
@@ -5257,11 +5255,9 @@ registered**, and nothing below it can move until it is.
         `gānde` and Wright's paradigm of `gān` (§ 550, page 288) prints
         "Infinitive gān. Past participle gegān." and no present participle
         at all, so the pointer to § 550 is spent.
-      - **No Wiktionary table read:** `hīwsċipas`, whose gloss was read in
-        Bosworth–Toller, and whose entry there (bt:19147) prints "Ealle
-        híwscipas þeóda universæ familiæ gentium" (Ps. Lamb. 21, 28);
-        `onsīene`, whose entry's quotations are all singular, and which
-        Wright § 390 declines like `cwēn`, plural `cwēne` (§ 389);
+      - **No Wiktionary table read:** `onsīene`, whose Bosworth–Toller
+        entry's quotations are all singular, and which Wright § 390
+        declines like `cwēn`, plural `cwēne` (§ 389);
         `hūsbondan` and `mentlas`, whose pages have no table and whose
         Bosworth–Toller entries (bt:19998 and bt:53417; bt:22625 and
         bt:55269), read whole, print no plural; and `fremdan`, the weak
@@ -5272,16 +5268,32 @@ registered**, and nothing below it can move until it is.
       - **Kind 4**, a headword's own marks: `ċempa`, `ċǣġ`, `hlīehhan`,
         `wasċan`, and `beginnan`, which Wright decides.
 
-      The next step, about an hour: let `ang-plurals.tsv` cite
-      Bosworth–Toller, `bt:<id>`, its quote holding the entry's head and a
-      passage that prints the form, read with its acute accents as length
-      marks and the dots set aside. The head is the check that the entry is
-      this word's: `treów, es; n.` is the tree where `treów, e; f.` is
-      faith, so the head should carry the gender the gender ledger gives.
-      That clears `hīwsċipas` and the tree's `trēow` at once. Then let a
-      noun listed as an adjective read its adjective's weak nominative
-      plural, as the Latin `aliēnus` item proposes for its cell. Kinds 3
-      and 4 move sounds and cards, and want their own PRs.
+      The next step, about half an hour: let a noun listed as an adjective
+      read its adjective's weak nominative plural, "fremdan", as the Latin
+      `aliēnus` item proposes for its cell. Then read Bosworth–Toller or a
+      second grammar for `ǣfnas`, `þorpas`, `onsīene`, `hūsbondan`,
+      `mentlas` and `gangende`, which the `bt:` source can now cite where a
+      quotation prints them, and decide `hattas`. Kinds 3 and 4 move sounds
+      and cards, and want their own PRs.
+
+      **Done 2026-10-09 for two more: `ang-plurals.tsv` cites
+      Bosworth–Toller.** A `bt:<id>` line quotes the entry's head as the
+      dictionary prints it, " … ", then the passage that prints the form;
+      the test reads its acute accents as length marks — a long diphthong's
+      on its first vowel, where the dictionary marks the second, so "treów"
+      is trēow, which the reader's first draft missed in a dry run — drops
+      its hyphens and sets the dots aside, and requires the head to spell
+      the headword and, for a noun, to name the row's gender, because one
+      spelling heads two entries — "treów, es; n." is the tree, "treów, e; f." faith. So
+      `hīwsċipas` cites "híw-scipe, híg-, es; m. … Ealle híwscipas þeóda"
+      (bt:19147), and the tree's bare plural "treów, es; n. … and óþre
+      treów" (bt:30998, Nar. 27, 26–29), which Wright § 363's paradigm
+      implies and does not print. Test-first: two rows out of `QUEUED`, red
+      naming both; the lines with the old rule, red on both sources; the
+      rule, green. Four probes, each restored by md5: the head of faith's
+      entry under the tree, a head misspelt, a passage without the form,
+      and a quote with no head. Nothing that ships moved. Tools 425 →
+      **426**, total 1133 → **1134**, in six places.
 
       **Done 2026-10-08 for four, in a second run.** `pæð`'s gloss was read
       in Bosworth–Toller, and Wright § 54, Note 3 (page 37, read in the page
@@ -5358,8 +5370,8 @@ registered**, and nothing below it can move until it is.
       hour, most of it the second.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-08: the nineteen Old English second forms their tables do not
-print, and the two Latin ones. Four more of the Old English thirty, Latin's
+2026-10-09: the seventeen Old English second forms their tables do not
+print, and the two Latin ones. Six more of the Old English thirty, Latin's
 second forms but two, seven of the thirty, the Old English second
 forms but thirty, the Italian, German, Portuguese, Spanish and French glosses,
 `tarde`, `tenir debout`, the modern verb forms, the

@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **425 pass**, 102 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **426 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -487,12 +487,16 @@ later `wætru` and `hēafdu`. Do not take the table's form over the grammar's
 to clear the queue: the pack is the normalised Early West Saxon of teaching
 editions, which is Wright's. A row neither prints, `QUEUED` names with what
 its table prints; a queued row that gains a line fails, so the list only
-shrinks. On 2026-10-08 that held 220 of 239, corrected `weġas` to `wegas`
+shrinks. On 2026-10-08 that held 222 of 239, corrected `weġas` to `wegas`
 (Wright §320, "wegas, ways", the guttural), `sweostru` to `sweostor`
 (§415's paradigm), `swefn` to the table's `swefnu`, which Bosworth–Toller
-quotes, and a feminine row's masculine `flōras` to `flōra`, and left 19 for
+quotes, and a feminine row's masculine `flōras` to `flōra`, and left 17 for
 `TODO.md`. A form a grammar only implies, by declining a word "like" another,
-is not one it prints: `trēow` waits for Bosworth–Toller's "óþre treów".
+is not one it prints: `trēow` cites Bosworth–Toller's "óþre treów" instead.
+A Bosworth–Toller line, `bt:<id>`, quotes the entry's head before the
+passage, its accents read as length marks, and the head must spell the
+headword and name a noun's gender, because one spelling heads two entries:
+"treów, es; n." is the tree and "treów, e; f." faith.
 
 **And a Latin one, read in its table and filed under its first person.**
 Lewis & Short prints a noun's genitive and a verb's principal parts, never
@@ -699,6 +703,61 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-09 — the Old English plural ledger cites Bosworth–Toller, by the head it quotes
+
+The same run's second PR, the next step the first one wrote down. Two of
+the queued rows had a source that printed them and that the ledger could
+not cite: `hīwsċipe`'s gloss was read in Bosworth–Toller, whose entry
+quotes "Ealle híwscipas þeóda", and the tree's bare plural `trēow`, which
+Wright only implies and Bosworth–Toller's neuter `treów` prints, "and óþre
+treów" (Nar.).
+
+**The head is the check that the entry is this word's.** A `wikt:` line is
+tied to its word by being an entry the gloss was read in, and a Wright quote
+names its word and gloss; a Bosworth–Toller id is a number. So a `bt:` line
+quotes the entry's head as the dictionary prints it, " … ", then the
+passage, and the test requires the head to spell the headword — acute
+accents read as macrons, hyphens dropped, the pack's dots set aside — and,
+for a noun, to name the row's gender. The gender is not decoration:
+Bosworth–Toller heads the tree "treów, es; n." and faith "treów, e; f.",
+one spelling, and a probe that put faith's head on the tree's line fails by
+name. Tying a `bt:` id to the ones the gloss and gender ledgers read was the
+other shape, and it would have refused the tree, whose gloss and gender were
+read in Wiktionary.
+
+**The reader's first draft read "treów" as treōw**, putting the length on
+the letter the accent sits on: Bosworth–Toller marks a long diphthong on its
+second vowel, "eó", "eá", where the pack marks the first, "ēo", "ēa". A dry
+run of the whole change in a scratch copy, its own `tools/seed` beside it,
+caught it while the first PR's checks ran and before this branch existed;
+the reader moves the mark now, and its test says so on `treów` and `ǼFEN`.
+`docs/THIRD-PARTY.md` still said "six … and twenty-three", which the first
+PR's sweep missed, and says eight, two and seventeen now.
+
+Test-first: two rows out of `QUEUED`, red naming both; the two lines under
+the old rule, red on both sources; the reader and rule, green, with a test
+of the reader's own. Four probes, each restored by md5. Nothing that ships
+moved. Tools 425 → **426**, total 1133 → **1134**, in six places,
+`docs/LAUNCH.md:221` first.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **426 tools / 102 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 2.8 min**, then
+build and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 —
+the release notes, B2a. `packs:verify` and `site:check` were not re-run: no
+pack, page or image moved.
+
+Assumed, with nobody to ask: that a late text's "óþre treów" is evidence
+enough for a bare plural that Wright's paradigm implies; that the head's
+first word and its first gender abbreviation are what a reader takes for
+the entry's word and gender; and that a verb's line needs no gender.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the seventeen Old English forms, then the two Latin
+ones.
 
 ### 2026-10-08 — four Old English plurals are what a source prints, and three had been woven otherwise
 
