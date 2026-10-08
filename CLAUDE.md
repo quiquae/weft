@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **293 pass**, 78 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **321 pass**, 84 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -433,6 +433,25 @@ them, as the Old English ledger has it — French `enfant`, Spanish `médico`,
 masculine or feminine by the person meant, print "masculine" — and whether
 those should print Latin's "common" is a call written up in `TODO.md`.
 
+**And a woven modern plural names its entry too, read as it is printed.** A
+noun row's second form is the word the tooltip says a reader met, and none
+of the 868 the five modern packs weave had been read against a dictionary
+until 2026-10-08. Read the rendered headword line, never the raw template:
+`{{es-noun|m}}` and German's `^er` leave the plural to Wiktionary's module,
+and only 14 of the 868 templates name theirs, where the page prints "homme m
+(plural hommes)". `tools/seed/fr-plurals.tsv`, `es-`, `pt-`, `de-` and
+`it-plurals.tsv` repeat each plural beside its entry and the clause of the
+headword line that prints it, and `tests/tools/plurals.test.ts` fails on a
+plural changed in one file and not the other, a line citing some other word,
+a quote that does not print the plural beside it, or a line outliving its
+row. A page holds every word of one spelling, so the clause is this word's
+own noun's: German `Mutter`, mother, is "plural Mütter" where `Mutter`, a
+nut, is "plural Muttern", and French `sol`, floor, is "plural sols" where
+the note of the scale is invariable. On 2026-10-08 two were wrong, and both
+are corrected: Spanish wove "countries" as `país`, the singular, where its
+line prints "plural países", and Portuguese "floors" as `chões`, where
+`chão` takes `chãos`.
+
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
 in `tools/seed/la-glosses.tsv` quoting Lewis & Short's own words for its
@@ -591,6 +610,84 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every woven modern plural is one its entry prints
+
+The queue sent this run at the Old English glosses, which #82, #84 and #86
+landed on 2026-10-07: `tools/seed/ang-glosses.tsv` is 462 lines and its 9
+tests pass. So the work was `TODO.md`'s one unchecked item, the 868 plurals
+the five modern packs weave, which no dictionary had read.
+
+**Read rendered, as the item said, and the reason measured.** Of the 868 raw
+templates in `/tmp/weft-it/wikt/`, exactly 14 spell the woven plural —
+`œil`'s *yeux*, `cão`'s *cães*, `Seemann`'s *Seeleute* — and the rest leave
+it to Wiktionary's module. So the rendered page for each of the 856 nouns
+was fetched (`action=render`, a User-Agent naming no person, two fetchers
+and then three, together about one request a second, 10 minutes), and a
+reader took every noun headword line in the language's section, balancing
+its spans — a line is not always followed by `</p>`: `pecora`'s carries
+"(male pecoro …)" after it — and gave each bold form the italic label before
+it. A plural is a form labelled "plural", or with the noun's own gender, as
+Italian prints "masculine plural signori" beside "feminine signora".
+
+**866 of the 868 are among the plurals their own noun's line prints, and the
+two that are not were wrong.** Spanish wove "countries" as *país*, the
+singular — the blank-or-plural rule in every seed's header exists to stop
+exactly that — where the line prints "país m (plural países)"; and
+Portuguese wove "floors" as *chões*, a form English Wiktionary has no page
+for, where `chão` takes *chãos*. A noun in *-ão* takes *-ãos*, *-ães* or
+*-ões* by its history, and the seed had all three right elsewhere —
+*irmãos*, *cães*, *corações* — so this was the pattern misapplied to one
+word. Eighteen pages hold a second noun of one spelling whose line prints
+another plural or none, and each was read by sense: the woven plural is the
+seed's word's on every one, German *Gesicht*, face, "Gesichter" where a
+vision is "Gesichte", and Portuguese *cão*, dog, "cães" where a khan is
+"cãos". Each ledger's header names its own. And where a clause prints more
+than one plural — *cieux or ciels*, *Männer or (rare or poetic) Mannen* —
+the woven one is the first, on all 868.
+
+Test-first: `tests/tools/plurals.test.ts`, 28 tests in 6 suites, red on a
+missing ledger for each of the five; then, the ledgers written with the
+plural each page prints, red on exactly `lex-es.tsv:146` and
+`lex-pt.tsv:97`, each naming the seed's form and the ledger's; green with
+the two seed cells, after which the generator wrote the same five ledgers
+straight off the pages with no correction table, md5-identical. Five probes
+on the French ledger, each restored by md5 and each failing its own test by
+name. The quote is the clause of the headword line, "plural cieux or ciels",
+and the test reads it as a reader does, its qualifiers set aside —
+"(collective) ossa f or (individual) ossi m" prints *ossa* and *ossi* — and
+pins that reading in two tests of its own.
+
+What moved: 2 fields of each pack, `builtAt` and the plural, `index.json`
+none; the Spanish pack 2 bytes longer, the Portuguese the same length. The
+site prints neither plural, and only the Spanish and Portuguese hubs'
+sitemap dates moved. All 36 screenshots regenerated byte-identical, 14 + 15
++ 7 written, Playwright's output in `/tmp`, and the three groups stamped
+after the last edit to `src/`. Tools 293 → **321** / 78 → **84** suites,
+total 1001 → **1029**, in six places, `docs/LAUNCH.md:221` first; a
+`CHANGELOG.md` paragraph, because the packs ship.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **321 tools / 84 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**,
+Spanish and Portuguese at 588 entries across 583 surface forms;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving.
+
+Assumed, with nobody to ask: that "write a ledger only for what the pass
+finds worth holding" meant every plural, since a ledger of the exceptions
+alone would let the next edit to any other plural through, and the genders
+were held whole; that a plural labelled with the noun's own gender is its
+plural, and one labelled with the other gender is its counterpart's; and
+that a form with no English Wiktionary page is not to be defended by a
+grammar nobody here has read.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item: the 400 woven verb forms, which the plural item left
+aside, and which Italian weaves as gerunds, not the participles it guessed.
 
 ### 2026-10-08 — every modern gender names its entry, and only Italian's five were wrong
 

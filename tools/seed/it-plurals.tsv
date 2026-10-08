@@ -1,0 +1,203 @@
+# Where each woven Italian plural in lex-it.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. On 2026-10-08 every woven
+# Italian plural was read in the headword line of English Wiktionary's
+# Italian entry for its noun, rendered as a reader sees it, because the raw
+# template mostly leaves the plural to Wiktionary's module: {{it-noun|f}}
+# prints "bocca f (plural bocche)". All 173 are among the plurals their own
+# noun's line prints, and none was changed: the five whose plural is
+# feminine, uova beside uovo, had already stopped being woven, by the rule
+# tests/tools/genders.test.ts holds.
+#
+# quote is the clause of that line which prints the plural, its qualifiers
+# kept, or "invariable" where the line says the plural is the singular. A
+# page holds every word of one spelling, so the clause is this word's own
+# noun's, of the seed's gender and sense. Two pages hold a second noun of
+# this spelling with no such plural: miele, honey, is "plural mieli" where
+# miele, the colour, is invariable, and barca, boat, is "plural barche"
+# where barca, a sheaf, is uncountable. A noun with a feminine counterpart
+# prints its own as "masculine plural", signore beside signora.
+#
+# The sources field
+# -----------------
+#   wikt:it:<title>    https://en.wiktionary.org/wiki/<title>#Italian
+#
+# tests/tools/plurals.test.ts requires every noun lex-it.tsv weaves in a
+# second form to have a line here with that form, citing the noun's own
+# entry, its quote printing the form, and fails on a line outliving its row.
+man	uomo	uomini	wikt:it:uomo	plural uomini
+woman	donna	donne	wikt:it:donna	plural donne
+child	bambino	bambini	wikt:it:bambino	plural bambini
+boy	ragazzo	ragazzi	wikt:it:ragazzo	plural ragazzi
+girl	ragazza	ragazze	wikt:it:ragazza	plural ragazze
+person	persona	persone	wikt:it:persona	plural persone
+friend	amico	amici	wikt:it:amico	plural amici
+family	famiglia	famiglie	wikt:it:famiglia	plural famiglie
+mother	madre	madri	wikt:it:madre	plural madri
+father	padre	padri	wikt:it:padre	plural padri
+brother	fratello	fratelli	wikt:it:fratello	plural fratelli or (obsolete) frategli
+sister	sorella	sorelle	wikt:it:sorella	plural sorelle
+son	figlio	figli	wikt:it:figlio	plural figli
+daughter	figlia	figlie	wikt:it:figlia	plural figlie
+wife	moglie	mogli	wikt:it:moglie	plural mogli
+husband	marito	mariti	wikt:it:marito	plural mariti
+baby	bambino	bambini	wikt:it:bambino	plural bambini
+king	re	re	wikt:it:re	invariable
+queen	regina	regine	wikt:it:regina	plural regine
+lord	signore	signori	wikt:it:signore	masculine plural signori
+neighbour	vicino	vicini	wikt:it:vicino	plural vicini
+stranger	straniero	stranieri	wikt:it:straniero	plural stranieri
+enemy	nemico	nemici	wikt:it:nemico	plural nemici
+soldier	soldato	soldati	wikt:it:soldato	plural soldati
+teacher	insegnante	insegnanti	wikt:it:insegnante	plural insegnanti
+doctor	medico	medici	wikt:it:medico	plural medici
+farmer	contadino	contadini	wikt:it:contadino	plural contadini
+sailor	marinaio	marinai	wikt:it:marinaio	plural marinai
+head	testa	teste	wikt:it:testa	plural teste
+hand	mano	mani	wikt:it:mano	plural mani or (archaic or dialectal) mano
+eye	occhio	occhi	wikt:it:occhio	plural occhi
+mouth	bocca	bocche	wikt:it:bocca	plural bocche
+nose	naso	nasi	wikt:it:naso	plural nasi
+tooth	dente	denti	wikt:it:dente	plural denti
+hair	capello	capelli	wikt:it:capello	plural capelli
+heart	cuore	cuori	wikt:it:cuore	plural cuori
+blood	sangue	sangui	wikt:it:sangue	plural sangui
+leg	gamba	gambe	wikt:it:gamba	plural gambe
+foot	piede	piedi	wikt:it:piede	plural piedi
+face	faccia	facce	wikt:it:faccia	plural facce
+body	corpo	corpi	wikt:it:corpo	plural corpi
+skin	pelle	pelli	wikt:it:pelle	plural pelli
+voice	voce	voci	wikt:it:voce	plural voci
+dog	cane	cani	wikt:it:cane	plural cani
+cat	gatto	gatti	wikt:it:gatto	plural gatti
+horse	cavallo	cavalli	wikt:it:cavallo	plural cavalli
+bird	uccello	uccelli	wikt:it:uccello	plural uccelli
+fish	pesce	pesci	wikt:it:pesce	plural pesci
+cow	vacca	vacche	wikt:it:vacca	plural vacche
+sheep	pecora	pecore	wikt:it:pecora	plural pecore
+pig	maiale	maiali	wikt:it:maiale	plural maiali
+wolf	lupo	lupi	wikt:it:lupo	plural lupi
+bear	orso	orsi	wikt:it:orso	plural orsi
+lion	leone	leoni	wikt:it:leone	plural leoni
+mouse	topo	topi	wikt:it:topo	plural topi
+snake	serpente	serpenti	wikt:it:serpente	plural serpenti
+bee	ape	api	wikt:it:ape	plural api
+worm	verme	vermi	wikt:it:verme	plural vermi
+raven	corvo	corvi	wikt:it:corvo	plural corvi
+hound	segugio	segugi	wikt:it:segugio	plural segugi
+ox	bue	buoi	wikt:it:bue	plural buoi
+goat	capra	capre	wikt:it:capra	plural capre
+food	cibo	cibi	wikt:it:cibo	plural cibi
+bread	pane	pani	wikt:it:pane	plural pani
+water	acqua	acque	wikt:it:acqua	plural acque
+wine	vino	vini	wikt:it:vino	plural vini
+milk	latte	latti	wikt:it:latte	plural latti
+meat	carne	carni	wikt:it:carne	plural carni
+fruit	frutto	frutti	wikt:it:frutto	plural frutti
+apple	mela	mele	wikt:it:mela	plural mele
+salt	sale	sali	wikt:it:sale	plural sali
+honey	miele	mieli	wikt:it:miele	plural mieli
+cheese	formaggio	formaggi	wikt:it:formaggio	plural formaggi
+fire	fuoco	fuochi	wikt:it:fuoco	plural fuochi or (Old Italian) fòcora or fuòcora
+house	casa	case	wikt:it:casa	plural case
+home	casa	case	wikt:it:casa	plural case
+door	porta	porte	wikt:it:porta	plural porte
+window	finestra	finestre	wikt:it:finestra	plural finestre
+wall	muro	muri	wikt:it:muro	plural muri m or (collectively, when referring to the walls of a town, castle, etc.) mura f
+roof	tetto	tetti	wikt:it:tetto	plural tetti
+floor	pavimento	pavimenti	wikt:it:pavimento	plural pavimenti
+room	stanza	stanze	wikt:it:stanza	plural stanze
+table	tavolo	tavoli	wikt:it:tavolo	plural tavoli
+chair	sedia	sedie	wikt:it:sedia	plural sedie
+bed	letto	letti	wikt:it:letto	plural letti or (Old Italian) letta
+book	libro	libri	wikt:it:libro	plural libri
+word	parola	parole	wikt:it:parola	plural parole
+letter	lettera	lettere	wikt:it:lettera	plural lettere
+name	nome	nomi	wikt:it:nome	plural nomi or (Old Italian) nómora
+key	chiave	chiavi	wikt:it:chiave	plural chiavi
+bridge	ponte	ponti	wikt:it:ponte	plural ponti
+church	chiesa	chiese	wikt:it:chiesa	plural chiese
+ship	nave	navi	wikt:it:nave	plural navi
+boat	barca	barche	wikt:it:barca	plural barche
+sword	spada	spade	wikt:it:spada	plural spade
+shield	scudo	scudi	wikt:it:scudo	plural scudi
+ring	anello	anelli	wikt:it:anello	plural anelli m or anella f
+gold	oro	ori	wikt:it:oro	plural ori
+silver	argento	argenti	wikt:it:argento	plural argenti
+iron	ferro	ferri	wikt:it:ferro	plural ferri
+stone	pietra	pietre	wikt:it:pietra	plural pietre
+glass	vetro	vetri	wikt:it:vetro	plural vetri
+cloth	stoffa	stoffe	wikt:it:stoffa	plural stoffe
+shoe	scarpa	scarpe	wikt:it:scarpa	plural scarpe
+coat	cappotto	cappotti	wikt:it:cappotto	plural cappotti
+hat	cappello	cappelli	wikt:it:cappello	plural cappelli
+sun	sole	soli	wikt:it:sole	plural soli
+moon	luna	lune	wikt:it:luna	plural lune
+star	stella	stelle	wikt:it:stella	plural stelle
+sky	cielo	cieli	wikt:it:cielo	plural cieli
+earth	terra	terre	wikt:it:terra	plural terre
+land	terra	terre	wikt:it:terra	plural terre
+sea	mare	mari	wikt:it:mare	plural mari
+river	fiume	fiumi	wikt:it:fiume	plural fiumi
+lake	lago	laghi	wikt:it:lago	plural laghi
+mountain	montagna	montagne	wikt:it:montagna	plural montagne
+hill	collina	colline	wikt:it:collina	plural colline
+forest	foresta	foreste	wikt:it:foresta	plural foreste
+tree	albero	alberi	wikt:it:albero	plural alberi
+leaf	foglia	foglie	wikt:it:foglia	plural foglie
+flower	fiore	fiori	wikt:it:fiore	plural fiori
+grass	erba	erbe	wikt:it:erba	plural erbe
+field	campo	campi	wikt:it:campo	plural campi
+road	strada	strade	wikt:it:strada	plural strade
+path	sentiero	sentieri	wikt:it:sentiero	plural sentieri
+city	città	città	wikt:it:città	invariable
+town	paese	paesi	wikt:it:paese	plural paesi
+village	villaggio	villaggi	wikt:it:villaggio	plural villaggi
+world	mondo	mondi	wikt:it:mondo	plural mondi
+country	paese	paesi	wikt:it:paese	plural paesi
+place	luogo	luoghi	wikt:it:luogo	plural luoghi
+rain	pioggia	piogge	wikt:it:pioggia	plural piogge
+snow	neve	nevi	wikt:it:neve	plural nevi
+wind	vento	venti	wikt:it:vento	plural venti
+cloud	nuvola	nuvole	wikt:it:nuvola	plural nuvole
+ice	ghiaccio	ghiacci	wikt:it:ghiaccio	plural ghiacci
+light	luce	luci	wikt:it:luce	plural luci
+shadow	ombra	ombre	wikt:it:ombra	plural ombre
+time	tempo	tempi	wikt:it:tempo	plural tempi
+day	giorno	giorni	wikt:it:giorno	plural giorni
+night	notte	notti	wikt:it:notte	plural notti
+year	anno	anni	wikt:it:anno	plural anni
+month	mese	mesi	wikt:it:mese	plural mesi
+week	settimana	settimane	wikt:it:settimana	plural settimane
+hour	ora	ore	wikt:it:ora	plural ore
+morning	mattina	mattine	wikt:it:mattina	plural mattine
+evening	sera	sere	wikt:it:sera	plural sere
+summer	estate	estati	wikt:it:estate	plural estati
+winter	inverno	inverni	wikt:it:inverno	plural inverni
+autumn	autunno	autunni	wikt:it:autunno	plural autunni
+life	vita	vite	wikt:it:vita	plural vite
+death	morte	morti	wikt:it:morte	plural morti
+love	amore	amori	wikt:it:amore	plural amori
+war	guerra	guerre	wikt:it:guerra	plural guerre
+peace	pace	paci	wikt:it:pace	plural paci
+truth	verità	verità	wikt:it:verità	invariable
+law	legge	leggi	wikt:it:legge	plural leggi
+work	lavoro	lavori	wikt:it:lavoro	plural lavori
+money	denaro	denari	wikt:it:denaro	plural denari
+price	prezzo	prezzi	wikt:it:prezzo	plural prezzi
+question	domanda	domande	wikt:it:domanda	plural domande
+answer	risposta	risposte	wikt:it:risposta	plural risposte
+story	storia	storie	wikt:it:storia	plural storie
+song	canzone	canzoni	wikt:it:canzone	plural canzoni
+music	musica	musiche	wikt:it:musica	plural musiche
+game	gioco	giochi	wikt:it:gioco	plural giochi
+dream	sogno	sogni	wikt:it:sogno	plural sogni
+fear	paura	paure	wikt:it:paura	plural paure
+hope	speranza	speranze	wikt:it:speranza	plural speranze
+joy	gioia	gioie	wikt:it:gioia	plural gioie
+anger	rabbia	rabbie	wikt:it:rabbia	plural rabbie
+oath	giuramento	giuramenti	wikt:it:giuramento	plural giuramenti
+gift	regalo	regali	wikt:it:regalo	plural regali

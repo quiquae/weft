@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **293** tool tests / 78 suites, **40** e2e passing
+suites, **321** tool tests / 84 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -44,7 +44,9 @@ the pack (+4), Chrome's 989.29 → 989.60 KB, Firefox's 989.67 and Safari's
 `background.js` (+23) and the pack (−22), Chrome's 989.61 KB either side —
 and back to **989 KB** on 2026-10-08 by 769 bytes, the Italian pack's five
 plurals that are no longer woven, Chrome's 989.61 → 988.86 KB, Firefox's
-988.92 and Safari's 988.86. `npm run test:all` exits 0 end to end.
+988.92 and Safari's 988.86 — and stayed there the same night through the
+Spanish *países*, +2 bytes, and the Portuguese *chãos*, ±0.
+`npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
 have.** `orecchio`, ear, printed "neuter", and the feminine plurals `ossa`,
@@ -54,6 +56,14 @@ five are masculine and woven in the singular only now, and
 not have. The same night every modern noun's gender was read in English
 Wiktionary, 890 in all, and none else was wrong; `tools/seed/<lang>-genders.tsv`
 names the entry for each, as the Old English and Latin ledgers do.
+
+**And as of 2026-10-08 every woven modern plural is one its entry prints.**
+All 868 the five modern packs weave were read in the rendered headword line
+of the noun's English Wiktionary entry, and two were wrong: Spanish wove
+"countries" as *país*, the singular, where the plural is *países*, and
+Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
+corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
+each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -4758,7 +4768,7 @@ registered**, and nothing below it can move until it is.
       places, `docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says where
       the modern genders were read.
 
-- [ ] **No woven modern plural has been read against a dictionary.** Found
+- [x] **No woven modern plural has been read against a dictionary.** Found
       2026-10-08 by the gender pass. The five modern packs weave 868
       second forms — 178 French, 178 Spanish, 178 Portuguese, 161 German,
       173 Italian — and the Italian five were wrong in gender, not in
@@ -4779,8 +4789,78 @@ registered**, and nothing below it can move until it is.
       Portuguese weave a gerund, Italian a participle, and which English
       *-ing* each answers to is a call, not a lookup.
 
+      **Done 2026-10-08, all five, and two were wrong.** The 14 was measured
+      before it was repeated: of the 868 raw templates cached in
+      `/tmp/weft-it/wikt/`, exactly 14 spell the woven plural. The rendered
+      page for each of the 856 nouns was fetched into
+      `/tmp/weft-pl/render/`, by two fetchers and then three, together about
+      one request a second, and `/tmp/weft-pl/plurals.py` read every noun
+      headword line in the language's section, balancing its spans — a line
+      is not always followed by `</p>`, and `pecora`'s carries "(male pecoro
+      …)" after its own — and gave each bold form the italic label before
+      it. A plural is a form labelled "plural", or labelled with the noun's
+      own gender, as Italian prints "masculine plural signori" beside
+      "feminine signora".
+
+      **866 of the 868 are among the plurals their own noun's line prints.**
+      The two that are not: Spanish *país*, country, woven as *país* under
+      "countries", where the line is "país m (plural países)"; and
+      Portuguese *chão*, floor, woven *chões*, a form English Wiktionary has
+      no page for, where the line is "chão m (plural chãos)" — a noun in
+      *-ão* takes *-ãos*, *-ães* or *-ões* by its history, and the seed
+      already had all three right elsewhere, *irmãos*, *cães*, *corações*.
+      Eighteen pages hold a second noun of one spelling whose line prints
+      another plural or none, and each was read by sense, the woven plural
+      belonging to the seed's word on every one: German *Mutter*, mother,
+      "plural Mütter", where the nut is "Muttern"; *Gesicht*, face,
+      "Gesichter", where a vision is "Gesichte"; Portuguese *cão*, dog,
+      "cães", where a khan is "cãos"; French *sol*, floor, "sols", where the
+      note is invariable; and fourteen more, named in each ledger's header.
+
+      Test-first: `tests/tools/plurals.test.ts`, 28 tests in 6 suites, red
+      on a missing ledger for each of the five, then — the five ledgers
+      written with the plural each page prints — red on exactly two rows,
+      “lex-es.tsv:146 country → país weaves país, where es-plurals.tsv:165
+      read países” and the same for `chão`, and green with the two seed
+      cells. Five probes on the French ledger, restored by md5, each failing
+      its own test by name: a seed plural changed, a quote not printing its
+      plural, another word's entry cited, a row no longer woven, and an
+      invariable noun given another form. 2 fields of each pack moved,
+      `builtAt` and the plural, `index.json` none; the Spanish pack is 2
+      bytes longer and the Portuguese the same length. The site, 714 pages
+      and 16 118 links, prints neither plural, and only the two hubs'
+      sitemap dates moved. All 36 screenshots regenerated byte-identical, 14
+      + 15 + 7 written, and the three groups stamped. Tools 293 → **321** /
+      78 → **84** suites, total 1001 → **1029**, in six places,
+      `docs/LAUNCH.md:221` first; a `CHANGELOG.md` paragraph, because the
+      packs ship.
+
+- [ ] **No woven modern verb form has been read against a dictionary.**
+      Found 2026-10-08 by the plurals pass, which the item above left it
+      to. The five modern packs weave 400 verb second forms under an
+      English *-ing* — 79 French, 80 Spanish, 80 Portuguese, 81 German, 80
+      Italian — and none names an entry. French and German weave a present
+      participle (*disant*, *sagend*); Spanish, Portuguese and Italian a
+      gerund (*diciendo*, *dizendo*, *dicendo*), where the item above
+      guessed Italian's to be a participle, which would be *dicente*. Two
+      questions, and only the first is a lookup: whether each woven form
+      is the one its verb's conjugation table prints in that slot, and
+      which English *-ing* each answers to, the progressive's participle or
+      a gerund used as a noun, which is a call about each language rather
+      than a check. Shape for the first, as the plurals were done: the
+      rendered page for each verb (`action=render`, one request a second, a
+      User-Agent naming no person; about ten minutes for 400 with two
+      fetchers), its conjugation table's present-participle or gerund
+      cell, and every woven form that is not in it read by eye.
+      `/tmp/weft-pl/` holds the plural pass's fetcher and headword-line
+      reader for as long as `/tmp` does; the table is a different reader,
+      since the forms sit in its cells, not in a headword line. Then a
+      ledger per language held as `tests/tools/plurals.test.ts` holds the
+      plurals, or the plural ledgers widened to verbs.
+
 `Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the modern plurals. The modern genders, the Italian
+above, as of 2026-10-08: the modern verb forms. The modern plurals, the
+modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
 adjective, numeral and interjection glosses, `ċildclāð` for "baby", the Old

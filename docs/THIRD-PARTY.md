@@ -96,10 +96,14 @@ honesty rather than for compliance.
 Every noun's gender was read against English Wiktionary's entry for the
 word in its language, and `tools/seed/fr-genders.tsv`, `es-genders.tsv`,
 `pt-genders.tsv`, `de-genders.tsv` and `it-genders.tsv` name the entry for
-each; `tests/tools/genders.test.ts` fails on a noun with none. The French
+each; `tests/tools/genders.test.ts` fails on a noun with none. Every woven
+plural was read in the headword line of the same entry, rendered as a reader
+sees it, and `tools/seed/fr-plurals.tsv`, `es-plurals.tsv`, `pt-plurals.tsv`,
+`de-plurals.tsv` and `it-plurals.tsv` quote the clause that prints each;
+`tests/tools/plurals.test.ts` fails on a plural with none. The French
 etymology claims cite etymonline and Wiktionary in
 `tools/seed/fr-cousins.tsv`. Nothing else in these five packs names its
-entry yet: their glosses and plurals cite nothing.
+entry yet: their glosses and verb forms cite nothing.
 
 ### Extending coverage
 

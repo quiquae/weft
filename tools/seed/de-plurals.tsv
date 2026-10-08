@@ -1,0 +1,193 @@
+# Where each woven German plural in lex-de.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. On 2026-10-08 every woven
+# German plural was read in the headword line of English Wiktionary's German
+# entry for its noun, rendered as a reader sees it, because the raw template
+# mostly leaves the plural to Wiktionary's module: {{de-noun|f,^e}} prints
+# "Angst f (genitive Angst, plural Ängste)". All 161 are among the plurals
+# their own noun's line prints, and none was changed.
+#
+# quote is the clause of that line which prints the plural, its qualifiers
+# kept, or "invariable" where the line says the plural is the singular. A
+# page holds every word of one spelling, so the clause is this word's own
+# noun's, of the seed's gender and sense. Nine pages hold another noun of
+# this spelling with another plural or none, and each was read by sense:
+# Mutter, mother, is "plural Mütter" where Mutter, a nut, is "plural
+# Muttern"; Gesicht, face, "plural Gesichter" where Gesicht, a vision, is
+# "plural Gesichte"; Lied, song, "Lieder" where an obsolete Lied, member, is
+# "Liede"; Tag, day, "Tage" where Tag, a label, is "Tags"; Glas, glass,
+# "Gläser or Glas" where the nautical half-hour is "Glasen"; Bauer, farmer,
+# "Bauern" where Bauer, a birdcage, is "Bauer"; and Bär, bear, Ort, place,
+# and Hand the same.
+#
+# The sources field
+# -----------------
+#   wikt:de:<title>    https://en.wiktionary.org/wiki/<title>#German
+#
+# tests/tools/plurals.test.ts requires every noun lex-de.tsv weaves in a
+# second form to have a line here with that form, citing the noun's own
+# entry, its quote printing the form, and fails on a line outliving its row.
+man	Mann	Männer	wikt:de:Mann	plural Männer or (rare or poetic) Mannen or (obsolete) Mann
+woman	Frau	Frauen	wikt:de:Frau	plural Frauen
+child	Kind	Kinder	wikt:de:Kind	plural Kinder
+boy	Junge	Jungen	wikt:de:Junge	plural Jungen or Jungs or Jungens
+girl	Mädchen	Mädchen	wikt:de:Mädchen	plural Mädchen or (nonstandard, uncommon) Mädchens
+person	Person	Personen	wikt:de:Person	plural Personen
+friend	Freund	Freunde	wikt:de:Freund	plural Freunde
+family	Familie	Familien	wikt:de:Familie	plural Familien
+mother	Mutter	Mütter	wikt:de:Mutter	plural Mütter
+father	Vater	Väter	wikt:de:Vater	plural Väter
+brother	Bruder	Brüder	wikt:de:Bruder	plural Brüder
+sister	Schwester	Schwestern	wikt:de:Schwester	plural Schwestern
+son	Sohn	Söhne	wikt:de:Sohn	plural Söhne
+daughter	Tochter	Töchter	wikt:de:Tochter	plural Töchter
+wife	Ehefrau	Ehefrauen	wikt:de:Ehefrau	plural Ehefrauen
+husband	Ehemann	Ehemänner	wikt:de:Ehemann	plural Ehemänner or (obsolete) Ehemannen
+baby	Baby	Babys	wikt:de:Baby	plural Babys or (now proscribed) Babies
+king	König	Könige	wikt:de:König	plural Könige
+queen	Königin	Königinnen	wikt:de:Königin	plural Königinnen
+lord	Herr	Herren	wikt:de:Herr	plural Herren or (archaic) Herrn
+neighbour	Nachbar	Nachbarn	wikt:de:Nachbar	plural Nachbarn
+stranger	Fremder	Fremde	wikt:de:Fremder	plural Fremde
+enemy	Feind	Feinde	wikt:de:Feind	plural Feinde
+soldier	Soldat	Soldaten	wikt:de:Soldat	plural Soldaten
+teacher	Lehrer	Lehrer	wikt:de:Lehrer	plural Lehrer
+doctor	Arzt	Ärzte	wikt:de:Arzt	plural Ärzte
+farmer	Bauer	Bauern	wikt:de:Bauer	plural Bauern
+sailor	Seemann	Seeleute	wikt:de:Seemann	plural Seeleute or Seemänner
+head	Kopf	Köpfe	wikt:de:Kopf	plural Köpfe
+hand	Hand	Hände	wikt:de:Hand	plural Hände
+eye	Auge	Augen	wikt:de:Auge	plural Augen
+ear	Ohr	Ohren	wikt:de:Ohr	plural Ohren
+mouth	Mund	Münder	wikt:de:Mund	plural Münder
+nose	Nase	Nasen	wikt:de:Nase	plural Nasen
+tooth	Zahn	Zähne	wikt:de:Zahn	plural Zähne
+hair	Haar	Haare	wikt:de:Haar	plural Haare
+heart	Herz	Herzen	wikt:de:Herz	plural Herzen
+bone	Knochen	Knochen	wikt:de:Knochen	plural Knochen
+arm	Arm	Arme	wikt:de:Arm	plural Arme
+leg	Bein	Beine	wikt:de:Bein	plural Beine
+foot	Fuß	Füße	wikt:de:Fuß	plural Füße
+finger	Finger	Finger	wikt:de:Finger	plural Finger
+face	Gesicht	Gesichter	wikt:de:Gesicht	plural Gesichter
+body	Körper	Körper	wikt:de:Körper	plural Körper
+skin	Haut	Häute	wikt:de:Haut	plural Häute
+voice	Stimme	Stimmen	wikt:de:Stimme	plural Stimmen
+dog	Hund	Hunde	wikt:de:Hund	plural Hunde or (regionally) Hünde
+cat	Katze	Katzen	wikt:de:Katze	plural Katzen
+horse	Pferd	Pferde	wikt:de:Pferd	plural Pferde
+bird	Vogel	Vögel	wikt:de:Vogel	plural Vögel
+fish	Fisch	Fische	wikt:de:Fisch	plural Fische
+cow	Kuh	Kühe	wikt:de:Kuh	plural Kühe
+sheep	Schaf	Schafe	wikt:de:Schaf	plural Schafe
+pig	Schwein	Schweine	wikt:de:Schwein	plural Schweine
+wolf	Wolf	Wölfe	wikt:de:Wolf	plural Wölfe
+bear	Bär	Bären	wikt:de:Bär	plural Bären
+lion	Löwe	Löwen	wikt:de:Löwe	plural Löwen
+mouse	Maus	Mäuse	wikt:de:Maus	plural Mäuse
+snake	Schlange	Schlangen	wikt:de:Schlange	plural Schlangen
+bee	Biene	Bienen	wikt:de:Biene	plural Bienen
+worm	Wurm	Würmer	wikt:de:Wurm	plural Würmer or (archaic) Würme
+raven	Rabe	Raben	wikt:de:Rabe	plural Raben
+hound	Jagdhund	Jagdhunde	wikt:de:Jagdhund	plural Jagdhunde
+ox	Ochse	Ochsen	wikt:de:Ochse	plural Ochsen
+goat	Ziege	Ziegen	wikt:de:Ziege	plural Ziegen
+bread	Brot	Brote	wikt:de:Brot	plural Brote
+water	Wasser	Wasser	wikt:de:Wasser	plural Wasser or Wässer
+wine	Wein	Weine	wikt:de:Wein	plural Weine
+fruit	Frucht	Früchte	wikt:de:Frucht	plural Früchte
+apple	Apfel	Äpfel	wikt:de:Apfel	plural Äpfel
+cheese	Käse	Käse	wikt:de:Käse	plural Käse
+egg	Ei	Eier	wikt:de:Ei	plural Eier
+fire	Feuer	Feuer	wikt:de:Feuer	plural Feuer
+house	Haus	Häuser	wikt:de:Haus	plural Häuser
+home	Heim	Heime	wikt:de:Heim	plural Heime
+door	Tür	Türen	wikt:de:Tür	plural Türen
+window	Fenster	Fenster	wikt:de:Fenster	plural Fenster
+wall	Wand	Wände	wikt:de:Wand	plural Wände
+roof	Dach	Dächer	wikt:de:Dach	plural Dächer
+floor	Boden	Böden	wikt:de:Boden	plural Böden
+room	Zimmer	Zimmer	wikt:de:Zimmer	plural Zimmer
+table	Tisch	Tische	wikt:de:Tisch	plural Tische
+chair	Stuhl	Stühle	wikt:de:Stuhl	plural Stühle
+bed	Bett	Betten	wikt:de:Bett	plural Betten
+book	Buch	Bücher	wikt:de:Buch	plural Bücher
+word	Wort	Wörter	wikt:de:Wort	plural Wörter or Worte
+letter	Brief	Briefe	wikt:de:Brief	plural Briefe
+name	Name	Namen	wikt:de:Name	plural Namen
+key	Schlüssel	Schlüssel	wikt:de:Schlüssel	plural Schlüssel
+bridge	Brücke	Brücken	wikt:de:Brücke	plural Brücken
+church	Kirche	Kirchen	wikt:de:Kirche	plural Kirchen
+ship	Schiff	Schiffe	wikt:de:Schiff	plural Schiffe
+boat	Boot	Boote	wikt:de:Boot	plural Boote
+sword	Schwert	Schwerter	wikt:de:Schwert	plural Schwerter
+shield	Schild	Schilde	wikt:de:Schild	plural Schilde
+ring	Ring	Ringe	wikt:de:Ring	plural Ringe
+stone	Stein	Steine	wikt:de:Stein	plural Steine
+glass	Glas	Gläser	wikt:de:Glas	plural Gläser or Glas
+cloth	Stoff	Stoffe	wikt:de:Stoff	plural Stoffe
+shoe	Schuh	Schuhe	wikt:de:Schuh	plural Schuhe or Schuh
+coat	Mantel	Mäntel	wikt:de:Mantel	plural Mäntel
+hat	Hut	Hüte	wikt:de:Hut	plural Hüte
+sun	Sonne	Sonnen	wikt:de:Sonne	plural Sonnen
+moon	Mond	Monde	wikt:de:Mond	plural Monde
+star	Stern	Sterne	wikt:de:Stern	plural Sterne
+sky	Himmel	Himmel	wikt:de:Himmel	plural Himmel
+land	Land	Länder	wikt:de:Land	plural Länder or (elevated or poetic) Lande
+sea	Meer	Meere	wikt:de:Meer	plural Meere
+river	Fluss	Flüsse	wikt:de:Fluss	plural Flüsse
+lake	See	Seen	wikt:de:See	plural Seen
+mountain	Berg	Berge	wikt:de:Berg	plural Berge
+hill	Hügel	Hügel	wikt:de:Hügel	plural Hügel
+forest	Wald	Wälder	wikt:de:Wald	plural Wälder
+tree	Baum	Bäume	wikt:de:Baum	plural Bäume
+leaf	Blatt	Blätter	wikt:de:Blatt	plural Blätter
+flower	Blume	Blumen	wikt:de:Blume	plural Blumen
+grass	Gras	Gräser	wikt:de:Gras	plural Gräser
+field	Feld	Felder	wikt:de:Feld	plural Felder
+road	Straße	Straßen	wikt:de:Straße	plural Straßen
+path	Pfad	Pfade	wikt:de:Pfad	plural Pfade
+city	Stadt	Städte	wikt:de:Stadt	plural Städte
+town	Stadt	Städte	wikt:de:Stadt	plural Städte
+village	Dorf	Dörfer	wikt:de:Dorf	plural Dörfer
+world	Welt	Welten	wikt:de:Welt	plural Welten
+country	Land	Länder	wikt:de:Land	plural Länder or (elevated or poetic) Lande
+place	Ort	Orte	wikt:de:Ort	plural Orte or (jargon) Örter
+wind	Wind	Winde	wikt:de:Wind	plural Winde
+cloud	Wolke	Wolken	wikt:de:Wolke	plural Wolken
+light	Licht	Lichter	wikt:de:Licht	plural Lichter or Lichte
+shadow	Schatten	Schatten	wikt:de:Schatten	plural Schatten
+time	Zeit	Zeiten	wikt:de:Zeit	plural Zeiten
+day	Tag	Tage	wikt:de:Tag	plural Tage
+night	Nacht	Nächte	wikt:de:Nacht	plural Nächte
+year	Jahr	Jahre	wikt:de:Jahr	plural Jahre or Jahr
+month	Monat	Monate	wikt:de:Monat	plural Monate
+week	Woche	Wochen	wikt:de:Woche	plural Wochen
+hour	Stunde	Stunden	wikt:de:Stunde	plural Stunden
+morning	Morgen	Morgen	wikt:de:Morgen	plural Morgen or (colloquial) Morgende
+evening	Abend	Abende	wikt:de:Abend	plural Abende
+summer	Sommer	Sommer	wikt:de:Sommer	plural Sommer
+winter	Winter	Winter	wikt:de:Winter	plural Winter
+autumn	Herbst	Herbste	wikt:de:Herbst	plural Herbste
+life	Leben	Leben	wikt:de:Leben	plural Leben
+death	Tod	Tode	wikt:de:Tod	plural Tode
+war	Krieg	Kriege	wikt:de:Krieg	plural Kriege
+truth	Wahrheit	Wahrheiten	wikt:de:Wahrheit	plural Wahrheiten
+law	Gesetz	Gesetze	wikt:de:Gesetz	plural Gesetze
+work	Arbeit	Arbeiten	wikt:de:Arbeit	plural Arbeiten
+money	Geld	Gelder	wikt:de:Geld	plural Gelder
+price	Preis	Preise	wikt:de:Preis	plural Preise
+question	Frage	Fragen	wikt:de:Frage	plural Fragen
+answer	Antwort	Antworten	wikt:de:Antwort	plural Antworten
+story	Geschichte	Geschichten	wikt:de:Geschichte	plural Geschichten
+song	Lied	Lieder	wikt:de:Lied	plural Lieder
+game	Spiel	Spiele	wikt:de:Spiel	plural Spiele
+dream	Traum	Träume	wikt:de:Traum	plural Träume
+fear	Angst	Ängste	wikt:de:Angst	plural Ängste
+hope	Hoffnung	Hoffnungen	wikt:de:Hoffnung	plural Hoffnungen
+joy	Freude	Freuden	wikt:de:Freude	plural Freuden
+oath	Eid	Eide	wikt:de:Eid	plural Eide
+gift	Geschenk	Geschenke	wikt:de:Geschenk	plural Geschenke

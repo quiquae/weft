@@ -1,0 +1,208 @@
+# Where each woven Portuguese plural in lex-pt.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. On 2026-10-08 every woven
+# Portuguese plural was read in the headword line of English Wiktionary's
+# Portuguese entry for its noun, rendered as a reader sees it, because the
+# raw template mostly leaves the plural to Wiktionary's module:
+# {{pt-noun|m}} prints "homem m (plural homens)". 177 of the 178 are among
+# the plurals their own noun's line prints. The 178th, chão, floor, was
+# woven chões, a form English Wiktionary has no page for, where its line
+# prints "chão m (plural chãos)": a noun in -ão takes -ãos, -ães or -ões by
+# its history, and chão takes -ãos, as mão is mãos. It weaves chãos since
+# this pass.
+#
+# quote is the clause of that line which prints the plural, its qualifiers
+# kept, or "invariable" where the line says the plural is the singular. A
+# page holds every word of one spelling, so the clause is this word's own
+# noun's, of the seed's gender and sense. One page holds a second noun of
+# this spelling with another plural: cão, dog, is "plural cães" where cão, a
+# khan, is "plural cãos".
+#
+# The sources field
+# -----------------
+#   wikt:pt:<title>    https://en.wiktionary.org/wiki/<title>#Portuguese
+#
+# tests/tools/plurals.test.ts requires every noun lex-pt.tsv weaves in a
+# second form to have a line here with that form, citing the noun's own
+# entry, its quote printing the form, and fails on a line outliving its row.
+man	homem	homens	wikt:pt:homem	plural homens
+woman	mulher	mulheres	wikt:pt:mulher	plural mulheres
+child	criança	crianças	wikt:pt:criança	plural crianças
+boy	menino	meninos	wikt:pt:menino	plural meninos
+girl	menina	meninas	wikt:pt:menina	plural meninas
+person	pessoa	pessoas	wikt:pt:pessoa	plural pessoas
+friend	amigo	amigos	wikt:pt:amigo	plural amigos
+family	família	famílias	wikt:pt:família	plural famílias
+mother	mãe	mães	wikt:pt:mãe	plural mães
+father	pai	pais	wikt:pt:pai	plural pais
+brother	irmão	irmãos	wikt:pt:irmão	plural irmãos
+sister	irmã	irmãs	wikt:pt:irmã	plural irmãs
+son	filho	filhos	wikt:pt:filho	plural filhos
+daughter	filha	filhas	wikt:pt:filha	plural filhas
+wife	esposa	esposas	wikt:pt:esposa	plural esposas
+husband	marido	maridos	wikt:pt:marido	plural maridos
+baby	bebé	bebés	wikt:pt:bebé	plural bebés
+king	rei	reis	wikt:pt:rei	plural reis
+queen	rainha	rainhas	wikt:pt:rainha	plural rainhas
+lord	senhor	senhores	wikt:pt:senhor	plural senhores
+neighbour	vizinho	vizinhos	wikt:pt:vizinho	plural vizinhos
+stranger	estranho	estranhos	wikt:pt:estranho	plural estranhos
+enemy	inimigo	inimigos	wikt:pt:inimigo	plural inimigos
+soldier	soldado	soldados	wikt:pt:soldado	plural soldados
+teacher	professor	professores	wikt:pt:professor	plural professores
+doctor	médico	médicos	wikt:pt:médico	plural médicos
+farmer	agricultor	agricultores	wikt:pt:agricultor	plural agricultores
+sailor	marinheiro	marinheiros	wikt:pt:marinheiro	plural marinheiros
+head	cabeça	cabeças	wikt:pt:cabeça	plural cabeças
+hand	mão	mãos	wikt:pt:mão	plural mãos
+eye	olho	olhos	wikt:pt:olho	plural olhos
+ear	orelha	orelhas	wikt:pt:orelha	plural orelhas
+mouth	boca	bocas	wikt:pt:boca	plural bocas
+nose	nariz	narizes	wikt:pt:nariz	plural narizes
+tooth	dente	dentes	wikt:pt:dente	plural dentes
+hair	cabelo	cabelos	wikt:pt:cabelo	plural cabelos
+heart	coração	corações	wikt:pt:coração	plural corações
+blood	sangue	sangues	wikt:pt:sangue	plural sangues
+bone	osso	ossos	wikt:pt:osso	plural ossos
+arm	braço	braços	wikt:pt:braço	plural braços
+leg	perna	pernas	wikt:pt:perna	plural pernas
+foot	pé	pés	wikt:pt:pé	plural pés
+finger	dedo	dedos	wikt:pt:dedo	plural dedos
+face	rosto	rostos	wikt:pt:rosto	plural rostos
+body	corpo	corpos	wikt:pt:corpo	plural corpos
+skin	pele	peles	wikt:pt:pele	plural peles
+voice	voz	vozes	wikt:pt:voz	plural vozes
+dog	cão	cães	wikt:pt:cão	plural cães
+cat	gato	gatos	wikt:pt:gato	plural gatos
+horse	cavalo	cavalos	wikt:pt:cavalo	plural cavalos
+bird	pássaro	pássaros	wikt:pt:pássaro	plural pássaros
+fish	peixe	peixes	wikt:pt:peixe	plural peixes
+cow	vaca	vacas	wikt:pt:vaca	plural vacas
+sheep	ovelha	ovelhas	wikt:pt:ovelha	plural ovelhas
+pig	porco	porcos	wikt:pt:porco	plural porcos
+wolf	lobo	lobos	wikt:pt:lobo	plural lobos
+bear	urso	ursos	wikt:pt:urso	plural ursos
+lion	leão	leões	wikt:pt:leão	plural leões
+mouse	rato	ratos	wikt:pt:rato	plural ratos
+snake	cobra	cobras	wikt:pt:cobra	plural cobras
+bee	abelha	abelhas	wikt:pt:abelha	plural abelhas
+worm	verme	vermes	wikt:pt:verme	plural vermes
+raven	corvo	corvos	wikt:pt:corvo	plural corvos
+hound	sabujo	sabujos	wikt:pt:sabujo	plural sabujos
+ox	boi	bois	wikt:pt:boi	plural bois
+goat	cabra	cabras	wikt:pt:cabra	plural cabras
+food	comida	comidas	wikt:pt:comida	plural comidas
+bread	pão	pães	wikt:pt:pão	plural pães
+water	água	águas	wikt:pt:água	plural águas
+wine	vinho	vinhos	wikt:pt:vinho	plural vinhos
+milk	leite	leites	wikt:pt:leite	plural leites
+meat	carne	carnes	wikt:pt:carne	plural carnes
+fruit	fruta	frutas	wikt:pt:fruta	plural frutas
+apple	maçã	maçãs	wikt:pt:maçã	plural maçãs
+salt	sal	sais	wikt:pt:sal	plural sais
+honey	mel	méis	wikt:pt:mel	plural méis or meles
+cheese	queijo	queijos	wikt:pt:queijo	plural queijos
+egg	ovo	ovos	wikt:pt:ovo	plural ovos
+fire	fogo	fogos	wikt:pt:fogo	plural fogos
+house	casa	casas	wikt:pt:casa	plural casas
+home	lar	lares	wikt:pt:lar	plural lares
+door	porta	portas	wikt:pt:porta	plural portas
+window	janela	janelas	wikt:pt:janela	plural janelas
+wall	parede	paredes	wikt:pt:parede	plural paredes
+roof	telhado	telhados	wikt:pt:telhado	plural telhados
+floor	chão	chãos	wikt:pt:chão	plural chãos
+room	quarto	quartos	wikt:pt:quarto	plural quartos
+table	mesa	mesas	wikt:pt:mesa	plural mesas
+chair	cadeira	cadeiras	wikt:pt:cadeira	plural cadeiras
+bed	cama	camas	wikt:pt:cama	plural camas
+book	livro	livros	wikt:pt:livro	plural livros
+word	palavra	palavras	wikt:pt:palavra	plural palavras
+letter	carta	cartas	wikt:pt:carta	plural cartas
+name	nome	nomes	wikt:pt:nome	plural nomes
+key	chave	chaves	wikt:pt:chave	plural chaves
+bridge	ponte	pontes	wikt:pt:ponte	plural pontes
+church	igreja	igrejas	wikt:pt:igreja	plural igrejas
+ship	navio	navios	wikt:pt:navio	plural navios
+boat	barco	barcos	wikt:pt:barco	plural barcos
+sword	espada	espadas	wikt:pt:espada	plural espadas
+shield	escudo	escudos	wikt:pt:escudo	plural escudos
+ring	anel	anéis	wikt:pt:anel	plural anéis
+gold	ouro	ouros	wikt:pt:ouro	plural ouros
+silver	prata	pratas	wikt:pt:prata	plural pratas
+iron	ferro	ferros	wikt:pt:ferro	plural ferros
+stone	pedra	pedras	wikt:pt:pedra	plural pedras
+glass	vidro	vidros	wikt:pt:vidro	plural vidros
+cloth	tecido	tecidos	wikt:pt:tecido	plural tecidos
+shoe	sapato	sapatos	wikt:pt:sapato	plural sapatos
+coat	casaco	casacos	wikt:pt:casaco	plural casacos
+hat	chapéu	chapéus	wikt:pt:chapéu	plural chapéus
+sun	sol	sóis	wikt:pt:sol	plural sóis
+moon	lua	luas	wikt:pt:lua	plural luas
+star	estrela	estrelas	wikt:pt:estrela	plural estrelas
+sky	céu	céus	wikt:pt:céu	plural céus
+earth	terra	terras	wikt:pt:terra	plural terras
+land	terra	terras	wikt:pt:terra	plural terras
+sea	mar	mares	wikt:pt:mar	plural mares
+river	rio	rios	wikt:pt:rio	plural rios
+lake	lago	lagos	wikt:pt:lago	plural lagos
+mountain	montanha	montanhas	wikt:pt:montanha	plural montanhas
+hill	colina	colinas	wikt:pt:colina	plural colinas
+forest	floresta	florestas	wikt:pt:floresta	plural florestas
+tree	árvore	árvores	wikt:pt:árvore	plural árvores
+leaf	folha	folhas	wikt:pt:folha	plural folhas
+flower	flor	flores	wikt:pt:flor	plural flores
+grass	erva	ervas	wikt:pt:erva	plural ervas
+field	campo	campos	wikt:pt:campo	plural campos
+road	estrada	estradas	wikt:pt:estrada	plural estradas
+path	caminho	caminhos	wikt:pt:caminho	plural caminhos
+city	cidade	cidades	wikt:pt:cidade	plural cidades
+town	vila	vilas	wikt:pt:vila	plural vilas
+village	aldeia	aldeias	wikt:pt:aldeia	plural aldeias
+world	mundo	mundos	wikt:pt:mundo	plural mundos
+country	país	países	wikt:pt:país	plural países
+place	lugar	lugares	wikt:pt:lugar	plural lugares
+rain	chuva	chuvas	wikt:pt:chuva	plural chuvas
+snow	neve	neves	wikt:pt:neve	plural neves
+wind	vento	ventos	wikt:pt:vento	plural ventos
+cloud	nuvem	nuvens	wikt:pt:nuvem	plural nuvens
+ice	gelo	gelos	wikt:pt:gelo	plural gelos
+light	luz	luzes	wikt:pt:luz	plural luzes
+shadow	sombra	sombras	wikt:pt:sombra	plural sombras
+time	tempo	tempos	wikt:pt:tempo	plural tempos
+day	dia	dias	wikt:pt:dia	plural dias
+night	noite	noites	wikt:pt:noite	plural noites
+year	ano	anos	wikt:pt:ano	plural anos
+month	mês	meses	wikt:pt:mês	plural meses
+week	semana	semanas	wikt:pt:semana	plural semanas
+hour	hora	horas	wikt:pt:hora	plural horas
+morning	manhã	manhãs	wikt:pt:manhã	plural manhãs
+evening	tarde	tardes	wikt:pt:tarde	plural tardes
+summer	verão	verões	wikt:pt:verão	plural verões or (dated) verãos
+winter	inverno	invernos	wikt:pt:inverno	plural invernos
+autumn	outono	outonos	wikt:pt:outono	plural outonos
+life	vida	vidas	wikt:pt:vida	plural vidas
+death	morte	mortes	wikt:pt:morte	plural mortes
+love	amor	amores	wikt:pt:amor	plural amores
+war	guerra	guerras	wikt:pt:guerra	plural guerras
+peace	paz	pazes	wikt:pt:paz	plural pazes
+truth	verdade	verdades	wikt:pt:verdade	plural verdades
+law	lei	leis	wikt:pt:lei	plural leis
+work	trabalho	trabalhos	wikt:pt:trabalho	plural trabalhos
+money	dinheiro	dinheiros	wikt:pt:dinheiro	plural dinheiros
+price	preço	preços	wikt:pt:preço	plural preços
+question	pergunta	perguntas	wikt:pt:pergunta	plural perguntas
+answer	resposta	respostas	wikt:pt:resposta	plural respostas
+story	história	histórias	wikt:pt:história	plural histórias
+song	canção	canções	wikt:pt:canção	plural canções
+music	música	músicas	wikt:pt:música	plural músicas
+game	jogo	jogos	wikt:pt:jogo	plural jogos
+dream	sonho	sonhos	wikt:pt:sonho	plural sonhos
+fear	medo	medos	wikt:pt:medo	plural medos
+hope	esperança	esperanças	wikt:pt:esperança	plural esperanças
+joy	alegria	alegrias	wikt:pt:alegria	plural alegrias
+anger	raiva	raivas	wikt:pt:raiva	plural raivas
+oath	juramento	juramentos	wikt:pt:juramento	plural juramentos
+gift	presente	presentes	wikt:pt:presente	plural presentes

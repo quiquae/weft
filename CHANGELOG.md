@@ -614,6 +614,14 @@ masculine plurals English Wiktionary gives four of them — *orecchi*, *ossi*,
 *bracci*, *diti* — are figurative or count the parts one at a time, which is
 not what English usually means by the word.
 
+**And two plurals were spelled wrong.** Spanish wove "countries" as *país*,
+the singular, where the plural is *países*, and Portuguese wove "floors" as
+*chões*, a form English Wiktionary has no page for: a noun in *-ão* takes
+*-ãos*, *-ães* or *-ões* by its history, and *chão* takes *-ãos*, as *mão* is
+*mãos*. Both are
+corrected, and every plural the five modern packs weave, 868 of them, now
+names the English Wiktionary entry that prints it.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -634,7 +642,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1001 tests: 566 unit, 102 in jsdom, 293 over the build tools, and
+**Built with** 1029 tests: 566 unit, 102 in jsdom, 321 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
