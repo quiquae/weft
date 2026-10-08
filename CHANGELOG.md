@@ -603,6 +603,17 @@ other Old English phrases, it shows no pronunciation for now. Every Old
 English adverb now quotes the entry that gives its gloss, so every row of
 the pack does.
 
+**And the Italian tooltip prints no gender Italian does not have.** *Orecchio*,
+ear, was marked neuter; it is masculine, and its plural *orecchie* feminine.
+Four more words were woven in a plural of the other gender and
+printed with their singular's: *ossa*, *braccia*, *dita* and *uova* are
+feminine, the plurals of masculine *osso*, *braccio*, *dito* and *uovo*, and
+the tooltip called them masculine. All five are now woven in the singular
+only, so "ears", "bones", "arms", "fingers" and "eggs" stay English: the
+masculine plurals English Wiktionary gives four of them — *orecchi*, *ossi*,
+*bracci*, *diti* — are figurative or count the parts one at a time, which is
+not what English usually means by the word.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -623,12 +634,12 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 975 tests: 566 unit, 102 in jsdom, 267 over the build tools, and
+**Built with** 980 tests: 566 unit, 102 in jsdom, 272 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface
-forms per language, 654 KB for all seven.
+forms per language, 653 KB for all seven.
 
 ## 1.0.0
 

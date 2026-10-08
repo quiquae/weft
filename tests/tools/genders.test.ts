@@ -221,8 +221,8 @@ describe('every Latin gender names the entry it was read in', () => {
  * the printed gender is the claim.
  *
  * Italian has two genders, and until 2026-10-08 the pack printed a third:
- * `orecchio`, ear, was marked neuter, because its plural `orecchie` is
- * feminine. Four more rows were the same kind of word marked the other way —
+ * `orecchio`, ear, was marked neuter, where it is masculine and its plural
+ * `orecchie` feminine. Four more rows were the same kind of word marked the other way —
  * `osso`, `braccio`, `dito` and `uovo` are masculine and were woven in their
  * feminine plurals, `ossa`, `braccia`, `dita` and `uova`, printed
  * "masculine". The rule Latin's `locus` set on 2026-10-06 decides them: a
