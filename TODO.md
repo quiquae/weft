@@ -6,7 +6,7 @@
 
 **State on 2026-10-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **361** tool tests / 92 suites, **40** e2e passing
+suites, **369** tool tests / 93 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB and passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
@@ -67,17 +67,19 @@ Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
-**And as of 2026-10-08 every French gloss quotes the entry that gives it.**
-`tools/seed/fr-glosses.tsv` holds, for all 356 rows, the definition line of
-the word's own English Wiktionary entry that gives its gloss, naming the
-word that stands for it where the English is not there — "seaman" for
-sailor, "fabric" for cloth — and `tests/tools/glosses.test.ts` fails on a
-row with none, and on a modern pack that is neither read nor listed as
+**And as of 2026-10-08 every French and Spanish gloss quotes the entry
+that gives it.** `tools/seed/fr-glosses.tsv` and `es-glosses.tsv` hold, for
+all 356 rows of each, the definition line of the word's own English
+Wiktionary entry that gives its gloss, naming the word that stands for it
+where the English is not there — "seaman" for sailor, "fabric" for cloth,
+"overcoat" for *abrigo* — and `tests/tools/glosses.test.ts` fails on a row
+with none, and on a modern pack that is neither read nor listed as
 waiting. Reading them found one false: `tenir debout`, woven for "stand",
 is "to hold water, to make sense". "stand" is `être debout` now, "stand (be
 upright …)", as Spanish, Italian and Portuguese weave it, and `tenir
 debout`'s card is the seventh `WITHDRAWN` keeps, the first in a modern pack.
-Spanish, Portuguese, German and Italian are the next four slices.
+Spanish's found none false; Portuguese, German and Italian are the next
+three slices.
 
 **And as of 2026-10-06 every Latin gloss quotes the entry that gives it.**
 `tools/seed/la-glosses.tsv` holds, for all 356 rows, Lewis & Short's own
@@ -4973,28 +4975,55 @@ registered**, and nothing below it can move until it is.
       word pages, so the site should not move; regenerate the screenshots
       to show they do not. About 45 minutes.
 
-- [ ] **No Spanish, Portuguese, German or Italian gloss names its
-      entry.** The rest of the modern glosses, 356 rows a language,
-      split by language, Spanish next. The French slice's shape is the
-      plan: add the language to `READ` and take it out of `UNREAD` in
+- [x] **No Spanish gloss names its entry.** Done 2026-10-08, the second
+      of the four slices this item was, the rest written below: read and
+      written in the run that did the French slice, which stopped at 03:44
+      with it uncommitted, and gated and landed by the next, at 05:54,
+      which found the branch, the tree and `origin/main` as left. 95 pages fetched beside the 250 the noun and
+      verb passes left; 343 of 356 drafted, all read. Two drafts were
+      another sense: `ley`'s first line holding "law" is a law of nature,
+      and `pelo`'s one hair, so their lines quote the legislature's and the
+      head's. Five name a stand-in (`extraño` "foreigner", `barco` "boat",
+      `abrigo` "overcoat", `subir` "go up", `verdaderamente`
+      "truthfully"); four quote the heading their page gives them (`solo`
+      an adjective, `cien` a "Number", `primero` an ordinal adjective, `sí`
+      a particle); three pages only name another form, so `FORM_OF` lists
+      `sentarse` → `sentar`, `juntos` → `junto` and `quizás` → `quizá`; and
+      one phrase has no entry at all, nor has any variant of it:
+      `en ningún lugar`, "nowhere". `COMPOSED`, new in
+      `tests/tools/glosses.test.ts`, names it with its words, and its line
+      cites `en`, `ningún` and `lugar` and quotes a line of each. `muy`'s one
+      line carries Wiktionary's "(Can we verify this sense?)", and its
+      quote leaves the notice out. None is false. Red first on "356
+      Spanish glosses name no entry"; five probes on the two new paths,
+      each restored by md5. Tools 361 → **369** / 92 → **93** suites,
+      total 1069 → **1077**, in six places. Nothing that ships moved.
+
+- [ ] **No Portuguese, German or Italian gloss names its entry.** The
+      rest of the modern glosses, 356 rows a language, one language a
+      slice, Portuguese next. The French and Spanish slices' shape is the
+      plan: move the language from `UNREAD` to `READ` in
       `tests/tools/glosses.test.ts`, which goes red naming all 356, write
       `tools/seed/<lang>-glosses.tsv`, and read every draft. The tooling
       is in `/tmp/weft-gl/` for as long as `/tmp` lasts: `fetch.py <lang>`
       fetches the pages the noun and verb passes did not (about 95 a
       language, a minute and a half), `defs.py` reads a page's definition
       lines per heading, `draft.py <lang>` drafts and lists the rows
-      needing a decision, and `/tmp/weft-gl/fr-header.txt` is the
-      header to adapt. Read the drafts, not only the misses: the first
-      line holding a word can be another sense, as `question`'s was. If
-      `/tmp` is gone, the three scripts are short to write again from
-      that description: the pages are `action=render`, a definition line
-      is an `<li>` of the first `<ol>` after a part of speech's heading,
-      its `<dl>` and `<ul>` set aside. About 30 minutes a language with
-      the tooling, two hours without it.
+      needing a decision, and `fr-header.txt` and `es-header.txt` are the
+      headers to adapt. Read the drafts, not only the misses: the first
+      line holding a word can be another sense, as `question`'s, `ley`'s
+      and `pelo`'s were. A page that names another form goes in
+      `FORM_OF`; a phrase with no entry, after its variants are tried, in
+      `COMPOSED`; a gloss no definition gives in `QUEUED`, and a TODO item
+      to teach it differently. If `/tmp` is gone, the three scripts are
+      short to write again: the pages are `action=render`, a definition
+      line is an `<li>` of the first `<ol>` after a part of speech's
+      heading, its `<dl>` and `<ul>` set aside. About 30 minutes a
+      language with the tooling, two hours without it.
 
 `Now` is **empty** and `Next` holds **one** unchecked item, the last
-above, as of 2026-10-08: the Spanish, Portuguese, German and Italian
-glosses. `tenir debout`, the French glosses, the modern verb forms, the
+above, as of 2026-10-08: the Portuguese, German and Italian glosses. The
+Spanish glosses, `tenir debout`, the French glosses, the modern verb forms, the
 modern plurals, the modern genders, the Italian
 genders, the form of "tomorrow", the Old English adverb glosses, `lāh`
 for "low", the Old English verb,
@@ -5459,8 +5488,9 @@ and no automated test can reach it.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-10-08 — the French glosses, and what the other four slices need.**
-Ticked in `Next`. Five things a later run would be sorry not to know:
+**2026-10-08 — the French and Spanish glosses, and what the other three
+slices need.** Ticked in `Next`. Six things a later run would be sorry not
+to know:
 
 1. **A source writes a space as an underscore and a curly apostrophe
    straight.** The sources field is space-separated, so `au revoir` is
@@ -5492,6 +5522,13 @@ Ticked in `Next`. Five things a later run would be sorry not to know:
    `être debout` was shown that way, by building `main` and the branch
    into `/tmp` and diffing. A withdrawal still costs a regeneration of the
    three screenshot groups, because `src/core/renames.ts` is under `src/`.
+6. **A phrase can have no entry at all, and that is not a false gloss.**
+   Spanish `en ningún lugar` has none, and nor have `en ninguna parte`,
+   `en ningún lado`, `en ningún sitio` or `ninguna parte`, each fetched
+   to be sure. It is correct Spanish, so it is not `QUEUED`, which means
+   "teach it differently": `COMPOSED` cites its words' entries instead.
+   Try a phrase's variants before deciding it has none; a variant with an
+   entry would be a better word to teach.
 
 **2026-10-05 — `far wel` withdrawn, and the first card nothing teaches.**
 Ticked in `Next`. Four things a later run would be sorry not to know:
