@@ -469,6 +469,22 @@ line cites both entries; Italian's tables mark the stressed vowel,
 read, and none was wrong. Whether a participle answers to every *-ing* it
 is woven under is a teaching call in `TODO.md`, not a check.
 
+**And so does an Old English second form, read in its table.** No Old
+English headword line prints a plural, but English Wiktionary declines and
+conjugates every Old English word in a table whose cells carry a class per
+slot, `nom|p` and `pres|part`, and `tools/seed/ang-plurals.tsv` and
+`ang-verb-forms.tsv` quote the cell for each woven form, from the entry its
+gloss was read in, so the gloss and the form cannot choose different words
+of one spelling. Two pack-wide spellings are read as one, never more: ð,
+which Wiktionary files under þ, and cg, which its tables write ċġ.
+`tests/tools/ang-forms.test.ts` holds both ledgers, and its `QUEUED` names
+each row whose table prints another form, with what it prints, until a
+grammar is read for it; a queued row that gains a line fails, so the list
+only shrinks. On 2026-10-08 that held 209 of 239 and queued 30, and
+`TODO.md` sorts them by kind: a dot before a back vowel (`weġas`, where
+Wright §320 prints "wegas"), a form a grammar prints and the table does not,
+a dot where an ending was lost, and a headword's own marks.
+
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
 in `tools/seed/la-glosses.tsv` quoting Lewis & Short's own words for its
@@ -660,6 +676,67 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every woven Old English plural and participle names its table, but thirty
+
+The queue sent this run at the modern plurals, which #90 landed that
+morning. `Next` held no unchecked item, so the work was found by counting
+which claims still name no entry: the second forms of the two packs read in
+their own dictionaries, Old English's 239 and Latin's 244. Old English
+first.
+
+**Read in the table, because its headword line prints no plural.** The
+rendered page of every entry `ang-glosses.tsv` read a woven row's gloss in
+was fetched, 244 pages, by two fetchers from either end of the list,
+together under one request a second; a script read the cells classed
+`nom|p` and `pres|part`, and wrote `tools/seed/ang-plurals.tsv` and
+`ang-verb-forms.tsv`. A page holding two words of a spelling is read by the
+etymology whose definitions give the gloss, and the first draft got one
+wrong: `lagu`, the law, took the sea's table, "laga", because "law" also
+stands in the sea's quotations; matched against the definition lines alone
+it is "laga, lage". Where one etymology declines a noun in two genders the
+table is the seed's gender's — `hyll`, `heofon`, `bāt`, `clāð`, `rūm` — and
+`wīġ`, war, matched the idol's table, "wīġ", where its own prints "wīg", so
+it is queued.
+
+**209 of 239 are among the forms their table prints**, once ð is read as
+þ and cg as ċġ, the two spellings the pack keeps on every word. The other
+thirty are `QUEUED` in `tests/tools/ang-forms.test.ts` with what each table
+prints, and the first item in `TODO.md` sorts them into four kinds. One is
+plainly wrong: "roads" is woven `weġas`, where Wright's *Old English
+Grammar* §320 prints "pl. dagas, days; wegas, ways", the guttural, as the
+pack itself writes `dagas`. Others are woven in a form the grammar prints
+and the table does not — `setl` ("setlu beside setl", §349), `mettas`
+(§386), `wintru` ("wintru beside winter", §397) — and two the tables dot otherwise than the pack, `ċempa` and
+`ċǣġ`, whose *c* comes before an umlaut, so the pack prints /ˈtʃæːj/ for
+the word that became *key*. Nothing was changed for them in this slice.
+
+Test-first: 15 tests in 3 suites, red on "158 Old English plurals are
+unsourced" and "81 … present participles", green with the ledgers. Six
+probes, each restored by md5, each failing its own test by name; three
+printed nothing at first — a Perl pattern holding *ċ* needs `-Mutf8` —
+and were rerun until the file had changed. Nothing that ships moved. Tools
+394 → **409** / 96 → **99** suites, total 1102 → **1117**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says where the forms are
+read. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **409 tools / 99 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then
+build and validate again. Separately `packs:verify` **0 errors / 5
+warnings**. `site:check` and `artefacts:check` were not re-run: no pack,
+page or image moved.
+
+Assumed, with nobody to ask: that an Old English form is read in the entry
+its gloss was, so the two ledgers cannot pick different homographs; that ð
+for þ and cg for ċġ are spellings, not forms; and that a row whose table
+prints another form waits, named, rather than taking the table's form,
+because a grammar prints several of the seed's.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the thirty queued Old English forms, then Latin's 244.
 
 ### 2026-10-08 — every Italian gloss names its entry, and every modern claim now does
 
