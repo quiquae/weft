@@ -57,11 +57,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **267 pass**, 71 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **272 pass**, 73 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for all three |
+| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for all three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -411,6 +411,20 @@ dictionary refuses is woven not at all — `vesper`'s is "not used", and
 `tests/tools/lexicon-orthography.test.ts` keeps each with what its entry
 prints.
 
+**And a gender is one its language has, in every pack.** French, Spanish,
+Italian and Portuguese have two, German and Old English three, Latin four
+with "common"; `INVENTORY` in `tests/tools/genders.test.ts` says which, reads
+the shipped packs, and fails on a printed gender outside it or a pack it
+gives none. Italian `orecchio`, ear, printed "neuter" until 2026-10-08, and
+`ossa`, `braccia`, `dita` and `uova` — the feminine plurals of masculine
+`osso`, `braccio`, `dito` and `uovo` — printed "masculine". By `locus`'s rule
+all five are woven in the singular only, because the masculine plurals
+English Wiktionary gives four of them are figurative or count the parts one
+at a time; `ITALIAN_OTHER_GENDER` keeps each with what its entry prints, and
+the same file refuses a masculine Italian noun woven in a plural in -a or
+-e, the endings of a feminine one. Beyond that, no modern pack's gender has
+been read against a dictionary.
+
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
 in `tools/seed/la-glosses.tsv` quoting Lewis & Short's own words for its
@@ -569,6 +583,77 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — Italian has two genders, and the pack printed three
+
+The queue sent this run at the Latin gloss ledger, which #79 landed on
+2026-10-06 — `tools/seed/la-glosses.tsv` is 406 lines and its 6 tests pass
+— and `TODO.md` held no unchecked item. So the work was found by counting:
+every seed's genders, per language, in one script. Italian used three.
+`orecchio`, ear, was `n`, and the tooltip printed `GENDER_LABELS`'
+"neuter" under it and under its plural `orecchie`; `tools/verify-packs.mjs`
+accepts any of `mfnc` in any language, so nothing objected.
+
+**One wrong gender was a class of five.** Asking which other Italian rows
+were the same kind of word — a masculine singular with a plural in -a or
+-e, which no masculine plural has — found `osso`, `braccio`, `dito` and
+`uovo`, woven in `ossa`, `braccia`, `dita` and `uova` and printed
+"masculine", because a seed row has one gender and the builder prints it
+under both forms. English Wiktionary's Italian entries, fetched raw and
+rendered, give each plural feminine: "uovo m (plural uova f", "osso m
+(plural (collective) ossa f or (individual) ossi m)". `locus`'s rule,
+recorded under the decisions above, settles them without a new choice:
+a plural of the row's own gender or none. Each masculine plural Wiktionary
+gives is figurative or counts the parts one at a time, so all five are
+woven in the singular only, and five English plurals stay English.
+
+Test-first: 5 tests in 2 new suites of `tests/tools/genders.test.ts`,
+reading the shipped packs, because the printed gender is the claim. Red on
+exactly `orecchio`/`orecchie` for the inventory and exactly the four -a
+plurals for the rule, no other masculine plural named; green after the
+seed and `npm run packs`. Two probes restored by md5: `uovo` marked `f`,
+the wrong fix, is named by the table; Italian dropped from `INVENTORY`
+names `en-it.json`. `en-it.json` lost five entries and `ear`'s `n`, 588 →
+583, and `index.json` its count and date. The ranges do not move. The seven
+packs are 769 bytes lighter, **653 KB** where `README.md` and
+`CHANGELOG.md` said 654, and so is each package, which prints **989 KB**
+where it printed 990: Chrome's 989.61 → 988.86 KB. Italian's one page, its
+words-you-already-know hub, prints none of the five and is byte-identical,
+built from `main` in a `/tmp` worktree and from the branch; `sitemap.xml`
+moved its date to the pack's. All 36 screenshots regenerated
+byte-identical, 14 + 15 + 7 written, and the three groups stamped. Tools 267 → **272** / 71 →
+**73** suites, total 975 → **980**, in six places, `docs/LAUNCH.md:221`
+first; a `CHANGELOG.md` paragraph, because the pack ships.
+
+**Counting found the next item too.** The same fetch, run over every
+modern noun, puts French at 167 of 178 agreeing with Wiktionary outright,
+and the 11 left are pages with two nouns of one spelling — *livre*, book
+and pound — or a gender by sense: *enfant* and *médecin* are masculine or
+feminine by the person meant, and *amour* is given both. No French gender
+is wrong, but whether *enfant* is printed as Latin's "common" is a call for
+that pass, and queued with it.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **272 tools / 73 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**,
+Italian at 583 entries across 578 surface forms; `npm run site` then
+`site:check` **714 pages / 16 118 links**, all resolving; `artefacts:check`
+**8 groups, 1 stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that `locus`'s rule binds Italian as it binds
+Latin, so no tenth column was added — written up in `TODO.md` as a call to
+look at; that a masculine plural counting the parts one at a time is not
+the plural English means by "fingers" or "bones", where Latin's "single
+places" was what English means by "places"; and that the inventory belongs
+in the test rather than the language table, which would move `src/core/`
+and every screenshot group for a fact only a guard reads.
+
+What needs a human: unchanged, everything below **B1** — `weft.study` is
+still NXDOMAIN. `Next` holds one agent-shaped item: the genders of the
+other 885 modern nouns, which no dictionary has read.
 
 ### 2026-10-07 — "tomorrow" was in Bosworth–Toller, past where the reading stopped
 

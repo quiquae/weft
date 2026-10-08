@@ -8,6 +8,14 @@
 #       a noun means the English plural is never woven, which is the
 #       correct outcome: weaving a singular target under an English
 #       plural teaches a form that does not exist.
+# gender m or f, and printed under both forms, so a noun whose plural takes
+#       the other gender is woven in the singular only. osso, braccio, dito,
+#       uovo and orecchio are masculine, and the plurals English means by
+#       bones, arms, fingers, eggs and ears are feminine: ossa, braccia, dita,
+#       uova, orecchie. The masculine plurals English Wiktionary gives four of
+#       them are figurative or of the parts one at a time. orecchio was marked
+#       neuter until 2026-10-08, a gender Italian does not have.
+#       tests/tools/genders.test.ts holds both.
 #
 man	noun	uomo	uomini	m			
 woman	noun	donna	donne	f			
@@ -40,18 +48,18 @@ sailor	noun	marinaio	marinai	m
 head	noun	testa	teste	f			
 hand	noun	mano	mani	f			
 eye	noun	occhio	occhi	m			
-ear	noun	orecchio	orecchie	n			
+ear	noun	orecchio		m			
 mouth	noun	bocca	bocche	f			
 nose	noun	naso	nasi	m			
 tooth	noun	dente	denti	m			
 hair	noun	capello	capelli	m			
 heart	noun	cuore	cuori	m			
 blood	noun	sangue	sangui	m			
-bone	noun	osso	ossa	m			
-arm	noun	braccio	braccia	m			
+bone	noun	osso		m			
+arm	noun	braccio		m			
 leg	noun	gamba	gambe	f			
 foot	noun	piede	piedi	m			
-finger	noun	dito	dita	m			
+finger	noun	dito		m			
 face	noun	faccia	facce	f			
 body	noun	corpo	corpi	m			
 skin	noun	pelle	pelli	f			
@@ -86,7 +94,7 @@ apple	noun	mela	mele	f
 salt	noun	sale	sali	m			
 honey	noun	miele	mieli	m			
 cheese	noun	formaggio	formaggi	m			
-egg	noun	uovo	uova	m			
+egg	noun	uovo		m			
 fire	noun	fuoco	fuochi	m			
 house	noun	casa	case	f			
 home	noun	casa	case	f			
