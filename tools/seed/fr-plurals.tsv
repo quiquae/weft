@@ -1,0 +1,206 @@
+# Where each woven French plural in lex-fr.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A noun row weaves its second form under an English plural, and the tooltip
+# prints that form as the word the reader met. On 2026-10-08 every woven
+# French plural was read in the headword line of English Wiktionary's French
+# entry for its noun, rendered as a reader sees it, because the raw template
+# mostly leaves the plural to Wiktionary's module: {{fr-noun|m}} prints
+# "homme m (plural hommes)". All 178 are among the plurals their own noun's
+# line prints, and none was changed.
+#
+# quote is the clause of that line which prints the plural, its qualifiers
+# kept, or "invariable" where the line says the plural is the singular. A
+# page holds every word of one spelling, so the clause is this word's own
+# noun's, of the seed's gender and sense. Three pages hold two nouns of this
+# spelling with different plurals: fils, son, is invariable where fils,
+# threads, is the plural of fil; sol, floor, is "plural sols" where sol, the
+# note of the scale, is invariable; and ciel, sky, is "plural cieux or
+# ciels" where ciel, the canopy of a bed, is "plural ciels".
+#
+# The sources field
+# -----------------
+#   wikt:fr:<title>    https://en.wiktionary.org/wiki/<title>#French
+#
+# tests/tools/plurals.test.ts requires every noun lex-fr.tsv weaves in a
+# second form to have a line here with that form, citing the noun's own
+# entry, its quote printing the form, and fails on a line outliving its row.
+man	homme	hommes	wikt:fr:homme	plural hommes
+woman	femme	femmes	wikt:fr:femme	plural femmes
+child	enfant	enfants	wikt:fr:enfant	plural enfants
+boy	garçon	garçons	wikt:fr:garçon	plural garçons
+girl	fille	filles	wikt:fr:fille	plural filles
+person	personne	personnes	wikt:fr:personne	plural personnes
+friend	ami	amis	wikt:fr:ami	plural amis
+family	famille	familles	wikt:fr:famille	plural familles
+mother	mère	mères	wikt:fr:mère	plural mères
+father	père	pères	wikt:fr:père	plural pères
+brother	frère	frères	wikt:fr:frère	plural frères
+sister	sœur	sœurs	wikt:fr:sœur	plural sœurs
+son	fils	fils	wikt:fr:fils	invariable
+daughter	fille	filles	wikt:fr:fille	plural filles
+wife	épouse	épouses	wikt:fr:épouse	plural épouses
+husband	mari	maris	wikt:fr:mari	plural maris
+baby	bébé	bébés	wikt:fr:bébé	plural bébés
+king	roi	rois	wikt:fr:roi	plural rois
+queen	reine	reines	wikt:fr:reine	plural reines
+lord	seigneur	seigneurs	wikt:fr:seigneur	plural seigneurs
+neighbour	voisin	voisins	wikt:fr:voisin	plural voisins
+stranger	étranger	étrangers	wikt:fr:étranger	plural étrangers
+enemy	ennemi	ennemis	wikt:fr:ennemi	plural ennemis
+soldier	soldat	soldats	wikt:fr:soldat	plural soldats
+teacher	professeur	professeurs	wikt:fr:professeur	plural professeurs
+doctor	médecin	médecins	wikt:fr:médecin	plural médecins
+farmer	fermier	fermiers	wikt:fr:fermier	plural fermiers
+sailor	marin	marins	wikt:fr:marin	plural marins
+head	tête	têtes	wikt:fr:tête	plural têtes
+hand	main	mains	wikt:fr:main	plural mains
+eye	œil	yeux	wikt:fr:œil	plural yeux or œils
+ear	oreille	oreilles	wikt:fr:oreille	plural oreilles
+mouth	bouche	bouches	wikt:fr:bouche	plural bouches
+nose	nez	nez	wikt:fr:nez	invariable
+tooth	dent	dents	wikt:fr:dent	plural dents
+hair	cheveu	cheveux	wikt:fr:cheveu	plural cheveux
+heart	cœur	cœurs	wikt:fr:cœur	plural cœurs
+blood	sang	sangs	wikt:fr:sang	plural sangs
+bone	os	os	wikt:fr:os	invariable
+arm	bras	bras	wikt:fr:bras	invariable
+leg	jambe	jambes	wikt:fr:jambe	plural jambes
+foot	pied	pieds	wikt:fr:pied	plural pieds
+finger	doigt	doigts	wikt:fr:doigt	plural doigts
+face	visage	visages	wikt:fr:visage	plural visages
+body	corps	corps	wikt:fr:corps	invariable
+skin	peau	peaux	wikt:fr:peau	plural peaux
+voice	voix	voix	wikt:fr:voix	invariable
+dog	chien	chiens	wikt:fr:chien	plural chiens
+cat	chat	chats	wikt:fr:chat	plural chats
+horse	cheval	chevaux	wikt:fr:cheval	plural chevaux
+bird	oiseau	oiseaux	wikt:fr:oiseau	plural oiseaux
+fish	poisson	poissons	wikt:fr:poisson	plural poissons
+cow	vache	vaches	wikt:fr:vache	plural vaches
+sheep	mouton	moutons	wikt:fr:mouton	plural moutons
+pig	cochon	cochons	wikt:fr:cochon	plural cochons
+wolf	loup	loups	wikt:fr:loup	plural loups
+bear	ours	ours	wikt:fr:ours	invariable
+lion	lion	lions	wikt:fr:lion	plural lions
+mouse	souris	souris	wikt:fr:souris	invariable
+snake	serpent	serpents	wikt:fr:serpent	plural serpents
+bee	abeille	abeilles	wikt:fr:abeille	plural abeilles
+worm	ver	vers	wikt:fr:ver	plural vers
+raven	corbeau	corbeaux	wikt:fr:corbeau	plural corbeaux
+hound	limier	limiers	wikt:fr:limier	plural limiers
+ox	bœuf	bœufs	wikt:fr:bœuf	plural bœufs
+goat	chèvre	chèvres	wikt:fr:chèvre	plural chèvres
+food	nourriture	nourritures	wikt:fr:nourriture	plural nourritures
+bread	pain	pains	wikt:fr:pain	plural pains
+water	eau	eaux	wikt:fr:eau	plural eaux
+wine	vin	vins	wikt:fr:vin	plural vins
+milk	lait	laits	wikt:fr:lait	plural laits
+meat	viande	viandes	wikt:fr:viande	plural viandes
+fruit	fruit	fruits	wikt:fr:fruit	plural fruits
+apple	pomme	pommes	wikt:fr:pomme	plural pommes
+salt	sel	sels	wikt:fr:sel	plural sels
+honey	miel	miels	wikt:fr:miel	plural miels
+cheese	fromage	fromages	wikt:fr:fromage	plural fromages
+egg	œuf	œufs	wikt:fr:œuf	plural œufs
+fire	feu	feux	wikt:fr:feu	plural feux
+house	maison	maisons	wikt:fr:maison	plural maisons
+home	foyer	foyers	wikt:fr:foyer	plural foyers
+door	porte	portes	wikt:fr:porte	plural portes
+window	fenêtre	fenêtres	wikt:fr:fenêtre	plural fenêtres
+wall	mur	murs	wikt:fr:mur	plural murs
+roof	toit	toits	wikt:fr:toit	plural toits
+floor	sol	sols	wikt:fr:sol	plural sols
+room	pièce	pièces	wikt:fr:pièce	plural pièces
+table	table	tables	wikt:fr:table	plural tables
+chair	chaise	chaises	wikt:fr:chaise	plural chaises
+bed	lit	lits	wikt:fr:lit	plural lits
+book	livre	livres	wikt:fr:livre	plural livres
+word	mot	mots	wikt:fr:mot	plural mots
+letter	lettre	lettres	wikt:fr:lettre	plural lettres
+name	nom	noms	wikt:fr:nom	plural noms
+key	clé	clés	wikt:fr:clé	plural clés
+bridge	pont	ponts	wikt:fr:pont	plural ponts
+church	église	églises	wikt:fr:église	plural églises
+ship	navire	navires	wikt:fr:navire	plural navires
+boat	bateau	bateaux	wikt:fr:bateau	plural bateaux
+sword	épée	épées	wikt:fr:épée	plural épées
+shield	bouclier	boucliers	wikt:fr:bouclier	plural boucliers
+ring	anneau	anneaux	wikt:fr:anneau	plural anneaux
+gold	or	ors	wikt:fr:or	plural ors
+silver	argent	argents	wikt:fr:argent	plural argents
+iron	fer	fers	wikt:fr:fer	plural fers
+stone	pierre	pierres	wikt:fr:pierre	plural pierres
+glass	verre	verres	wikt:fr:verre	plural verres
+cloth	tissu	tissus	wikt:fr:tissu	plural tissus
+shoe	chaussure	chaussures	wikt:fr:chaussure	plural chaussures
+coat	manteau	manteaux	wikt:fr:manteau	plural manteaux
+hat	chapeau	chapeaux	wikt:fr:chapeau	plural chapeaux
+sun	soleil	soleils	wikt:fr:soleil	plural soleils
+moon	lune	lunes	wikt:fr:lune	plural lunes
+star	étoile	étoiles	wikt:fr:étoile	plural étoiles
+sky	ciel	cieux	wikt:fr:ciel	plural cieux or ciels
+earth	terre	terres	wikt:fr:terre	plural terres
+land	terre	terres	wikt:fr:terre	plural terres
+sea	mer	mers	wikt:fr:mer	plural mers
+river	rivière	rivières	wikt:fr:rivière	plural rivières
+lake	lac	lacs	wikt:fr:lac	plural lacs
+mountain	montagne	montagnes	wikt:fr:montagne	plural montagnes
+hill	colline	collines	wikt:fr:colline	plural collines
+forest	forêt	forêts	wikt:fr:forêt	plural forêts
+tree	arbre	arbres	wikt:fr:arbre	plural arbres
+leaf	feuille	feuilles	wikt:fr:feuille	plural feuilles
+flower	fleur	fleurs	wikt:fr:fleur	plural fleurs
+grass	herbe	herbes	wikt:fr:herbe	plural herbes
+field	champ	champs	wikt:fr:champ	plural champs
+road	route	routes	wikt:fr:route	plural routes
+path	sentier	sentiers	wikt:fr:sentier	plural sentiers
+city	ville	villes	wikt:fr:ville	plural villes
+town	ville	villes	wikt:fr:ville	plural villes
+village	village	villages	wikt:fr:village	plural villages
+world	monde	mondes	wikt:fr:monde	plural mondes
+country	pays	pays	wikt:fr:pays	invariable
+place	endroit	endroits	wikt:fr:endroit	plural endroits
+rain	pluie	pluies	wikt:fr:pluie	plural pluies
+snow	neige	neiges	wikt:fr:neige	plural neiges
+wind	vent	vents	wikt:fr:vent	plural vents
+cloud	nuage	nuages	wikt:fr:nuage	plural nuages
+ice	glace	glaces	wikt:fr:glace	plural glaces
+light	lumière	lumières	wikt:fr:lumière	plural lumières
+shadow	ombre	ombres	wikt:fr:ombre	plural ombres
+time	temps	temps	wikt:fr:temps	invariable
+day	jour	jours	wikt:fr:jour	plural jours
+night	nuit	nuits	wikt:fr:nuit	plural nuits
+year	année	années	wikt:fr:année	plural années
+month	mois	mois	wikt:fr:mois	invariable
+week	semaine	semaines	wikt:fr:semaine	plural semaines
+hour	heure	heures	wikt:fr:heure	plural heures
+morning	matin	matins	wikt:fr:matin	plural matins
+evening	soir	soirs	wikt:fr:soir	plural soirs
+summer	été	étés	wikt:fr:été	plural étés
+winter	hiver	hivers	wikt:fr:hiver	plural hivers
+autumn	automne	automnes	wikt:fr:automne	plural automnes
+life	vie	vies	wikt:fr:vie	plural vies
+death	mort	morts	wikt:fr:mort	plural morts
+love	amour	amours	wikt:fr:amour	plural amours
+war	guerre	guerres	wikt:fr:guerre	plural guerres
+peace	paix	paix	wikt:fr:paix	invariable
+truth	vérité	vérités	wikt:fr:vérité	plural vérités
+law	loi	lois	wikt:fr:loi	plural lois
+work	travail	travaux	wikt:fr:travail	plural travaux or travails
+money	argent	argents	wikt:fr:argent	plural argents
+price	prix	prix	wikt:fr:prix	invariable
+question	question	questions	wikt:fr:question	plural questions
+answer	réponse	réponses	wikt:fr:réponse	plural réponses
+story	histoire	histoires	wikt:fr:histoire	plural histoires
+song	chanson	chansons	wikt:fr:chanson	plural chansons
+music	musique	musiques	wikt:fr:musique	plural musiques
+game	jeu	jeux	wikt:fr:jeu	plural jeux
+dream	rêve	rêves	wikt:fr:rêve	plural rêves
+fear	peur	peurs	wikt:fr:peur	plural peurs
+hope	espoir	espoirs	wikt:fr:espoir	plural espoirs
+joy	joie	joies	wikt:fr:joie	plural joies
+anger	colère	colères	wikt:fr:colère	plural colères
+oath	serment	serments	wikt:fr:serment	plural serments
+gift	cadeau	cadeaux	wikt:fr:cadeau	plural cadeaux
