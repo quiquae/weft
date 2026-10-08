@@ -715,7 +715,15 @@ form, a source that is no section, and the dots not set aside, which names
 `byriġ`. Tools 409 → **410**, total 1117 → **1118**, in six places, and a
 `CHANGELOG.md` paragraph, because the pack ships.
 
-Measured at the end: GATE_RESULT
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **410 tools / 99 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.7 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**; `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving; `artefacts:check` **8 groups, 1 stale** — the release notes,
+B2a — with the three screenshot groups `ok` on their new stamps.
 
 Assumed, with nobody to ask: that the seed's older forms stand where Wright
 prints them as the paradigm's, the pack being Early West Saxon; that a
