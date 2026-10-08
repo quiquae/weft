@@ -1,0 +1,420 @@
+# Where each gloss in lex-it.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word an Italian word is woven for, and the tooltip
+# prints it back: it is the claim every reader meets first. Every other
+# claim the pack makes about a word names its entry — genders in
+# it-genders.tsv, plurals in it-plurals.tsv, verb forms in it-verb-forms.tsv
+# — and the gloss named none until 2026-10-08, the night fr-, es-, pt- and
+# de-glosses.tsv were written the same way. Italian was the last of the five.
+#
+# Every row is read, all 356: the 178 nouns, 81 verbs, 57 adjectives, 22
+# adverbs, 13 numerals and 5 interjections. Each was read in the rendered
+# page of the word's English Wiktionary entry, in its Italian section: a
+# script took the definition lines under each heading of the row's part of
+# speech, examples, quotations and synonyms set aside, and drafted the first
+# that holds the row's English word, and every quote was read against its
+# page. Two drafts were another sense, and their lines quote the row's:
+# luna's line holding "moon" is "(archaic, literary) a month, moon", and
+# molto's first holding "very" is "much, very much, a lot (with verbs)",
+# where the row's is the one before adjectives.
+#
+# A page holds every word of one spelling, so a quote is from this word's
+# own part of speech where the page has it. Two rows' words have none of
+# theirs, and their lines quote the heading the page gives them: primo,
+# "first", is an ordinal adjective, and sì, "yes", a particle.
+#
+# The sources field
+# -----------------
+#   wikt:it:<title>    https://en.wiktionary.org/wiki/<title>#Italian
+#
+# The title is the word as Wiktionary's address writes it, with an
+# underscore for a space: wikt:it:stare_in_piedi. A noun cites the entry its
+# gender was read in, which for every Italian noun is its own. sedersi, a
+# pronominal infinitive, defines itself, "to sit, sit down, take a seat",
+# beside "reflexive of sedere", and needs no other entry.
+#
+# One phrase has no entry of its own: in nessun luogo, "nowhere". Its line
+# cites the entries of its words, in, nessuno and luogo — nessun is
+# "apocopic form of nessuno" — and quotes a line of each, joined by " / ",
+# naming no stand-in; COMPOSED in tests/tools/glosses.test.ts lists it. Its
+# variant da nessuna parte is an entry, "nowhere", and in nessun posto is
+# not; teaching da nessuna parte instead is a call in TODO.md.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in
+# the entry, or is there only in another sense. Six rows need one. terra's
+# entry is three lines, "ground", "soil" and "planet", so it is "soil" for
+# "earth" and "ground" for "land"; tiepido for "warm" is "tepid, lukewarm",
+# the entry that gives "warm" being caldo's, "warm, hot", which the pack
+# weaves for "hot"; cercare for "seek" is "to look for"; salire for "rise"
+# "to go up, to come up"; and luna for "moon" is "a natural satellite",
+# Wiktionary filing the Moon itself under Luna.
+#
+# None is false. One says less than the row is woven for, and is recorded
+# rather than changed: capello is "a single hair (on the head)", as French
+# cheveu is one hair, where English's mass noun "hair" is capelli; see
+# TODO.md.
+#
+# tests/tools/glosses.test.ts requires every row of lex-it.tsv to have a line
+# here citing its own word's entry, whose quote holds its English word or the
+# stand-in it names, and fails on a line outliving its row.
+man	noun	uomo	wikt:it:uomo	person, man (human being)
+woman	noun	donna	wikt:it:donna	woman
+child	noun	bambino	wikt:it:bambino	child, baby, toddler, tot (male or of unspecified gender)
+boy	noun	ragazzo	wikt:it:ragazzo	boy, young man
+girl	noun	ragazza	wikt:it:ragazza	girl, young woman
+person	noun	persona	wikt:it:persona	person, pl people, persons
+friend	noun	amico	wikt:it:amico	friend, companion, partner
+family	noun	famiglia	wikt:it:famiglia	family
+mother	noun	madre	wikt:it:madre	mother
+father	noun	padre	wikt:it:padre	(family) father
+brother	noun	fratello	wikt:it:fratello	brother, sibling
+sister	noun	sorella	wikt:it:sorella	sister
+son	noun	figlio	wikt:it:figlio	son
+daughter	noun	figlia	wikt:it:figlia	daughter
+wife	noun	moglie	wikt:it:moglie	wife
+husband	noun	marito	wikt:it:marito	husband
+baby	noun	bambino	wikt:it:bambino	child, baby, toddler, tot (male or of unspecified gender)
+king	noun	re	wikt:it:re	king (male monarch)
+queen	noun	regina	wikt:it:regina	queen (monarch)
+lord	noun	signore	wikt:it:signore	(archaic) lord (ruler)
+neighbour	noun	vicino	wikt:it:vicino	neighbour/neighbor
+stranger	noun	straniero	wikt:it:straniero	foreigner, alien, stranger, outlander
+enemy	noun	nemico	wikt:it:nemico	enemy, foe
+soldier	noun	soldato	wikt:it:soldato	soldier
+teacher	noun	insegnante	wikt:it:insegnante	teacher, master
+doctor	noun	medico	wikt:it:medico	(medicine) doctor, physician
+farmer	noun	contadino	wikt:it:contadino	peasant, farmer, bond
+sailor	noun	marinaio	wikt:it:marinaio	sailor, mariner, seaman
+head	noun	testa	wikt:it:testa	(anatomy) head
+hand	noun	mano	wikt:it:mano	(anatomy) hand
+eye	noun	occhio	wikt:it:occhio	eye
+ear	noun	orecchio	wikt:it:orecchio	(anatomy) ear
+mouth	noun	bocca	wikt:it:bocca	mouth (all senses)
+nose	noun	naso	wikt:it:naso	(anatomy) nose
+tooth	noun	dente	wikt:it:dente	(anatomy) tooth
+hair	noun	capello	wikt:it:capello	a single hair (on the head)
+heart	noun	cuore	wikt:it:cuore	heart
+blood	noun	sangue	wikt:it:sangue	(uncountable) blood (vital liquid)
+bone	noun	osso	wikt:it:osso	(anatomy) bone
+arm	noun	braccio	wikt:it:braccio	(anatomy) arm
+leg	noun	gamba	wikt:it:gamba	leg
+foot	noun	piede	wikt:it:piede	foot
+finger	noun	dito	wikt:it:dito	finger (on a hand)
+face	noun	faccia	wikt:it:faccia	face (of a person or an animal)
+body	noun	corpo	wikt:it:corpo	body (the physical structure of a human or animal)
+skin	noun	pelle	wikt:it:pelle	skin
+voice	noun	voce	wikt:it:voce	voice
+dog	noun	cane	wikt:it:cane	dog, male dog
+cat	noun	gatto	wikt:it:gatto	cat
+horse	noun	cavallo	wikt:it:cavallo	horse
+bird	noun	uccello	wikt:it:uccello	bird
+fish	noun	pesce	wikt:it:pesce	fish
+cow	noun	vacca	wikt:it:vacca	cow
+sheep	noun	pecora	wikt:it:pecora	sheep (animal)
+pig	noun	maiale	wikt:it:maiale	pig
+wolf	noun	lupo	wikt:it:lupo	wolf
+bear	noun	orso	wikt:it:orso	bear (Ursus arctos)
+lion	noun	leone	wikt:it:leone	lion
+mouse	noun	topo	wikt:it:topo	mouse, rat
+snake	noun	serpente	wikt:it:serpente	snake
+bee	noun	ape	wikt:it:ape	(entomology) bee
+worm	noun	verme	wikt:it:verme	worm
+raven	noun	corvo	wikt:it:corvo	raven, crow, rook
+hound	noun	segugio	wikt:it:segugio	hound, bloodhound
+ox	noun	bue	wikt:it:bue	ox (adult castrated male of cattle)
+goat	noun	capra	wikt:it:capra	goat (a mammal)
+food	noun	cibo	wikt:it:cibo	food
+bread	noun	pane	wikt:it:pane	bread
+water	noun	acqua	wikt:it:acqua	water
+wine	noun	vino	wikt:it:vino	wine (an alcoholic beverage made by fermenting grape juice, with an ABV ranging from 5.5–16%)
+milk	noun	latte	wikt:it:latte	milk
+meat	noun	carne	wikt:it:carne	meat, flesh
+fruit	noun	frutto	wikt:it:frutto	(botany) fruit
+apple	noun	mela	wikt:it:mela	apple (fruit)
+salt	noun	sale	wikt:it:sale	salt, sal
+honey	noun	miele	wikt:it:miele	honey
+cheese	noun	formaggio	wikt:it:formaggio	cheese
+egg	noun	uovo	wikt:it:uovo	egg
+fire	noun	fuoco	wikt:it:fuoco	fire
+house	noun	casa	wikt:it:casa	house
+home	noun	casa	wikt:it:casa	home
+door	noun	porta	wikt:it:porta	door
+window	noun	finestra	wikt:it:finestra	window
+wall	noun	muro	wikt:it:muro	wall
+roof	noun	tetto	wikt:it:tetto	roof
+floor	noun	pavimento	wikt:it:pavimento	floor
+room	noun	stanza	wikt:it:stanza	room
+table	noun	tavolo	wikt:it:tavolo	(furniture) table, board, desk
+chair	noun	sedia	wikt:it:sedia	(furniture) chair
+bed	noun	letto	wikt:it:letto	(furniture) bed
+book	noun	libro	wikt:it:libro	book
+word	noun	parola	wikt:it:parola	word (distinct unit of language)
+letter	noun	lettera	wikt:it:lettera	letter (symbol in an alphabet)
+name	noun	nome	wikt:it:nome	name
+key	noun	chiave	wikt:it:chiave	key
+bridge	noun	ponte	wikt:it:ponte	bridge (structure)
+church	noun	chiesa	wikt:it:chiesa	church
+ship	noun	nave	wikt:it:nave	ship
+boat	noun	barca	wikt:it:barca	boat
+sword	noun	spada	wikt:it:spada	sword
+shield	noun	scudo	wikt:it:scudo	shield, specifically:
+ring	noun	anello	wikt:it:anello	ring
+gold	noun	oro	wikt:it:oro	(chemistry) gold
+silver	noun	argento	wikt:it:argento	(chemistry) silver
+iron	noun	ferro	wikt:it:ferro	(chemistry) iron (metal, tool made of iron)
+stone	noun	pietra	wikt:it:pietra	stone
+glass	noun	vetro	wikt:it:vetro	glass (transparent material)
+cloth	noun	stoffa	wikt:it:stoffa	cloth, material, fabric
+shoe	noun	scarpa	wikt:it:scarpa	shoe (protective covering for the foot)
+coat	noun	cappotto	wikt:it:cappotto	(fashion) coat, overcoat
+hat	noun	cappello	wikt:it:cappello	hat
+sun	noun	sole	wikt:it:sole	sun
+moon	noun	luna	wikt:it:luna	(colloquial, astronomy, by extension of Luna) a natural satellite	natural satellite
+star	noun	stella	wikt:it:stella	star
+sky	noun	cielo	wikt:it:cielo	sky
+earth	noun	terra	wikt:it:terra	(colloquial, atechnical synonym of suolo (“terreno”, “soil”)) soil	soil
+land	noun	terra	wikt:it:terra	ground	ground
+sea	noun	mare	wikt:it:mare	sea
+river	noun	fiume	wikt:it:fiume	river
+lake	noun	lago	wikt:it:lago	lake
+mountain	noun	montagna	wikt:it:montagna	(geomorphology, orography) mountain
+hill	noun	collina	wikt:it:collina	hill
+forest	noun	foresta	wikt:it:foresta	forest
+tree	noun	albero	wikt:it:albero	tree (all senses)
+leaf	noun	foglia	wikt:it:foglia	leaf
+flower	noun	fiore	wikt:it:fiore	(also figurative) flower, bloom, blossom
+grass	noun	erba	wikt:it:erba	grass
+field	noun	campo	wikt:it:campo	(sports, agriculture) field
+road	noun	strada	wikt:it:strada	road, way, street
+path	noun	sentiero	wikt:it:sentiero	path, trail
+city	noun	città	wikt:it:città	town, city
+town	noun	paese	wikt:it:paese	town
+village	noun	villaggio	wikt:it:villaggio	village, hamlet
+world	noun	mondo	wikt:it:mondo	world
+country	noun	paese	wikt:it:paese	country (nation)
+place	noun	luogo	wikt:it:luogo	place (location; position)
+rain	noun	pioggia	wikt:it:pioggia	rain
+snow	noun	neve	wikt:it:neve	(weather) snow
+wind	noun	vento	wikt:it:vento	wind (movement of air caused by differences in atmospheric pressure)
+cloud	noun	nuvola	wikt:it:nuvola	cloud
+ice	noun	ghiaccio	wikt:it:ghiaccio	(uncountable) ice (water in solid form)
+light	noun	luce	wikt:it:luce	light (visible electromagnetic wave; electrical device providing light)
+shadow	noun	ombra	wikt:it:ombra	shade, shadow
+time	noun	tempo	wikt:it:tempo	(uncountable) time
+day	noun	giorno	wikt:it:giorno	day
+night	noun	notte	wikt:it:notte	night
+year	noun	anno	wikt:it:anno	year (all senses)
+month	noun	mese	wikt:it:mese	month
+week	noun	settimana	wikt:it:settimana	week
+hour	noun	ora	wikt:it:ora	(time) hour (a unit of time of one twenty-fourth of a day (sixty minutes))
+morning	noun	mattina	wikt:it:mattina	morning
+evening	noun	sera	wikt:it:sera	evening
+summer	noun	estate	wikt:it:estate	summer
+winter	noun	inverno	wikt:it:inverno	winter
+autumn	noun	autunno	wikt:it:autunno	autumn, (US) fall
+life	noun	vita	wikt:it:vita	life
+death	noun	morte	wikt:it:morte	death
+love	noun	amore	wikt:it:amore	love
+war	noun	guerra	wikt:it:guerra	(also figurative) war, warfare
+peace	noun	pace	wikt:it:pace	peace
+truth	noun	verità	wikt:it:verità	truth
+law	noun	legge	wikt:it:legge	law
+work	noun	lavoro	wikt:it:lavoro	work (all senses)
+money	noun	denaro	wikt:it:denaro	money
+price	noun	prezzo	wikt:it:prezzo	price
+question	noun	domanda	wikt:it:domanda	question
+answer	noun	risposta	wikt:it:risposta	answer, reply, response, feedback
+story	noun	storia	wikt:it:storia	story
+song	noun	canzone	wikt:it:canzone	song
+music	noun	musica	wikt:it:musica	music
+game	noun	gioco	wikt:it:gioco	game
+dream	noun	sogno	wikt:it:sogno	dream
+fear	noun	paura	wikt:it:paura	fear
+hope	noun	speranza	wikt:it:speranza	hope
+joy	noun	gioia	wikt:it:gioia	joy, delight
+anger	noun	rabbia	wikt:it:rabbia	anger, chafe
+oath	noun	giuramento	wikt:it:giuramento	oath
+gift	noun	regalo	wikt:it:regalo	present, gift
+good	adj	buono	wikt:it:buono	good, nice (in general)
+bad	adj	cattivo	wikt:it:cattivo	bad
+big	adj	grande	wikt:it:grande	big, large (in size or quantity)
+small	adj	piccolo	wikt:it:piccolo	small
+great	adj	grande	wikt:it:grande	great (importance)
+little	adj	piccolo	wikt:it:piccolo	little
+long	adj	lungo	wikt:it:lungo	long
+short	adj	corto	wikt:it:corto	short
+high	adj	alto	wikt:it:alto	high, tall
+low	adj	basso	wikt:it:basso	low
+old	adj	vecchio	wikt:it:vecchio	old, outworn
+young	adj	giovane	wikt:it:giovane	young
+new	adj	nuovo	wikt:it:nuovo	new
+hot	adj	caldo	wikt:it:caldo	warm, hot
+cold	adj	freddo	wikt:it:freddo	cold
+warm	adj	tiepido	wikt:it:tiepido	tepid, lukewarm	lukewarm
+heavy	adj	pesante	wikt:it:pesante	heavy
+strong	adj	forte	wikt:it:forte	strong
+weak	adj	debole	wikt:it:debole	weak, dim, faint
+hard	adj	duro	wikt:it:duro	hard
+soft	adj	morbido	wikt:it:morbido	soft, tender, mellow
+quick	adj	rapido	wikt:it:rapido	quick, fast, rapid
+slow	adj	lento	wikt:it:lento	slow
+true	adj	vero	wikt:it:vero	true
+false	adj	falso	wikt:it:falso	false
+rich	adj	ricco	wikt:it:ricco	rich, wealthy, affluent (owning a lot of money or wealth)
+poor	adj	povero	wikt:it:povero	poor (with little or no possessions or money)
+happy	adj	felice	wikt:it:felice	happy (contented)
+sad	adj	triste	wikt:it:triste	sad, unhappy, bleak
+tired	adj	stanco	wikt:it:stanco	tired
+full	adj	pieno	wikt:it:pieno	full
+empty	adj	vuoto	wikt:it:vuoto	empty, vacant
+clean	adj	pulito	wikt:it:pulito	(literally or figuratively) clean, neat, tidy
+dirty	adj	sporco	wikt:it:sporco	dirty, filthy, unclean, soiled
+beautiful	adj	bello	wikt:it:bello	nice, fair, fine, pleasant; beautiful (of the weather, etc.)
+ugly	adj	brutto	wikt:it:brutto	ugly, bad, nasty
+easy	adj	facile	wikt:it:facile	easy
+difficult	adj	difficile	wikt:it:difficile	difficult, hard
+free	adj	libero	wikt:it:libero	free (not imprisoned or enslaved)
+wise	adj	saggio	wikt:it:saggio	wise (having wisdom)
+brave	adj	coraggioso	wikt:it:coraggioso	brave, courageous, daring, doughty
+holy	adj	santo	wikt:it:santo	holy
+deep	adj	profondo	wikt:it:profondo	deep, profound
+wide	adj	largo	wikt:it:largo	wide, broad
+narrow	adj	stretto	wikt:it:stretto	narrow
+dead	adj	morto	wikt:it:morto	(literal and figurative) dead
+alive	adj	vivo	wikt:it:vivo	alive, live
+sick	adj	malato	wikt:it:malato	ill, sick, unwell, affected, sore
+whole	adj	intero	wikt:it:intero	whole, entire
+white	adj	bianco	wikt:it:bianco	white (bright and colourless/colorless)
+black	adj	nero	wikt:it:nero	black (color/colour)
+red	adj	rosso	wikt:it:rosso	red
+green	adj	verde	wikt:it:verde	green (color/colour)
+blue	adj	azzurro	wikt:it:azzurro	light blue, azure, sky blue (especially the light blue colour/color of the sky)
+yellow	adj	giallo	wikt:it:giallo	yellow
+grey	adj	grigio	wikt:it:grigio	grey
+brown	adj	marrone	wikt:it:marrone	brown
+have	verb	avere	wikt:it:avere	(transitive) to have
+say	verb	dire	wikt:it:dire	to say, tell, utter
+go	verb	andare	wikt:it:andare	to go [auxiliary essere]
+come	verb	venire	wikt:it:venire	to come
+see	verb	vedere	wikt:it:vedere	to see
+know	verb	sapere	wikt:it:sapere	(ambitransitive) to know (information) [auxiliary avere]
+think	verb	pensare	wikt:it:pensare	to think
+take	verb	prendere	wikt:it:prendere	(transitive) to take, hold, pick up, get
+give	verb	dare	wikt:it:dare	to give (to transfer the possession/holding of something to someone else)
+make	verb	fare	wikt:it:fare	(transitive) to make
+find	verb	trovare	wikt:it:trovare	to find
+want	verb	volere	wikt:it:volere	(transitive, modal) to want
+tell	verb	raccontare	wikt:it:raccontare	(transitive) to tell, to narrate, to recount, to relate
+ask	verb	chiedere	wikt:it:chiedere	(transitive) to ask (for)
+work	verb	lavorare	wikt:it:lavorare	(intransitive) to work; to labor
+play	verb	giocare	wikt:it:giocare	to play, specifically:
+run	verb	correre	wikt:it:correre	(intransitive) to run [auxiliary essere or avere] (see above)
+walk	verb	camminare	wikt:it:camminare	(intransitive) to walk, to tread, to travel, to wander, to stroll, to saunter
+speak	verb	parlare	wikt:it:parlare	(ambitransitive) to talk, to speak
+read	verb	leggere	wikt:it:leggere	(ambitransitive) to read [auxiliary avere]
+write	verb	scrivere	wikt:it:scrivere	(ambitransitive) to write [auxiliary avere]
+eat	verb	mangiare	wikt:it:mangiare	(ambitransitive) to eat [auxiliary avere]
+drink	verb	bere	wikt:it:bere	(ambitransitive) to drink [auxiliary avere]
+sleep	verb	dormire	wikt:it:dormire	(intransitive) to sleep
+sit	verb	sedersi	wikt:it:sedersi	to sit, sit down, take a seat
+stand	verb	stare in piedi	wikt:it:stare_in_piedi	to stand; to be standing
+live	verb	vivere	wikt:it:vivere	(intransitive) to live; to be alive [auxiliary avere or (traditional) essere]
+die	verb	morire	wikt:it:morire	(intransitive) to die [auxiliary essere]
+love	verb	amare	wikt:it:amare	to love, to like
+hate	verb	odiare	wikt:it:odiare	(transitive) to hate, to detest, to loathe
+fear	verb	temere	wikt:it:temere	to fear [transitive ‘something’; or with di (+ infinitive) ‘something happening’; or with che (+ subjunctive clause) ‘that something may happen’]
+hear	verb	sentire	wikt:it:sentire	to hear
+feel	verb	sentire	wikt:it:sentire	to feel
+hold	verb	tenere	wikt:it:tenere	(transitive) to hold
+carry	verb	portare	wikt:it:portare	to bring, fetch, take, carry
+bring	verb	portare	wikt:it:portare	to bring, fetch, take, carry
+send	verb	mandare	wikt:it:mandare	(transitive) to send, forward, dispatch, transmit
+buy	verb	comprare	wikt:it:comprare	(transitive) to buy
+sell	verb	vendere	wikt:it:vendere	to sell
+pay	verb	pagare	wikt:it:pagare	(ambitransitive) to pay (money, a bill, the rent, etc.) [auxiliary avere]
+build	verb	costruire	wikt:it:costruire	to build, construct
+break	verb	rompere	wikt:it:rompere	(ambitransitive) to break [auxiliary avere]
+open	verb	aprire	wikt:it:aprire	(transitive) to open
+close	verb	chiudere	wikt:it:chiudere	(transitive) to close, to shut
+begin	verb	iniziare	wikt:it:iniziare	(ambitransitive) to begin, to set about
+help	verb	aiutare	wikt:it:aiutare	(transitive) to help, assist
+learn	verb	imparare	wikt:it:imparare	to learn
+teach	verb	insegnare	wikt:it:insegnare	(transitive, to pass on knowledge) to teach
+remember	verb	ricordare	wikt:it:ricordare	(transitive) to remember, to recall, to recollect
+forget	verb	dimenticare	wikt:it:dimenticare	(transitive) to forget
+win	verb	vincere	wikt:it:vincere	(ambitransitive) to win [auxiliary avere]
+lose	verb	perdere	wikt:it:perdere	(ambitransitive) to lose [auxiliary avere]
+fight	verb	combattere	wikt:it:combattere	(ambitransitive, also figurative) to fight; to combat
+swim	verb	nuotare	wikt:it:nuotare	(ambitransitive) to swim [auxiliary avere]
+fly	verb	volare	wikt:it:volare	to fly
+ride	verb	cavalcare	wikt:it:cavalcare	(ambitransitive) to ride (a horse) [auxiliary avere]
+sing	verb	cantare	wikt:it:cantare	(ambitransitive) to sing [auxiliary avere]
+laugh	verb	ridere	wikt:it:ridere	(intransitive) to laugh [auxiliary avere]
+cry	verb	piangere	wikt:it:piangere	(ambitransitive) to weep, cry
+wait	verb	aspettare	wikt:it:aspettare	(ambitransitive) to wait for, await, wait [with di (+ infinitive) or che (+ subjunctive clause)]
+watch	verb	guardare	wikt:it:guardare	(transitive) to look at, to watch, to glance or gaze at
+look	verb	guardare	wikt:it:guardare	(transitive) to look at, to watch, to glance or gaze at
+show	verb	mostrare	wikt:it:mostrare	(transitive) to show
+call	verb	chiamare	wikt:it:chiamare	(transitive) to call
+put	verb	mettere	wikt:it:mettere	(transitive) to put, to place, to lay, to set
+keep	verb	tenere	wikt:it:tenere	(transitive) to keep
+leave	verb	partire	wikt:it:partire	to depart; to leave; to set forth
+follow	verb	seguire	wikt:it:seguire	(transitive) to follow, to pursue
+seek	verb	cercare	wikt:it:cercare	to look for	look for
+choose	verb	scegliere	wikt:it:scegliere	(transitive) to choose
+change	verb	cambiare	wikt:it:cambiare	(transitive) to change
+grow	verb	crescere	wikt:it:crescere	(intransitive) to grow, to increase, to expand [auxiliary essere]
+fall	verb	cadere	wikt:it:cadere	to fall
+rise	verb	salire	wikt:it:salire	(intransitive) to go up, to come up [auxiliary essere]	go up
+turn	verb	girare	wikt:it:girare	(ergative) to turn, stir, turn over [auxiliary avere]
+move	verb	muovere	wikt:it:muovere	(transitive) to move
+throw	verb	lanciare	wikt:it:lanciare	to throw; to sling; to launch
+catch	verb	prendere	wikt:it:prendere	(transitive) to catch (a criminal, animal, etc.)
+cut	verb	tagliare	wikt:it:tagliare	to cut, to slash
+wash	verb	lavare	wikt:it:lavare	(transitive) to wash
+cook	verb	cucinare	wikt:it:cucinare	(transitive or intransitive, cooking) to cook
+always	adv	sempre	wikt:it:sempre	always
+never	adv	mai	wikt:it:mai	never
+often	adv	spesso	wikt:it:spesso	often
+sometimes	adv	a volte	wikt:it:a_volte	sometimes, at times
+today	adv	oggi	wikt:it:oggi	today
+tomorrow	adv	domani	wikt:it:domani	tomorrow
+yesterday	adv	ieri	wikt:it:ieri	yesterday
+now	adv	adesso	wikt:it:adesso	now
+soon	adv	presto	wikt:it:presto	soon
+already	adv	già	wikt:it:già	already, yet
+almost	adv	quasi	wikt:it:quasi	almost, nearly
+together	adv	insieme	wikt:it:insieme	together
+alone	adv	solo	wikt:it:solo	only, just, but, alone, merely
+again	adv	di nuovo	wikt:it:di_nuovo	again, anew
+here	adv	qui	wikt:it:qui	here
+everywhere	adv	ovunque	wikt:it:ovunque	wherever, anywhere, everywhere
+nowhere	adv	in nessun luogo	wikt:it:in wikt:it:nessuno wikt:it:luogo	in / (in negative sentences) no, any / place (location; position)
+slowly	adv	lentamente	wikt:it:lentamente	slowly
+quickly	adv	rapidamente	wikt:it:rapidamente	quickly, rapidly
+truly	adv	veramente	wikt:it:veramente	really, indeed, actually, truly
+perhaps	adv	forse	wikt:it:forse	maybe, perhaps, possibly, may, might
+very	adv	molto	wikt:it:molto	very, really, very much (with adjectives or adverbs)
+one	num	uno	wikt:it:uno	one
+two	num	due	wikt:it:due	two
+three	num	tre	wikt:it:tre	three
+four	num	quattro	wikt:it:quattro	four
+five	num	cinque	wikt:it:cinque	five
+six	num	sei	wikt:it:sei	six
+seven	num	sette	wikt:it:sette	seven
+eight	num	otto	wikt:it:otto	eight
+nine	num	nove	wikt:it:nove	nine
+ten	num	dieci	wikt:it:dieci	ten
+hundred	num	cento	wikt:it:cento	hundred, one hundred
+thousand	num	mille	wikt:it:mille	thousand, one thousand
+first	num	primo	wikt:it:primo	(ordinal number) first
+yes	intj	sì	wikt:it:sì	yes
+hello	intj	ciao	wikt:it:ciao	hello!
+goodbye	intj	arrivederci	wikt:it:arrivederci	goodbye, so long, see you soon, see you (non-definitive farewell)
+please	intj	per favore	wikt:it:per_favore	please
+sorry	intj	scusa	wikt:it:scusa	(informal) sorry! (second-person singular)
