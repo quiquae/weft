@@ -1,0 +1,207 @@
+# Where each Portuguese noun's gender in lex-pt.tsv was read.
+#
+# lemma | tgt | gender | sources
+#
+# The tooltip prints a noun's gender beside it, under both forms a row
+# weaves. On 2026-10-08 every Portuguese noun was read against English
+# Wiktionary's Portuguese entry, fetched raw, and none was wrong: 171 of the
+# 178 rows carry the gender of their page's one Portuguese noun, and the 7
+# others were read by sense.
+#
+# A Wiktionary page holds every word of one spelling, so a line citing it
+# means the gender of this word's own noun there. Five pages hold more than
+# one: coração, heart, is masculine where coração, blushing, is feminine;
+# cabeça, head, cobra, snake, and cabra, goat, are feminine beside a
+# colloquial noun for a person; and irmã, sister, is feminine beside
+# dialectal forms of other words.
+#
+# Where Wiktionary gives one word two genders, the seed's is one of them, as
+# the Old English and French ledgers have it: bebé, baby, and soldado,
+# soldier, are masculine or feminine by the person meant. The seed prints
+# both "masculine".
+#
+# The sources field
+# -----------------
+#   wikt:pt:<title>    https://en.wiktionary.org/wiki/<title>#Portuguese
+#
+# tests/tools/genders.test.ts requires every noun in lex-pt.tsv to have a
+# line here giving the gender the seed gives, citing the noun's own entry,
+# and fails on a line outliving its noun.
+man	homem	m	wikt:pt:homem
+woman	mulher	f	wikt:pt:mulher
+child	criança	f	wikt:pt:criança
+boy	menino	m	wikt:pt:menino
+girl	menina	f	wikt:pt:menina
+person	pessoa	f	wikt:pt:pessoa
+friend	amigo	m	wikt:pt:amigo
+family	família	f	wikt:pt:família
+mother	mãe	f	wikt:pt:mãe
+father	pai	m	wikt:pt:pai
+brother	irmão	m	wikt:pt:irmão
+sister	irmã	f	wikt:pt:irmã
+son	filho	m	wikt:pt:filho
+daughter	filha	f	wikt:pt:filha
+wife	esposa	f	wikt:pt:esposa
+husband	marido	m	wikt:pt:marido
+baby	bebé	m	wikt:pt:bebé
+king	rei	m	wikt:pt:rei
+queen	rainha	f	wikt:pt:rainha
+lord	senhor	m	wikt:pt:senhor
+neighbour	vizinho	m	wikt:pt:vizinho
+stranger	estranho	m	wikt:pt:estranho
+enemy	inimigo	m	wikt:pt:inimigo
+soldier	soldado	m	wikt:pt:soldado
+teacher	professor	m	wikt:pt:professor
+doctor	médico	m	wikt:pt:médico
+farmer	agricultor	m	wikt:pt:agricultor
+sailor	marinheiro	m	wikt:pt:marinheiro
+head	cabeça	f	wikt:pt:cabeça
+hand	mão	f	wikt:pt:mão
+eye	olho	m	wikt:pt:olho
+ear	orelha	f	wikt:pt:orelha
+mouth	boca	f	wikt:pt:boca
+nose	nariz	m	wikt:pt:nariz
+tooth	dente	m	wikt:pt:dente
+hair	cabelo	m	wikt:pt:cabelo
+heart	coração	m	wikt:pt:coração
+blood	sangue	m	wikt:pt:sangue
+bone	osso	m	wikt:pt:osso
+arm	braço	m	wikt:pt:braço
+leg	perna	f	wikt:pt:perna
+foot	pé	m	wikt:pt:pé
+finger	dedo	m	wikt:pt:dedo
+face	rosto	m	wikt:pt:rosto
+body	corpo	m	wikt:pt:corpo
+skin	pele	f	wikt:pt:pele
+voice	voz	f	wikt:pt:voz
+dog	cão	m	wikt:pt:cão
+cat	gato	m	wikt:pt:gato
+horse	cavalo	m	wikt:pt:cavalo
+bird	pássaro	m	wikt:pt:pássaro
+fish	peixe	m	wikt:pt:peixe
+cow	vaca	f	wikt:pt:vaca
+sheep	ovelha	f	wikt:pt:ovelha
+pig	porco	m	wikt:pt:porco
+wolf	lobo	m	wikt:pt:lobo
+bear	urso	m	wikt:pt:urso
+lion	leão	m	wikt:pt:leão
+mouse	rato	m	wikt:pt:rato
+snake	cobra	f	wikt:pt:cobra
+bee	abelha	f	wikt:pt:abelha
+worm	verme	m	wikt:pt:verme
+raven	corvo	m	wikt:pt:corvo
+hound	sabujo	m	wikt:pt:sabujo
+ox	boi	m	wikt:pt:boi
+goat	cabra	f	wikt:pt:cabra
+food	comida	f	wikt:pt:comida
+bread	pão	m	wikt:pt:pão
+water	água	f	wikt:pt:água
+wine	vinho	m	wikt:pt:vinho
+milk	leite	m	wikt:pt:leite
+meat	carne	f	wikt:pt:carne
+fruit	fruta	f	wikt:pt:fruta
+apple	maçã	f	wikt:pt:maçã
+salt	sal	m	wikt:pt:sal
+honey	mel	m	wikt:pt:mel
+cheese	queijo	m	wikt:pt:queijo
+egg	ovo	m	wikt:pt:ovo
+fire	fogo	m	wikt:pt:fogo
+house	casa	f	wikt:pt:casa
+home	lar	m	wikt:pt:lar
+door	porta	f	wikt:pt:porta
+window	janela	f	wikt:pt:janela
+wall	parede	f	wikt:pt:parede
+roof	telhado	m	wikt:pt:telhado
+floor	chão	m	wikt:pt:chão
+room	quarto	m	wikt:pt:quarto
+table	mesa	f	wikt:pt:mesa
+chair	cadeira	f	wikt:pt:cadeira
+bed	cama	f	wikt:pt:cama
+book	livro	m	wikt:pt:livro
+word	palavra	f	wikt:pt:palavra
+letter	carta	f	wikt:pt:carta
+name	nome	m	wikt:pt:nome
+key	chave	f	wikt:pt:chave
+bridge	ponte	f	wikt:pt:ponte
+church	igreja	f	wikt:pt:igreja
+ship	navio	m	wikt:pt:navio
+boat	barco	m	wikt:pt:barco
+sword	espada	f	wikt:pt:espada
+shield	escudo	m	wikt:pt:escudo
+ring	anel	m	wikt:pt:anel
+gold	ouro	m	wikt:pt:ouro
+silver	prata	f	wikt:pt:prata
+iron	ferro	m	wikt:pt:ferro
+stone	pedra	f	wikt:pt:pedra
+glass	vidro	m	wikt:pt:vidro
+cloth	tecido	m	wikt:pt:tecido
+shoe	sapato	m	wikt:pt:sapato
+coat	casaco	m	wikt:pt:casaco
+hat	chapéu	m	wikt:pt:chapéu
+sun	sol	m	wikt:pt:sol
+moon	lua	f	wikt:pt:lua
+star	estrela	f	wikt:pt:estrela
+sky	céu	m	wikt:pt:céu
+earth	terra	f	wikt:pt:terra
+land	terra	f	wikt:pt:terra
+sea	mar	m	wikt:pt:mar
+river	rio	m	wikt:pt:rio
+lake	lago	m	wikt:pt:lago
+mountain	montanha	f	wikt:pt:montanha
+hill	colina	f	wikt:pt:colina
+forest	floresta	f	wikt:pt:floresta
+tree	árvore	f	wikt:pt:árvore
+leaf	folha	f	wikt:pt:folha
+flower	flor	f	wikt:pt:flor
+grass	erva	f	wikt:pt:erva
+field	campo	m	wikt:pt:campo
+road	estrada	f	wikt:pt:estrada
+path	caminho	m	wikt:pt:caminho
+city	cidade	f	wikt:pt:cidade
+town	vila	f	wikt:pt:vila
+village	aldeia	f	wikt:pt:aldeia
+world	mundo	m	wikt:pt:mundo
+country	país	m	wikt:pt:país
+place	lugar	m	wikt:pt:lugar
+rain	chuva	f	wikt:pt:chuva
+snow	neve	f	wikt:pt:neve
+wind	vento	m	wikt:pt:vento
+cloud	nuvem	f	wikt:pt:nuvem
+ice	gelo	m	wikt:pt:gelo
+light	luz	f	wikt:pt:luz
+shadow	sombra	f	wikt:pt:sombra
+time	tempo	m	wikt:pt:tempo
+day	dia	m	wikt:pt:dia
+night	noite	f	wikt:pt:noite
+year	ano	m	wikt:pt:ano
+month	mês	m	wikt:pt:mês
+week	semana	f	wikt:pt:semana
+hour	hora	f	wikt:pt:hora
+morning	manhã	f	wikt:pt:manhã
+evening	tarde	f	wikt:pt:tarde
+summer	verão	m	wikt:pt:verão
+winter	inverno	m	wikt:pt:inverno
+autumn	outono	m	wikt:pt:outono
+life	vida	f	wikt:pt:vida
+death	morte	f	wikt:pt:morte
+love	amor	m	wikt:pt:amor
+war	guerra	f	wikt:pt:guerra
+peace	paz	f	wikt:pt:paz
+truth	verdade	f	wikt:pt:verdade
+law	lei	f	wikt:pt:lei
+work	trabalho	m	wikt:pt:trabalho
+money	dinheiro	m	wikt:pt:dinheiro
+price	preço	m	wikt:pt:preço
+question	pergunta	f	wikt:pt:pergunta
+answer	resposta	f	wikt:pt:resposta
+story	história	f	wikt:pt:história
+song	canção	f	wikt:pt:canção
+music	música	f	wikt:pt:música
+game	jogo	m	wikt:pt:jogo
+dream	sonho	m	wikt:pt:sonho
+fear	medo	m	wikt:pt:medo
+hope	esperança	f	wikt:pt:esperança
+joy	alegria	f	wikt:pt:alegria
+anger	raiva	f	wikt:pt:raiva
+oath	juramento	m	wikt:pt:juramento
+gift	presente	m	wikt:pt:presente

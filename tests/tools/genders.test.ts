@@ -331,6 +331,7 @@ describe('an Italian plural of another gender is not printed with its singularâ€
 const MODERN: ReadonlyArray<{ lang: string; name: string }> = [
   { lang: 'fr', name: 'French' },
   { lang: 'es', name: 'Spanish' },
+  { lang: 'pt', name: 'Portuguese' },
 ];
 
 for (const { lang, name } of MODERN) {
