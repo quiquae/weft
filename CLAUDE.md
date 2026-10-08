@@ -713,6 +713,67 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-09 — a noun whose entry is an adjective's reads the adjective's cell
+
+The queue sent this run at the modern glosses, French first, which #94 to
+#98 landed on 2026-10-08: all five `tools/seed/<lang>-glosses.tsv` exist and
+`UNREAD` in `tests/tools/glosses.test.ts` is empty. So the work was
+`TODO.md`'s topmost unchecked item, the seventeen Old English second forms,
+whose first step it had written down: let a noun listed as an adjective
+read its adjective's cell, `fremdan`, as the Latin item proposed for
+`aliēnus`. Both were done, being one rule.
+
+**`fremde` was queued as "its entry has no table", and it has one.**
+Wiktionary gives the word no noun section; its table declines the adjective
+strong and weak, in cells classed `str|nom|m|p` and `wk|nom|m|p`, which a
+reader looking for `nom|p` cannot see. A queued reason is the reader's view
+on the day it was written. `hūsbonda` and `mentel` carry the same reason,
+and their cached renders were checked again: no declension cell at all, so
+theirs stands.
+
+**The rule.** `ADJECTIVE` in each form test names such a row, keyed by part
+of speech as `QUEUED` is, so the existing stale check covers it, and its
+line quotes the nominative plural of the row's own gender by the table's
+labels: "weak masculine nominative plural fremdan", strong and weak both
+read, and "masculine nominative plural aliēnī". The gender is checked as
+well as the form — Old English's weak plural is `fremdan` in every gender,
+but Latin's feminine is `aliēnae`. Lewis & Short's *alienus*, fetched to
+check the test's "Subst.", has "II. Subst. 1. ălĭēnus, i, m., a stranger"
+and quotes the plural, "apud me cenant alieni novem".
+
+Test-first: a reader test in each file and both rows out of `QUEUED`, red on
+exactly those four; the readers and two ledger lines, green. Four probes,
+each restored by md5 and each failing by name: `ADJECTIVE` emptied, which
+reads the line as "not the nominative plural cell"; the feminine cell
+quoted, in each language; and a listed word the pack does not weave.
+Nothing that ships moved, and `npm run packs` left the tree clean. Tools
+426 → **428**, total 1134 → **1136**, in six places, `docs/LAUNCH.md:221`
+first; `docs/THIRD-PARTY.md` says sixteen and one.
+
+**`gangende` got a lead, not a fix.** Bosworth–Toller's main *gán*
+(bt:13263) heads "GÁN, to gánne; ic gá, ðú gǽst, he gǽþ; … pp. gán" and
+prints no present participle; the Supplement's (bt:62409) ends "Similar
+entries v. út-gánde", a participle in -gánde, the table's `gānde` shape.
+Written into the item: weaving `gānde` is the likely cure, once `út-gánde`
+is read.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **428 tools / 102 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.6 min**, then
+build and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 —
+the release notes, B2a. `packs:verify` and `site:check` were not re-run: no
+pack, page or image moved.
+
+Assumed, with nobody to ask: that a substantivised adjective may weave
+either declension's plural, the table printing both, so the test reads both
+and the quote says which; that the gender ledger's gender picks the cell;
+and that one PR for both languages is right, the rule being one.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the sixteen Old English forms, then `nārrāre`.
+
 ### 2026-10-09 — the Old English plural ledger cites Bosworth–Toller, by the head it quotes
 
 The same run's second PR, the next step the first one wrote down. Two of
