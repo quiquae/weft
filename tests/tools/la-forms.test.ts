@@ -37,7 +37,7 @@ const LEXICON = 'lex-la.tsv';
 const GLOSSES = 'la-glosses.tsv';
 
 type Pos = 'noun' | 'verb';
-type Row = { line: number; lemma: string; tgt: string; tgt2: string };
+type Row = { line: number; lemma: string; tgt: string; tgt2: string; gender: string };
 type Form = { line: number; lemma: string; tgt: string; tgt2: string; sources: string[]; quote: string };
 
 const tsv = (file: string): Array<{ line: number; f: string[] }> =>
@@ -49,7 +49,7 @@ const tsv = (file: string): Array<{ line: number; f: string[] }> =>
 const woven = (pos: Pos): Row[] =>
   tsv(LEXICON)
     .filter(({ f }) => f[1] === pos && (f[3] ?? '') !== '')
-    .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', tgt2: f[3] ?? '' }));
+    .map(({ line, f }) => ({ line, lemma: f[0] ?? '', tgt: f[2] ?? '', tgt2: f[3] ?? '', gender: f[4] ?? '' }));
 
 /** A ledger not yet written holds nothing, so every row it should hold is named. */
 const readLedger = (file: string): Form[] =>
@@ -95,15 +95,23 @@ const entryOf = (pos: Pos, lemma: string, tgt: string): string => {
   return `wikt:la:${k.replace(/\d+$/, '').replaceAll('j', 'i').replaceAll('J', 'I')}`;
 };
 
+const GENDER: Readonly<Record<string, string>> = { m: 'masculine', f: 'feminine', n: 'neuter' };
+
+/** The label of the cell a row's form is read in: for a noun read as an adjective, its gender's. */
+const label = (pos: Pos, adjective?: string): string =>
+  adjective === undefined ? SLOT[pos] : `${GENDER[adjective] ?? adjective} ${SLOT[pos]}`;
+
 /**
- * The forms a quote prints in its part of speech's woven cell: "nominative
- * plural locī, loca" prints both. Undefined for a quote from any other cell.
+ * The forms a quote prints in its row's woven cell: "nominative plural locī,
+ * loca" prints both, and, for a noun read as a masculine adjective,
+ * "masculine nominative plural aliēnī" prints aliēnī. Undefined for a quote
+ * from any other cell.
  */
-const printed = (quote: string, pos: Pos): string[] | undefined => {
-  const label = `${SLOT[pos]} `;
-  if (!quote.startsWith(label)) return undefined;
+const printed = (quote: string, pos: Pos, adjective?: string): string[] | undefined => {
+  const cell = `${label(pos, adjective)} `;
+  if (!quote.startsWith(cell)) return undefined;
   return quote
-    .slice(label.length)
+    .slice(cell.length)
     .split(/\s*,\s*|\s+or\s+/)
     .map((form) => form.trim())
     .filter(Boolean);
@@ -115,9 +123,16 @@ const printed = (quote: string, pos: Pos): string[] | undefined => {
  * Keyed by part of speech, English lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['noun\tstranger\taliēnus', 'its entry is the adjective’s, whose masculine cell, nom|m|p, prints aliēnī'],
   ['verb\ttell\tnārrāre', 'its table prints narrāns, the first vowel short'],
 ]);
+
+/**
+ * Nouns whose entry is an adjective's, declined as one: English Wiktionary
+ * gives `aliēnus`, a stranger in Lewis & Short's "Subst.", no noun section.
+ * Such a row's line quotes the nominative plural of the row's own gender, by
+ * the labels the table prints: "masculine nominative plural aliēnī".
+ */
+const ADJECTIVE: ReadonlySet<string> = new Set(['noun\tstranger\taliēnus']);
 
 describe('the woven cell of a Latin table is read as a reader reads it', () => {
   test('a cell with several forms prints each of them', () => {
@@ -128,6 +143,13 @@ describe('the woven cell of a Latin table is read as a reader reads it', () => {
   test('a quote from another cell is not the woven one', () => {
     assert.equal(printed('genitive plural virōrum', 'noun'), undefined);
     assert.equal(printed('future active participle mōtūrus', 'verb'), undefined);
+  });
+
+  test('a noun read as an adjective prints its own gender’s nominative plural', () => {
+    assert.deepEqual(printed('masculine nominative plural aliēnī', 'noun', 'm'), ['aliēnī']);
+    assert.equal(printed('feminine nominative plural aliēnae', 'noun', 'm'), undefined);
+    assert.equal(printed('nominative plural aliēnī', 'noun', 'm'), undefined);
+    assert.equal(printed('masculine nominative plural aliēnī', 'noun'), undefined);
   });
 
   test('a title drops the macrons, and a verb is filed under its first person', () => {
@@ -141,6 +163,7 @@ for (const pos of ['noun', 'verb'] as const) {
   const rows = woven(pos);
   const ledger = readLedger(file);
   const byKey = new Map(ledger.map((e) => [key(e.lemma, e.tgt), e]));
+  const byRow = new Map(rows.map((r) => [key(r.lemma, r.tgt), r]));
   const queued = (lemma: string, tgt: string): boolean => QUEUED.has(`${pos}\t${key(lemma, tgt)}`);
 
   describe(`every woven Latin ${NAME[pos]} names the table that prints it`, () => {
@@ -165,8 +188,10 @@ for (const pos of ['noun', 'verb'] as const) {
 
     test(`every quote prints the form beside it, in the ${SLOT[pos]} cell`, () => {
       const offenders = ledger.flatMap((e) => {
-        const forms = printed(e.quote, pos);
-        if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${SLOT[pos]} cell`];
+        const k = key(e.lemma, e.tgt);
+        const adjective = ADJECTIVE.has(`${pos}\t${k}`) ? (byRow.get(k)?.gender ?? '') : undefined;
+        const forms = printed(e.quote, pos, adjective);
+        if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${label(pos, adjective)} cell`];
         return forms.includes(e.tgt2) ? [] : [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${forms.join(', ')}, not ${e.tgt2}`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} quotes do not print their form:\n  ${offenders.join('\n  ')}`);
@@ -184,11 +209,12 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], offenders.join('\n'));
     });
 
-    test('nothing is queued that the pack no longer weaves', () => {
+    test('nothing is queued, or read as an adjective, that the pack no longer weaves', () => {
       const taught = new Set(rows.map((r) => key(r.lemma, r.tgt)));
-      const offenders = [...QUEUED.keys()]
-        .filter((k) => k.startsWith(`${pos}\t`))
-        .flatMap((k) => (taught.has(k.slice(pos.length + 1)) ? [] : [`QUEUED ${k.replace(/\t/g, ' ')}: ${LEXICON} weaves no ${NAME[pos]} of it`]));
+      const listed = [...[...QUEUED.keys()].map((k) => ['QUEUED', k]), ...[...ADJECTIVE].map((k) => ['ADJECTIVE', k])];
+      const offenders = listed
+        .filter(([, k = '']) => k.startsWith(`${pos}\t`))
+        .flatMap(([table, k = '']) => (taught.has(k.slice(pos.length + 1)) ? [] : [`${table} ${k.replace(/\t/g, ' ')}: ${LEXICON} weaves no ${NAME[pos]} of it`]));
       assert.deepEqual(offenders, [], offenders.join('\n'));
     });
 

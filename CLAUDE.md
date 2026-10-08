@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **426 pass**, 102 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **428 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -496,7 +496,14 @@ is not one it prints: `trēow` cites Bosworth–Toller's "óþre treów" instead
 A Bosworth–Toller line, `bt:<id>`, quotes the entry's head before the
 passage, its accents read as length marks, and the head must spell the
 headword and name a noun's gender, because one spelling heads two entries:
-"treów, es; n." is the tree and "treów, e; f." faith.
+"treów, es; n." is the tree and "treów, e; f." faith. A noun whose entry is
+an adjective's — `fremde`, a stranger, to which Wiktionary gives no noun
+section — reads the nominative plural of its own gender in the adjective's
+table, strong or weak, the cells classed `str|nom|m|p` and `wk|nom|m|p`; a
+reader looking for `nom|p` cannot see them, and `fremde` was queued as
+having no table until 2026-10-09. `ADJECTIVE` in the test names each, and
+its quote carries the cell's labels, "weak masculine nominative plural
+fremdan".
 
 **And a Latin one, read in its table and filed under its first person.**
 Lewis & Short prints a noun's genitive and a verb's principal parts, never
@@ -511,6 +518,8 @@ and the homograph number dropped, so `dīcere` is `wikt:la:dico`, from
 `ls:dico2`. Do not cite the infinitive's page: it prints no table. On
 2026-10-08 that held 242 of 244, none wrong, and queued `aliēnus`, an
 adjective's table, and `nārrāns`, whose table writes the first vowel short.
+Since 2026-10-09 `aliēnus` reads its adjective's masculine cell by the Old
+English rule, "masculine nominative plural aliēnī".
 
 **And a Latin gloss quotes its entry, naming the word that stands in where
 the English is not there.** Every row of `tools/seed/lex-la.tsv` has a line
@@ -703,6 +712,73 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-09 — a noun whose entry is an adjective's reads the adjective's cell
+
+The queue sent this run at the modern glosses, French first, which #94 to
+#98 landed on 2026-10-08: all five `tools/seed/<lang>-glosses.tsv` exist and
+`UNREAD` in `tests/tools/glosses.test.ts` is empty. So the work was
+`TODO.md`'s topmost unchecked item, the seventeen Old English second forms,
+whose first step it had written down: let a noun listed as an adjective
+read its adjective's cell, `fremdan`, as the Latin item proposed for
+`aliēnus`. Both were done, being one rule.
+
+**`fremde` was queued as "its entry has no table", and it has one.**
+Wiktionary gives the word no noun section; its table declines the adjective
+strong and weak, in cells classed `str|nom|m|p` and `wk|nom|m|p`, which a
+reader looking for `nom|p` cannot see. A queued reason is the reader's view
+on the day it was written. `hūsbonda` and `mentel` carry the same reason,
+and their cached renders were checked again: no declension cell at all, so
+theirs stands.
+
+**The rule.** `ADJECTIVE` in each form test names such a row, keyed by part
+of speech as `QUEUED` is, so the existing stale check covers it, and its
+line quotes the nominative plural of the row's own gender by the table's
+labels: "weak masculine nominative plural fremdan", strong and weak both
+read, and "masculine nominative plural aliēnī". The gender is checked as
+well as the form — Old English's weak plural is `fremdan` in every gender,
+but Latin's feminine is `aliēnae`. Lewis & Short's *alienus*, fetched to
+check the test's "Subst.", has "II. Subst. 1. ălĭēnus, i, m., a stranger"
+and quotes the plural, "apud me cenant alieni novem".
+
+Test-first: a reader test in each file and both rows out of `QUEUED`, red on
+exactly those four; the readers and two ledger lines, green. Four probes,
+each restored by md5 and each failing by name: `ADJECTIVE` emptied, which
+reads the line as "not the nominative plural cell"; the feminine cell
+quoted, in each language; and a listed word the pack does not weave.
+Nothing that ships moved, and `npm run packs` left the tree clean. Tools
+426 → **428**, total 1134 → **1136**, in six places, `docs/LAUNCH.md:221`
+first; `docs/THIRD-PARTY.md` says sixteen and one.
+
+**`gangende` was read to the end of what is free, and is a call.**
+Bosworth–Toller's main *gán* (bt:13263) prints no present participle;
+Sievers (tr. Cook, 1903) § 430 conjugates *gān* in West Saxon with none,
+and its Note 3 gives the Vespasian Psalter's, Mercian, as "gande"; and
+*út-gánde* (bt:60111) quotes "útgándan (-gangendan, v.l.)", one text with
+both shapes. So `gānde` is the only form printed for *gān* itself and
+`gangende` is *gangan*'s; which a West Saxon pack should weave is written
+into the item as a call, not changed here. The same Sievers prints no
+plural of `ǣfen` (§ 248.2, a neuter "like wēsten", genitive "ǣfnes") or
+`onsīen` (§ 269 note 4's "onsiene" is an accusative singular), so the
+queue's next reading is Bülbring or Wright's *Elementary* grammar for the
+last three.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **428 tools / 102 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.6 min**, then
+build and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 —
+the release notes, B2a. `packs:verify` and `site:check` were not re-run: no
+pack, page or image moved.
+
+Assumed, with nobody to ask: that a substantivised adjective may weave
+either declension's plural, the table printing both, so the test reads both
+and the quote says which; that the gender ledger's gender picks the cell;
+and that one PR for both languages is right, the rule being one.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the sixteen Old English forms, then `nārrāre`.
 
 ### 2026-10-09 — the Old English plural ledger cites Bosworth–Toller, by the head it quotes
 

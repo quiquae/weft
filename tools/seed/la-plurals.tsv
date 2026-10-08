@@ -31,11 +31,12 @@
 # lengths: ōs, the mouth, "ōra", beside os, the bone, "ossa, ossua"; liber,
 # the book, "librī", beside līber, free.
 #
-# 164 of the 165 are among the forms their table prints. aliēnus, woven for
-# "stranger", is an adjective used as a noun, and its page declines it as
-# one: its masculine cell, nom|m|p, prints "aliēnī", the form woven, and
-# QUEUED in tests/tools/la-forms.test.ts names it until the test reads that
-# cell for a noun.
+# All 165 are among the forms their table prints. aliēnus, woven for
+# "stranger", is an adjective used as a noun, Lewis & Short's "Subst.", and
+# its page declines it as one: its line quotes the cell of its gender,
+# classed nom|m|p, "masculine nominative plural aliēnī", the form woven, and
+# ADJECTIVE in tests/tools/la-forms.test.ts names it for the test to read
+# that cell.
 man	vir	virī	wikt:la:vir	nominative plural virī
 woman	fēmina	fēminae	wikt:la:femina	nominative plural fēminae
 child	puer	puerī	wikt:la:puer	nominative plural puerī
@@ -57,6 +58,7 @@ king	rēx	rēgēs	wikt:la:rex	nominative plural rēgēs
 queen	rēgīna	rēgīnae	wikt:la:regina	nominative plural rēgīnae
 lord	dominus	dominī	wikt:la:dominus	nominative plural dominī
 neighbour	vīcīnus	vīcīnī	wikt:la:vicinus	nominative plural vīcīnī
+stranger	aliēnus	aliēnī	wikt:la:alienus	masculine nominative plural aliēnī
 enemy	hostis	hostēs	wikt:la:hostis	nominative plural hostēs
 soldier	mīles	mīlitēs	wikt:la:miles	nominative plural mīlitēs
 teacher	magister	magistrī	wikt:la:magister	nominative plural magistrī

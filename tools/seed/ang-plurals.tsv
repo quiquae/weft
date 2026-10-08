@@ -89,7 +89,15 @@
 # quotes "Swefnu gefremminge habbaþ, dreams will have accomplishment"; it
 # is swefnu now.
 #
-# 13 woven plurals are not here, because the table of their entry prints
+# One is an adjective's. Stranger's entry, fremde, is the adjective's, and
+# Wiktionary gives it no noun section; its table declines it strong and weak,
+# in cells classed str|nom|m|p and wk|nom|m|p rather than nom|p, which is why
+# it was first queued as having no table. Its line quotes the weak cell of
+# its gender, "weak masculine nominative plural fremdan", the form woven, and
+# ADJECTIVE in tests/tools/ang-forms.test.ts names it for the test to read
+# the nominative plural of the row's gender, strong or weak.
+#
+# 12 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until
@@ -114,6 +122,7 @@ king	cyning	cyningas	wikt:ang:cyning	nominative plural cyningas
 queen	cwēn	cwēna	wikt:ang:cwen	nominative plural cwēne, cwēna
 lord	hlāford	hlāfordas	wikt:ang:hlaford	nominative plural hlāfordas
 neighbour	nēahġebūr	nēahġebūras	wikt:ang:neahgebur	nominative plural nēahġebūras
+stranger	fremde	fremdan	wikt:ang:fremde	weak masculine nominative plural fremdan
 enemy	fēond	fīend	wikt:ang:feond	nominative plural fīend
 teacher	lārēow	lārēowas	wikt:ang:lareow	nominative plural lārēowas
 doctor	lǣċe	lǣċas	wikt:ang:læce	nominative plural lǣċas
