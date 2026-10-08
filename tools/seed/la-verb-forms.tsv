@@ -1,0 +1,116 @@
+# Where each woven Latin present participle in lex-la.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. Its sound has been held to
+# Allen & Greenough since 2026-10-04, and its spelling to nothing: Lewis &
+# Short prints a verb's principal parts, not its participle. English
+# Wiktionary conjugates every Latin verb in a table whose cells carry a class
+# per slot, and on 2026-10-08 every woven participle was read in the rendered
+# table (action=render) of its entry: the cell classed pres|act|part, quoted
+# as the table prints it, "present active participle movēns".
+# tests/tools/la-forms.test.ts fails on a form changed in one file and not
+# the other, a line citing another verb's entry, a quote from another cell or
+# not printing its form, and a line outliving its row.
+#
+# The sources field
+# -----------------
+# One entry per line, the one whose table the quote is from:
+#
+#   wikt:la:<title>   https://en.wiktionary.org/wiki/<title>#Latin
+#                     (the title drops the macrons)
+#
+# A noun's is its headword's. Wiktionary files a verb under its first
+# person, the key Lewis & Short files it under in la-glosses.tsv, so a verb's
+# is that key's, j written i and the homograph number dropped: dīcere is
+# wikt:la:dico, from ls:dico2.
+#
+# A page holding more than one word of a spelling is read by the table whose
+# headword is this one, Wiktionary marking each table's with its vowel
+# lengths: ōs, the mouth, "ōra", beside os, the bone, "ossa, ossua"; liber,
+# the book, "librī", beside līber, free.
+#
+# 78 of the 79 are among the forms their table prints. nārrāre, "tell", is
+# woven nārrāns, where the table prints "narrāns": Wiktionary marks the
+# first vowel short, the seed long, which is a question about the headword's
+# own length, not the participle's, and QUEUED in tests/tools/la-forms.test.ts
+# names it until a dictionary is read for it.
+have	habēre	habēns	wikt:la:habeo	present active participle habēns
+say	dīcere	dīcēns	wikt:la:dico	present active participle dīcēns
+go	īre	iēns	wikt:la:eo	present active participle iēns
+come	venīre	veniēns	wikt:la:venio	present active participle veniēns
+see	vidēre	vidēns	wikt:la:video	present active participle vidēns
+know	scīre	sciēns	wikt:la:scio	present active participle sciēns
+think	putāre	putāns	wikt:la:puto	present active participle putāns
+take	capere	capiēns	wikt:la:capio	present active participle capiēns
+give	dare	dāns	wikt:la:do	present active participle dāns
+make	facere	faciēns	wikt:la:facio	present active participle faciēns
+find	invenīre	inveniēns	wikt:la:invenio	present active participle inveniēns
+want	velle	volēns	wikt:la:volo	present active participle volēns
+ask	rogāre	rogāns	wikt:la:rogo	present active participle rogāns
+work	labōrāre	labōrāns	wikt:la:laboro	present active participle labōrāns
+play	lūdere	lūdēns	wikt:la:ludo	present active participle lūdēns
+run	currere	currēns	wikt:la:curro	present active participle currēns
+walk	ambulāre	ambulāns	wikt:la:ambulo	present active participle ambulāns
+speak	loquī	loquēns	wikt:la:loquor	present active participle loquēns
+read	legere	legēns	wikt:la:lego	present active participle legēns
+write	scrībere	scrībēns	wikt:la:scribo	present active participle scrībēns
+eat	edere	edēns	wikt:la:edo	present active participle edēns
+drink	bibere	bibēns	wikt:la:bibo	present active participle bibēns
+sleep	dormīre	dormiēns	wikt:la:dormio	present active participle dormiēns
+sit	sedēre	sedēns	wikt:la:sedeo	present active participle sedēns
+stand	stāre	stāns	wikt:la:sto	present active participle stāns
+live	vīvere	vīvēns	wikt:la:vivo	present active participle vīvēns
+die	morī	moriēns	wikt:la:morior	present active participle moriēns
+love	amāre	amāns	wikt:la:amo	present active participle amāns
+fear	timēre	timēns	wikt:la:timeo	present active participle timēns
+hear	audīre	audiēns	wikt:la:audio	present active participle audiēns
+feel	sentīre	sentiēns	wikt:la:sentio	present active participle sentiēns
+hold	tenēre	tenēns	wikt:la:teneo	present active participle tenēns
+carry	portāre	portāns	wikt:la:porto	present active participle portāns
+bring	ferre	ferēns	wikt:la:fero	present active participle ferēns
+send	mittere	mittēns	wikt:la:mitto	present active participle mittēns
+buy	emere	emēns	wikt:la:emo	present active participle emēns
+sell	vēndere	vēndēns	wikt:la:vendo	present active participle vēndēns
+pay	solvere	solvēns	wikt:la:solvo	present active participle solvēns
+build	aedificāre	aedificāns	wikt:la:aedifico	present active participle aedificāns
+break	frangere	frangēns	wikt:la:frango	present active participle frangēns
+open	aperīre	aperiēns	wikt:la:aperio	present active participle aperiēns
+close	claudere	claudēns	wikt:la:claudo	present active participle claudēns
+begin	incipere	incipiēns	wikt:la:incipio	present active participle incipiēns
+help	iuvāre	iuvāns	wikt:la:iuvo	present active participle iuvāns
+learn	discere	discēns	wikt:la:disco	present active participle discēns
+teach	docēre	docēns	wikt:la:doceo	present active participle docēns
+forget	oblīvīscī	oblīvīscēns	wikt:la:obliviscor	present active participle oblīvīscēns
+win	vincere	vincēns	wikt:la:vinco	present active participle vincēns
+lose	āmittere	āmittēns	wikt:la:amitto	present active participle āmittēns
+fight	pugnāre	pugnāns	wikt:la:pugno	present active participle pugnāns
+swim	natāre	natāns	wikt:la:nato	present active participle natāns
+fly	volāre	volāns	wikt:la:volo	present active participle volāns
+ride	vehī	vehēns	wikt:la:veho	present active participle vehēns
+sing	canere	canēns	wikt:la:cano	present active participle canēns
+laugh	rīdēre	rīdēns	wikt:la:rideo	present active participle rīdēns
+cry	flēre	flēns	wikt:la:fleo	present active participle flēns
+wait	exspectāre	exspectāns	wikt:la:exspecto	present active participle exspectāns
+watch	spectāre	spectāns	wikt:la:specto	present active participle spectāns
+look	aspicere	aspiciēns	wikt:la:aspicio	present active participle aspiciēns
+show	mōnstrāre	mōnstrāns	wikt:la:monstro	present active participle mōnstrāns
+call	vocāre	vocāns	wikt:la:voco	present active participle vocāns
+put	pōnere	pōnēns	wikt:la:pono	present active participle pōnēns
+keep	servāre	servāns	wikt:la:servo	present active participle servāns
+leave	relinquere	relinquēns	wikt:la:relinquo	present active participle relinquēns
+follow	sequī	sequēns	wikt:la:sequor	present active participle sequēns
+seek	quaerere	quaerēns	wikt:la:quaero	present active participle quaerēns
+choose	ēligere	ēligēns	wikt:la:eligo	present active participle ēligēns
+change	mūtāre	mūtāns	wikt:la:muto	present active participle mūtāns
+grow	crēscere	crēscēns	wikt:la:cresco	present active participle crēscēns
+fall	cadere	cadēns	wikt:la:cado	present active participle cadēns
+rise	surgere	surgēns	wikt:la:surgo	present active participle surgēns
+turn	vertere	vertēns	wikt:la:verto	present active participle vertēns
+move	movēre	movēns	wikt:la:moveo	present active participle movēns
+throw	iacere	iaciēns	wikt:la:iacio	present active participle iaciēns
+catch	capere	capiēns	wikt:la:capio	present active participle capiēns
+cut	secāre	secāns	wikt:la:seco	present active participle secāns
+wash	lavāre	lavāns	wikt:la:lavo	present active participle lavāns
+cook	coquere	coquēns	wikt:la:coquo	present active participle coquēns
