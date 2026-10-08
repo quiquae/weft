@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **361 pass**, 92 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **369 pass**, 93 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -502,14 +502,19 @@ not give such a row a stand-in to pass: a stand-in is a word of the entry
 that means the English, and none does.
 
 **And so does a modern one, a language at a time.** `tools/seed/fr-glosses.tsv`
-quotes, for every row of the French pack, the definition line of the word's
-own English Wiktionary entry that gives its gloss, read in the rendered
-page and held by `tests/tools/glosses.test.ts` to the Latin and Old English
+and `es-glosses.tsv` quote, for every row of the French and Spanish packs,
+the definition line of the word's own English Wiktionary entry that gives
+its gloss, read in the rendered page and held by
+`tests/tools/glosses.test.ts` to the Latin and Old English
 rules: the row's English word or a named stand-in, never wikitext, a noun's
 line citing the entry its gender was read in, `FORM_OF` and `QUEUED` with
 stale checks. `READ` names the languages read and `UNREAD` those waiting,
-so a pack added later fails until it is one or the other; French was read
-on 2026-10-08, and Spanish, Portuguese, German and Italian wait. A source
+so a pack added later fails until it is one or the other; French and
+Spanish were read on 2026-10-08, and Portuguese, German and Italian wait.
+A phrase no entry gives whole — Spanish `en ningún lugar`, "nowhere", has
+none, nor has any variant of it — is `COMPOSED`: its line cites the entry of
+each of its words, quotes a line of each joined by " / ", and names no
+stand-in. Do not give it one to pass: no one word of it means the English. A source
 writes a space as an underscore, `wikt:fr:au_revoir`, the field being
 space-separated, and a curly apostrophe straight, as Wiktionary titles
 `aujourd'hui`. A quote is from the row's own part of speech where the page
@@ -647,6 +652,71 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-08 — every Spanish gloss names its entry, and "nowhere" has no entry to name
+
+The third PR of the run that did French: the next slice of the modern
+glosses, Spanish. It was read and written before 03:44, when that run
+stopped with the whole slice uncommitted on `lexicon/spanish-glosses`, and
+the queue re-sent the task at 05:54. The new run found the branch on
+`origin/main`, which had not moved, the tree as left and the 18 gloss
+tests passing, and gated and landed it. **Commit before anything long** —
+recorded before, and true again: the slice survived only because nothing
+had touched the checkout in between.
+
+**Spanish read like French and needed two things French did not.** 95
+pages fetched beside the 250 the noun and verb passes left, 343 of 356
+rows drafted by `/tmp/weft-gl/draft.py`, all read. Two drafts were another
+sense, the trap `question` set: `ley`'s first line holding "law" is a law
+of nature, and `pelo`'s is one hair, so the lines quote the legislature's
+and the head's. **Three pages define nothing and name another form** —
+`sentarse`, "infinitive of sentar combined with se"; `juntos`, "masculine
+plural of junto"; `quizás`, "alternative form of quizá" — so `FORM_OF`,
+empty for French, lists them and their lines quote the entry named, as the
+Old English ledger does. **And one phrase has no entry at all**:
+`en ningún lugar`, "nowhere", nor any variant — `en ninguna parte`,
+`en ningún lado`, `en ningún sitio`, `ninguna parte`, each fetched. It is
+correct Spanish, so `QUEUED`, which means "teach it differently", was the
+wrong table. `COMPOSED`, new, names it with its words; its line cites `en`,
+`ningún` and `lugar` and quotes a line of each, joined by " / ", and names
+no stand-in, no one word of it meaning "nowhere".
+
+Five rows name a stand-in (`extraño` "foreigner", `barco` "boat", `abrigo`
+"overcoat", `subir` "go up", `verdaderamente` "truthfully"), four quote the
+heading their page gives them (`solo` an adjective, `cien` a "Number",
+`primero` an ordinal adjective, `sí` a particle, its interjection being the
+telephone's "hello?"), and `muy`'s only line opens with Wiktionary's "(Can
+we verify this sense?)", which its quote leaves out. None is false.
+
+Test-first: Spanish moved from `UNREAD` to `READ`, red on "356 Spanish
+glosses name no entry in es-glosses.tsv", the French suite staying green;
+then the ledger, and green. Five probes on the two new paths, each restored
+by md5 and each failing its own test by name: `quizás` taken out of
+`FORM_OF`, its line citing only `quizá`, the composed quote a word short, a
+stand-in on it, and `COMPOSED` emptied. Nothing that ships moved. Tools 361
+→ **369** / 92 → **93** suites, total 1069 → **1077**, in six places,
+`docs/LAUNCH.md:221` first; `docs/THIRD-PARTY.md` says French's and
+Spanish's glosses name their entries. No `CHANGELOG.md` paragraph.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **369 tools / 93 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 1.4 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`site:check` was not re-run: no pack, page or image moved.
+
+Assumed, with nobody to ask: that a phrase no dictionary prints whole may
+be glossed by its words' entries when it means what its words say, where a
+word no dictionary gives in that sense is queued; that `muy`'s notice is
+Wiktionary's doubt about its analysis, not its meaning, so the quote may
+drop it; and that an adjective's "alone, by oneself" glosses `solo` among
+the adverbs, as `seul`'s did.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds one
+agent-shaped item, the Portuguese, German and Italian glosses, Portuguese
+next.
 
 ### 2026-10-08 — the French for "stand" is être debout, and tenir debout the seventh card withdrawn
 

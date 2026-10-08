@@ -37,17 +37,36 @@ const SEED = join(ROOT, 'tools/seed');
 const PACKS = join(ROOT, 'src/lexicon/packs');
 
 /** The languages whose every row the ledgers hold. */
-const READ = new Set(['fr']);
+const READ = new Set(['fr', 'es']);
 
 /** The modern languages whose glosses are not read yet, each an item in `TODO.md`. */
-const UNREAD = new Set(['es', 'pt', 'de', 'it']);
+const UNREAD = new Set(['pt', 'de', 'it']);
 
 /**
  * Words whose own Wiktionary entry gives no definition but names the entry it
  * is a form of, keyed by language and title. A line for one of these cites
- * both entries, quoting the second. None of French's is such a page.
+ * both entries, quoting the second. None of French's is such a page; three of
+ * Spanish's are: `sentarse` is "infinitive of sentar combined with se",
+ * `juntos` "masculine plural of junto", `quizás` "alternative form of quizá".
  */
-const FORM_OF: ReadonlyMap<string, string> = new Map([]);
+const FORM_OF: ReadonlyMap<string, string> = new Map([
+  ['es\tsentarse', 'sentar'],
+  ['es\tjuntos', 'junto'],
+  ['es\tquizás', 'quizá'],
+]);
+
+/**
+ * Phrases no entry gives whole, keyed by language and title, with the words
+ * whose entries gloss them, in order. English Wiktionary has no entry for
+ * Spanish `en ningún lugar`, nor for `en ninguna parte`, `en ningún lado` or
+ * `en ningún sitio`: it is "in", "not any" and "place". Its line cites each
+ * word's entry and quotes each word's line, joined by " / ", and names no
+ * stand-in, since no one word of it means "nowhere"; the phrase's meaning is
+ * the words', not a dictionary's.
+ */
+const COMPOSED: ReadonlyMap<string, readonly string[]> = new Map([
+  ['es\ten_ningún_lugar', ['en', 'ningún', 'lugar']],
+]);
 
 /**
  * Rows whose gloss no definition gives, each queued in `TODO.md` to be taught
@@ -126,8 +145,8 @@ describe('the modern gloss ledgers', () => {
     assert.ok(MODERN.length >= 5, `only ${MODERN.length} modern packs were found`);
   });
 
-  test('every alternative form and every queued gloss names a language that is read', () => {
-    const offenders = [...FORM_OF.keys(), ...QUEUED.keys()].flatMap((k) => {
+  test('every alternative form, composed phrase and queued gloss names a language that is read', () => {
+    const offenders = [...FORM_OF.keys(), ...COMPOSED.keys(), ...QUEUED.keys()].flatMap((k) => {
       const lang = k.split('\t')[0] ?? '';
       return READ.has(lang) ? [] : [`${k.replace(/\t/g, ' ')}: ${lang} is not in READ`];
     });
@@ -161,7 +180,8 @@ for (const lang of [...READ].filter((l) => MODERN.includes(l))) {
       const offenders = ledger.flatMap((g) => {
         const own = `wikt:${lang}:${title(g.tgt)}`;
         const form = FORM_OF.get(`${lang}\t${title(g.tgt)}`);
-        const wanted = form ? [own, `wikt:${lang}:${form}`] : [own];
+        const words = COMPOSED.get(`${lang}\t${title(g.tgt)}`);
+        const wanted = words ? words.map((w) => `wikt:${lang}:${w}`) : form ? [own, `wikt:${lang}:${form}`] : [own];
         if (g.sources.length === 0) return [`${file}:${g.line} ${g.tgt}: names no entry`];
         const other = g.sources.filter((s) => !wanted.includes(s));
         if (other.length) return [`${file}:${g.line} ${g.tgt}: ${other.map((s) => `“${s}”`).join(' ')} is not ${wanted.join(' or ')}`];
@@ -176,6 +196,12 @@ for (const lang of [...READ].filter((l) => MODERN.includes(l))) {
         const at = `${file}:${g.line} ${g.lemma} → ${g.tgt}`;
         if (!g.quote) return [`${at}: quotes nothing`];
         if (queued(g)) return [];
+        const words = COMPOSED.get(`${lang}\t${title(g.tgt)}`);
+        if (words) {
+          if (g.stands) return [`${at}: a composed phrase names no stand-in, and “${g.stands}” is named`];
+          const parts = g.quote.split(' / ').length;
+          return parts === words.length ? [] : [`${at}: quotes ${parts} lines for the ${words.length} words ${words.join(', ')}`];
+        }
         if (!g.stands) return holds(g.quote, g.lemma) ? [] : [`${at}: “${g.quote}” does not hold “${g.lemma}”, and no word is named to stand for it`];
         if (holds(g.quote, g.lemma)) return [`${at}: “${g.quote}” holds “${g.lemma}” itself, so “${g.stands}” need not stand for it`];
         return holds(g.quote, g.stands) ? [] : [`${at}: “${g.stands}” is not in “${g.quote}”`];
@@ -205,7 +231,7 @@ for (const lang of [...READ].filter((l) => MODERN.includes(l))) {
       assert.deepEqual(offenders, [], `${offenders.length} nouns are glossed from another entry:\n  ${offenders.join('\n  ')}`);
     });
 
-    test('every alternative form and every queued gloss is still one a line needs', () => {
+    test('every alternative form, composed phrase and queued gloss is still one a line needs', () => {
       // Both tables excuse a line from a rule, so neither may outlive the line
       // it excuses: a queued gloss that is fixed, or a form whose line cites
       // its own entry's text, would otherwise go on excusing nothing.
@@ -215,6 +241,11 @@ for (const lang of [...READ].filter((l) => MODERN.includes(l))) {
         if (l !== lang) return [];
         return cited.has(`wikt:${lang}:${lemma}`) && cited.has(`wikt:${lang}:${own}`) ? [] : [`FORM_OF ${own} → ${lemma}: no line cites both`];
       });
+      const composed = [...COMPOSED.keys()].flatMap((k) => {
+        const [l, phrase] = k.split('\t');
+        if (l !== lang) return [];
+        return ledger.some((g) => title(g.tgt) === phrase) ? [] : [`COMPOSED ${phrase}: no line, or ${lexicon} no longer teaches it`];
+      });
       const stale = [...QUEUED.keys()].flatMap((k) => {
         if (!k.startsWith(`${lang}\t`)) return [];
         const g = byKey.get(k.slice(lang.length + 1));
@@ -223,7 +254,7 @@ for (const lang of [...READ].filter((l) => MODERN.includes(l))) {
           ? [`QUEUED ${k.replace(/\t/g, ' ')}: its quote gives its gloss now, so it need not be queued`]
           : [];
       });
-      assert.deepEqual([...forms, ...stale], []);
+      assert.deepEqual([...forms, ...composed, ...stale], []);
     });
 
     test('no line outlives its row, and no row has two', () => {

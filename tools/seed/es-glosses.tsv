@@ -1,0 +1,433 @@
+# Where each gloss in lex-es.tsv was read.
+#
+# lemma | pos | tgt | sources | quote | stands
+#
+# The gloss is the English word a Spanish word is woven for, and the tooltip
+# prints it back: it is the claim every reader meets first. Every other claim
+# the pack makes about a word names its entry — genders in es-genders.tsv,
+# plurals in es-plurals.tsv, verb forms in es-verb-forms.tsv — and the gloss
+# named none until 2026-10-08, the night fr-glosses.tsv was written the same
+# way.
+#
+# Every row is read, all 356: the 178 nouns, 81 verbs, 57 adjectives, 22
+# adverbs, 13 numerals and 5 interjections. Each was read in the rendered
+# page of the word's English Wiktionary entry, in its Spanish section: a
+# script took the definition lines under each heading of the row's part of
+# speech, examples, quotations and synonyms set aside, and drafted the first
+# that holds the row's English word, and every quote was read against its
+# page. Where that first line is another sense, the quote is the row's: ley's
+# first is "law (a well-established characteristic of nature)", and its line
+# quotes "law (body of rules issued by a legislative body)"; pelo's first is
+# "hair (a single hair)", and its line quotes the hair of a head, the sense
+# English's mass noun has.
+#
+# muy's one line begins with Wiktionary's own notice, "(Can we verify this
+# sense?)", which asks whether it is an apocopic form of mucho; its quote
+# leaves the notice out and keeps the rest of the line, "very" among it.
+#
+# A page holds every word of one spelling, so a quote is from this word's
+# own part of speech where the page has it. Four rows' words have none of
+# theirs, and their lines quote the heading the page gives them: solo, woven
+# for "alone" among the adverbs, is "alone, by oneself" as an adjective, its
+# adverb being "only; solely; just"; cien, "hundred", is a "Number"; primero,
+# "first", an ordinal adjective; and sí, "yes", a particle, its page's
+# interjection being "(Spain) hello?", the answer to a telephone.
+#
+# The sources field
+# -----------------
+#   wikt:es:<title>    https://en.wiktionary.org/wiki/<title>#Spanish
+#
+# The title is the word as Wiktionary's address writes it: without a
+# homograph's number, and with an underscore for a space, so that each source
+# stays one word of the field: wikt:es:estar_de_pie. A noun cites the entry
+# its gender was read in, which for every Spanish noun is its own.
+#
+# Three pages define nothing and name another form, so their lines quote the
+# entry named and cite the word's own beside it, as the Old English ledger
+# does, the quoted entry first: sentarse is "infinitive of sentar combined
+# with se", and its line quotes sentar's "(pronominal) to sit down, have a
+# seat"; juntos is "masculine plural of junto", and its line quotes junto's
+# adverb, "together"; and quizás is "alternative form of quizá", "perhaps,
+# maybe". FORM_OF in tests/tools/glosses.test.ts lists them.
+#
+# One phrase has no entry at all. English Wiktionary has none for en ningún
+# lugar, "nowhere", nor for en ninguna parte, en ningún lado or en ningún
+# sitio. It is its words, en, "in", ningún, "not any", and lugar, "place", so
+# its line cites the three entries and quotes a line of each, joined by
+# " / ", and names no stand-in, no one word of it meaning "nowhere".
+# COMPOSED in the test lists it with its words.
+#
+# The stands field
+# ----------------
+# Blank where the quote holds the row's English word. Otherwise it names the
+# word of the quote that stands for it, because the English word is not in
+# the entry. Five rows need one: extraño for "stranger" is "foreigner",
+# barco for "ship" "boat (usually with a concave hull)", abrigo for "coat"
+# "overcoat", subir for "rise" "to go up or come up", and verdaderamente for
+# "truly" "truthfully".
+#
+# None is false. Two say less than the row is woven for, and are recorded
+# rather than changed: extraño's noun is only "foreigner", where a stranger
+# need not be foreign — the adjective is "strange, unusual" and "foreign,
+# alien" — and verdaderamente's only line is "truthfully", where English
+# "truly" is as often "really".
+#
+# tests/tools/glosses.test.ts requires every row of lex-es.tsv to have a line
+# here citing its own word's entry, whose quote holds its English word or the
+# stand-in it names, and fails on a line outliving its row.
+man	noun	hombre	wikt:es:hombre	man (adult male human)
+woman	noun	mujer	wikt:es:mujer	woman
+child	noun	niño	wikt:es:niño	child, boy
+boy	noun	chico	wikt:es:chico	boy; kid
+girl	noun	chica	wikt:es:chica	female equivalent of chico: girl
+person	noun	persona	wikt:es:persona	person (an individual; usually a human being)
+friend	noun	amigo	wikt:es:amigo	friend
+family	noun	familia	wikt:es:familia	family (group of people related to each other)
+mother	noun	madre	wikt:es:madre	mother
+father	noun	padre	wikt:es:padre	(family) father, parent
+brother	noun	hermano	wikt:es:hermano	brother
+sister	noun	hermana	wikt:es:hermana	sister; female equivalent of hermano (“brother”)
+son	noun	hijo	wikt:es:hijo	son
+daughter	noun	hija	wikt:es:hija	daughter; female equivalent of hijo
+wife	noun	esposa	wikt:es:esposa	wife
+husband	noun	esposo	wikt:es:esposo	husband
+baby	noun	bebé	wikt:es:bebé	baby
+king	noun	rey	wikt:es:rey	king
+queen	noun	reina	wikt:es:reina	queen
+lord	noun	señor	wikt:es:señor	mister, sir, lord (title conferred on a married or older male)
+neighbour	noun	vecino	wikt:es:vecino	neighbour (a person living on adjacent or nearby land)
+stranger	noun	extraño	wikt:es:extraño	foreigner	foreigner
+enemy	noun	enemigo	wikt:es:enemigo	foe; enemy
+soldier	noun	soldado	wikt:es:soldado	soldier
+teacher	noun	maestro	wikt:es:maestro	(especially Latin America) a male teacher
+doctor	noun	médico	wikt:es:médico	doctor
+farmer	noun	granjero	wikt:es:granjero	farmer
+sailor	noun	marinero	wikt:es:marinero	sailor, seaman
+head	noun	cabeza	wikt:es:cabeza	(anatomy) head
+hand	noun	mano	wikt:es:mano	(anatomy, of a person) hand
+eye	noun	ojo	wikt:es:ojo	(anatomy) eye
+ear	noun	oreja	wikt:es:oreja	(anatomy) outer ear; auricle; ear (used for references to the external or tangible aspects of the ear)
+mouth	noun	boca	wikt:es:boca	(anatomy) mouth, oral cavity
+nose	noun	nariz	wikt:es:nariz	nose (a protuberance on the face housing the nostrils, which are used to breathe or smell)
+tooth	noun	diente	wikt:es:diente	(anatomy) tooth
+hair	noun	pelo	wikt:es:pelo	hair (all hair on the head)
+heart	noun	corazón	wikt:es:corazón	(anatomy) heart (organ of the body)
+blood	noun	sangre	wikt:es:sangre	blood
+bone	noun	hueso	wikt:es:hueso	(anatomy) bone
+arm	noun	brazo	wikt:es:brazo	(anatomy) arm
+leg	noun	pierna	wikt:es:pierna	leg (lower limb of a human)
+foot	noun	pie	wikt:es:pie	foot (a part of the body)
+finger	noun	dedo	wikt:es:dedo	(anatomy) digit: finger or toe, literally translated as "finger" and thought of that way by Spanish-speaking learners of English
+face	noun	cara	wikt:es:cara	(anatomy) face (the front part of the head)
+body	noun	cuerpo	wikt:es:cuerpo	body (the physical structure of a human or animal)
+skin	noun	piel	wikt:es:piel	skin
+voice	noun	voz	wikt:es:voz	voice
+dog	noun	perro	wikt:es:perro	dog (the species Canis familiaris (sometimes designated Canis lupus familiaris), domesticated for thousands of years and of highly variable appearance because of human breeding)
+cat	noun	gato	wikt:es:gato	cat (unspecified gender)
+horse	noun	caballo	wikt:es:caballo	horse
+bird	noun	pájaro	wikt:es:pájaro	bird, especially a perching bird
+fish	noun	pez	wikt:es:pez	fish (especially if alive or not intended for consumption)
+cow	noun	vaca	wikt:es:vaca	cow (adult female of the species Bos taurus)
+sheep	noun	oveja	wikt:es:oveja	sheep
+pig	noun	cerdo	wikt:es:cerdo	pig, hog
+wolf	noun	lobo	wikt:es:lobo	wolf (wild Canis lupus)
+bear	noun	oso	wikt:es:oso	bear (in general)
+lion	noun	león	wikt:es:león	lion
+mouse	noun	ratón	wikt:es:ratón	mouse (small rodent)
+snake	noun	serpiente	wikt:es:serpiente	snake, serpent (legless reptile of the sub-order Serpentes)
+bee	noun	abeja	wikt:es:abeja	bee (insect of the clade Anthophila)
+worm	noun	gusano	wikt:es:gusano	worm
+raven	noun	cuervo	wikt:es:cuervo	raven
+hound	noun	sabueso	wikt:es:sabueso	hound (hunting dog)
+ox	noun	buey	wikt:es:buey	ox, bullock, steer
+goat	noun	cabra	wikt:es:cabra	female goat
+food	noun	comida	wikt:es:comida	food
+bread	noun	pan	wikt:es:pan	bread (food made by baking cereal dough)
+water	noun	agua	wikt:es:agua	water
+wine	noun	vino	wikt:es:vino	wine (an alcoholic beverage made by fermenting grape juice, with an ABV ranging from 5.5–16%)
+milk	noun	leche	wikt:es:leche	milk
+meat	noun	carne	wikt:es:carne	an animal’s meat, or by extension the edible “fleshy” or soft part of a fruit or vegetable
+fruit	noun	fruta	wikt:es:fruta	fruit (the seed-bearing part of a plant)
+apple	noun	manzana	wikt:es:manzana	apple
+salt	noun	sal	wikt:es:sal	salt; table salt
+honey	noun	miel	wikt:es:miel	honey
+cheese	noun	queso	wikt:es:queso	cheese
+egg	noun	huevo	wikt:es:huevo	egg
+fire	noun	fuego	wikt:es:fuego	fire
+house	noun	casa	wikt:es:casa	house
+home	noun	hogar	wikt:es:hogar	home
+door	noun	puerta	wikt:es:puerta	door (portal of entry into a building)
+window	noun	ventana	wikt:es:ventana	window (opening for light and air)
+wall	noun	pared	wikt:es:pared	wall, especially of a house or room
+roof	noun	tejado	wikt:es:tejado	tiled roof
+floor	noun	suelo	wikt:es:suelo	floor, ground
+room	noun	habitación	wikt:es:habitación	room (separate part of a building)
+table	noun	mesa	wikt:es:mesa	table
+chair	noun	silla	wikt:es:silla	chair
+bed	noun	cama	wikt:es:cama	bed
+book	noun	libro	wikt:es:libro	book
+word	noun	palabra	wikt:es:palabra	word
+letter	noun	carta	wikt:es:carta	letter (document)
+name	noun	nombre	wikt:es:nombre	name
+key	noun	llave	wikt:es:llave	key (to open doors)
+bridge	noun	puente	wikt:es:puente	bridge (construction spanning a waterway, ravine, or valley from an elevated height)
+church	noun	iglesia	wikt:es:iglesia	(Christianity) church
+ship	noun	barco	wikt:es:barco	boat (usually with a concave hull)	boat
+boat	noun	bote	wikt:es:bote	boat, dinghy
+sword	noun	espada	wikt:es:espada	(countable) sword (a long bladed weapon with a grip and typically a pommel and crossguard (together forming a hilt), which is designed to cut, stab, slash and/or hack)
+shield	noun	escudo	wikt:es:escudo	shield
+ring	noun	anillo	wikt:es:anillo	ring
+gold	noun	oro	wikt:es:oro	gold.
+silver	noun	plata	wikt:es:plata	silver
+iron	noun	hierro	wikt:es:hierro	(uncountable) iron (chemical element)
+stone	noun	piedra	wikt:es:piedra	stone (hard earthen substance that can form large rocks)
+glass	noun	vidrio	wikt:es:vidrio	glass (substance)
+cloth	noun	tela	wikt:es:tela	(clothing) cloth, fabric (woven material made of fibers)
+shoe	noun	zapato	wikt:es:zapato	shoe
+coat	noun	abrigo	wikt:es:abrigo	overcoat	overcoat
+hat	noun	sombrero	wikt:es:sombrero	hat
+sun	noun	sol	wikt:es:sol	sun
+moon	noun	luna	wikt:es:luna	moon
+star	noun	estrella	wikt:es:estrella	star (celestial body)
+sky	noun	cielo	wikt:es:cielo	sky
+earth	noun	tierra	wikt:es:tierra	Earth (planet of the Solar System in which all of humanity resides)
+land	noun	tierra	wikt:es:tierra	(geography) land, ground (Earth surface not covered by oceans or other bodies of water)
+sea	noun	mar	wikt:es:mar	sea
+river	noun	río	wikt:es:río	river
+lake	noun	lago	wikt:es:lago	lake
+mountain	noun	montaña	wikt:es:montaña	mountain
+hill	noun	colina	wikt:es:colina	(geography) hill
+forest	noun	bosque	wikt:es:bosque	forest
+tree	noun	árbol	wikt:es:árbol	tree (perennial woody plant)
+leaf	noun	hoja	wikt:es:hoja	leaf (usually green and flat organ that is the most prominent feature of most vegetative plants)
+flower	noun	flor	wikt:es:flor	flower (structure in angiosperms)
+grass	noun	hierba	wikt:es:hierba	(chiefly Spain, uncountable) grass (plant of the family Poaceae or plant that resembles grasses)
+field	noun	campo	wikt:es:campo	field (large open area)
+road	noun	camino	wikt:es:camino	road
+path	noun	sendero	wikt:es:sendero	trail, path, track (a route for travel over land)
+city	noun	ciudad	wikt:es:ciudad	city
+town	noun	pueblo	wikt:es:pueblo	town, village
+village	noun	aldea	wikt:es:aldea	village
+world	noun	mundo	wikt:es:mundo	world, earth (human collective existence)
+country	noun	país	wikt:es:país	country (the territory of a nation)
+place	noun	lugar	wikt:es:lugar	place
+rain	noun	lluvia	wikt:es:lluvia	rain
+snow	noun	nieve	wikt:es:nieve	snow
+wind	noun	viento	wikt:es:viento	wind (movement of air)
+cloud	noun	nube	wikt:es:nube	cloud
+ice	noun	hielo	wikt:es:hielo	ice
+light	noun	luz	wikt:es:luz	light
+shadow	noun	sombra	wikt:es:sombra	shadow (a dark image projected onto a surface where light (or other radiation) is blocked by the shade of an object)
+time	noun	tiempo	wikt:es:tiempo	(also physics) time
+day	noun	día	wikt:es:día	day (any period of 24 hours)
+night	noun	noche	wikt:es:noche	night (the period between sunset and sunrise)
+year	noun	año	wikt:es:año	year
+month	noun	mes	wikt:es:mes	month
+week	noun	semana	wikt:es:semana	week (7 days)
+hour	noun	hora	wikt:es:hora	hour (a time period of sixty minutes)
+morning	noun	mañana	wikt:es:mañana	the morning
+evening	noun	tarde	wikt:es:tarde	evening (after sunset)
+summer	noun	verano	wikt:es:verano	summer
+winter	noun	invierno	wikt:es:invierno	winter
+autumn	noun	otoño	wikt:es:otoño	autumn, fall
+life	noun	vida	wikt:es:vida	life
+death	noun	muerte	wikt:es:muerte	death (the cessation of life)
+love	noun	amor	wikt:es:amor	love
+war	noun	guerra	wikt:es:guerra	war, warfare
+peace	noun	paz	wikt:es:paz	peace (warlessness)
+truth	noun	verdad	wikt:es:verdad	truth
+law	noun	ley	wikt:es:ley	law (body of rules issued by a legislative body)
+work	noun	trabajo	wikt:es:trabajo	work, job
+money	noun	dinero	wikt:es:dinero	money
+price	noun	precio	wikt:es:precio	price
+question	noun	pregunta	wikt:es:pregunta	question (sentence that asks for information)
+answer	noun	respuesta	wikt:es:respuesta	reply, response, answer
+story	noun	historia	wikt:es:historia	story (a sequence of real or fictional events)
+song	noun	canción	wikt:es:canción	song
+music	noun	música	wikt:es:música	(uncountable) music
+game	noun	juego	wikt:es:juego	game; sport
+dream	noun	sueño	wikt:es:sueño	dream
+fear	noun	miedo	wikt:es:miedo	fear
+hope	noun	esperanza	wikt:es:esperanza	hope, hopefulness
+joy	noun	alegría	wikt:es:alegría	joy, happiness
+anger	noun	ira	wikt:es:ira	anger, ire
+oath	noun	juramento	wikt:es:juramento	an oath
+gift	noun	regalo	wikt:es:regalo	present, gift
+good	adj	bueno	wikt:es:bueno	(with ser or (chiefly Latin America, sometimes) estar) good (of good quality)
+bad	adj	malo	wikt:es:malo	(with ser or (chiefly Latin America, sometimes) estar) bad (of bad quality)
+big	adj	grande	wikt:es:grande	(after the noun or predicatively) big, large
+small	adj	pequeño	wikt:es:pequeño	small; little
+great	adj	grande	wikt:es:grande	(before a plural noun) great, grand
+little	adj	pequeño	wikt:es:pequeño	small; little
+long	adj	largo	wikt:es:largo	long (having much distance from one terminating point to another)
+short	adj	corto	wikt:es:corto	short (having a small distance from one end to another)
+high	adj	alto	wikt:es:alto	(with ser or estar) high
+low	adj	bajo	wikt:es:bajo	low, ground (situated close to the ground)
+old	adj	viejo	wikt:es:viejo	(of an object) old (having existed for a long time)
+young	adj	joven	wikt:es:joven	young, youthful
+new	adj	nuevo	wikt:es:nuevo	new
+hot	adj	caliente	wikt:es:caliente	hot, warm (emitting heat or warmth)
+cold	adj	frío	wikt:es:frío	cold (having a low temperature)
+warm	adj	cálido	wikt:es:cálido	warm
+heavy	adj	pesado	wikt:es:pesado	heavy in weight, weighty
+strong	adj	fuerte	wikt:es:fuerte	strong
+weak	adj	débil	wikt:es:débil	weak
+hard	adj	duro	wikt:es:duro	hard (not soft)
+soft	adj	suave	wikt:es:suave	smooth, soft, fluffy
+quick	adj	rápido	wikt:es:rápido	rapid, quick, fast
+slow	adj	lento	wikt:es:lento	slow
+true	adj	verdadero	wikt:es:verdadero	true, real
+false	adj	falso	wikt:es:falso	false; untrue
+rich	adj	rico	wikt:es:rico	rich (having a lot of money and possessions)
+poor	adj	pobre	wikt:es:pobre	(postpositive) poor (lacking money, resources, etc.)
+happy	adj	feliz	wikt:es:feliz	(with ser) happy, merry (trait)
+sad	adj	triste	wikt:es:triste	sad, saddened, blue, gloomy, unhappy, joyless, triste
+tired	adj	cansado	wikt:es:cansado	tired, weary, wearied
+full	adj	lleno	wikt:es:lleno	full
+empty	adj	vacío	wikt:es:vacío	empty, vacant
+clean	adj	limpio	wikt:es:limpio	clean
+dirty	adj	sucio	wikt:es:sucio	dirty, filthy
+beautiful	adj	hermoso	wikt:es:hermoso	gorgeous, beautiful, handsome, lovely
+ugly	adj	feo	wikt:es:feo	ugly
+easy	adj	fácil	wikt:es:fácil	easy, facile, simple (requiring little effort)
+difficult	adj	difícil	wikt:es:difícil	difficult, hard, tough, challenging, rough, tricky, trying, arduous, testing
+free	adj	libre	wikt:es:libre	free (not imprisoned or enslaved)
+wise	adj	sabio	wikt:es:sabio	prudent; wise
+brave	adj	valiente	wikt:es:valiente	brave, courageous, fearless
+holy	adj	santo	wikt:es:santo	holy, godly
+deep	adj	profundo	wikt:es:profundo	deep (having a bottom far from the surface or mouth)
+wide	adj	ancho	wikt:es:ancho	wide; broad
+narrow	adj	estrecho	wikt:es:estrecho	narrow
+dead	adj	muerto	wikt:es:muerto	dead
+alive	adj	vivo	wikt:es:vivo	alive, living (having life)
+sick	adj	enfermo	wikt:es:enfermo	sick, ill
+whole	adj	entero	wikt:es:entero	whole; entire
+white	adj	blanco	wikt:es:blanco	white
+black	adj	negro	wikt:es:negro	black (absorbing all light and reflecting none; dark and hueless)
+red	adj	rojo	wikt:es:rojo	red (colour)
+green	adj	verde	wikt:es:verde	green (color/colour)
+blue	adj	azul	wikt:es:azul	blue
+yellow	adj	amarillo	wikt:es:amarillo	yellow or golden (colour)
+grey	adj	gris	wikt:es:gris	grey / gray
+brown	adj	marrón	wikt:es:marrón	brown (colour)
+have	verb	tener	wikt:es:tener	(transitive, literally) to have; to possess
+say	verb	decir	wikt:es:decir	to say, to tell, to name, to mention
+go	verb	ir	wikt:es:ir	(intransitive) to go (away from speaker and listener)
+come	verb	venir	wikt:es:venir	(sometimes reflexive) to come (move closer to some location (most often closer to the speaker), by default the speaker's location)
+see	verb	ver	wikt:es:ver	(transitive, literally) to see, to spot
+know	verb	saber	wikt:es:saber	to know, to understand (a fact)
+think	verb	pensar	wikt:es:pensar	to think, ponder
+take	verb	tomar	wikt:es:tomar	(chiefly Latin America unless imperative) to take (put under one's physical or mental control, often in one's hands)
+give	verb	dar	wikt:es:dar	(ditransitive) to give, to give out
+make	verb	hacer	wikt:es:hacer	to make
+find	verb	encontrar	wikt:es:encontrar	(transitive) to find, encounter, come across
+want	verb	querer	wikt:es:querer	to desire, to want, to want to
+tell	verb	contar	wikt:es:contar	(transitive) to tell (a story); narrate
+ask	verb	preguntar	wikt:es:preguntar	(ditransitive, ambitransitive) to ask
+work	verb	trabajar	wikt:es:trabajar	to work
+play	verb	jugar	wikt:es:jugar	to play
+run	verb	correr	wikt:es:correr	to run, to jog
+walk	verb	caminar	wikt:es:caminar	to walk
+speak	verb	hablar	wikt:es:hablar	to talk; to speak; to communicate using words [with con ‘with’, along with de or sobre ‘about’, along with en ‘in (a language)’, along with dative ‘person spoken to’, along with accusative ‘what is said’]
+read	verb	leer	wikt:es:leer	to read
+write	verb	escribir	wikt:es:escribir	(intransitive or transitive) to write (to form letters, words or symbols on a surface in order to communicate)
+eat	verb	comer	wikt:es:comer	to eat
+drink	verb	beber	wikt:es:beber	(transitive, intransitive, sometimes reflexive) to drink
+sleep	verb	dormir	wikt:es:dormir	(intransitive) to sleep
+sit	verb	sentarse	wikt:es:sentar wikt:es:sentarse	(pronominal) to sit down, have a seat
+stand	verb	estar de pie	wikt:es:estar_de_pie	(idiomatic) to stand (to be upright, support oneself on the feet in an erect position)
+live	verb	vivir	wikt:es:vivir	(intransitive) to live; to be alive
+die	verb	morir	wikt:es:morir	(intransitive, sometimes reflexive) to die (to stop living)
+love	verb	amar	wikt:es:amar	(somewhat literary) to love, have great affection for, care about
+hate	verb	odiar	wikt:es:odiar	to hate, to loathe
+fear	verb	temer	wikt:es:temer	(ambitransitive) to fear
+hear	verb	oír	wikt:es:oír	(intransitive) to hear
+feel	verb	sentir	wikt:es:sentir	(transitive) to feel
+hold	verb	sostener	wikt:es:sostener	to hold, to hold up, to prop up, to sustain, to underpin (physically)
+carry	verb	llevar	wikt:es:llevar	(transitive) to carry, bear, hold
+bring	verb	traer	wikt:es:traer	to bring (in the sense of transport, for differences with llevar and examples see that entry)
+send	verb	enviar	wikt:es:enviar	to send
+buy	verb	comprar	wikt:es:comprar	to buy (to obtain in exchange of money or goods)
+sell	verb	vender	wikt:es:vender	(transitive) to sell
+pay	verb	pagar	wikt:es:pagar	(transitive) to pay [with le ‘someone’; or with lo ‘something or someone’]
+build	verb	construir	wikt:es:construir	to build
+break	verb	romper	wikt:es:romper	to break
+open	verb	abrir	wikt:es:abrir	(transitive, intransitive, reflexive) to open, open up
+close	verb	cerrar	wikt:es:cerrar	(transitive) to close, to shut
+begin	verb	empezar	wikt:es:empezar	to start, begin, to get started
+help	verb	ayudar	wikt:es:ayudar	(transitive) to help
+learn	verb	aprender	wikt:es:aprender	(transitive, intransitive) to learn (to acquire, or attempt to acquire knowledge or an ability to do something)
+teach	verb	enseñar	wikt:es:enseñar	to teach
+remember	verb	recordar	wikt:es:recordar	(transitive) to remember, to recollect
+forget	verb	olvidar	wikt:es:olvidar	(transitive) to forget
+win	verb	ganar	wikt:es:ganar	(sports) to win
+lose	verb	perder	wikt:es:perder	(transitive) to lose
+fight	verb	luchar	wikt:es:luchar	to fight, to battle, to do battle
+swim	verb	nadar	wikt:es:nadar	(intransitive) to swim (move through water)
+fly	verb	volar	wikt:es:volar	(intransitive) to fly, to fly away
+ride	verb	montar	wikt:es:montar	to ride
+sing	verb	cantar	wikt:es:cantar	(transitive, intransitive) to sing
+laugh	verb	reír	wikt:es:reír	(transitive, often reflexive) to laugh [with de ‘at, about’]
+cry	verb	llorar	wikt:es:llorar	(intransitive) to cry, to weep
+wait	verb	esperar	wikt:es:esperar	(intransitive or transitive) to wait, wait (for) [(optionally) with direct object ‘for something’ or a que (+ subjunctive clause) ‘for something to happen’]
+watch	verb	mirar	wikt:es:mirar	(transitive) to watch (to look at, view, or observe for a period of time)
+look	verb	mirar	wikt:es:mirar	(transitive) to look at (to try to see, to pay attention to with one’s eyes)
+show	verb	mostrar	wikt:es:mostrar	(transitive) to show (have somebody see something)
+call	verb	llamar	wikt:es:llamar	to summon, to call
+put	verb	poner	wikt:es:poner	(transitive or ditransitive) to put, to place (cause to assume a specified position)
+keep	verb	guardar	wikt:es:guardar	to keep
+leave	verb	salir	wikt:es:salir	to go out, to leave, to depart, to head out
+follow	verb	seguir	wikt:es:seguir	(transitive or intransitive) to follow
+seek	verb	buscar	wikt:es:buscar	to seek, search for, look for, try to find, to scour
+choose	verb	elegir	wikt:es:elegir	(transitive) to choose
+change	verb	cambiar	wikt:es:cambiar	(transitive, intransitive) to change, to shift, to switch, to alter
+grow	verb	crecer	wikt:es:crecer	to grow
+fall	verb	caer	wikt:es:caer	(intransitive, reflexive) to fall (to move to a lower position due to gravity)
+rise	verb	subir	wikt:es:subir	to go up or come up	go up
+turn	verb	girar	wikt:es:girar	(transitive, intransitive) to turn, pivot
+move	verb	mover	wikt:es:mover	(transitive) to move (to cause to change place or posture)
+throw	verb	lanzar	wikt:es:lanzar	to throw
+catch	verb	atrapar	wikt:es:atrapar	to catch, to get
+cut	verb	cortar	wikt:es:cortar	to cut
+wash	verb	lavar	wikt:es:lavar	(transitive) to wash
+cook	verb	cocinar	wikt:es:cocinar	(transitive or intransitive) to cook
+always	adv	siempre	wikt:es:siempre	always
+never	adv	nunca	wikt:es:nunca	never
+often	adv	a menudo	wikt:es:a_menudo	often, oftentimes (habitually)
+sometimes	adv	a veces	wikt:es:a_veces	(idiomatic) sometimes; occasionally; at times
+today	adv	hoy	wikt:es:hoy	today, tonight (on the current day)
+tomorrow	adv	mañana	wikt:es:mañana	tomorrow
+yesterday	adv	ayer	wikt:es:ayer	yesterday
+now	adv	ahora	wikt:es:ahora	now (at the present time)
+soon	adv	pronto	wikt:es:pronto	soon
+already	adv	ya	wikt:es:ya	already
+almost	adv	casi	wikt:es:casi	almost
+together	adv	juntos	wikt:es:junto wikt:es:juntos	together
+alone	adv	solo	wikt:es:solo	alone, by oneself
+again	adv	otra vez	wikt:es:otra_vez	(idiomatic) again, once more, once again
+here	adv	aquí	wikt:es:aquí	here (in the speaker's location)
+everywhere	adv	por todas partes	wikt:es:por_todas_partes	(idiomatic) everywhere, all over the place, all around, throughout
+nowhere	adv	en ningún lugar	wikt:es:en wikt:es:ningún wikt:es:lugar	in, at, on / (before the noun) apocopic form of ninguno (“not any”) / place
+slowly	adv	lentamente	wikt:es:lentamente	slowly
+quickly	adv	rápidamente	wikt:es:rápidamente	rapidly, quickly
+truly	adv	verdaderamente	wikt:es:verdaderamente	truthfully	truthfully
+perhaps	adv	quizás	wikt:es:quizá wikt:es:quizás	perhaps, maybe
+very	adv	muy	wikt:es:muy	(before adjectives and adverbs) apocopic form of mucho; very
+one	num	uno	wikt:es:uno	one
+two	num	dos	wikt:es:dos	two
+three	num	tres	wikt:es:tres	three
+four	num	cuatro	wikt:es:cuatro	four
+five	num	cinco	wikt:es:cinco	five
+six	num	seis	wikt:es:seis	six
+seven	num	siete	wikt:es:siete	seven
+eight	num	ocho	wikt:es:ocho	eight (8)
+nine	num	nueve	wikt:es:nueve	nine
+ten	num	diez	wikt:es:diez	ten
+hundred	num	cien	wikt:es:cien	one hundred (100)
+thousand	num	mil	wikt:es:mil	thousand
+first	num	primero	wikt:es:primero	(ordinal number) first, first up
+yes	intj	sí	wikt:es:sí	yes, yeah, (used to respond affirmatively to a question, used both informally and formally)
+hello	intj	hola	wikt:es:hola	hello, hi, hey
+goodbye	intj	adiós	wikt:es:adiós	goodbye, farewell
+please	intj	por favor	wikt:es:por_favor	please
+sorry	intj	perdón	wikt:es:perdón	sorry, pardon me (excuse me)
