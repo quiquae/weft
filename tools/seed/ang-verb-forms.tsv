@@ -1,0 +1,114 @@
+# Where each woven Old English present participle in lex-ang.tsv was read.
+#
+# lemma | tgt | tgt2 | sources | quote
+#
+# A verb row weaves its second form under an English -ing, and the tooltip
+# prints that form as the word the reader met. Each modern verb form has
+# named the table that prints it since 2026-10-08, and on the same day every
+# woven Old English one was read in the rendered conjugation table
+# (action=render) of its English Wiktionary entry: the cell classed
+# pres|part, the present participle, quoted as the table prints it.
+# tests/tools/ang-forms.test.ts fails on a form changed in one file and not
+# the other, a line citing an entry its gloss was not read in, a quote from
+# another cell or not printing its form, and a line outliving its row.
+#
+# A page holding more than one verb of a spelling is read by sense, as the
+# plurals are: witan, to know, "witende", not wītan's "wītende".
+#
+# The sources field
+# -----------------
+# One entry per line, the one whose table the quote is from:
+#
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#                      (the title drops macrons and the dots of ċ and ġ)
+#
+# It is always an entry ang-glosses.tsv read the row's gloss in, so the two
+# ledgers cannot choose different words of one spelling. Where the gloss was
+# read in two, a ð spelling's page and the þ page it names, the line cites
+# the one whose table prints the woven form as the pack spells it.
+#
+# Two things the pack writes otherwise than the tables, on every word, are
+# read as one: ð, which the pack keeps where a teaching edition prints it and
+# Wiktionary files under þ, and the doubled palatal, which the pack writes
+# cg, "dg" in its pronunciation key, where the tables write ċġ.
+#
+# 4 woven participles are not here, because the table prints another
+# form: QUEUED in tests/tools/ang-forms.test.ts names each with what its
+# table prints, until a grammar is read for it.
+have	habban	hæbbende	wikt:ang:habban	present participle hæbbende
+say	secgan	secgende	wikt:ang:secgan	present participle seċġende
+come	cuman	cumende	wikt:ang:cuman	present participle cumende
+see	sēon	sēonde	wikt:ang:seon	present participle sēonde
+know	witan	witende	wikt:ang:witan	present participle witende
+think	þenċan	þenċende	wikt:ang:þencan	present participle þenċende
+take	niman	nimende	wikt:ang:niman	present participle nimende
+give	ġiefan	ġiefende	wikt:ang:giefan	present participle ġiefende
+make	macian	maciende	wikt:ang:macian	present participle maciende
+find	findan	findende	wikt:ang:findan	present participle findende
+want	willan	willende	wikt:ang:willan	present participle willende
+tell	tellan	tellende	wikt:ang:tellan	present participle tellende
+ask	āscian	āsciende	wikt:ang:ascian	present participle āsciende
+work	wyrċan	wyrċende	wikt:ang:wyrcan	present participle wyrċende
+play	plegian	plegiende	wikt:ang:plegian	present participle plegiende
+run	rinnan	rinnende	wikt:ang:rinnan	present participle rinnende
+walk	wealcan	wealcende	wikt:ang:wealcan	present participle wealcende
+speak	sprecan	sprecende	wikt:ang:sprecan	present participle sprecende
+read	rǣdan	rǣdende	wikt:ang:rædan	present participle rǣdende
+write	wrītan	wrītende	wikt:ang:writan	present participle wrītende
+eat	etan	etende	wikt:ang:etan	present participle etende
+drink	drincan	drincende	wikt:ang:drincan	present participle drincende
+sleep	slǣpan	slǣpende	wikt:ang:slæpan	present participle slǣpende
+sit	sittan	sittende	wikt:ang:sittan	present participle sittende
+stand	standan	standende	wikt:ang:standan	present participle standende
+live	libban	libbende	wikt:ang:libban	present participle libbende
+die	steorfan	steorfende	wikt:ang:steorfan	present participle steorfende
+love	lufian	lufiende	wikt:ang:lufian	present participle lufiende
+hate	hatian	hatiende	wikt:ang:hatian	present participle hatiende
+fear	ondrǣdan	ondrǣdende	wikt:ang:ondrædan	present participle ondrǣdende
+hear	hīeran	hīerende	wikt:ang:hieran	present participle hīerende
+feel	fēlan	fēlende	wikt:ang:felan	present participle fēlende
+hold	healdan	healdende	wikt:ang:healdan	present participle healdende
+carry	beran	berende	wikt:ang:beran	present participle berende
+bring	bringan	bringende	wikt:ang:bringan	present participle bringende
+send	sendan	sendende	wikt:ang:sendan	present participle sendende
+buy	bycgan	bycgende	wikt:ang:bycgan	present participle byċġende
+sell	sellan	sellende	wikt:ang:sellan	present participle sellende
+pay	ġieldan	ġieldende	wikt:ang:gieldan	present participle ġieldende
+build	timbran	timbrende	wikt:ang:timbran	present participle timbrende
+break	brecan	brecende	wikt:ang:brecan	present participle brecende
+open	openian	openiende	wikt:ang:openian	present participle openiende
+close	clȳsan	clȳsende	wikt:ang:clysan	present participle clȳsende
+help	helpan	helpende	wikt:ang:helpan	present participle helpende
+learn	leornian	leorniende	wikt:ang:leornian	present participle leorniende
+teach	tǣċan	tǣċende	wikt:ang:tæcan	present participle tǣċende
+remember	ġemunan	ġemunende	wikt:ang:gemunan	present participle ġemunende
+forget	forġietan	forġietende	wikt:ang:forgietan	present participle forġietende
+win	winnan	winnende	wikt:ang:winnan	present participle winnende
+lose	losian	losiende	wikt:ang:losian	present participle losiende
+fight	feohtan	feohtende	wikt:ang:feohtan	present participle feohtende
+swim	swimman	swimmende	wikt:ang:swimman	present participle swimmende
+fly	flēogan	flēogende	wikt:ang:fleogan	present participle flēogende
+ride	rīdan	rīdende	wikt:ang:ridan	present participle rīdende
+sing	singan	singende	wikt:ang:singan	present participle singende
+cry	wēpan	wēpende	wikt:ang:wepan	present participle wēpende
+wait	ābīdan	ābīdende	wikt:ang:abidan	present participle ābīdende
+watch	weardian	weardiende	wikt:ang:weardian	present participle weardiende
+look	lōcian	lōciende	wikt:ang:locian	present participle lōciende
+show	sċēawian	sċēawiende	wikt:ang:sceawian	present participle sċēawiende
+call	clipian	clipiende	wikt:ang:clipian	present participle clipiende
+put	settan	settende	wikt:ang:settan	present participle settende
+keep	cēpan	cēpende	wikt:ang:cepan	present participle cēpende
+leave	lǣfan	lǣfende	wikt:ang:læfan	present participle lǣfende
+follow	folgian	folgiende	wikt:ang:folgian	present participle folgiende
+seek	sēċan	sēċende	wikt:ang:secan	present participle sēċende
+choose	ċēosan	ċēosende	wikt:ang:ceosan	present participle ċēosende
+change	wendan	wendende	wikt:ang:wendan	present participle wendende
+grow	grōwan	grōwende	wikt:ang:growan	present participle grōwende
+fall	feallan	feallende	wikt:ang:feallan	present participle feallende
+rise	rīsan	rīsende	wikt:ang:risan	present participle rīsende
+turn	tyrnan	tyrnende	wikt:ang:tyrnan	present participle tyrnende
+move	styrian	styriende	wikt:ang:styrian	present participle styriende
+throw	weorpan	weorpende	wikt:ang:weorpan	present participle weorpende
+catch	fōn	fōnde	wikt:ang:fon	present participle fōnde
+cut	ċeorfan	ċeorfende	wikt:ang:ceorfan	present participle ċeorfende
+cook	sēoþan	sēoþende	wikt:ang:seoþan	present participle sēoþende
