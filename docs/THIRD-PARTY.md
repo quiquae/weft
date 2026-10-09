@@ -81,7 +81,8 @@ and `ang-verb-forms.tsv`, a noun whose entry is an adjective's, as *fremde*
 is, from the cell of its own gender; eight quote instead the section of
 Wright's *Old English Grammar* that prints the woven form, read in the
 archive.org page images, two the Bosworth–Toller entry whose quotations
-print it, and the twelve that none of them prints are named in
+print it, one, *wasċende*, its table's cell with the dot Wright's § 312
+gives its *sc*, and the eleven that none of them prints are named in
 `tests/tools/ang-forms.test.ts` until they are read. It fails on any other
 with no line.
 

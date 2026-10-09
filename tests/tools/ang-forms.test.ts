@@ -25,7 +25,10 @@
  * later "wætru" and "hēafdu". Or it may cite the entry of Bosworth–Toller
  * whose quotations print it, quoting the entry's head before the passage,
  * because one spelling can head two entries: "treów, es; n." is the tree,
- * "treów, e; f." faith. A row none prints, `QUEUED` names with what its
+ * "treów, e; f." faith. Where the table writes the headword itself without
+ * a dot a section of Wright gives it — `wascan` for `wasċan`, whose *sc*
+ * § 312 makes palatal — the line quotes the table's cell, read with the dots
+ * set aside, and `DOTTED` names the section. A row none prints, `QUEUED` names with what its
  * table prints, until a grammar or Bosworth–Toller is read for it; a queued
  * row that gains a line fails, so the list can only shrink.
  */
@@ -178,7 +181,6 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
   ['verb\tgo\tgān', 'its table prints gānde, and Wright’s paradigm of gān (§ 550) prints no present participle'],
-  ['verb\twash\twasċan', 'its table prints wascende'],
 ]);
 
 /**
@@ -189,6 +191,30 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
  * prints: "weak masculine nominative plural fremdan".
  */
 const ADJECTIVE: ReadonlySet<string> = new Set(['noun\tstranger\tfremde']);
+
+/**
+ * Headwords whose own dot a section of Wright decides against their table.
+ * English Wiktionary writes `wascan`, /ˈwɑs.kɑn/, and conjugates it
+ * `wascende`, its *sc* the guttural of the oldest Old English; Wright § 312
+ * says that "some time during the OE. period the guttural sc became palatal,
+ * except in loanwords", and names "wascan, to wash" among his examples, so
+ * the pack writes `wasċan`. Such a row's woven form is its table's but for
+ * that dot, so its line quotes the table's cell, read with the dots set
+ * aside. It names the table's headword, which must differ from the pack's
+ * by dots alone — a dot in dispute on the form only, as on `līċ`'s plural,
+ * which the table writes `līc`, is not the headword's and is not cleared
+ * here — and the section, quoting words that name the headword.
+ */
+const DOTTED: ReadonlyMap<string, { table: string; source: string; quote: string }> = new Map([
+  [
+    'verb\twash\twasċan',
+    {
+      table: 'wascan',
+      source: 'wright:§312',
+      quote: 'the guttural sc became palatal, except in loanwords … blyscan, to blush; þerscan, to thresh; wascan, to wash; wȳscan, to wish',
+    },
+  ],
+]);
 
 /** The Wiktionary titles each row's gloss line names: the entries its gloss was read in. */
 const glossEntries = new Map(
@@ -239,6 +265,12 @@ describe('the woven cell of an Old English table is read as a reader reads it', 
     assert.equal(btQuote('Ealle híwscipas þeóda'), undefined);
     assert.ok(BT.test('bt:19147'));
     assert.ok(!BT.test('bt:'));
+  });
+
+  test('a dot a grammar decides is set aside, and only a dot', () => {
+    assert.equal(undotted('wasċende'), undotted('wascende'));
+    assert.notEqual(undotted('wasċende'), undotted('waxende'));
+    assert.notEqual(fold('wasċende'), fold('wascende'));
   });
 
   test('ð is þ and cg is ċġ, and nothing else is folded', () => {
@@ -296,7 +328,11 @@ for (const pos of ['noun', 'verb'] as const) {
         const adjective = ADJECTIVE.has(`${pos}\t${k}`) ? (byRow.get(k)?.gender ?? '') : undefined;
         const forms = printed(e.quote, pos, adjective);
         if (forms === undefined) return [`${file}:${e.line} ${e.tgt}: “${e.quote}” is not the ${labels(pos, adjective).join(' or ')} cell`];
-        return forms.map(fold).includes(fold(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${forms.join(', ')}, not ${e.tgt2}`];
+        if (forms.map(fold).includes(fold(e.tgt2))) {
+          return DOTTED.has(`${pos}\t${k}`) ? [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${e.tgt2} as the pack dots it, so DOTTED need not name it`] : [];
+        }
+        if (DOTTED.has(`${pos}\t${k}`) && forms.map(undotted).includes(undotted(e.tgt2))) return [];
+        return [`${file}:${e.line} ${e.tgt}: “${e.quote}” prints ${forms.join(', ')}, not ${e.tgt2}`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} quotes do not print their form:\n  ${offenders.join('\n  ')}`);
     });
@@ -313,9 +349,27 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], offenders.join('\n'));
     });
 
-    test('nothing is queued, or read as an adjective, that the pack no longer weaves', () => {
+    test('a headword dotted against its table names a section of Wright that names it, and a table headword unlike it by dots alone', () => {
+      const offenders = [...DOTTED]
+        .filter(([k]) => k.startsWith(`${pos}\t`))
+        .flatMap(([k, d]) => {
+          const headword = k.split('\t')[2] ?? '';
+          if (!WRIGHT.test(d.source)) return [`DOTTED ${headword}: “${d.source}” is not a section of Wright`];
+          if (!wrightWords(d.quote).map(undotted).includes(undotted(headword))) return [`DOTTED ${headword}: Wright’s “${d.quote}” does not name it`];
+          if (undotted(d.table) !== undotted(headword)) return [`DOTTED ${headword}: its table’s headword, ${d.table}, is not the same word dotted otherwise`];
+          if (fold(d.table) === fold(headword)) return [`DOTTED ${headword}: its table dots the headword as the pack does, so the dot in dispute is the form’s, not the headword’s`];
+          return [];
+        });
+      assert.deepEqual(offenders, [], offenders.join('\n'));
+    });
+
+    test('nothing is queued, read as an adjective, or dotted by a grammar, that the pack no longer weaves', () => {
       const taught = new Set(rows.map((r) => key(r.lemma, r.tgt)));
-      const listed = [...[...QUEUED.keys()].map((k) => ['QUEUED', k]), ...[...ADJECTIVE].map((k) => ['ADJECTIVE', k])];
+      const listed = [
+        ...[...QUEUED.keys()].map((k) => ['QUEUED', k]),
+        ...[...ADJECTIVE].map((k) => ['ADJECTIVE', k]),
+        ...[...DOTTED.keys()].map((k) => ['DOTTED', k]),
+      ];
       const offenders = listed
         .filter(([, k = '']) => k.startsWith(`${pos}\t`))
         .flatMap(([table, k = '']) => (taught.has(k.slice(pos.length + 1)) ? [] : [`${table} ${k.replace(/\t/g, ' ')}: ${LEXICON} weaves no ${NAME[pos]} of it`]));

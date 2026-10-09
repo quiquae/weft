@@ -671,7 +671,7 @@ with a hard *g*, /beˈɡinːɑn/, where the *g* stood before an original *i*
 and Wright gives such a *g* its palatal (§316), as the pack already did in
 *forġietan*; it is *beġinnan* now, /beˈjinːɑn/, and *beginning* is
 *beġinnende*, as its table prints. Every woven Old English plural and
-participle but twelve names
+participle but eleven names
 the declension or conjugation table that prints it, the section of Wright's
 grammar, or the Bosworth–Toller entry that quotes it.
 
@@ -695,7 +695,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1136 tests: 566 unit, 102 in jsdom, 428 over the build tools, and
+**Built with** 1139 tests: 566 unit, 102 in jsdom, 431 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

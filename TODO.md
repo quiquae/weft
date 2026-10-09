@@ -6,7 +6,7 @@
 
 **State on 2026-10-09:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **428** tool tests / 102 suites, **40** e2e passing
+suites, **431** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
 passing `npm run validate`. The package grew
@@ -79,7 +79,7 @@ declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
 was wrong, and the two are written up in `Next`.
 
 **And as of 2026-10-09 every woven Old English plural and participle but
-twelve names the table, or the section of a grammar, that prints it.** None had been read against a
+eleven names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -102,7 +102,8 @@ were wrong, each moving its card through `RENAMED`: `ċempa` and `ċǣġ` are
 `cempa` and `cǣġ`, the *c* before an umlaut being guttural (Wright § 309),
 `hlīehhan` is `hliehhan` (§ 69), and `beginnan` is `beġinnan`, its *g*
 before an original *i* being palatal (§ 316), as `forġietan`'s already
-was. The last twelve are named in
+was. And `wasċende` quotes its table's `wascende`, the dot being one
+Wright § 312 gives the *sc* of `wasċan`. The last eleven are named in
 that test's `QUEUED`
 with what their table prints, and reading them is the first item in
 `Next`.
@@ -5241,7 +5242,7 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Twelve Old English second forms are still not what their
+- [ ] **Eleven Old English second forms are still not what their
       table prints.** The remainder of the item above, named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints, and
       what Wright and Bosworth–Toller were found to print on 2026-10-08:
@@ -5270,11 +5271,10 @@ registered**, and nothing below it can move until it is.
         bt:53417; bt:22625 and bt:55269), read whole, print no plural.
       - **Kind 3**, a dot where an ending was lost: `līċ`, `wīġ`, `bēc`,
         `ċirican`, as written above.
-      - **Kind 4**, a headword's own marks: `wasċan`, whose dot Wright
-        § 312 decides for the pack (below). `ċempa`, `ċǣġ`, `hlīehhan`
-        and `beginnan` are done, below — `beginnan` the other way from
-        what this line said until 2026-10-09: Wright does not decide its
-        *g* bare.
+      - **Kind 4**, a headword's own marks, is done: `ċempa`, `ċǣġ`,
+        `hlīehhan`, `beginnan` and `wasċan`, below — `beginnan` the other
+        way from what this line said until 2026-10-09, Wright not deciding
+        its *g* bare.
 
       **Read on 2026-10-09, and printing none of them.** Sievers, *An Old
       English Grammar* (tr. Cook, 1903), whole on archive.org as
@@ -5310,19 +5310,29 @@ registered**, and nothing below it can move until it is.
       *Elementary* grammar for `þorpas`, `hūsbondan` and `mentlas` — their
       own Bosworth–Toller entries are read whole and print none — and
       decide `hattas` and `gangende`, each of which has its evidence
-      above and in the bullets. Kinds 3 and 4 move sounds and cards, and
-      want their own PRs. Kind 4's last, `wasċan`, has its grammar read:
-      Wright § 312, read in the page images (pages 155–156, `n174` and
-      `n175`), says "some time during the OE. period the guttural sc
-      became palatal, except in loanwords", and lists "blyscan, to blush;
-      þerscan, to thresh; wascan, to wash; wȳscan, to wish" among his
-      examples, so the pack's dot is Wright's and the table's bare *sc* the
-      older state — its note's "waxan, to wash, beside … wascan", the
-      metathesis of late West Saxon, being why Wiktionary leaves it bare.
-      What stays is a rule: the woven `wasċende` is the table's
-      `wascende` with a dot the grammar decides, which no line can yet
-      say. A table naming such rows with the section that decides each,
-      compared with the dots set aside, would do it.
+      above and in the bullets. Kind 3 moves sounds, and wants its own
+      PR; `DOTTED`, below, does not reach it on purpose.
+
+      **Done 2026-10-09 for one more: `wasċan`'s dot is Wright's, and a
+      line may say so.** § 312, read in the page images (pages 155–156,
+      `n174` and `n175`): "some time during the OE. period the guttural sc
+      became palatal, except in loanwords", with "blyscan, to blush;
+      þerscan, to thresh; wascan, to wash; wȳscan, to wish" among the
+      examples. The table writes `wascan`, /ˈwɑs.kɑn/, and `wascende`, the
+      *sc* of the oldest Old English, so the pack's `wasċende` is the
+      table's form with a dot the grammar decides. `DOTTED` in
+      `tests/tools/ang-forms.test.ts` names such a row with the table's
+      headword and the section, quoting words that name the headword, and
+      its line quotes the table's cell, read with the dots set aside. The
+      table's headword must differ from the pack's by dots alone, so a
+      dot in dispute on the form only — kind 3's `līċ`, whose table dots
+      the headword and not the plural — cannot be cleared this way. The
+      stale check reads it too. Test-first: the row out of `QUEUED` and its
+      line in, red on "prints wascende, not wasċende"; the rule, green.
+      Three probes, each restored by md5: the quote without `wascan`, the
+      table's headword dotted as the pack's, and `DOTTED` emptied, each
+      failing by name. Nothing that ships moved. Tools 428 → **431**, total
+      1136 → **1139**, in six places.
 
       **Done 2026-10-09 for one more: `beginnan` takes the palatal *g*.**
       This item said Wright decides it bare, and he does not: §§ 313–314,
@@ -5510,8 +5520,8 @@ registered**, and nothing below it can move until it is.
       plural aliēnī". All 165 Latin plurals now name their table.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-09: the twelve Old English second forms their tables do not
-print, and the one Latin one, `nārrāre`. `beġinnan`'s palatal *g*,
+2026-10-09: the eleven Old English second forms their tables do not
+print, and the one Latin one, `nārrāre`. `wasċan`'s dot, `beġinnan`'s palatal *g*,
 `hliehhan`'s short *ie*, `cempa`
 and `cǣġ`'s guttural *c*, `fremdan` and `aliēnī`, the adjectives' cells, six more of the Old
 English thirty, Latin's
@@ -6029,6 +6039,15 @@ Three things a later run would be sorry not to know:
    run in one zsh loop as `set -- ${=spec}`, which splits where `$spec`
    alone does not, and the files newer than a stamp, 14 + 15 + 7, are what
    showed they ran.
+4. **A call for a human: the pack dots `wasċan` and not `fiscas` or
+   `āscian`.** Wright § 312's own note sets the three side by side —
+   "āxian, to ask, fixas, fishes, waxan, to wash, beside asce, āscian …
+   fiscas, wascan" — medial *sc* before a back vowel that late West Saxon
+   metathesised, so was still /sk/. The pack follows his main text for
+   `wasċan` (it names "wascan, to wash" among the palatal *sc*, and English
+   has *wash*) and Wiktionary's stems for `fiscas` and `āscian` (English has
+   *ask*), decided 2026-10-04. Each is defensible and they do not agree;
+   writing all three alike would move cards or sounds, so it was left.
 
 **2026-10-08 — the five modern gloss ledgers.** Ticked in `Next`. Eight
 things a later run would be sorry not to know:

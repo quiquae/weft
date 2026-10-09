@@ -47,7 +47,15 @@
 # beġinnan since 2026-10-09, as forġietan already was, and its line quotes
 # the cell.
 #
-# 2 woven participles are not here, because the table prints another
+# Wash's mark is the pack's, and stays. The table writes wascan,
+# /ˈwɑs.kɑn/, and "wascende", the sc of the oldest Old English; Wright
+# § 312, read in the page images, says "some time during the OE. period the
+# guttural sc became palatal, except in loanwords" and names "wascan, to
+# wash" among his examples, so the pack writes wasċan. Its line quotes the
+# cell, and DOTTED in tests/tools/ang-forms.test.ts names the section, the
+# cell being read with the dots set aside.
+#
+# 1 woven participle is not here, because the table prints another
 # form: QUEUED in tests/tools/ang-forms.test.ts names each with what its
 # table prints, until a grammar is read for it.
 have	habban	hæbbende	wikt:ang:habban	present participle hæbbende
@@ -128,4 +136,5 @@ move	styrian	styriende	wikt:ang:styrian	present participle styriende
 throw	weorpan	weorpende	wikt:ang:weorpan	present participle weorpende
 catch	fōn	fōnde	wikt:ang:fon	present participle fōnde
 cut	ċeorfan	ċeorfende	wikt:ang:ceorfan	present participle ċeorfende
+wash	wasċan	wasċende	wikt:ang:wascan	present participle wascende
 cook	sēoþan	sēoþende	wikt:ang:seoþan	present participle sēoþende
