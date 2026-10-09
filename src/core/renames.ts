@@ -78,6 +78,13 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * umlaut of *ā*. The pack had dotted both and printed /tʃ/; English
  * Wiktionary writes `cempa` and `cǣġ`, transcribes the second /kæːj/, and
  * the words became *kemp* and *key*.
+ *
+ * **And a macron taken off, the same night.** `hlīehhan`, to laugh, is
+ * short: Wright §69, read in the page image, prints "ea became ie (later i,
+ * y) by i-umlaut, as hliehhan (Goth. hlahjan), to laugh" beside "mieht" and
+ * "nieht", the short diphthong of *a* broken before *h*, where §71's long
+ * one is "ēa became īe". English Wiktionary writes `hliehhan` and
+ * conjugates it `hliehhende`.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -96,6 +103,7 @@ export const RENAMED: Renames = {
     tōmorgen: 'tō morgen',
     ċempa: 'cempa',
     ċǣġ: 'cǣġ',
+    hlīehhan: 'hliehhan',
   },
 };
 
