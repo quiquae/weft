@@ -57,7 +57,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **428 pass**, 102 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **431 pass**, 102 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -712,6 +712,54 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-09 — wasċan's dot is Wright's, and a line can say so without clearing kind 3
+
+The same run's second PR, kind 4's last word. Wright § 312, read in the page
+images: "some time during the OE. period the guttural sc became palatal,
+except in loanwords", naming "wascan, to wash" among the examples. The
+table writes `wascan`, /ˈwɑs.kɑn/, and `wascende`, the oldest Old English's
+*sc*, so the pack's `wasċende` is the table's form with a dot the grammar
+decides, and nothing that ships moved.
+
+**The rule is narrow on purpose.** `DOTTED` in
+`tests/tools/ang-forms.test.ts` names such a row with the table's headword
+and the section, quoting words that name the headword, and its line quotes
+the table's cell, read with the dots set aside. The table's headword must
+differ from the pack's by dots alone: a dot disputed on the form only —
+kind 3, `līċ`, whose table dots the headword and not the plural — is a
+question about sounds this rule must not settle by setting dots aside.
+Test-first: the row out of `QUEUED` and its line in, red on "prints
+wascende, not wasċende"; the rule, green. Three probes, restored by md5, each
+failing by name: the quote without `wascan`, the table's headword dotted as
+the pack's, `DOTTED` emptied. Tools 428 → **431**, total 1136 → **1139**, in
+six places, `docs/LAUNCH.md:221` first.
+
+**And the reading found a tension it did not settle.** § 312's own note
+sets "waxan … beside … wascan" with "āxian … āscian" and "fixas … fiscas",
+medial *sc* that late West Saxon metathesised, so still /sk/; the pack dots
+`wasċan` on the main text and leaves `fiscas` and `āscian` bare on
+Wiktionary's stems, as decided on 2026-10-04. Written into `TODO.md`'s
+Notes as a call, not changed.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, **431 tools / 102 suites**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 2.1 min**, then
+build and validate again. Separately `packs:verify` **0 errors / 5
+warnings**. `site:check` and the screenshots were not re-run: no pack, page,
+image or file under `src/` moved.
+
+Assumed, with nobody to ask: that a section naming a word decides its dot
+as it decided `cempa`'s and `hliehhan`'s marks, though here the table is
+the one left standing; and that a dot the grammar decides is a spelling of
+one form, as ð for þ is, where the table has the headword dotted otherwise.
+
+What needs a human: unchanged, everything below **B1**, and one call in
+`TODO.md`'s Notes, the *sc* of `wasċan` against `fiscas` and `āscian`.
+`Next` holds two agent-shaped items: the eleven Old English forms, then
+`nārrāre`.
 
 ### 2026-10-09 — beġinnan takes the palatal g, and Wright never said otherwise
 
