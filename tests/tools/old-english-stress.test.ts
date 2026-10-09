@@ -17,7 +17,7 @@
  *    element of the compound, as eal(l)mǣst, almost … but onwég, away;
  *    tōgǽdere, together". And `tōgædere` had a second fault: the *g* that
  *    begins *gædere* was read as the spirant between two vowels, where it is
- *    the guttural explosive that begins a word, as the *g* of *be-ginnan* is.
+ *    the guttural explosive that begins a word, as the *g* of *gōd* is (§315).
  *  - **Three compounds voiced the sound their second element begins with.**
  *    `andswaru` was /ˈɑndzwɑru/, `onsīen` /ˈonziːen/ and `ēagþȳrel`
  *    /ˈæːɑɡðyːrel/. §261 note: "This voicing of f, þ, s only took place in
@@ -104,7 +104,7 @@ type Divided = { first: string; stressed: 'first' | 'second'; grown?: string };
 const COMPOUNDED: Record<string, Divided> = {
   // §14: a verb with an inseparable particle is stressed on its root.
   ābīdan: { first: 'ā', stressed: 'second' }, // §646, "ābīdan, to abide"
-  beginnan: { first: 'be', stressed: 'second' }, // §647
+  beġinnan: { first: 'be', stressed: 'second' }, // §647
   forġietan: { first: 'for', stressed: 'second' }, // §14, "forġiefan, to forgive"
   ġemunan: { first: 'ġe', stressed: 'second' }, // §651
   ondrǣdan: { first: 'on', stressed: 'second' }, // §654, on- "the unstressed form of and-"

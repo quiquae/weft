@@ -78,8 +78,8 @@ declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
 `la-verb-forms.tsv`, held by `tests/tools/la-forms.test.ts`; none of the 242
 was wrong, and the two are written up in `Next`.
 
-**And as of 2026-10-08 every woven Old English plural and participle but
-seventeen names the table, or the section of a grammar, that prints it.** None had been read against a
+**And as of 2026-10-09 every woven Old English plural and participle but
+twelve names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -97,7 +97,12 @@ Wright's paradigm gives `sweostor` (§ 415), and is `sweostor` now; and
 table's `flōra` now; and "dreams" woven `swefn`, like its singular, where
 the table and Bosworth–Toller print `swefnu`, as it is now. Two cite the
 Bosworth–Toller entry that prints them, the line quoting the entry's head:
-`hīwsċipas` and the tree's bare `trēow`. The last seventeen are named in
+`hīwsċipas` and the tree's bare `trēow`. And four headwords' own marks
+were wrong, each moving its card through `RENAMED`: `ċempa` and `ċǣġ` are
+`cempa` and `cǣġ`, the *c* before an umlaut being guttural (Wright § 309),
+`hlīehhan` is `hliehhan` (§ 69), and `beginnan` is `beġinnan`, its *g*
+before an original *i* being palatal (§ 316), as `forġietan`'s already
+was. The last twelve are named in
 that test's `QUEUED`
 with what their table prints, and reading them is the first item in
 `Next`.
@@ -5236,7 +5241,7 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Thirteen Old English second forms are still not what their
+- [ ] **Twelve Old English second forms are still not what their
       table prints.** The remainder of the item above, named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints, and
       what Wright and Bosworth–Toller were found to print on 2026-10-08:
@@ -5265,9 +5270,11 @@ registered**, and nothing below it can move until it is.
         bt:53417; bt:22625 and bt:55269), read whole, print no plural.
       - **Kind 3**, a dot where an ending was lost: `līċ`, `wīġ`, `bēc`,
         `ċirican`, as written above.
-      - **Kind 4**, a headword's own marks: `wasċan`, and `beginnan`,
-        which Wright decides. `ċempa`, `ċǣġ` and `hlīehhan` are done,
-        below.
+      - **Kind 4**, a headword's own marks: `wasċan`, whose dot Wright
+        § 312 decides for the pack (below). `ċempa`, `ċǣġ`, `hlīehhan`
+        and `beginnan` are done, below — `beginnan` the other way from
+        what this line said until 2026-10-09: Wright does not decide its
+        *g* bare.
 
       **Read on 2026-10-09, and printing none of them.** Sievers, *An Old
       English Grammar* (tr. Cook, 1903), whole on archive.org as
@@ -5304,11 +5311,43 @@ registered**, and nothing below it can move until it is.
       own Bosworth–Toller entries are read whole and print none — and
       decide `hattas` and `gangende`, each of which has its evidence
       above and in the bullets. Kinds 3 and 4 move sounds and cards, and
-      want their own PRs. Kind 4's last, `wasċan`, wants a grammar read
-      before either way: Wright § 7
-      lists "wascan, to wash" among his examples of *sc* beside "sceal,
-      shall; sceap, sheep … fisc, fish", the sound the pack dots, so here
-      the table's bare *sc* may be the one to doubt.
+      want their own PRs. Kind 4's last, `wasċan`, has its grammar read:
+      Wright § 312, read in the page images (pages 155–156, `n174` and
+      `n175`), says "some time during the OE. period the guttural sc
+      became palatal, except in loanwords", and lists "blyscan, to blush;
+      þerscan, to thresh; wascan, to wash; wȳscan, to wish" among his
+      examples, so the pack's dot is Wright's and the table's bare *sc* the
+      older state — its note's "waxan, to wash, beside … wascan", the
+      metathesis of late West Saxon, being why Wiktionary leaves it bare.
+      What stays is a rule: the woven `wasċende` is the table's
+      `wascende` with a dot the grammar decides, which no line can yet
+      say. A table naming such rows with the section that decides each,
+      compared with the dots set aside, would do it.
+
+      **Done 2026-10-09 for one more: `beginnan` takes the palatal *g*.**
+      This item said Wright decides it bare, and he does not: §§ 313–314,
+      which `tests/tools/old-english-stress.test.ts` reads, give an
+      undotted *g* its sound and say nothing on whether the *g* of
+      *-ginnan* is guttural. § 313, read in the page image (page 156,
+      `n175`), differentiates Germanic *ʒ* "under the same conditions as
+      those by which Germanic k became differentiated into a guttural and
+      a palatal explosive", and § 316 (page 157, `n176`) lists the palatal
+      "giefan, Goth. giban … to give", its note giving this verb's own
+      alternation: "pret. pl. guton, pp. goten, beside inf. gēotan". The
+      *i* of Proto-Germanic \*ginnaną is original, and the pack already
+      dotted the same place in `forġietan`. English Wiktionary writes
+      `beġinnan`, /beˈjin.nɑn/. So the seed writes `beġinnan` and
+      `beġinnende`, /beˈjinːɑn/ and /beˈjinːende/; the participle is what
+      the table prints and leaves `QUEUED` with a line, and `RENAMED`
+      moves the card. Test-first through the ledgers, red on exactly the
+      begin row, 8 of 428; the generator's self-check, red on its two
+      forms; a probe without the `RENAMED` line naming `ang:beginnan`
+      stranded, restored by md5. 6 of 7 163 fields of `en-ang.json` moved,
+      `builtAt` already today; the site differs in 25 files, each
+      `main`'s with the respelling rewritten, 70 occurrences, 28 of them
+      the address, which does not move. All 36 screenshots regenerated
+      byte-identical, 14 + 15 + 7 written, and the three groups stamped.
+      No test count moved.
 
       **Done 2026-10-09 for one more: `hliehhan` is short.** Wright § 69,
       read in the page image (page 44, `n63`): "ea became ie (later i, y)
@@ -5471,8 +5510,9 @@ registered**, and nothing below it can move until it is.
       plural aliēnī". All 165 Latin plurals now name their table.
 
 `Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-09: the thirteen Old English second forms their tables do not
-print, and the one Latin one, `nārrāre`. `hliehhan`'s short *ie*, `cempa`
+2026-10-09: the twelve Old English second forms their tables do not
+print, and the one Latin one, `nārrāre`. `beġinnan`'s palatal *g*,
+`hliehhan`'s short *ie*, `cempa`
 and `cǣġ`'s guttural *c*, `fremdan` and `aliēnī`, the adjectives' cells, six more of the Old
 English thirty, Latin's
 second forms but two, seven of the thirty, the Old English second
@@ -5967,6 +6007,28 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-09 — `beġinnan`, and what a guard of sounds cannot decide.**
+Three things a later run would be sorry not to know:
+
+1. **A test that gives a letter its sound does not decide the letter.**
+   `tests/tools/old-english-stress.test.ts` reads every undotted *g* as
+   the guttural one and holds its transcription to Wright §§ 313–324, so
+   `beginnan` /beˈɡinːɑn/ passed it, and the queue recorded that "Wright
+   decides" the *g* bare. He does not: the test holds the sound to the
+   spelling, never the spelling to the grammar. What decided it was
+   reading the rule that makes a *g* palatal (§§ 313, 316) and asking the
+   pack about itself: `forġietan` dots the same place, a root's first *g*
+   after an unstressed particle, before an original front vowel.
+2. **Wright's index numbers are sections, not pages.** "beginnan 59" is
+   § 59, Germanic *a* before a nasal, "in the pret. singular of many
+   strong verbs of class III (§ 498), as begann, began" — not the *g*. A
+   page is n = page + 19 in the archive.org images; §§ 312–316 are pages
+   155–157, `n174`–`n176`.
+3. **Count what a generator wrote.** The three screenshot generators were
+   run in one zsh loop as `set -- ${=spec}`, which splits where `$spec`
+   alone does not, and the files newer than a stamp, 14 + 15 + 7, are what
+   showed they ran.
 
 **2026-10-08 — the five modern gloss ledgers.** Ticked in `Next`. Eight
 things a later run would be sorry not to know:

@@ -38,7 +38,16 @@
 # laugh", the short diphthong, so the headword is hliehhan since 2026-10-09,
 # its card following through RENAMED, and its line quotes the cell.
 #
-# 3 woven participles are not here, because the table prints another
+# Begin's was too, the other way. The pack wrote beginnan, and the table
+# prints "beġinnende": the g that begins the root stood before an original
+# i, and Wright § 316, read in the page image, lists the palatal "giefan,
+# Goth. giban … to give", with a note that "the guttural and palatal ʒ
+# often existed side by side in different forms of the same word, as …
+# pret. pl. guton, pp. goten, beside inf. gēotan". So the headword is
+# beġinnan since 2026-10-09, as forġietan already was, and its line quotes
+# the cell.
+#
+# 2 woven participles are not here, because the table prints another
 # form: QUEUED in tests/tools/ang-forms.test.ts names each with what its
 # table prints, until a grammar is read for it.
 have	habban	hæbbende	wikt:ang:habban	present participle hæbbende
@@ -84,6 +93,7 @@ build	timbran	timbrende	wikt:ang:timbran	present participle timbrende
 break	brecan	brecende	wikt:ang:brecan	present participle brecende
 open	openian	openiende	wikt:ang:openian	present participle openiende
 close	clȳsan	clȳsende	wikt:ang:clysan	present participle clȳsende
+begin	beġinnan	beġinnende	wikt:ang:beginnan	present participle beġinnende
 help	helpan	helpende	wikt:ang:helpan	present participle helpende
 learn	leornian	leorniende	wikt:ang:leornian	present participle leorniende
 teach	tǣċan	tǣċende	wikt:ang:tæcan	present participle tǣċende

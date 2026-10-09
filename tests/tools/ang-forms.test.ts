@@ -178,7 +178,6 @@ const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
   ['verb\tgo\tgān', 'its table prints gānde, and Wright’s paradigm of gān (§ 550) prints no present participle'],
-  ['verb\tbegin\tbeginnan', 'its table prints beġinnende'],
   ['verb\twash\twasċan', 'its table prints wascende'],
 ]);
 

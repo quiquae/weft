@@ -666,8 +666,12 @@ print, *cempan* and *cǣġa*, and a learner's cards for either follow the new
 spelling. And *hliehhan*, to laugh, was written with a long *ī*, where
 Wright prints it with the short *ie* of *a* broken before *h* (§69), beside
 *mieht* and *nieht*; it is *hliehhan* now, /ˈhliexːɑn/, and *laughing* is
-*hliehhende*, as its table prints. Every woven Old English plural and
-participle but thirteen names
+*hliehhende*, as its table prints. And *beginnan*, to begin, was written
+with a hard *g*, /beˈɡinːɑn/, where the *g* stood before an original *i*
+and Wright gives such a *g* its palatal (§316), as the pack already did in
+*forġietan*; it is *beġinnan* now, /beˈjinːɑn/, and *beginning* is
+*beġinnende*, as its table prints. Every woven Old English plural and
+participle but twelve names
 the declension or conjugation table that prints it, the section of Wright's
 grammar, or the Bosworth–Toller entry that quotes it.
 

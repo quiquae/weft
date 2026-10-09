@@ -226,12 +226,12 @@ of tō and the noun it governs, which are stressed on the noun (§15: "onwég,
 away; tōgǽdere, together").
 
 Listed explicitly rather than detected, because nothing in the orthography
-distinguishes prefixed be-ginnan from unprefixed beran, or prefixed ge-munan
+distinguishes prefixed be-ġinnan from unprefixed beran, or prefixed ge-munan
 from the diphthong in geong. For a curated lexicon an explicit list is both
 correct and auditable; a rule would be neither.
 """
 ANG_PREFIXED = {
-    'ābīdan': 'ā', 'beginnan': 'be', 'forġietan': 'for', 'ġemunan': 'ġe', 'ondrǣdan': 'on',
+    'ābīdan': 'ā', 'beġinnan': 'be', 'forġietan': 'for', 'ġemunan': 'ġe', 'ondrǣdan': 'on',
     'tōdæġ': 'tō', 'tōgædere': 'tō',
 }
 
@@ -327,7 +327,7 @@ def _ang_phones(word, initial=True):
             phones.append('ŋ')
         elif ch == 'g':
             # Undotted g is the guttural one (Wright §§313–324). It is the
-            # explosive where a root begins — the g of be-ginnan — and after
+            # explosive where a root begins — the g of tō-gædere — and after
             # n; the voiced spirant inside a word after a vowel, l or r (§320,
             # "beorgan … folgian … swelgan"), before a voiced consonant too,
             # since it "remained a spirant in all other positions" (§313) —
@@ -366,7 +366,7 @@ def _division(table, key, head):
     A word's entry in one of the two tables above. A second form — the plural
     of a noun, the participle of a verb — divides where its headword does, so
     it takes the headword's entry when it begins with the same element:
-    beginnende as beginnan, wīfmenn as wīfmann.
+    beġinnende as beġinnan, wīfmenn as wīfmann.
     """
     if key in table:
         return table[key]
@@ -380,7 +380,7 @@ def old_english_ipa(word, pos='', head=''):
     the stress mark trivial to place — position zero — once any unstressed
     prefix has been separated off. Each element of a word that divides is
     transcribed on its own, so a root begins with the sound a word begins
-    with: the g of be-ginnan is a stop, the s of and-swaru voiceless. `head`
+    with: the g of tō-gædere is a stop, the s of and-swaru voiceless. `head`
     is the headword of a second form, which divides where it does.
     """
     w = word.strip()
@@ -453,13 +453,13 @@ if __name__ == '__main__':
             bad += 1
         print(f'  la  {flag} {word:12s} {got:22s} want {want}')
     checks_ang_verbs = [
-        ('ābīdan', '/ɑːˈbiːdɑn/'), ('beginnan', '/beˈɡinːɑn/'),
+        ('ābīdan', '/ɑːˈbiːdɑn/'), ('beġinnan', '/beˈjinːɑn/'),
         ('forġietan', '/forˈjietɑn/'), ('ġemunan', '/jeˈmunɑn/'),
     ]
     # A second form divides where its headword does: the participle keeps the
     # infinitive's unstressed particle, the plural the compound's boundary.
     checks_ang_second = [
-        ('beginnende', 'beginnan', '/beˈɡinːende/'), ('ābīdende', 'ābīdan', '/ɑːˈbiːdende/'),
+        ('beġinnende', 'beġinnan', '/beˈjinːende/'), ('ābīdende', 'ābīdan', '/ɑːˈbiːdende/'),
         ('hūsbondan', 'hūsbonda', '/ˈhuːsbondɑn/'), ('andswara', 'andswaru', '/ˈɑndswɑrɑ/'),
         ('wīfmenn', 'wīfmann', '/ˈwiːvmenː/'), ('menn', 'mann', '/ˈmenː/'),
         # And its fricatives are read where they now stand: between vowels, voiced.
