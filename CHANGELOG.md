@@ -653,10 +653,19 @@ plural, under a word the tooltip calls feminine, as Wiktionary does and
 Bosworth–Toller first; it is the feminine *flōra* now. And "dreams" was
 woven *swefn*, like its singular, where the table prints *swefnu* and
 Bosworth–Toller quotes "Swefnu gefremminge habbaþ", "dreams will have
-accomplishment"; it is *swefnu* now. Every woven Old English plural and
-participle but seventeen names the declension or conjugation table that
-prints it, the section of Wright's grammar, or the Bosworth–Toller entry
-that quotes it.
+accomplishment"; it is *swefnu* now.
+
+**And two Old English words are spelt with the *c* they had.** *cempa*, a
+soldier, and *cǣġ*, a key, were written *ċempa* and *ċǣġ* and pronounced
+with a *ch*, /ˈtʃempɑ/ and /ˈtʃæːj/. Wright's *Old English Grammar* keeps
+Germanic *k* guttural before the umlauts of the back vowels, which came
+after the palatalisation (§309), and lists *cempa* beside *cēpan* and
+*cyning* (§310); the words became English *kemp* and *key*. They are
+*cempa* and *cǣġ* now, /ˈkempɑ/ and /ˈkæːj/, with the plurals their tables
+print, *cempan* and *cǣġa*, and a learner's cards for either follow the new
+spelling. Every woven Old English plural and participle but fourteen names
+the declension or conjugation table that prints it, the section of Wright's
+grammar, or the Bosworth–Toller entry that quotes it.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had

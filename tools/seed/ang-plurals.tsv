@@ -97,7 +97,14 @@
 # ADJECTIVE in tests/tools/ang-forms.test.ts names it for the test to read
 # the nominative plural of the row's gender, strong or weak.
 #
-# 12 woven plurals are not here, because the table of their entry prints
+# Two were their headwords' dots. Soldier's and key's tables print "cempan"
+# and "cǣġa, cǣġe", with a bare c, and Wright §309 keeps Germanic k a
+# guttural before the umlauts of the back vowels, §310 listing "cempa,
+# warrior" with cēpan and cyning; so the headwords are cempa and cǣġ since
+# 2026-10-09, their cards following through RENAMED, and their lines quote
+# those cells.
+#
+# 10 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until
