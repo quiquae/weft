@@ -85,6 +85,17 @@ export type Renames = Readonly<Record<LangCode, Readonly<Record<string, string>>
  * "nieht", the short diphthong of *a* broken before *h*, where §71's long
  * one is "ēa became īe". English Wiktionary writes `hliehhan` and
  * conjugates it `hliehhende`.
+ *
+ * **And a dot put on, the same night.** The *g* that begins the root of
+ * `beginnan`, to begin, stood before an original *i*, Proto-Germanic
+ * \*ginnaną, and Wright §313 differentiates Germanic *ʒ* "under the same
+ * conditions as those by which Germanic k became differentiated into a
+ * guttural and a palatal explosive"; §316 lists the palatal "giefan, Goth.
+ * giban … to give", and its note has the alternation this verb has: "pret.
+ * pl. guton, pp. goten, beside inf. gēotan". The pack already dotted the
+ * same place in `forġietan`.
+ * English Wiktionary writes `beġinnan`, /beˈjin.nɑn/, and conjugates it
+ * `beġinnende`.
  */
 export const RENAMED: Renames = {
   ang: {
@@ -104,6 +115,7 @@ export const RENAMED: Renames = {
     ċempa: 'cempa',
     ċǣġ: 'cǣġ',
     hlīehhan: 'hliehhan',
+    beginnan: 'beġinnan',
   },
 };
 
