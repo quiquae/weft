@@ -663,7 +663,11 @@ after the palatalisation (§309), and lists *cempa* beside *cēpan* and
 *cyning* (§310); the words became English *kemp* and *key*. They are
 *cempa* and *cǣġ* now, /ˈkempɑ/ and /ˈkæːj/, with the plurals their tables
 print, *cempan* and *cǣġa*, and a learner's cards for either follow the new
-spelling. Every woven Old English plural and participle but fourteen names
+spelling. And *hliehhan*, to laugh, was written with a long *ī*, where
+Wright prints it with the short *ie* of *a* broken before *h* (§69), beside
+*mieht* and *nieht*; it is *hliehhan* now, /ˈhliexːɑn/, and *laughing* is
+*hliehhende*, as its table prints. Every woven Old English plural and
+participle but thirteen names
 the declension or conjugation table that prints it, the section of Wright's
 grammar, or the Bosworth–Toller entry that quotes it.
 

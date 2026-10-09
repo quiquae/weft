@@ -32,7 +32,13 @@
 # Wiktionary files under þ, and the doubled palatal, which the pack writes
 # cg, "dg" in its pronunciation key, where the tables write ċġ.
 #
-# 4 woven participles are not here, because the table prints another
+# Laugh's was the headword's own mark. The pack wrote hlīehhan, and the
+# table prints "hliehhende"; Wright § 69, read in the page image, prints
+# "ea became ie (later i, y) by i-umlaut, as hliehhan (Goth. hlahjan), to
+# laugh", the short diphthong, so the headword is hliehhan since 2026-10-09,
+# its card following through RENAMED, and its line quotes the cell.
+#
+# 3 woven participles are not here, because the table prints another
 # form: QUEUED in tests/tools/ang-forms.test.ts names each with what its
 # table prints, until a grammar is read for it.
 have	habban	hæbbende	wikt:ang:habban	present participle hæbbende

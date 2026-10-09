@@ -713,6 +713,51 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-09 — hliehhan is short, and kind 4 is down to one
+
+The same run's third PR, the next of kind 4. The pack wrote `hlīehhan`,
+to laugh, with a long *ī*, and the table writes `hliehhan`. Wright § 69,
+read in the page image because the OCR drops every macron: "ea became ie
+(later i, y) by i-umlaut, as hliehhan (Goth. hlahjan), to laugh; mieht …
+nieht", the short diphthong of *a* broken before *h*, with no macron, where
+§ 71 on the same page prints "ēa became īe (later ī, ȳ)". So it is
+`hliehhan` and `hliehhende` now, /ˈhliexːɑn/, the participle the table's,
+and `RENAMED` moves the card. The same steps as `cempa`: the ledgers respelt
+first, red on exactly the *laugh* row, seven tests; the seed and the packs;
+the `RENAMED` line, green; and, because the line went in before its red was
+watched, a probe without it, which named `ang:hlīehhan (card-ids.tsv:127)`
+stranded, restored by md5.
+
+What moved: 6 fields of `en-ang.json` and `builtAt`, 10-08 → 10-09 — the
+UTC day turned between this PR and the one before, so 702 sitemap dates
+moved with the pack, the pack-granular dating already recorded; otherwise
+the site differs from `main`'s in 4 files, each `main`'s with the
+respelling rewritten, 21 occurrences. All 36 screenshots regenerated
+byte-identical, 14 + 15 + 7 written, and the three groups stamped. No test
+count moved. The `CHANGELOG.md` paragraph the previous PR wrote gained a
+sentence, and the queue's one count, thirteen.
+
+Kind 4 has one word left, `wasċan`, and Wright § 7 lists "wascan, to wash"
+with his *sc* examples beside "sceal … fisc", the sound the pack dots: the
+table may be the one to doubt there. Written into the item, not acted on.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 566 unit / 137 suites, 102
+jsdom / 23 suites, 428 tools / 102 suites, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 989
+KB** passing `validate`, **40 e2e passed and 3 skipped in 1.5 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**; `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a.
+
+Assumed, with nobody to ask: that a section of Wright's which names the
+word, read in the image, is enough to take a macron off, as one was enough
+to put a dot on.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds two
+agent-shaped items: the thirteen Old English forms, then `nārrāre`.
+
 ### 2026-10-09 — cempa and cǣġ take the guttural c, and their cards follow
 
 The same run's second PR, kind 4 of the Old English queue, the part of it a
