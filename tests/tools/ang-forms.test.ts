@@ -170,17 +170,15 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
  * Keyed by part of speech, English lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['noun\thusband\thūsbonda', 'its entry has no table'],
-  ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, whose quotations are singular; Wright § 390 declines ansīen like cwēn, plural cwēne (§ 389)'],
-  ['noun\tbody\tlīċ', 'its table prints līc'],
-  ['noun\tbook\tbōc', 'its table prints bēċ; bōca, bōce'],
-  ['noun\tchurch\tċiriċe', 'its table prints ċiriċan'],
-  ['noun\tcoat\tmentel', 'its entry has no table'],
-  ['noun\that\thæt', 'its table prints hættas; Bosworth–Toller (bt:17964) prints no plural, and Wright § 57 keeps a before a double consonant when a back vowel followed (catte, sacc)'],
-  ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”'],
-  ['noun\tevening\tǣfen', 'its table prints ǣfennas'],
-  ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s'],
-  ['verb\tgo\tgān', 'its table prints gānde, and Wright’s paradigm of gān (§ 550) prints no present participle'],
+  ['noun\thusband\thūsbonda', 'its entry has no table; Bosworth–Toller’s two entries (bt:19998, bt:53417), read whole, print no plural, and Wright’s index names neither the word nor bonda'],
+  ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, which heads it an-sýn (bt:1954), not onsīen, and whose quotations are singular; Wright § 390 only declines ansīen like cwēn, plural cwēne (§ 389)'],
+  ['noun\tbody\tlīċ', 'its table prints līc; Wright § 311 note 2 makes a final c after ī palatal, naming līc, and says nothing of the neuter plural, whose ending was lost'],
+  ['noun\tchurch\tċiriċe', 'its table prints ċiriċan; Wright § 311 puts cirice under the palatal c and § 404 declines it like tunge, so neither prints the plural’s second c'],
+  ['noun\tcoat\tmentel', 'its entry has no table; Bosworth–Toller’s two entries (bt:22625, bt:55269), read whole, print no plural, and Wright’s index does not name the word'],
+  ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”; Wright § 335 declines þorp like stān, which implies þorpas and does not print it'],
+  ['noun\tevening\tǣfen', 'its table prints ǣfennas; Bosworth–Toller’s two entries (bt:391, bt:37608) print only the genitive plural ǽfena, and Wright names ǣfen only for its sounds (§§ 119, 293)'],
+  ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s; Wright § 324 makes a final g after a palatal vowel palatal and says nothing of the neuter plural, whose ending was lost'],
+  ['verb\tgo\tgān', 'its table prints gānde; Wright prints no present participle for gān (§ 550) or gangan (§ 515), nor Bosworth–Toller’s gán (bt:13263)'],
 ]);
 
 /**
