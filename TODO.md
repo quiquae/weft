@@ -6,7 +6,7 @@
 
 **State on 2026-10-24:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **431** tool tests / 102 suites, **40** e2e passing
+suites, **439** tool tests / 105 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
 passing `npm run validate`. The package grew
@@ -65,6 +65,19 @@ release notes alone, which is B2a — and the submission is still blocked:
 `https://weft.study/privacy`, the privacy policy URL the store requires, does
 not resolve. `site:check` cannot see that, because it reads `dist/site`; see
 **B1**.
+
+**And as of 2026-10-24 `docs/READY-TO-SUBMIT.md` is the one page to work
+down at the store consoles** — for each of Chrome, Firefox, Edge and Safari
+the exact zip, the fee, and every field's copy inline in the form a store's
+box takes, held word for word to `docs/STORE-LISTING.md` by
+`tests/tools/ready-to-submit.test.ts`, with a BLOCKED list of what only
+Creagh can do. Writing it against each store's own documentation found four
+things not ready, each written up below: AMO now requires a data-collection
+declaration the Firefox manifest does not make; the `edge-*` screenshots are
+1366×768, which Edge does not accept; the three Pro buy buttons ship *inside
+the package* and their checkout returns 404, so B4 is in every store's
+review, not only the site's; and Apple's guidelines forbid a licence-key
+unlock and in-extension purchases, so Safari cannot ship Pro as built.
 
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
 have.** `orecchio`, ear, printed "neuter", and the feminine plurals `ossa`,
@@ -1094,6 +1107,54 @@ registered**, and nothing below it can move until it is.
       Notes, which replace the entries they contradict.
 
 ## Next
+
+- [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
+      Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
+      2025, all new extensions must adopt the Firefox built-in data
+      collection consent system"
+      ([Extension Workshop](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)),
+      and one without `browser_specific_settings.gecko.data_collection_permissions`
+      set correctly "will be prevented from being submitted"
+      ([Mozilla's blog, 2025-10-23](https://blog.mozilla.org/addons/2025/10/23/data-collection-consent-changes-for-new-firefox-extensions/)).
+      Weft has never been listed on AMO, so it is new, and
+      `buildManifest('firefox')` writes only `id` and `strict_min_version`
+      there. Two decisions, both written up as F0 on the page:
+      the value — Weft sends nothing by default, but the optional own-key
+      provider sends single words of the page, Mozilla's `websiteContent`,
+      so `{ "required": ["none"], "optional": ["websiteContent"] }` is the
+      likely honest one — and the floor, because Firefox's own consent
+      screen exists only from 140 and `MINIMUMS.firefox` is `128.0`. **Before
+      choosing, run `npm run compat`**: `tools/compat-audit.mjs` fails the
+      build on a key MDN says the floor lacks, so keeping 128 may need a
+      named fallback there, and that audit, not this note, says which. Then
+      `npm run zip`, `npm run validate`, and lint the Firefox zip as AMO will.
+      If the store-listing's "Website content? No." answer changes with it,
+      `tests/tools/ready-to-submit.test.ts` fails until the page says to tick
+      website content on Chrome and Edge too — which is the point. About an
+      hour once the two calls are made; not agent-shaped before then.
+
+- [ ] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
+      them.** `docs/store/edge-*.png` are 1366×768, and Microsoft's
+      [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+      takes screenshots of "640 x 480 pixels or 1280 x 800 pixels" only
+      (read 2026-10-24). `docs/READY-TO-SUBMIT.md` E10 sends the Chrome five
+      to Edge instead, which are 1280×800 already, so the simplest fix is to
+      drop the `edge` frame from `tests/e2e/store-assets.spec.ts` and take
+      the five files with it — the frame table at
+      `tests/e2e/store-assets.spec.ts:37`, the fifteen-capture count in
+      `tests/tools/artefacts.test.ts:378`, and the screenshot table in
+      `docs/STORE-LISTING.md` all move with it.
+      `logo-edge-300x300.png` stays: it is the required Edge logo and the
+      right size. Agent-shaped, about 45 minutes with the regeneration.
+
+- [ ] **Draft the Safari subtitle and keywords, for Creagh to approve.** The
+      Mac App Store wants a subtitle of at most 30 characters and keywords of
+      at most 100 bytes, required, and `docs/STORE-LISTING.md` has neither,
+      so `docs/READY-TO-SUBMIT.md` S3–S4 say "not drafted". Add them to the
+      listing as drafts marked unapproved, and give the page `paste` blocks
+      for them so the test holds them too. Copy is a call, so it waits for a
+      yes; only worth doing once the Pro question in B6 is settled, since
+      that decides whether Safari ships at all.
 
 - [x] **An export carries three stores that an import silently drops.**
       Done 2026-09-29, as shape 1 — `attention` and `introduced` merge in,
@@ -6077,7 +6138,9 @@ to extend; the command is not.
 **B2 — Make the repository public, or set `WEFT_REPO`.** The install page's
 download button points at `<repo>/releases/latest`
 (`tools/build-site.mjs:613`), which 404s for everyone but the owner while the
-repo is private. `gh repo edit quiquae/weft --visibility public`, or host the
+repo is private. `gh repo edit quiquae/weft --visibility public
+--accept-visibility-change-consequences` (gh 2.98 refuses `--visibility`
+without that second flag), or host the
 zips elsewhere and set `WEFT_REPO`. Then push the `v1.0.1` tag so the release
 workflow attaches the packages. *Needs: B1 decided, and B0 done — the tag
 cannot be pushed before it exists.*
@@ -6116,12 +6179,18 @@ issue-tracker link both still 404 while the repository is private.
 **B4 — Replace the placeholder checkout URLs.** `CHECKOUT_BASE` in
 `src/core/pricing.ts:31` is `https://weft.lemonsqueezy.com/checkout/buy`,
 which is a placeholder store. A live pricing page with a dead buy button is
-worse than no pricing page. Not a blocker for the *free* tier or for the store
-submission itself — Weft is free for one language forever — so it can follow
-B3 if the Pro purchase is not ready. *Needs: a Lemon Squeezy account.*
+worse than no pricing page. **It is in the package too, not only the site**:
+`src/ui/options/pro.tsx:86` links each plan's `checkout`, so
+`weft-chrome-1.0.1.zip` ships three buy buttons, and on 2026-10-24 at 22:51
+UTC `https://weft.lemonsqueezy.com/checkout/buy/weft-pro-yearly` returned
+`404`. A reviewer can click one. The free tier does not need it, so the
+choice is to fix it and rebuild the zips before submitting, or to submit
+knowing that; `docs/READY-TO-SUBMIT.md` puts it as BLOCKED 3. *Needs: a Lemon
+Squeezy account.*
 
 **B5 — Submit to the Chrome Web Store.** Everything a machine can check has
-been checked. The remaining steps, in order:
+been checked. **Work down `docs/READY-TO-SUBMIT.md`**, which has every step
+below with the copy inline. The remaining steps, in order:
 
 1. Register at <https://chrome.google.com/webstore/devconsole> and pay the
    one-time fee. Chrome's docs confirm it is one-time, not recurring, and do
@@ -6138,7 +6207,7 @@ been checked. The remaining steps, in order:
 5. Upload **`weft-chrome-1.0.1.zip`** — the plain one. The `-folder.zip` is
    for humans loading unpacked; the store rejects an archive with
    `manifest.json` inside a directory.
-6. Paste the listing fields from `docs/STORE-LISTING.md`: name, the 129-char
+6. Paste the listing fields from `docs/STORE-LISTING.md`: name, the 112-char
    short description, the detailed description, category **Education**,
    language English.
 7. Upload the graphics, all already at the exact required sizes and verified
@@ -6176,12 +6245,22 @@ been checked. The remaining steps, in order:
 
 Review takes hours to a couple of weeks; a first submission is slower.
 
-**B6 — Firefox and Safari.** Out of scope for this pass and fully written up
-in `docs/SUBMIT.md`. Firefox is free and independent of everything above, and
-needs reviewable source because the bundle is minified. Safari needs a 99
-USD/year Apple Developer membership, a 7 GB Xcode install, and a hand check on
-Safari 16.4–17.1 specifically, where the wrapped renderer is the path taken
-and no automated test can reach it.
+**B6 — Firefox and Safari.** Both are on `docs/READY-TO-SUBMIT.md` now, and
+neither is ready. Firefox is free and independent of everything above, needs
+reviewable source because the bundle is minified, and needs the manifest key
+in the first item of `Next` before AMO will take it. Safari needs a 99
+USD/year Apple Developer membership and a hand check on Safari 16.4–17.1
+specifically, where the wrapped renderer is the path taken and no automated
+test can reach it. As of 2026-10-24 Apple says App Store Connect converts an
+uploaded zip "without using a Mac or Xcode", so the 7 GB Xcode install may
+not be needed; nobody has tried it with `weft-safari-1.0.1.zip`. **And Safari
+needs a decision about Pro**: App Review Guideline 3.1.1 says apps "may not
+use their own mechanisms to unlock content or functionality, such as license
+keys", and 4.4 that extensions "may not include marketing, advertising, or
+in-app purchases". Weft Pro is a licence key and the options page has buy
+buttons, so the Safari build has to drop Pro or sell it through In-App
+Purchase. That is a product call, not an agent's. The Safari subtitle (30
+characters) and keywords (100 bytes) are not drafted either.
 
 ## Notes
 

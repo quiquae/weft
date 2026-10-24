@@ -38,10 +38,12 @@ a Chrome Web Store listing that a stranger can install from. That is a
 submission Creagh performs by hand with her own developer account, so this
 repository's job is to be release-ready and to keep the remaining human steps
 written down. Every one of those steps now needs her: `TODO.md` is that list,
-headed by **B1**, registering `weft.study`. `docs/SUBMIT.md` is the long-form
-runbook, `docs/STORE-LISTING.md` holds every field's copy, and
-`docs/SUBMIT-STATUS.md` is the last full run of the runbook's gate, dated,
-with the live-URL measurements no check in the repository makes.
+headed by **B1**, registering `weft.study`. `docs/READY-TO-SUBMIT.md` is the
+one page to work down at the four store consoles, every field's copy inline;
+`docs/SUBMIT.md` is the long-form runbook behind it, `docs/STORE-LISTING.md`
+holds every field's copy, and `docs/SUBMIT-STATUS.md` is the last full run of
+the runbook's gate, dated, with the live-URL measurements no check in the
+repository makes.
 
 ## How to work here
 
@@ -59,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **431 pass**, 102 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **439 pass**, 105 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -245,6 +247,22 @@ only the month and day are shown. And do not seed the plan at `HELD_AT`
 itself: `SEEDED_AT` is a minute earlier because a card reviewed as many days
 ago as its stability sits exactly on its 90% line at the seeding instant.
 `tests/tools/screenshots.test.ts` fails on either.
+
+**The submission page carries the listing's words as a store's box takes
+them, and is held to them.** `docs/READY-TO-SUBMIT.md` inlines every field's
+copy, so it is a copy of `docs/STORE-LISTING.md`, the defect this file keeps
+finding. Each block it tells a reader to paste sits under a
+`<!-- paste: <source> -->` marker, and `tests/tools/ready-to-submit.test.ts`
+converts the named part of the listing — each paragraph onto one line,
+emphasis and backticks dropped, nothing else — and requires the block to
+equal it. Do not paste the listing's Markdown as written: no store field
+renders it, and its hard wraps become line breaks in the listing. The same
+file holds the package's name and description to the listing's, because
+Chrome and Edge read both from the manifest rather than the form; every
+permission the Chrome package declares to a justification in the Chrome and
+Edge sections; every zip `READY-TO-SUBMIT.md` and `SUBMIT.md` name to
+`VERSION`; and the copy to each limit a store's own documentation prints. A
+block with no marker is not checked, so give every copied block one.
 
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
@@ -714,6 +732,97 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-24 — READY-TO-SUBMIT.md, and writing it against the stores' own pages found four stores' worth of "not ready"
+
+The queue asked for `docs/READY-TO-SUBMIT.md`: one page to work straight
+down, per store the exact zip, the fee and the listing fields with the copy
+from `docs/STORE-LISTING.md` inline, then a short BLOCKED list, honest about
+what is not ready. `TODO.md` had no unchecked item, so this was the work.
+
+**The copy is inline in every store's section, collapsed, and held to its
+source.** Four stores ask for the same description, and a page that says
+"see above" is a page that makes you look things up, so each section carries
+its own blocks, the long ones inside `<details>`. That is a copy four times
+over, which is the defect this file keeps recording, so each block sits
+under a `<!-- paste: <source> -->` marker and
+`tests/tools/ready-to-submit.test.ts`, 8 tests in 3 suites, requires it to
+equal the listing in paste form: each paragraph on one line, emphasis and
+backticks dropped. The listing as written is not pasteable — no store field
+renders Markdown, and its hard wraps would break every sentence. The same
+file holds the package's name and description to the listing's (Chrome and
+Edge read both from the manifest), the Chrome and Edge permission blocks to
+`buildManifest('chrome')`, every zip `READY-TO-SUBMIT.md` and `SUBMIT.md`
+name to `VERSION`, the copy to each limit a store's documentation prints, and
+"tick none of the data boxes" to every disclosure answering No. Red first on
+the missing page; five probes, each restored by md5, each failing its own
+test by name: the manifest's description reworded, a disclosure answering
+Yes, a listing sentence reworded, a 1.0.0 zip name, and an undeclared
+`idle` permission. The page was rendered from a scratch template by a
+script that inserts each block, so no block was typed by hand.
+
+**Every store fact was read in the store's own documentation**, Microsoft's
+through the Learn server and the rest by three web readers asked for verbatim
+quotes, and the page links each one. They found more than the page was asked
+to hold:
+
+- **Firefox is not submittable as built.** AMO has required
+  `browser_specific_settings.gecko.data_collection_permissions` of every new
+  extension since 2025-11-03, Weft is new there, and the Firefox manifest
+  lacks it. The value is a call (`websiteContent` for the own-key provider,
+  as optional), and so is the floor (the built-in consent screen starts at
+  Firefox 140; Weft's is 128). Queued first in `Next`, with `npm run compat`
+  named as what decides whether 128 can stay.
+- **The `edge-*` screenshots are a size Edge does not take.** Microsoft
+  accepts 640×480 or 1280×800; they are 1366×768. The page sends the Chrome
+  five instead, and dropping the frame is queued. `SUBMIT.md`'s "Import from
+  Chrome Web Store" is in no Microsoft page either, and is gone. Edge's fee
+  is verified as none.
+- **B4 is in the package, not only on the site.** `src/ui/options/pro.tsx:86`
+  links each plan's checkout, so the zip ships three buy buttons, and the
+  checkout returned 404 at 22:51 UTC. B4's "not a blocker for the store
+  submission itself" is corrected.
+- **Apple takes a zip now, and forbids what Pro is.** App Store Connect
+  converts an uploaded zip "without using a Mac or Xcode", so the Safari row
+  names `weft-safari-1.0.1.zip`, untried. But guideline 3.1.1 refuses "their
+  own mechanisms to unlock content or functionality, such as license keys",
+  and 4.4 in-extension purchases, so Safari waits on a product call. Apple's
+  support URL must show a legal address, email and phone, which `/support`
+  does not.
+
+And three smaller ones, all corrected: the short description is 112
+characters, where the listing, `SUBMIT.md` and B5 said 129; `gh` 2.98 refuses
+`--visibility public` without `--accept-visibility-change-consequences`, so
+the command in `TODO.md` B2 and `SUBMIT.md` would have failed as written; and
+the description's "Open source. MIT licensed." is untrue until B2, which the
+BLOCKED list now says. Both Chrome and Apple will ask about EU trader status,
+and Google wants a physical address for an item that sells features; that is
+in BLOCKED 4, beside the support email nobody has made.
+
+Measured on this branch, with npm's own exit status captured: `npm run
+typecheck` clean; `npm test` exit 0 — 566 unit / 137 suites, 102 jsdom / 23,
+**439 tools / 105 suites**; and, before the last documentation edits and with
+nothing under `src/` or the build moving after, `compat` 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 990
+KB** passing `validate`, **40 e2e passed and 3 skipped in 4.3 min**, then
+build and validate again, all exit 0. `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. `packs:verify` and `site:check`
+were not re-run: no pack or page moved. Counts moved 1139 → **1147** and
+tools 431 → **439** / 102 → **105** suites, in six places,
+`docs/LAUNCH.md:221` first.
+
+Assumed, with nobody to ask: that the user's store order — Chrome, Firefox,
+Edge, Safari — is the page's order; that a long block repeated per store,
+collapsed and tested, beats one block and "see above"; that `PRIVACY.md` and
+`LICENSE` are pasted as files rather than inlined; that ticking AMO's
+payment box is right, Mozilla's policy saying listings "must disclose when
+payment is required to enable any add-on functionality"; and that the
+data-collection value and the Safari Pro question are calls, not this run's.
+
+What needs a human: everything in the page's BLOCKED list — the domain and
+the site (B1–B3), the buy buttons (B4), the accounts, fees, trader status and
+a support email, and posting the launch links by hand — and three calls: the
+Firefox value and floor, Safari's Pro, and the Safari subtitle and keywords.
 
 ### 2026-10-24 — every generated store file was regenerated, and none had drifted
 

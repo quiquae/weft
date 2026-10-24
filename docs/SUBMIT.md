@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 566 unit tests, 102 jsdom tests, 431 tool tests, the
+runs typecheck, 566 unit tests, 102 jsdom tests, 439 tool tests, the
 compatibility audit, all three builds, the package validator, and 40 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -103,7 +103,8 @@ These block each other, so the order matters.
    - The install page's download button points at
      `<repo>/releases/latest`, and the support page's issue-tracker link at
      `<repo>/issues`. Both **404 while the repository is private**. Either
-     `gh repo edit quiquae/weft --visibility public`, or host the zips
+     `gh repo edit quiquae/weft --visibility public --accept-visibility-change-consequences`
+     (gh 2.98 refuses `--visibility` without the second flag), or host the zips
      elsewhere and set `WEFT_REPO` — and if issues are not going to be the
      support channel, change `docs/SUPPORT.md`, which is the only place that
      link is written.

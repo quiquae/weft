@@ -1,9 +1,9 @@
 # Ready to submit — Weft 1.0.1
 
 **Do this first:** register `weft.study` — item 1 of [BLOCKED](#blocked--only-creagh-can-do-these),
-at the bottom. Every store asks for a privacy policy URL, and at 22:51 UTC on
-2026-10-24 `https://weft.study/privacy` did not resolve. Nothing below can be
-submitted until it loads in a logged-out browser.
+at the bottom. Chrome, Edge and Apple each ask for a privacy policy URL, and at
+22:51 UTC on 2026-10-24 `https://weft.study/privacy` did not resolve. Nothing
+below can be submitted until it loads in a logged-out browser.
 
 One page, worked top to bottom. Every field's copy is on it, in the form the
 store's box takes: one paragraph per line, no Markdown. Click a grey block's
@@ -14,10 +14,10 @@ runbook behind this page; nothing here needs it.
 
 | Store | Upload | Fee | Ready? |
 |---|---|---|---|
-| Chrome Web Store | `weft-chrome-1.0.1.zip` | One-time registration fee, about 5 USD | **After BLOCKED 1–3** |
-| Firefox (AMO) | `weft-firefox-1.0.1.zip` and a source zip | Free | **No** — TBD-FIREFOX-STATUS |
-| Edge Add-ons | `weft-chrome-1.0.1.zip` — the Chrome zip, unchanged | Free | **After BLOCKED 1–3** |
-| Safari (Mac App Store) | No zip: an app archived in Xcode | 99 USD a year | **No** — never built: needs Xcode and a paid Apple membership |
+| Chrome Web Store | `weft-chrome-1.0.1.zip` | One-time registration fee, about 5 USD | **Once BLOCKED 1 is done and 3 decided** |
+| Firefox (AMO) | `weft-firefox-1.0.1.zip` and a source zip | Free | **No** — the package lacks a manifest key AMO requires of a new add-on (F0) |
+| Edge Add-ons | `weft-chrome-1.0.1.zip` — the Chrome zip, unchanged | Free | **Once BLOCKED 1 is done and 3 decided** |
+| Safari (Mac App Store) | `weft-safari-1.0.1.zip`, untried | 99 USD a year | **No** — never built, and Pro breaks Apple’s rules as it stands |
 
 Facts about the stores were checked on 2026-10-24 against each store's own
 documentation, linked where they are used. Fees and forms change; the store's
@@ -42,7 +42,7 @@ reject that:
 
 - `weft-chrome-1.0.1.zip` — Chrome **and** Edge
 - `weft-firefox-1.0.1.zip` — Firefox
-- `weft-safari-1.0.1.zip` — not uploaded anywhere; Safari starts from `dist/safari` (see Safari)
+- `weft-safari-1.0.1.zip` — Safari, through Apple's zip packager, untried (see Safari)
 
 **0.3** If `npm run validate` dies with `Unknown system error -11`, that is
 iCloud copying files into `dist/`, not the package. Fix:
@@ -56,7 +56,8 @@ on disk, not the bytes in the repository.
 
 ## Chrome Web Store
 
-**Ready after BLOCKED 1–3.** About 45 minutes of forms once the account exists.
+**Ready once BLOCKED 1 is done and BLOCKED 3 decided.** About 45 minutes of
+forms once the account exists.
 Fee: **one-time**, not recurring — Google says "pay a one-time registration fee"
 ([register](https://developer.chrome.com/docs/webstore/register)) and prints no
 amount; it has been 5 USD for years and the console shows it before you pay.
@@ -69,7 +70,7 @@ publisher name (BLOCKED 4), verify the contact email.
 
 **C3 — Store listing → Product details.** The title and the short summary
 come from the package, and Google says the manifest cannot be edited in the
-dashboard after upload. Check they read as below; if the form does offer a
+dashboard after upload ([prepare](https://developer.chrome.com/docs/webstore/prepare)). Check they read as below; if the form does offer a
 summary box, paste the second one:
 
 <!-- paste: name -->
@@ -126,8 +127,7 @@ Open source. MIT licensed.
 - Promo video: none
 
 **C7 — Additional fields.** Homepage URL: `https://weft.study`. Official URL:
-leave empty — it needs the domain verified in Google Search Console first.
-Mature content: unticked. Support URL:
+optional; leave it empty. Mature content: unticked. Support URL:
 
 <!-- paste: support-url -->
 ```text
@@ -186,7 +186,7 @@ Two entries on the extension's own toolbar button, for the progress and settings
 Informs the user when a settings change they queued has finished its cooldown and taken effect. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
 ```
 
-Host permission (`*://*/*`, optional):
+Host permission (`*://*/*`, optional), if the form lists it:
 
 <!-- paste: permission:optional_host_permissions -->
 ```text
@@ -197,7 +197,11 @@ Requested per-origin at runtime, from a user gesture on the extension's own firs
 checks the package for it.
 
 **C11 — Data usage.** Tick **none** of the data types — every disclosure in the
-listing answers No. Then tick **all three** certifications.
+listing answers No. Then tick **all three** certifications. One answer to keep
+consistent: the listing says No to website content because words go only to
+a translation provider the user sets up with their own key. If F0 below ends
+up declaring `websiteContent` for Firefox, tick website content here and on
+Edge too, so the three stores are told the same thing.
 
 **C12 — Privacy policy URL.**
 
@@ -222,21 +226,147 @@ Free weaves") asserts.
 
 ## Firefox (addons.mozilla.org)
 
-TBD-FIREFOX-BODY
+**Not ready: the package needs one manifest key, and you need to choose
+its value.** Fee: **none** — no fee appears anywhere in Mozilla's publishing
+documentation. About 45 minutes of forms once the key is in.
+
+**F0 — First: declare what Weft sends.** "From November 3, 2025, all new
+extensions must adopt the Firefox built-in data collection consent system"
+([Mozilla](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)),
+and one without it set correctly "will be prevented from being submitted"
+([Mozilla](https://blog.mozilla.org/addons/2025/10/23/data-collection-consent-changes-for-new-firefox-extensions/)).
+Weft has never been listed, so it is new, and `weft-firefox-1.0.1.zip`
+puts only `id` and `strict_min_version` under
+`browser_specific_settings.gecko`. Two calls only you can make:
+
+- **The value.** Weft sends nothing by default. With the optional own-key
+  provider it sends single words from the page to the service the user
+  chose, which is Mozilla's `websiteContent`, "anything visible on a
+  website". So the honest declaration is most likely
+  `"data_collection_permissions": { "required": ["none"], "optional": ["websiteContent"] }`;
+  `"required": ["none"]` alone would say it never sends anything.
+- **The floor.** Firefox shows its own consent screen from version 140;
+  Weft's floor is 128. Raise `strict_min_version` to `140.0`, or keep 128
+  and let Weft's own opt-in — no word leaves until a user types in their own
+  key — stand as consent on 128–139, which Mozilla's policy 6.2.2 then
+  governs.
+
+Then rebuild (step 0.1). AMO lints the zip on upload and says what it
+refuses. The change itself is the first item in `TODO.md`'s `Next`.
+
+**F1 — Account.** <https://addons.mozilla.org/developers/>, with a Firefox
+account.
+
+**F2 — Upload.** *Submit a New Add-on* → *On this site* →
+`weft-firefox-1.0.1.zip`. Platform: Firefox for desktop only; nothing
+has ever tested Weft on Firefox for Android.
+
+**F3 — Source code: Yes.** The bundle is built with esbuild and minified, so
+AMO wants the source it came from. Make the archive from the commit the zip
+was built from, on a clean `main`:
+
+```bash
+git archive --format=zip --output=weft-source-1.0.1.zip HEAD
+```
+
+Upload `weft-source-1.0.1.zip`, and put this in *Notes to reviewer*:
+
+```text
+Build from the source archive: Node 22 (the version in .nvmrc), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04; this one is Node 22, which is also what CI builds it with on Ubuntu.
+```
+
+**F4 — Name.** From the package; check it reads:
+
+<!-- paste: name -->
+```text
+Weft — Language Immersion
+```
+
+**F5 — Summary**, 250 characters at most
+([Mozilla](https://extensionworkshop.com/documentation/publish/submitting-an-add-on/)):
+
+<!-- paste: short-description -->
+```text
+Reads the web back to you with some words woven into another language. Difficulty rises with the time you spend.
+```
+
+**F6 — Description.**
+
+<details><summary>Description — click to open, then copy</summary>
+
+<!-- paste: description -->
+```text
+Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
+
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+
+Point at a word and it gives you the English back.
+
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+
+You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+
+A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+
+It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
+
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+
+Open source. MIT licensed.
+```
+
+</details>
+
+**F7 — Categories.** Up to two for Firefox; leave Firefox for Android's
+empty. The listing's own are Education and Productivity; pick the nearest
+two on AMO's list — *Language Support*, if it is there, is the closest fit.
+
+**F8 — Support.** Website:
+
+<!-- paste: support-url -->
+```text
+https://weft.study/support
+```
+
+Email: none exists yet (BLOCKED 4); leave it empty.
+
+**F9 — License.** Choose the custom licence and paste the `LICENSE` file:
+it is MIT for the code and CC BY-SA 4.0 for the lexicon data, and choosing
+MIT alone would misstate the lexicons.
+
+**F10 — Privacy policy.** Tick *This add-on has a privacy policy*. Mozilla
+wants the policy's text wherever data can leave the device — "a privacy
+policy explaining what is being sent and how it's used is required" — and
+the own-key provider makes that possible. Paste the text of
+`docs/PRIVACY.md` — like F9's `LICENSE`, a whole file, so not repeated here.
+
+**F11 — Payment.** Tick *This add-on requires payment, non-free services or
+software, or additional hardware*. Mozilla's policy: "Listings must disclose
+when payment is required to enable any add-on functionality"
+([policies](https://extensionworkshop.com/documentation/publish/add-on-policies/)),
+and Pro is paid.
+
+**F12 — Submit.** Attach the source to every later version too: Mozilla
+wants it each time.
 
 ---
 
 ## Edge Add-ons
 
-**Ready after BLOCKED 1–3.** About 40 minutes. Fee: **none** — "There is no
+**Ready once BLOCKED 1 is done and BLOCKED 3 decided.** About 40 minutes. Fee: **none** — "There is no
 registration fee for submitting extensions to the Microsoft Edge program"
 ([Microsoft](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/create-dev-account)).
 Every field below is from Microsoft's
 [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension).
 
 **E1 — Account.** Register at <https://partner.microsoft.com/dashboard/microsoftedge>
-with a Microsoft account (or sign in with GitHub, which makes one). Choose
-**Individual** — it cannot be changed later. Publisher display name: the same
+with a Microsoft account (or sign in with GitHub, which makes one). Account
+type: *Individual*, unless you have a registered company — it cannot be
+changed later. Publisher display name: the same
 one as Chrome (BLOCKED 4), 50 characters at most.
 
 **E2 — Upload.** *Create new extension* → `weft-chrome-1.0.1.zip`. Edge
@@ -305,7 +435,7 @@ Two entries on the extension's own toolbar button, for the progress and settings
 Informs the user when a settings change they queued has finished its cooldown and taken effect. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
 ```
 
-Host permission (`*://*/*`, optional):
+Host permission (`*://*/*`, optional), if the form lists it:
 
 <!-- paste: permission:optional_host_permissions -->
 ```text
@@ -373,17 +503,122 @@ good one to paste. Certification takes up to seven business days.
 
 ## Safari (Mac App Store)
 
-TBD-SAFARI-BODY
+**Not ready, and the biggest job of the four.** Fee: **99 USD a year**,
+recurring — "$99 annual membership" ([Apple](https://developer.apple.com/programs/)),
+required to distribute at all.
+
+Apple now takes a zip: "Simply upload a ZIP file with your extension to App
+Store Connect to have it converted for you and packaged up for testing"
+([Apple](https://developer.apple.com/safari/extensions/)), "without using a
+Mac or Xcode". So `weft-safari-1.0.1.zip` is the file to try. Nobody has:
+Apple's packager guide returned no text when this page was checked, so
+whether it takes a flat archive like this one, which platforms it builds and
+which Safari it targets are all unread. The older route — `npm run safari`
+and the full 7 GB Xcode, as `docs/SUBMIT.md` describes — has never been run
+here either.
+
+Three things to settle before the forms:
+
+- **Pro, which only you can decide.** App Review Guideline 3.1.1 says apps
+  "may not use their own mechanisms to unlock content or functionality, such
+  as license keys", and 4.4 that extensions "may not include marketing,
+  advertising, or in-app purchases"
+  ([guidelines](https://developer.apple.com/app-store/review/guidelines/)).
+  Weft Pro is a licence key, and the options page has buy buttons. Expect a
+  rejection until the Safari build drops Pro or sells it through In-App
+  Purchase.
+- **The support URL.** Apple's "must lead to actual contact information
+  (legal address, email address, telephone number)"
+  ([Apple](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information)),
+  and `/support` gives a GitHub issues link (BLOCKED 4).
+- **A hand check in Safari 16.4–17.1**, where the wrapped renderer runs and
+  no automated test reaches: woven words must be styled.
+
+**S1 — Join** the Apple Developer Program (BLOCKED 4), then open App Store
+Connect.
+
+**S2 — Upload** `weft-safari-1.0.1.zip` to the Safari web extension
+packager, and try the build through TestFlight. If the packager refuses it,
+fall back to `npm run safari` and Xcode.
+
+**S3 — App information.** Category: *Education*. Copyright (required):
+`2026 Weft contributors`, as `LICENSE` has it. Name, 30 characters at most:
+
+<!-- paste: name -->
+```text
+Weft — Language Immersion
+```
+
+Subtitle, 30 characters at most: **not drafted** — the short description is
+112. Privacy Policy URL (required for Mac apps):
+
+<!-- paste: privacy-url -->
+```text
+https://weft.study/privacy
+```
+
+**S4 — Version information.** Description, 4 000 characters at most:
+
+<details><summary>Description — click to open, then copy</summary>
+
+<!-- paste: description -->
+```text
+Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
+
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+
+Point at a word and it gives you the English back.
+
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+
+You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+
+A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+
+It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
+
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+
+Open source. MIT licensed.
+```
+
+</details>
+
+Keywords, 100 bytes, required: **not drafted**. Marketing URL:
+`https://weft.study`. Support URL (but see above):
+
+<!-- paste: support-url -->
+```text
+https://weft.study/support
+```
+
+Screenshots: `docs/store/apple-01-woven.png` … `apple-05-settings.png`
+(1440×900, one of the four sizes Apple takes, and without the alpha channel
+it refuses —
+[specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)).
+
+**S5 — App Privacy.** The listing's disclosures say nothing is collected (as
+in C11). The one thing to weigh first: with the optional own-key provider,
+single words go to the translation service the user picked. Read Apple's
+definition of "collect" before choosing *Data Not Collected*.
+
+**S6 — Trader status, price, submit.** Trader status is BLOCKED 4. Price:
+free. Then submit the build for review.
 
 ---
 
 ## BLOCKED — only Creagh can do these
 
-In this order; each one unblocks the next.
+Roughly in this order: 1 first, because every store waits on it; 5 last.
 
 1. **Register `weft.study`, and host the site on it.** NXDOMAIN at the
    registry's own server on 2026-10-24 (`docs/SUBMIT-STATUS.md`). Then: make
-   the repository public (`gh repo edit quiquae/weft --visibility public`),
+   the repository public
+   (`gh repo edit quiquae/weft --visibility public --accept-visibility-change-consequences`),
    turn on Pages (Settings → Pages → Source: GitHub Actions) and run
    `gh variable set WEFT_PAGES --body true`. Done when this prints `200`:
    `curl -sS -o /dev/null -w '%{http_code}\n' https://weft.study/privacy`.
@@ -420,5 +655,5 @@ In this order; each one unblocks the next.
    account may post any of it, because coordinated self-promotion earns a
    domain-level shadowban, which would bury the site's 714 pages.
 
-**Next:** open <https://www.whois.com/whois/weft.study> — or any registrar's
-search — and see whether `weft.study` can be bought.
+**Next, 2 minutes:** type `weft.study` into any registrar's domain search and
+see whether it can be bought.
