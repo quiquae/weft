@@ -76,6 +76,51 @@ gitignored, so the next change to `src/` makes them stale again without
 anything saying so: run `npm run zip` immediately before uploading, never
 upload one an earlier session left behind.
 
+### The seven `ok` groups, regenerated rather than dated
+
+`artefacts:check` asks provenance: whether anything an artefact is made from
+has been committed since it was written. It cannot see the renderer, or a
+fact pasted into a generator, so "ok" says nobody has moved the sources, not
+that the files are what the sources draw. So on 2026-10-24, 22:22–22:26 UTC,
+every generator was run again, on a branch from `main` at `7205e45` — which
+differs from `42b3b28` in four documents and nothing that ships — with
+npm's exit status captured for each, a marker file touched just before it to
+prove each file was rewritten rather than left alone, and each file's blob
+compared with `HEAD`'s by `git hash-object`. Same machine, macOS 27.0.1,
+which `softwareupdate --history` dates 2026-10-02 with nothing since; Node
+26.7.0 linking zlib 1.2.12, the Node that wrote the icons; Playwright 1.63.0.
+
+| Group | Command | Exit | Rewritten | Identical to `HEAD` |
+|---|---|---|---|---|
+| shipped extension icons | `npm run icons` | 0 | 6 of 6 | 6 |
+| icon comparison sheet | `npm run icons:sheet` | 0 | 1 of 1 | 1 |
+| store promo tiles | `npm run tiles` | 0 | 3 of 3 | 3 |
+| social card | `npm run og` | 0 | 1 of 1 | 1 |
+| store listing screenshots | `npm run build:test`, then `WEFT_STORE=1 npx playwright test store-assets` | 0, 0 | 15 of 15 | 15 |
+| documentation screenshots | `WEFT_SCREENS=1 npx playwright test screenshots` | 0 | 14 of 14 | 14 |
+| first-run walkthrough shots | `WEFT_FIRSTRUN=1 npx playwright test firstrun` | 0 | 7 of 7 | 7 |
+
+**None had drifted: 47 of 47 files rewritten, 47 byte-identical.** The
+three Playwright runs took 51, 38 and 21 seconds, with `--output` in `/tmp`
+so iCloud had no directory to copy into. Byte-equality proves the generators
+reproduce, not that what they draw is right, so the eight files the Chrome
+block uploads were read as well. The five `chrome-*.png` show the woven
+article, two tooltips, the feed in folded-alphabetical order with *père*
+before *pierre*, and "28% of content words — 1 word in 4" with the whole
+preset row in shot; the marquee has the mark crossing three of its four
+threads beside the four French lead pairs, and the small tile the same mark
+above *rivière*. `assets/icon-128.png` is held to its geometry pixel for
+pixel by `tests/tools/brand.test.ts`. All seven groups were stamped with
+`npm run artefacts:verify` — the icon sheet, the social card and the tiles
+for the first time — and `npm run test:tools` passed 431 of 431 with the
+new stamps in the tree.
+
+**The one generated file that has drifted is the release notes**, and it is
+the one that must not be regenerated here (**B2a**): `RELEASE-1.0.1.md`
+lists the changes to `d2e834f`, 85 commits behind `7205e45`, and prints the
+archives at 213 and 215 KB, where the ones `main` builds round to 220 and
+221 — 224 859 and 226 195 bytes for Chrome's.
+
 ## The blocker: the privacy policy URL does not resolve
 
 **`site:check` passing is not evidence that the site is up.** It reads the
@@ -144,3 +189,19 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://weft.study/privacy
 
 Do not chain `artefacts:check` with `&&`: it exits 1 on a correct tree
 until the tag, so it would stop everything after it.
+
+To check the seven generated groups' content rather than their dates, run
+each generator on its own and then ask git what moved — nothing should:
+
+```bash
+npm run icons && npm run icons:sheet && npm run tiles && npm run og
+npm run build:test
+WEFT_STORE=1 npx playwright test store-assets --output=/tmp/weft-pw-out
+WEFT_SCREENS=1 npx playwright test screenshots --output=/tmp/weft-pw-out
+WEFT_FIRSTRUN=1 npx playwright test firstrun --output=/tmp/weft-pw-out
+git status --porcelain     # empty means all 47 files reproduced exactly
+npm run build              # put the production extension back in dist/chrome
+```
+
+An empty `git status` is also what a generator that died early leaves, so
+read each exit status, and count the files whose modification time moved.

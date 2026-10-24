@@ -715,6 +715,73 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-24 — every generated store file was regenerated, and none had drifted
+
+The queue asked for every store artefact to be regenerated — `npm run
+tiles`, `og`, `icons` and the three `WEFT_*` asset specs — then
+`artefacts:check`, and a report of which files had drifted from the current
+`src/`. **None of the 47 had.** `TODO.md` held no unchecked item, so this
+was the work.
+
+**Provenance and content were asked separately, because they are different
+questions.** `artefacts:check` first: exit 1, seven groups `ok` and the
+release notes stale, 85 commits behind `d2e834f`, the state the session
+before recorded. Then every generator on its own, in this file's order for a
+redrawn mark — `icons`, `icons:sheet`, `tiles`, `og` — then `npm run
+build:test` and the store, documentation and first-run specs. Each ran with
+npm's exit status captured, after a marker file touched just before it, so a
+file left untouched could not pass for one reproduced; each file's blob was
+compared with `HEAD`'s by `git hash-object`. 6, 1, 3, 1, 15, 14 and 7 files:
+every one rewritten, every one byte-identical, every command exit 0.
+Playwright's `--output` was in `/tmp`, and no iCloud conflict copy appeared.
+`icons:sheet` is not in the queue's list and was run because its group is
+one of the eight.
+
+**It reproduced because nothing under the generators had moved**, checked
+before the first run rather than after: macOS 27.0.1, which `softwareupdate
+--history` dates 2026-10-02 with nothing since, and Node 26.7.0 linking zlib
+1.2.12, the Node that wrote the icons — the operating system and the zlib
+being the two things the decisions above record as moving these bytes
+without moving `src/`. #109 had regenerated and stamped the three
+Chromium-drawn sets an hour before, on the same machine.
+
+**Byte-equality proves the generators reproduce, not that what they draw is
+right**, so the eight files the Chrome block uploads were read: the woven
+article, two tooltips, the feed with *père* before *pierre*, "28% of content
+words — 1 word in 4" over the whole preset row, and the mark crossing three
+of its four threads beside the French lead pairs. All current.
+
+All seven groups are stamped with `artefacts:verify`, three of them — the
+icon sheet, the social card and the tiles — for the first time. This file
+records a group's first stamp once turning a test red, by counting the
+manifest its paths fold in; these three did not, `npm run test:tools`
+passing 431 of 431 with them in the tree, since every reader of a group's
+paths filters by extension or goes through `captures()`. **The one generated
+file that has drifted is `RELEASE-1.0.1.md`**: 86 commits behind once this
+lands, and printing 213 and 215 KB archives that round to 220 and 221 today.
+It is B2a's to regenerate, on a clean `main` immediately before the tag,
+never inside a PR. The six zips on disk were cut at `42b3b28`, and nothing
+that ships has changed since, so they are current; they are gitignored and
+no check reads them. `docs/SUBMIT-STATUS.md` has a new section with the
+table and the commands to repeat it, beside the provenance figures.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 18 s** — typecheck clean, 566 unit /
+137 suites, 102 jsdom / 23, 431 tools / 102, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **989 / 990 / 990
+KB** passing `validate`, **40 e2e passed and 3 skipped in 4.3 min**, then
+build and validate again; `artefacts:check` **8 groups, 1 stale**, exit 1,
+the release notes. `packs:verify` and `site:check` were not re-run: no pack,
+page or file under `src/` moved.
+
+Assumed, with nobody to ask: that "every store artefact" includes the icon
+sheet, its group being one of the eight; that stamping groups already `ok`
+is right, a stamp saying exactly "regenerated and compared, no change"; and
+that the release notes are reported rather than regenerated.
+
+What needs a human: unchanged, everything below **B1**. `Now` and `Next`
+are empty.
+
 ### 2026-10-24 — the gate passes, the domain does not resolve, and site:check could never have said so
 
 The queue asked for the whole pre-submission gate as `docs/SUBMIT.md`

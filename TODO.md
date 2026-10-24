@@ -5611,6 +5611,32 @@ registered**, and nothing below it can move until it is.
       and its line quotes the cell of its gender, "masculine nominative
       plural aliēnī". All 165 Latin plurals now name their table.
 
+- [x] **Regenerate every store artefact and say which had drifted.** Asked
+      by the queue on 2026-10-24 and done the same night: **none of the 47
+      files the seven generator groups commit had drifted.** Each generator
+      ran on its own — `npm run icons`, `icons:sheet`, `tiles` and `og`,
+      then `npm run build:test` and the `WEFT_STORE=1`, `WEFT_SCREENS=1`
+      and `WEFT_FIRSTRUN=1` specs — and each exited 0; every file's
+      modification time moved past a marker touched just before its run, so
+      none was skipped; and every file came back byte-identical to `HEAD`.
+      The eight files the Chrome block uploads were read as well and are
+      current. All seven groups are stamped, the icon sheet, the social card
+      and the tiles for the first time. `icons:sheet` was not named by the
+      queue and was run because its group is one of the eight. The one
+      generated file that has drifted is `RELEASE-1.0.1.md` — 85 commits
+      behind, and printing 213 and 215 KB archives that are 220 and 221 KB
+      today — and regenerating it is **B2a**'s, not a PR's. Figures, and the
+      commands to repeat it, in `docs/SUBMIT-STATUS.md`.
+
+      **It reproduced because nothing under the generators moved**: the
+      same macOS 27.0.1 and Node 26.7.0 as #109's regeneration an hour
+      before. The two things that move these bytes without moving `src/`
+      are an operating-system update, which moves every Chromium-drawn
+      image's text antialiasing, and a Node linking another zlib, which
+      moves the icons' bytes and not their pixels. Repeat this after either,
+      and read the CLAUDE.md decisions on each before committing anything
+      it moves.
+
 `Now` and `Next` are **empty**, as of 2026-10-24: the Old English second
 forms their tables do not print and the Latin one are closed, every source
 the ledgers accept read for each, and the ten forms none of them prints are
@@ -5653,6 +5679,9 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+Regenerating the 47 generated files is spent too: all came back
+byte-identical on 2026-10-24, and will again until `src/`, the operating
+system or Node moves.
 
 **Ten second-form calls a human may want to look at**, recorded on
 2026-10-24 rather than changed. Each is a woven form that no source the
