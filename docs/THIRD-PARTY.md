@@ -44,8 +44,9 @@ verb's principal parts, not the plural or participle a row weaves, so those
 are quoted from the declension or conjugation table of English Wiktionary's
 entry in `tools/seed/la-plurals.tsv` and `la-verb-forms.tsv` — a noun
 whose entry is an adjective's, as *aliēnus* is, from the cell of its own
-gender — all but one, which `tests/tools/la-forms.test.ts` names until it is
-read; it fails on any other with no line.
+gender — all but one, *nārrāns*, whose first vowel the dictionaries do not
+agree on and which `tests/tools/la-forms.test.ts` names; it fails on any
+other with no line.
 
 Classical pronunciation follows the standard reconstruction as set out in
 W. Sidney Allen, *Vox Latina* (Cambridge, 1965). Transcriptions are derived
@@ -82,9 +83,9 @@ is, from the cell of its own gender; eight quote instead the section of
 Wright's *Old English Grammar* that prints the woven form, read in the
 archive.org page images, two the Bosworth–Toller entry whose quotations
 print it, one, *wasċende*, its table's cell with the dot Wright's § 312
-gives its *sc*, and the eleven that none of them prints are named in
-`tests/tools/ang-forms.test.ts` until they are read. It fails on any other
-with no line.
+gives its *sc*, and the nine that none of them prints, Wright and
+Bosworth–Toller read for each, are named in `tests/tools/ang-forms.test.ts`
+with what each prints instead. It fails on any other with no line.
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair
