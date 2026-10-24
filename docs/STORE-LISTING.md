@@ -11,7 +11,7 @@ Weft — Language Immersion
 > Reads the web back to you with some words woven into another language.
 > Difficulty rises with the time you spend.
 
-(129 characters.)
+(112 characters.)
 
 ## Category
 
@@ -181,7 +181,11 @@ comes out 1280x3000 and is rejected.
 | 5 | `chrome-05-settings.png` | The difficulty controls and the friction |
 
 `edge-*` (1366x768) and `apple-*` (1440x900) are the same five scenes at
-those stores' sizes.
+other sizes. **Upload the `chrome-*` set to Edge, not `edge-*`:** Microsoft's
+[publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+accepts screenshots of 640x480 or 1280x800 only (read 2026-10-24), so the
+1366x768 frame is a size Edge does not take. `apple-*` is one of the four
+sizes the Mac App Store accepts.
 
 Scenes 4 and 5 are scrolled, and the scroll is **framed on a section
 boundary** rather than nudged by `scrollIntoViewIfNeeded` — the section's top
@@ -314,6 +318,9 @@ is an automated test asserting exactly that (`tests/e2e/licensing.spec.ts`,
 
 ### Firefox, separately
 
+- [ ] The Firefox manifest declares `data_collection_permissions`, which AMO
+      requires of a new extension — it does not yet
+      (`READY-TO-SUBMIT.md`, F0)
 - [ ] An addons.mozilla.org account, no fee
 - [ ] Submit `weft-firefox-<version>.zip`
 - [ ] AMO requires reviewable source for minified code. `npm run build` is
