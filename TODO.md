@@ -1108,6 +1108,20 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
+- [ ] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
+      them.** `docs/store/edge-*.png` are 1366×768, and Microsoft's
+      [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+      takes screenshots of "640 x 480 pixels or 1280 x 800 pixels" only
+      (read 2026-10-24). `docs/READY-TO-SUBMIT.md` E10 sends the Chrome five
+      to Edge instead, which are 1280×800 already, so the simplest fix is to
+      drop the `edge` frame from `tests/e2e/store-assets.spec.ts` and take
+      the five files with it — the frame table at
+      `tests/e2e/store-assets.spec.ts:37`, the fifteen-capture count in
+      `tests/tools/artefacts.test.ts:378`, and the screenshot table in
+      `docs/STORE-LISTING.md` all move with it.
+      `logo-edge-300x300.png` stays: it is the required Edge logo and the
+      right size. Agent-shaped, about 45 minutes with the regeneration.
+
 - [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
       Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
       2025, all new extensions must adopt the Firefox built-in data
@@ -1131,21 +1145,9 @@ registered**, and nothing below it can move until it is.
       If the store-listing's "Website content? No." answer changes with it,
       `tests/tools/ready-to-submit.test.ts` fails until the page says to tick
       website content on Chrome and Edge too — which is the point. About an
-      hour once the two calls are made; not agent-shaped before then.
-
-- [ ] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
-      them.** `docs/store/edge-*.png` are 1366×768, and Microsoft's
-      [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
-      takes screenshots of "640 x 480 pixels or 1280 x 800 pixels" only
-      (read 2026-10-24). `docs/READY-TO-SUBMIT.md` E10 sends the Chrome five
-      to Edge instead, which are 1280×800 already, so the simplest fix is to
-      drop the `edge` frame from `tests/e2e/store-assets.spec.ts` and take
-      the five files with it — the frame table at
-      `tests/e2e/store-assets.spec.ts:37`, the fifteen-capture count in
-      `tests/tools/artefacts.test.ts:378`, and the screenshot table in
-      `docs/STORE-LISTING.md` all move with it.
-      `logo-edge-300x300.png` stays: it is the required Edge logo and the
-      right size. Agent-shaped, about 45 minutes with the regeneration.
+      hour once the two calls are made. **Not agent-shaped before
+      then**: an unattended run that reaches this with neither call made
+      should leave it and take the next item.
 
 - [ ] **Draft the Safari subtitle and keywords, for Creagh to approve.** The
       Mac App Store wants a subtitle of at most 30 characters and keywords of
