@@ -5339,19 +5339,19 @@ registered**, and nothing below it can move until it is.
         Bosworth–Toller's Supplement entry for `hæt` (bt:51569), which the
         2026-10-08 reading had not opened, quotes "Eówre hættas mitrę" from
         the glosses of Wright's *Vocabularies* and "Haetas mitras" (Txts.
-        113, 75), and
-        the table, `hætt`'s, prints `hættas`. Two texts beat § 57's rule,
+        113, 75), and the table, `hætt`'s, prints `hættas`. Two texts beat
+        § 57's rule,
         which names no form of this word: "hats" is `hættas`, /ˈhætːɑs/,
         and its line cites the table, because the Supplement's head,
         "hæt. Add:", names no gender for the ledger's head rule to read.
       - **`hūsbondan` and `mentlas`.** Neither word is in Wright's index,
         nor `bonda`; their Bosworth–Toller entries, read whole, print no
         plural, and their pages have no table. Cannot be cited.
-      - **`onsīene`.** Bosworth–Toller heads the word `an-sýn` (bt:1954);
-        `on-sién` (bt:24741) and `on-sýn` (bt:24784) only send a reader
-        there, so no `bt:` line can quote a head that spells `onsīen`, and
-        the entry's quotations are singular. Wright § 390 declines
-        `ansīen` "like cwēn" and prints no form of it. Cannot be cited.
+      - **`onsīene`.** Bosworth–Toller files the word under `an-sýn`
+        (bt:1954), whose quotations are singular; its `on-sién` (bt:24741)
+        is a cross-reference with no passage, so no `bt:` line can quote a
+        head that spells `onsīen` beside a plural. Wright § 390 declines
+        `ansīen` "like cwēn" and prints no plural of it. Cannot be cited.
       - **`þorpas`.** Wright § 335 declines `þorp` "like stān", which
         agrees with Bosworth–Toller's masculine and implies `þorpas`
         without printing it; Bosworth–Toller (bt:31961, to which `þrop`,
@@ -5360,8 +5360,9 @@ registered**, and nothing below it can move until it is.
         Cannot be cited.
       - **`ǣfnas`.** Wright names `ǣfen` only in §§ 119 and 293, for its
         sounds. Cannot be cited.
-      - **`gangende`.** Wright § 515 gives `gangan` its preterite and no
-        participle, as § 550 gives `gān` none. Cannot be cited.
+      - **`gangende`.** Wright § 515 gives `gangan` its principal parts
+        and no present participle, as § 550 gives `gān` none. Cannot be
+        cited.
       - **`līċ`, `wīġ` and `ċirican`, kind 3.** Wright § 311 note 2 makes
         "OE. final c … palatal when preceded by i or ī, as … līc, body",
         and § 324 a final *g* after a palatal vowel: the singular's dot,
