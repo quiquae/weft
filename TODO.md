@@ -6250,7 +6250,7 @@ Review takes hours to a couple of weeks; a first submission is slower.
 **B6 — Firefox and Safari.** Both are on `docs/READY-TO-SUBMIT.md` now, and
 neither is ready. Firefox is free and independent of everything above, needs
 reviewable source because the bundle is minified, and needs the manifest key
-in the first item of `Next` before AMO will take it. Safari needs a 99
+queued in `Next` before AMO will take it. Safari needs a 99
 USD/year Apple Developer membership and a hand check on Safari 16.4–17.1
 specifically, where the wrapped renderer is the path taken and no automated
 test can reach it. As of 2026-10-24 Apple says App Store Connect converts an

@@ -771,7 +771,7 @@ to hold:
   extension since 2025-11-03, Weft is new there, and the Firefox manifest
   lacks it. The value is a call (`websiteContent` for the own-key provider,
   as optional), and so is the floor (the built-in consent screen starts at
-  Firefox 140; Weft's is 128). Queued first in `Next`, with `npm run compat`
+  Firefox 140; Weft's is 128). Queued in `Next`, with `npm run compat`
   named as what decides whether 128 can stay.
 - **The `edge-*` screenshots are a size Edge does not take.** Microsoft
   accepts 640×480 or 1280×800; they are 1366×768. The page sends the Chrome

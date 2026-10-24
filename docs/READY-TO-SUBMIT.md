@@ -252,7 +252,7 @@ puts only `id` and `strict_min_version` under
   governs.
 
 Then rebuild (step 0.1). AMO lints the zip on upload and says what it
-refuses. The change itself is the first item in `TODO.md`'s `Next`.
+refuses. The change itself is queued in `TODO.md`'s `Next`.
 
 **F1 — Account.** <https://addons.mozilla.org/developers/>, with a Firefox
 account.
