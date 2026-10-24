@@ -81,7 +81,7 @@ upload one an earlier session left behind.
 `artefacts:check` asks provenance: whether anything an artefact is made from
 has been committed since it was written. It cannot see the renderer, or a
 fact pasted into a generator, so "ok" says nobody has moved the sources, not
-that the files are what the sources draw. So on 2026-10-24, 22:25–22:40 UTC,
+that the files are what the sources draw. So on 2026-10-24, 22:22–22:26 UTC,
 every generator was run again, on a branch from `main` at `7205e45` — which
 differs from `42b3b28` in four documents and nothing that ships — with
 npm's exit status captured for each, a marker file touched just before it to
