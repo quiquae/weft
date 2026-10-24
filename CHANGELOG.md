@@ -670,10 +670,14 @@ Wright prints it with the short *ie* of *a* broken before *h* (§69), beside
 with a hard *g*, /beˈɡinːɑn/, where the *g* stood before an original *i*
 and Wright gives such a *g* its palatal (§316), as the pack already did in
 *forġietan*; it is *beġinnan* now, /beˈjinːɑn/, and *beginning* is
-*beġinnende*, as its table prints. Every woven Old English plural and
-participle but eleven names
-the declension or conjugation table that prints it, the section of Wright's
-grammar, or the Bosworth–Toller entry that quotes it.
+*beġinnende*, as its table prints. And two plurals are now the ones their
+sources print: *books* was woven *bēc*, /ˈbeːk/, where Wright lists "bēc from
+\*bōkiz, books" under the palatal *c* (§311), so it is *bēċ*, /ˈbeːtʃ/, as
+its table prints; and *hats* was woven *hattas*, which no source prints,
+where Bosworth–Toller's Supplement quotes "Eówre hættas mitrę", so it is
+*hættas*, /ˈhætːɑs/. Every woven Old English plural and participle but nine
+names the declension or conjugation table that prints it, the section of
+Wright's grammar, or the Bosworth–Toller entry that quotes it.
 
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had

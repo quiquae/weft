@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-09:** every automatable check is green, measured at the end
+**State on 2026-10-24:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
 suites, **431** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
+packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -52,7 +52,10 @@ Chrome's 988.86 → 989.21 KB, Firefox's 989.27 and Safari's 989.21, and
 `tarde`'s, +241, 237 of them `background.js` and 4 the Portuguese pack,
 Chrome's 989.21 → 989.44 KB, Safari's 989.45 and Firefox's 989.51, which
 prints **990**: the gate's sizes, not the last session's, are the ones to
-carry.
+carry. Safari's prints **990** too from 2026-10-24, by the 4 bytes of the
+Old English pack's `bēċ` and `hættas`, 989.499 → 989.503 KB, measured
+against `main`'s three packages built in a `/tmp` worktree; Chrome's is
+989.496 and still prints 989.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
@@ -72,14 +75,16 @@ Portuguese "floors" as *chões*, where *chão* takes *chãos*. Both are
 corrected. `tools/seed/<lang>-plurals.tsv` quotes the clause that prints
 each plural, and `tests/tools/plurals.test.ts` fails on one with none.
 
-**And as of 2026-10-08 every woven Latin plural and participle but two
-names the table that prints it**, 242 of 244 read in English Wiktionary's
-declension and conjugation tables, in `tools/seed/la-plurals.tsv` and
-`la-verb-forms.tsv`, held by `tests/tools/la-forms.test.ts`; none of the 242
-was wrong, and the two are written up in `Next`.
+**And as of 2026-10-09 every woven Latin plural and participle but one
+names the table that prints it**, 243 of 244 read in English Wiktionary's
+declension and conjugation tables — `aliēnus` in its adjective's cell — in
+`tools/seed/la-plurals.tsv` and `la-verb-forms.tsv`, held by
+`tests/tools/la-forms.test.ts`; none was wrong. The one, `nārrāns`, is a
+call, written up below `Next`: Lewis's *Elementary Latin Dictionary* heads
+the verb "nārrō" and English Wiktionary "narrō".
 
-**And as of 2026-10-09 every woven Old English plural and participle but
-eleven names the table, or the section of a grammar, that prints it.** None had been read against a
+**And as of 2026-10-24 every woven Old English plural and participle but
+nine names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -103,10 +108,14 @@ were wrong, each moving its card through `RENAMED`: `ċempa` and `ċǣġ` are
 `hlīehhan` is `hliehhan` (§ 69), and `beginnan` is `beġinnan`, its *g*
 before an original *i* being palatal (§ 316), as `forġietan`'s already
 was. And `wasċende` quotes its table's `wascende`, the dot being one
-Wright § 312 gives the *sc* of `wasċan`. The last eleven are named in
-that test's `QUEUED`
-with what their table prints, and reading them is the first item in
-`Next`.
+Wright § 312 gives the *sc* of `wasċan`. And on 2026-10-24 two more were
+wrong: "books" was `bēc`, /ˈbeːk/, where Wright § 311 lists "bēc from
+\*bōkiz, books" under the palatal *c*, and is the table's `bēċ` now; and
+"hats" was `hattas`, which nothing prints, where Bosworth–Toller's
+Supplement quotes "Eówre hættas mitrę", and is the table's `hættas`. The
+last nine are named in that test's `QUEUED` with what their table prints
+and what Wright and Bosworth–Toller were found to print, and what to weave
+for them is a call, written up below `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -5242,7 +5251,7 @@ registered**, and nothing below it can move until it is.
       Wright rules, each restored by md5. Tools 409 → **410**, total 1117 →
       **1118**, in six places.
 
-- [ ] **Eleven Old English second forms are still not what their
+- [x] **Eleven Old English second forms are still not what their
       table prints.** The remainder of the item above, named in `QUEUED` in
       `tests/tools/ang-forms.test.ts` with what each table prints, and
       what Wright and Bosworth–Toller were found to print on 2026-10-08:
@@ -5312,6 +5321,63 @@ registered**, and nothing below it can move until it is.
       decide `hattas` and `gangende`, each of which has its evidence
       above and in the bullets. Kind 3 moves sounds, and wants its own
       PR; `DOTTED`, below, does not reach it on purpose.
+
+      **Closed 2026-10-24: two are woven as their sources print them, and
+      the nine left are printed by neither Wright nor Bosworth–Toller.**
+      Wright's grammar was read again, its OCR to find a word and its index
+      for every section naming one, then the page; Bosworth–Toller was
+      searched for each headword, its variants and its Supplement.
+
+      - **`bēċ`.** The pack wove `bēc`, /ˈbeːk/, the table `bēċ`. Wright
+        § 311, "2. Palatal c.", lists "bēc from \*bōkiz, books" among the
+        palatal *c*, so "books" is `bēċ`, /ˈbeːtʃ/, and its line cites the
+        table. § 410's paradigm prints "bēc" as well, but Wright prints no
+        dots, so a `wright:` line, read with the dots set aside, would have
+        cleared the row without deciding its sound: never cite a section of
+        Wright for a dot it does not discuss.
+      - **`hættas`.** The pack wove `hattas`, which no source prints.
+        Bosworth–Toller's Supplement entry for `hæt` (bt:51569), which the
+        2026-10-08 reading had not opened, quotes "Eówre hættas mitrę" from
+        the glosses of Wright's *Vocabularies* and "Haetas mitras" (Txts.
+        113, 75), and the table, `hætt`'s, prints `hættas`. Two texts beat
+        § 57's rule,
+        which names no form of this word: "hats" is `hættas`, /ˈhætːɑs/,
+        and its line cites the table, because the Supplement's head,
+        "hæt. Add:", names no gender for the ledger's head rule to read.
+      - **`hūsbondan` and `mentlas`.** Neither word is in Wright's index,
+        nor `bonda`; their Bosworth–Toller entries, read whole, print no
+        plural, and their pages have no table. Cannot be cited.
+      - **`onsīene`.** Bosworth–Toller files the word under `an-sýn`
+        (bt:1954), whose quotations are singular; its `on-sién` (bt:24741)
+        is a cross-reference with no passage, so no `bt:` line can quote a
+        head that spells `onsīen` beside a plural. Wright § 390 declines
+        `ansīen` "like cwēn" and prints no plural of it. Cannot be cited.
+      - **`þorpas`.** Wright § 335 declines `þorp` "like stān", which
+        agrees with Bosworth–Toller's masculine and implies `þorpas`
+        without printing it; Bosworth–Toller (bt:31961, to which `þrop`,
+        bt:32134, sends a reader) prints only the late "ealle þa þorpes"
+        (Chr. 963).
+        Cannot be cited.
+      - **`ǣfnas`.** Wright names `ǣfen` only in §§ 119 and 293, for its
+        sounds. Cannot be cited.
+      - **`gangende`.** Wright § 515 gives `gangan` its principal parts
+        and no present participle, as § 550 gives `gān` none. Cannot be
+        cited.
+      - **`līċ`, `wīġ` and `ċirican`, kind 3.** Wright § 311 note 2 makes
+        "OE. final c … palatal when preceded by i or ī, as … līc, body",
+        and § 324 a final *g* after a palatal vowel: the singular's dot,
+        and nothing on a neuter plural whose ending was lost. § 404
+        declines `cirice` "like tunge" and prints no plural, and § 223,
+        which the index gives for it, is about syncope. Whether a plural
+        kept its singular's sound is Hogg's or Campbell's to say, and
+        neither is free. Cannot be decided from either source.
+
+      So nine cannot be cited from the sources the ledger accepts, and
+      nothing was invented for them. They stay in `QUEUED`, whose reasons
+      now say what each source was found to print, and what to weave for
+      them is a call, below `Next`. Bülbring and Wright's *Elementary*
+      grammar, which the step above named, are sources the ledger does not
+      accept; a `wright:` line means the 1914 grammar.
 
       **Done 2026-10-09 for one more: `wasċan`'s dot is Wright's, and a
       line may say so.** § 312, read in the page images (pages 155–156,
@@ -5494,7 +5560,7 @@ registered**, and nothing below it can move until it is.
       suites, total 1118 → **1133**, in six places. Nothing that ships
       moved.
 
-- [ ] **One Latin second form is not what its table prints.** Named in
+- [x] **One Latin second form is not what its table prints.** Named in
       `QUEUED` in `tests/tools/la-forms.test.ts`. `nārrāre`, "tell", is
       woven `nārrāns` where the table prints "narrāns": Wiktionary marks the
       first vowel short and the seed long, a question of the headword's own
@@ -5512,6 +5578,20 @@ registered**, and nothing below it can move until it is.
       Allen's *Vox Latina* or the *Oxford Latin Dictionary* — not another
       table.
 
+      **Closed 2026-10-24: it cannot be cited, and two dictionaries
+      disagree.** Charlton T. Lewis's *Elementary Latin Dictionary* (1890),
+      at Perseus (`Perseus:text:1999.04.0060:entry=narro`), heads the verb
+      "nārrō", the seed's length. English Wiktionary heads it "narrō" and
+      says why: it is "from earlier nārō", and the long vowel and the
+      doubled *r* alternate — "a common vacillation between long vowel and
+      geminate consonant" — citing de Vaan, *Etymological Dictionary of
+      Latin* (2008), s.v. *gnārus* > *narrāre*, p. 267, and Weiss,
+      "Observations on the Littera Rule" (2010). So the seed's `nārrāre`,
+      long vowel and doubled consonant both, is Lewis's spelling, and by
+      Wiktionary's account one the language did not write at once. The
+      ledger accepts only the table, so `QUEUED` keeps the row, and whether
+      to respell the headword `narrāre` is a call, below `Next`.
+
       **Done 2026-10-09 for `aliēnus`**, with Old English `fremde`: an
       adjective used as a noun, Lewis & Short's "II. Subst. 1. ălĭēnus, i,
       m., a stranger", which also quotes the plural, "apud me cenant alieni
@@ -5519,9 +5599,10 @@ registered**, and nothing below it can move until it is.
       and its line quotes the cell of its gender, "masculine nominative
       plural aliēnī". All 165 Latin plurals now name their table.
 
-`Now` is **empty** and `Next` holds **two** unchecked items, as of
-2026-10-09: the eleven Old English second forms their tables do not
-print, and the one Latin one, `nārrāre`. `wasċan`'s dot, `beġinnan`'s palatal *g*,
+`Now` and `Next` are **empty**, as of 2026-10-24: the Old English second
+forms their tables do not print and the Latin one are closed, every source
+the ledgers accept read for each, and the ten forms none of them prints are
+calls, below. `bēċ` and `hættas`, `wasċan`'s dot, `beġinnan`'s palatal *g*,
 `hliehhan`'s short *ie*, `cempa`
 and `cǣġ`'s guttural *c*, `fremdan` and `aliēnī`, the adjectives' cells, six more of the Old
 English thirty, Latin's
@@ -5560,6 +5641,39 @@ a collision leaves every URL resolving. **713 declared against 711 written**
 is the whole signal. If a future session wants the same class of finding
 cheaply, compare what a generator says it produced against what it left on
 disk, rather than asking whether the output is internally consistent.
+
+**Ten second-form calls a human may want to look at**, recorded on
+2026-10-24 rather than changed. Each is a woven form that no source the
+ledgers accept prints, named in `QUEUED` in `tests/tools/ang-forms.test.ts`
+or `la-forms.test.ts` with what was read. Each fix moves the pack, a
+transcription and the three screenshot groups; only the last moves a card.
+
+1. **Regular forms nobody prints: `hūsbondan`, `mentlas`, `onsīene`,
+   `þorpas`.** Each is what its declension as Wright prints it gives — a
+   weak masculine's *-an*, `englas`'s syncope (§ 338's paradigm), `cwēn`'s
+   "cwēne, -a" (§ 389), `stān`'s *-as* — and none is in a text read. Keep
+   them, with `QUEUED` as the record, or blank them as `iūsiūrandum`'s
+   plural was, a blank costing less trust than a form nobody has seen, so
+   that "husbands", "coats", "faces" and "villages" stay English.
+2. **`ǣfnas` or the table's `ǣfennas`.** The table, masculine as the gender
+   ledger is, prints `ǣfennas`; Sievers § 248.2 calls the word a neuter
+   "(also masc.)" and prints only its genitive, "ǣfnes, beside ǣfenes and
+   ǣfennes", which gives `ǣfnas` no print either. Weaving `ǣfennas`
+   clears the row as `flōra` was cleared.
+3. **`gangende` or `gānde`**, as the closed item records: `gānde` is the
+   table's and Mercian, `gangende` is `gangan`'s, which West Saxon prose
+   merges with `gān`.
+4. **Kind 3: `līċ`, `wīġ`, `ċirican`.** Whether a neuter plural whose
+   ending was lost keeps its singular's palatal, and whether `ċiriċe`'s
+   oblique cases keep the second one before *-an*. The tables say no to
+   the first and yes to the second, the pack the reverse of each, and
+   Wright speaks only to the singulars. Hogg's or Campbell's chapter on
+   palatalisation would decide both; the orthography guard's dot rule
+   moves with the forms.
+5. **`nārrāre` or `narrāre`.** Lewis's *Elementary* prints the seed's
+   `nārrō`, Wiktionary `narrō`, with de Vaan and Weiss behind it.
+   Respelling moves the card through `RENAMED`, a mark only, and both
+   transcriptions.
 
 **Two verb calls a human may want to look at**, recorded on 2026-10-08
 rather than changed:
