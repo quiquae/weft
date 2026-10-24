@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-09:** every automatable check is green, measured at the end
+**State on 2026-10-24:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
 suites, **431** tool tests / 102 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 989 KB for Chrome and Safari and 990 for Firefox, all
+packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -52,7 +52,10 @@ Chrome's 988.86 → 989.21 KB, Firefox's 989.27 and Safari's 989.21, and
 `tarde`'s, +241, 237 of them `background.js` and 4 the Portuguese pack,
 Chrome's 989.21 → 989.44 KB, Safari's 989.45 and Firefox's 989.51, which
 prints **990**: the gate's sizes, not the last session's, are the ones to
-carry.
+carry. Safari's prints **990** too from 2026-10-24, by the 4 bytes of the
+Old English pack's `bēċ` and `hættas`, 989.499 → 989.503 KB, measured
+against `main`'s three packages built in a `/tmp` worktree; Chrome's is
+989.496 and still prints 989.
 `npm run test:all` exits 0 end to end.
 
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not

@@ -119,11 +119,12 @@ const printed = (quote: string, pos: Pos, adjective?: string): string[] | undefi
 
 /**
  * A woven form the table of its entry does not print, with what it prints
- * instead: waiting for a grammar or Lewis & Short to say which is right.
- * Keyed by part of speech, English lemma and headword.
+ * instead. Lewis & Short marks no quantity a position hides, and the two
+ * dictionaries that do disagree, so what to weave is a call, written up in
+ * TODO.md. Keyed by part of speech, English lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
-  ['verb\ttell\tnārrāre', 'its table prints narrāns, the first vowel short'],
+  ['verb\ttell\tnārrāre', 'its table prints narrāns, the first vowel short; Lewis’s Elementary Latin Dictionary heads the verb nārrō'],
 ]);
 
 /**

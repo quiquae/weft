@@ -166,8 +166,10 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
 
 /**
  * A woven form the table of its entry does not print, with what it prints
- * instead: waiting for a grammar or Bosworth–Toller to say which is right.
- * Keyed by part of speech, English lemma and headword.
+ * instead and what Wright and Bosworth–Toller were found to print. Each was
+ * read in both on 2026-10-24, and neither prints the woven form, so what to
+ * weave is a call, written up in TODO.md. Keyed by part of speech, English
+ * lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table; Bosworth–Toller’s two entries (bt:19998, bt:53417), read whole, print no plural, and Wright’s index names neither the word nor bonda'],
