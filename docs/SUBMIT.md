@@ -1,7 +1,10 @@
 # Getting Weft into the stores
 
 Four stores, four different processes. This is the operational runbook;
-`STORE-LISTING.md` has the copy to paste into the fields.
+`STORE-LISTING.md` has the copy to paste into the fields. **To submit, work
+down `READY-TO-SUBMIT.md` instead**: one page, every field's copy inline in
+the form the store's box takes, and what is not ready said plainly. This file
+is the reasoning behind it.
 
 Everything a machine can check has been checked:
 
@@ -63,7 +66,7 @@ this tests what a person downloads.
 | Store | Fee | Verified |
 |---|---|---|
 | Chrome Web Store | One-time registration fee | Chrome's docs confirm **one-time, not recurring**, but do not print the amount. It has been $5 for years; the figure is shown at registration. |
-| Microsoft Edge Add-ons | No fee for extension publishing | Not independently verified here — confirm at registration. |
+| Microsoft Edge Add-ons | **None** | Verified 2026-10-24: "There is no registration fee for submitting extensions to the Microsoft Edge program" ([Microsoft](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/create-dev-account)). |
 | Firefox (addons.mozilla.org) | Free | Long-standing; no account fee. |
 | Safari / Mac App Store | **99 USD per year, recurring** | Verified against Apple's enrolment page. A paid membership is **required** to distribute; without it you can only run Weft on your own machine. |
 
@@ -110,8 +113,8 @@ These block each other, so the order matters.
 2. **Decide the publisher name.** It appears on every listing, and changing it
    later is awkward on Chrome and painful on Apple.
 3. **Chrome Web Store first.** It is the largest audience, the fastest review,
-   and Edge can import a published Chrome listing, so doing Chrome first
-   halves the Edge work.
+   and Edge's forms ask for the same copy, so doing Chrome first halves
+   the Edge work.
 4. **Firefox in parallel.** Independent of everything else.
 5. **Safari last**, because of the Apple membership and the Xcode build.
 6. **Only then post anywhere.** `LAUNCH.md` says this too and it is worth
@@ -153,7 +156,7 @@ folder to point "Load unpacked" at.
    one-time fee.
 2. **Upload** `weft-chrome-1.0.1.zip`.
 3. **Store listing** — paste from `STORE-LISTING.md`: name, short description
-   (129 chars, under the 132 limit), detailed description, category
+   (112 chars, under the 132 limit), detailed description, category
    *Education*, language English.
 4. **Graphics** — all at the exact required sizes already:
    - Icon: `assets/icon-128.png`
@@ -191,9 +194,13 @@ Edge runs the same MV3 package as Chrome. Use the **Chrome zip**, not a
 separate build — there is no `--target=edge` because there is no difference.
 
 1. Register at <https://partner.microsoft.com/dashboard/microsoftedge>.
-2. If the Chrome listing is already live, use **"Import from Chrome Web
-   Store"** and then correct what it gets wrong.
-3. Screenshots: the five `docs/store/edge-*.png` (1366×768).
+2. Paste the same copy as Chrome. An earlier draft of this step said to
+   "Import from Chrome Web Store"; Microsoft's
+   [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+   describes no such option, so do not count on one.
+3. Screenshots: the five **`docs/store/chrome-*.png`** (1280×800). Not the
+   `edge-*.png` set: it is 1366×768, and Microsoft accepts screenshots of
+   640×480 or 1280×800 only.
 4. Store logo: `docs/store/logo-edge-300x300.png` (300×300, required).
 
 Edge review is usually slower than Chrome's and the feedback is terser.
