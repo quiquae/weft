@@ -39,7 +39,9 @@ submission Creagh performs by hand with her own developer account, so this
 repository's job is to be release-ready and to keep the remaining human steps
 written down. Every one of those steps now needs her: `TODO.md` is that list,
 headed by **B1**, registering `weft.study`. `docs/SUBMIT.md` is the long-form
-runbook and `docs/STORE-LISTING.md` holds every field's copy.
+runbook, `docs/STORE-LISTING.md` holds every field's copy, and
+`docs/SUBMIT-STATUS.md` is the last full run of the runbook's gate, dated,
+with the live-URL measurements no check in the repository makes.
 
 ## How to work here
 
@@ -63,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for Chrome, 990 for Firefox and Safari |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing |
+| `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -712,6 +714,63 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-24 — the gate passes, the domain does not resolve, and site:check could never have said so
+
+The queue asked for the whole pre-submission gate as `docs/SUBMIT.md`
+defines it, its figures written into a new `docs/SUBMIT-STATUS.md`, and
+warned that `site:check` would fail because `weft.study` does not resolve —
+to be recorded as the blocker, the check left alone. **It did not fail, and
+could not have.** `tools/check-links.mjs` `stat()`s files in `dist/site` and
+skips every absolute URL (`:50`), so it proves the build has a page at
+`/privacy`, `/support` and `/pricing` and passes whether or not the domain
+exists. The prediction most likely came from `docs/SUBMIT.md:24`, which said
+`site:check` "proves the privacy policy URL Chrome requires … has a page
+behind it". The check was right and the sentence promised more than it does;
+the sentence is corrected, and the check is untouched.
+
+**So the blocker is recorded from a measurement of its own**, at 21:59 UTC:
+NXDOMAIN from 8.8.8.8 and 1.1.1.1, and from `a.nic.study`, the registry's
+own server, with the authoritative flag set; `curl` on all three URLs exits
+6, "Could not resolve host", HTTP `000`. That is B1. The Chrome block of
+`SUBMIT.md` now ends with that `curl`, which must print `200`. It is a manual
+step, not a CI one: it would be red on every push until B1.
+
+Measured on `main` at `42b3b28`, Node 26.7, one command at a time with npm's
+own exit status captured: `npm run test:all` **exit 0 in 5 min 15 s** —
+typecheck clean, 566 unit / 137 suites, 102 jsdom / 23, 431 tools / 102,
+compat 21 dependencies × 3 browsers, 56 pass / 7 degrade / 0 fail / 0 without
+data, **989 / 990 / 990 KB** passing `validate`, **40 e2e passed and 3
+skipped in 4.3 min**, then build and validate again. Then `packs:verify`
+**0 errors / 5 warnings**; `npm run site` and `site:check` **714 pages /
+16 118 links**, all resolving; `artefacts:check` **8 groups, 1 stale**,
+exit 1 — the release notes, 84 commits behind `d2e834f`, B2a; and the
+Chrome block's `zip` and `validate`, exit 0, the store archive 224 859 bytes
+with `manifest.json` at its root and `"version": "1.0.1"`. After the
+documents moved, typecheck and `npm test` were run again on the final tree:
+exit 0, 566 / 102 / 431, 0 failures. Every figure is in
+`docs/SUBMIT-STATUS.md`.
+
+**Reading the documents that define the gate while it ran found three
+stale claims.** `docs/SUBMIT.md:19` said "37 passed, 3 skipped" is the green
+result, six lines below "40 end-to-end tests": the count sweeps of #49, #64
+and #72 took that count from 37 to 40, one each, and none of them moved the
+37. It no longer repeats the count.
+B1 in `TODO.md` said a new domain meant changing three files "and nothing
+else"; `git grep` finds 26 lines in 16, among them the store listing's
+privacy and support URLs, the field Chrome reads. B1 gives the command now.
+And the six zips on disk were 2026-09-29's, cut with 1.0.1: 218 593 bytes
+for the Chrome store archive, where `main` builds 224 859. They are
+gitignored, so nothing says when they go stale; `npm run zip` replaced them.
+
+Assumed, with nobody to ask: that the gate is `SUBMIT.md`'s three extra
+checks plus its Chrome block, `zip` and `validate` among them; that a check
+which passes is reported as passing even when the queue expected it to
+fail, with the live failure measured beside it; and that `npm ci` was not
+part of the gate, `SUBMIT.md` not naming it.
+
+What needs a human: unchanged, everything below **B1**. `Now` and `Next` are
+empty.
 
 ### 2026-10-24 — bēċ and hættas are what their sources print, and ten forms cannot be cited
 

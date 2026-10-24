@@ -58,6 +58,14 @@ against `main`'s three packages built in a `/tmp` worktree; Chrome's is
 989.496 and still prints 989.
 `npm run test:all` exits 0 end to end.
 
+**The whole pre-submission gate was run on 2026-10-24 and is written up, figure
+by figure, in `docs/SUBMIT-STATUS.md`.** It passes — `test:all`, `packs:verify`,
+`site:check`, `zip` and `validate` exit 0, and `artefacts:check` exits 1 on the
+release notes alone, which is B2a — and the submission is still blocked:
+`https://weft.study/privacy`, the privacy policy URL the store requires, does
+not resolve. `site:check` cannot see that, because it reads `dist/site`; see
+**B1**.
+
 **And as of 2026-10-08 the Italian tooltip prints no gender Italian does not
 have.** `orecchio`, ear, printed "neuter", and the feminine plurals `ossa`,
 `braccia`, `dita` and `uova` printed their masculine singulars' gender. All
@@ -255,14 +263,18 @@ with the pack's own words blanked out, and fails on a verb of descent. Of
 says "Source of English" since the session after — see the ticked item
 there.
 
-**The three gates `test:all` leaves out, re-measured on 2026-10-06, each with
-npm's own exit status captured rather than a pipe's:**
+**The three gates `test:all` leaves out, re-measured on 2026-10-24 with the
+whole of `docs/SUBMIT.md`'s gate, each with npm's own exit status captured
+rather than a pipe's.** Every figure of that run, and the live-URL
+measurements, are in `docs/SUBMIT-STATUS.md`; the last row is not an npm
+command and is the one that blocks the submission:
 
 | Gate | Exit | Result |
 |---|---|---|
 | `npm run packs:verify` | **0** | 0 errors, 5 warnings — the Old English phrases with no IPA: the four interjections and, since 2026-10-07, `tō morgen`. 356 rows per seed; built packs 581–588 entries across 576–583 surface forms |
-| `npm run site:check` | **0** | **714** pages, **16 118** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it |
-| `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
+| `npm run site:check` | **0** | **714** pages, **16 118** internal links, all resolve, all 3 externally-referenced pages exist. Needs `npm run site` first — it reads `dist/site` and does not build it. **It never contacts `weft.study`**, so it passes whether or not the domain resolves |
+| `npm run artefacts:check` | **1** | **8** groups, **1** stale: the release notes, 84 commits behind `d2e834f`, which is **B2a** and cannot be fresh before the tag, because its `inputs` are `.`. Was 5 groups; the icon sheet, the shipped icons and the social card were added 2026-09-30, and **every committed image is now inside a group** |
+| `curl https://weft.study/privacy` | **6** | `Could not resolve host`, HTTP `000`; NXDOMAIN from 8.8.8.8, 1.1.1.1 and, with authority, the registry's `a.nic.study`. The privacy policy URL the store requires does not exist yet: **B1** |
 
 **`artefacts:check` exits 1 on a correct tree and nothing said so before
 now.** The release-notes group is stale by design until B2a, so a non-zero
@@ -6006,17 +6018,32 @@ Notes here and from the Journal in `CLAUDE.md`.*
 
 **B1 — Register `weft.study`.** *Everything else waits on this.* `dig` returns
 NXDOMAIN from both 8.8.8.8 and 1.1.1.1 while the `.study` TLD itself resolves,
-so the domain is simply not registered. Three things are compiled into the
+and on 2026-10-24 the registry's own server, `a.nic.study`, answered NXDOMAIN
+with authority, so the name is not in the zone — the measurements are in
+`docs/SUBMIT-STATUS.md`. That is what an unregistered name returns, and also
+what a registered one held without nameservers returns, so a registrar's
+search says which. Three things are compiled into the
 shipped extension or the store copy and point at it: `PRICING_URL` and
 `SUPPORT_URL` in `src/core/pricing.ts:82,91`, and the privacy policy URL the
 Chrome Web Store requires. *Unblocks: B2, B3, and the whole of B5.*
 If a different domain is chosen instead, note that
 `browser_specific_settings.gecko.id` is `weft@weft.study` and **must not
 change** — it orphans every Firefox install — so the id will simply outlive
-the domain name. Change `src/core/pricing.ts`, `WEFT_SITE_URL` in
-`.github/workflows/site.yml` and the one URL in the r/latin draft at
-`docs/LAUNCH.md` — added 2026-09-28, where an undefined Markdown reference had
-been — and nothing else.
+the domain name. Change what this finds, except the two lines naming that id
+(`manifest.config.mjs` and `docs/SUBMIT.md`):
+
+```bash
+git grep -n 'weft\.study' -- ':!CLAUDE.md' ':!TODO.md' ':!CHANGELOG.md' ':!RELEASE-1.0.0.md' ':!docs/SUBMIT-STATUS.md'
+```
+
+On 2026-10-24 it found 26 lines in 16 files. The list it replaces named
+three — `src/core/pricing.ts`, `.github/workflows/site.yml` and
+`docs/LAUNCH.md` — "and nothing else", and missed the store listing's own
+privacy and support URLs (`docs/STORE-LISTING.md`), the landing page's five
+absolute URLs (`site/index.html`), the site builder's default domain
+(`tools/build-site.mjs:54`) and the release-notes template
+(`tools/release.mjs`). A hand-kept list of places is a list somebody forgets
+to extend; the command is not.
 
 **B2 — Make the repository public, or set `WEFT_REPO`.** The install page's
 download button points at `<repo>/releases/latest`
@@ -6131,6 +6158,29 @@ and no automated test can reach it.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-24 — the pre-submission gate, and three claims about it that were
+wrong.** The run is `docs/SUBMIT-STATUS.md`. What it found in the documents
+that define the gate:
+
+1. **A check's description can promise more than the check does.** The
+   queue predicted `site:check` would fail because `weft.study` does not
+   resolve — a reading, most likely, of `docs/SUBMIT.md:24`, which said it
+   "proves the privacy policy URL Chrome requires … has a page behind it".
+   It reads
+   `dist/site` and skips absolute URLs, so it passed, correctly. The
+   sentence now says what it proves, and the live URL is measured by hand
+   — `curl` in the Chrome block of `SUBMIT.md`, which must print `200`.
+   **Do not add that `curl` to CI or to `site:check`:** it would be red on
+   every push until B1, for a reason no commit can fix.
+2. **A number stated twice drifts.** `docs/SUBMIT.md:19` said "37 passed, 3
+   skipped" is the green result, six lines below "40 end-to-end tests". The
+   count sweeps of #49, #64 and #72 took that count from 37 to 38, 39 and
+   40, and none of them moved the 37. It no longer repeats the count.
+3. **A hand-kept list of places is a list somebody forgets to extend.** B1
+   said a new domain meant changing three files "and nothing else"; `git
+   grep` found 26 lines in 16 files, among them the store listing's
+   privacy and support URLs. B1 gives the command now.
 
 **2026-10-09 — `beġinnan`, and what a guard of sounds cannot decide.**
 Three things a later run would be sorry not to know:

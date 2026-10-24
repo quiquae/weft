@@ -16,17 +16,34 @@ green.
 
 Three further end-to-end specs are defined and deliberately skipped — they
 generate assets rather than assert anything, and run only behind
-`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. "37 passed, 3
-skipped" is the green result, not a partial one.
+`WEFT_STORE=1`, `WEFT_SCREENS=1` and `WEFT_FIRSTRUN=1`. Playwright reports
+them as "3 skipped" beside the passes, and that is the green result, not a
+partial one.
 
 `test:all` does **not** include `npm run packs:verify`, `npm run site:check`
-or `npm run artefacts:check`. Run all three as well before a submission.
+or `npm run artefacts:check`. Run all three as well before a submission —
+`site:check` after `npm run site`, because it reads `dist/site` and does not
+build it:
+
+```bash
+npm run packs:verify
+npm run site && npm run site:check
+npm run artefacts:check
+```
+
 `packs:verify` is the only thing that reads the lexicons; `site:check` is the
-only thing that proves the privacy policy URL Chrome requires — and the
-support URL compiled into the shipped extension — has a page behind it; and
-`artefacts:check` is the only thing that looks at the generated files this
-runbook tells you to upload, which go stale whenever `src/` moves and do not
-change when they do.
+only thing that proves the site this repository builds has a page at the
+privacy policy path Chrome requires and at the support path compiled into
+the shipped extension; and `artefacts:check` is the only thing that looks at
+the generated files this runbook tells you to upload, which go stale whenever
+`src/` moves and do not change when they do.
+
+**None of them can tell whether `https://weft.study` serves those pages.**
+`site:check` reads files and skips every absolute URL, so it passes whether
+or not the domain resolves — and on 2026-10-24 `weft.study` did not resolve
+at all.
+The last full run of this gate, every figure in it and the live-URL
+measurements beside it, is in `SUBMIT-STATUS.md`.
 
 After tagging a release, check what GitHub actually serves:
 
@@ -110,9 +127,14 @@ npm run test:all          # must be green
 npm run artefacts:check   # what the tree has moved past since it was generated
 npm run zip               # writes two archives per target
 npm run validate          # re-check the exact bytes being uploaded
+curl -sS -o /dev/null -w '%{http_code}\n' https://weft.study/privacy   # must print 200
 ```
 
-`artefacts:check` is the one of those four that is about *this document*.
+The last line is the only one that asks the internet rather than this
+repository, and it checks the URL the store refuses a submission without.
+Load the page in a logged-out browser as well.
+
+`artefacts:check` is the one of those five that is about *this document*.
 The screenshots below and the release notes are generated files, and an
 ordinary change to `src/` invalidates them without changing them — so they
 go stale silently, and a version bump invalidates filenames the same way.
