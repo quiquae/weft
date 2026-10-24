@@ -214,6 +214,11 @@ Edge review is usually slower than Chrome's and the feedback is terser.
 npm run zip               # also writes weft-firefox-1.0.1.zip
 ```
 
+**Not submittable yet.** Since 2025-11-03 AMO refuses a new extension whose
+manifest does not declare `browser_specific_settings.gecko.data_collection_permissions`,
+and the Firefox build does not. `READY-TO-SUBMIT.md` (F0) has the two calls
+that needs, and `TODO.md`'s `Next` the change.
+
 1. Create an account at <https://addons.mozilla.org/developers/>. No fee.
 2. Submit `weft-firefox-1.0.1.zip`.
 3. **Source code is required** because the bundle is minified. AMO wants a

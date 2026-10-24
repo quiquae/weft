@@ -318,6 +318,9 @@ is an automated test asserting exactly that (`tests/e2e/licensing.spec.ts`,
 
 ### Firefox, separately
 
+- [ ] The Firefox manifest declares `data_collection_permissions`, which AMO
+      requires of a new extension — it does not yet
+      (`READY-TO-SUBMIT.md`, F0)
 - [ ] An addons.mozilla.org account, no fee
 - [ ] Submit `weft-firefox-<version>.zip`
 - [ ] AMO requires reviewable source for minified code. `npm run build` is
