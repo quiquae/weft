@@ -100,6 +100,21 @@ export function dayKey(ts: number, rolloverHour = 4): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * The day key `days` days after `key`, or before it for a negative `days`,
+ * counted on the calendar.
+ *
+ * Never `dayKey(now - days * 86_400_000)`. A day is 25 hours long on the
+ * night the clocks go back and 23 on the night they go forward, so stepping
+ * by 24 hours lands twice in one day or skips one — for an hour of every day
+ * in the month after each change, at a 4 a.m. rollover. A key names a date,
+ * and a date is stepped in UTC, where no day has a change of the clocks.
+ */
+export function shiftDay(key: string, days: number): string {
+  const [y, m, d] = key.split('-').map(Number) as [number, number, number];
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
+}
+
 export interface TickResult {
   attention: SiteAttention;
   /** True when the day rolled over during this tick. */
