@@ -675,9 +675,13 @@ sources print: *books* was woven *bēc*, /ˈbeːk/, where Wright lists "bēc fro
 \*bōkiz, books" under the palatal *c* (§311), so it is *bēċ*, /ˈbeːtʃ/, as
 its table prints; and *hats* was woven *hattas*, which no source prints,
 where Bosworth–Toller's Supplement quotes "Eówre hættas mitrę", so it is
-*hættas*, /ˈhætːɑs/. Every woven Old English plural and participle but nine
-names the declension or conjugation table that prints it, the section of
-Wright's grammar, or the Bosworth–Toller entry that quotes it.
+*hættas*, /ˈhætːɑs/. And *churches* was woven *ċirican*, its second *c*
+hard, /ˈtʃirikɑn/, where the table prints *ċiriċan* and Bülbring's
+*Altenglisches Elementarbuch* (§499) prints the West Saxon "ćirićean
+'Kirchen'", both *c* soft; it is *ċiriċan* now, /ˈtʃiritʃɑn/. Every woven
+Old English plural and participle but seven names the declension or
+conjugation table that prints it, the section of Wright's grammar or of
+Moore and Knott's, or the Bosworth–Toller entry that quotes it.
 
 **And the dashboard counted the night the clocks went back twice.** Its
 daily chart, the week's total, yesterday's figure and the streak each stepped

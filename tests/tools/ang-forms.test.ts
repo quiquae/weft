@@ -193,14 +193,16 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
  * were searched for each — Bülbring's *Altenglisches Elementarbuch* (1902),
  * Wright's *Elementary Old English Grammar* (1923) and Moore and Knott's
  * *The Elements of Old English* (1919) — and none prints a form woven here;
- * what Bülbring prints for `līċ` and `ċiriċe` is in their reasons. Keyed by
- * part of speech, English lemma and headword.
+ * what Bülbring prints for `līċ` is in its reason. Bülbring took `ċiriċe` out
+ * of the list the same day: § 499 Anm. 4 prints the West Saxon plural
+ * "ćirićean 'Kirchen'", both c palatal, which is the table's `ċiriċan`, and
+ * the pack weaves that now. Keyed by part of speech, English lemma and
+ * headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table; Bosworth–Toller’s two entries (bt:19998, bt:53417), read whole, print no plural, and Wright’s index names neither the word nor bonda'],
   ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, which heads it an-sýn (bt:1954), not onsīen, and whose quotations are singular; Wright § 390 only declines ansīen like cwēn, plural cwēne (§ 389)'],
   ['noun\tbody\tlīċ', 'its table prints līc; Wright § 311 note 2 makes a final c after ī palatal, naming līc, and says nothing of the neuter plural, whose ending was lost; Bülbring § 496 (page 199) makes a word-final c straight after ī palatal south of the Humber, “līć ‘Leib’”, and is silent on the plural too'],
-  ['noun\tchurch\tċiriċe', 'its table prints ċiriċan; Wright § 311 puts cirice under the palatal c and § 404 declines it like tunge, so neither prints the plural’s second c; Bülbring § 499 Anm. 4 (page 201) prints the West Saxon plural “ćirićean ‘Kirchen’”, both c palatal, the e marking the second before a back vowel: the table’s ċiriċan, not the pack’s ċirican'],
   ['noun\tcoat\tmentel', 'its entry has no table; Bosworth–Toller’s two entries (bt:22625, bt:55269), read whole, print no plural, and Wright’s index does not name the word'],
   ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”; Wright § 335 declines þorp like stān, which implies þorpas and does not print it'],
   ['noun\tevening\tǣfen', 'its table prints ǣfennas; Bosworth–Toller’s two entries (bt:391, bt:37608) print only the genitive plural ǽfena, and Wright names ǣfen only for its sounds (§§ 119, 293)'],

@@ -237,8 +237,11 @@ describe('a lexicon note quotes with the same marks the site itself does', () =>
  * "children" as `cildru`, `ċildclāð` "babies" as `cildclāðas`, and `æġ`
  * "eggs" as `ǣgru`, where English Wiktionary declines `ċild` on its dotted
  * stem and writes `{{ang-noun|ǣġ|n|ǣġru}}`. A dot may go where a back vowel
- * follows, which is the guttural sound coming back — `fisċ`, `fiscas` and
- * `ċiriċe`, `ċirican`, as Wiktionary declines them on the stems `fisċ|fisc`.
+ * follows, which is the guttural sound coming back — `fisċ`, `fiscas`, as
+ * Wiktionary declines it on the stems `fisċ|fisc`, and `dæġ`, `dagas`, which
+ * Wright § 320 prints — but it need not: `ċiriċe` keeps both in `ċiriċan`,
+ * as its table prints it and Bülbring § 499 Anm. 4 prints the West Saxon
+ * "ćirićean 'Kirchen'", where the pack wove `ċirican` until 2026-10-25.
  */
 type Form = Entry & { tgt?: string };
 
