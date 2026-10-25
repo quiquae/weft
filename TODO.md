@@ -6,7 +6,7 @@
 
 **State on 2026-10-25:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **442** tool tests / 106 suites, **40** e2e passing
+suites, **448** tool tests / 107 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -147,6 +147,17 @@ prints, "(gangende)", with the note that West Saxon supplies it from
 it and Bülbring § 499 Anm. 4 prints the West Saxon plural, "ćirićean
 'Kirchen'". What to weave for the seven left is a call, written up below
 `Next`.
+
+**And as of 2026-10-25 every Old English note on a verb, adjective, adverb,
+numeral or interjection names the entries it was read in.** The Latin notes
+have named theirs since 2026-10-02; the Old English ones named none.
+`tools/seed/ang-notes.tsv` repeats each of those 39 beside the entry its
+row's gloss was read in and the etymonline or English Wiktionary entries for
+the English words it explains, and `tests/tools/ang-notes.test.ts` fails on a
+note with no line. 38 stood. One said less than the dictionaries:
+`clȳsan`'s "“close” came from French", where both have the verb partly from
+`clȳsan` itself; it says "“close” is partly this word and partly Old French
+“clos”" now. The 48 noun notes are the first item in `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -599,8 +610,9 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
-agent-shaped item, only two that wait on Creagh's calls.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds one
+agent-shaped item, the Old English noun notes, above two that wait on
+Creagh's calls.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1117,6 +1129,61 @@ registered**, and nothing below it can move until it is.
       Notes, which replace the entries they contradict.
 
 ## Next
+
+- [ ] **Read the 48 Old English noun notes into `tools/seed/ang-notes.tsv`,
+      then add `'noun'` to `HELD` in `tests/tools/ang-notes.test.ts`.** The
+      ledger and its test landed on 2026-10-25 holding every other part of
+      speech; nouns are the rest, and a line for a noun may land before
+      `HELD` takes nouns, the other five rules holding it already. Each line
+      cites an entry its row's gloss was read in (`ang-glosses.tsv`, the
+      gender's entry for a noun) and, when the note names the row's etymon,
+      `etym:` or `wikt:en:` for it. **etymonline refuses automated readers**
+      with a challenge page; read it in the Internet Archive's copies, one
+      every three seconds, retrying a `000`:
+      `curl -s -L --compressed "https://web.archive.org/web/2025id_/https://www.etymonline.com/word/<w>"`.
+      English Wiktionary takes `index.php?title=<t>&action=render`. Seven
+      notes looked doubtful while they were listed, so read them first:
+      `setl`'s "the high-backed bench" describes English *settle*, not
+      *setl*, which `ang-glosses.tsv` quotes as "seat, bench, throne", and so
+      glosses the wrong word when the etymon badge is off, as `umbra`'s did
+      in Latin; `āscung`'s "“asking”, built on “ask”, replaced it", where
+      etymonline may derive *asking* from *āscung* itself (read
+      `ang-etymons.tsv`'s foot first); `sċeadu`'s "“shade” comes partly from
+      it"; `hām`'s "many English place-names in -ham", some being *hamm*;
+      `mōnað`'s "from one new moon to the next"; `stōw`'s "as in
+      Walthamstow"; and `weald`'s "the Kentish Weald". A rewritten note moves
+      the Old English pack, so regenerate and stamp the three screenshot
+      groups after committing it, and write a `CHANGELOG.md` sentence. About
+      45 minutes of reading, and 25 more if a note moves.
+
+- [x] **Hold the Old English notes to the entries they were read in, every
+      part of speech but the noun.** Done 2026-10-25. The queue sent this
+      run at "the eleven Old English second forms their tables do not
+      print", a task written before 2026-10-24: `bēċ` and `ċiriċan` had
+      landed, Wright §§ 309–324 and Bülbring had been read for kind 3, and
+      Bülbring, Wright's *Elementary* grammar and Moore and Knott had been
+      searched for `þorpas`, `hūsbondan` and `mentlas`, so the seven left
+      are the calls below `Next` and nothing in the item was agent-shaped.
+      Nor was anything else in `Next`. So the work was found by counting
+      which published claims name no entry, and the Old English notes were
+      the last: 87 rows, the Latin ones held since 2026-10-02, the reason
+      the Latin test gave for leaving these — that nothing here cited
+      Bosworth–Toller — false since four ledgers came to cite it.
+      `tools/seed/ang-notes.tsv` and `tests/tools/ang-notes.test.ts`, 6
+      tests in a new suite: a note of a held part of speech with no line, or
+      reworded since, fails; so does a line citing no entry its row's gloss
+      was read in, a note naming its etymon without that English word's own
+      entry, an unreadable source, and a line outliving its note. Red first
+      on a header-only ledger, all 39; then, the ledger written with
+      `clȳsan`'s rewritten note, red on exactly
+      `lex-ang.tsv:331 close → clȳsan`; green with the seed. Seven probes,
+      each restored by md5, each failing its own test by name. 2 fields of
+      `en-ang.json` moved, `close` and `closing`, `builtAt` already today.
+      All 31 screenshots regenerated, 10 + 14 + 7; the documentation set's
+      first run moved `options.png` by 40 pixels, the largest channel 16
+      apart, the drift of 2026-10-08, and its second gave back every
+      committed byte, so the three groups are stamped. Tools 442 → **448** /
+      106 → **107** suites, in six places, `docs/LAUNCH.md:221` first.
 
 - [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
       Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
