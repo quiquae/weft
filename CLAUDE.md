@@ -782,6 +782,79 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-25 — the compat audit read no manifest, though two documents said it checked all three
+
+The queue sent this run at the Edge screenshots, which #113 had landed that
+morning: `docs/store/` holds no `edge-*.png`, and `TODO.md` has the item
+ticked. Both unchecked items in `Next` wait on Creagh, each saying so of
+itself. So the work was found where the Firefox item's step 2 had already
+pointed: "It does not fail on the key today, because it reads its own list and
+not the manifest."
+
+**The guarantee was written in two places and kept in none.** This file's
+per-target decision said `tools/compat-audit.mjs` "fails the build on any key
+MDN says the target lacks", and the header of `manifest.config.mjs` that it
+"checks every key here". The audit imported `MINIMUMS` and nothing else from
+that file. It judged a hand list of 21 paths, five of them manifest keys, in
+all three browsers alike. Measured before anything moved: with `notifications`
+and `idle` pushed onto the Safari build's permissions — the near-miss the
+audit's own header gives as its reason to exist — `npm run compat` exited 0,
+56 pass and 7 degrade as before.
+
+**Now the manifest half is derived.** `tools/compat.ts` walks what
+`buildManifest(target)` writes, every key and every permission, and judges
+each on its own target at its floor; the verdict logic moved out of the audit
+with it, so both halves share one `judge()`. Icon sizes and command names are
+names a developer chooses, not keys, and a list of strings is a value except a
+list of permissions. A key MDN has no entry for fails as NO-DATA, which is
+what catches a misspelt one, unless `UNTRACKED` names it for exactly the
+targets that declare it, with the page that documents it — Chrome's
+`minimum_chrome_version` page and MDN's `browser_specific_settings` page, both
+read the same hour. `KEY_FALLBACKS` names two: Safari's `commands`, which left
+the hand list with the other four manifest keys, and Chrome's
+`use_dynamic_url`, 130 against a floor of 116, which nothing had judged.
+16 dependencies × 3 browsers: 42 pass, 6 degrade. 92 manifest keys, chrome 30,
+firefox 32, safari 30: 86 pass, 2 degrade, 4 untracked and named. 0 fail, 0
+without data.
+
+Test-first: `tests/tools/compat.test.ts`, 11 tests in 4 suites, red on the
+missing module; then 9 green and 2 red, and the second red was the gap
+itself — a copy of the old audit, given a manifest whose Safari build declares
+`notifications`, exited 0. Green once the audit was rewired. Three probes on
+the real config, each restored by md5: Safari's `notifications` and `idle`
+fail by name; F0's `data_collection_permissions` fails at floor 128, "needs
+140, we claim 128.0", and passes at 140, so **the audit now holds F0's floor
+call by itself**; its `required` and `optional` children are NO-DATA until
+`UNTRACKED` names them, which the Firefox item's step 2 now says. `npm run
+compat` passes `--experimental-strip-types`, as `packs` does, since it imports
+TypeScript now, and the audit sets `process.exitCode` rather than calling
+`exit()`. Nothing that ships moved, so no image group went stale. Tools 448 →
+**459** / 107 → **111** suites, total 1161 → **1172**, in six places,
+`docs/LAUNCH.md:221` first. `docs/SUBMIT-STATUS.md` keeps the 2026-10-24
+figure, being that run's record.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 44 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **459 tools / 111**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **40
+e2e passed and 3 skipped in 4.6 min**, then build and validate again.
+`README.md`'s one line moved after that run's tools step, so `test:tools`
+and the typecheck were run again on the final tree: 459 of 459, clean. The
+session was restarted after the gate had finished, and the queue re-sent the
+same Edge task; nothing in the tree had moved. `packs:verify`, `site:check`
+and the screenshot groups were not re-run: no pack, page, image or file under
+`src/` moved.
+
+Assumed, with nobody to ask: that a check promising more than it does is this
+run's to fix where its two neighbours in `Next` wait on calls, the work moving
+nothing any store is told; that the five manifest keys belong out of the hand
+list, a copy of a manifest key being what the walk replaces; and that a key
+MDN does not track is named rather than skipped, so a misspelling cannot pass.
+
+What needs a human: unchanged, everything below **B1** and the calls. F0's yes
+now lands on an audit that refuses the key below Firefox 140.
+
 ### 2026-10-25 — AMO's validator, run for the first time, finds no error and decides neither call
 
 `Now` held no unchecked item, and the two in `Next` each say they wait on
