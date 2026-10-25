@@ -753,6 +753,63 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-25 — churches is ċiriċan, as its table and Bülbring print it
+
+The same run's second PR, the item the first one queued. The pack wove
+"churches" `ċirican`, its second *c* the guttural before *-an*, and nothing
+printed it. English Wiktionary's table for `ċiriċe`, fetched rendered,
+keeps both dots in every cell — `ċiriċan`, `ċiriċena`, `ċiriċum` — and
+Bülbring § 499 Anm. 4, page 201, read in the page image, prints the West
+Saxon plural "ćirićean 'Kirchen'", the inserted *e* marking the second
+*c* palatal before a back vowel, as it marks the pack's own `tǣċan` and
+`þenċan`. So the seed weaves `ċiriċan`, /ˈtʃiritʃɑn/, `fill_ipa.py`
+writing exactly one transcription, and the plural line quotes the table's
+cell. No card moves; the headword is untouched.
+
+Test-first: the ledger line and the row out of `QUEUED`, red on exactly
+"lex-ang.tsv:149 church → ċiriċe weaves ċirican, where ang-plurals.tsv:199
+read ċiriċan"; the seed, green. 3 fields of `en-ang.json` moved, `builtAt`
+10-24 → 10-25 and the row's form and transcription, 3 bytes, every package
+still printing 990 KB. Built from `main` in a `/tmp` worktree and from the
+branch, the site differs in `/old-english/cirice`'s Plural cell and in 702
+sitemap dates, the pack-granular dating already recorded. The orthography
+guard's comment had cited `ċirican` as a dot rightly dropped before a back
+vowel; it cites Wright § 320's `dagas` now, and its floor of two such forms
+holds at three. `ang-plurals.tsv`'s header counted ten queued plurals,
+stale since 2026-10-24, and counts seven. No test count moved.
+
+**The screenshots needed three runs to say "no change", and each miss was
+noise.** All 31 were rewritten, 10 + 14 + 7. The first run moved
+`dashboard-milestones.png` by 5 pixels, the largest channel 1 apart; the
+documentation set run again gave it back exactly and moved `options.png`
+by 40 pixels, the largest 16 apart, the drift 2026-10-08 recorded on the
+same page; a third run gave back all 14 committed bytes. Neither page reads
+the Old English pack. So the committed bytes stand and the three groups are
+stamped, after the commit that moved the pack: before it they read `ok`,
+the pack change being uncommitted, and provenance reads only commits. A
+`CHANGELOG.md` sentence, because the pack ships, which also brings the 1.0.1
+paragraph's "but nine" to seven and names Moore and Knott.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 9 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, 442 tools / 106, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.1 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a.
+
+Assumed, with nobody to ask: that a phonology printing a plural's spelling
+in a note about its sound is evidence for the form, as Wright § 311's "bēc"
+was for `bēċ`; and that the table's undotted-nowhere declension outweighs
+the 2026-10-04 reading that Wiktionary declined `ċiriċe` on a bare stem,
+which its rendered table does not.
+
+What needs a human: unchanged, everything below **B1**, and the eight
+calls. `Next` holds no agent-shaped item; the Firefox and Safari items wait
+on calls.
+
 ### 2026-10-25 — gangende is the participle a teaching grammar gives gān, and Bülbring answers ċirican
 
 The queue sent this run at "the thirteen Old English second forms still

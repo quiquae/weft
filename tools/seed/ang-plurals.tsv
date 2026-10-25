@@ -104,7 +104,14 @@
 # 2026-10-09, their cards following through RENAMED, and their lines quote
 # those cells.
 #
-# 10 woven plurals are not here, because the table of their entry prints
+# Church's was its second c. The pack wove ċirican, the second c the
+# guttural before -an, and the table prints "ċiriċan"; Bülbring,
+# Altenglisches Elementarbuch (1902), § 499 Anm. 4, read in the page image,
+# prints the West Saxon plural "ćirićean 'Kirchen'", both c palatal, the e
+# marking the second before a back vowel, as in the pack's own tǣċan. So
+# churches is ċiriċan since 2026-10-25, and its line quotes the cell.
+#
+# 7 woven plurals are not here, because the table of their entry prints
 # another form and no grammar read yet prints the woven one, or their entry
 # has no table, or their gloss was read in Bosworth–Toller alone: QUEUED in
 # tests/tools/ang-forms.test.ts names each with what its table prints, until
@@ -196,6 +203,7 @@ letter	bōcstæf	bōcstafas	wikt:ang:bocstæf	nominative plural bōcstafas
 name	nama	naman	wikt:ang:nama	nominative plural naman
 key	cǣġ	cǣġa	wikt:ang:cæg	nominative plural cǣġa, cǣġe
 bridge	brycg	brycga	wikt:ang:brycg	nominative plural bryċġa, bryċġe
+church	ċiriċe	ċiriċan	wikt:ang:cirice	nominative plural ċiriċan
 ship	sċip	sċipu	wikt:ang:scip	nominative plural sċipu
 boat	bāt	bātas	wikt:ang:bat	nominative plural bātas
 sword	sweord	sweord	wikt:ang:sweord	nominative plural sweord

@@ -86,7 +86,7 @@ print it, one, *wasċende*, its table's cell with the dot Wright's § 312
 gives its *sc*, one, *gangende*, the section of Samuel Moore and Thomas A.
 Knott, *The Elements of Old English* (Ann Arbor, 1919), whose paradigm of
 *gān* prints it as the participle West Saxon takes from *gangan*, and the
-eight that none of them prints, Wright and Bosworth–Toller read for each and
+seven that none of them prints, Wright and Bosworth–Toller read for each and
 Bülbring, Wright's *Elementary Old English Grammar* (1923) and Moore and
 Knott searched, are named in `tests/tools/ang-forms.test.ts` with what each
 prints instead. It fails on any other with no line.
