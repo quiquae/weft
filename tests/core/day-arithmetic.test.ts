@@ -24,7 +24,7 @@ import { dayKey, shiftDay } from '../../src/core/escalation.ts';
 import { attentionSummary } from '../../src/core/stats.ts';
 import type { SiteAttention } from '../../src/core/types.ts';
 
-/** 03:30 GMT on Sunday 25 October 2026, an hour into the 25th hour of the 24th. */
+/** 03:30 GMT on Sunday 25 October 2026, half an hour into the 25th hour of the 24th. */
 const CLOCKS_BACK = Date.UTC(2026, 9, 25, 3, 30);
 /** 04:30 BST on Sunday 28 March 2027, half an hour into a day after a 23-hour one. */
 const CLOCKS_FORWARD = Date.UTC(2027, 2, 28, 3, 30);

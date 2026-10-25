@@ -199,7 +199,7 @@ npm run build:test
 WEFT_STORE=1 npx playwright test store-assets --output=/tmp/weft-pw-out
 WEFT_SCREENS=1 npx playwright test screenshots --output=/tmp/weft-pw-out
 WEFT_FIRSTRUN=1 npx playwright test firstrun --output=/tmp/weft-pw-out
-git status --porcelain     # empty means all 47 files reproduced exactly
+git status --porcelain     # empty means all 42 files reproduced exactly
 npm run build              # put the production extension back in dist/chrome
 ```
 

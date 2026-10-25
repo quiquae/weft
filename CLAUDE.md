@@ -65,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 989 KB unpacked for Chrome, 990 for Firefox and Safari |
+| `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -748,6 +748,71 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-25 — the dashboard steps its days by the calendar, because one in each half-year is not 24 hours long
+
+The same run's second PR, the item the first one queued:
+`attentionSummary` (`src/core/stats.ts`) built the dashboard's "yesterday",
+its daily series and the streak from `dayKey(now - i * 86_400_000)`, the
+arithmetic that failed `tests/core/storage-export.test.ts` at 03:29 GMT.
+
+**Measured before it was fixed, on fixed instants rather than the clock.** At
+03:30 GMT on 25 October 2026, half an hour into the 25th hour of the 24th,
+yesterday read today's 600 seconds where the 23rd's 900 were, the series held
+the 24th twice, the week counted it twice, 2 100 seconds for 1 500, and the
+streak was 3 for 2. At 04:30 BST on 28 March 2027, after a 23-hour day,
+yesterday read the 26th and the streak broke at 1. And at 03:30 GMT on 10
+November the 24th was still in the series twice, because the hazard is any
+instant 24 hours from another inside the long day, for as long as the long
+day is inside the span the dashboard asks for: `Math.max(historyDays, 7)`,
+a week on Free and sixty days on Pro, at the hour before the rollover in
+autumn and the hour after it in spring. A first draft of this entry, the
+changelog paragraph, the decision and `shiftDay`'s comment said "the month
+after each change", from the function's default of thirty; the dashboard
+never asks for thirty, and the comment, being in `src/`, cost a second
+regeneration of the three screenshot groups.
+
+**`shiftDay(key, days)`**, in `src/core/escalation.ts` beside `dayKey`, steps
+a day key on the calendar in UTC, where no day has a change of the clocks,
+and the summary takes yesterday and every day of its series and streak from
+today's key with it. Test-first: `tests/core/day-arithmetic.test.ts`, 5 tests
+in a new suite, sets `TZ=Europe/London` in its own process, so CI, which runs
+in UTC, has both nights too, and its first test fails if the zone did not
+take; red on exactly the three summaries, "yesterday read today again",
+"yesterday read the day before it", "the 24th of October appears 2 times",
+then red on the missing export, then green, and green again under `TZ=UTC`.
+No other shipped code steps a day by 24 hours: `fsrs.ts`, `prune.ts`,
+`licence.ts` and the providers' cache measure durations, which a change of
+the clocks does not lengthen, and `retirementSeries` buckets by weeks of
+milliseconds and labels in UTC.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 6 min 10 s** — typecheck clean, **571 unit
+/ 138 suites**, 102 jsdom / 23, 441 tools / 106, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 5.2 min**, then
+build and validate again. A comment in the new test file was corrected after
+the unit step, and the file run again, 5 of 5. The three screenshot groups
+`src/` stales were regenerated twice, once on the fix and once on the
+corrected comment, 10 + 14 + 7 written each time, every file byte-identical,
+and are stamped. **Chrome's package prints 990 KB now**: 97 bytes,
+`shiftDay()`, took it from 989.496 to 989.591 KB, measured
+against `main`'s Chrome package built in a `/tmp` worktree; swept in this file's command
+table and `TODO.md`'s state line. `artefacts:check` **8 groups, 1 stale**,
+exit 1 — the release notes, B2a. `packs:verify` and `site:check` were not
+re-run: no pack or page moved.
+
+One count #113 missed: `docs/SUBMIT-STATUS.md`'s commands for repeating
+the regeneration said an empty `git status` means 47 files reproduced; with
+the Edge five gone it is 42.
+
+Assumed, with nobody to ask: that a day key names a date and may be stepped
+as one, whatever rollover hour produced it; and that a summary opened in the
+hour the clocks change is worth a fix that no user has reported, the
+dashboard printing the streak as a fact.
+
+What needs a human: unchanged, everything below **B1**. `Next` holds no
+agent-shaped item; the Firefox and Safari items wait on calls.
+
 ### 2026-10-25 — Edge is sent the Chrome five, a frame drawn for no store fails, and the gate found the night the clocks went back
 
 The queue sent this run at "twenty-three Old English second forms" in
@@ -804,8 +869,8 @@ arithmetic ships**: `attentionSummary` steps the dashboard's yesterday, daily
 series and streak back by 24 hours, so for an hour of every day the changed
 day is on the chart, a week on Free and two months on Pro, the series counts
 the long day twice, the week and the streak with it, or skips the short
-one. Its fix is written and
-green on `fix/day-arithmetic`, test-first, and is the next PR rather than
+one. Its fix was written
+test-first on a branch of its own, and is the next PR rather than
 this one, because it moves `src/` and the three screenshot groups with it.
 **When a test nobody touched fails, check the calendar before the code.**
 

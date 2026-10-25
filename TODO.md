@@ -8,7 +8,7 @@
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
 suites, **441** tool tests / 106 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
+packages built at 990 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -55,7 +55,9 @@ prints **990**: the gate's sizes, not the last session's, are the ones to
 carry. Safari's prints **990** too from 2026-10-24, by the 4 bytes of the
 Old English pack's `bēċ` and `hættas`, 989.499 → 989.503 KB, measured
 against `main`'s three packages built in a `/tmp` worktree; Chrome's is
-989.496 and still prints 989.
+989.496 and still prints 989. Chrome's prints **990** from 2026-10-25, by
+the 97 bytes of `shiftDay()`, 989.496 → 989.591 KB, measured the
+same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
