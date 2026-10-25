@@ -682,9 +682,10 @@ Wright's grammar, or the Bosworth–Toller entry that quotes it.
 **And the dashboard counted the night the clocks went back twice.** Its
 daily chart, the week's total, yesterday's figure and the streak each stepped
 back from the present 24 hours at a time, and a day is 25 hours long when the
-clocks go back and 23 when they go forward. So for an hour of every day in
-the month after each change — the hour before the 4 a.m. rollover after the
-autumn change, the hour after it after the spring one — the chart drew the
+clocks go back and 23 when they go forward. So for an hour of every day
+while the changed day was on the chart — a week on Free, two months on Pro;
+the hour before the 4 a.m. rollover after the autumn change, the hour after
+it after the spring one — the chart drew the
 long day twice and the week and the streak counted it twice, or the short day
 went missing altogether. Days are counted on the calendar now. A test found
 it, failing at 03:29 GMT on 25 October 2026, two and a half hours after the

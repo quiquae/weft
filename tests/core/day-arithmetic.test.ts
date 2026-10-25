@@ -5,10 +5,10 @@
  * `attentionSummary` built the dashboard's "yesterday", its daily series and
  * the streak from `dayKey(now - i * 86_400_000)` until 2026-10-25. With the
  * 4 a.m. rollover a 25-hour day, the clocks going back, holds two instants 24
- * hours apart, so for the hour from 03:00 on each of the thirty days after it
- * the series counted that day twice and the streak with it; a 23-hour day,
- * the clocks going forward, holds none, so for the hour from 04:00 the series
- * skipped it. `tests/core/storage-export.test.ts` found it, failing at 03:29
+ * hours apart, so for the hour from 03:00 on every day it was still in the
+ * series — seven days on Free, sixty on Pro — the series counted it twice and
+ * the streak with it; a 23-hour day, the clocks going forward, holds none, so
+ * for the hour from 04:00 the series skipped it. `tests/core/storage-export.test.ts` found it, failing at 03:29
  * GMT on 2026-10-25 for the same arithmetic in its own fixture.
  *
  * Europe/London is fixed here, so that CI, which runs in UTC and has no clock
@@ -28,7 +28,7 @@ import type { SiteAttention } from '../../src/core/types.ts';
 const CLOCKS_BACK = Date.UTC(2026, 9, 25, 3, 30);
 /** 04:30 BST on Sunday 28 March 2027, half an hour into a day after a 23-hour one. */
 const CLOCKS_FORWARD = Date.UTC(2027, 2, 28, 3, 30);
-/** 03:30 GMT on 10 November 2026, with the 25-hour day still inside the thirty. */
+/** 03:30 GMT on 10 November 2026, with the 25-hour day still inside the default thirty. */
 const A_FORTNIGHT_ON = Date.UTC(2026, 10, 10, 3, 30);
 
 function site(now: number, day: string, seconds: number, history: SiteAttention['history']): SiteAttention {

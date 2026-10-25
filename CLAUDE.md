@@ -160,8 +160,9 @@ commitment would be coercion. Anything that makes Weft harder applies at once.
 **A day key is stepped by the calendar, never by 86 400 000.** A day is 25
 hours long on the night the clocks go back and 23 on the night they go
 forward, so `dayKey(now - i * 86_400_000)` lands twice in one day or skips
-one — at the 4 a.m. rollover, for an hour of every day in the month after
-each change. `shiftDay()` in `src/core/escalation.ts` steps a key on the
+one — at the 4 a.m. rollover, for an hour of every day the changed day is
+still in the span being stepped: a week of the dashboard's chart on Free,
+two months on Pro. `shiftDay()` in `src/core/escalation.ts` steps a key on the
 calendar, in UTC, where no day changes its clocks; `attentionSummary` stepped
 the dashboard's yesterday, series and streak by 24 hours until 2026-10-25.
 `tests/core/day-arithmetic.test.ts` sets `TZ=Europe/London` in its own
@@ -800,9 +801,10 @@ current one, the import folded them, and "brings the attention history with
 it" failed. The fixture now takes noon on the calendar day before today,
 which no rollover moves, and passed at 03:36, inside the hour. **The same
 arithmetic ships**: `attentionSummary` steps the dashboard's yesterday, daily
-series and streak back by 24 hours, so for an hour of every day in the month
-after each change of the clocks the series counts the long day twice, the
-week and the streak with it, or skips the short one. Its fix is written and
+series and streak back by 24 hours, so for an hour of every day the changed
+day is on the chart, a week on Free and two months on Pro, the series counts
+the long day twice, the week and the streak with it, or skips the short
+one. Its fix is written and
 green on `fix/day-arithmetic`, test-first, and is the next PR rather than
 this one, because it moves `src/` and the three screenshot groups with it.
 **When a test nobody touched fails, check the calendar before the code.**

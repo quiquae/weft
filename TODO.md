@@ -1146,23 +1146,26 @@ registered**, and nothing below it can move until it is.
       that decides whether Safari ships at all.
 
 - [x] **Step the dashboard's days by the calendar, not by 24 hours.**
-      Done 2026-10-25, as written below, in the PR after the one that found
-      it. Found 2026-10-25 when `npm run test:all` failed at 03:29 GMT, on the
+      Done 2026-10-25, in the PR after the one that found it. Found when
+      `npm run test:all` failed at 03:29 GMT, on the
       night the clocks went back: `tests/core/storage-export.test.ts` seeded
       "yesterday" as `dayKey(NOW - 86_400_000, 4)`, which from 03:00 to 04:00
       that morning is still today, a 25-hour day holding two instants 24
-      hours apart. The fixture is fixed on this branch, by the calendar. **The
-      same arithmetic ships:** `attentionSummary` (`src/core/stats.ts`) builds
+      hours apart. #113 fixed the fixture, by the calendar. **The same
+      arithmetic shipped:** `attentionSummary` (`src/core/stats.ts`) built
       the dashboard's yesterday, its daily series and the streak from
-      `dayKey(now - i * 86_400_000)`, so for an hour of every day in the
-      month after each change the series counts the long day twice, with the
-      week and the streak, or skips the short one. The fix, `shiftDay()` in
-      `src/core/escalation.ts` and `tests/core/day-arithmetic.test.ts` pinned
-      to Europe/London, is written and green on the branch
-      `fix/day-arithmetic`: rebuild it on this `main` by cherry-picking its
-      second commit, regenerate the three screenshot groups `src/` stales,
-      add a `CHANGELOG.md` paragraph and the count sweep (unit 566 → 571 / 137
-      → 138 suites), and land it. Agent-shaped, about 30 minutes.
+      `dayKey(now - i * 86_400_000)`, so for an hour of every day the
+      changed day was on the chart — a week on Free, two months on Pro —
+      the series counted the long day twice, with the week and the streak,
+      or skipped the short one: at 03:30 GMT on the
+      25th, yesterday read today's 600 seconds for the 23rd's 900, the week
+      2 100 for 1 500 and the streak 3 for 2. `shiftDay()` in
+      `src/core/escalation.ts` steps a key on the calendar in UTC, and
+      `tests/core/day-arithmetic.test.ts`, 5 tests pinned to Europe/London,
+      holds the summary to both nights; written test-first, red on exactly
+      the three summaries. The three screenshot groups `src/` stales came
+      back byte-identical, 10 + 14 + 7, and are stamped. Unit 566 → **571** /
+      137 → **138** suites.
 
 - [x] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
       them.** Done 2026-10-25, the simplest way: the `edge` frame is gone
