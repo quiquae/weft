@@ -11,8 +11,9 @@
 # up against a dictionary, where the Latin ones have named theirs in
 # la-notes.tsv since 2026-10-02.
 #
-# On 2026-10-25 the 39 notes of the verbs, adjectives, adverbs, numerals and
-# interjections were read: against the entry each row's gloss was read in
+# On 2026-10-25 all 87 were read, the 39 of the verbs, adjectives, adverbs,
+# numerals and interjections first and the 48 of the nouns after: against
+# the entry each row's gloss was read in
 # (ang-glosses.tsv), against etymonline for every English word a note
 # explains, against English Wiktionary's English entries where etymonline
 # does not print the claim — "the quick and the dead", "to wit", the
@@ -20,12 +21,9 @@
 # etymonline was read in the Internet Archive's copies of its pages
 # (web.archive.org, snapshots of 2025-08 to 2026-03), because that day the
 # site answered every automated reader with a challenge page; the entries
-# are cited as etymonline's all the same, being its text. 38 stood. One did
-# not, and is listed at the foot of this file with what the dictionaries say,
-# so that nobody restores it in good faith.
-#
-# The 48 noun notes are not read yet; tests/tools/ang-notes.test.ts holds the
-# parts of speech in its HELD, and nouns join it when they are.
+# are cited as etymonline's all the same, being its text. 84 stood. Three did
+# not, and are listed at the foot of this file with what the dictionaries
+# say, so that nobody restores one in good faith.
 #
 # The line repeats the note. That is the point: reword a note and it has no
 # source until somebody opens the dictionary again and says which entry.
@@ -50,6 +48,54 @@
 # "“bleak” is its Norse cousin" does for an English word borrowed from the
 # Norse cousin of blāc.
 
+man	noun	mann	“mann” meant a human being of either sex	wikt:ang:mann etym:man
+woman	noun	wīfmann	literally “woman-person”	bt:35615 wikt:ang:wifmann etym:woman
+friend	noun	frēond	from “frēon”, to love	wikt:ang:freond wikt:ang:freon etym:friend
+wife	noun	wīf	“wīf” meant woman generally, and was neuter	wikt:ang:wif etym:wife
+husband	noun	hūsbonda	the householder, not yet the spouse	wikt:ang:husbonda etym:husband
+queen	noun	cwēn	originally simply “woman, wife”	wikt:ang:cwen etym:queen wikt:en:queen
+lord	noun	hlāford	“hlāf-weard”, the loaf-keeper	wikt:ang:hlaford etym:lord
+neighbour	noun	nēahġebūr	the near-dweller	wikt:ang:neahgebur etym:neighbor
+enemy	noun	fēond	“fēond” was any enemy before it meant a demon	wikt:ang:feond etym:fiend
+doctor	noun	lǣċe	the healer; the bloodsucking worm may be a different word	wikt:ang:læce etym:leech
+body	noun	līċ	it survives in “lychgate”, the corpse-gate of a churchyard	wikt:ang:lic etym:lich wikt:en:lych-gate
+dog	noun	hund	the usual word; “docga” was rare and gave “dog”	wikt:ang:hund etym:dog
+lion	noun	lēo	borrowed straight from Latin; “lion” came later, from French	wikt:ang:leo etym:lion
+snake	noun	nǣdre	“a nadder” was misheard as “an adder”	wikt:ang:nædre etym:adder
+worm	noun	wyrm	also meant serpent and dragon	wikt:ang:wyrm etym:worm
+food	noun	mete	“mete” was food of any kind	wikt:ang:mete etym:meat
+bread	noun	hlāf	“brēad” meant a morsel	wikt:ang:hlaf etym:bread
+apple	noun	æppel	any fruit, not only the apple	wikt:ang:æppel etym:apple
+egg	noun	ǣġ	it became Middle English “ey”, which Norse “egg” displaced	wikt:ang:æg etym:egg
+home	noun	hām	survives in many English place-names in -ham	wikt:ang:ham etym:home wikt:en:-ham
+window	noun	ēagþȳrel	literally “eye-hole”; “window”, “wind-eye”, is Norse	wikt:ang:eagþyrel etym:window
+chair	noun	setl	a seat, bench or throne; “settle” for the high-backed bench dates from the 1550s	wikt:ang:setl etym:settle
+book	noun	bōc	usually traced to “beech”	wikt:ang:boc etym:book
+moon	noun	mōna	the moon was masculine, the sun feminine	wikt:ang:mona wikt:ang:sunne etym:moon
+sky	noun	heofon	“sky” came later, from Old Norse	wikt:ang:heofon etym:sky
+forest	noun	weald	the Kentish Weald keeps the word	wikt:ang:weald etym:weald
+city	noun	burg	its dative, “byriġ”, survives in many place-names as -bury	wikt:ang:burg etym:borough wikt:en:-bury
+town	noun	tūn	an enclosure, whence the -ton of place-names	wikt:ang:tun etym:town wikt:en:-ton
+world	noun	weorold	literally “age of man”; “wer”, man, survives in “werewolf”	wikt:ang:weorold etym:world etym:werewolf
+country	noun	rīċe	a realm; it survives as the -ric of “bishopric”	wikt:ang:rice etym:bishopric
+place	noun	stōw	common in English place-names	wikt:ang:stow etym:stow
+shadow	noun	sċeadu	“shade” comes partly from it	wikt:ang:sceadu etym:shade etym:shadow
+month	noun	mōnað	from one new moon to the next	wikt:ang:monaþ wikt:ang:monað etym:month
+hour	noun	tīd	“tīd” was an hour or a season, whence Yuletide	wikt:ang:tid etym:tide etym:yuletide
+morning	noun	morgen	it gave “morn” and “morrow”, and “morning” was built on “morn”	wikt:ang:morgen etym:morn etym:morrow etym:morning
+evening	noun	ǣfen	whence “evening” and “eve”	wikt:ang:æfen etym:evening etym:eve
+winter	noun	winter	years were counted in winters	wikt:ang:winter etym:winter
+peace	noun	friþ	the peace of a place, as in Frithstool	wikt:ang:friþ wikt:en:frithstool
+truth	noun	sōþ	“forsooth” and “soothsayer” keep it	wikt:ang:soþ etym:forsooth etym:soothsayer
+law	noun	lagu	borrowed from Old Norse	wikt:ang:lagu etym:law
+money	noun	feoh	“feoh” was cattle, then property, then money; “fee” is partly this word	wikt:ang:feoh etym:fee
+question	noun	āscung	“asking”, built on “ask”, replaced it	wikt:ang:ascung etym:asking
+answer	noun	andswaru	its second half comes from “swerian”, to swear	wikt:ang:andswaru etym:answer
+story	noun	spell	it meant a story; “gōd spell”, the good story, became “gospel”	wikt:ang:spell etym:spell etym:gospel
+music	noun	drēam	“drēam” meant joy and music; nobody has proved it became “dream”	wikt:ang:dream etym:dream
+dream	noun	swefn	it shares a root with Latin “somnus”, sleep, whence “somnolent”	wikt:ang:swefn etym:somnolent
+anger	noun	ierre	“ire” is not this word: it came from French	wikt:ang:ierre etym:ire
+gift	noun	ġiefu	“gift” came from its Norse cousin	wikt:ang:giefu etym:gift
 big	adj	miċel	“many a little makes a mickle”	wikt:ang:micel etym:mickle wikt:en:many_a_mickle_makes_a_muckle
 great	adj	grēat	“grēat” meant thick or massive	wikt:ang:great etym:great wikt:en:great
 weak	adj	wāc	“weak” came from its Norse cousin, “veikr”	wikt:ang:wac etym:weak wikt:en:weak
@@ -102,3 +148,21 @@ sorry	intj	mē hrēoweþ	literally “it rues me”, mē being the one who regre
 #                    up."" Read under the woven word, the note said English close owes
 #                    clȳsan nothing. The etymon column stays empty, a part-descent being no
 #                    descent (ang-etymons.tsv); the note tells the part.
+#
+# Rewritten on 2026-10-25: it glossed the English word
+# ----------------------------------------------------
+#   chair   setl     "the high-backed bench"
+#                    etym:settle: "settle (n.) "long seat or bench with a high back and
+#                    arms," 1550s …, from Middle English setle "a seat," from Old English setl
+#                    "a seat, stall; position, abode; setting of a heavenly body""; wikt:ang:setl:
+#                    "sitting, residence", "seat, bench, throne". The note described English
+#                    settle, and read without the etymon badge above it, a gloss of setl, which
+#                    is the wrong word, as umbra's "a little shade" was in Latin.
+#
+# Rewritten on 2026-10-25: no entry read prints it
+# ------------------------------------------------
+#   place   stōw     "as in Walthamstow"
+#                    etym:stow, the verb: "verbal use of Old English noun stow "a place,
+#                    spot, site, locality" (common in place names)". No entry read names
+#                    Walthamstow, wikt:en:Walthamstow printing no etymology at all; restore the
+#                    example with a place-name dictionary's entry for it, if one is read.

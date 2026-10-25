@@ -148,16 +148,20 @@ it and Bülbring § 499 Anm. 4 prints the West Saxon plural, "ćirićean
 'Kirchen'". What to weave for the seven left is a call, written up below
 `Next`.
 
-**And as of 2026-10-25 every Old English note on a verb, adjective, adverb,
-numeral or interjection names the entries it was read in.** The Latin notes
-have named theirs since 2026-10-02; the Old English ones named none.
-`tools/seed/ang-notes.tsv` repeats each of those 39 beside the entry its
-row's gloss was read in and the etymonline or English Wiktionary entries for
-the English words it explains, and `tests/tools/ang-notes.test.ts` fails on a
-note with no line. 38 stood. One said less than the dictionaries:
-`clȳsan`'s "“close” came from French", where both have the verb partly from
-`clȳsan` itself; it says "“close” is partly this word and partly Old French
-“clos”" now. The 48 noun notes are the first item in `Next`.
+**And as of 2026-10-25 every Old English note names the entries it was read
+in.** The Latin notes have named theirs since 2026-10-02; the Old English
+ones named none. `tools/seed/ang-notes.tsv` repeats each of the 87 beside the
+entry its row's gloss was read in and the etymonline or English Wiktionary
+entries for the English words it explains, and
+`tests/tools/ang-notes.test.ts` fails on a note with no line. 84 stood.
+`clȳsan`'s "“close” came from French" said less than both dictionaries,
+which have the verb partly from `clȳsan` itself; `setl`'s "the high-backed
+bench" described English *settle*, a sense of the 1550s, and so glossed the
+wrong word with the etymon badge off; and `stōw`'s "as in Walthamstow" is
+printed by no entry read. Each says what its entries do now. So every
+gloss, gender, etymology and note the seven packs print names the entry it
+was read in; the transcriptions are held to grammars by rule, and the eight
+woven forms nothing prints are calls below `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -610,9 +614,8 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds one
-agent-shaped item, the Old English noun notes, above two that wait on
-Creagh's calls.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
+agent-shaped item, only two that wait on Creagh's calls.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1130,8 +1133,30 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
-- [ ] **Read the 48 Old English noun notes into `tools/seed/ang-notes.tsv`,
-      then add `'noun'` to `HELD` in `tests/tools/ang-notes.test.ts`.** The
+- [x] **Read the 48 Old English noun notes into `tools/seed/ang-notes.tsv`,
+      then add `'noun'` to `HELD` in `tests/tools/ang-notes.test.ts`.** Done
+      2026-10-25, in the PR after the one that queued it. All 48 read, 46
+      stood, and two of the seven flagged below were rewritten: `setl`'s
+      "the high-backed bench" is etymonline's English *settle* of the 1550s,
+      where *setl* is "a seat, stall; position, abode", so it is "a seat,
+      bench or throne; “settle” for the high-backed bench dates from the
+      1550s"; and `stōw`'s "as in Walthamstow" is in no entry read,
+      `wikt:en:Walthamstow` printing no etymology, so it is etymonline's
+      "common in English place-names" — restore the example with a
+      place-name dictionary's entry if one is read. The other five stood:
+      `āscung`, etymonline's *asking* "replacing Old English ascunge";
+      `sċeadu`, *shade* "also partly from sceadu"; `hām`, Wiktionary's
+      *-ham* "from the convergence of two elements", *hām* and *hamm*;
+      `mōnað`, "the interval between one new moon and the next"; `weald`,
+      "the forest between the North and South Downs in Sussex, Kent, and
+      Surrey", of which the Kentish Weald is a part. Neither rewrite uses
+      "meant", which the feed's false-friend pattern would have caught. Red
+      on 48 with nouns held, then on exactly the two; green with the seed;
+      a probe removing `hām`'s line, restored by md5. 4 fields of
+      `en-ang.json`; all 31 screenshots byte-identical, 10 + 14 + 7, and
+      stamped. No test count moved; the floor is 80 held notes now.
+
+      What the item said before it was done: The
       ledger and its test landed on 2026-10-25 holding every other part of
       speech; nouns are the rest, and a line for a noun may land before
       `HELD` takes nouns, the other five rules holding it already. Each line

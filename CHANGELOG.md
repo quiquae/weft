@@ -684,9 +684,12 @@ conjugation table that prints it, the section of Wright's grammar or of
 Moore and Knott's, or the Bosworth–Toller entry that quotes it. And the note
 under *clȳsan*, woven for *close*, said "“close” came from French", where
 English Wiktionary and etymonline both have the verb partly from Old English
-*clȳsan* and partly from Old French *clos*; it says so now, and every note on
-an Old English verb, adjective, adverb, numeral or interjection names the
-dictionary entries it was checked against.
+*clȳsan* and partly from Old French *clos*; it says so now. The note under
+*setl*, woven for *chair*, said "the high-backed bench", which is what
+English *settle* came to mean in the 1550s, where *setl* was any seat; and
+*stōw*'s "as in Walthamstow" was printed in no dictionary read. Both say
+what their entries do now, and every Old English note names the dictionary
+entries it was checked against.
 
 **And the dashboard counted the night the clocks went back twice.** Its
 daily chart, the week's total, yesterday's figure and the streak each stepped

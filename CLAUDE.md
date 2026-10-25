@@ -411,11 +411,13 @@ of a spelling — `hund` is a dog where `hund²` is a hundred — and, when the
 note names the row's etymon, that English word's own entry, etymonline's or
 English Wiktionary's, the two the etymon ledger takes.
 `tests/tools/ang-notes.test.ts` holds them by the Latin rule: a line for
-every note, repeated exactly, and none outliving its note. On 2026-10-25 the
-39 notes of the verbs, adjectives, adverbs, numerals and interjections were
-read and `HELD` took those five; one was rewritten, `clȳsan`'s "“close” came
-from French", both dictionaries having the verb partly from Old English
-`clȳsan` too. The 48 noun notes are next. etymonline refused every automated
+every note, repeated exactly, and none outliving its note. On 2026-10-25 all
+87 were read and `HELD` took every part of speech; three were rewritten:
+`clȳsan`'s "“close” came from French", both dictionaries having the verb
+partly from Old English `clȳsan` too; `setl`'s "the high-backed bench",
+English *settle*'s sense of the 1550s, which glossed the wrong word with the
+etymon badge off, as Latin `umbra`'s did; and `stōw`'s "as in
+Walthamstow", which no entry read prints. etymonline refused every automated
 reader that day with a challenge page, and was read in the Internet
 Archive's copies, `web.archive.org/web/2025id_/<url>` with `curl
 --compressed`; an entry read that way is still etymonline's, and is cited
@@ -770,6 +772,51 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-25 — the noun notes too, and setl was the high-backed bench only in English
+
+The same run's second PR, the item the first one queued: the 48 Old English
+noun notes, read against the entries the first PR's method opened, 63
+etymonline pages through the archive (four never archived: *lychgate*,
+*-ham*, *-bury*, *frith*, each read in Wiktionary instead) and the gloss
+ledger's Wiktionary entries. `HELD` takes nouns, so all 87 notes are held.
+
+**46 stood, and two were rewritten.** `setl`'s "the high-backed bench" is
+etymonline's English *settle*, "long seat or bench with a high back and
+arms," 1550s, from Old English *setl* "a seat, stall; position, abode": the
+note described the descendant, and with the etymon badge off it glossed the
+wrong word, as Latin `umbra`'s "a little shade" did on 2026-10-02. And
+`stōw`'s "as in Walthamstow" is printed by no entry read —
+`wikt:en:Walthamstow` has no etymology, and etymonline says only "(common in
+place names)" — so it says that. **A first rewrite of `setl`'s said "has
+meant", which the feed's false-friend pattern matches**, and would have told
+*settle* as a false friend in a broken sentence; checked against
+`FALSE_FRIEND` before it was written. The five other notes flagged while
+listing all stood, each on a passage quoted in `TODO.md`'s ticked item.
+
+Test-first: nouns into `HELD`, red on 48; the lines, red on exactly `setl`
+and `stōw`; the seed, green; a probe without `hām`'s line, restored by md5.
+4 fields of `en-ang.json`. All 31 screenshots regenerated, 10 + 14 + 7, every
+one byte-identical, and the three groups stamped. No test count moved; the
+held-notes floor is 80.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 4 min 42 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, 448 tools / 107, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 3.9 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving, `/old-english/setl` printing the new note; `artefacts:check`
+**8 groups, 1 stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that a true example no entry read prints is
+rewritten rather than kept, by the Latin rule that an entry saying less
+than the note wins; and that "the Kentish Weald" is a loose paraphrase of a
+forest etymonline places in Sussex, Kent and Surrey.
+
+What needs a human: unchanged, everything below **B1**, and the eight
+calls. `Next` holds no agent-shaped item.
 
 ### 2026-10-25 — the Old English notes name their entries, all but the nouns', and close is partly clȳsan
 

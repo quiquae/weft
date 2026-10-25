@@ -33,8 +33,13 @@
  * It cannot tell an entry somebody read from one somebody typed, which is the
  * limit every ledger here has. Cite the ones actually opened.
  *
- * The ledger holds the parts of speech in `HELD`, each added as its notes
- * were read; a part of speech not in it is not yet checked.
+ * On 2026-10-25 all 87 were read, the verbs, adjectives, adverbs, numerals
+ * and interjections first and the nouns after, and three were rewritten:
+ * `clȳsan`'s, which said English *close* came from French where both
+ * dictionaries have it partly from `clȳsan`; `setl`'s, which described
+ * English *settle* and so glossed the wrong word with the etymon badge off;
+ * and `stōw`'s "as in Walthamstow", which no entry read prints. The ledger
+ * holds the parts of speech in `HELD`, each added as its notes were read.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -48,7 +53,7 @@ const LEDGER = join(ROOT, 'tools/seed/ang-notes.tsv');
 const GLOSSES = join(ROOT, 'tools/seed/ang-glosses.tsv');
 
 /** The parts of speech whose every note the ledger holds. */
-const HELD = new Set(['verb', 'adj', 'adv', 'num', 'intj']);
+const HELD = new Set(['noun', 'verb', 'adj', 'adv', 'num', 'intj']);
 
 /**
  * The entries a source can name.
@@ -208,7 +213,7 @@ describe('an Old English note names the entries it was checked against', () => {
     const all = notes();
     assert.ok(all.length > 70, `only ${all.length} Old English rows carry a note`);
     const held = all.filter((n) => HELD.has(n.pos));
-    assert.ok(held.length >= 30, `only ${held.length} notes are of a part of speech the ledger holds`);
+    assert.ok(held.length > 80, `only ${held.length} notes are of a part of speech the ledger holds`);
     const explained = held.filter((n) => n.etymon && names(n.note, n.etymon)).length;
     assert.ok(explained >= 5, `only ${explained} held notes name their English descendant, so that rule polices almost nothing`);
   });

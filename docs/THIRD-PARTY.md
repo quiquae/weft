@@ -89,12 +89,11 @@ Knott, *The Elements of Old English* (Ann Arbor, 1919), whose paradigm of
 seven that none of them prints, Wright and Bosworth–Toller read for each and
 Bülbring, Wright's *Elementary Old English Grammar* (1923) and Moore and
 Knott searched, are named in `tests/tools/ang-forms.test.ts` with what each
-prints instead. It fails on any other with no line. Every note on a verb,
-adjective, adverb, numeral or interjection names, in
+prints instead. It fails on any other with no line. Every note names, in
 `tools/seed/ang-notes.tsv`, the entry its gloss was read in and the
 etymonline or English Wiktionary entries for the English words it explains,
-and `tests/tools/ang-notes.test.ts` fails on one with none; the notes on
-nouns are not yet read.
+etymonline read in the Internet Archive's copies of its pages, and
+`tests/tools/ang-notes.test.ts` fails on one with none.
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair
