@@ -86,6 +86,9 @@ social card, is `tools/brand.ts`; after changing it run `icons`,
 a browser), `npm run png:diff -- <file.png>…` (each working file against its
 `HEAD` blob: how many pixels differ, the largest channel difference, and the
 box they sit in; `--region=x0,y0,x1,y1` counts inside a box too),
+`npm run lint:firefox` (AMO's own validator, addons-linter pinned through
+`npx`, on `dist/firefox`; it exits 0 on a package AMO would refuse, so read
+its warnings),
 `npm run licence -- --name="..." --tier=pro` (mint a key).
 
 The three skipped e2e tests are asset *generators*, not assertions. Turn them
@@ -772,6 +775,68 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-25 — AMO's validator, run for the first time, finds no error and decides neither call
+
+`Now` held no unchecked item, and the two in `Next` each say they wait on
+Creagh: the Firefox data-collection declaration, whose two calls are F0 of
+`docs/READY-TO-SUBMIT.md`, and the Safari subtitle, which waits on B6. So
+the run took the half of the Firefox item that needs no call, which nobody
+had done: lint the package as AMO will.
+
+**addons-linter 10.14.0, AMO's own validator and the latest on npm**, in a
+`/tmp` install, on `weft-firefox-1.0.1.zip` built from `main`: exit 0, **0
+errors and 5 warnings**. The missing `data_collection_permissions` is one of
+them — a warning, so the refusal Mozilla's blog describes is AMO's check of
+a new add-on at submission, which no local tool runs. The other four are
+"Unsafe assignment to innerHTML" in the four UI bundles, every one
+Preact's `dangerouslySetInnerHTML` path, `e.innerHTML=….__html`; nothing in
+`src/` writes HTML. Six candidate declarations, each linted in a copy of
+`dist/firefox`, have no error either: at floor 128 a
+`KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION` warning, at 140 an Android one, and
+with `gecko_android.strict_min_version` 142 — Mozilla's option 1 — only
+Preact's four. **So the validator decides neither call; Mozilla's page
+does most of the first.** It defines transmission as "any data collected,
+used, transferred, shared, or handled outside the add-on or the local
+browser", so the own-key provider is `websiteContent` and `required:
+["none"]` alone would be false; and optional data "aren't granted by
+default" and are asked for with `permissions.request()` in a click, which
+is code Weft does not have. **A declared `optional` type is a promise to
+ask**, so the item's hour is two, and its plan is written out in five
+steps.
+
+`npm run lint:firefox` is new: the validator pinned through `npx --yes`,
+not a 190-package `devDependency`, so `npm ci` and CI do not move. It exits
+0 on a package AMO would refuse, which the docs now say beside it. F0 quotes
+Mozilla on both calls; F3's note to the reviewer answers the Preact
+warnings; `docs/SUBMIT-STATUS.md` has the table; `docs/SUBMIT.md` names the
+command. One claim in the old item was wrong and is corrected: the compat
+audit does not fail on a manifest key MDN says the floor lacks unless the
+key is in its own list, and this one is not.
+
+The first `npm install` of the linter sat for minutes and was killed with
+nothing written; the same command later took 10 s. Retry before
+diagnosing.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 4 min 58 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, 448 tools / 107, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.1 min**, then build
+and validate again; and `npm run lint:firefox` on the rebuilt
+`dist/firefox`, exit 0, 0 errors and the same 5 warnings. `packs:verify`,
+`site:check` and the screenshot groups were not re-run: no pack, page,
+image or file under `src/` moved.
+
+Assumed, with nobody to ask: that measuring the candidates was this run's
+and choosing among them Creagh's, the choice changing what Chrome's and
+Edge's forms are told too; that a sentence in the note to AMO's reviewer
+about Preact's warnings is a fact, not listing copy awaiting approval; and
+that a pinned `npx` suits a check run by hand before an upload.
+
+What needs a human: unchanged, everything below **B1**, the eight calls,
+and now one yes or no — F0's recommendation, `optional: ["websiteContent"]`
+at floor 140 with Android 142. `Next` holds no agent-shaped item.
 
 ### 2026-10-25 — the noun notes too, and setl was the high-backed bench only in English
 

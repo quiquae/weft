@@ -155,6 +155,76 @@ No check in the repository measures this, on purpose: a CI step that fetched
 comments give the reason that rules it out — a red X that is ignored is worse
 than no check at all.
 
+## Firefox: AMO's own linter
+
+**Measured 2026-10-25, 18:00 UTC, on `main` at `d378da6`**, with
+addons-linter 10.14.0 — the validator addons.mozilla.org runs on every
+upload, and the latest on npm that day — against `weft-firefox-1.0.1.zip`
+built from that commit, and against `dist/firefox` under six candidate
+declarations, each linted in a copy of its own. `npm run lint:firefox` runs
+the same linter, at the same version, on `dist/firefox`.
+
+As built, exit 0, **0 errors and 5 warnings**:
+
+| Code | Message | File |
+|---|---|---|
+| `MISSING_DATA_COLLECTION_PERMISSIONS` | "The "/browser_specific_settings/gecko/data_collection_permissions" property is required for all new Firefox extensions" | `manifest.json` |
+| `UNSAFE_VAR_ASSIGNMENT` ×4 | "Unsafe assignment to innerHTML" | `popup.js`, `onboarding.js`, `dashboard.js`, `options.js`, line 1 |
+
+The linter reports the missing key as a warning. What refuses it is AMO's
+check of a *new* add-on at submission, which Mozilla's blog describes ("will
+be prevented from being submitted") and no local tool runs. The four
+`innerHTML` writes are Preact's own: each is `e.innerHTML=….__html`, the
+library's `dangerouslySetInnerHTML` path, and nothing under `src/` uses
+`dangerouslySetInnerHTML` or `innerHTML`. The same four bundles are the
+linter's `unknownMinifiedFiles`, which is why F3 uploads the source.
+
+With a declaration, the four Preact warnings in every row:
+
+| `data_collection_permissions` | Floor | Errors | Other warnings |
+|---|---|---|---|
+| `required: ["none"]` | 128.0 | 0 | `KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION` (desktop 128 is before 140) and `KEY_FIREFOX_ANDROID_UNSUPPORTED_BY_MIN_VERSION` (Android, before 142) |
+| `required: ["none"]` | 140.0 | 0 | the Android one |
+| `required: ["none"], optional: ["websiteContent"]` | 128.0 | 0 | both |
+| `required: ["none"], optional: ["websiteContent"]` | 140.0 | 0 | the Android one |
+| `required: ["none"], optional: ["websiteContent"]` | 140.0, and `gecko_android` 142.0 | 0 | **none** |
+| `required: ["websiteContent"]` | 140.0 | 0 | the Android one |
+
+**So the linter decides neither of F0's calls**: no candidate has an error,
+the value moves nothing, and the floor moves a warning. Mozilla's own page
+(`extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/`,
+last updated 2026-03-12) decides more:
+
+- "the policies state that data transmission refers to any data collected,
+  used, transferred, shared, or handled outside the add-on or the local
+  browser". The own-key provider sends words of the page, and with
+  `sendContext` their sentence, to DeepL, Google or OpenAI, so it transmits
+  `websiteContent`, and `required: ["none"]` alone would be false.
+- Optional data "aren't presented during installation …, and they aren't
+  granted by default. The extension can request that the user opts in to
+  this data collection after installation by calling permissions.request()
+  in a user-activated event handler". So declaring `optional` commits Weft
+  to asking — `permissions.request({ data_collection: ["websiteContent"] })`
+  from the click that turns the providers on, and a look at
+  `permissions.getAll()`'s `data_collection` before `lookupMissing` sends —
+  or it claims a consent Weft never asks for. Nothing in `src/` does either
+  yet.
+- An extension that collects data on Firefox 139 or earlier "must display a
+  custom data collection experience", by one of three options, and "For new
+  extensions, options 1 or 2 make the most sense": `strict_min_version` 140
+  for `gecko` and 142 for `gecko_android` — the row above with no warnings —
+  or turning the collection off where `getAll()` has no `data_collection`.
+
+`npm run compat` does not know the key: it has no entry for
+`webextensions.manifest.browser_specific_settings.gecko.data_collection_permissions`
+or `webextensions.api.permissions.Permissions.data_collection`, both Firefox
+140 and Android 142 in MDN's data, and it checks every entry in all three
+browsers, so the entry the change adds needs a fallback naming that
+`buildManifest` writes the key for Firefox alone.
+
+To measure again: `npm run build:firefox && npm run lint:firefox`, and read
+the warnings, since the exit status is 0 with or without the key.
+
 ## What it waits on, in order
 
 1. **B1** — register `weft.study`, or choose another domain and change every

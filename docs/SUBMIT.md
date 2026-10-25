@@ -212,7 +212,12 @@ Edge review is usually slower than Chrome's and the feedback is terser.
 
 ```bash
 npm run zip               # also writes weft-firefox-1.0.1.zip
+npm run lint:firefox      # AMO's own validator, on dist/firefox; read the warnings
 ```
+
+`lint:firefox` exits 0 whether or not the key below is declared, because the
+validator only warns about it; as built on 2026-10-25 it printed 0 errors and
+5 warnings, the missing key and four in Preact (`SUBMIT-STATUS.md`).
 
 **Not submittable yet.** Since 2025-11-03 AMO refuses a new extension whose
 manifest does not declare `browser_specific_settings.gecko.data_collection_permissions`,
