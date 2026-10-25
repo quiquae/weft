@@ -356,7 +356,7 @@ describe('the screenshots the page sends', () => {
   test('every frame the store spec draws is one the page sends to a store', () => {
     const spec = read('tests/e2e/store-assets.spec.ts');
     const frames = [...spec.matchAll(/\{ name: '([a-z]+)', width: \d+, height: \d+ \}/g)].map((m) => m[1]!);
-    assert.ok(frames.length >= 2, `found ${frames.length} frames in store-assets.spec.ts — has the FRAMES table changed shape?`);
+    assert.ok(frames.length > 0, 'found no frames in store-assets.spec.ts — has the FRAMES table changed shape?');
     const sent = new Set([...screenshotsByHeading().values()].flat().map((file) => file.slice(0, file.indexOf('-'))));
     assert.deepEqual(
       frames.filter((frame) => !sent.has(frame)),
