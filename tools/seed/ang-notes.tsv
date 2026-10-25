@@ -1,0 +1,104 @@
+# Where each note in lex-ang.tsv was checked.
+#
+# lemma | pos | tgt | note | sources
+#
+# A note is the sentence printed under a woven Old English word: in the
+# tooltip, on /old-english/<word> — joined to the descent sentence, or under
+# "Worth knowing" where the word has no descendant — in the note column of the
+# descent hub, and, when it says "meant", "simply" or "literally", as the
+# word's line in the discoveries feed. It is a published claim, and until
+# 2026-10-25 nothing recorded that any of the Old English ones had been looked
+# up against a dictionary, where the Latin ones have named theirs in
+# la-notes.tsv since 2026-10-02.
+#
+# On 2026-10-25 the 39 notes of the verbs, adjectives, adverbs, numerals and
+# interjections were read: against the entry each row's gloss was read in
+# (ang-glosses.tsv), against etymonline for every English word a note
+# explains, against English Wiktionary's English entries where etymonline
+# does not print the claim — "the quick and the dead", "to wit", the
+# proverb — and against Bosworth–Toller where the gloss was read there.
+# etymonline was read in the Internet Archive's copies of its pages
+# (web.archive.org, snapshots of 2025-08 to 2026-03), because that day the
+# site answered every automated reader with a challenge page; the entries
+# are cited as etymonline's all the same, being its text. 38 stood. One did
+# not, and is listed at the foot of this file with what the dictionaries say,
+# so that nobody restores it in good faith.
+#
+# The 48 noun notes are not read yet; tests/tools/ang-notes.test.ts holds the
+# parts of speech in its HELD, and nouns join it when they are.
+#
+# The line repeats the note. That is the point: reword a note and it has no
+# source until somebody opens the dictionary again and says which entry.
+#
+# The sources field
+# -----------------
+# Each line names the entries it was checked against, separated by spaces:
+#
+#   bt:<id>            Bosworth–Toller, https://bosworthtoller.com/<id>
+#   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
+#   wikt:en:<title>    https://en.wiktionary.org/wiki/<title>#English, a
+#                      space written as an underscore
+#   etym:<english>     https://www.etymonline.com/word/<english>
+#
+# tests/tools/ang-notes.test.ts requires every note of a held part of speech
+# to have a line repeating it, a line to cite an entry its row's gloss was
+# read in — a Wiktionary page holds every word of one spelling, and hund is a
+# dog where hund² is a hundred — and a note that names its row's etymon to
+# cite that English word's own entry, etymonline's or Wiktionary's. What a
+# note is held to is what the entries say: one they contradict, hedge or say
+# less than is rewritten, and a loose paraphrase of a true thing stands, as
+# "“bleak” is its Norse cousin" does for an English word borrowed from the
+# Norse cousin of blāc.
+
+big	adj	miċel	“many a little makes a mickle”	wikt:ang:micel etym:mickle wikt:en:many_a_mickle_makes_a_muckle
+great	adj	grēat	“grēat” meant thick or massive	wikt:ang:great etym:great wikt:en:great
+weak	adj	wāc	“weak” came from its Norse cousin, “veikr”	wikt:ang:wac etym:weak wikt:en:weak
+quick	adj	swift	“cwic” meant alive, as in “the quick and the dead”	wikt:ang:swift wikt:ang:cwic etym:quick wikt:en:quick
+false	adj	lēas	the suffix in “hopeless” is this word	wikt:ang:leas etym:-less wikt:en:-less
+rich	adj	rīċe²	it meant powerful before it meant wealthy	wikt:ang:rice etym:rich wikt:en:rich
+sad	adj	unrōt	“sad” is another word, “sæd”, which meant sated, full	wikt:ang:unrot etym:sad wikt:en:sad
+holy	adj	hāliġ	it shares a root with “hāl”, whole	wikt:ang:halig wikt:ang:hal etym:holy
+alive	adj	cwic	“the quick and the dead”	wikt:ang:cwic etym:quick wikt:en:quick
+whole	adj	hāl	also “hale”; and “hǣlan”, to make whole, became “heal”	wikt:ang:hal wikt:ang:hælan etym:whole etym:hale etym:heal
+black	adj	blæc	“blāc”, with a long vowel, meant pale; “bleak” is its Norse cousin	wikt:ang:blæc wikt:ang:blac etym:black etym:bleak
+know	verb	witan	“to wit”, “unwittingly”	wikt:ang:witan wikt:en:wit wikt:en:to_wit etym:unwitting
+take	verb	niman	“numb” was its past participle, taken or seized; “take” itself is Norse	wikt:ang:niman etym:numb etym:take
+tell	verb	tellan	it meant to count, as in “bank teller”	wikt:ang:tellan etym:tell etym:teller
+work	verb	wyrċan	“wyrċan” gave both “work” and “wrought”	wikt:ang:wyrcan etym:work etym:wrought wikt:en:work
+walk	verb	wealcan	it meant to roll or toss	wikt:ang:wealcan etym:walk
+read	verb	rǣdan	it meant to advise, as in “Ethelred the Unready”	wikt:ang:rædan etym:read etym:unready
+write	verb	wrītan	it meant to scratch or incise	wikt:ang:writan etym:write
+die	verb	steorfan	“steorfan” simply meant to die	wikt:ang:steorfan etym:starve
+sell	verb	sellan	“sellan” meant to give	wikt:ang:sellan etym:sell
+pay	verb	ġieldan	“ġieldan” meant to pay or repay, and became “yield”	wikt:ang:gieldan bt:16997 etym:yield
+close	verb	clȳsan	“close” is partly this word and partly Old French “clos”	wikt:ang:clysan wikt:en:close etym:close
+teach	verb	tǣċan	related to “tācn”, a token or sign	wikt:ang:tæcan etym:teach etym:token
+win	verb	winnan	“winnan” meant to struggle or toil	wikt:ang:winnan etym:win
+watch	verb	weardian	“warden” and “guard” are its cousins, through French	wikt:ang:weardian etym:ward etym:warden etym:guard
+show	verb	sċēawian	it meant to look at, not to display	wikt:ang:sceawian etym:show
+seek	verb	sēċan	as “besēċan” it became “beseech”	wikt:ang:secan etym:seek etym:beseech
+change	verb	wendan	“wend one’s way”; its past tense “went” was captured by “go”	wikt:ang:wendan etym:wend etym:went
+throw	verb	weorpan	“weorpan” meant to throw	wikt:ang:weorpan etym:warp
+catch	verb	fōn	its past participle gave “fang”, once a seizing or taking	wikt:ang:fon etym:fang
+never	adv	nǣfre	“ne ǣfre”, not ever	wikt:ang:næfre etym:never
+soon	adv	sōna	“sōna” meant immediately	wikt:ang:sona etym:soon
+almost	adv	fulnēah	“nēah”, near, became “nigh”	wikt:ang:fulneah wikt:ang:neah etym:nigh
+alone	adv	āna	“all āna” became “alone”	wikt:ang:ana etym:alone
+hundred	num	hund²	the usual word for the number; English kept “hundred”, “a counting of 100”	wikt:ang:hund etym:hundred
+first	num	forma	“former” began as its comparative	wikt:ang:forma etym:former
+hello	intj	wes hāl	literally “be whole”; “wassail” is its Norse cousin, “ves heill”	bt:18028 wikt:ang:wesan etym:whole wikt:en:wassail
+goodbye	intj	wes hāl	said at parting as well as meeting: “wesaþ hāle”, to more than one, glosses Latin “valete”, farewell	bt:35422 wikt:ang:wesan
+sorry	intj	mē hrēoweþ	literally “it rues me”, mē being the one who regrets it	bt:19714 bt:53179 etym:rue
+#
+# Rewritten on 2026-10-25: it said less than the dictionaries do
+# --------------------------------------------------------------
+#   close   clȳsan   "“close” came from French"
+#                    wikt:en:close, the verb: "From Middle English closen (“to close,
+#                    enclose”), partly continuing (in altered form) earlier Middle English
+#                    clusen (“to close”) from Old English clȳsan (“to close, shut”) … and
+#                    partly derived from Middle English clos …, from Old French clos";
+#                    etym:close, the verb: "from Old French clos- (past participle stem of
+#                    clore …)" and "Also partly from Old English beclysan "close in, shut
+#                    up."" Read under the woven word, the note said English close owes
+#                    clȳsan nothing. The etymon column stays empty, a part-descent being no
+#                    descent (ang-etymons.tsv); the note tells the part.
