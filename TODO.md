@@ -6,7 +6,7 @@
 
 **State on 2026-10-25:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **448** tool tests / 107 suites, **40** e2e passing
+suites, **459** tool tests / 111 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -616,8 +616,9 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
-agent-shaped item, only two that wait on Creagh's calls.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
+that wait on Creagh's calls and one agent-shaped item behind them, the woad
+colour's four copies.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1135,6 +1136,54 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
+- [x] **Make the compat audit read the manifests it was said to check.**
+      Done 2026-10-25. The queue sent this run at the Edge screenshots,
+      which #113 had landed that morning — `docs/store/` holds no
+      `edge-*.png` — and both unchecked items below wait on Creagh, each
+      saying so of itself. Reading the Firefox item's step 2 found a
+      guarantee nothing kept: `CLAUDE.md` and the header of
+      `manifest.config.mjs` said `tools/compat-audit.mjs` fails the build
+      on any key a target's manifest declares and MDN says it lacks, and
+      the audit imported only `MINIMUMS`. It judged a hand list of 21
+      paths, five of them manifest keys, in all three browsers alike. With
+      `notifications` and `idle` pushed onto the Safari build's
+      permissions — the near-miss the audit's own header says it exists to
+      stop — `npm run compat` exited 0, 56 pass and 7 degrade as before.
+
+      Now `tools/compat.ts` walks what `buildManifest(target)` writes, every
+      key and every permission, and judges each on its own target at its
+      floor, with the verdict logic moved out of the audit so both halves
+      share one `judge()`. Icon sizes and command names are names, not
+      keys; a list of strings is a value except a list of permissions. A
+      key MDN has no entry for fails as NO-DATA, which catches a misspelt
+      key, unless `UNTRACKED` names it for exactly the targets that declare
+      it, with the page that documents it: `minimum_chrome_version`
+      (Chrome's docs), and `gecko.id`, `gecko.strict_min_version` and
+      `safari.strict_min_version` (MDN's `browser_specific_settings` page,
+      read the same hour). `KEY_FALLBACKS` names two: Safari's `commands`,
+      which moved out of the hand list with the other four manifest keys,
+      and Chrome's `use_dynamic_url`, 130 against a floor of 116, which
+      nothing had judged. Result: 16 dependencies × 3 browsers, 42 pass
+      and 6 degrade; 92 manifest keys, chrome 30, firefox 32, safari 30,
+      86 pass, 2 degrade, 4 untracked; 0 fail, 0 without data.
+
+      Test-first: `tests/tools/compat.test.ts`, 11 tests in 4 suites, red
+      on the missing module; then 9 green and 2 red, the second of which
+      was the gap itself — a copy of the old audit, given a manifest whose
+      Safari build declares `notifications`, exited 0. Green with the
+      audit rewired. Three probes on the real config, each restored by md5:
+      Safari's `notifications` and `idle` fail by name; F0's
+      `data_collection_permissions` fails at floor 128, "needs 140", and
+      passes at 140, its `required` and `optional` NO-DATA until named
+      (step 2 of the Firefox item says so now). `npm run compat` passes
+      `--experimental-strip-types`, as `packs` does, because it imports
+      TypeScript now; the audit sets `process.exitCode` rather than
+      calling `exit()`, which can cut off output still queued for a pipe.
+      Nothing that ships moved, so no image group went stale. Tools 448 →
+      **459** / 107 → **111** suites, total 1161 → **1172**, in six places,
+      `docs/LAUNCH.md:221` first. `docs/SUBMIT-STATUS.md` keeps the
+      2026-10-24 figure, being that run's record.
+
 - [x] **Lint the Firefox package as AMO will, before F0's two calls are
       made.** Done 2026-10-25: the half of the Firefox item below that needs
       no call. `Now` held no unchecked item and `Next` two that wait on
@@ -1263,15 +1312,21 @@ registered**, and nothing below it can move until it is.
          header comment (`:29`), and `gecko_android`; `build.mjs:59`'s
          esbuild `firefox128`, which moves no byte while `chrome116` and
          `safari16.4` bind; `docs/SUBMIT.md:238`'s "floor is 128".
-      2. `tools/compat-audit.mjs`: entries for
-         `webextensions.manifest.browser_specific_settings.gecko.data_collection_permissions`
-         and `webextensions.api.permissions.Permissions.data_collection`,
-         Firefox 140 and Android 142 in MDN's data. The audit checks every
-         entry in all three browsers and has no per-target field, so each
-         needs a fallback naming that `buildManifest` writes the key for
-         Firefox alone, or the audit a `targets` field. It does not fail on
-         the key today, because it reads its own list and not the manifest —
-         this note said otherwise before it was measured.
+      2. The compat audit. **The key needs no entry since 2026-10-25**: the
+         audit walks each target's built manifest and judges the key on
+         Firefox alone — probed, it FAILs "needs 140, we claim 128.0" at
+         today's floor and passes at 140, so the audit holds the floor call
+         by itself. Its two children, `required` and `optional`, have no
+         entry in MDN's data and fail as NO-DATA until `UNTRACKED` in
+         `tools/compat.ts` names each for `['firefox']`, citing MDN's
+         `browser_specific_settings` page; so will
+         `gecko_android.strict_min_version`. The API the request calls,
+         `webextensions.api.permissions.Permissions.data_collection`
+         (Firefox 140), does need a line in `DEPENDENCIES` in
+         `tools/compat-audit.mjs`, which judges every entry in all three
+         browsers: give it a fallback naming that only the Firefox build
+         calls it, which is DEGRADES on Chrome and Safari, or give
+         `DEPENDENCIES` a `targets` field first.
       3. The request: the options control that turns the providers on calls
          `permissions.request({ data_collection: ['websiteContent'] })` in
          the click itself, on Firefox only — Chrome's schema refuses the key,
@@ -1301,6 +1356,25 @@ registered**, and nothing below it can move until it is.
       for them so the test holds them too. Copy is a call, so it waits for a
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
+
+- [ ] **Hold the woad colour's four copies to `tools/brand.ts`.** Found on
+      2026-10-01 and left; re-measured 2026-10-25. `WOAD = [47, 75, 124]`
+      (`tools/brand.ts:27`) is `#2f4b7c`, and it is typed again in
+      `site/weft.css:24–25` and `src/ui/theme.css:30,32` (`--woad`,
+      `--woad-wash`), `tools/make-og.mjs:48` and
+      `tools/make-store-tiles.mjs:38`. All five agree today, so nothing is
+      wrong yet; it is the shape `tools/brand.ts` was made to end, a fact
+      pasted into a generator being an input no pathspec declares. The fix:
+      the two tools take `css(WOAD)` from `tools/brand.ts`, which both
+      already import for the mark — regenerate `npm run og` and
+      `npm run tiles`, which should come back byte-identical, and stamp both
+      groups; and a test in `tests/tools/brand.test.ts` holds each
+      stylesheet's light-mode `--woad` and `--woad-wash` to `WOAD` (the dark
+      values, `#93b0dd`, are another colour on purpose) and refuses the hex
+      anywhere under `tools/`. Nothing under `src/` needs editing, so no
+      screenshot group moves. A probe changing one stylesheet's woad must
+      fail by name. About 40 minutes, and agent-shaped: no store is told
+      anything different.
 
 - [x] **Weave `ċiriċan` for "churches", as the table and Bülbring print
       it.** Done 2026-10-25, in the PR after the one that found it: the
@@ -6565,6 +6639,30 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-25 — the compat audit read no manifest.** Three things a later run
+would be sorry not to know:
+
+1. **Read what a check imports before believing what it says it checks.**
+   `tools/compat-audit.mjs` imported `MINIMUMS` and nothing else from
+   `manifest.config.mjs`, so no sentence about it checking the manifest
+   could have been true; one `grep import` says so faster than any probe.
+   The same shape as `site:check` on 2026-10-24: right about the question
+   it asked, described as asking a bigger one.
+2. **When F0's yes lands, the audit holds its floor.** The key is judged
+   on Firefox alone and fails at 128, "needs 140". Its `required` and
+   `optional` children and `gecko_android.strict_min_version` have no
+   entry in MDN's data, so each needs an `UNTRACKED` line in
+   `tools/compat.ts` for `['firefox']`, citing MDN's
+   `browser_specific_settings` page, which documents them in prose. A
+   line for a key no target declares fails the test, so the lines land
+   with the key, not before.
+3. **A new key whose children are names fails until `NAMES` lists it.**
+   `icons`, `action.default_icon` and `commands` hold sizes and command
+   names a developer chooses, so the walk does not descend into them; any
+   other object is walked, and its children judged. A key like them added
+   later reads as NO-DATA once per child, which is the loud direction:
+   add it to `NAMES` with the reason, never an `UNTRACKED` line per name.
 
 **2026-10-25 — AMO's validator, run for the first time, and what its exit
 status cannot say.** Three things a later run would be sorry not to know:
