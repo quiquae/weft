@@ -681,7 +681,12 @@ hard, /ˈtʃirikɑn/, where the table prints *ċiriċan* and Bülbring's
 'Kirchen'", both *c* soft; it is *ċiriċan* now, /ˈtʃiritʃɑn/. Every woven
 Old English plural and participle but seven names the declension or
 conjugation table that prints it, the section of Wright's grammar or of
-Moore and Knott's, or the Bosworth–Toller entry that quotes it.
+Moore and Knott's, or the Bosworth–Toller entry that quotes it. And the note
+under *clȳsan*, woven for *close*, said "“close” came from French", where
+English Wiktionary and etymonline both have the verb partly from Old English
+*clȳsan* and partly from Old French *clos*; it says so now, and every note on
+an Old English verb, adjective, adverb, numeral or interjection names the
+dictionary entries it was checked against.
 
 **And the dashboard counted the night the clocks went back twice.** Its
 daily chart, the week's total, yesterday's figure and the streak each stepped
@@ -715,7 +720,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1155 tests: 571 unit, 102 in jsdom, 442 over the build tools, and
+**Built with** 1161 tests: 571 unit, 102 in jsdom, 448 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **442 pass**, 106 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **448 pass**, 107 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -385,9 +385,9 @@ inflected form becoming the English word (*shadow* from the oblique case of
 *sċeadu*, *numb* from the past participle of *niman*), and nothing else: not
 "partly from", not "probably", not a compound that merely contains the word.
 On 2026-10-01 that standard removed 21 of 330 and corrected 6. Notes are not
-held by it, because a gloss of Old English meaning wants Bosworth–Toller,
-which nothing here cites. The claims taken out are listed at the foot of the
-ledger with what the dictionary says; read that before restoring one.
+held by it: they have a ledger of their own, `tools/seed/ang-notes.tsv`, the
+paragraph below the Latin notes. The claims taken out are listed at the foot
+of the ledger with what the dictionary says; read that before restoring one.
 
 **And a Latin note names its entries, because a note is a published
 sentence.** Every note in `tools/seed/lex-la.tsv` has a line in
@@ -402,6 +402,24 @@ Jenner having "named the vaccine", which the landing page quoted. Separately,
 `tests/tools/lexicon-notes.test.ts` refuses a note in any pack that gives a
 word a verb's person, tense or conjugation when its own `pos` says it is not
 a verb.
+
+**And so does an Old English one, read where its gloss was.** Every note in
+`tools/seed/lex-ang.tsv` of a part of speech in `HELD` has a line in
+`tools/seed/ang-notes.tsv` that repeats it and cites an entry its row's gloss
+was read in (`ang-glosses.tsv`), so that the note and the gloss read one word
+of a spelling — `hund` is a dog where `hund²` is a hundred — and, when the
+note names the row's etymon, that English word's own entry, etymonline's or
+English Wiktionary's, the two the etymon ledger takes.
+`tests/tools/ang-notes.test.ts` holds them by the Latin rule: a line for
+every note, repeated exactly, and none outliving its note. On 2026-10-25 the
+39 notes of the verbs, adjectives, adverbs, numerals and interjections were
+read and `HELD` took those five; one was rewritten, `clȳsan`'s "“close” came
+from French", both dictionaries having the verb partly from Old English
+`clȳsan` too. The 48 noun notes are next. etymonline refused every automated
+reader that day with a challenge page, and was read in the Internet
+Archive's copies, `web.archive.org/web/2025id_/<url>` with `curl
+--compressed`; an entry read that way is still etymonline's, and is cited
+`etym:` all the same.
 
 **A Latin etymon names its entry too, under a looser verb.** Every etymon in
 `tools/seed/lex-la.tsv` has a line in `tools/seed/la-etymons.tsv` naming the
@@ -752,6 +770,76 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-25 — the Old English notes name their entries, all but the nouns', and close is partly clȳsan
+
+The queue sent this run at "the eleven Old English second forms their
+tables do not print", with kind 3 and three regular plurals to read. Every
+reading it named had been made on 2026-10-24 and -25 — Wright §§ 309–324
+and Bülbring for kind 3, Bülbring, Wright's *Elementary* grammar and Moore
+and Knott for `þorpas`, `hūsbondan` and `mentlas` — and `bēċ` and `ċiriċan`
+had landed, so the seven left are calls, and `Next` held nothing an
+unattended run should take. So the work was found by counting which
+published claims name no entry, and the Old English notes were the last: 87
+rows held to nothing, the reason `la-notes.test.ts` gave for leaving them —
+that nothing here cited Bosworth–Toller — false since four ledgers came to
+cite it.
+
+**`tools/seed/ang-notes.tsv` holds the 39 notes of every part of speech but
+the noun**, and `tests/tools/ang-notes.test.ts`, 6 tests in a new suite,
+holds it by Latin's rules with one change: a line cites an entry its row's
+gloss was read in, rather than a dictionary the test names, because a
+Wiktionary page holds every word of one spelling and the gloss ledger has
+already said which word the row is. Test-first: red on a header-only ledger,
+all 39; red on exactly `lex-ang.tsv:331 close → clȳsan` once the ledger
+carried its rewritten note; green with the seed. Seven probes, each restored
+by md5, each failing its own test by name, an emptied `HELD` the floor.
+
+**38 stood, and `clȳsan`'s said less than both dictionaries.** "“close” came
+from French": English Wiktionary's verb *close* is "partly continuing (in
+altered form) earlier Middle English clusen (“to close”) from Old English
+clȳsan … and partly derived from … Old French clos", and etymonline's ends
+"Also partly from Old English beclysan". Read under the woven word, the note
+said English *close* owes `clȳsan` nothing. It says "“close” is partly this
+word and partly Old French “clos”" now; the etymon column stays empty, a
+part-descent being none. 2 fields of `en-ang.json` moved, `close` and
+`closing`, `builtAt` already today; the seven packs still print 653 KB.
+
+**etymonline answered every automated reader with a Cloudflare challenge**,
+`curl` and the web fetcher alike, so it was read in the Internet Archive's
+copies, `web.archive.org/web/2025id_/<url>`, snapshots of 2025-08 to
+2026-03, three seconds apart with a `000` retried. Without `curl
+--compressed` the archive's body is brotli and reads as noise. **When a
+source refuses a reader, look for a public copy of it before dropping it**:
+`rīċe²`'s "powerful before it meant wealthy" is in etymonline, "in later
+Old English "wealthy"", and in no Wiktionary page.
+
+All 31 screenshots were regenerated after the pack's commit, 10 + 14 + 7;
+the documentation set's first run moved `options.png` by 40 pixels, the
+largest channel 16 apart, the drift recorded on 2026-10-08, and its second
+gave back all 14 committed bytes, so the three groups are stamped. Tools 442
+→ **448** / 106 → **107** suites, total 1155 → **1161**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` sentence, because the pack
+ships.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 0 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **448 tools / 107**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.1 min**, then build
+and validate again. Separately: `packs:verify` **0 errors / 5 warnings**;
+`npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a.
+
+Assumed, with nobody to ask: that the Latin rule "a loose paraphrase of a
+true thing stands" keeps "“bleak” is its Norse cousin" and "as in “Ethelred
+the Unready”", whose epithet etymonline gives as *ungerǣd*, "ill-advised",
+beside `rǣdan`; that an etymonline entry read in the archive is cited as
+etymonline's; and that the nouns are a slice of their own.
+
+What needs a human: unchanged, everything below **B1**, and the eight
+calls. `Next` holds one agent-shaped item, the 48 noun notes.
 
 ### 2026-10-25 — churches is ċiriċan, as its table and Bülbring print it
 

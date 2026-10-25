@@ -48,10 +48,10 @@
  * It cannot tell an entry somebody read from one somebody typed, which is the
  * limit every ledger here has. Cite the ones actually opened.
  *
- * Old English notes are still not held to a source: a gloss of Old English
- * meaning wants Bosworth–Toller, which nothing here cites. The Latin etymon
- * column has a ledger of its own, `tools/seed/la-etymons.tsv`, held by
- * `tests/tools/etymons.test.ts`.
+ * The Old English notes have the same kind of ledger since 2026-10-25,
+ * `tools/seed/ang-notes.tsv`, held by `tests/tools/ang-notes.test.ts`. The
+ * Latin etymon column has a ledger of its own, `tools/seed/la-etymons.tsv`,
+ * held by `tests/tools/etymons.test.ts`.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';

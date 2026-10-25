@@ -36,9 +36,8 @@
  * etymonline has none. It cannot tell a reference somebody read from one
  * somebody typed; the entries cited should be the ones actually opened.
  *
- * Notes are not covered here. Old English notes are held to nothing yet — a
- * gloss of Old English meaning wants Bosworth–Toller, which nothing here
- * cites — and Latin notes have their own ledger, `tests/tools/la-notes.test.ts`.
+ * Notes are not covered here: each language's have their own ledger,
+ * `tests/tools/la-notes.test.ts` and `tests/tools/ang-notes.test.ts`.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
