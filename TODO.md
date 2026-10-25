@@ -75,7 +75,9 @@ box takes, held word for word to `docs/STORE-LISTING.md` by
 `tests/tools/ready-to-submit.test.ts`, with a BLOCKED list of what only
 Creagh can do. Writing it against each store's own documentation found four
 things not ready, each written up below: AMO now requires a data-collection
-declaration the Firefox manifest does not make; the `edge-*` screenshots were
+declaration the Firefox manifest does not make — and AMO's own validator,
+first run on 2026-10-25, finds no error in the package with or without one,
+so what to declare is Mozilla's policy, which F0 now quotes; the `edge-*` screenshots were
 1366×768, which Edge does not accept, and are gone since 2026-10-25; the
 three Pro buy buttons ship *inside
 the package* and their checkout returns 404, so B4 is in every store's
@@ -1133,6 +1135,33 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
+- [x] **Lint the Firefox package as AMO will, before F0's two calls are
+      made.** Done 2026-10-25: the half of the Firefox item below that needs
+      no call. `Now` held no unchecked item and `Next` two that wait on
+      Creagh, each saying so of itself, and nobody had ever run AMO's
+      validator on the Firefox package, which that item asks for. It is
+      addons-linter, 10.14.0, the latest on npm, installed in `/tmp`. On
+      `weft-firefox-1.0.1.zip` as built: exit 0, **0 errors, 5 warnings** —
+      `MISSING_DATA_COLLECTION_PERMISSIONS`, which the linter only warns
+      about, the refusal being AMO's own check of a new add-on, and four
+      "Unsafe assignment to innerHTML" in the four UI bundles, every one
+      Preact's `dangerouslySetInnerHTML` path, `e.innerHTML=….__html`, which
+      nothing in `src/` uses. Then six candidate declarations, each in a copy
+      of `dist/firefox`: an error in none; at floor 128 a
+      `KEY_FIREFOX_UNSUPPORTED_BY_MIN_VERSION` warning, at 140 an Android
+      one, and with `gecko_android.strict_min_version` at 142 nothing but
+      Preact's four. So the linter decides neither call, and Mozilla's page,
+      read the same hour, decides most of the first: transmission is "any
+      data … handled outside the add-on or the local browser", so
+      `required: ["none"]` alone is false, and optional data "aren't granted
+      by default" and are asked for with `permissions.request()` from a
+      click, which is code Weft does not have. `npm run lint:firefox` runs
+      the same validator on `dist/firefox`, and exits 0 with or without the
+      key; `docs/SUBMIT-STATUS.md` has the table; F0 of
+      `docs/READY-TO-SUBMIT.md` quotes Mozilla on both calls, and F3's note
+      to the reviewer answers the four Preact warnings. Nothing that ships
+      moved.
+
 - [x] **Read the 48 Old English noun notes into `tools/seed/ang-notes.tsv`,
       then add `'noun'` to `HELD` in `tests/tools/ang-notes.test.ts`.** Done
       2026-10-25, in the PR after the one that queued it. All 48 read, 46
@@ -1220,22 +1249,49 @@ registered**, and nothing below it can move until it is.
       ([Mozilla's blog, 2025-10-23](https://blog.mozilla.org/addons/2025/10/23/data-collection-consent-changes-for-new-firefox-extensions/)).
       Weft has never been listed on AMO, so it is new, and
       `buildManifest('firefox')` writes only `id` and `strict_min_version`
-      there. Two decisions, both written up as F0 on the page:
-      the value — Weft sends nothing by default, but the optional own-key
-      provider sends single words of the page, Mozilla's `websiteContent`,
-      so `{ "required": ["none"], "optional": ["websiteContent"] }` is the
-      likely honest one — and the floor, because Firefox's own consent
-      screen exists only from 140 and `MINIMUMS.firefox` is `128.0`. **Before
-      choosing, run `npm run compat`**: `tools/compat-audit.mjs` fails the
-      build on a key MDN says the floor lacks, so keeping 128 may need a
-      named fallback there, and that audit, not this note, says which. Then
-      `npm run zip`, `npm run validate`, and lint the Firefox zip as AMO will.
-      If the store-listing's "Website content? No." answer changes with it,
-      `tests/tools/ready-to-submit.test.ts` fails until the page says to tick
-      website content on Chrome and Edge too — which is the point. About an
-      hour once the two calls are made. **Not agent-shaped before
-      then**: an unattended run that reaches this with neither call made
-      should leave it and take the next item.
+      there. Two decisions, both written up as F0 on the page: the value and
+      the floor. **Measured 2026-10-25** (the ticked item above): AMO's own
+      validator errors on no candidate, so both are questions of Mozilla's
+      policy, and F0 now quotes what Mozilla's page says of each. **The
+      recommendation, for Creagh's yes or no**:
+      `{ "required": ["none"], "optional": ["websiteContent"] }`, with
+      `strict_min_version` `140.0` and `gecko_android.strict_min_version`
+      `142.0` — Mozilla's option 1, which lints with no warning but Preact's
+      four. After a yes it is about two hours, not the hour this item said,
+      because `optional` is a promise to ask:
+      1. `manifest.config.mjs`: the key, `MINIMUMS.firefox` `140.0` and its
+         header comment (`:29`), and `gecko_android`; `build.mjs:59`'s
+         esbuild `firefox128`, which moves no byte while `chrome116` and
+         `safari16.4` bind; `docs/SUBMIT.md:238`'s "floor is 128".
+      2. `tools/compat-audit.mjs`: entries for
+         `webextensions.manifest.browser_specific_settings.gecko.data_collection_permissions`
+         and `webextensions.api.permissions.Permissions.data_collection`,
+         Firefox 140 and Android 142 in MDN's data. The audit checks every
+         entry in all three browsers and has no per-target field, so each
+         needs a fallback naming that `buildManifest` writes the key for
+         Firefox alone, or the audit a `targets` field. It does not fail on
+         the key today, because it reads its own list and not the manifest —
+         this note said otherwise before it was measured.
+      3. The request: the options control that turns the providers on calls
+         `permissions.request({ data_collection: ['websiteContent'] })` in
+         the click itself, on Firefox only — Chrome's schema refuses the key,
+         and an `await` before the call loses the user activation — and
+         leaves the providers off if it is refused.
+      4. The check: `lookupMissing` (`src/background/providers/index.ts`)
+         sends nothing unless `permissions.getAll()`'s `data_collection`
+         includes `websiteContent`, where the key exists at all — a pure
+         function in `src/core/` with unit tests, which the worker calls — so
+         revoking it in `about:addons` stops the words leaving.
+      5. Docs and the store answers: C11 and Edge's website-content box
+         ticked, as C11 says, with `docs/STORE-LISTING.md`'s disclosures —
+         `tests/tools/ready-to-submit.test.ts` fails until the page agrees,
+         which is the point — `docs/PRIVACY.md` if it says what Firefox asks,
+         and a `CHANGELOG.md` paragraph. Then `npm run zip`,
+         `npm run validate` and `npm run lint:firefox`, which should print
+         the four Preact warnings and nothing else.
+      **Not agent-shaped before the yes**: it changes what three stores are
+      told Weft sends, Chrome's among them. An unattended run that reaches
+      this without one should leave it and take the next item.
 
 - [ ] **Draft the Safari subtitle and keywords, for Creagh to approve.** The
       Mac App Store wants a subtitle of at most 30 characters and keywords of
@@ -6509,6 +6565,36 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-25 — AMO's validator, run for the first time, and what its exit
+status cannot say.** Three things a later run would be sorry not to know:
+
+1. **`npm run lint:firefox` exits 0 on a package AMO will refuse.** The
+   validator reports the missing `data_collection_permissions` as a
+   *warning*; the refusal Mozilla's blog describes is AMO's own check of a
+   new add-on at submission, which no local tool runs. So the check is the
+   warnings: as built, the missing key and four of Preact's; after F0,
+   Preact's four alone. Do not wire it into a gate on its exit code.
+2. **The linter is not a dependency, on purpose.** It is 190 packages, and
+   the script pins it through `npx --yes addons-linter@10.14.0`, which
+   fetches it once into npm's cache and keeps `npm ci` and CI unchanged.
+   AMO runs the latest; when it moves past 10.14.0, raise the pin and lint
+   again rather than trusting the old figures. A first `npm install` of it
+   here sat for minutes and was killed with nothing written, and the same
+   command a while later took 10 s: retry before diagnosing.
+3. **A declared `optional` type is a promise to ask.** Firefox never grants
+   it by default, so `optional: ["websiteContent"]` with no
+   `permissions.request()` behind it would tell Mozilla and the user that
+   Weft asks before a word leaves, when it does not. That is why the
+   Firefox item's estimate went from an hour to two, and why the
+   declaration and the code have to land in one PR.
+
+Assumed, with nobody to ask: that measuring the candidates was this run's
+work and choosing among them was not, the Firefox item saying so of itself
+and the choice changing what Chrome's listing is told too; that a sentence
+in the note to AMO's reviewer about Preact's warnings is a fact rather than
+listing copy waiting on approval; and that a pinned `npx` beats a
+190-package `devDependency` for a check run by hand before an upload.
 
 **2026-10-24 — the pre-submission gate, and three claims about it that were
 wrong.** The run is `docs/SUBMIT-STATUS.md`. What it found in the documents

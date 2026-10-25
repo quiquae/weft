@@ -237,22 +237,42 @@ and one without it set correctly "will be prevented from being submitted"
 ([Mozilla](https://blog.mozilla.org/addons/2025/10/23/data-collection-consent-changes-for-new-firefox-extensions/)).
 Weft has never been listed, so it is new, and `weft-firefox-1.0.1.zip`
 puts only `id` and `strict_min_version` under
-`browser_specific_settings.gecko`. Two calls only you can make:
+`browser_specific_settings.gecko`. Two calls only you can make. AMO's own
+linter, run on 2026-10-25 against the zip and six candidate declarations,
+finds an error in none of them, so it decides neither; the figures are in
+`SUBMIT-STATUS.md`. Mozilla's page decides more:
 
 - **The value.** Weft sends nothing by default. With the optional own-key
-  provider it sends single words from the page to the service the user
-  chose, which is Mozilla's `websiteContent`, "anything visible on a
-  website". So the honest declaration is most likely
-  `"data_collection_permissions": { "required": ["none"], "optional": ["websiteContent"] }`;
-  `"required": ["none"]` alone would say it never sends anything.
+  provider it sends words from the page — and, with *send context* on,
+  their sentence — to the service the user chose. Mozilla counts that:
+  "data transmission refers to any data collected, used, transferred,
+  shared, or handled outside the add-on or the local browser", and its type
+  is `websiteContent`, "anything visible on a website". So
+  `"required": ["none"]` alone would be false. The accurate declaration is
+  `"data_collection_permissions": { "required": ["none"], "optional": ["websiteContent"] }`,
+  and it is a promise to ask: optional data "aren't granted by default", and
+  "The extension can request that the user opts in to this data collection
+  after installation by calling permissions.request() in a user-activated
+  event handler". That needs code Weft does not have yet — the request,
+  from the click that turns the providers on, and a check before a word
+  leaves. `"required": ["websiteContent"]` needs no code, and asks everyone
+  who installs to accept a transmission the default never makes.
 - **The floor.** Firefox shows its own consent screen from version 140;
-  Weft's floor is 128. Raise `strict_min_version` to `140.0`, or keep 128
-  and let Weft's own opt-in — no word leaves until a user types in their own
-  key — stand as consent on 128–139, which Mozilla's policy 6.2.2 then
-  governs.
+  Weft's floor is 128. Mozilla: "For new extensions, options 1 or 2 make the
+  most sense". Option 1 raises `strict_min_version` to `140.0` and sets
+  `gecko_android`'s to `142.0`, which lints with no warning but Preact's four
+  (F3). Option 2 keeps 128 and turns the providers off on 128–139, where
+  `permissions.getAll()` has no `data_collection`. Keeping 128 with Weft's
+  own opt-in — no word leaves until a user types in their own key — as the
+  consent is the third, a custom consent experience, which Mozilla does not
+  name among the sensible ones for a new extension.
+- **And Chrome and Edge with it.** If Firefox is told `websiteContent`, tick
+  website content in C11 and on Edge too, as C11 says.
 
-Then rebuild (step 0.1). AMO lints the zip on upload and says what it
-refuses. The change itself is queued in `TODO.md`'s `Next`.
+Then rebuild (step 0.1) and run `npm run lint:firefox`. It exits 0 with the
+key missing — the linter only warns, and the refusal is AMO's own check of
+a new add-on — so read the warnings, not the exit status: the four Preact
+ones should be all. The change itself is queued in `TODO.md`'s `Next`.
 
 **F1 — Account.** <https://addons.mozilla.org/developers/>, with a Firefox
 account.
@@ -269,10 +289,14 @@ was built from, on a clean `main`:
 git archive --format=zip --output=weft-source-1.0.1.zip HEAD
 ```
 
-Upload `weft-source-1.0.1.zip`, and put this in *Notes to reviewer*:
+Upload `weft-source-1.0.1.zip`, and put this in *Notes to reviewer*. Its
+last two sentences answer the four warnings AMO's validator prints for this
+package — "Unsafe assignment to innerHTML" in `popup.js`, `onboarding.js`,
+`dashboard.js` and `options.js` — measured with the validator itself on
+2026-10-25:
 
 ```text
-Build from the source archive: Node 22 (the version in .nvmrc), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04; this one is Node 22, which is also what CI builds it with on Ubuntu.
+Build from the source archive: Node 22 (the version in .nvmrc), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04; this one is Node 22, which is also what CI builds it with on Ubuntu. The four "Unsafe assignment to innerHTML" warnings are in Preact, which is bundled into the four extension pages: each is the library's dangerouslySetInnerHTML path, e.innerHTML = ….__html. No file under src/ uses dangerouslySetInnerHTML or innerHTML.
 ```
 
 **F4 — Name.** From the package; check it reads:
