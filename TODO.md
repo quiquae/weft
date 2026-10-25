@@ -616,8 +616,9 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
-agent-shaped item, only two that wait on Creagh's calls.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
+that wait on Creagh's calls and one agent-shaped item behind them, the woad
+colour's four copies.** The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1355,6 +1356,25 @@ registered**, and nothing below it can move until it is.
       for them so the test holds them too. Copy is a call, so it waits for a
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
+
+- [ ] **Hold the woad colour's four copies to `tools/brand.ts`.** Found on
+      2026-10-01 and left; re-measured 2026-10-25. `WOAD = [47, 75, 124]`
+      (`tools/brand.ts:27`) is `#2f4b7c`, and it is typed again in
+      `site/weft.css:24–25` and `src/ui/theme.css:30,32` (`--woad`,
+      `--woad-wash`), `tools/make-og.mjs:48` and
+      `tools/make-store-tiles.mjs:38`. All five agree today, so nothing is
+      wrong yet; it is the shape `tools/brand.ts` was made to end, a fact
+      pasted into a generator being an input no pathspec declares. The fix:
+      the two tools take `css(WOAD)` from `tools/brand.ts`, which both
+      already import for the mark — regenerate `npm run og` and
+      `npm run tiles`, which should come back byte-identical, and stamp both
+      groups; and a test in `tests/tools/brand.test.ts` holds each
+      stylesheet's light-mode `--woad` and `--woad-wash` to `WOAD` (the dark
+      values, `#93b0dd`, are another colour on purpose) and refuses the hex
+      anywhere under `tools/`. Nothing under `src/` needs editing, so no
+      screenshot group moves. A probe changing one stylesheet's woad must
+      fail by name. About 40 minutes, and agent-shaped: no store is told
+      anything different.
 
 - [x] **Weave `ċiriċan` for "churches", as the table and Bülbring print
       it.** Done 2026-10-25, in the PR after the one that found it: the

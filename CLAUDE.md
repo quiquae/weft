@@ -853,7 +853,9 @@ list, a copy of a manifest key being what the walk replaces; and that a key
 MDN does not track is named rather than skipped, so a misspelling cannot pass.
 
 What needs a human: unchanged, everything below **B1** and the calls. F0's yes
-now lands on an audit that refuses the key below Firefox 140.
+now lands on an audit that refuses the key below Firefox 140. `Next` holds one
+agent-shaped item, behind the two calls: the woad colour's four copies, held
+to `tools/brand.ts`.
 
 ### 2026-10-25 — AMO's validator, run for the first time, finds no error and decides neither call
 
