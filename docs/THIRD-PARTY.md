@@ -83,9 +83,13 @@ is, from the cell of its own gender; eight quote instead the section of
 Wright's *Old English Grammar* that prints the woven form, read in the
 archive.org page images, two the Bosworth–Toller entry whose quotations
 print it, one, *wasċende*, its table's cell with the dot Wright's § 312
-gives its *sc*, and the nine that none of them prints, Wright and
-Bosworth–Toller read for each, are named in `tests/tools/ang-forms.test.ts`
-with what each prints instead. It fails on any other with no line.
+gives its *sc*, one, *gangende*, the section of Samuel Moore and Thomas A.
+Knott, *The Elements of Old English* (Ann Arbor, 1919), whose paradigm of
+*gān* prints it as the participle West Saxon takes from *gangan*, and the
+eight that none of them prints, Wright and Bosworth–Toller read for each and
+Bülbring, Wright's *Elementary Old English Grammar* (1923) and Moore and
+Knott searched, are named in `tests/tools/ang-forms.test.ts` with what each
+prints instead. It fails on any other with no line.
 
 Orthography follows the normalised Early West Saxon of teaching editions.
 Phonology follows Richard Hogg, *A Grammar of Old English*, and Alistair
@@ -98,8 +102,8 @@ element, which Wright's examples leave open, the voicing follows Karl
 Bülbring, *Altenglisches Elementarbuch* (Heidelberg, 1902), §474, with
 Eduard Sievers, *An Old English Grammar* (tr. Albert S. Cook, 3rd ed.,
 Boston, 1903), §193, and Karl Luick, *Historische Grammatik der englischen
-Sprache*, §639, for the two words it decides. Wright, Bülbring and Sievers
-are public domain; Luick's chapter on the consonants was edited from his
+Sprache*, §639, for the two words it decides. Wright, Bülbring, Sievers,
+and Moore and Knott are public domain; Luick's chapter on the consonants was edited from his
 notes by Friedrich Wild and Herbert Koziol and published in 1940, and one
 sentence of it is quoted. Vowel length follows the dictionaries and, where
 they disagree, the grammar: *ǣġ*, egg, is long in Wiktionary and in Sievers

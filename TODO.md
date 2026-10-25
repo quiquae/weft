@@ -6,7 +6,7 @@
 
 **State on 2026-10-25:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **441** tool tests / 106 suites, **40** e2e passing
+suites, **442** tool tests / 106 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -107,8 +107,8 @@ declension and conjugation tables — `aliēnus` in its adjective's cell — in
 call, written up below `Next`: Lewis's *Elementary Latin Dictionary* heads
 the verb "nārrō" and English Wiktionary "narrō".
 
-**And as of 2026-10-24 every woven Old English plural and participle but
-nine names the table, or the section of a grammar, that prints it.** None had been read against a
+**And as of 2026-10-25 every woven Old English plural and participle but
+eight names the table, or the section of a grammar, that prints it.** None had been read against a
 dictionary: their dots were held to their headwords and their sounds to
 Wright, and nothing to a paradigm. English Wiktionary's Old English entries
 decline and conjugate every word in a table whose cells carry a class per
@@ -137,9 +137,13 @@ wrong: "books" was `bēc`, /ˈbeːk/, where Wright § 311 lists "bēc from
 \*bōkiz, books" under the palatal *c*, and is the table's `bēċ` now; and
 "hats" was `hattas`, which nothing prints, where Bosworth–Toller's
 Supplement quotes "Eówre hættas mitrę", and is the table's `hættas`. The
-last nine are named in that test's `QUEUED` with what their table prints
-and what Wright and Bosworth–Toller were found to print, and what to weave
-for them is a call, written up below `Next`.
+last nine were named in that test's `QUEUED` with what their table prints
+and what Wright and Bosworth–Toller were found to print, and on 2026-10-25
+one of them was settled: `gangende`, "going", which the table prints as the
+Mercian `gānde`, is the participle Moore and Knott's paradigm of `gān`
+prints, "(gangende)", with the note that West Saxon supplies it from
+`gangan`, and its line cites that section (§ 160). What to weave for the
+eight left is a call, written up below `Next`.
 
 **And as of 2026-10-08 every modern gloss quotes the entry that gives it.**
 `tools/seed/fr-glosses.tsv`, `es-glosses.tsv`, `pt-glosses.tsv`,
@@ -592,10 +596,11 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds no
-unchecked item.** The code is not
+**So the whole of B0 is closed, `Now` is empty, and `Next` holds one
+agent-shaped item, `ċiriċan`, found 2026-10-25, and two that wait on
+Creagh's calls.** The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
+more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
 
 ## Now
@@ -1146,6 +1151,72 @@ registered**, and nothing below it can move until it is.
       for them so the test holds them too. Copy is a call, so it waits for a
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
+
+- [ ] **Weave `ċiriċan` for "churches", as the table and Bülbring print
+      it.** Found 2026-10-25 reading Bülbring for the queue. The pack weaves
+      `ċirican`, its second *c* the guttural before *-an*; English
+      Wiktionary's table for `ċiriċe` prints `ċiriċan`, and Bülbring,
+      *Altenglisches Elementarbuch* (1902), § 499 Anm. 4, page 201, read in
+      the page image (`altenglischesele00bluoft`, `n222`), prints the West
+      Saxon plural "ćirićean 'Kirchen'", both *c* palatal, the inserted *e*
+      marking the second before a back vowel, as in "tǣćean 'lehren'" — the
+      pack's own `tǣċan`. Wright § 404 declines `cirice` "like tunge", whose
+      plural is *tungan*, and prints none. So nothing prints the pack's form
+      and two sources print the table's. The fix: `tgt2` and `ipa2` of the
+      church row in `tools/seed/lex-ang.tsv` (run `tools/seed/fill_ipa.py`
+      after blanking the cell, and check it writes exactly one), a line in
+      `ang-plurals.tsv` quoting the table's cell as it prints it (fetch the
+      rendered page, `action=render`, and read the `nom|p` cell), the row
+      out of `QUEUED`, and `npm run packs`. No card moves: the headword is
+      untouched. The pack, the site's `/old-english/cirice` and the three
+      screenshot groups move, so regenerate and stamp them, and write a
+      `CHANGELOG.md` paragraph. About 45 minutes. `līċ` and `wīġ` stay
+      calls: Bülbring § 496 makes the singular's final *c* palatal and says
+      nothing of the plural.
+
+- [x] **The thirteen Old English second forms, as the queue counted them on
+      2026-10-09.** Sent by the queue on 2026-10-25 with a task written
+      before 2026-10-24 closed the item: `QUEUED` held nine, not thirteen,
+      `hattas` and `bēc` were already `hættas` and `bēċ`, and `wasċan` had
+      its rule. The one step nobody had taken was the reading it named,
+      Bülbring and Wright's *Elementary* grammar, so it was taken, with a
+      third grammar beside them, and one form came out of it.
+
+      **`gangende` is Moore and Knott's.** Samuel Moore and Thomas A. Knott,
+      *The Elements of Old English* (Ann Arbor: George Wahr, 1919; its title
+      page and copyright verso read, `elementsofoldeng00mooriala`), a
+      teaching grammar, § 160, page 88 (image `n101`), read in the page
+      image: the paradigm of `gān` gives "Present Participle (gangende)",
+      and its note reads "gānde, the present participle of gān, does not
+      occur in West-Saxon, and its place is supplied by the present
+      participle of gangan, a strong verb of Class VII". That is the
+      teaching edition call 3 asked for, so it is decided for the pack's
+      form: `gangende` stays, and its line cites `mk:§160`, a third grammar
+      the ledger now takes. Its quote must name the verb as well as print
+      the form, because the form is `gangan`'s and the paradigm's
+      "Infinitive gān" is what says it serves `gān`. Test-first: `gān` out
+      of `QUEUED`, red naming `lex-ang.tsv:290`; the line, red on its source
+      and its quote; a reader test, red on `mkPrints` missing; the rule,
+      green. Three probes, each restored by md5: the quote without the
+      verb, the source without its §, and `gān` queued again, each failing
+      by name. Nothing that ships moved. Tools 441 → **442**, total 1154 →
+      **1155**, in six places.
+
+      **The other eight are printed by none of the three.** Bülbring
+      (`altenglischesele00bluoft`), Wright's *Elementary Old English
+      Grammar* (1923, `in.ernet.dli.2015.30689`) and Moore and Knott were
+      searched in their OCR for every headword, and Bülbring's and
+      Wright's word indexes read: none names `þorp`, `mentel`, `hūsbonda`
+      or `onsīen`; `ǣfen` appears for its sounds and, in Moore and Knott,
+      as the genitive "tō ǣfenes, till evening"; no plural of `wīġ` or
+      `līċ` is printed. Bülbring's volume is its "I. Teil: Lautlehre", as
+      its title page says, so a plural is in it only where a sound is. **But it
+      speaks to kind 3**, read in the page images: § 496, page 199
+      (`n220`), makes "wortauslautendes c unmittelbar nach ī" palatal south
+      of the Humber, "līć 'Leib'", and § 497 Anm. 2, in the OCR only, lets
+      the singular's genitive and dative take that palatal by analogy,
+      nothing on the plural; and § 499 Anm. 4, page 201 (`n222`), prints
+      the West Saxon plural "ćirićean 'Kirchen'", which is the item above.
 
 - [x] **Step the dashboard's days by the calendar, not by 24 hours.**
       Done 2026-10-25, in the PR after the one that found it. Found when
@@ -5757,10 +5828,11 @@ registered**, and nothing below it can move until it is.
       and read the CLAUDE.md decisions on each before committing anything
       it moves.
 
-`Now` and `Next` are **empty**, as of 2026-10-24: the Old English second
+`Now` and `Next` were **empty**, as of 2026-10-24: the Old English second
 forms their tables do not print and the Latin one are closed, every source
 the ledgers accept read for each, and the ten forms none of them prints are
-calls, below. `bēċ` and `hættas`, `wasċan`'s dot, `beġinnan`'s palatal *g*,
+calls, below — one of which, `gangende`, a third grammar settled on
+2026-10-25, and another of which, `ċirican`, Bülbring answers. `bēċ` and `hættas`, `wasċan`'s dot, `beġinnan`'s palatal *g*,
 `hliehhan`'s short *ie*, `cempa`
 and `cǣġ`'s guttural *c*, `fremdan` and `aliēnī`, the adjectives' cells, six more of the Old
 English thirty, Latin's
@@ -5803,8 +5875,10 @@ Regenerating the 47 generated files is spent too: all came back
 byte-identical on 2026-10-24, and will again until `src/`, the operating
 system or Node moves.
 
-**Ten second-form calls a human may want to look at**, recorded on
-2026-10-24 rather than changed. Each is a woven form that no source the
+**Nine second-form calls a human may want to look at**, recorded on
+2026-10-24 rather than changed; a tenth, `gangende`, was settled on
+2026-10-25 by a grammar that prints it, and a part of the fourth is an
+item in `Next`. Each is a woven form that no source the
 ledgers accept prints, named in `QUEUED` in `tests/tools/ang-forms.test.ts`
 or `la-forms.test.ts` with what was read. Each fix moves the pack, a
 transcription and the three screenshot groups; only the last moves a card.
@@ -5812,7 +5886,9 @@ transcription and the three screenshot groups; only the last moves a card.
 1. **Regular forms nobody prints: `hūsbondan`, `mentlas`, `onsīene`,
    `þorpas`.** Each is what its declension as Wright prints it gives — a
    weak masculine's *-an*, `englas`'s syncope (§ 338's paradigm), `cwēn`'s
-   "cwēne, -a" (§ 389), `stān`'s *-as* — and none is in a text read. Keep
+   "cwēne, -a" (§ 389), `stān`'s *-as* — and none is in a text read.
+   Bülbring, Wright's *Elementary* grammar and Moore and Knott, searched
+   on 2026-10-25, name none of the four words either. Keep
    them, with `QUEUED` as the record, or blank them as `iūsiūrandum`'s
    plural was, a blank costing less trust than a form nobody has seen, so
    that "husbands", "coats", "faces" and "villages" stay English.
@@ -5821,16 +5897,18 @@ transcription and the three screenshot groups; only the last moves a card.
    "(also masc.)" and prints only its genitive, "ǣfnes, beside ǣfenes and
    ǣfennes", which gives `ǣfnas` no print either. Weaving `ǣfennas`
    clears the row as `flōra` was cleared.
-3. **`gangende` or `gānde`**, as the closed item records: `gānde` is the
-   table's and Mercian, `gangende` is `gangan`'s, which West Saxon prose
-   merges with `gān`.
-4. **Kind 3: `līċ`, `wīġ`, `ċirican`.** Whether a neuter plural whose
-   ending was lost keeps its singular's palatal, and whether `ċiriċe`'s
-   oblique cases keep the second one before *-an*. The tables say no to
-   the first and yes to the second, the pack the reverse of each, and
-   Wright speaks only to the singulars. Hogg's or Campbell's chapter on
-   palatalisation would decide both; the orthography guard's dot rule
-   moves with the forms.
+3. **`gangende` or `gānde`: settled 2026-10-25 for `gangende`**, which
+   Moore and Knott's paradigm of `gān` prints, "(gangende)", as the
+   participle West Saxon supplies from `gangan` (§ 160), `gānde` being
+   Mercian; see the ticked item in `Next`.
+4. **Kind 3: `līċ` and `wīġ`.** Whether a neuter plural whose ending was
+   lost keeps its singular's palatal. The tables say no and the pack yes,
+   and Wright and Bülbring speak only to the singulars — Bülbring § 496,
+   "līć 'Leib'". Hogg's or Campbell's chapter on palatalisation would
+   decide it; the orthography guard's dot rule moves with the forms.
+   `ċirican`, the third word of this kind, has its answer in Bülbring
+   § 499 Anm. 4, "ćirićean 'Kirchen'", the table's form, and is the first
+   item in `Next`.
 5. **`nārrāre` or `narrāre`.** Lewis's *Elementary* prints the seed's
    `nārrō`, Wiktionary `narrō`, with de Vaan and Weiss behind it.
    Respelling moves the card through `RENAMED`, a mark only, and both
