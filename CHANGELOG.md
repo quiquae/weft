@@ -679,6 +679,17 @@ where Bosworth–Toller's Supplement quotes "Eówre hættas mitrę", so it is
 names the declension or conjugation table that prints it, the section of
 Wright's grammar, or the Bosworth–Toller entry that quotes it.
 
+**And the dashboard counted the night the clocks went back twice.** Its
+daily chart, the week's total, yesterday's figure and the streak each stepped
+back from the present 24 hours at a time, and a day is 25 hours long when the
+clocks go back and 23 when they go forward. So for an hour of every day in
+the month after each change — the hour before the 4 a.m. rollover after the
+autumn change, the hour after it after the spring one — the chart drew the
+long day twice and the week and the streak counted it twice, or the short day
+went missing altogether. Days are counted on the calendar now. A test found
+it, failing at 03:29 GMT on 25 October 2026, two and a half hours after the
+clocks went back.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -699,7 +710,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1149 tests: 566 unit, 102 in jsdom, 441 over the build tools, and
+**Built with** 1154 tests: 571 unit, 102 in jsdom, 441 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

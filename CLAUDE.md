@@ -59,7 +59,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **441 pass**, 106 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
@@ -156,6 +156,18 @@ is decoding with, for almost no vocabulary.
 nor restarts one, and re-requesting the same change does not move it.
 Cancelling a queued change is instant and free: friction on the way *out* of a
 commitment would be coercion. Anything that makes Weft harder applies at once.
+
+**A day key is stepped by the calendar, never by 86 400 000.** A day is 25
+hours long on the night the clocks go back and 23 on the night they go
+forward, so `dayKey(now - i * 86_400_000)` lands twice in one day or skips
+one — at the 4 a.m. rollover, for an hour of every day in the month after
+each change. `shiftDay()` in `src/core/escalation.ts` steps a key on the
+calendar, in UTC, where no day changes its clocks; `attentionSummary` stepped
+the dashboard's yesterday, series and streak by 24 hours until 2026-10-25.
+`tests/core/day-arithmetic.test.ts` sets `TZ=Europe/London` in its own
+process, so that CI, which runs in UTC, has the clock changes too, and fails
+first if the zone did not take. A fixture that needs the real `Date.now()`
+takes its yesterday the same way, as noon on the calendar day before.
 
 **Some things are never gated at any price** — accessibility, the never-weave
 list, panic passes, data export, pronunciation and the etymologies.
