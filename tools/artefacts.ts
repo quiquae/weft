@@ -1,7 +1,7 @@
 /**
  * Which committed artefacts the tree has moved past.
  *
- * Some files in this repository are generated and committed: the fifteen
+ * Some files in this repository are generated and committed: the
  * listing screenshots, the documentation and first-run shots, and the
  * release notes. Their inputs live elsewhere — mostly `src/` — so an
  * ordinary change to the extension silently invalidates them, and nothing
@@ -239,7 +239,7 @@ export function artefactsFor(version: string): Artefact[] {
   const groups: Array<Omit<Artefact, 'paths'> & { paths: string[] }> = [
     {
       name: 'store listing screenshots',
-      // Only the fifteen captures. The tiles beside them are a group of
+      // Only the captures. The tiles beside them are a group of
       // their own below, on a different input: they are rendered from HTML
       // by a tool and owe nothing to `src/`.
       paths: ['docs/store/*-0*.png'],

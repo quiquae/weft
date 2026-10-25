@@ -66,7 +66,14 @@ async function machine(): Promise<Store> {
 
 const NOW = Date.now();
 const today = dayKey(NOW, 4);
-const yesterday = dayKey(NOW - 86_400_000, 4);
+/*
+ * The day before `today` by the calendar: noon on it, which no rollover hour
+ * moves. Not `dayKey(NOW - 86_400_000, 4)`: a day is 25 hours long on the
+ * night the clocks go back, so from 03:00 to 04:00 that morning 24 hours ago
+ * is still `today`, and this file failed at 03:29 GMT on 2026-10-25.
+ */
+const [ty, tm, td] = today.split('-').map(Number) as [number, number, number];
+const yesterday = dayKey(new Date(ty, tm - 1, td - 1, 12).getTime(), 4);
 
 function site(over: Partial<SiteAttention> = {}): SiteAttention {
   return {

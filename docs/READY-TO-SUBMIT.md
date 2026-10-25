@@ -492,8 +492,8 @@ Open source. MIT licensed.
 - Small promotional tile: `docs/store/tile-small-440x280.png`
 - Large promotional tile: `docs/store/tile-marquee-1400x560.png`
 - Screenshots: the **Chrome** five, `docs/store/chrome-01-woven.png` …
-  `chrome-05-settings.png`. Not the `edge-*.png` files: they are 1366×768, and
-  Microsoft accepts 640×480 or 1280×800 only.
+  `chrome-05-settings.png`, 1280×800 each. Microsoft accepts 640×480 or
+  1280×800 only, so Edge has no set of its own.
 - Search terms: optional; none are drafted.
 
 **E11 — Publish.** *Notes for certification* is optional; the C14 answer is a

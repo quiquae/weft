@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-24:** every automatable check is green, measured at the end
+**State on 2026-10-25:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **439** tool tests / 105 suites, **40** e2e passing
+suites, **441** tool tests / 106 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
 passing `npm run validate`. The package grew
@@ -73,8 +73,9 @@ box takes, held word for word to `docs/STORE-LISTING.md` by
 `tests/tools/ready-to-submit.test.ts`, with a BLOCKED list of what only
 Creagh can do. Writing it against each store's own documentation found four
 things not ready, each written up below: AMO now requires a data-collection
-declaration the Firefox manifest does not make; the `edge-*` screenshots are
-1366×768, which Edge does not accept; the three Pro buy buttons ship *inside
+declaration the Firefox manifest does not make; the `edge-*` screenshots were
+1366×768, which Edge does not accept, and are gone since 2026-10-25; the
+three Pro buy buttons ship *inside
 the package* and their checkout returns 404, so B4 is in every store's
 review, not only the site's; and Apple's guidelines forbid a licence-key
 unlock and in-extension purchases, so Safari cannot ship Pro as built.
@@ -1108,19 +1109,23 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
-- [ ] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
-      them.** `docs/store/edge-*.png` are 1366×768, and Microsoft's
-      [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
-      takes screenshots of "640 x 480 pixels or 1280 x 800 pixels" only
-      (read 2026-10-24). `docs/READY-TO-SUBMIT.md` E10 sends the Chrome five
-      to Edge instead, which are 1280×800 already, so the simplest fix is to
-      drop the `edge` frame from `tests/e2e/store-assets.spec.ts` and take
-      the five files with it — the frame table at
-      `tests/e2e/store-assets.spec.ts:37`, the fifteen-capture count in
-      `tests/tools/artefacts.test.ts:378`, and the screenshot table in
-      `docs/STORE-LISTING.md` all move with it.
-      `logo-edge-300x300.png` stays: it is the required Edge logo and the
-      right size. Agent-shaped, about 45 minutes with the regeneration.
+- [ ] **Step the dashboard's days by the calendar, not by 24 hours.**
+      Found 2026-10-25 when `npm run test:all` failed at 03:29 GMT, on the
+      night the clocks went back: `tests/core/storage-export.test.ts` seeded
+      "yesterday" as `dayKey(NOW - 86_400_000, 4)`, which from 03:00 to 04:00
+      that morning is still today, a 25-hour day holding two instants 24
+      hours apart. The fixture is fixed on this branch, by the calendar. **The
+      same arithmetic ships:** `attentionSummary` (`src/core/stats.ts`) builds
+      the dashboard's yesterday, its daily series and the streak from
+      `dayKey(now - i * 86_400_000)`, so for an hour of every day in the
+      month after each change the series counts the long day twice, with the
+      week and the streak, or skips the short one. The fix, `shiftDay()` in
+      `src/core/escalation.ts` and `tests/core/day-arithmetic.test.ts` pinned
+      to Europe/London, is written and green on the branch
+      `fix/day-arithmetic`: rebuild it on this `main` by cherry-picking its
+      second commit, regenerate the three screenshot groups `src/` stales,
+      add a `CHANGELOG.md` paragraph and the count sweep (unit 566 → 571 / 137
+      → 138 suites), and land it. Agent-shaped, about 30 minutes.
 
 - [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
       Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
@@ -1157,6 +1162,52 @@ registered**, and nothing below it can move until it is.
       for them so the test holds them too. Copy is a call, so it waits for a
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
+
+- [x] **Draw the Edge screenshots at a size Edge accepts, or stop drawing
+      them.** Done 2026-10-25, the simplest way: the `edge` frame is gone
+      from `tests/e2e/store-assets.spec.ts` and the five `edge-*.png` with
+      it, and Edge is sent the Chrome five, which every runbook already said.
+      `logo-edge-300x300.png` stays. Microsoft's page was read again first:
+      "The size of the screenshots must be either 640 x 480 pixels or 1280 x
+      800 pixels".
+
+      **The guard is the part worth keeping.** Two tests in
+      `tests/tools/ready-to-submit.test.ts`: every screenshot
+      `docs/READY-TO-SUBMIT.md` names under a store's heading is a size that
+      store's documentation prints — Chrome "1280x800 or 640x400", Edge's
+      two, the Mac App Store's four 16:10 sizes, each re-read 2026-10-25 —
+      read from the file's header, as an upload form reads it; and every
+      frame the store spec draws is one the page sends to some store. The
+      second was red on `edge`. The first passed on the old tree, because
+      the page already sent Edge the right files, so it was shown to fire by
+      a probe naming `edge-01-woven.png` under Edge: "is 1366x768; Edge
+      Add-ons takes 640x480 or 1280x800".
+
+      **Dropping a frame moved a shot in another frame.** Each scene opens its
+      frames in turn against one store, so the Apple page is now the second
+      to weave `showcase.html`, not the third: it meets *rivière* for the
+      first time and `apple-03-cousins.png` prints the first-meeting line,
+      "New to you, and source of English “river”", where it printed "Chosen
+      because the sentence around it…" — 76 933 pixels, all inside
+      387,208–979,848. Two consecutive runs agree byte for byte and the
+      other nine captures are unchanged, so it is recommitted. A comment
+      edited in `tests/e2e/fixtures.ts` staled the documentation and
+      first-run groups; both came back byte-identical, 14 + 7 written, and
+      are stamped. The store group's stamp is deleted, this change not being
+      "no change". Tools 439 → **441** / 105 → **106** suites.
+
+      `docs/store/edge-*.png` were 1366×768, and Microsoft's
+      [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
+      takes screenshots of "640 x 480 pixels or 1280 x 800 pixels" only
+      (read 2026-10-24). `docs/READY-TO-SUBMIT.md` E10 sends the Chrome five
+      to Edge instead, which are 1280×800 already, so the simplest fix is to
+      drop the `edge` frame from `tests/e2e/store-assets.spec.ts` and take
+      the five files with it — the frame table at
+      `tests/e2e/store-assets.spec.ts:37`, the fifteen-capture count in
+      `tests/tools/artefacts.test.ts:378`, and the screenshot table in
+      `docs/STORE-LISTING.md` all move with it.
+      `logo-edge-300x300.png` stays: it is the required Edge logo and the
+      right size. Agent-shaped, about 45 minutes with the regeneration.
 
 - [x] **An export carries three stores that an import silently drops.**
       Done 2026-09-29, as shape 1 — `attention` and `introduced` merge in,

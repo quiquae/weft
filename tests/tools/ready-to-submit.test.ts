@@ -20,12 +20,14 @@
  * justification on the page, in each store that asks for one; every zip a
  * runbook names is this version's, which a version bump breaks silently (it
  * broke `SUBMIT.md` in five places on 2026-09-29); every piece of copy fits
- * the field it goes into; and the page's "tick none of the data boxes" stays
- * true only while every disclosure in the listing answers No.
+ * the field it goes into; the page's "tick none of the data boxes" stays
+ * true only while every disclosure in the listing answers No; and every
+ * screenshot the page sends a store is a size that store takes, and every
+ * frame the store spec draws is one the page sends somewhere.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -266,6 +268,101 @@ describe('the listing behind the page', () => {
     assert.ok(answers.length >= 9, `only ${answers.length} disclosures were read`);
     const yes = answers.filter((m) => !m[2]!.startsWith('No')).map((m) => m[1]);
     assert.deepEqual(yes, [], `${PAGE} tells you to tick none of the data boxes`);
+  });
+});
+
+/**
+ * The screenshot sizes each store's own documentation prints, read on
+ * 2026-10-25: the images' `LIMITS`. A store refuses an upload at any other
+ * size, and the page is where a reader picks the files to upload, so the
+ * sizes are held to the files the page names under each store's heading,
+ * read from their headers, as an upload form reads them.
+ *
+ *   - Chrome: "1280x800 or 640x400 pixels".
+ *   - Edge: "The size of the screenshots must be either 640 x 480 pixels or
+ *     1280 x 800 pixels".
+ *   - Mac App Store: "One of the following, with a 16:10 aspect ratio",
+ *     1280 x 800, 1440 x 900, 2560 x 1600 or 2880 x 1800.
+ *
+ * Firefox has no line because the page sends it no screenshot. A heading
+ * that names one and has no line here fails rather than going unchecked.
+ */
+const SCREENSHOT_SIZES: { heading: string; sizes: string[]; url: string }[] = [
+  {
+    heading: 'Chrome Web Store',
+    sizes: ['1280x800', '640x400'],
+    url: 'https://developer.chrome.com/docs/webstore/images',
+  },
+  {
+    heading: 'Edge Add-ons',
+    sizes: ['640x480', '1280x800'],
+    url: 'https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension',
+  },
+  {
+    heading: 'Safari (Mac App Store)',
+    sizes: ['1280x800', '1440x900', '2560x1600', '2880x1800'],
+    url: 'https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications',
+  },
+];
+
+/** Every listing capture the page names, `chrome-01-woven.png`, by the `## ` heading it is named under. */
+function screenshotsByHeading(): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  let heading = '';
+  for (const line of read(PAGE).split('\n')) {
+    const h = /^## (.+)$/.exec(line);
+    if (h) heading = h[1]!;
+    for (const m of line.matchAll(/\b([a-z]+-\d\d-[a-z-]+\.png)/g)) {
+      out.set(heading, [...(out.get(heading) ?? []), m[1]!]);
+    }
+  }
+  return out;
+}
+
+/** A committed PNG's size as its header states it. */
+function pngSize(path: string): string {
+  const png = readFileSync(join(ROOT, path));
+  assert.equal(png.toString('ascii', 12, 16), 'IHDR', `${path} is not a PNG`);
+  return `${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`;
+}
+
+describe('the screenshots the page sends', () => {
+  test('every screenshot the page sends a store is a size that store takes', () => {
+    const named = screenshotsByHeading();
+    const unread = [...named.keys()].filter((h) => !SCREENSHOT_SIZES.some((s) => s.heading === h));
+    assert.deepEqual(unread, [], `${PAGE} sends screenshots under a heading whose sizes nobody has read`);
+    const misfits: string[] = [];
+    for (const { heading, sizes, url } of SCREENSHOT_SIZES) {
+      const files = named.get(heading) ?? [];
+      assert.ok(files.length > 0, `${PAGE} sends "${heading}" no screenshot, so nothing here checks one`);
+      for (const file of files) {
+        const path = `docs/store/${file}`;
+        assert.ok(existsSync(join(ROOT, path)), `${PAGE} sends "${heading}" ${path}, which is not there`);
+        const size = pngSize(path);
+        if (!sizes.includes(size)) misfits.push(`${file} is ${size}; ${heading} takes ${sizes.join(' or ')} (${url})`);
+      }
+    }
+    assert.deepEqual(misfits, []);
+  });
+
+  /*
+   * The cause, where it lives. Until 2026-10-25 the spec drew a 1366x768
+   * `edge` frame, a size Edge does not take, and the page, knowing it, sent
+   * Edge the Chrome five and told the reader not to upload the edge set. Five
+   * binaries went on being regenerated, committed and diffed for a listing
+   * that could never use them. A frame the page sends nowhere is that,
+   * whatever its size.
+   */
+  test('every frame the store spec draws is one the page sends to a store', () => {
+    const spec = read('tests/e2e/store-assets.spec.ts');
+    const frames = [...spec.matchAll(/\{ name: '([a-z]+)', width: \d+, height: \d+ \}/g)].map((m) => m[1]!);
+    assert.ok(frames.length > 0, 'found no frames in store-assets.spec.ts — has the FRAMES table changed shape?');
+    const sent = new Set([...screenshotsByHeading().values()].flat().map((file) => file.slice(0, file.indexOf('-'))));
+    assert.deepEqual(
+      frames.filter((frame) => !sent.has(frame)),
+      [],
+      `store-assets.spec.ts draws a frame whose captures ${PAGE} never sends to a store`,
+    );
   });
 });
 
