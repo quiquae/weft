@@ -21,9 +21,13 @@
 #
 #   wikt:ang:<title>   https://en.wiktionary.org/wiki/<title>#Old_English
 #                      (the title drops macrons and the dots of ċ and ġ)
+#   mk:§<n>            Samuel Moore and Thomas A. Knott, The Elements of Old
+#                      English (Ann Arbor: George Wahr, 1919), the section
+#                      whose paradigm prints the form; public domain, at
+#                      https://archive.org/details/elementsofoldeng00mooriala
 #
-# It is always an entry ang-glosses.tsv read the row's gloss in, so the two
-# ledgers cannot choose different words of one spelling. Where the gloss was
+# A wikt: line cites an entry ang-glosses.tsv read the row's gloss in, so the
+# two ledgers cannot choose different words of one spelling. Where the gloss was
 # read in two, a ð spelling's page and the þ page it names, the line cites
 # the one whose table prints the woven form as the pack spells it.
 #
@@ -55,11 +59,19 @@
 # cell, and DOTTED in tests/tools/ang-forms.test.ts names the section, the
 # cell being read with the dots set aside.
 #
-# 1 woven participle is not here, because the table prints another
-# form: QUEUED in tests/tools/ang-forms.test.ts names each with what its
-# table prints, until a grammar is read for it.
+# Go's is gangan's, as West Saxon has it. The table prints "gānde", which
+# Sievers § 430 note 3 gives to the Vespasian Psalter, which is Mercian, and
+# Wright prints no present participle for gān (§ 550). Moore and Knott's
+# paradigm of gān, § 160, read in the page image (page 88), prints "Present
+# Participle (gangende)", with the note "gānde, the present participle of
+# gān, does not occur in West-Saxon, and its place is supplied by the
+# present participle of gangan, a strong verb of Class VII". So the line
+# cites the section, and its quote names the verb as well as the form,
+# because the form is another verb's and the paradigm is what says it
+# serves gān.
 have	habban	hæbbende	wikt:ang:habban	present participle hæbbende
 say	secgan	secgende	wikt:ang:secgan	present participle seċġende
+go	gān	gangende	mk:§160	Infinitive gān … Present Participle (gangende) … gānde, the present participle of gān, does not occur in West-Saxon, and its place is supplied by the present participle of gangan, a strong verb of Class VII
 come	cuman	cumende	wikt:ang:cuman	present participle cumende
 see	sēon	sēonde	wikt:ang:seon	present participle sēonde
 know	witan	witende	wikt:ang:witan	present participle witende

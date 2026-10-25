@@ -25,7 +25,12 @@
  * later "wætru" and "hēafdu". Or it may cite the entry of Bosworth–Toller
  * whose quotations print it, quoting the entry's head before the passage,
  * because one spelling can head two entries: "treów, es; n." is the tree,
- * "treów, e; f." faith. Where the table writes the headword itself without
+ * "treów, e; f." faith. A verb form West Saxon supplies from another verb
+ * may cite the section of Samuel Moore and Thomas A. Knott's *The Elements
+ * of Old English* (1919) whose paradigm prints it, its quote naming the verb
+ * as well as the form: their paradigm of `gān` gives "Present Participle
+ * (gangende)", `gangan`'s, where the table prints the Mercian "gānde"
+ * (§ 160). Where the table writes the headword itself without
  * a dot a section of Wright gives it — `wascan` for `wasċan`, whose *sc*
  * § 312 makes palatal — the line quotes the table's cell, read with the dots
  * set aside, and `DOTTED` names the section. A row none prints, `QUEUED` names with what its
@@ -123,6 +128,22 @@ const WRIGHT = /^wright:§\d+$/;
 const wrightWords = (quote: string): string[] => quote.split(/[^\p{L}\p{M}]+/u).filter(Boolean).map((w) => fold(w));
 const undotted = (form: string): string => fold(form).replaceAll('ċ', 'c').replaceAll('ġ', 'g');
 
+/** A source naming a section of Samuel Moore and Thomas A. Knott's *The Elements of Old English* (1919). */
+const MK = /^mk:§\d+$/;
+
+/**
+ * A quote from Moore and Knott prints the form and names the verb whose
+ * paradigm it is, both read as a Wright quote's words are. Their paradigm
+ * of `gān` prints "Present Participle (gangende)" because West Saxon, they
+ * say, supplies it from `gangan`'s, so the form alone would be gangan's
+ * participle; the quote's "Infinitive gān" is what says the paradigm is
+ * gān's.
+ */
+const mkPrints = (quote: string, headword: string, form: string): boolean => {
+  const words = wrightWords(quote).map(undotted);
+  return words.includes(undotted(headword)) && words.includes(undotted(form));
+};
+
 /** A source naming an entry of Bosworth–Toller's *Anglo-Saxon Dictionary*. */
 const BT = /^bt:\d+$/;
 
@@ -168,19 +189,22 @@ const btQuote = (quote: string): { head: string; gender: string | undefined; wor
  * A woven form the table of its entry does not print, with what it prints
  * instead and what Wright and Bosworth–Toller were found to print. Each was
  * read in both on 2026-10-24, and neither prints the woven form, so what to
- * weave is a call, written up in TODO.md. Keyed by part of speech, English
- * lemma and headword.
+ * weave is a call, written up in TODO.md. On 2026-10-25 three more grammars
+ * were searched for each — Bülbring's *Altenglisches Elementarbuch* (1902),
+ * Wright's *Elementary Old English Grammar* (1923) and Moore and Knott's
+ * *The Elements of Old English* (1919) — and none prints a form woven here;
+ * what Bülbring prints for `līċ` and `ċiriċe` is in their reasons. Keyed by
+ * part of speech, English lemma and headword.
  */
 const QUEUED: ReadonlyMap<string, string> = new Map([
   ['noun\thusband\thūsbonda', 'its entry has no table; Bosworth–Toller’s two entries (bt:19998, bt:53417), read whole, print no plural, and Wright’s index names neither the word nor bonda'],
   ['noun\tface\tonsīen', 'its gloss was read in Bosworth–Toller, which heads it an-sýn (bt:1954), not onsīen, and whose quotations are singular; Wright § 390 only declines ansīen like cwēn, plural cwēne (§ 389)'],
-  ['noun\tbody\tlīċ', 'its table prints līc; Wright § 311 note 2 makes a final c after ī palatal, naming līc, and says nothing of the neuter plural, whose ending was lost'],
-  ['noun\tchurch\tċiriċe', 'its table prints ċiriċan; Wright § 311 puts cirice under the palatal c and § 404 declines it like tunge, so neither prints the plural’s second c'],
+  ['noun\tbody\tlīċ', 'its table prints līc; Wright § 311 note 2 makes a final c after ī palatal, naming līc, and says nothing of the neuter plural, whose ending was lost; Bülbring § 496 (page 199) makes a word-final c straight after ī palatal south of the Humber, “līć ‘Leib’”, and is silent on the plural too'],
+  ['noun\tchurch\tċiriċe', 'its table prints ċiriċan; Wright § 311 puts cirice under the palatal c and § 404 declines it like tunge, so neither prints the plural’s second c; Bülbring § 499 Anm. 4 (page 201) prints the West Saxon plural “ćirićean ‘Kirchen’”, both c palatal, the e marking the second before a back vowel: the table’s ċiriċan, not the pack’s ċirican'],
   ['noun\tcoat\tmentel', 'its entry has no table; Bosworth–Toller’s two entries (bt:22625, bt:55269), read whole, print no plural, and Wright’s index does not name the word'],
   ['noun\tvillage\tþorp', 'its table, neuter, prints þorp; Bosworth–Toller, masculine (bt:31961), prints only the late “ealle þa þorpes”; Wright § 335 declines þorp like stān, which implies þorpas and does not print it'],
   ['noun\tevening\tǣfen', 'its table prints ǣfennas; Bosworth–Toller’s two entries (bt:391, bt:37608) print only the genitive plural ǽfena, and Wright names ǣfen only for its sounds (§§ 119, 293)'],
   ['noun\twar\twīġ', 'its own table, war’s, prints wīg; wīġ is the idol’s; Wright § 324 makes a final g after a palatal vowel palatal and says nothing of the neuter plural, whose ending was lost'],
-  ['verb\tgo\tgān', 'its table prints gānde; Wright prints no present participle for gān (§ 550) or gangan (§ 515), nor Bosworth–Toller’s gán (bt:13263)'],
 ]);
 
 /**
@@ -252,6 +276,15 @@ describe('the woven cell of an Old English table is read as a reader reads it', 
     assert.ok(!WRIGHT.test('wright:386'));
   });
 
+  test('a Moore and Knott quote prints the form and names the verb whose paradigm it is', () => {
+    assert.ok(mkPrints('Infinitive gān … Present Participle (gangende)', 'gān', 'gangende'));
+    assert.ok(!mkPrints('Present Participle (gangende)', 'gān', 'gangende'));
+    assert.ok(!mkPrints('Infinitive gān … Present Participle (gānde)', 'gān', 'gangende'));
+    assert.ok(MK.test('mk:§160'));
+    assert.ok(!MK.test('mk:160'));
+    assert.ok(!MK.test('wright:§160'));
+  });
+
   test('a Bosworth–Toller quote is read with its accents as length marks, its head naming the entry', () => {
     const q = btQuote('híw-scipe, híg-, es; m. … Ealle híwscipas þeóda universæ familiæ gentium');
     assert.equal(q?.head, undotted('hīwsċipe'));
@@ -300,18 +333,18 @@ for (const pos of ['noun', 'verb'] as const) {
       assert.deepEqual(offenders, [], `${offenders.length} Old English ${NAME[pos]}s are unsourced:\n  ${offenders.join('\n  ')}`);
     });
 
-    test('every ledger line cites one entry: its gloss’s, a section of Wright, or Bosworth–Toller’s', () => {
+    test('every ledger line cites one entry: its gloss’s, a section of Wright or of Moore and Knott, or Bosworth–Toller’s', () => {
       const offenders = ledger.flatMap((e) => {
         const read = glossEntries.get(`${pos}\t${key(e.lemma, e.tgt)}`) ?? [];
         if (e.sources.length !== 1) return [`${file}:${e.line} ${e.tgt} cites ${e.sources.length} entries, where it wants the one its table is in`];
         const [source = ''] = e.sources;
-        if (WRIGHT.test(source) || BT.test(source)) return [];
-        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'}), a section of Wright, or an entry of Bosworth–Toller`];
+        if (WRIGHT.test(source) || MK.test(source) || BT.test(source)) return [];
+        return read.includes(source) ? [] : [`${file}:${e.line} ${e.tgt}: “${source}” is not an entry ${GLOSSES} read its gloss in (${read.join(' ') || 'none'}), a section of Wright or of Moore and Knott, or an entry of Bosworth–Toller`];
       });
       assert.deepEqual(offenders, [], `${offenders.length} ledger lines cannot be read:\n  ${offenders.join('\n  ')}`);
     });
 
-    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell, in Wright’s words or in Bosworth–Toller’s`, () => {
+    test(`every quote prints the form beside it, in the ${SLOT[pos]} cell, in a grammar’s words or in Bosworth–Toller’s`, () => {
       const offenders = ledger.flatMap((e) => {
         if (e.sources.some((s) => BT.test(s))) {
           const q = btQuote(e.quote);
@@ -320,6 +353,9 @@ for (const pos of ['noun', 'verb'] as const) {
           const gender = byRow.get(key(e.lemma, e.tgt))?.gender;
           if (pos === 'noun' && q.gender !== gender) return [`${file}:${e.line} ${e.tgt}: the entry’s head names ${q.gender ?? 'no gender'}, where ${LEXICON} gives ${gender}`];
           return q.words.includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Bosworth–Toller’s “${e.quote}” does not print ${e.tgt2}`];
+        }
+        if (e.sources.some((s) => MK.test(s))) {
+          return mkPrints(e.quote, e.tgt, e.tgt2) ? [] : [`${file}:${e.line} ${e.tgt}: Moore and Knott’s “${e.quote}” does not name ${e.tgt} and print ${e.tgt2}`];
         }
         if (e.sources.some((s) => WRIGHT.test(s))) {
           return wrightWords(e.quote).map(undotted).includes(undotted(e.tgt2)) ? [] : [`${file}:${e.line} ${e.tgt}: Wright’s “${e.quote}” does not print ${e.tgt2}`];

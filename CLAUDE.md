@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **441 pass**, 106 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **442 pass**, 106 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -531,7 +531,12 @@ is not one it prints: `trēow` cites Bosworth–Toller's "óþre treów" instead
 A Bosworth–Toller line, `bt:<id>`, quotes the entry's head before the
 passage, its accents read as length marks, and the head must spell the
 headword and name a noun's gender, because one spelling heads two entries:
-"treów, es; n." is the tree and "treów, e; f." faith. A noun whose entry is
+"treów, es; n." is the tree and "treów, e; f." faith. A form West Saxon
+takes from another verb cites a teaching grammar's paradigm of this one,
+`mk:§<n>`: Moore and Knott's *The Elements of Old English* (1919) gives
+`gān`'s present participle as "(gangende)", `gangan`'s, where the table
+prints the Mercian `gānde` (§ 160), and the quote names the verb as well as
+the form, since the form alone is the other verb's. A noun whose entry is
 an adjective's — `fremde`, a stranger, to which Wiktionary gives no noun
 section — reads the nominative plural of its own gender in the adjective's
 table, strong or weak, the cells classed `str|nom|m|p` and `wk|nom|m|p`; a
