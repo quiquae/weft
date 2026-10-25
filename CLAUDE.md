@@ -61,9 +61,9 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **448 pass**, 107 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **459 pass**, 111 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
-| `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
+| `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
@@ -143,8 +143,14 @@ demonstrable rather than assertable.
 `notifications`, so the Safari build does not declare it and falls back to the
 toolbar badge. A permission the browser cannot honour is an install prompt for
 something that can never work, in front of a reviewer who knows that.
-`tools/compat-audit.mjs` fails the build on any key MDN says the target lacks.
-Two permissions were removed for the same reason and the reasoning is kept in
+`tools/compat-audit.mjs` walks each target's built manifest and fails the
+build on any key or permission MDN says that target lacks at its floor, unless
+a fallback is named; a key MDN does not track fails too, unless `UNTRACKED` in
+`tools/compat.ts` names it for exactly the targets that declare it. It only
+claimed to until 2026-10-25: it judged a hand list in all three browsers and
+read no manifest, and a Safari build declaring `notifications` and `idle`
+passed it. `tests/tools/compat.test.ts` declares them and requires the
+failure. Two permissions were removed for the same reason and the reasoning is kept in
 `docs/STORE-LISTING.md` because a reviewer comparing versions will see them go:
 `idle` had zero call sites, and `unlimitedStorage` was masking two unbounded
 stores that `src/core/prune.ts` now caps.

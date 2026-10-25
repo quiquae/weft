@@ -26,9 +26,18 @@
  * fine — the content script probes for it and falls back to wrapped spans.
  * "Safari lacks notifications and we call it unguarded" is a bug. Only the
  * second should stop a release, and before this tool existed neither did.
+ *
+ * Two halves. What the code calls is listed below by hand, because it cannot
+ * be read off a file. What the manifests declare is not listed anywhere: each
+ * target's `buildManifest()` is walked, key by key and permission by
+ * permission, and each is judged on that target alone (`tools/compat.ts`).
+ * Until 2026-10-25 five manifest keys sat in the list below, judged in all
+ * three browsers alike, and no manifest was read — so a Safari build that
+ * declared `notifications` and `idle` again, the near-miss above, passed.
  */
 import bcd from '@mdn/browser-compat-data' with { type: 'json' };
-import { MINIMUMS } from '../manifest.config.mjs';
+import { MINIMUMS, TARGETS, buildManifest } from '../manifest.config.mjs';
+import { at, auditManifests, judge, manifestKeys } from './compat.ts';
 
 /** MDN browser keys for the engines we ship to. */
 const BROWSERS = { chrome: 'chrome', firefox: 'firefox', safari: 'safari' };
@@ -52,17 +61,10 @@ const DEPENDENCIES = [
     path: 'webextensions.api.scripting.RegisteredContentScript.persistAcrossSessions',
     why: 'registration must survive the service worker being killed',
   },
-  {
-    path: 'webextensions.manifest.optional_host_permissions',
-    why: 'hosts are granted per-origin at runtime, never at install',
-  },
   { path: 'webextensions.api.storage.local', why: 'all persistence' },
   { path: 'webextensions.api.alarms', why: 'the attention tick and lock cooldowns' },
   { path: 'webextensions.api.permissions.request', why: 'the grant flow' },
   { path: 'webextensions.api.tabs.query', why: 'finding the tab in front of the reader' },
-  { path: 'webextensions.manifest.action', why: 'the popup' },
-  { path: 'webextensions.manifest.options_ui', why: 'the settings page' },
-  { path: 'webextensions.manifest.default_locale', why: 'the _locales bundle' },
 
   // ------------------------------------------------- degrade gracefully
   {
@@ -74,11 +76,6 @@ const DEPENDENCIES = [
     path: 'webextensions.api.menus',
     why: 'right-click shortcuts to progress and settings',
     fallback: 'src/shared/browser.ts contextMenus() returns undefined; setup returns early',
-  },
-  {
-    path: 'webextensions.manifest.commands',
-    why: 'keyboard shortcuts for reveal, cycle and panic',
-    fallback: 'api.commands?.onCommand optional chain; every command has UI too',
   },
   {
     path: 'webextensions.api.action.setBadgeText',
@@ -114,182 +111,86 @@ const DEPENDENCIES = [
   },
 ];
 
-/* ------------------------------------------------------------------ utils */
-
-/** Walk a dotted BCD path, returning undefined rather than throwing. */
-function at(path) {
-  let node = bcd;
-  for (const part of path.split('.')) {
-    if (node === undefined || node === null) return undefined;
-    node = node[part];
-  }
-  return node;
-}
-
-const clean = (v) => String(v).replace(/^[≤<>=~ ]+/, '');
-
-/** True when a BCD version string is something we can actually compare. */
-function isNumericVersion(v) {
-  const parts = clean(v).split('.');
-  return parts.length > 0 && parts.every((p) => p !== '' && Number.isFinite(Number(p)));
-}
-
-/**
- * Compare dotted version strings numerically.
- *
- * Needed because string comparison puts "9" after "16.4", and because BCD
- * uses "≤" prefixes for "at or before this release" and `true` for "since
- * forever". Returns negative when a < b.
- *
- * Throws on anything non-numeric rather than returning NaN, because NaN was
- * a silent false pass. BCD also uses "preview" for a feature that exists
- * only in a browser's technology preview — Safari's requestIdleCallback was
- * marked that way — and `cmp('preview', '16.4')` is NaN, so the
- * `cmp(...) > 0` test read false and the feature was reported as SUPPORTED
- * at our floor. A tool whose whole job is refusing to guess about browser
- * support cannot afford to guess optimistically when it meets a version
- * string it does not understand.
- */
-function cmp(a, b) {
-  if (!isNumericVersion(a) || !isNumericVersion(b)) {
-    throw new Error(`non-numeric version compared: ${a} vs ${b}`);
-  }
-  const pa = clean(a).split('.').map(Number);
-  const pb = clean(b).split('.').map(Number);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const d = (pa[i] ?? 0) - (pb[i] ?? 0);
-    if (d !== 0) return d;
-  }
-  return 0;
-}
-
-/**
- * Resolve support for one browser into a comparable shape.
- *
- * BCD gives an array when a feature was added, removed and re-added; the
- * first element is the current state, which is the one we want. A
- * `version_removed` matters: a feature present in 14 and gone in 17 is not
- * support.
- */
-function support(node, browser) {
-  const raw = node?.__compat?.support?.[browser];
-  if (raw === undefined) return { known: false };
-  const entry = Array.isArray(raw) ? raw[0] : raw;
-  if (entry.version_added === false) return { known: true, supported: false };
-  if (entry.version_removed) return { known: true, supported: false, removedIn: entry.version_removed };
-  return {
-    known: true,
-    supported: true,
-    since: entry.version_added === true ? '0' : entry.version_added,
-    partial: Boolean(entry.partial_implementation),
-  };
-}
-
 /* ------------------------------------------------------------------- main */
 
-const results = [];
-let failures = 0;
-let degradations = 0;
-let unknown = 0;
+/** "UNTRACKED" is the longest verdict. */
+const TAG = 9;
+const INDENT = ' '.repeat(2 + TAG + 1);
 
+/** Print every line worth reading: everything but a pass. */
+function show(rows) {
+  const shown = rows.filter((r) => r.verdict !== 'PASS');
+  if (shown.length === 0) console.log('  everything supported at or below every declared floor.');
+  for (const r of shown) {
+    console.log(`  ${r.verdict.padEnd(TAG)} ${r.browser.padEnd(8)} ${r.name}`);
+    console.log(`${INDENT}${r.detail}`);
+    if (r.fallback) console.log(`${INDENT}fallback: ${r.fallback}`);
+    else if (r.verdict === 'FAIL' && r.why) console.log(`${INDENT}needed for: ${r.why}`);
+  }
+}
+
+function tally(rows) {
+  const n = (verdict) => rows.filter((r) => r.verdict === verdict).length;
+  return { pass: n('PASS'), degrade: n('DEGRADES'), fail: n('FAIL'), unknown: n('NO-DATA'), untracked: n('UNTRACKED') };
+}
+
+const floors = Object.entries(MINIMUMS)
+  .map(([k, v]) => `${k} ${v}`)
+  .join(', ');
+console.log(`compat audit — floors: ${floors}`);
+
+// The code's half: every listed path, in every browser.
+const code = [];
 for (const dep of DEPENDENCIES) {
-  const node = at(dep.path);
+  const node = at(bcd, dep.path);
   if (!node) {
-    results.push({ dep, browser: '-', verdict: 'NO-DATA', detail: 'path not in compat data' });
-    unknown++;
+    code.push({ browser: '-', name: dep.path, verdict: 'NO-DATA', detail: 'path not in compat data' });
     continue;
   }
-
   for (const [target, key] of Object.entries(BROWSERS)) {
-    const floor = MINIMUMS[target];
-    const s = support(node, key);
-
-    if (!s.known) {
-      results.push({ dep, browser: target, verdict: 'NO-DATA', detail: 'no entry for this browser' });
-      unknown++;
-      continue;
-    }
-
-    if (!s.supported) {
-      const detail = s.removedIn ? `removed in ${s.removedIn}` : 'never implemented';
-      if (dep.fallback) {
-        results.push({ dep, browser: target, verdict: 'DEGRADES', detail });
-        degradations++;
-      } else {
-        results.push({ dep, browser: target, verdict: 'FAIL', detail });
-        failures++;
-      }
-      continue;
-    }
-
-    // "preview" and friends: present somewhere, but not in a release a user
-    // can install, so treat it exactly as unsupported.
-    if (!isNumericVersion(s.since)) {
-      const detail = `marked "${s.since}" — not a released version`;
-      if (dep.fallback) {
-        results.push({ dep, browser: target, verdict: 'DEGRADES', detail });
-        degradations++;
-      } else {
-        results.push({ dep, browser: target, verdict: 'FAIL', detail });
-        failures++;
-      }
-      continue;
-    }
-
-    if (cmp(s.since, floor) > 0) {
-      const detail = `needs ${s.since}, we claim ${floor}`;
-      if (dep.fallback) {
-        results.push({ dep, browser: target, verdict: 'DEGRADES', detail });
-        degradations++;
-      } else {
-        results.push({ dep, browser: target, verdict: 'FAIL', detail });
-        failures++;
-      }
-      continue;
-    }
-
-    results.push({
-      dep,
+    const judgement = judge(node, key, MINIMUMS[target], dep.fallback);
+    code.push({
       browser: target,
-      verdict: 'PASS',
-      detail: `since ${s.since}${s.partial ? ' (partial)' : ''}`,
+      name: dep.path,
+      why: dep.why,
+      ...judgement,
+      ...(judgement.verdict === 'DEGRADES' ? { fallback: dep.fallback } : {}),
     });
   }
 }
 
-const shown = results.filter((r) => r.verdict !== 'PASS');
-const floors = Object.entries(MINIMUMS)
-  .map(([k, v]) => `${k} ${v}`)
-  .join(', ');
+console.log(`\n${DEPENDENCIES.length} dependencies of the code x ${Object.keys(BROWSERS).length} browsers\n`);
+show(code);
+const c = tally(code);
+console.log(`\n  ${c.pass} pass, ${c.degrade} degrade with a named fallback, ${c.fail} fail, ${c.unknown} without data`);
 
-console.log(`compat audit — floors: ${floors}`);
-console.log(`${DEPENDENCIES.length} dependencies x ${Object.keys(BROWSERS).length} browsers\n`);
+// The manifests' half: every key each target's manifest declares, on that target.
+const manifests = Object.fromEntries(TARGETS.map((target) => [target, buildManifest(target)]));
+const keys = auditManifests(manifests, MINIMUMS, bcd).map((r) => ({ ...r, browser: r.target, name: r.label }));
+const counts = TARGETS.map((target) => `${target} ${manifestKeys(manifests[target]).length} keys`).join(', ');
 
-if (shown.length === 0) {
-  console.log('  everything supported at or below every declared floor.');
-} else {
-  for (const r of shown) {
-    const tag = r.verdict.padEnd(8);
-    console.log(`  ${tag} ${r.browser.padEnd(8)} ${r.dep.path}`);
-    console.log(`           ${r.detail}`);
-    if (r.dep.fallback) console.log(`           fallback: ${r.dep.fallback}`);
-    else if (r.verdict === 'FAIL') console.log(`           needed for: ${r.dep.why}`);
-  }
-}
-
+console.log(`\nmanifest keys, each on its own target: ${counts}\n`);
+show(keys);
+const k = tally(keys);
 console.log(
-  `\n  ${results.filter((r) => r.verdict === 'PASS').length} pass, ` +
-    `${degradations} degrade with a named fallback, ${failures} fail, ${unknown} without data`,
+  `\n  ${k.pass} pass, ${k.degrade} degrade with a named fallback, ` +
+    `${k.untracked} untracked by MDN and named, ${k.fail} fail, ${k.unknown} without data`,
 );
+
+const failures = c.fail + k.fail;
+const unknown = c.unknown + k.unknown;
 
 if (unknown) {
   console.log(
     '\n  NO-DATA is not a pass. It means MDN has no entry for that path, so\n' +
-      '  the path is probably misspelled — fix the path, do not ignore the line.',
+      '  the path is probably misspelled — fix the path, do not ignore the line.\n' +
+      '  A manifest key MDN really does not track is named in UNTRACKED in\n' +
+      '  tools/compat.ts, for the targets that declare it, with its page.',
   );
 }
 
 if (failures || unknown) {
   console.error(`\ncompat audit failed: ${failures} unsupported without a fallback, ${unknown} unverifiable`);
-  process.exit(1);
+  // exitCode rather than exit(): exit() can cut off output still queued for a pipe.
+  process.exitCode = 1;
 }
