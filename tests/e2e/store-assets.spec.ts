@@ -16,7 +16,11 @@ import { fileURLToPath } from 'node:url';
  *     these are viewport captures rather than fullPage ones. A fullPage shot
  *     of a tall settings page comes out 1280x3000, and the upload is
  *     rejected — or worse, silently letterboxed.
- *   - Edge wants 1366x768. Same shots, different frame.
+ *   - Edge takes 640x480 or 1280x800 and nothing else, so it is sent the
+ *     Chrome five and has no frame of its own. A 1366x768 `edge` frame was
+ *     drawn here until 2026-10-25, a size Edge does not take, for a set the
+ *     submission page told the reader not to upload; a frame the page sends
+ *     to no store now fails `tests/tools/ready-to-submit.test.ts`.
  *   - Apple accepts 1280x800, 1440x900, 2560x1600 or 2880x1800 for a macOS
  *     listing. 1440x900 is captured here because deviceScaleFactor is a
  *     browser-context option and the fixture's context is shared across
@@ -31,10 +35,9 @@ import { fileURLToPath } from 'node:url';
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '../../docs/store');
 
-/** Chrome 1280x800; Edge 1366x768; Apple 2880x1800 via a 2x scale factor. */
+/** Chrome 1280x800, which Edge takes too; Apple 1440x900, one of the Mac App Store's four. */
 const FRAMES = [
   { name: 'chrome', width: 1280, height: 800 },
-  { name: 'edge', width: 1366, height: 768 },
   { name: 'apple', width: 1440, height: 900 },
 ];
 

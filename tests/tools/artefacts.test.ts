@@ -367,7 +367,7 @@ describe("the real artefact list points at things that are actually there", () =
     }
   });
 
-  test('the store pathspec takes the fifteen captures and not the tiles', () => {
+  test('the store pathspec takes the ten captures and not the tiles', () => {
     const shots = artefactsFor('1.0.1').find((a) => a.name.startsWith('store listing'));
     assert.ok(shots);
     const matched = captures(shots);
@@ -375,7 +375,7 @@ describe("the real artefact list points at things that are actually there", () =
     // own generator and their own group: a tool that renders HTML, owing
     // nothing to `src/`. Sweeping them in here would report them stale on
     // every commit that touches shipped code and cannot reach them.
-    assert.equal(matched.length, 15, `matched:\n${matched.join('\n')}`);
+    assert.equal(matched.length, 10, `matched:\n${matched.join('\n')}`);
     for (const file of matched) assert.match(file, /-0\d-/);
   });
 
@@ -410,7 +410,7 @@ describe("the real artefact list points at things that are actually there", () =
    * `firstrun.spec.ts` and `screenshots.spec.ts` name each file as a
    * single-quoted literal. `store-assets.spec.ts` composes
    * `${frame}-${slug}.png` from a frame table and the slug it is called
-   * with, so none of its fifteen names exists anywhere in the file as a
+   * with, so none of its names exists anywhere in the file as a
    * whole string and they have to be multiplied out. That composition is
    * the reason this guard was left applying to one group only when it was
    * written, and the reason the other two went unchecked.

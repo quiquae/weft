@@ -249,7 +249,7 @@ export function changedWordCount(original: string, text: string): number {
  *
  * Integer `scrollTo`, not `scrollIntoView({ block: 'start' })`: a
  * fractional scroll offset shifts subpixel text rendering, and these
- * fifteen files are compared byte for byte. `Math.ceil` rather than
+ * files are compared byte for byte. `Math.ceil` rather than
  * `Math.round` so the rounding error is spent on the section's own top
  * padding rather than on a sliver of the row above it.
  *
