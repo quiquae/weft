@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **566 pass**, 137 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **439 pass**, 105 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **441 pass**, 106 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API used, checked against MDN compat data | 21 dependencies × 3 browsers = 63 checks: **56 pass, 7 degrade with a named fallback, 0 fail, 0 without data** |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -266,7 +266,9 @@ block with no marker is not checked, so give every copied block one.
 
 **Three build targets, and Edge is not one of them.** Edge runs the Chrome
 package unchanged, so a `--target=edge` would be a fourth thing to keep in
-sync for no difference in output.
+sync for no difference in output. Nor does it get screenshots of its own:
+Edge takes 640×480 or 1280×800, the Chrome five are 1280×800, and the
+1366×768 set drawn for it until 2026-10-25 was a size it refuses.
 
 **The content site deploys only on request.** `.github/workflows/site.yml`
 builds and link-checks all 714 pages on every push but the deploy job is

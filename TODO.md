@@ -6,7 +6,7 @@
 
 **State on 2026-10-24:** every automatable check is green, measured at the end
 of this session — typecheck clean, **566** unit / 137 suites, **102** jsdom / 23
-suites, **439** tool tests / 105 suites, **40** e2e passing
+suites, **441** tool tests / 106 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 989 KB for Chrome and 990 for Firefox and Safari, all
 passing `npm run validate`. The package grew
@@ -73,8 +73,9 @@ box takes, held word for word to `docs/STORE-LISTING.md` by
 `tests/tools/ready-to-submit.test.ts`, with a BLOCKED list of what only
 Creagh can do. Writing it against each store's own documentation found four
 things not ready, each written up below: AMO now requires a data-collection
-declaration the Firefox manifest does not make; the `edge-*` screenshots are
-1366×768, which Edge does not accept; the three Pro buy buttons ship *inside
+declaration the Firefox manifest does not make; the `edge-*` screenshots were
+1366×768, which Edge does not accept, and are gone since 2026-10-25; the
+three Pro buy buttons ship *inside
 the package* and their checkout returns 404, so B4 is in every store's
 review, not only the site's; and Apple's guidelines forbid a licence-key
 unlock and in-extension purchases, so Safari cannot ship Pro as built.

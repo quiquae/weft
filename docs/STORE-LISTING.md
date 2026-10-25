@@ -180,12 +180,16 @@ comes out 1280x3000 and is rejected.
 | 4 | `chrome-04-progress.png` | Progress, scrolled to the discoveries feed |
 | 5 | `chrome-05-settings.png` | The difficulty controls and the friction |
 
-`edge-*` (1366x768) and `apple-*` (1440x900) are the same five scenes at
-other sizes. **Upload the `chrome-*` set to Edge, not `edge-*`:** Microsoft's
+`apple-*` (1440x900) are the same five scenes at one of the four sizes the
+Mac App Store accepts. **Edge is sent the `chrome-*` set and has none of its
+own:** Microsoft's
 [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
-accepts screenshots of 640x480 or 1280x800 only (read 2026-10-24), so the
-1366x768 frame is a size Edge does not take. `apple-*` is one of the four
-sizes the Mac App Store accepts.
+takes screenshots of "either 640 x 480 pixels or 1280 x 800 pixels" (read
+2026-10-25), and the Chrome five are 1280x800. An `edge-*` set was drawn at
+1366x768 until 2026-10-25, a size Edge does not take, and is gone.
+`tests/tools/ready-to-submit.test.ts` holds every screenshot
+`docs/READY-TO-SUBMIT.md` sends a store to the sizes that store prints, and
+fails on a frame the page sends to no store.
 
 Scenes 4 and 5 are scrolled, and the scroll is **framed on a section
 boundary** rather than nudged by `scrollIntoViewIfNeeded` — the section's top

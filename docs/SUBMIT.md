@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 566 unit tests, 102 jsdom tests, 439 tool tests, the
+runs typecheck, 566 unit tests, 102 jsdom tests, 441 tool tests, the
 compatibility audit, all three builds, the package validator, and 40 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -199,9 +199,9 @@ separate build — there is no `--target=edge` because there is no difference.
    "Import from Chrome Web Store"; Microsoft's
    [publishing guide](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/publish-extension)
    describes no such option, so do not count on one.
-3. Screenshots: the five **`docs/store/chrome-*.png`** (1280×800). Not the
-   `edge-*.png` set: it is 1366×768, and Microsoft accepts screenshots of
-   640×480 or 1280×800 only.
+3. Screenshots: the five **`docs/store/chrome-*.png`** (1280×800). Microsoft
+   accepts screenshots of 640×480 or 1280×800 only, so Edge has no set of its
+   own.
 4. Store logo: `docs/store/logo-edge-300x300.png` (300×300, required).
 
 Edge review is usually slower than Chrome's and the feedback is terser.
