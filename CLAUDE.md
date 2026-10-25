@@ -753,6 +753,75 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-25 — gangende is the participle a teaching grammar gives gān, and Bülbring answers ċirican
+
+The queue sent this run at "the thirteen Old English second forms still
+queued", a task written on 2026-10-09, with readings to make: Bülbring or
+Wright's *Elementary* grammar for `þorpas`, `hūsbondan` and `mentlas`, and
+`hattas` and `gangende` to decide. `QUEUED` held nine, `hættas` and `bēċ`
+had landed on 2026-10-24, and that session had closed the item without the
+reading, calling the two grammars sources the ledger does not take. So the
+reading was the work, and a third grammar went with it: Moore and Knott,
+*The Elements of Old English* (Ann Arbor, 1919), whose archive.org text an
+earlier session had listed and nobody had read for a form.
+
+**Moore and Knott print `gangende` as `gān`'s.** § 160, page 88, read in the
+page image: the paradigm gives "Present Participle (gangende)", and its note
+"gānde, the present participle of gān, does not occur in West-Saxon, and its
+place is supplied by the present participle of gangan, a strong verb of
+Class VII". That is the teaching edition call 3 wanted, and it agrees with
+Sievers § 430's Mercian "gande" and with Wright's silence (§ 550, and, in
+the OCR, his *Elementary* grammar's § 394). So the pack's form stays and its
+line cites `mk:§160`. The ledger has taken a grammar twice before when one
+printed a form the table did not, `wright:` on 2026-10-08 and `bt:` on
+2026-10-09; this is a third, and its rule is stricter than Wright's: the
+quote names the verb as well as the form, because "(gangende)" alone is
+`gangan`'s participle and only the paradigm's "Infinitive gān" says it
+serves `gān`. The title page and its verso were read before the date was
+written, as Luick's taught on 2026-10-04: George Wahr, 1919, "Copyright 1919
+By Samuel Moore".
+
+Test-first: `gān` out of `QUEUED`, red naming `lex-ang.tsv:290`; the ledger
+line, red on its source and its quote; a reader test, red on `mkPrints`
+missing; the rule, green, 22 of 22 in the file. Three probes, each restored
+by md5: the quote without the verb, the source without its §, and `gān`
+queued again, each failing by name. Nothing that ships moved, and
+`npm run packs` left the tree clean. Tools 441 → **442**, total 1154 →
+**1155**, in six places, `docs/LAUNCH.md:221` first.
+
+**The other eight are printed by none of the three**, searched in their OCR
+and, for Bülbring and Wright, their word indexes. Bülbring's volume is its
+"I. Teil: Lautlehre", so a plural is in it only where a sound is — and two
+of its sounds are kind 3's. § 496, page 199, makes a word-final *c* straight
+after *ī* palatal south of the Humber, "līć 'Leib'", and says nothing of the
+plural; § 499 Anm. 4, page 201, prints the West Saxon plural "ćirićean
+'Kirchen'", both *c* palatal, the inserted *e* marking the second before a
+back vowel. That is English Wiktionary's `ċiriċan` against the pack's
+`ċirican`, so nothing prints the pack's form and two sources print the
+table's. It moves the pack and the three screenshot groups, so it is the
+first item in `Next` rather than this PR. **A phonology prints a plural only
+where a sound is at stake, which is where a dotted plural's question
+lives: search a grammar for the sound, not only for the paradigm.**
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 13 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **442 tools / 106**, compat 21 dependencies × 3
+browsers, 56 pass / 7 degrade / 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.1 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. `packs:verify` and `site:check` were not re-run: no pack
+or page moved, and nothing that builds either reads the ledgers.
+
+Assumed, with nobody to ask: that a teaching grammar's paradigm is a source
+the ledger may take as it took Wright's, the 2026-10-24 note that Bülbring
+and Wright's *Elementary* grammar are not accepted describing the ledger
+then rather than forbidding its growth; that the queue's "decide gangende"
+was this run's once a source printed it; and that Bülbring's spelling with
+*e* is the table's form, the pack writing `tǣċan` and `þenċan` without it.
+
+What needs a human: unchanged, everything below **B1**, and the eight
+calls. `Next` holds one agent-shaped item, `ċiriċan`.
+
 ### 2026-10-25 — the dashboard steps its days by the calendar, because one in each half-year is not 24 hours long
 
 The same run's second PR, the item the first one queued:
