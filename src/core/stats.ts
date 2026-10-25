@@ -1,6 +1,6 @@
 import type { MemoryCard, Settings, SiteAttention } from './types.ts';
 import { cardRetrievability, daysUntilDue, isRetirable } from './fsrs.ts';
-import { dayKey } from './escalation.ts';
+import { dayKey, shiftDay } from './escalation.ts';
 import { orderKey } from './similarity.ts';
 
 /**
@@ -113,7 +113,7 @@ export function attentionSummary(
   days = 30,
 ): AttentionSummary {
   const today = dayKey(now, rolloverHour);
-  const yesterday = dayKey(now - 86_400_000, rolloverHour);
+  const yesterday = shiftDay(today, -1);
 
   const byDay = new Map<string, number>();
   const todayByHost: Array<{ host: string; seconds: number }> = [];
@@ -130,13 +130,13 @@ export function attentionSummary(
 
   const series: Array<{ day: string; seconds: number }> = [];
   for (let i = days - 1; i >= 0; i--) {
-    const key = dayKey(now - i * 86_400_000, rolloverHour);
+    const key = shiftDay(today, -i);
     series.push({ day: key, seconds: Math.round(byDay.get(key) ?? 0) });
   }
 
   let streakDays = 0;
   for (let i = 0; i < days; i++) {
-    const key = dayKey(now - i * 86_400_000, rolloverHour);
+    const key = shiftDay(today, -i);
     if ((byDay.get(key) ?? 0) > 0) streakDays++;
     else if (i > 0) break;
   }
