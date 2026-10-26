@@ -617,8 +617,9 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
 **So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
-that wait on Creagh's calls and one agent-shaped item behind them, the
-site's favicon, which wants a check before it is mechanical.** Since
+that wait on Creagh's calls and a third that does too since 2026-10-26, the
+site's favicon, whose check is made and whose remedy is a choice.** No
+unchecked item is agent-shaped. Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
 and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
 otherwise what is holding the release up, and neither is the version any
@@ -1415,18 +1416,33 @@ registered**, and nothing below it can move until it is.
       that decides whether Safari ships at all.
 
 - [ ] **Give the site's favicon a drawing that survives 16 pixels.** In
-      Notes since 2026-10-01 and never queued. `site/icon.svg` is the 128px
-      geometry, four threads, and a tab draws it at 16 device pixels at 1×,
-      where it smears exactly as the toolbar icon did before `0d9910e`.
-      The Note's remedy was to copy `assets/icon-16.png` and `-32.png` into
-      `site/` from `make-icons.mjs` and link them with `sizes` beside the
-      SVG. **Check first which icon Chromium picks when an SVG and sized
-      PNGs are both declared**: if it takes the SVG whatever the size, the
-      copies change nothing, and the choice is between dropping the SVG
-      link and drawing `site/icon.svg` from a smaller size's geometry,
-      which is a call about the mark. Both the builder's template
-      (`tools/build-site.mjs:262`) and `site/index.html:19` link it. The
-      site is unpublished (B3), so nothing is in a hurry.
+      Notes since 2026-10-01; **measured 2026-10-26, and now a call for
+      Creagh.** `site/icon.svg` is the 128px geometry, four threads, and a
+      tab draws it at 16 device pixels at 1×, where it smears as the toolbar
+      icon did before `0d9910e`. The Note's remedy, copying
+      `assets/icon-16.png` and `-32.png` into `site/` and linking them with
+      `sizes` beside the SVG, **changes nothing in Chromium**: four scratch
+      pages served locally to Chromium 153 (Playwright's `chromium` channel,
+      new headless), with the server logging which icon the browser fetched,
+      got `icon.svg` and nothing else whenever an SVG was declared, before
+      the PNGs or after them, at a device scale of 1 or 2. With the PNGs
+      alone it fetched only `icon-32.png`, at both scales, so a 1× tab would
+      draw the 32px drawing shrunk, not the 16px one. The choices:
+      1. Drop the SVG link and serve a `favicon.ico` holding the 16 and 32px
+         rasters as two frames, which Chromium's favicon code chooses
+         between by scale (read, not measured here). `make-icons.mjs` holds
+         both buffers already, and an ICO of PNG frames is a 6-byte header
+         and a 16-byte entry per frame. Every browser then shows the
+         toolbar's own icon; the cost is a raster at large sizes, where the
+         SVG was sharp.
+      2. Draw `site/icon.svg` from the 32px geometry, three threads, which
+         holds together at 16 better than four: a call about the mark.
+      3. Leave it: the site is unpublished (B3), and at 2× the SVG is fine.
+      **Recommendation: 1**, the icon a user already sees in the toolbar.
+      Both the builder's template (`tools/build-site.mjs:262`) and
+      `site/index.html:19` link the icon, and `site:check` and the icons'
+      artefact group would take the new file. Not agent-shaped before the
+      yes.
 
 - [x] **Weave `ċiriċan` for "churches", as the table and Bülbring print
       it.** Done 2026-10-25, in the PR after the one that found it: the
@@ -6693,7 +6709,7 @@ Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
 **2026-10-26 — the face too, and a re-sent task found the work where the
-last run left it.** Two things a later run would be sorry not to know:
+last run left it.** Three things a later run would be sorry not to know:
 
 1. **When the queue re-sends a task, read `git status` before starting
    over.** The run that landed the palette, #121, began the type stack
@@ -6708,6 +6724,14 @@ last run left it.** Two things a later run would be sorry not to know:
    `tools/brand.ts` names Iowan Old Style. `read`, `rootTokens()`,
    `SHEETS` and `TOOLS` sit at the top of `tests/tools/brand.test.ts`, so
    holding another token to the stylesheets is one test, not a reader.
+3. **Which favicon a browser chose shows in the requests it makes.**
+   Headless Chromium on Playwright's `chromium` channel runs the browser's
+   own favicon code, which fetches the one candidate it picked; a
+   throwaway `node:http` server logging request paths, a query string per
+   page to tell them apart, answered in under a minute, and
+   `page.on('request')` sees the same fetch. A first draft of this note
+   said it did not; a two-minute check said otherwise before it shipped.
+   Chromium 153 took the SVG whenever one was declared.
 
 **2026-10-26 — the woad was one of five, and a comment claimed the rest.**
 Three things a later run would be sorry not to know:
