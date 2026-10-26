@@ -6,7 +6,7 @@
 
 **State on 2026-10-25:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **459** tool tests / 111 suites, **40** e2e passing
+suites, **463** tool tests / 112 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -617,8 +617,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
 **So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
-that wait on Creagh's calls and one agent-shaped item behind them, the woad
-colour's four copies.** The code is not
+that wait on Creagh's calls and two agent-shaped items behind them, the
+artwork's type stack and the site's favicon.** Since 2026-10-26 the
+artwork's colours are written down once, `PALETTE` in `tools/brand.ts`, and
+both stylesheets are held to it. The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1136,6 +1138,38 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
+- [x] **Hold the woad colour's four copies to `tools/brand.ts`.** Done
+      2026-10-26, and it was the palette, not the woad. Grepping the
+      generators for every hex they type found linen `#e9e8e3`, thread
+      `#b9b2a2`, ink `#20262b` and soft ink `#4d565e` copied exactly as the
+      woad was, each in both generators and both stylesheets, every copy
+      agreeing. `PALETTE` in `tools/brand.ts` holds the five, keyed by the
+      custom property that carries each, with `woad: WOAD` so the mark's
+      colour stays one constant, and `make-og.mjs` and
+      `make-store-tiles.mjs` take `css(PALETTE.<name>)`. Four tests in a new
+      suite of `tests/tools/brand.test.ts`: each stylesheet's light scheme
+      declares the palette as `PALETTE` holds it; each `--woad-wash` is the
+      woad at some transparency; every colour `site/weft.css` declares,
+      light and dark, is `src/ui/theme.css`'s, which the site's own comment
+      claimed ("Same tokens as the extension") and nothing held; and no
+      tool types a palette colour, as hex or as the three numbers. The
+      stylesheets are derived as every tracked one declaring `--woad`, so a
+      third is held without an edit. Test-first: red on the missing export,
+      then red naming exactly the ten typed colours, five per generator,
+      then green. Seven probes, each restored by md5, each failing by name:
+      a stylesheet's woad, a wash, the site's dark woad, `PALETTE`'s ink, a
+      hex retyped into a tool, `--woad` deleted from the site (the floor,
+      "only 1 stylesheet(s) declare --woad"), and an opaque wash.
+      `npm run icons`, `og` and `tiles` rewrote all ten files their groups
+      hold, every one byte-identical to `HEAD`, `rgb(233 232 227)` drawing
+      exactly the pixels `#e9e8e3` did; the card and the small tile were
+      read, and the three groups `tools/brand.ts` feeds are stamped.
+      Nothing under `src/` moved, so no screenshot group did, and nothing
+      that ships moved, so no `CHANGELOG.md` paragraph. Tools 459 → **463**
+      / 111 → **112** suites, total 1172 → **1176**, in six places,
+      `docs/LAUNCH.md:221` first. The type stack is the same shape and is
+      the next agent-shaped item.
+
 - [x] **Make the compat audit read the manifests it was said to check.**
       Done 2026-10-25. The queue sent this run at the Edge screenshots,
       which #113 had landed that morning — `docs/store/` holds no
@@ -1357,24 +1391,35 @@ registered**, and nothing below it can move until it is.
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
 
-- [ ] **Hold the woad colour's four copies to `tools/brand.ts`.** Found on
-      2026-10-01 and left; re-measured 2026-10-25. `WOAD = [47, 75, 124]`
-      (`tools/brand.ts:27`) is `#2f4b7c`, and it is typed again in
-      `site/weft.css:24–25` and `src/ui/theme.css:30,32` (`--woad`,
-      `--woad-wash`), `tools/make-og.mjs:48` and
-      `tools/make-store-tiles.mjs:38`. All five agree today, so nothing is
-      wrong yet; it is the shape `tools/brand.ts` was made to end, a fact
-      pasted into a generator being an input no pathspec declares. The fix:
-      the two tools take `css(WOAD)` from `tools/brand.ts`, which both
-      already import for the mark — regenerate `npm run og` and
-      `npm run tiles`, which should come back byte-identical, and stamp both
-      groups; and a test in `tests/tools/brand.test.ts` holds each
-      stylesheet's light-mode `--woad` and `--woad-wash` to `WOAD` (the dark
-      values, `#93b0dd`, are another colour on purpose) and refuses the hex
-      anywhere under `tools/`. Nothing under `src/` needs editing, so no
-      screenshot group moves. A probe changing one stylesheet's woad must
-      fail by name. About 40 minutes, and agent-shaped: no store is told
-      anything different.
+- [ ] **Hold the artwork's type stack to the stylesheets' `--serif`.**
+      Found 2026-10-26 holding the palette. Both generators type
+      `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`
+      (`tools/make-og.mjs:35`, `tools/make-store-tiles.mjs:43`),
+      and both stylesheets declare a longer `--serif`, with "Book Antiqua",
+      "URW Palladio L" and "Times New Roman" in it. So it is not even a copy
+      that agrees: the two fall back differently on a machine without Iowan
+      Old Style. The palette's shape fits: a `SERIF` beside `PALETTE` in
+      `tools/brand.ts`, the stylesheets' string, which the tools take; a
+      test holding each stylesheet's `--serif` to it, reusing
+      `rootTokens()` in `tests/tools/brand.test.ts`; and the scan refusing
+      the stack typed into a tool. On this Mac Iowan Old Style is installed
+      and covers every glyph the art sets, so `og` and `tiles` should come
+      back byte-identical; if they do not, read why before committing.
+      About 30 minutes, agent-shaped.
+
+- [ ] **Give the site's favicon a drawing that survives 16 pixels.** In
+      Notes since 2026-10-01 and never queued. `site/icon.svg` is the 128px
+      geometry, four threads, and a tab draws it at 16 device pixels at 1×,
+      where it smears exactly as the toolbar icon did before `0d9910e`.
+      The Note's remedy was to copy `assets/icon-16.png` and `-32.png` into
+      `site/` from `make-icons.mjs` and link them with `sizes` beside the
+      SVG. **Check first which icon Chromium picks when an SVG and sized
+      PNGs are both declared**: if it takes the SVG whatever the size, the
+      copies change nothing, and the choice is between dropping the SVG
+      link and drawing `site/icon.svg` from a smaller size's geometry,
+      which is a call about the mark. Both the builder's template
+      (`tools/build-site.mjs:262`) and `site/index.html:19` link it. The
+      site is unpublished (B3), so nothing is in a hurry.
 
 - [x] **Weave `ċiriċan` for "churches", as the table and Bülbring print
       it.** Done 2026-10-25, in the PR after the one that found it: the
@@ -6639,6 +6684,27 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-26 — the woad was one of five, and a comment claimed the rest.**
+Three things a later run would be sorry not to know:
+
+1. **Grep a generator for every value it types, not the one an item
+   names.** The item said "the woad colour's four copies", because the
+   2026-10-01 grep that found it was a grep for the woad. One
+   `grep -noE '#[0-9a-fA-F]{6}' tools/*.mjs` found linen, thread, ink and
+   soft ink copied the same way, in the same two generators and the same
+   two stylesheets. The icon sheet's colours are Chrome's toolbar greys,
+   not the product's, and stay typed.
+2. **When a comment says two things are the same, look for the test.**
+   `site/weft.css` opens "Same tokens as the extension", and nothing held
+   it: every colour it declares, light and dark, now has to be
+   `src/ui/theme.css`'s. They agreed, all twenty.
+3. **Hex and `rgb()` draw the same pixels, and `tools/brand.ts` feeds
+   three groups.** Moving the generators from `#e9e8e3` to
+   `css(PALETTE.linen)` moved no byte of the card or the tiles. Any edit
+   to `tools/brand.ts`, a comment included, stales the icons, the card and
+   the tiles at once: regenerate all three after the last edit, then stamp
+   all three.
 
 **2026-10-25 — the compat audit read no manifest.** Three things a later run
 would be sorry not to know:

@@ -12,7 +12,7 @@ import { chromium } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { markSvg, SOLID, LEAD_PAIRS } from './brand.ts';
+import { markSvg, SOLID, LEAD_PAIRS, PALETTE, css } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -31,12 +31,12 @@ const CARD = `<!doctype html>
     width: 1200px; height: 630px;
     display: flex; flex-direction: column; justify-content: space-between;
     padding: 72px 80px;
-    background: #e9e8e3; color: #20262b;
+    background: ${css(PALETTE.linen)}; color: ${css(PALETTE.ink)};
     font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   }
   .top { display: flex; align-items: center; gap: 18px; }
   .top svg { width: 46px; height: 46px; }
-  .top span { font-size: 30px; letter-spacing: 0.01em; color: #4d565e; }
+  .top span { font-size: 30px; letter-spacing: 0.01em; color: ${css(PALETTE['ink-soft'])}; }
   h1 {
     font-size: 86px; line-height: 0.98; letter-spacing: -0.035em;
     max-width: 17ch; font-weight: 600;
@@ -45,11 +45,11 @@ const CARD = `<!doctype html>
   .gloss { display: flex; gap: 46px; align-items: flex-end; }
   .pair { display: grid; justify-items: center; line-height: 1.12; }
   .t {
-    color: #2f4b7c; font-style: italic; font-size: 40px;
-    padding: 0 6px 5px; border-bottom: 2px solid #b9b2a2;
+    color: ${css(PALETTE.woad)}; font-style: italic; font-size: 40px;
+    padding: 0 6px 5px; border-bottom: 2px solid ${css(PALETTE.thread)};
   }
   .s { padding-top: 6px; font-size: 40px; }
-  .foot { font-size: 27px; color: #4d565e; }
+  .foot { font-size: 27px; color: ${css(PALETTE['ink-soft'])}; }
 </style></head><body>
   <div class="top">
     ${markSvg(SOLID, { indent: '    ' })}
