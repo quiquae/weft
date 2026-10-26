@@ -806,6 +806,87 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-26 — core was pure, and nothing said so but three sentences
+
+The queue sent the generic task, and every unchecked item in `Next` waits on
+Creagh, each saying so of itself. So the work was found the way #120 found
+the compat audit's: a written guarantee with nothing behind it. `CLAUDE.md`
+lists **the purity of `src/core/`** — no DOM, no `chrome.*`, no I/O — first
+among the things never touched, its decisions call it the reason the unit
+suite runs without a browser, and `src/core/types.ts` opens by saying so.
+No test, lint rule or build step held it, and `tsc` cannot: `tsconfig.json`
+gives every file the DOM library and the chrome types, so `document.title`
+typed into `src/core/selector.ts` type-checks, builds and ships.
+
+**Measured first, with the checker rather than grep: core is pure.** A
+scratch script asked TypeScript where each of the 9 316 names in core's 28
+files is declared. The only ones no ECMAScript library declares are eight
+platform APIs, 24 uses in four files: `crypto`, `CryptoKey`, `JsonWebKey`,
+`TextEncoder`, `TextDecoder`, `atob`, `btoa` and `URL`. Two traps the
+script found on the way: `@types/node` augments `Array`, `String` and
+`Uint8Array`, so "declared by Node" is not "Node's", and the rule has to be
+that ECMAScript declares none of the name; and a member of a browser type,
+`crypto.subtle`, is the object's business, so only a name in the global
+scope counts, with a property read off `globalThis` counted as one.
+
+**`tests/tools/core-purity.test.ts`, 6 tests in 2 suites**, is that rule.
+A name outside ECMAScript fails unless `PLATFORM` names it with why; a name
+`PLATFORM` allows must be a browser's, since core runs in one, and Node's as
+well wherever core uses it as a value, since the unit suite runs it — so
+`CryptoKey` and `JsonWebKey`, browser-only types the build erases, pass, and
+`document` could not be allowed by anyone who wrote a reason for it. An
+import from outside `src/core/` fails too, so purity cannot be borrowed. A
+probe file that never touches disk, served by a compiler host, plants a
+browser global, a chrome one, two of Node's, a timer, a fetch, a read off
+`globalThis`, a DOM type and a class extending a browser one, beside a
+comment, a string and a local `window` that must not count, and is checked
+on every run: the guard is shown to fire each time, not once.
+
+Test-first: red on a stubbed scanner, all three probe tests and the floor;
+red on exactly the 24 uses with `PLATFORM` empty; green. Ten probes on the
+real tree, each restored by md5, each failing by name: `document` in
+`selector.ts`, `chrome` in `lock.ts`, `process` in `stats.ts`,
+`typeof window` in `fsrs.ts`, an import from `../shared/` in `quiz.ts`, a
+stale `fetch` entry, `HTMLElement` allowed and used as a value, `process`
+allowed — and `HTMLElement` allowed and used as a type, which stayed green,
+as it should. Blinding the classifier, every TypeScript library read as
+ECMAScript, turns the probe file's tests red, three of them, so the guard
+cannot go quietly vacuous. The floor was guessed at 10 000 names and failed
+at 9 316; it is 5 000 now, set from the count.
+
+**It does not hold the clock**, which is ECMAScript's, and five functions
+read it: `daysUntilDue()` in `fsrs.ts`, `upcoming()` in `stats.ts` through
+it, and `verifyLicence()`, `describeLicence()` and `needsAttention()` in
+`licence.ts`. Handing them a `now` moves `src/` and all three screenshot
+groups with it, so it is the next item rather than this PR. `upcoming()`
+has no caller in `src/`, only its test. The decision above said the unit
+suite runs "in under two seconds"; the table has said ~9 s since
+2026-09-27, so it says "in seconds" now.
+
+Nothing that ships moved and no artefact group went stale: no group reads
+`tests/tools/`. Tools 465 → **471** / 113 → **115** suites, total 1178 →
+**1184**, in six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md`
+paragraph: nothing a user gets moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 6 min 35 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **471 tools / 115**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **40
+e2e passed and 3 skipped in 5.4 min**, then build and validate again.
+Separately `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. `packs:verify` and `site:check` were not re-run: no pack, page
+or file under `src/` moved.
+
+Assumed, with nobody to ask: that a guarantee `CLAUDE.md` lists first among
+the things never touched is this run's to hold where every item in `Next`
+waits on a call; that a type a build erases may come from a browser's
+library alone; and that the clock is a second PR, being a change to `src/`
+where this one is a check of it.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the clock.
+
 ### 2026-10-26 — the face too, and the re-sent task found it at its red step
 
 The queue re-sent the task at 02:52. The run that landed the palette, #121,
