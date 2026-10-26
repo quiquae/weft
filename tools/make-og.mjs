@@ -12,7 +12,7 @@ import { chromium } from '@playwright/test';
 import { writeFile } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { markSvg, SOLID, LEAD_PAIRS, PALETTE, css } from './brand.ts';
+import { markSvg, SOLID, LEAD_PAIRS, PALETTE, SERIF, css } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -32,7 +32,7 @@ const CARD = `<!doctype html>
     display: flex; flex-direction: column; justify-content: space-between;
     padding: 72px 80px;
     background: ${css(PALETTE.linen)}; color: ${css(PALETTE.ink)};
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-family: ${SERIF};
   }
   .top { display: flex; align-items: center; gap: 18px; }
   .top svg { width: 46px; height: 46px; }

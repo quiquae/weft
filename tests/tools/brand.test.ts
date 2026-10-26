@@ -43,6 +43,7 @@ import {
   WOAD,
   WOAD_LIGHT,
   PALETTE,
+  SERIF,
   markGeometry,
   iconPixels,
   iconSvg,
@@ -410,6 +411,50 @@ describe('the words the artwork leads with', () => {
   });
 });
 
+/** A tracked file's text. */
+const read = (file: string): string => readFileSync(join(ROOT, file), 'utf8');
+
+/**
+ * The custom properties a stylesheet's `:root` rules declare, by the
+ * at-rule each rule sits inside: '' for none, which is the light scheme,
+ * and the at-rule as written otherwise, with its spaces collapsed.
+ */
+function rootTokens(css: string): Map<string, Map<string, string>> {
+  const scopes = new Map<string, Map<string, string>>();
+  const open: string[] = [];
+  let text = '';
+  const declare = (): void => {
+    const m = /^(--[\w-]+)\s*:\s*([\s\S]+)$/.exec(text.trim());
+    if (!m || open[open.length - 1] !== ':root') return;
+    const scope = open.slice(0, -1).join(' ');
+    if (!scopes.has(scope)) scopes.set(scope, new Map());
+    scopes.get(scope)!.set(m[1]!, m[2]!.replace(/\s+/g, ' ').trim());
+  };
+  for (const ch of css.replace(/\/\*[\s\S]*?\*\//g, '')) {
+    if (ch === '{') {
+      open.push(text.trim().replace(/\s+/g, ' '));
+      text = '';
+    } else if (ch === '}') {
+      declare();
+      open.pop();
+      text = '';
+    } else if (ch === ';') {
+      declare();
+      text = '';
+    } else text += ch;
+  }
+  return scopes;
+}
+
+/**
+ * The stylesheets the artwork answers to: every tracked one that declares
+ * the woad, so a third is held without an edit here.
+ */
+const SHEETS = tracked('*.css').filter((f) => rootTokens(read(f)).get('')?.has('--woad'));
+
+/** Every tool but the module the look is written down in. */
+const TOOLS = readdirSync(join(ROOT, 'tools')).filter((f) => /\.(mjs|ts)$/.test(f) && `tools/${f}` !== BRAND);
+
 /**
  * The colours, written down once.
  *
@@ -431,7 +476,6 @@ describe('the words the artwork leads with', () => {
 describe('the palette is written down once', () => {
   /** The stylesheet the others copy: the site's says "same tokens as the extension". */
   const EXTENSION = 'src/ui/theme.css';
-  const read = (file: string): string => readFileSync(join(ROOT, file), 'utf8');
 
   /** A colour as CSS writes it in hex: `#2f4b7c`. */
   const hex = (rgb: RGB): string => `#${rgb.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
@@ -446,47 +490,12 @@ describe('the palette is written down once', () => {
 
   const sameColour = (a: RGB, b: RGB): boolean => a.every((v, i) => v === b[i]);
 
-  /**
-   * The custom properties a stylesheet's `:root` rules declare, by the
-   * at-rule each rule sits inside: '' for none, which is the light scheme,
-   * and the at-rule as written otherwise, with its spaces collapsed.
-   */
-  function rootTokens(css: string): Map<string, Map<string, string>> {
-    const scopes = new Map<string, Map<string, string>>();
-    const open: string[] = [];
-    let text = '';
-    const declare = (): void => {
-      const m = /^(--[\w-]+)\s*:\s*([\s\S]+)$/.exec(text.trim());
-      if (!m || open[open.length - 1] !== ':root') return;
-      const scope = open.slice(0, -1).join(' ');
-      if (!scopes.has(scope)) scopes.set(scope, new Map());
-      scopes.get(scope)!.set(m[1]!, m[2]!.replace(/\s+/g, ' ').trim());
-    };
-    for (const ch of css.replace(/\/\*[\s\S]*?\*\//g, '')) {
-      if (ch === '{') {
-        open.push(text.trim().replace(/\s+/g, ' '));
-        text = '';
-      } else if (ch === '}') {
-        declare();
-        open.pop();
-        text = '';
-      } else if (ch === ';') {
-        declare();
-        text = '';
-      } else text += ch;
-    }
-    return scopes;
-  }
-
-  // Every stylesheet that declares the woad, so a third is held without an edit here.
-  const sheets = tracked('*.css').filter((f) => rootTokens(read(f)).get('')?.has('--woad'));
-
   test('each stylesheet declares the colours the artwork is drawn in, as tools/brand.ts holds them', () => {
     // Non-vacuity floor: the site's and the extension's.
-    assert.ok(sheets.length >= 2, `only ${sheets.length} stylesheet(s) declare --woad: ${sheets.join(', ')}`);
+    assert.ok(SHEETS.length >= 2, `only ${SHEETS.length} stylesheet(s) declare --woad: ${SHEETS.join(', ')}`);
     const wrong: string[] = [];
     let checked = 0;
-    for (const file of sheets) {
+    for (const file of SHEETS) {
       const light = rootTokens(read(file)).get('')!;
       for (const [name, rgb] of Object.entries(PALETTE)) {
         checked++;
@@ -503,7 +512,7 @@ describe('the palette is written down once', () => {
 
   test('each wash of woad is the woad, seen through', () => {
     const wrong: string[] = [];
-    for (const file of sheets) {
+    for (const file of SHEETS) {
       const value = rootTokens(read(file)).get('')!.get('--woad-wash');
       const colour = hexColour(value);
       if (!colour || colour.alpha === 255 || !sameColour(colour.rgb, WOAD)) {
@@ -518,7 +527,7 @@ describe('the palette is written down once', () => {
     const wrong: string[] = [];
     const schemes = new Set<string>();
     let checked = 0;
-    for (const file of sheets.filter((f) => f !== EXTENSION)) {
+    for (const file of SHEETS.filter((f) => f !== EXTENSION)) {
       for (const [scope, tokens] of rootTokens(read(file))) {
         for (const [name, value] of tokens) {
           // The measure and the type stack are not colours, and the measure differs on purpose.
@@ -540,9 +549,8 @@ describe('the palette is written down once', () => {
   });
 
   test('no tool types a colour of the palette', () => {
-    const tools = readdirSync(join(ROOT, 'tools')).filter((f) => /\.(mjs|ts)$/.test(f) && `tools/${f}` !== BRAND);
     // Non-vacuity floor: a directory read that came back short would pass.
-    assert.ok(tools.length >= 15, `only ${tools.length} tools were found`);
+    assert.ok(TOOLS.length >= 15, `only ${TOOLS.length} tools were found`);
     const typed: string[] = [];
     for (const [name, rgb] of Object.entries(PALETTE)) {
       const [r, g, b] = rgb;
@@ -551,11 +559,48 @@ describe('the palette is written down once', () => {
         `${hex(rgb)}(?:[0-9a-f]{2})?(?![0-9a-f])|(?<![\\d.])${r}[\\s,]+${g}[\\s,]+${b}(?![\\d.])`,
         'i',
       );
-      for (const tool of tools) {
+      for (const tool of TOOLS) {
         const found = notation.exec(read(`tools/${tool}`));
         if (found) typed.push(`tools/${tool} types --${name} as ${found[0]}`);
       }
     }
     assert.deepEqual(typed, [], `take these from PALETTE in ${BRAND}, as the mark is taken from it`);
+  });
+});
+
+/**
+ * The face, written down once.
+ *
+ * The palette's shape, and a copy that had already drifted: both generators
+ * typed `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`,
+ * where both stylesheets set a longer `--serif`, with Book Antiqua, URW
+ * Palladio L and Times New Roman before Georgia. On a machine without Iowan
+ * Old Style the card and the product it advertises would have fallen back to
+ * different faces. The generators take `SERIF` from `tools/brand.ts` now,
+ * and the stylesheets are held to it here.
+ *
+ * `tests/e2e/pages/showcase.html` sets the same face and is left alone: it
+ * stands in for somebody else's article, which Weft weaves into, and how
+ * that page is set is not how Weft looks.
+ */
+describe('the face is written down once', () => {
+  test('each stylesheet sets the face tools/brand.ts holds', () => {
+    assert.ok(SHEETS.length >= 2, `only ${SHEETS.length} stylesheet(s) were found`);
+    const wrong = SHEETS.map((file) => [file, rootTokens(read(file)).get('')?.get('--serif')] as const)
+      .filter(([, value]) => value !== SERIF)
+      .map(([file, value]) => `${file} --serif is ${value ?? 'not declared'}, and ${BRAND} has ${SERIF}`);
+    assert.deepEqual(wrong, [], 'a stylesheet and the artwork set different faces: change both, or neither');
+  });
+
+  test('no tool types the face', () => {
+    // The face's first family, unquoted: a tool typing the stack names it, however it goes on.
+    const face = SERIF.split(',')[0]!.trim().replace(/^"|"$/g, '');
+    assert.ok(face.length > 3, `the face's first family reads as “${face}”`);
+    assert.ok(TOOLS.length >= 15, `only ${TOOLS.length} tools were found`);
+    assert.deepEqual(
+      TOOLS.filter((tool) => read(`tools/${tool}`).includes(face)).map((tool) => `tools/${tool}`),
+      [],
+      `these type “${face}”: take SERIF from ${BRAND}, as the palette is taken from it`,
+    );
   });
 });

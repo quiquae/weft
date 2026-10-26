@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **463 pass**, 112 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **465 pass**, 113 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -227,7 +227,10 @@ custom property that carries each, and the card and the tiles take
 import, so the same test holds their light scheme to `PALETTE`, holds every
 colour `site/weft.css` declares, in both schemes, to `src/ui/theme.css`'s,
 and refuses a palette colour typed into any tool. Retune a colour in
-`PALETTE` and the stylesheets together, then run `og` and `tiles`.
+`PALETTE` and the stylesheets together, then run `og` and `tiles`. The face
+is held the same way: `SERIF` is the stylesheets' `--serif`, which the
+generators typed shorter, without Book Antiqua, URW Palladio L or Times New
+Roman, until the same day.
 
 **The shipped icons are held to the geometry by their pixels, never by their
 bytes.** The same test draws each icon again and requires the committed PNG

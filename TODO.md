@@ -6,7 +6,7 @@
 
 **State on 2026-10-26:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **463** tool tests / 112 suites, **40** e2e passing
+suites, **465** tool tests / 113 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -617,10 +617,10 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
 **So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
-that wait on Creagh's calls and two agent-shaped items behind them, the
-artwork's type stack and the site's favicon.** Since 2026-10-26 the
-artwork's colours are written down once, `PALETTE` in `tools/brand.ts`, and
-both stylesheets are held to it. The code is not
+that wait on Creagh's calls and one agent-shaped item behind them, the
+site's favicon, which wants a check before it is mechanical.** Since
+2026-10-26 the artwork's colours and face are written down once, `PALETTE`
+and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
 otherwise what is holding the release up, and neither is the version any
 more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
 registered**, and nothing below it can move until it is.
@@ -1138,6 +1138,29 @@ registered**, and nothing below it can move until it is.
 
 ## Next
 
+- [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
+      Done 2026-10-26, the run after the palette's. `SERIF` in
+      `tools/brand.ts` is the stylesheets' stack, and `make-og.mjs` and
+      `make-store-tiles.mjs` take it where they typed a shorter one without
+      Book Antiqua, URW Palladio L or Times New Roman. Two tests in a new
+      suite of `tests/tools/brand.test.ts`: each stylesheet's `--serif` is
+      `SERIF`, read as the palette test reads its colours, and no tool types
+      the face's first family. `read`, `rootTokens()`, `SHEETS` and `TOOLS`
+      moved to the file's top level so both suites share them, the move
+      green before the first new test. Test-first: red on the missing
+      export, then red naming exactly the two generators, then green, 29 of
+      29 in the file. Four probes, each restored by md5, each failing by
+      name: the site's stack without Book Antiqua, the extension's with two
+      families swapped, `SERIF` without Times New Roman, and the face retyped
+      into the card's tool. `npm run icons`, `og` and `tiles` rewrote all ten
+      files, every one byte-identical to `HEAD`, Iowan Old Style being
+      installed here and covering every glyph the art sets; the card, the
+      small tile and the marquee have been read across the two runs, and the
+      three groups are stamped. `tests/e2e/pages/showcase.html` sets the
+      same face and is left alone, standing in for somebody else's article.
+      Tools 463 → **465** / 112 → **113** suites, total 1176 → **1178**, in
+      six places, `docs/LAUNCH.md:221` first.
+
 - [x] **Hold the woad colour's four copies to `tools/brand.ts`.** Done
       2026-10-26, and it was the palette, not the woad. Grepping the
       generators for every hex they type found linen `#e9e8e3`, thread
@@ -1390,22 +1413,6 @@ registered**, and nothing below it can move until it is.
       for them so the test holds them too. Copy is a call, so it waits for a
       yes; only worth doing once the Pro question in B6 is settled, since
       that decides whether Safari ships at all.
-
-- [ ] **Hold the artwork's type stack to the stylesheets' `--serif`.**
-      Found 2026-10-26 holding the palette. Both generators type
-      `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`
-      (`tools/make-og.mjs:35`, `tools/make-store-tiles.mjs:43`),
-      and both stylesheets declare a longer `--serif`, with "Book Antiqua",
-      "URW Palladio L" and "Times New Roman" in it. So it is not even a copy
-      that agrees: the two fall back differently on a machine without Iowan
-      Old Style. The palette's shape fits: a `SERIF` beside `PALETTE` in
-      `tools/brand.ts`, the stylesheets' string, which the tools take; a
-      test holding each stylesheet's `--serif` to it, reusing
-      `rootTokens()` in `tests/tools/brand.test.ts`; and the scan refusing
-      the stack typed into a tool. On this Mac Iowan Old Style is installed
-      and covers every glyph the art sets, so `og` and `tiles` should come
-      back byte-identical; if they do not, read why before committing.
-      About 30 minutes, agent-shaped.
 
 - [ ] **Give the site's favicon a drawing that survives 16 pixels.** In
       Notes since 2026-10-01 and never queued. `site/icon.svg` is the 128px
@@ -6684,6 +6691,23 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-26 — the face too, and a re-sent task found the work where the
+last run left it.** Two things a later run would be sorry not to know:
+
+1. **When the queue re-sends a task, read `git status` before starting
+   over.** The run that landed the palette, #121, began the type stack
+   straight after, and stopped with it uncommitted on
+   `brand/serif-one-copy`, at its red step. The re-sent task found the
+   branch, the tree and `origin/main` as left and finished it from there.
+   Committing the red test before stopping would have made that a commit
+   rather than luck.
+2. **No product colour or face is typed in a tool now.**
+   `grep -noE '#[0-9a-fA-F]{6}' tools/*.mjs` finds only
+   `make-icon-sheet.mjs`, whose greys are Chrome's toolbar, and only
+   `tools/brand.ts` names Iowan Old Style. `read`, `rootTokens()`,
+   `SHEETS` and `TOOLS` sit at the top of `tests/tools/brand.test.ts`, so
+   holding another token to the stylesheets is one test, not a reader.
 
 **2026-10-26 — the woad was one of five, and a comment claimed the rest.**
 Three things a later run would be sorry not to know:

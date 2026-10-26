@@ -60,6 +60,21 @@ export const PALETTE: Record<string, RGB> = {
 };
 
 /**
+ * The face everything is set in: the stack both stylesheets give `--serif`,
+ * an old-style serif from the system, which the card and the tiles take
+ * from here.
+ *
+ * The generators typed a shorter stack of their own until 2026-10-26,
+ * without Book Antiqua, URW Palladio L or Times New Roman, so on a machine
+ * without Iowan Old Style the artwork and the product it advertises would
+ * have fallen back to different faces. `tests/tools/brand.test.ts` holds
+ * each stylesheet's `--serif` to this, and refuses the face typed into a
+ * tool.
+ */
+export const SERIF =
+  '"Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", Georgia, "Times New Roman", serif';
+
+/**
  * How far across the warp the weft reaches.
  *
  * Per-count, because "0.62 of the span" means different things depending on

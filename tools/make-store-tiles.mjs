@@ -27,20 +27,19 @@ import { chromium } from '@playwright/test';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { markSvg, SOLID, LEAD_PAIRS, PALETTE, css } from './brand.ts';
+import { markSvg, SOLID, LEAD_PAIRS, PALETTE, SERIF, css } from './brand.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'docs/store');
 
-// The product's palette, from `tools/brand.ts`, as the mark is: typed here,
-// a colour retuned there would leave these tiles reported fresh in the old one.
+// The product's palette and face come from `tools/brand.ts`, as the mark does:
+// typed here, either retuned there would leave these tiles reported fresh in
+// the old one.
 const PAPER = css(PALETTE.linen);
 const INK = css(PALETTE.ink);
 const MUTED = css(PALETTE['ink-soft']);
 const WEFT_BLUE = css(PALETTE.woad);
 const RULE = css(PALETTE.thread);
-
-const SERIF = '"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
 
 /**
  * The loom mark, at whatever size the caller needs.
