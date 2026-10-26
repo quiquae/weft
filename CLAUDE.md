@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **459 pass**, 111 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **463 pass**, 112 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -219,7 +219,15 @@ is an input no pathspec declares. `tests/tools/brand.test.ts` reads the mark
 back out of the pixels of every committed image drawn from it and fails if a
 tool draws an SVG of its own. One copy remains on purpose: `site/index.html`
 is hand-written and cannot import, so its header carries the markup pasted
-in, and `tests/tools/build-site.test.ts` reads it off the built page.
+in, and `tests/tools/build-site.test.ts` reads it off the built page. **So
+are the colours the artwork is drawn in**, since 2026-10-26: `PALETTE` in
+`tools/brand.ts` holds linen, thread, ink, soft ink and woad, keyed by the
+custom property that carries each, and the card and the tiles take
+`css(PALETTE.woad)` where they typed `#2f4b7c`. The two stylesheets cannot
+import, so the same test holds their light scheme to `PALETTE`, holds every
+colour `site/weft.css` declares, in both schemes, to `src/ui/theme.css`'s,
+and refuses a palette colour typed into any tool. Retune a colour in
+`PALETTE` and the stylesheets together, then run `og` and `tiles`.
 
 **The shipped icons are held to the geometry by their pixels, never by their
 bytes.** The same test draws each icon again and requires the committed PNG
@@ -781,6 +789,65 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-26 — the woad was one of five copies, and the site's tokens were held by a comment
+
+`Now` was empty, and the two unchecked items atop `Next` each wait on
+Creagh, so the run took the agent-shaped one behind them: hold the woad
+colour's four copies to `tools/brand.ts`. Its premise held, and was a fifth
+of the job. **Grepping the two generators for every hex they type, rather
+than for the one value the item named, found linen, thread, ink and soft ink
+copied exactly as the woad was**, each in both generators and both
+stylesheets, all agreeing. The item had come from a 2026-10-01 grep for
+`#2f4b7c`, which can only find `#2f4b7c`.
+
+**So `PALETTE` in `tools/brand.ts` holds the five**, keyed by the custom
+property that carries each, `woad: WOAD` keeping the mark's colour one
+constant, and `make-og.mjs` and `make-store-tiles.mjs` take
+`css(PALETTE.<name>)`. The stylesheets cannot import, so four tests in a new
+suite of `tests/tools/brand.test.ts` hold them: each one's light scheme
+declares the palette as `PALETTE` holds it; each `--woad-wash` is the woad
+at some transparency; no tool types a palette colour, as hex or as the
+three numbers; and **every colour `site/weft.css` declares, in both schemes,
+is `src/ui/theme.css`'s** — twenty of them, which the site's own stylesheet
+had promised in a comment, "Same tokens as the extension", and nothing held.
+The stylesheets are derived as every tracked one declaring `--woad`, and a
+small reader takes each `:root` rule's properties by the at-rule around it.
+
+Test-first: red on the missing export, then red naming exactly the ten typed
+colours, five per generator, then green, 27 of 27 in the file. Seven
+probes, each restored by md5, each failing by name, among them the site's
+dark woad moved by one, and `--woad` deleted from the site, which only the
+floor can see: "only 1 stylesheet(s) declare --woad". `npm run icons`, `og`
+and `tiles` rewrote all ten files of the three groups `tools/brand.ts` feeds,
+each byte-identical to `HEAD` — `rgb(233 232 227)` draws exactly the pixels
+`#e9e8e3` did — run again after the last comment edit to `tools/brand.ts`,
+since any edit to it stales all three, and stamped. Nothing under `src/`
+moved, so no screenshot group did. Tools 459 → **463** / 111 → **112**
+suites, total 1172 → **1176**, in six places, `docs/LAUNCH.md:221` first.
+No `CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 48 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **463 tools / 112**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **40
+e2e passed and 3 skipped in 4.7 min**, then build and validate again.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving, the site builder importing `tools/brand.ts`; and
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`packs:verify` was not re-run: no pack moved.
+
+Assumed, with nobody to ask: that "the woad's four copies" meant the shape
+and not the one colour, so the palette landed whole; that the site holding
+the extension's tokens, dark scheme included, is the same item, being the
+same kind of copy; and that the type stack, also typed in both generators
+and already different from the stylesheets' `--serif`, is a PR of its own.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Next`
+holds two agent-shaped items behind the two calls: the artwork's type stack,
+and the site's favicon at 16 pixels, queued from a 2026-10-01 note with a
+check to make first.
 
 ### 2026-10-25 — the compat audit read no manifest, though two documents said it checked all three
 

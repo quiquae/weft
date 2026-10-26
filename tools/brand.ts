@@ -1,6 +1,6 @@
 /**
- * What Weft looks like, written down once: the loom mark, and the words the
- * artwork leads with.
+ * What Weft looks like, written down once: the loom mark, the colours the
+ * artwork is drawn in, and the words it leads with.
  *
  * The mark is the product: vertical warp threads with a weft crossing only
  * part of them. A full crossing would mean a fully translated page, which is
@@ -27,6 +27,37 @@ export type RGB = readonly [number, number, number];
 export const WOAD: RGB = [47, 75, 124];
 /** The warp. */
 export const WOAD_LIGHT: RGB = [122, 150, 192];
+
+/**
+ * The colours the artwork is drawn in, keyed by the custom property that
+ * carries each in the light scheme of `src/ui/theme.css` and
+ * `site/weft.css`: the social card and the store tiles are set in the
+ * product's palette, linen, thread, iron-gall ink and woad, and take it from
+ * here rather than typing it.
+ *
+ * Both generators typed all five as hex until 2026-10-26, beside the two
+ * stylesheets. Every copy agreed, and that was the danger rather than the
+ * reassurance: a colour pasted into a generator is an input no artefact
+ * group declares, the shape that left the tiles showing a superseded mark
+ * for nine days.
+ * The stylesheets cannot import this, so `tests/tools/brand.test.ts` holds
+ * them to it, and refuses any of these colours typed into a tool.
+ *
+ * The warp's lighter woad is the icon's alone, and the dark scheme's colours
+ * are no image's, so neither is here.
+ */
+export const PALETTE: Record<string, RGB> = {
+  /** Undyed wool: the paper. */
+  linen: [233, 232, 227],
+  /** The rule between a woven word and its English. */
+  thread: [185, 178, 162],
+  /** Iron-gall ink: the text. */
+  ink: [32, 38, 43],
+  /** Text that steps back: the wordmark beside the mark, the line under the pairs. */
+  'ink-soft': [77, 86, 94],
+  /** Woad: every woven word, and the weft. */
+  woad: WOAD,
+};
 
 /**
  * How far across the warp the weft reaches.

@@ -42,11 +42,13 @@ import {
   GEOMETRY,
   WOAD,
   WOAD_LIGHT,
+  PALETTE,
   markGeometry,
   iconPixels,
   iconSvg,
   LEAD_LANGUAGE,
   LEAD_PAIRS,
+  type RGB,
 } from '../../tools/brand.ts';
 import { artefactsFor } from '../../tools/artefacts.ts';
 import { decode } from '../../tools/png.ts';
@@ -405,5 +407,155 @@ describe('the words the artwork leads with', () => {
           (woven.length ? `weaves “${source}” as ${woven.join(', ')}` : `does not carry “${source}”`),
       );
     }
+  });
+});
+
+/**
+ * The colours, written down once.
+ *
+ * The card and the tiles are drawn in the product's palette — linen, thread,
+ * iron-gall ink and woad — and until 2026-10-26 both generators typed all
+ * five as hex, beside two stylesheets typing them again. All of them agreed,
+ * so nothing was wrong; it was the shape `tools/brand.ts` was made to end. A
+ * colour pasted into a generator is an input no artefact group declares, so
+ * retuning it in one place would have left the art drawn from the other
+ * reported fresh, and the store listing showing a woad the product had
+ * stopped using. The generators take the palette from `tools/brand.ts` now.
+ * The stylesheets cannot import it, so they are held to it here, as the
+ * landing page's pasted mark is held by `build-site.test.ts`.
+ *
+ * Only the light scheme is the artwork's, every image being drawn on linen.
+ * The dark scheme's woad, #93b0dd, is another colour on purpose, and is held
+ * only to the extension's own.
+ */
+describe('the palette is written down once', () => {
+  /** The stylesheet the others copy: the site's says "same tokens as the extension". */
+  const EXTENSION = 'src/ui/theme.css';
+  const read = (file: string): string => readFileSync(join(ROOT, file), 'utf8');
+
+  /** A colour as CSS writes it in hex: `#2f4b7c`. */
+  const hex = (rgb: RGB): string => `#${rgb.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+
+  /** `#rrggbb` or `#rrggbbaa` as a colour and an alpha out of 255; null for anything else. */
+  function hexColour(value: string | undefined): { rgb: RGB; alpha: number } | null {
+    const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i.exec(value ?? '');
+    if (!m) return null;
+    const [r, g, b, a] = m.slice(1).map((h) => (h === undefined ? 255 : parseInt(h, 16)));
+    return { rgb: [r!, g!, b!], alpha: a! };
+  }
+
+  const sameColour = (a: RGB, b: RGB): boolean => a.every((v, i) => v === b[i]);
+
+  /**
+   * The custom properties a stylesheet's `:root` rules declare, by the
+   * at-rule each rule sits inside: '' for none, which is the light scheme,
+   * and the at-rule as written otherwise, with its spaces collapsed.
+   */
+  function rootTokens(css: string): Map<string, Map<string, string>> {
+    const scopes = new Map<string, Map<string, string>>();
+    const open: string[] = [];
+    let text = '';
+    const declare = (): void => {
+      const m = /^(--[\w-]+)\s*:\s*([\s\S]+)$/.exec(text.trim());
+      if (!m || open[open.length - 1] !== ':root') return;
+      const scope = open.slice(0, -1).join(' ');
+      if (!scopes.has(scope)) scopes.set(scope, new Map());
+      scopes.get(scope)!.set(m[1]!, m[2]!.replace(/\s+/g, ' ').trim());
+    };
+    for (const ch of css.replace(/\/\*[\s\S]*?\*\//g, '')) {
+      if (ch === '{') {
+        open.push(text.trim().replace(/\s+/g, ' '));
+        text = '';
+      } else if (ch === '}') {
+        declare();
+        open.pop();
+        text = '';
+      } else if (ch === ';') {
+        declare();
+        text = '';
+      } else text += ch;
+    }
+    return scopes;
+  }
+
+  // Every stylesheet that declares the woad, so a third is held without an edit here.
+  const sheets = tracked('*.css').filter((f) => rootTokens(read(f)).get('')?.has('--woad'));
+
+  test('each stylesheet declares the colours the artwork is drawn in, as tools/brand.ts holds them', () => {
+    // Non-vacuity floor: the site's and the extension's.
+    assert.ok(sheets.length >= 2, `only ${sheets.length} stylesheet(s) declare --woad: ${sheets.join(', ')}`);
+    const wrong: string[] = [];
+    let checked = 0;
+    for (const file of sheets) {
+      const light = rootTokens(read(file)).get('')!;
+      for (const [name, rgb] of Object.entries(PALETTE)) {
+        checked++;
+        const value = light.get(`--${name}`);
+        const colour = hexColour(value);
+        if (!colour || colour.alpha !== 255 || !sameColour(colour.rgb, rgb)) {
+          wrong.push(`${file} --${name} is ${value ?? 'not declared'}, and ${BRAND} has ${hex(rgb)}`);
+        }
+      }
+    }
+    assert.ok(checked >= 10, `only ${checked} colours were compared`);
+    assert.deepEqual(wrong, [], 'a stylesheet and the artwork disagree about a colour: change both, or neither');
+  });
+
+  test('each wash of woad is the woad, seen through', () => {
+    const wrong: string[] = [];
+    for (const file of sheets) {
+      const value = rootTokens(read(file)).get('')!.get('--woad-wash');
+      const colour = hexColour(value);
+      if (!colour || colour.alpha === 255 || !sameColour(colour.rgb, WOAD)) {
+        wrong.push(`${file} --woad-wash is ${value ?? 'not declared'}, which is not ${hex(WOAD)} at any transparency`);
+      }
+    }
+    assert.deepEqual(wrong, []);
+  });
+
+  test('every colour another stylesheet declares is the extension’s, in both schemes', () => {
+    const extension = rootTokens(read(EXTENSION));
+    const wrong: string[] = [];
+    const schemes = new Set<string>();
+    let checked = 0;
+    for (const file of sheets.filter((f) => f !== EXTENSION)) {
+      for (const [scope, tokens] of rootTokens(read(file))) {
+        for (const [name, value] of tokens) {
+          // The measure and the type stack are not colours, and the measure differs on purpose.
+          if (!value.startsWith('#')) continue;
+          checked++;
+          schemes.add(scope);
+          const theirs = extension.get(scope)?.get(name);
+          if (theirs?.toLowerCase() !== value.toLowerCase()) {
+            const where = scope ? ` inside ${scope}` : '';
+            wrong.push(`${file} ${name}${where} is ${value}, and ${EXTENSION} has ${theirs ?? 'none'}`);
+          }
+        }
+      }
+    }
+    // Non-vacuity floor: the site declares ten colours, in each of two schemes.
+    assert.ok(schemes.size >= 2, `colours were found in ${schemes.size} scheme(s), not the light and the dark`);
+    assert.ok(checked >= 16, `only ${checked} colours were compared`);
+    assert.deepEqual(wrong, [], 'the site has drifted from the extension it says it shares its tokens with');
+  });
+
+  test('no tool types a colour of the palette', () => {
+    const tools = readdirSync(join(ROOT, 'tools')).filter((f) => /\.(mjs|ts)$/.test(f) && `tools/${f}` !== BRAND);
+    // Non-vacuity floor: a directory read that came back short would pass.
+    assert.ok(tools.length >= 15, `only ${tools.length} tools were found`);
+    const typed: string[] = [];
+    for (const [name, rgb] of Object.entries(PALETTE)) {
+      const [r, g, b] = rgb;
+      // As hex, alpha or none, and as the three numbers, which `rgb()` and an array both write.
+      const notation = new RegExp(
+        `${hex(rgb)}(?:[0-9a-f]{2})?(?![0-9a-f])|(?<![\\d.])${r}[\\s,]+${g}[\\s,]+${b}(?![\\d.])`,
+        'i',
+      );
+      for (const tool of tools) {
+        const found = notation.exec(read(`tools/${tool}`));
+        if (found) typed.push(`tools/${tool} types --${name} as ${found[0]}`);
+      }
+    }
+    assert.deepEqual(typed, [], `take these from PALETTE in ${BRAND}, as the mark is taken from it`);
   });
 });
