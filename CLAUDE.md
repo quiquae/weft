@@ -836,9 +836,22 @@ Assumed, with nobody to ask: that the stylesheets' longer stack is the one
 to keep, being the product's; and that a re-sent task resumes a branch it
 finds intact rather than starting again.
 
-What needs a human: unchanged, everything below **B1** and the calls. `Next`
-holds one agent-shaped item behind the two calls, the site's favicon at 16
-pixels, with a check to make before it is mechanical.
+**After #122 landed, the favicon item's check was made, and it turned the
+item into a call.** Four scratch pages served to Chromium 153 on
+Playwright's `chromium` channel, the server logging what the browser
+fetched: whenever an SVG icon was declared, before sized PNGs or after them,
+at a device scale of 1 or 2, it fetched `icon.svg` and nothing else; with
+the PNGs alone, only `icon-32.png`, at both scales. So the 2026-10-01
+remedy, the rasters linked beside the SVG, changes nothing in Chromium, and
+the choices — a two-frame `favicon.ico` in place of the SVG link,
+recommended, or a smaller geometry for the SVG, which is a call about the
+mark — are written into the item for Creagh. A sentence of this run's own
+said Playwright's `page.on('request')` could not see that fetch; checked
+before it shipped, it can.
+
+What needs a human: unchanged, everything below **B1** and the calls, and
+now the favicon's remedy among them. No unchecked item in `Next` is
+agent-shaped.
 
 ### 2026-10-26 — the woad was one of five copies, and the site's tokens were held by a comment
 
