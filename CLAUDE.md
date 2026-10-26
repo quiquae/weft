@@ -790,6 +790,65 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-26 — the woad was one of five copies, and the site's tokens were held by a comment
+
+`Now` was empty, and the two unchecked items atop `Next` each wait on
+Creagh, so the run took the agent-shaped one behind them: hold the woad
+colour's four copies to `tools/brand.ts`. Its premise held, and was a fifth
+of the job. **Grepping the two generators for every hex they type, rather
+than for the one value the item named, found linen, thread, ink and soft ink
+copied exactly as the woad was**, each in both generators and both
+stylesheets, all agreeing. The item had come from a 2026-10-01 grep for
+`#2f4b7c`, which can only find `#2f4b7c`.
+
+**So `PALETTE` in `tools/brand.ts` holds the five**, keyed by the custom
+property that carries each, `woad: WOAD` keeping the mark's colour one
+constant, and `make-og.mjs` and `make-store-tiles.mjs` take
+`css(PALETTE.<name>)`. The stylesheets cannot import, so four tests in a new
+suite of `tests/tools/brand.test.ts` hold them: each one's light scheme
+declares the palette as `PALETTE` holds it; each `--woad-wash` is the woad
+at some transparency; no tool types a palette colour, as hex or as the
+three numbers; and **every colour `site/weft.css` declares, in both schemes,
+is `src/ui/theme.css`'s** — twenty of them, which the site's own stylesheet
+had promised in a comment, "Same tokens as the extension", and nothing held.
+The stylesheets are derived as every tracked one declaring `--woad`, and a
+small reader takes each `:root` rule's properties by the at-rule around it.
+
+Test-first: red on the missing export, then red naming exactly the ten typed
+colours, five per generator, then green, 27 of 27 in the file. Seven
+probes, each restored by md5, each failing by name, among them the site's
+dark woad moved by one, and `--woad` deleted from the site, which only the
+floor can see: "only 1 stylesheet(s) declare --woad". `npm run icons`, `og`
+and `tiles` rewrote all ten files of the three groups `tools/brand.ts` feeds,
+each byte-identical to `HEAD` — `rgb(233 232 227)` draws exactly the pixels
+`#e9e8e3` did — run again after the last comment edit to `tools/brand.ts`,
+since any edit to it stales all three, and stamped. Nothing under `src/`
+moved, so no screenshot group did. Tools 459 → **463** / 111 → **112**
+suites, total 1172 → **1176**, in six places, `docs/LAUNCH.md:221` first.
+No `CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 48 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **463 tools / 112**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **40
+e2e passed and 3 skipped in 4.7 min**, then build and validate again.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving, the site builder importing `tools/brand.ts`; and
+`artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`packs:verify` was not re-run: no pack moved.
+
+Assumed, with nobody to ask: that "the woad's four copies" meant the shape
+and not the one colour, so the palette landed whole; that the site holding
+the extension's tokens, dark scheme included, is the same item, being the
+same kind of copy; and that the type stack, also typed in both generators
+and already different from the stylesheets' `--serif`, is a PR of its own.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Next`
+holds two agent-shaped items behind the two calls: the artwork's type stack,
+and the site's favicon at 16 pixels, queued from a 2026-10-01 note with a
+check to make first.
+
 ### 2026-10-25 — the compat audit read no manifest, though two documents said it checked all three
 
 The queue sent this run at the Edge screenshots, which #113 had landed that
