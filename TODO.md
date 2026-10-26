@@ -6,7 +6,7 @@
 
 **State on 2026-10-26:** every automatable check is green, measured at the end
 of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **465** tool tests / 113 suites, **40** e2e passing
+suites, **471** tool tests / 115 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1136,6 +1136,73 @@ registered**, and nothing below it can move until it is.
       shots byte-identical** — the claim `TODO.md` had been making since
       2026-09-28 and could not support. See the two notes at the top of
       Notes, which replace the entries they contradict.
+
+- [x] **Hold `src/core/` to the purity `CLAUDE.md` says it has.** Done
+      2026-10-26, by a run that found every unchecked item in `Next`
+      waiting on Creagh. `CLAUDE.md` lists the purity of `src/core/` — no
+      DOM, no `chrome.*`, no I/O — among the things never touched, and
+      `src/core/types.ts` opens by saying so; nothing held it, and `tsc`
+      could not, since `tsconfig.json` gives every file the DOM library and
+      the chrome types. `tests/tools/core-purity.test.ts`, 6 tests in 2
+      suites, asks the TypeScript checker where every name core uses is
+      declared: a global ECMAScript defines passes, and one that only a
+      browser's library, the chrome types or Node's declare fails unless
+      `PLATFORM` names it with why. A name it allows must be a browser's,
+      and Node's as well wherever core uses it as a value, since the unit
+      suite runs it; an import from outside `src/core/` fails too. A probe
+      file that never touches disk is checked on every run, so the guard
+      cannot go blind. **Measured first: core is pure.** 9 316 names in 28
+      files, and the only ones outside ECMAScript are eight platform APIs,
+      24 uses in four files: `crypto`, `CryptoKey`, `JsonWebKey`,
+      `TextEncoder`, `TextDecoder`, `atob`, `btoa` and `URL`. Test-first:
+      red on a stubbed scanner, all three probe tests and the floor; red
+      on exactly the 24 uses with `PLATFORM` empty; green. Ten probes,
+      each restored by md5: `document` in `selector.ts`, `chrome` in
+      `lock.ts`, `process` in `stats.ts`, `typeof window` in `fsrs.ts` and
+      an import from `../shared/` in `quiz.ts`, each failing by file and
+      line; a stale `fetch` entry; `HTMLElement` allowed and used as a
+      type, green as it should be, and as a value, failing the Node rule;
+      `process` allowed, failing the browser rule; and the classifier
+      blinded, every TypeScript library read as ECMAScript, which the
+      probe file's tests catch, three red. Nothing that ships moved and no
+      artefact group went stale. Tools 465 → **471** / 113 → **115**
+      suites, total 1178 → **1184**, in six places, `docs/LAUNCH.md:221`
+      first.
+
+- [ ] **Hand core's five clock reads a `now`, then let the purity guard
+      refuse the clock.** Found 2026-10-26 by the purity guard's run,
+      which leaves the clock alone because `Date` is ECMAScript's.
+      `CLAUDE.md` says every interesting decision in core "is a function
+      of its arguments", and five are not: `daysUntilDue()`
+      (`src/core/fsrs.ts:305`), `upcoming()` in `stats.ts`, which calls
+      it, and `verifyLicence()`, `describeLicence()` and
+      `needsAttention()` in `licence.ts`, which read `Date.now()` at
+      `:181`, `:199` and `:215`. The rest of core already takes the
+      instant — `dayKey(now, …)`, the lock, `noteClock` — so the shape is
+      there. Steps:
+      1. A required `now: number` on each, so `tsc` names every caller:
+         `src/background/index.ts:296`, `storage.ts:135` and `:216`,
+         `src/ui/dashboard/index.tsx:469`, `src/ui/options/pro.tsx:46`,
+         `:47` and `:50`, and the tests in `tests/core/fsrs.test.ts`,
+         `licence.test.ts` and `stats.test.ts`. A UI caller passes
+         `Date.now()`; the worker passes the instant it already holds where
+         it has one. `upcoming()` has no caller in `src/` at all, only its
+         test, so it can take `now` with the rest or be deleted: esbuild
+         drops it from every bundle already.
+      2. Unit tests that pin each at a fixed instant, red first: a
+         licence one second past its `expires`, the days-left sentence
+         at exactly seven days, a card due tomorrow.
+      3. In `tests/tools/core-purity.test.ts`, refuse `Date.now()`, an
+         argument-less `new Date()` and `Math.random()` in core, with the
+         probe file planting each and `crypto.getRandomValues` staying
+         allowed as `PLATFORM`'s.
+      4. It moves `src/`, so all three screenshot groups go stale by
+         provenance: regenerate (`npm run build:test`, then the three
+         `WEFT_*` specs), compare, stamp with `artefacts:verify`. The
+         worker's clock is held by `holdWorkerClock()`, so the dashboard
+         shots should come back byte-identical.
+      About 90 minutes with the regeneration. Agent-shaped: nothing a
+      store or a learner is told moves.
 
 ## Next
 
@@ -6707,6 +6774,32 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-26 — core was pure, and the guard that now says so asks the
+checker.** Three things a later run would be sorry not to know:
+
+1. **`tsc` passes a browser API anywhere in the tree.** `tsconfig.json`
+   gives every file under `src/`, `tests/` and `tools/` the DOM library and
+   the chrome types, so a `document` or a `chrome.storage` in core, or in a
+   tool that runs under Node, is never a type error.
+   `tests/tools/core-purity.test.ts` is the only thing that refuses one, and
+   only in `src/core/`.
+2. **To ask where a name comes from, resolve it and read its declaration's
+   file.** `checker.getSymbolAtLocation()`, then each declaration's
+   `getSourceFile().fileName`: `lib.es*` and `lib.decorators*` are
+   ECMAScript's, every other `lib.*.d.ts` a browser's, and `@types/chrome`
+   and `@types/node` their own. Two traps: `@types/node` augments
+   ECMAScript's `Array`, `String` and typed arrays, so the rule is that
+   ECMAScript declares none of the name, not that Node declares it; and only
+   a global declaration counts, never a member of `declare module 'crypto'`
+   or of an interface, so `crypto.subtle` is the object's business. The
+   test's `libraryUses()` does both, and would serve a guard over
+   `src/content/` or `tools/` unchanged.
+3. **A probe that lives inside the test cannot be forgotten.** A compiler
+   host that serves one extra path from a string puts a file in the program
+   that is never on disk, so the guard is shown to fire on every run rather
+   than once by hand. It takes three lines wherever a test builds a
+   `ts.Program`.
 
 **2026-10-26 — the face too, and a re-sent task found the work where the
 last run left it.** Three things a later run would be sorry not to know:
