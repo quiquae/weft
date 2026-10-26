@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **463 pass**, 112 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **465 pass**, 113 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -227,7 +227,10 @@ custom property that carries each, and the card and the tiles take
 import, so the same test holds their light scheme to `PALETTE`, holds every
 colour `site/weft.css` declares, in both schemes, to `src/ui/theme.css`'s,
 and refuses a palette colour typed into any tool. Retune a colour in
-`PALETTE` and the stylesheets together, then run `og` and `tiles`.
+`PALETTE` and the stylesheets together, then run `og` and `tiles`. The face
+is held the same way: `SERIF` is the stylesheets' `--serif`, which the
+generators typed shorter, without Book Antiqua, URW Palladio L or Times New
+Roman, until the same day.
 
 **The shipped icons are held to the geometry by their pixels, never by their
 bytes.** The same test draws each icon again and requires the committed PNG
@@ -789,6 +792,53 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-26 — the face too, and the re-sent task found it at its red step
+
+The queue re-sent the task at 02:52. The run that landed the palette, #121,
+had started the type stack straight after and stopped with it uncommitted on
+`brand/serif-one-copy`, at its red step: `SERIF` in `tools/brand.ts`, two
+tests in a new suite, the test file's helpers hoisted, and "no tool types
+the face" failing on exactly the two generators. `git status`, the diff and
+`origin/main` were read before anything moved, and all were as left, so the
+work went on from there rather than starting over.
+
+**The type stack was a copy that had already drifted**, which the palette
+was not: both generators typed `"Iowan Old Style", "Palatino Linotype",
+Palatino, Georgia, serif`, and both stylesheets set a longer `--serif` with
+Book Antiqua, URW Palladio L and Times New Roman before Georgia. `SERIF` is
+the stylesheets' stack, and `make-og.mjs` and `make-store-tiles.mjs` take
+it; the two tests hold each stylesheet's `--serif` to it and refuse the
+face's first family typed into a tool. `read`, `rootTokens()`, `SHEETS` and
+`TOOLS` moved to the top of `tests/tools/brand.test.ts` first, the move
+green before the first new test. Green, 29 of 29; four probes, each restored
+by md5, each failing by name. `npm run icons`, `og` and `tiles` rewrote all
+ten files byte-identical to `HEAD`, Iowan Old Style being installed and
+covering every glyph the art sets, so the extra fallbacks change nothing
+here; the marquee was read, and the three groups are stamped.
+`tests/e2e/pages/showcase.html` sets the same face and is left alone, being
+somebody else's article in the story the store art tells. Tools 463 →
+**465** / 112 → **113** suites, total 1176 → **1178**, in six places,
+`docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that ships
+moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 58 s** — typecheck clean, 571 unit /
+138 suites, 102 jsdom / 23, **465 tools / 113**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **40
+e2e passed and 3 skipped in 4.9 min**, then build and validate again.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving; and `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. `packs:verify` was not re-run: no pack moved.
+
+Assumed, with nobody to ask: that the stylesheets' longer stack is the one
+to keep, being the product's; and that a re-sent task resumes a branch it
+finds intact rather than starting again.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Next`
+holds one agent-shaped item behind the two calls, the site's favicon at 16
+pixels, with a check to make before it is mechanical.
 
 ### 2026-10-26 — the woad was one of five copies, and the site's tokens were held by a comment
 
