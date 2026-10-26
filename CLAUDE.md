@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **465 pass**, 113 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **471 pass**, 115 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -105,6 +105,7 @@ on deliberately: `WEFT_STORE=1`, `WEFT_SCREENS=1`, `WEFT_FIRSTRUN=1`.
 - The purity of `src/core/` — no DOM, no `chrome.*`, no I/O. Reaching for
   either from core is the one change that would undo the test suite's speed
   and the reason five bugs were caught before anyone loaded the extension.
+  `tests/tools/core-purity.test.ts` fails on it.
 - Version lives in exactly one place, `VERSION` in `manifest.config.mjs`, with
   `package.json` kept in step by `tools/release.mjs`. Do not edit either by
   hand.
@@ -125,8 +126,20 @@ See `docs/ARCHITECTURE.md`.
 
 **`src/core/` is pure.** Every interesting decision — which word to swap, how
 hard the page should be, whether a settings change is allowed yet — is a
-function of its arguments. That is why the unit suite runs in under two
-seconds without a browser.
+function of its arguments. That is why the unit suite runs in seconds
+without a browser. `tests/tools/core-purity.test.ts` holds it, since
+2026-10-26, and `tsc` cannot: `tsconfig.json` gives every file the DOM
+library and the chrome types, so `document.title` in `src/core/`
+type-checks. The test asks the checker where each name core uses is
+declared, and refuses one that a browser's library, the chrome types or
+Node's declare and ECMAScript does not, unless `PLATFORM` there names it
+with why — WebCrypto, the Encoding API, base64 and `URL` today. A name it
+allows must be a browser's, since core runs in one, and Node's as well
+wherever core uses it as a value rather than a type, since core is tested
+there. It refuses an import from outside `src/core/`, so purity cannot be
+borrowed. It does not hold the clock, which is ECMAScript's:
+`daysUntilDue()` in `fsrs.ts` and three expiry checks in `licence.ts` read
+`Date.now()` themselves.
 
 **No static `content_scripts`, and no host permissions at install.**
 `optional_host_permissions: ['*://*/*']` is requested per-origin at runtime
