@@ -19,6 +19,13 @@
  * must admit exactly the versions in `PROBES` that do: none that cannot, so
  * the floor is never a promise, and every one that can, so it is never
  * raised without a reason written here.
+ *
+ * What the derivation cannot see is an API: a tool, or a dependency, calling
+ * something newer than the floor passes here and wherever the newest 22
+ * runs. So one job in CI runs on the floor itself, read from `engines.node`
+ * rather than typed, and runs every command the other jobs run that needs no
+ * browser, read from `ci.yml` and `package.json`'s scripts, so a step added
+ * to `check` reaches the floor or fails this file by name.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -203,6 +210,91 @@ function needs(): Need[] {
   return out;
 }
 
+/**
+ * The lowest version `range` admits: the least of the versions it names
+ * that it admits. A floor it does not name, as `>22.18.0` has, throws.
+ */
+function floorOf(range: string): string {
+  const named = [...range.matchAll(/v?\d+(?:\.\d+){0,2}/g)].map(([text]) => version(text)).sort(compare);
+  const lowest = named.find((v) => satisfies(v.join('.'), range));
+  if (!lowest) throw new Error(`"${range}" admits none of the versions it names, so its floor cannot be read`);
+  return lowest.join('.');
+}
+
+const WORKFLOW = '.github/workflows/ci.yml';
+
+interface Job {
+  name: string;
+  /** What the job hands actions/setup-node as `node-version`, as written. */
+  node: string | null;
+  /** Each command its `run:` steps run, a line of a `|` block apiece. */
+  commands: string[];
+}
+
+/**
+ * A workflow's jobs, read for the shapes ci.yml writes: each job two spaces
+ * in under `jobs:`, `node-version:` under a step's `with:`, and `run:` as a
+ * plain value or a `|` block. Any other `run:` throws, naming its line, so a
+ * new shape fails this test rather than being read as no command at all.
+ */
+function workflowJobs(path: string): Job[] {
+  const lines = read(path).split('\n');
+  const start = lines.indexOf('jobs:');
+  if (start === -1) throw new Error(`${path} has no "jobs:" to read`);
+  const jobs: Job[] = [];
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    if (/^[^\s#]/.test(line)) break;
+    const name = /^ {2}([\w-]+):\s*$/.exec(line)?.[1];
+    if (name) {
+      jobs.push({ name, node: null, commands: [] });
+      continue;
+    }
+    const job = jobs.at(-1);
+    if (!job || /^\s*(?:#.*)?$/.test(line)) continue;
+    const node = /^\s+node-version:\s*(.*?)\s*$/.exec(line)?.[1];
+    if (node !== undefined) {
+      job.node = node.replace(/^(['"])(.*)\1$/, '$2');
+      continue;
+    }
+    const run = /^(\s+(?:- )?)run:\s*(.*?)\s*$/.exec(line);
+    if (!run) continue;
+    const [, lead = '', value = ''] = run;
+    if (value === '|' || value === '|-') {
+      while (i + 1 < lines.length) {
+        const next = lines[i + 1] ?? '';
+        if (next.trim() && next.search(/\S/) <= lead.length) break;
+        if (next.trim()) job.commands.push(next.trim());
+        i++;
+      }
+    } else if (/^[^\s>|"'[{&*!#]/.test(value)) {
+      job.commands.push(value.replace(/\s+#.*$/, ''));
+    } else {
+      throw new Error(`${path}:${i + 1}: cannot read "run: ${value}"`);
+    }
+  }
+  return jobs;
+}
+
+/**
+ * Whether a command starts Playwright, which needs a browser, itself or
+ * through a script it runs: `npx playwright install` does, `npm run
+ * test:e2e` does through its script, and `npm test` does not.
+ */
+function needsBrowser(command: string, seen = new Set<string>()): boolean {
+  return command.split(/&&|\|\||;|\|/).some((part) => {
+    const words = part.trim().split(/\s+/);
+    if (words.includes('playwright')) return true;
+    if (words[0] !== 'npm') return false;
+    const script = words[1] === 'run' || words[1] === 'run-script' ? words[2] : words[1] === 'test' ? 'test' : undefined;
+    if (!script || seen.has(script)) return false;
+    seen.add(script);
+    const body = (pkg.scripts as Record<string, string>)[script];
+    if (body === undefined) throw new Error(`"${part.trim()}" runs the script "${script}", which package.json does not have`);
+    return needsBrowser(body, seen);
+  });
+}
+
 describe('the Node floor package.json states', () => {
   const all = needs();
   const unmet = (v: string): Need[] => all.filter((need) => !satisfies(v, need.range));
@@ -254,7 +346,56 @@ describe('the Node floor package.json states', () => {
   });
 });
 
+describe('the CI job at the floor engines.node states', () => {
+  // This file holds engines.node to Node's changelog and to every package's
+  // own engines. It cannot see a tool or a dependency reaching for an API
+  // newer than the floor, and the check job's `node-version: 22` takes the
+  // newest 22, so nothing would; a job on the floor itself can.
+  const floor = floorOf(pkg.engines.node);
+  const jobs = workflowJobs(WORKFLOW);
+  const atFloor = jobs.filter((job) => job.node === floor);
+  const others = jobs.filter((job) => job.node !== floor);
+
+  test(`one job in ${WORKFLOW} runs on the floor itself`, () => {
+    const by = jobs.map((job) => `${job.name} on ${job.node ?? 'no node-version'}`).join(', ');
+    assert.equal(atFloor.length, 1, `engines.node is "${pkg.engines.node}", whose floor is ${floor}; ${by}`);
+  });
+
+  test('it runs every command the other jobs run that needs no browser', () => {
+    const [job] = atFloor;
+    assert.ok(job, `no job runs on ${floor}`);
+    const wanted = others.flatMap((other) =>
+      other.commands.filter((command) => !needsBrowser(command)).map((command) => ({ from: other.name, command })),
+    );
+    // 11 on 2026-10-28. A reader that found nothing would pass the rule.
+    assert.ok(wanted.length >= 8, `only ${wanted.length} commands were read from the other jobs`);
+    const missing = wanted.filter(({ command }) => !job.commands.includes(command));
+    assert.deepEqual(
+      missing.map(({ from, command }) => `${from}: ${command}`),
+      [],
+      `the ${job.name} job, on ${floor}, does not run what the other jobs run`,
+    );
+  });
+
+  test('the reader tells a command that needs a browser from one that does not', () => {
+    assert.equal(needsBrowser('npm run test:e2e'), true, 'test:e2e no longer reads as starting Playwright');
+    assert.equal(needsBrowser('npx playwright install --with-deps chromium'), true);
+    assert.equal(needsBrowser('npm run test:all'), true, 'test:all runs test:e2e');
+    assert.equal(needsBrowser('npm test'), false);
+    assert.equal(needsBrowser('npm run build:all'), false);
+    assert.equal(needsBrowser('git diff --exit-code -- src/lexicon/packs'), false);
+    assert.throws(() => needsBrowser('npm run no-such-script'), /does not have/);
+  });
+});
+
 describe('the range reader', () => {
+  test('reads the floor of a range, which it must name', () => {
+    assert.equal(floorOf('^22.18.0 || >=23.6.0'), '22.18.0');
+    assert.equal(floorOf('>=23.6.0 || ^22.18.0'), '22.18.0');
+    assert.equal(floorOf('>=20'), '20.0.0');
+    assert.throws(() => floorOf('>22.18.0'), /floor cannot be read/);
+  });
+
   test('reads the shapes the lockfile and package.json use, and refuses others', () => {
     assert.equal(satisfies('22.18.0', '^22.18.0 || >=23.6.0'), true);
     assert.equal(satisfies('22.17.1', '^22.18.0 || >=23.6.0'), false);

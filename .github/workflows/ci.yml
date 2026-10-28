@@ -70,3 +70,41 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  # Everything check runs that needs no browser, on the lowest Node
+  # package.json's engines.node admits. check's `22` takes the newest 22, so
+  # a tool or a dependency reaching for an API newer than the floor would
+  # pass there and fail for anyone on the floor itself. Each step is check's;
+  # see there for why it runs. tests/tools/node-floor.test.ts derives the
+  # floor from engines.node and fails if no job is on it, or if this one
+  # skips a command check runs without a browser. Quoted, because YAML reads
+  # an unquoted 22.20 as the number 22.2.
+  floor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Committed packs match the seed lexicons
+        run: |
+          npm run packs
+          git diff --exit-code -- src/lexicon/packs
+      - name: Verify lexicon packs
+        run: npm run packs:verify
+      - name: Unit tests
+        run: npm run test:unit
+      - name: DOM tests
+        run: npm run test:dom
+      - name: Tool tests
+        run: npm run test:tools
+      - name: Browser compatibility audit
+        run: npm run compat
+      - name: Build (chrome + firefox + safari)
+        run: npm run build:all
+      - name: Validate packages
+        run: npm run validate

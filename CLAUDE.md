@@ -47,11 +47,12 @@ repository makes.
 
 ## How to work here
 
-Node 22.18 or later (`.nvmrc` and CI say 22, which installs the newest;
-`engines.node` is `^22.18.0 || >=23.6.0`, the first releases that run
-TypeScript with no flag, as `build.mjs` and most tools do —
+Node 22.18 or later (`.nvmrc` and CI's `check` job say 22, which installs
+the newest; `engines.node` is `^22.18.0 || >=23.6.0`, the first releases that
+run TypeScript with no flag, as `build.mjs` and most tools do —
 `tests/tools/node-floor.test.ts` derives it, and 22.17.1 and 23.5.0, measured,
-build nothing). `npm ci`, then
+build nothing; CI's `floor` job runs all of `check` but the browser on 22.18.0
+itself, and the same test fails if it does not). `npm ci`, then
 `npm run packs` if you have touched `tools/seed/*.tsv` — the lexicon packs in
 `src/lexicon/packs/` are generated from those and committed, so a fresh clone
 already has them. Running it anyway is a no-op: since 2026-09-28 it keeps each
@@ -65,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **487 pass**, 120 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **491 pass**, 121 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -821,6 +822,65 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-28 — the floor runs in CI, and a step added to `check` reaches it
+
+The queue sent this run at `TODO.md`'s one unchecked item in `Now`, queued by
+the floor's run: `tests/tools/node-floor.test.ts` holds `engines.node` to
+Node's changelog and to every package's `engines`, and cannot see a tool or a
+dependency calling an API newer than 22.18.0, while CI's `node-version: 22`
+takes the newest 22.
+
+**A `floor` job in `ci.yml` runs everything `check` runs but the browser, on
+`'22.18.0'`.** The item named four commands; the job runs the ten of
+`check`'s that need no browser, because the guard derives the job's commands
+from `check`'s rather than from a list, so a step added to `check` reaches
+the floor or fails by name. The other four — typecheck, the packs
+rebuild-and-diff, `packs:verify` and `compat` — cost about 10 s. The version
+is quoted, because YAML reads `22.20` as the number 22.2.
+
+**Its first run passed in 1 m 3 s beside `check`'s 3 m 24 s**, and the log,
+not the tick, says what ran: `node: v22.18.0` and `npm: 10.9.3`, `npm ci`
+adding 79 packages in 2 s — the one step nobody had run at the floor, npm 10
+reading the lockfile npm 11 wrote — then 575 / 102 / 491, compat clean and
+990 KB × 3.
+
+**The guard is three readers and a rule**, 4 tests and a suite in
+`tests/tools/node-floor.test.ts`: `floorOf()`, the least version a range
+names that it admits; a line reader for `ci.yml` that throws on a `run:` it
+cannot read; and `needsBrowser()`, which follows `npm run` through
+`package.json`'s scripts to any that starts Playwright. Test-first, red on
+"whose floor is 22.18.0; check on 22" and "no job runs on 22.18.0". Five
+probes, each restored by md5, each failing by name: the job on 22.17.1; the
+job dropping `compat`; `check` gaining `site:check`; the browser reader
+blinded, which the floor of 8 commands catches as "only 0 commands were
+read"; and a folded `run: >`, which throws naming `ci.yml:19`.
+
+**Reading that log found the next item.** Both jobs end on GitHub's warning
+that `actions/checkout@v4`, `setup-node@v4` and, in `check`,
+`upload-artifact@v4` target the deprecated Node 20 runtime and are forced
+onto Node 24. They run; queued in `Now`, with `release.yml` left out of it.
+
+Tools 487 → **491** / 120 → **121** suites, total 1204 → **1208**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
+ships moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured, on
+the commit holding the code: `npm run test:all` **exit 0** — typecheck
+clean, 575 unit / 138 suites, 102 jsdom / 23, **491 tools / 121**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.0 min**, then build
+and validate again. Only documents moved after it, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the floor job runs all of `check` but the
+browser rather than the item's four, the guard being easier to keep honest
+that way; that the guard needs no exemption list until a step does; and that
+`release.yml`'s actions are for B2, not this run.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the Node 20 actions.
 
 ### 2026-10-28 — the floor is `^22.18.0 || >=23.6.0`, measured on five Nodes
 
