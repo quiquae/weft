@@ -47,7 +47,11 @@ repository makes.
 
 ## How to work here
 
-Node 22 (`.nvmrc`; `engines.node >= 20`; CI pins 22). `npm ci`, then
+Node 22.18 or later (`.nvmrc` and CI say 22, which installs the newest;
+`engines.node` is `^22.18.0 || >=23.6.0`, the first releases that run
+TypeScript with no flag, as `build.mjs` and most tools do —
+`tests/tools/node-floor.test.ts` derives it, and 22.17.1 and 23.5.0, measured,
+build nothing). `npm ci`, then
 `npm run packs` if you have touched `tools/seed/*.tsv` — the lexicon packs in
 `src/lexicon/packs/` are generated from those and committed, so a fresh clone
 already has them. Running it anyway is a no-op: since 2026-09-28 it keeps each
@@ -61,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **481 pass**, 118 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **487 pass**, 120 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
