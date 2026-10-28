@@ -1249,25 +1249,60 @@ registered**, and nothing below it can move until it is.
       suites, total 1190 → **1198**, in six places, `docs/LAUNCH.md:221`
       first.
 
-- [ ] **Say the Node floor the toolchain actually has.** Found 2026-10-28,
-      writing the version guard (Notes). `package.json` says
-      `engines.node >= 20` and `CLAUDE.md`'s setup line repeats it, but
-      `npm test`, `packs` and `compat` pass `--experimental-strip-types`,
-      which Node added in 22.6.0, and `build` itself (`build.mjs:16`),
-      `site`, `validate`, `icons`, `og`, `tiles` and `release` import
-      TypeScript with no flag, which needs type stripping on by default,
-      from 22.18.0. Read from Node's changelogs, so **measure before
-      choosing**: in a `/tmp` copy of the tree with `node_modules` linked,
-      run `npm run build:all` and `npm test` under `npx -y node@20`,
-      `node@22.17` and `node@22.18` (each `npx` fetch is a Node binary, tens
-      of megabytes; clear them from npm's cache after). Then either set
-      `engines.node` to the measured floor and say it in `CLAUDE.md`'s
-      setup line, or pass the flag in every script that imports TypeScript
-      so that 22.6 works too. **Recommendation: the floor**: CI and `.nvmrc`
-      are on 22 already, and a flag on every script is a convention the
-      next script forgets, as seven have. About 30 minutes. `package.json`
-      dates the install page in the sitemap (`tools/build-site.mjs:1374`),
-      so that `lastmod` moves; nothing is indexed yet (B3).
+- [x] **Say the Node floor the toolchain actually has.** Done 2026-10-28,
+      the run after the version guard's. Measured first, in a `/tmp`
+      worktree of `main` with `node_modules` linked, each Node fetched with
+      `npx -y node@X` and put first on `PATH`, so npm, its scripts and every
+      child spawned on `process.execPath` ran it: `npm run build:all` and
+      `npm test` on 20.20.2 exit 1 and 9, the build at `build.mjs`'s import
+      of `tests/fixtures/licence-keypair.ts` (`ERR_UNKNOWN_FILE_EXTENSION`)
+      and the tests at "bad option: --experimental-strip-types"; on 22.17.1
+      the same build failure, and the unit and jsdom suites pass whole while
+      the tool suite passes 447 of 481, four failing and thirty cancelled,
+      where `build-pack`, `build-site` and `cousins` tests spawn their tools
+      with no flag; on 22.18.0 both exit 0, 575 / 102 / 481 and 990 KB × 3,
+      and so do `typecheck`, `packs` (no change), `packs:verify`, `compat`,
+      `validate`, `site` and `site:check`, 714 pages / 16 118 links. Node 23
+      was measured too, since a `>=22.18.0` would promise it: 23.5.0 fails
+      as 22.17.1 does, 23.6.1 passes both. So `engines.node` is
+      **`^22.18.0 || >=23.6.0`**, the floor rather than the flag, as
+      recommended. The lockfile's root `engines` moved with it, md5-identical
+      to what `npm install --package-lock-only --offline` writes in `/tmp`.
+      `tests/tools/node-floor.test.ts`, 6 tests in 2 suites, derives the
+      range instead of typing it: each script's `node` commands, the
+      TypeScript their entries reach through their imports, the children
+      their test files spawn on `process.execPath`, and every lockfile
+      package's own `engines`; `engines.node` must admit exactly the probe
+      versions that meet all of them, the lockfile must carry the same
+      `engines`, and `CLAUDE.md`'s setup line must quote the range. Red on
+      `>=20` naming seven versions it wrongly admits, and on the setup line;
+      then the lockfile half red on `package.json` edited alone. Four probes,
+      each restored by md5: `>=24.0.0` refuses 22.18.0 and 23.6.1; the flag
+      added to every script with the floor lowered to the flag's range is
+      still refused, naming `build-pack.test.ts`'s child, which is what
+      22.17.1 measured; and the spawn reader and the import walk, each
+      blinded, fail by name. The test passes on 22.18.0 itself. The AMO
+      reviewer note in `docs/READY-TO-SUBMIT.md` said "Node 22", which a
+      reviewer on 22.17 would build nothing with, and says 22.18 or later.
+      Tools 481 → **487** / 118 → **120** suites, total 1198 → **1204**, in
+      six places, `docs/LAUNCH.md:221` first. `package.json` dates the
+      install page in the sitemap, so its `lastmod` moves; nothing is
+      indexed yet (B3).
+
+- [ ] **Run the fast suites and the build at the floor in CI.** Found
+      2026-10-28, landing the floor. `tests/tools/node-floor.test.ts` holds
+      `engines.node` to Node's changelog, written into its `NODE` table, and
+      to every package's `engines`; it cannot see a tool or a dependency
+      reaching for an API newer than 22.18.0, and CI's `node-version: 22`
+      takes the newest 22, so nothing would. Add a second job to
+      `.github/workflows/ci.yml`, `floor`, on `node-version: 22.18.0` with
+      `cache: npm`: `npm ci`, `npm test`, `npm run build:all`, `npm run
+      validate`. It needs no browser and runs beside `check`, so it adds no
+      wall-clock time. Measured locally that day on 22.18.0: `npm test`,
+      `build:all` and `validate` pass; `npm ci` there was not run, the
+      worktree linking this checkout's `node_modules`. Do not touch
+      `release.yml`. About 20 minutes, most of it the first CI
+      run.
 
 ## Next
 
@@ -6839,6 +6874,34 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-28 — the floor is `^22.18.0 || >=23.6.0`, measured.** Five
+things a later run would be sorry not to know:
+
+1. **To run the tree on a Node that is not installed**, `npx -y node@X -p
+   process.execPath` fetches it and prints the binary's path; put that
+   directory first on `PATH` and npm, every script it runs and every child
+   a test spawns on `process.execPath` use it. `npm exec -c 'node
+   --version'` confirms. Homebrew's npm 11.19 ran under all five versions.
+   The downloads are npx entries: `npm cache npx ls` lists them, `npm cache
+   npx rm <key>` removes one, and `npm cache ls node-darwin-arm64` names
+   the tarballs they left in the content cache.
+2. **A child does not inherit its parent's flags.** `spawn` and `execFile`
+   pass only the arguments given (only `fork` copies `execArgv`), so on
+   22.17.1 the suites ran under `--experimental-strip-types` and the tools
+   three tests spawn did not, and failed. Lowering the floor to 22.6 would
+   need the flag in every script and in every such spawn; the guard's
+   second probe shows it refusing the scripts alone. At the floor the
+   scripts' flags are redundant and harmless, and were left.
+3. **Node 23's test runner prints the spec reporter into a pipe** (`ℹ pass
+   575`) where 22's prints TAP (`# pass 575`): read a log for both.
+4. **`.nvmrc` says 22, which the floor cannot hold.** `nvm install` takes
+   the newest 22, but `nvm use` takes the newest *installed* 22, which may
+   be older than 22.18; CI's `setup-node` with `22` takes the newest. Left
+   as it is: a minor in `.nvmrc` would pin the patch level too.
+5. **The lockfile carries the root's `engines` as it does its `version`**,
+   and `npm install` rewrites both from `package.json`, so the guard holds
+   the pair as `tests/tools/version.test.ts` holds the versions.
 
 **2026-10-28 — the version had four copies, and the bump knew of two.**
 Five things a later run would be sorry not to know:

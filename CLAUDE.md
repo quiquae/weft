@@ -822,6 +822,74 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-10-28 — the floor is `^22.18.0 || >=23.6.0`, measured on five Nodes
+
+The queue sent this run at the one item in `Now`, queued by the version
+guard's run: `engines.node` said `>=20`, and the item doubted anything ran
+there. **Measured before choosing**, in a `/tmp` worktree of `main` with
+`node_modules` linked, each Node fetched by `npx -y node@X` and put first on
+`PATH`, so npm, its scripts and every child a test spawns ran it:
+
+| Node | `npm run build:all` | `npm test` |
+|---|---|---|
+| 20.20.2 | exit 1, `ERR_UNKNOWN_FILE_EXTENSION` at `build.mjs`'s `.ts` import | exit 9, "bad option: --experimental-strip-types" |
+| 22.17.1 | exit 1, the same | exit 1: 575 and 102 pass; tools 447 of 481, 4 failing, 30 cancelled |
+| 22.18.0 | exit 0, 990 KB × 3 | exit 0, 575 / 102 / 481 |
+| 23.5.0 | exit 1, as 22.17.1 | exit 1, as 22.17.1 |
+| 23.6.1 | exit 0 | exit 0 |
+
+**The tool failures on 22.17.1 are the part worth keeping.** The suites ran
+with the flag and the children three of them spawn did not: `spawn` passes
+only the arguments it is given, so `build-pack.test.ts`, `build-site.test.ts`
+and `cousins.test.ts` ran their tools bare. Passing the flag in every script,
+the item's other option, would not have lowered the floor to 22.6 on its own.
+Node 23 was measured because `>=22.18.0` would promise 23.0 to 23.5, which
+fail. So `engines.node` is `^22.18.0 || >=23.6.0`, the floor, as recommended;
+`typecheck`, `packs` (no change), `packs:verify`, `compat`, `validate`,
+`site` and `site:check` pass on 22.18.0 too. The lockfile's root `engines`
+moved with it, md5-identical to what npm writes given the new
+`package.json`.
+
+**`tests/tools/node-floor.test.ts`, 6 tests in 2 suites, derives the range.**
+Each script's `node` commands are read, their entries' imports followed with
+`ts.preProcessFile` to the first TypeScript file, the children each `--test`
+file spawns on `process.execPath` read the same way, and every lockfile
+package's `engines` added; `engines.node` must admit exactly the twelve probe
+versions that meet them all, so it is neither a promise nor raised without a
+reason. A small range reader takes the shapes the lockfile uses and throws on
+any other. Red on `>=20`, naming seven versions it admits, and on the setup
+line; the lockfile test red on `package.json` edited alone. Four probes, each
+restored by md5: `>=24.0.0` refused 22.18.0 and 23.6.1; the flag on every
+script with the floor at the flag's range was still refused, naming
+`build-pack.test.ts`'s child; the spawn reader and the import walk, blinded,
+each failed by name. It passes on 22.18.0 itself.
+
+**The AMO reviewer note said "Node 22"**, `docs/READY-TO-SUBMIT.md:299`, and a
+reviewer on 22.17 would have built nothing from the source archive; it says
+22.18 or later. Tools 481 → **487** / 118 → **120** suites, total 1198 →
+**1204**, in six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md`
+paragraph: nothing that ships moved. The install page's sitemap date moves
+with `package.json`; nothing is indexed (B3).
+
+Measured at the end, on Node 26.7, with npm's own exit status captured, on
+the commit holding the code: `npm run test:all` **exit 0** — typecheck
+clean, 575 unit / 138 suites, 102 jsdom / 23, **487 tools / 120**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.9 min**, then build
+and validate again. Only `TODO.md` and this entry moved after it, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that Node 23, end-of-life, belongs in the range
+as its releases actually behave rather than rounded into `>=22.18.0`; that
+the scripts' now-redundant flags stay, being harmless and what the guard
+reads; that `.nvmrc` stays `22`; and that the five npx downloads, and the
+`node@22` one an earlier session left, are the downloads the task meant to
+clear.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item: the same build and suites at 22.18.0 in CI.
+
 ### 2026-10-28 — the version had four copies, the lockfile said 1.0.0, and the rest of "Never touched" was a sentence each
 
 The queue sent the generic task. Every item in `Now` was ticked, and the
