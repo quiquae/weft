@@ -6,7 +6,7 @@
 
 **State on 2026-10-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **487** tool tests / 120 suites, **40** e2e passing
+suites, **491** tool tests / 121 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -616,10 +616,21 @@ wanted its long vowel, `ǣġ`, its card moved by `RENAMED`. A guard in
 `tests/tools/lexicon-orthography.test.ts` refuses a second form that drops
 a dot anywhere but before a back vowel. See the ticked item in `Next`.
 
-**So the whole of B0 is closed, `Now` is empty, and `Next` holds two items
-that wait on Creagh's calls and a third that does too since 2026-10-26, the
-site's favicon, whose check is made and whose remedy is a choice.** No
-unchecked item is agent-shaped. Since
+**And as of 2026-10-28 the Node floor `package.json` states is the one CI
+runs on.** `engines.node` is `^22.18.0 || >=23.6.0`, derived and measured
+that morning, and CI's `check` job takes the newest 22, so a tool or a
+dependency reaching for an API newer than the floor would have passed
+everywhere it was tested. A second job, `floor`, runs everything `check`
+runs but the browser on 22.18.0 itself, in about a minute beside `check`'s
+three, and `tests/tools/node-floor.test.ts` fails if no job is on the floor
+or if that job skips a command `check` runs without a browser. See the
+ticked item in `Now`.
+
+**So the whole of B0 is closed. `Now` holds one agent-shaped item, found on
+2026-10-28: CI's actions declare the Node 20 runtime GitHub has deprecated.
+`Next` holds two items that wait on Creagh's calls and a third that does
+too since 2026-10-26, the site's favicon, whose check is made and whose
+remedy is a choice.** Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
 and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
 otherwise what is holding the release up, and neither is the version any
@@ -1289,20 +1300,57 @@ registered**, and nothing below it can move until it is.
       install page in the sitemap, so its `lastmod` moves; nothing is
       indexed yet (B3).
 
-- [ ] **Run the fast suites and the build at the floor in CI.** Found
-      2026-10-28, landing the floor. `tests/tools/node-floor.test.ts` holds
-      `engines.node` to Node's changelog, written into its `NODE` table, and
-      to every package's `engines`; it cannot see a tool or a dependency
-      reaching for an API newer than 22.18.0, and CI's `node-version: 22`
-      takes the newest 22, so nothing would. Add a second job to
-      `.github/workflows/ci.yml`, `floor`, on `node-version: 22.18.0` with
-      `cache: npm`: `npm ci`, `npm test`, `npm run build:all`, `npm run
-      validate`. It needs no browser and runs beside `check`, so it adds no
-      wall-clock time. Measured locally that day on 22.18.0: `npm test`,
-      `build:all` and `validate` pass; `npm ci` there was not run, the
-      worktree linking this checkout's `node_modules`. Do not touch
-      `release.yml`. About 20 minutes, most of it the first CI
-      run.
+- [x] **Run the fast suites and the build at the floor in CI.** Done
+      2026-10-28, the run after the floor's. A `floor` job in
+      `.github/workflows/ci.yml`, on `node-version: '22.18.0'` — quoted,
+      because YAML reads an unquoted `22.20` as the number 22.2 — runs every
+      command `check` runs that needs no browser: `npm ci`, typecheck, the
+      packs rebuild-and-diff, `packs:verify`, the unit, jsdom and tool
+      suites, `compat`, `build:all` and `validate`. That is the item's four
+      and four more, because the guard derives the job's commands from
+      `check`'s rather than from a typed list; the four cost about 10 s, 8.5
+      of them the typecheck. **Its first run, on PR #128, passed in 1 m 3 s
+      beside `check`'s 3 m 24 s**, printing `node: v22.18.0` and `npm:
+      10.9.3`, which read the lockfile npm 11 wrote: `npm ci`, the one step
+      nobody had run at the floor, added 79 packages in 2 s. Then 575 / 102
+      / 491 tests, compat clean, 990 KB × 3, all as on Node 26.7.
+      `tests/tools/node-floor.test.ts` gained 4 tests and a suite: one job
+      in `ci.yml` runs on the floor, which `floorOf()` reads from
+      `engines.node` as the least version the range names that it admits;
+      that job runs every command the other jobs run that needs no browser,
+      the commands read from `ci.yml` by a line reader that throws on a
+      `run:` it cannot read, and the browser by `needsBrowser()`, which
+      follows `npm run` through `package.json`'s scripts to any that starts
+      Playwright; and the two readers' own cases. Test-first: red on
+      "whose floor is 22.18.0; check on 22" and "no job runs on 22.18.0".
+      Five probes, each restored by md5, each failing by name: the job on
+      22.17.1; the job dropping `compat`, named `check: npm run compat`;
+      `check` gaining `npm run site:check`, named; the browser reader
+      blinded to "always", which the floor of 8 commands catches as "only 0
+      commands were read"; and a folded `run: >` in `check`, which throws
+      naming `ci.yml:19`. `release.yml` is untouched. Tools 487 → **491** /
+      120 → **121** suites, total 1204 → **1208**, in six places,
+      `docs/LAUNCH.md:221` first.
+
+- [ ] **Move CI's actions off the Node 20 runtime GitHub has deprecated.**
+      Found 2026-10-28, reading the floor job's first log. Both jobs end on
+      a warning: "Node.js 20 is deprecated. The following actions target
+      Node.js 20 but are being forced to run on Node.js 24:
+      actions/checkout@v4, actions/setup-node@v4", and `check`'s names
+      `actions/upload-artifact@v4` too. They run, forced onto Node 24, so
+      nothing fails today; what GitHub does next is in the changelog the
+      warning links, `github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/`,
+      which was not read. Read it, then each action's own releases for the
+      major that declares Node 24 and what else that major changed —
+      `upload-artifact`'s majors have changed how an artefact of an existing
+      name is treated before. Bump `ci.yml` and `site.yml`, whose
+      `upload-pages-artifact@v3` and `deploy-pages@v4` want the same
+      reading. `ci.yml` is checked by the PR's own run; `site.yml` has no
+      `pull_request` trigger, so run it on the branch with `gh workflow run
+      site.yml --ref <branch>`, its deploy job being gated on
+      `vars.WEFT_PAGES` and so skipped. **Do not touch `release.yml`**: it
+      publishes, fires once and cannot be rehearsed, so leave it at `@v4`
+      and say so in B2. About 40 minutes.
 
 ## Next
 
@@ -6874,6 +6922,31 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-28 — CI runs the floor, and `check` cannot outgrow it.** Four
+things a later run would be sorry not to know:
+
+1. **A step added to `check` must be added to `floor` in the same commit**,
+   or start Playwright, or `npm run test:tools` fails naming it as `check:
+   <command>`. The rule has no exemption list. If a step ever cannot run at
+   the floor for a reason other than the browser, give the guard a list
+   with the reason beside each entry, as `PLATFORM` does in
+   `tests/tools/core-purity.test.ts`, rather than leaving the step out.
+2. **The guard reads `ci.yml` line by line, not as YAML.** It knows jobs two
+   spaces in under `jobs:`, `node-version:`, and `run:` as a plain value or
+   a `|` block, and throws on any other `run:`, naming the line: teach it
+   the shape rather than rewriting a step around it. It ignores `if:`,
+   `env:` and matrices, so a job on `${{ matrix.node }}` reads as on that
+   literal string and no job as on the floor, which the test says.
+3. **Read what CI ran, not the tick.** `gh run view --job <id> --log`
+   prints each line prefixed by job, step and timestamp, and `sed -E
+   's/^[^\t]*\t[^\t]*\t[0-9TZ:.-]+ //'` strips the prefix. That is how the
+   floor job was seen to print `node: v22.18.0` and `npm: 10.9.3`, and how
+   the Node 20 actions warning in `Now` was found: `gh pr checks` shows
+   only `pass`.
+4. **Quote a `node-version` that has two dots or more.** YAML reads `22.20`
+   as the number 22.2; `22.18.0` happens to be safe unquoted, and is
+   quoted so that the next bump is too.
 
 **2026-10-28 — the floor is `^22.18.0 || >=23.6.0`, measured.** Five
 things a later run would be sorry not to know:
