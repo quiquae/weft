@@ -59,9 +59,9 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **571 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **471 pass**, 115 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **473 pass**, 115 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -137,9 +137,14 @@ with why — WebCrypto, the Encoding API, base64 and `URL` today. A name it
 allows must be a browser's, since core runs in one, and Node's as well
 wherever core uses it as a value rather than a type, since core is tested
 there. It refuses an import from outside `src/core/`, so purity cannot be
-borrowed. It does not hold the clock, which is ECMAScript's:
-`daysUntilDue()` in `fsrs.ts` and three expiry checks in `licence.ts` read
-`Date.now()` themselves.
+borrowed. And since 2026-10-28 it refuses the clock and the dice, which are
+ECMAScript's: `Date.now`, an argument-less `new Date()`, `Date()` and
+`Math.random`, each resolved through the checker, so a parameter named
+`Date` is not counted. A function that needs the time takes a required
+`now`, after the thing it judges, and its caller reads the clock once;
+`daysUntilDue()` and three expiry checks in `licence.ts` read it themselves
+until then. Randomness is `crypto.getRandomValues`, `PLATFORM`'s, for an
+install id.
 
 **No static `content_scripts`, and no host permissions at install.**
 `optional_host_permissions: ['*://*/*']` is requested per-origin at runtime
@@ -805,6 +810,78 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-28 — core takes the instant from its caller, and the guard refuses the clock
+
+The queue sent this run at `TODO.md`'s one unchecked item in `Now`, written
+by the purity guard's run: five functions in core read the clock
+themselves, though `CLAUDE.md` says every interesting decision there is a
+function of its arguments. The item was right to the line:
+`daysUntilDue()` at `fsrs.ts:305`, `upcoming()` through it, and
+`verifyLicence()`, `describeLicence()` and `needsAttention()` at
+`licence.ts:181`, `:199` and `:215`.
+
+**The guard first, red on exactly the four.** `clockReads()` in
+`tests/tools/core-purity.test.ts` refuses `Date.now`, an argument-less `new
+Date`, `Date()` — which, called without `new`, ignores its arguments and
+returns the time — and `Math.random`, asking the checker whether each
+`Date` and `Math` is ECMAScript's, so a parameter named `Date` passes. A
+reference counts as well as a call, since a held `Date.now` reads the clock
+whenever anyone calls it. The probe file plants six reads beside `new
+Date(0)`, `Date.UTC`, `crypto.getRandomValues`, a comment, a string and the
+shadowing parameter, none of which count. Red on a stubbed scanner, the
+probe's test alone; then red on the real tree naming `fsrs.ts:305` and
+`licence.ts:181`, `:199` and `:215`, and not `lock.ts:546`, whose
+`Date.now()` is in a comment. `upcoming()` is not in the list, reading the
+clock only through `daysUntilDue()`; the checker is what finds it, once
+`now` is required.
+
+**Then each function takes a required `now`**, after the card or the
+status, as `cardRetrievability(card, now)` already does, and `tsc` named the
+seven callers the item listed and no others. Twelve unit tests went red
+first at instants far from the real clock: "Renews in 5259 days" for seven,
+`upcoming()` at `[0, 56]` for `[1, 100]`, a card due tomorrow "due in 0
+days" with `now` read as `target`, and the licence checks `invalid` with
+`now` read as `opts`. The licence tests judge at 2021 and 2041, one either
+side of the clock, so a check reading `Date.now()` gets one of them wrong
+whichever way it errs. Each caller reads the clock once: `load()` passes
+the `now` it already held, `set-licence` one instant to `saveLicence()` and
+`describeLicence()`, and the options page one to the nudge and the sentence
+inside it, which two reads could have put either side of the seven-day
+line. `upcoming()` kept its place and took `now`, though nothing in `src/`
+calls it.
+
+Four probes on the real tree, each restored by md5, each failing by file
+and line: `Date.now()` in `selector.ts`, `Math.random()` in `lock.ts`, `new
+Date()` in `stats.ts` and `String(Date())` in `escalation.ts`. All three
+screenshot groups were regenerated on a test build, 10 + 14 + 7 written,
+every one byte-identical, the worker's clock being held, and are stamped.
+Unit 571 → **575**, tools 471 → **473**, suites unchanged, total 1184 →
+**1190**, in six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md`
+paragraph: nothing a user gets moved.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0 in 5 min 39 s** — typecheck clean, **575 unit
+/ 138 suites**, 102 jsdom / 23, **473 tools / 115**, compat 16 dependencies
+× 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2
+degrade / 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing
+`validate`, **40 e2e passed and 3 skipped in 4.5 min**, then build and
+validate again. The package moved by too few bytes to print. Documents
+moved after that run's tools step, so typecheck and `npm test` were run
+again on the final tree. Separately `npm run site` then `site:check`
+**714 pages / 16 118 links**, all resolving, and `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a.
+
+Assumed, with nobody to ask: that `now` goes after the thing judged and
+before every defaulted parameter, the order core already used; that `Date()`
+and a held `Date.now` are clock reads the item's three meant, being the
+same read spelt differently; that `upcoming()` takes `now` rather than being
+deleted, the item naming it among the five; and that `src/core/types.ts`'s
+opening, "no DOM, no chrome.* APIs, no I/O", stays as written, true still,
+since any edit to `src/` would stale the three groups just stamped.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+is empty, and no unchecked item in `Next` is agent-shaped.
 
 ### 2026-10-26 — core was pure, and nothing said so but three sentences
 

@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-26:** every automatable check is green, measured at the end
-of this session — typecheck clean, **571** unit / 138 suites, **102** jsdom / 23
-suites, **471** tool tests / 115 suites, **40** e2e passing
+**State on 2026-10-28:** every automatable check is green, measured at the end
+of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
+suites, **473** tool tests / 115 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1169,40 +1169,34 @@ registered**, and nothing below it can move until it is.
       suites, total 1178 → **1184**, in six places, `docs/LAUNCH.md:221`
       first.
 
-- [ ] **Hand core's five clock reads a `now`, then let the purity guard
-      refuse the clock.** Found 2026-10-26 by the purity guard's run,
-      which leaves the clock alone because `Date` is ECMAScript's.
-      `CLAUDE.md` says every interesting decision in core "is a function
-      of its arguments", and five are not: `daysUntilDue()`
-      (`src/core/fsrs.ts:305`), `upcoming()` in `stats.ts`, which calls
-      it, and `verifyLicence()`, `describeLicence()` and
-      `needsAttention()` in `licence.ts`, which read `Date.now()` at
-      `:181`, `:199` and `:215`. The rest of core already takes the
-      instant — `dayKey(now, …)`, the lock, `noteClock` — so the shape is
-      there. Steps:
-      1. A required `now: number` on each, so `tsc` names every caller:
-         `src/background/index.ts:296`, `storage.ts:135` and `:216`,
-         `src/ui/dashboard/index.tsx:469`, `src/ui/options/pro.tsx:46`,
-         `:47` and `:50`, and the tests in `tests/core/fsrs.test.ts`,
-         `licence.test.ts` and `stats.test.ts`. A UI caller passes
-         `Date.now()`; the worker passes the instant it already holds where
-         it has one. `upcoming()` has no caller in `src/` at all, only its
-         test, so it can take `now` with the rest or be deleted: esbuild
-         drops it from every bundle already.
-      2. Unit tests that pin each at a fixed instant, red first: a
-         licence one second past its `expires`, the days-left sentence
-         at exactly seven days, a card due tomorrow.
-      3. In `tests/tools/core-purity.test.ts`, refuse `Date.now()`, an
-         argument-less `new Date()` and `Math.random()` in core, with the
-         probe file planting each and `crypto.getRandomValues` staying
-         allowed as `PLATFORM`'s.
-      4. It moves `src/`, so all three screenshot groups go stale by
-         provenance: regenerate (`npm run build:test`, then the three
-         `WEFT_*` specs), compare, stamp with `artefacts:verify`. The
-         worker's clock is held by `holdWorkerClock()`, so the dashboard
-         shots should come back byte-identical.
-      About 90 minutes with the regeneration. Agent-shaped: nothing a
-      store or a learner is told moves.
+- [x] **Hand core's five clock reads a `now`, then let the purity guard
+      refuse the clock.** Done 2026-10-28. `daysUntilDue()`, `upcoming()`,
+      `verifyLicence()`, `describeLicence()` and `needsAttention()` each
+      take a required `now`, after the card or the status, as
+      `cardRetrievability(card, now)` already did, so `tsc` named exactly
+      the seven callers listed here. Each reads the clock once: `load()`
+      passes the `now` it held, `set-licence` one instant to
+      `saveLicence()` and `describeLicence()`, and the options page one to
+      the nudge and the sentence in it. `upcoming()` kept its place and took
+      `now`, though nothing in `src/` calls it. `clockReads()` in
+      `tests/tools/core-purity.test.ts` refuses `Date.now` (called or held),
+      an argument-less `new Date`, `Date()` and `Math.random`, each asked of
+      the checker, so a parameter named `Date` passes; the probe file plants
+      six beside `new Date(0)`, `Date.UTC`, `crypto.getRandomValues`, a
+      comment, a string and that parameter. Test-first: red on a stubbed
+      scanner, the probe's test alone; red on the real tree naming exactly
+      `fsrs.ts:305` and `licence.ts:181`, `:199` and `:215`, the
+      `Date.now()` in `lock.ts:546`'s comment not counted; then twelve unit
+      tests red at instants far from the real clock — "Renews in 5259
+      days" for seven, `[0, 56]` for `[1, 100]`, and the new argument read
+      as `target` or `opts` — and green. Four probes on the real tree, each
+      restored by md5, each failing by file and line: `Date.now()` in
+      `selector.ts`, `Math.random()` in `lock.ts`, `new Date()` in
+      `stats.ts`, `String(Date())` in `escalation.ts`. All three screenshot
+      groups regenerated on a test build, 10 + 14 + 7 written, every one
+      byte-identical, and stamped. Unit 571 → **575**, tools 471 → **473**,
+      suites unchanged, total 1184 → **1190**, in six places,
+      `docs/LAUNCH.md:221` first.
 
 ## Next
 
@@ -6774,6 +6768,26 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-28 — core takes the instant from its caller.** Two things a
+later run would be sorry not to know:
+
+1. **A number in a signature's second place means something else now.**
+   `daysUntilDue(card, now, target, w)` took `target` second until
+   2026-10-28, and `verifyLicence(input, now, opts)` took `opts`. A caller
+   written to the old order still type-checks wherever the old parameter
+   was a number — `daysUntilDue(card, 0.85)` is `now = 0.85`, an instant
+   in 1970, so every card reads as due decades away — and `npm test` runs
+   on stripped types, so it would not say so either. None existed when the order changed; pass `target` by
+   name if it is ever wanted, through an options object, not a fourth
+   positional.
+2. **`Date()` without `new` reads the clock too**, ignoring its arguments
+   and returning the time as a string, and a held `Date.now` reads it the
+   moment anyone calls it, so `clockReads()` refuses both beside the three
+   the item named. `Date` and `Math` are asked of the checker, as
+   `libraryUses()` asks of every name, so a parameter or local that shadows
+   them passes; `new Date(x)` and `Date.UTC` are arithmetic on an instant
+   the caller gave, and pass.
 
 **2026-10-26 — core was pure, and the guard that now says so asks the
 checker.** Three things a later run would be sorry not to know:
