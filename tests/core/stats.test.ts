@@ -133,14 +133,19 @@ describe('attentionSummary', () => {
 });
 
 describe('upcoming', () => {
-  test('orders by days until due and skips unseen and retired words', () => {
-    const list = upcoming([
-      card({ lemma: 'soon', reps: 3, stability: 1, lastReview: Date.now() }),
-      card({ lemma: 'later', reps: 3, stability: 100, lastReview: Date.now() }),
-      card({ lemma: 'unseen', reps: 0 }),
-      card({ lemma: 'retired', reps: 5, stability: 50, retiredAt: Date.now() }),
-    ]);
+  test('orders by days until due, counted from the instant it is given, and skips unseen and retired words', () => {
+    const list = upcoming(
+      [
+        card({ lemma: 'soon', reps: 3, stability: 1, lastReview: NOW }),
+        card({ lemma: 'later', reps: 3, stability: 100, lastReview: NOW }),
+        card({ lemma: 'unseen', reps: 0 }),
+        card({ lemma: 'retired', reps: 5, stability: 50, retiredAt: NOW }),
+      ],
+      NOW,
+    );
     assert.deepEqual(list.map((u) => u.lemma), ['soon', 'later']);
+    // Reviewed at NOW and judged at NOW, so each is due a stability away.
+    assert.deepEqual(list.map((u) => Math.round(u.days)), [1, 100]);
   });
 });
 

@@ -132,7 +132,7 @@ export async function load(): Promise<Snapshot> {
   // Verified locally, against a public key compiled into the extension. No
   // request is made, here or anywhere, which is the point: an activation
   // server would be a per-user identifier and a log of when Weft is used.
-  const licence = await verifyLicence(licenceKey ?? '');
+  const licence = await verifyLicence(licenceKey ?? '', now);
 
   const settingsOpened = await open<unknown>(meta.installId, settingsEnv);
   const lockOpened = await open<LockState>(meta.installId, lockEnv);
@@ -211,9 +211,9 @@ export async function saveAttention(
   return kept;
 }
 
-/** Store a licence key and return what it turned out to be. */
-export async function saveLicence(key: string): Promise<LicenceStatus> {
-  const status = await verifyLicence(key);
+/** Store a licence key and return what it turned out to be at `now`. */
+export async function saveLicence(key: string, now: number): Promise<LicenceStatus> {
+  const status = await verifyLicence(key, now);
   // An unusable key is not stored, so a typo cannot leave the extension in a
   // permanently complaining state.
   if (status.kind === 'invalid') return status;

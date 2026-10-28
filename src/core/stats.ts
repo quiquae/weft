@@ -162,10 +162,10 @@ export interface UpcomingReview {
   stability: number;
 }
 
-export function upcoming(cards: MemoryCard[], limit = 20): UpcomingReview[] {
+export function upcoming(cards: MemoryCard[], now: number, limit = 20): UpcomingReview[] {
   return cards
     .filter((c) => c.reps > 0 && !c.retiredAt)
-    .map((c) => ({ lemma: c.lemma, days: daysUntilDue(c), stability: c.stability }))
+    .map((c) => ({ lemma: c.lemma, days: daysUntilDue(c, now), stability: c.stability }))
     .sort((a, b) => a.days - b.days)
     .slice(0, limit);
 }

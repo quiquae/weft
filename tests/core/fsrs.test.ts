@@ -218,13 +218,23 @@ describe('isRetirable', () => {
 
 describe('daysUntilDue', () => {
   test('is 0 for an unseen card', () => {
-    assert.equal(daysUntilDue(newCard('fr', 'x', NOW)), 0);
-    assert.equal(daysUntilDue(undefined), 0);
+    assert.equal(daysUntilDue(newCard('fr', 'x', NOW), NOW), 0);
+    assert.equal(daysUntilDue(undefined, NOW), 0);
   });
 
   test('is positive for a freshly reviewed stable card', () => {
-    const c = card({ reps: 3, stability: 30, lastReview: Date.now() });
-    assert.ok(daysUntilDue(c) > 20);
+    const c = card({ reps: 3, stability: 30, lastReview: NOW });
+    assert.ok(daysUntilDue(c, NOW) > 20);
+  });
+
+  test('counts from the instant it is given: a card due tomorrow is a day away', () => {
+    // Stability is the interval at 90% retention, so a card that holds for two
+    // days and was reviewed yesterday is due tomorrow. NOW is weeks behind the
+    // real clock, so a count from Date.now() would call the card overdue.
+    const c = card({ reps: 3, stability: 2, lastReview: NOW - DAY });
+    const due = daysUntilDue(c, NOW);
+    assert.ok(Math.abs(due - 1) < 1e-9, `due in ${due} days`);
+    assert.equal(daysUntilDue(c, NOW + 2 * DAY), 0);
   });
 });
 

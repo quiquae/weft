@@ -294,15 +294,16 @@ export function isRetirable(
   return cardRetrievability(card, now, w) >= 0.85;
 }
 
-/** Days until this card next wants to be seen, for the dashboard. */
+/** Days from `now` until this card next wants to be seen, for the dashboard. */
 export function daysUntilDue(
   card: MemoryCard | undefined,
+  now: number,
   target = 0.9,
   w: readonly number[] = DEFAULT_W,
 ): number {
   if (!card || card.reps === 0) return 0;
   const ivl = intervalForRetention(card.stability, target, w);
-  const elapsed = card.lastReview ? (Date.now() - card.lastReview) / DAY_MS : 0;
+  const elapsed = card.lastReview ? (now - card.lastReview) / DAY_MS : 0;
   return Math.max(0, ivl - elapsed);
 }
 

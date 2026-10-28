@@ -287,13 +287,15 @@ const handlers: Handlers = {
   },
 
   'set-licence': async (request) => {
-    const status = await store.saveLicence(request.key);
+    // One instant for both, so the key is described as of the moment it was judged.
+    const now = Date.now();
+    const status = await store.saveLicence(request.key, now);
     store.invalidate();
     if (status.kind !== 'invalid') {
       await broadcastSettingsChanged();
       await registerContentScripts();
     }
-    return { licence: status, tier: status.tier, message: describeLicence(status) };
+    return { licence: status, tier: status.tier, message: describeLicence(status, now) };
   },
 
   'clear-licence': async () => {
