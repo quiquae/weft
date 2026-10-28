@@ -5,16 +5,17 @@
  *   node tools/release.mjs --version=1.1.0
  *   node tools/release.mjs --version=1.1.0 --dry
  *
- * Bumps the version in one place, rebuilds everything, packages both
- * browsers, and writes release notes. Refuses to run on a dirty tree or
+ * Bumps the version everywhere it is written, rebuilds everything, packages
+ * all three targets, and writes release notes. Refuses to run on a dirty tree or
  * without a green test suite, because a release is the one moment where
  * "I'll check afterwards" is most expensive.
  */
-import { readFile, writeFile } from 'node:fs/promises';
+import { writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { stat } from 'node:fs/promises';
+import { VERSION_FILES, readVersions, writeVersion } from './version.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -62,22 +63,17 @@ if (!skipTests) {
 
 /* --------------------------------------------------------------- version */
 
-// One source of truth. manifest.config.mjs reads VERSION, package.json is
-// what npm and the tooling read, and they must not drift.
-const manifestConfig = join(ROOT, 'manifest.config.mjs');
-let mc = await readFile(manifestConfig, 'utf8');
-const before = mc.match(/export const VERSION = '([^']+)'/)?.[1];
-mc = mc.replace(/export const VERSION = '[^']+'/, `export const VERSION = '${version}'`);
-
-const pkgPath = join(ROOT, 'package.json');
-const pkg = JSON.parse(await readFile(pkgPath, 'utf8'));
-pkg.version = version;
+// One version, written in four places: `VERSION` in manifest.config.mjs,
+// which everything that builds reads, and the copies npm keeps in
+// package.json and, twice, in package-lock.json. tools/version.ts knows all
+// four. This script used to write two of them itself, and the lockfile said
+// 1.0.0 for as long as the tree said 1.0.1.
+const before = readVersions(ROOT)[0].version;
 
 if (dry) {
-  console.log(`would bump ${before} → ${version} in manifest.config.mjs and package.json`);
+  console.log(`would bump ${before} → ${version} in ${VERSION_FILES.join(', ')}`);
 } else {
-  await writeFile(manifestConfig, mc);
-  await writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  writeVersion(ROOT, version);
   console.log(`→ version ${before} → ${version}`);
 }
 
