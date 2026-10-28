@@ -61,7 +61,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **473 pass**, 115 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **481 pass**, 118 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -99,16 +99,23 @@ on deliberately: `WEFT_STORE=1`, `WEFT_SCREENS=1`, `WEFT_FIRSTRUN=1`.
 - `.licence-private.jwk` — gitignored, on Creagh's machine only, the only
   thing that can mint a licence. Its public half is
   `PUBLISHER_PUBLIC_KEY_JWK` in `src/core/licence-key.ts`; rotating it
-  invalidates every licence already issued.
+  invalidates every licence already issued. `tests/tools/never-touched.test.ts`
+  fails if the ignore line goes or any tracked file holds a `d` beside the
+  public half's `x`, without ever opening the key.
 - `browser_specific_settings.gecko.id` = `weft@weft.study`
-  (`manifest.config.mjs`). Changing it orphans every existing Firefox install.
+  (`manifest.config.mjs`). Changing it orphans every existing Firefox install,
+  and the same test fails on it.
 - The purity of `src/core/` — no DOM, no `chrome.*`, no I/O. Reaching for
   either from core is the one change that would undo the test suite's speed
   and the reason five bugs were caught before anyone loaded the extension.
   `tests/tools/core-purity.test.ts` fails on it.
 - Version lives in exactly one place, `VERSION` in `manifest.config.mjs`, with
-  `package.json` kept in step by `tools/release.mjs`. Do not edit either by
-  hand.
+  npm's copies kept in step by `tools/release.mjs`: `package.json`'s, and the
+  two `package-lock.json` carries, at `version` and `packages[""].version`.
+  `writeVersion()` in `tools/version.ts` is the only writer, and
+  `tests/tools/version.test.ts` fails on a copy that disagrees. Do not edit
+  any of them by hand. The lockfile said 1.0.0 until 2026-10-28, the bump
+  having written two copies and not known of the other two.
 
 ## Decisions that already hold
 
@@ -810,6 +817,97 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-28 — the version had four copies, the lockfile said 1.0.0, and the rest of "Never touched" was a sentence each
+
+The queue sent the generic task. Every item in `Now` was ticked, and the
+three unchecked ones in `Next` each say they wait on Creagh's yes. So the
+work was found the way #124 found core's purity: read the "Never touched"
+list for a rule nothing holds. Core's purity has been held since
+2026-10-26. The other three were held by a sentence each: the version, the
+Firefox add-on id, and the private signing key's absence from the tree, by
+one `.gitignore` line that `git add -f` walks past.
+
+**The version rule was already false.** "Version lives in exactly one
+place, `VERSION` in `manifest.config.mjs`, with `package.json` kept in step
+by `tools/release.mjs`" — but `package-lock.json` carries the root
+package's version twice, at `version` and `packages[""].version`, and both
+said **1.0.0**. The bump that cut 1.0.1 wrote the other two copies by hand
+and did not know of the lockfile, which no commit had moved since
+`4a68345`. `npm ci` does not compare those fields, so CI passed for a
+month. `npm install` does: measured in a `/tmp` copy with
+`npm install --package-lock-only --offline`, it rewrites exactly those two
+lines, so it left anyone who ran it a dirty tree, which `npm run release`
+refuses — the failure the reproducible packs fixed on 2026-09-28, arriving
+through npm instead.
+
+**`writeVersion()` in a new `tools/version.ts` is the one writer**, and
+`release.mjs` calls it. It reads and checks all three files before writing
+any, and throws on a copy it cannot find, where the script's own
+`replace()` would have done nothing, silently, had the declaration been
+reworded. Both package files round-trip through
+`JSON.stringify(v, null, 2) + '\n'` byte for byte, measured, so it parses
+and rewrites rather than patching text. The lockfile was fixed by the
+writer itself, and is byte-identical to what npm wrote in `/tmp`, md5
+`506d4d86…` both.
+
+Test-first: `tests/tools/version.test.ts`, 4 tests in a new suite, red on
+`ERR_MODULE_NOT_FOUND`, then on exactly the lockfile's two fields and
+`release.mjs` not importing the writer, then green. Five probes, each
+restored by md5, each failing its own test by name: the writer skipping the
+lockfile, reformatting at four spaces, passing over a missing declaration,
+`release.mjs` back at `HEAD`, and `package.json` edited to 1.0.2.
+
+**The other two are `tests/tools/never-touched.test.ts`, 4 tests in 2
+suites.** The Firefox build's `gecko.id` is `weft@weft.study`. And
+`.licence-private.jwk` is ignored by the rules, asked with `git check-ignore
+--no-index` so a tracked copy cannot hide a missing line, and untracked;
+and no tracked file holds the publisher's private half, found without
+opening the key: a private JWK repeats its public members, so the leak is
+a `d` of 43 base64url characters within 400 of the `x` that
+`src/core/licence-key.ts` trusts. A PEM private key fails too. The key file
+is on this machine, mode 600, and was never read. These guard a correct
+tree, so they passed at once and five probes show them firing, each
+restored by md5: the id renamed, the ignore line removed, a fake private
+JWK beside the real `x` and a PEM header each staged with `git add -N`, so
+`git grep` sees them, and the search blinded to 44 characters, which the
+fixture's committed test key catches by name.
+
+`package.json` itself did not move, so neither did the install page's
+sitemap date; nothing that ships moved and no artefact group went stale.
+Tools 473 → **481** / 115 → **118** suites, total 1190 → **1198**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph.
+
+**Found and queued:** `engines.node` says `>=20`, but `npm test` passes
+`--experimental-strip-types`, which Node added in 22.6, and `build.mjs`,
+`site`, `validate`, `icons`, `og`, `tiles` and `release` import TypeScript
+unflagged, which needs 22.18. Read from Node's changelogs, not measured; the
+item at the foot of `Now` says how.
+
+Measured on Node 26.7, with npm's own exit status captured: `npm run
+test:all` on the version commit, **exit 0 in about 6 minutes** — typecheck
+clean, 575 unit / 138 suites, 102 jsdom / 23, **477 tools / 116**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **990 KB × 3**
+passing `validate`, **40 e2e passed and 3 skipped in 4.5 min**, then build
+and validate again. The never-touched suite and the documents came after
+it, and touch nothing the build or the browser reads, so typecheck and `npm
+test` were run again on the final tree: clean, and 575 / 102 / **481 / 118**,
+0 failures. `packs:verify`,
+`site:check` and `artefacts:check` were not re-run: no pack, page, image or
+file under `src/` moved.
+
+Assumed, with nobody to ask: that a run with no item may take a rule from
+"Never touched" as #124 did; that the add-on id is worth a test though AMO
+has no install of Weft yet, B1's note having settled that it stands
+whatever the domain; that npm's two root fields are copies of the
+version rather than npm's business, since `npm install` rewrites them from
+`package.json`; and that `package.json`'s `release` script needs no
+`--experimental-strip-types`, the scripts it runs already importing
+TypeScript without one.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the Node floor.
 
 ### 2026-10-28 — core takes the instant from its caller, and the guard refuses the clock
 

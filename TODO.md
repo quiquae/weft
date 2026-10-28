@@ -6,7 +6,7 @@
 
 **State on 2026-10-28:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **473** tool tests / 115 suites, **40** e2e passing
+suites, **481** tool tests / 118 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1197,6 +1197,77 @@ registered**, and nothing below it can move until it is.
       byte-identical, and stamped. Unit 571 → **575**, tools 471 → **473**,
       suites unchanged, total 1184 → **1190**, in six places,
       `docs/LAUNCH.md:221` first.
+
+- [x] **Hold every copy of the version to `VERSION`, and let the release
+      bump write all of them; and hold the rest of "Never touched".** Done
+      2026-10-28, by a run that found `Now`
+      empty and every unchecked item in `Next` waiting on Creagh, and so
+      read `CLAUDE.md`'s "Never touched" list for a rule nothing held. The
+      version is one of them: it "lives in exactly one place, `VERSION` in
+      `manifest.config.mjs`, with `package.json` kept in step by
+      `tools/release.mjs`". **It was already false**: `package-lock.json`
+      carries the root package's version twice, at `version` and at
+      `packages[""].version`, and both said **1.0.0** — the bump that cut
+      1.0.1 wrote `manifest.config.mjs` and `package.json` by hand and did
+      not know of the lockfile, which no commit had moved since `4a68345`.
+      `npm ci` does not read those fields, so CI passed for a month;
+      `npm install`, measured in a `/tmp` copy with `--package-lock-only
+      --offline`, rewrites exactly those two lines and nothing else, so it
+      left anyone who ran it a dirty tree, which `npm run release` refuses.
+      `writeVersion()` in a new `tools/version.ts` writes all four copies
+      and nothing else, reads and checks every file before writing any, and
+      throws on a copy it cannot find, where the script's own `replace()`
+      would have done nothing, silently; `release.mjs` calls it, and its dry
+      run names the three files from the same list. The lockfile was fixed
+      by the writer itself, `writeVersion(ROOT, VERSION)`, and is
+      **byte-identical to what `npm install --package-lock-only` wrote**,
+      md5 `506d4d86…` both. `tests/tools/version.test.ts`, 4 tests in a new
+      suite: every copy in the tree is `VERSION`; a bump in a temporary copy
+      moves exactly one line per copy; a missing declaration, in the config
+      or the lockfile, throws; and `release.mjs` imports the writer, calls
+      it, and opens no version file by name. Test-first: red on
+      `ERR_MODULE_NOT_FOUND`, then on exactly the lockfile's two fields and
+      `release.mjs` not importing the writer. Five probes, each restored by
+      md5, each failing its own test by name: the writer skipping the
+      lockfile, reformatting JSON at four spaces, passing over a missing
+      declaration, `release.mjs` back at `HEAD`, and `package.json` edited
+      to 1.0.2. **The list's other two rules were held by nothing either**,
+      so `tests/tools/never-touched.test.ts`, 4 tests in 2 suites, holds
+      them: the Firefox build's `gecko.id` is `weft@weft.study`; and
+      `.licence-private.jwk` is ignored by the rules (`git check-ignore
+      --no-index`) and untracked, and no tracked file holds the publisher's
+      private half — a `d` within 400 characters of the `x` that
+      `src/core/licence-key.ts` trusts, which is how a private JWK repeats
+      its public members — nor any PEM private key. It never opens the key
+      file. These pass on a correct tree, so five probes show them firing,
+      each restored by md5: the id renamed, the ignore line removed, a fake
+      private JWK beside the real `x` and a PEM header each staged with
+      `git add -N`, and the search blinded to 44 characters, which the
+      fixture's committed test key catches. Nothing that ships moved and no
+      artefact group went stale: `package.json` is untouched, so the
+      install page's date did not move. Tools 473 → **481** / 115 → **118**
+      suites, total 1190 → **1198**, in six places, `docs/LAUNCH.md:221`
+      first.
+
+- [ ] **Say the Node floor the toolchain actually has.** Found 2026-10-28,
+      writing the version guard (Notes). `package.json` says
+      `engines.node >= 20` and `CLAUDE.md`'s setup line repeats it, but
+      `npm test`, `packs` and `compat` pass `--experimental-strip-types`,
+      which Node added in 22.6.0, and `build` itself (`build.mjs:16`),
+      `site`, `validate`, `icons`, `og`, `tiles` and `release` import
+      TypeScript with no flag, which needs type stripping on by default,
+      from 22.18.0. Read from Node's changelogs, so **measure before
+      choosing**: in a `/tmp` copy of the tree with `node_modules` linked,
+      run `npm run build:all` and `npm test` under `npx -y node@20`,
+      `node@22.17` and `node@22.18` (each `npx` fetch is a Node binary, tens
+      of megabytes; clear them from npm's cache after). Then either set
+      `engines.node` to the measured floor and say it in `CLAUDE.md`'s
+      setup line, or pass the flag in every script that imports TypeScript
+      so that 22.6 works too. **Recommendation: the floor**: CI and `.nvmrc`
+      are on 22 already, and a flag on every script is a convention the
+      next script forgets, as seven have. About 30 minutes. `package.json`
+      dates the install page in the sitemap (`tools/build-site.mjs:1374`),
+      so that `lastmod` moves; nothing is indexed yet (B3).
 
 ## Next
 
@@ -6768,6 +6839,39 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-28 — the version had four copies, and the bump knew of two.**
+Four things a later run would be sorry not to know:
+
+1. **CI cannot see a stale lockfile version, and `npm install` can.**
+   `npm ci` installs from the lockfile without comparing its root
+   `version` with `package.json`'s, so `package-lock.json` said 1.0.0 under
+   a 1.0.1 tree for a month with every check green. `npm install` rewrites
+   both root fields, so the symptom is a dirty tree after an install, and
+   `npm run release` refuses one. To ask npm what it would write without
+   touching `node_modules`, copy the two files into `/tmp` and run
+   `npm install --package-lock-only --offline --ignore-scripts` there.
+2. **Both package files round-trip through `JSON.stringify(v, null, 2) +
+   '\n'` byte for byte**, measured, so `writeVersion()` parses and rewrites
+   them rather than patching text. If npm ever changes how it formats the
+   lockfile, the "one line per copy" test fails on the bump, naming the
+   lines that moved, before any release can reformat 49 KB.
+3. **The Node floor `package.json` states is not the toolchain's.**
+   `engines.node` says `>=20`, but `npm test`, `packs` and `compat` pass
+   `--experimental-strip-types`, which Node added in 22.6.0, and `build`
+   itself — `build.mjs:16` imports `tests/fixtures/licence-keypair.ts` —
+   with `site`, `validate`, `icons`, `og`, `tiles` and `release`, imports
+   TypeScript with no flag at all, which works only where type stripping is
+   on by default, from 22.18.0. CI's `node-version: 22` takes the newest
+   22, so it never meets the gap. Read from Node's changelogs, not measured
+   here; the item at the foot of `Now` says how to measure it.
+4. **A secret can be searched for by its public half.** A private JWK
+   repeats `x` and `y` beside `d`, so `tests/tools/never-touched.test.ts`
+   finds the publisher's private key as a `d` near the `x` the extension
+   trusts, and never opens `.licence-private.jwk`, which is on this machine
+   (mode 600) and must stay unread. To probe a guard that reads tracked
+   files without committing anything, `git add -N <file>` puts it in the
+   index for `git grep`, and `git rm --cached` takes it out again.
 
 **2026-10-28 — core takes the instant from its caller.** Two things a
 later run would be sorry not to know:
