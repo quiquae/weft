@@ -15,6 +15,16 @@ import { LICENCE_PUBLIC_KEY_JWK } from '../../src/core/licence-key.ts';
 const enc = new TextEncoder();
 const b64url = (b: Uint8Array | ArrayBuffer) => toBase64Url(new Uint8Array(b));
 
+const DAY = 86_400_000;
+
+/*
+ * The instants a licence is judged at, one well before the real clock and one
+ * well after it, so a check that reads `Date.now()` rather than the `now` it
+ * is given gets a different answer at one of them rather than the same at both.
+ */
+const PAST = Date.UTC(2021, 2, 14, 9, 30);
+const FUTURE = Date.UTC(2041, 2, 14, 9, 30);
+
 /**
  * A throwaway publisher keypair, generated once for this file.
  *
@@ -63,8 +73,8 @@ async function issue(payload: LicencePayload): Promise<string> {
 }
 
 /** verifyLicence against this file's keypair rather than the publisher's. */
-async function verify(input: string) {
-  return verifyLicence(input, { publicKeyJwk: await publicKeyJwk() });
+async function verify(input: string, now = PAST) {
+  return verifyLicence(input, now, { publicKeyJwk: await publicKeyJwk() });
 }
 
 /** Sign with a keypair that is NOT the publisher's. */
@@ -131,19 +141,22 @@ describe('verifyLicence', () => {
   });
 
   test('accepts a genuine subscription that has not expired', async () => {
-    const status = await verify(
-      await issue({ ...lifetime, expires: Date.now() + 30 * 86_400_000 }),
-    );
+    const status = await verify(await issue({ ...lifetime, expires: PAST + 30 * DAY }), PAST);
     assert.equal(status.kind, 'valid');
     assert.equal(status.tier, 'pro');
   });
 
   test('reports an expired subscription as expired, and falls back to free', async () => {
-    const status = await verify(
-      await issue({ ...lifetime, expires: Date.now() - 86_400_000 }),
-    );
+    const status = await verify(await issue({ ...lifetime, expires: FUTURE - DAY }), FUTURE);
     assert.equal(status.kind, 'expired');
     assert.equal(status.tier, 'free');
+  });
+
+  test('is judged at the instant it is given, to the second', async () => {
+    const at = async (expires: number, now: number) => (await verify(await issue({ ...lifetime, expires }), now)).kind;
+    assert.equal(await at(FUTURE - 1000, FUTURE), 'expired', 'a second past its expiry');
+    assert.equal(await at(PAST + 1000, PAST), 'valid', 'a second before it');
+    assert.equal(await at(PAST, PAST), 'valid', 'at its expiry, which it reaches and does not pass');
   });
 
   test('rejects a licence signed by anyone else', async () => {
@@ -211,35 +224,42 @@ describe('verifyLicence', () => {
 
 describe('describeLicence', () => {
   test('describes a free install without making it sound broken', () => {
-    const text = describeLicence({ kind: 'none', tier: 'free' });
+    const text = describeLicence({ kind: 'none', tier: 'free' }, PAST);
     assert.match(text, /Free/);
     assert.match(text, /no time limit/);
   });
 
   test('names the licensee and the term', () => {
     assert.match(
-      describeLicence({ kind: 'valid', tier: 'pro', payload: lifetime }),
+      describeLicence({ kind: 'valid', tier: 'pro', payload: lifetime }, PAST),
       /lifetime.*Ada Lovelace/,
     );
     assert.match(
-      describeLicence({
-        kind: 'valid',
-        tier: 'pro',
-        payload: { ...lifetime, expires: Date.now() + 10 * 86_400_000 },
-      }),
+      describeLicence({ kind: 'valid', tier: 'pro', payload: { ...lifetime, expires: PAST + 10 * DAY } }, PAST),
       /Renews in 10 days/,
     );
+  });
+
+  test('counts the days left from the instant it is given', () => {
+    const renews = (expires: number, now: number) =>
+      describeLicence({ kind: 'valid', tier: 'pro', payload: { ...lifetime, expires } }, now);
+    assert.match(renews(FUTURE + 7 * DAY, FUTURE), /Renews in 7 days\./);
+    assert.match(renews(PAST + 7 * DAY, PAST), /Renews in 7 days\./);
+    assert.match(renews(FUTURE + 3_600_000, FUTURE), /Renews in 1 day\./);
   });
 
   test('expiry copy reassures rather than threatens', () => {
     // Someone whose card failed has not lost their vocabulary, and the first
     // thing they read should say so.
     assert.match(
-      describeLicence({
-        kind: 'expired',
-        tier: 'free',
-        payload: { ...lifetime, expires: Date.UTC(2026, 5, 1) },
-      }),
+      describeLicence(
+        {
+          kind: 'expired',
+          tier: 'free',
+          payload: { ...lifetime, expires: Date.UTC(2026, 5, 1) },
+        },
+        FUTURE,
+      ),
       /still here/,
     );
   });
@@ -247,26 +267,20 @@ describe('describeLicence', () => {
 
 describe('needsAttention', () => {
   test('flags expiry, invalidity and imminent renewal only', () => {
-    assert.equal(needsAttention({ kind: 'none', tier: 'free' }), false);
-    assert.equal(needsAttention({ kind: 'valid', tier: 'pro', payload: lifetime }), false);
-    assert.equal(
-      needsAttention({
-        kind: 'valid',
-        tier: 'pro',
-        payload: { ...lifetime, expires: Date.now() + 60 * 86_400_000 },
-      }),
-      false,
-    );
-    assert.equal(
-      needsAttention({
-        kind: 'valid',
-        tier: 'pro',
-        payload: { ...lifetime, expires: Date.now() + 3 * 86_400_000 },
-      }),
-      true,
-    );
-    assert.equal(needsAttention({ kind: 'expired', tier: 'free', payload: lifetime }), true);
-    assert.equal(needsAttention({ kind: 'invalid', tier: 'free', reason: 'x' }), true);
+    const renewing = (expires: number) => ({ kind: 'valid', tier: 'pro', payload: { ...lifetime, expires } }) as const;
+    assert.equal(needsAttention({ kind: 'none', tier: 'free' }, PAST), false);
+    assert.equal(needsAttention({ kind: 'valid', tier: 'pro', payload: lifetime }, PAST), false);
+    assert.equal(needsAttention(renewing(PAST + 60 * DAY), PAST), false);
+    assert.equal(needsAttention(renewing(PAST + 3 * DAY), PAST), true);
+    assert.equal(needsAttention({ kind: 'expired', tier: 'free', payload: lifetime }, PAST), true);
+    assert.equal(needsAttention({ kind: 'invalid', tier: 'free', reason: 'x' }, PAST), true);
+  });
+
+  test('nudges inside the last seven days before the instant it is given, and not a millisecond sooner', () => {
+    const renewing = (expires: number) => ({ kind: 'valid', tier: 'pro', payload: { ...lifetime, expires } }) as const;
+    assert.equal(needsAttention(renewing(FUTURE + 7 * DAY), FUTURE), false);
+    assert.equal(needsAttention(renewing(FUTURE + 7 * DAY - 1), FUTURE), true);
+    assert.equal(needsAttention(renewing(PAST + 7 * DAY), PAST), false);
   });
 });
 
@@ -284,13 +298,13 @@ describe('the verifying key defaults to the publisher', () => {
      * being the publisher's key and Pro is free for anyone who can run
      * generateKey.
      */
-    const status = await verifyLicence(await issue(lifetime));
+    const status = await verifyLicence(await issue(lifetime), PAST);
     assert.equal(status.kind, 'invalid', 'a self-signed licence was accepted by default');
     assert.equal(status.tier, 'free');
   });
 
   test('the default key is the one compiled into the extension', async () => {
-    const status = await verifyLicence(await issue(lifetime), {
+    const status = await verifyLicence(await issue(lifetime), PAST, {
       publicKeyJwk: LICENCE_PUBLIC_KEY_JWK as unknown as JsonWebKey,
     });
     // Same verdict as passing nothing, which is what "defaults to" means.
@@ -303,7 +317,7 @@ describe('the verifying key defaults to the publisher', () => {
     // test's ephemeral key would verify another's licence.
     const mine = await issue(lifetime);
     assert.equal((await verify(mine)).kind, 'valid');
-    assert.equal((await verifyLicence(mine)).kind, 'invalid');
+    assert.equal((await verifyLicence(mine, PAST)).kind, 'invalid');
     assert.equal((await verify(mine)).kind, 'valid');
   });
 });

@@ -22,6 +22,8 @@ export function ProSection({ c }: { c: Controller }) {
   const [result, setResult] = useState<string | null>(null);
   const licence = c.licence;
   const isPro = c.tier === 'pro';
+  // Read once, so the nudge and the sentence in it agree about how long is left.
+  const now = Date.now();
 
   async function submit() {
     if (!key.trim()) return;
@@ -43,11 +45,11 @@ export function ProSection({ c }: { c: Controller }) {
       {licence && licence.kind !== 'none' ? (
         <Row siglum={SIGLA.leaf} title="Status">
           <div class="stack">
-            {needsAttention(licence) ? (
-              <Notice tone="warn">{describeLicence(licence)}</Notice>
+            {needsAttention(licence, now) ? (
+              <Notice tone="warn">{describeLicence(licence, now)}</Notice>
             ) : (
               <p class="row__detail" style={{ margin: 0 }}>
-                {describeLicence(licence)}
+                {describeLicence(licence, now)}
               </p>
             )}
             <div class="inline">

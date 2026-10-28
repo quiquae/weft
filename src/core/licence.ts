@@ -132,8 +132,10 @@ export function normalizeKey(input: string): string {
     .replace(/\s+/g, '');
 }
 
+/** What a licence key is, judged at `now`: an expiry is a fact about the instant asked. */
 export async function verifyLicence(
   input: string,
+  now: number,
   opts: VerifyOptions = {},
 ): Promise<LicenceStatus> {
   const key = normalizeKey(input);
@@ -178,15 +180,15 @@ export async function verifyLicence(
     };
   }
 
-  if (payload.expires !== undefined && Date.now() > payload.expires) {
+  if (payload.expires !== undefined && now > payload.expires) {
     return { kind: 'expired', tier: 'free', payload };
   }
 
   return { kind: 'valid', tier: payload.tier, payload };
 }
 
-/** Human summary for the settings page. */
-export function describeLicence(status: LicenceStatus): string {
+/** Human summary for the settings page, its days counted from `now`. */
+export function describeLicence(status: LicenceStatus, now: number): string {
   switch (status.kind) {
     case 'none':
       return 'Weft Free. One language, the whole lexicon for it, and no time limit.';
@@ -196,7 +198,7 @@ export function describeLicence(status: LicenceStatus): string {
       if (payload.expires === undefined) {
         return `Weft Pro, lifetime. Licensed to ${payload.name}.`;
       }
-      const days = Math.ceil((payload.expires - Date.now()) / 86_400_000);
+      const days = Math.ceil((payload.expires - now) / 86_400_000);
       return `Weft Pro, licensed to ${payload.name}. Renews in ${days} day${days === 1 ? '' : 's'}.`;
     }
     case 'expired': {
@@ -208,11 +210,11 @@ export function describeLicence(status: LicenceStatus): string {
   }
 }
 
-/** Whether the status should prompt a renewal nudge. Deliberately narrow. */
-export function needsAttention(status: LicenceStatus): boolean {
+/** Whether the status should prompt a renewal nudge at `now`. Deliberately narrow. */
+export function needsAttention(status: LicenceStatus, now: number): boolean {
   if (status.kind === 'expired' || status.kind === 'invalid') return true;
   if (status.kind === 'valid' && status.payload.expires !== undefined) {
-    return status.payload.expires - Date.now() < 7 * 86_400_000;
+    return status.payload.expires - now < 7 * 86_400_000;
   }
   return false;
 }

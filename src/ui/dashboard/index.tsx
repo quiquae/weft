@@ -466,7 +466,7 @@ function VocabRow({
 }) {
   const stage = stageOf(card, settings, now);
   const retention = cardRetrievability(card, now);
-  const due = daysUntilDue(card);
+  const due = daysUntilDue(card, now);
 
   return (
     <li class="vocab__row" data-stage={stage}>

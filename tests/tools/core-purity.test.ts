@@ -16,6 +16,12 @@
  * are held to `src/core/` itself, so purity cannot be borrowed from a module
  * that does not have it.
  *
+ * The clock and the dice are refused too, though ECMAScript has both: every
+ * interesting decision in core is a function of its arguments, so `Date.now()`,
+ * an argument-less `new Date()`, `Date()` and `Math.random()` are the caller's
+ * to read. A timer or `performance` is a platform global, which the name check
+ * already refuses; `crypto.getRandomValues` is `PLATFORM`'s, for an install id.
+ *
  * The check reads names, so it is a guard against reaching for the browser by
  * habit, not against hiding it: `globalThis['chrome']` names no identifier.
  */
@@ -184,6 +190,48 @@ function outsideCore(file: ts.SourceFile): string[] {
     .map(({ line, name }) => `${relative(ROOT, file.fileName)}:${line} ${name}`);
 }
 
+/** Whether an expression is ECMAScript's own global of that name, not a local that shadows it. */
+function isEcmaGlobal(node: ts.Expression, name: string): boolean {
+  if (!ts.isIdentifier(node) || node.text !== name) return false;
+  const declarations = checker.getSymbolAtLocation(node)?.declarations ?? [];
+  return declarations.some((d) => originOf(d.getSourceFile().fileName) === 'ECMAScript');
+}
+
+/** The member a property access names, `Date.now` or `Date['now']`, or null. */
+function member(node: ts.Node): { object: ts.Expression; name: string } | null {
+  if (ts.isPropertyAccessExpression(node)) return { object: node.expression, name: node.name.text };
+  if (ts.isElementAccessExpression(node) && ts.isStringLiteralLike(node.argumentExpression)) {
+    return { object: node.expression, name: node.argumentExpression.text };
+  }
+  return null;
+}
+
+/** Where core reads the clock or the dice, as `src/core/<file>:<line>` and what it wrote. */
+function clockReads(file: ts.SourceFile): { at: string; what: string }[] {
+  const found: { at: string; what: string }[] = [];
+  const add = (node: ts.Node, what: string): void => {
+    const line = file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1;
+    found.push({ at: `${relative(ROOT, file.fileName)}:${line}`, what });
+  };
+  const visit = (node: ts.Node): void => {
+    const m = member(node);
+    // A reference counts as well as a call: `clock = Date.now` reads the clock
+    // the moment anyone calls it, which is no later than core's own code would.
+    const called = (): string => (ts.isCallExpression(node.parent) && node.parent.expression === node ? '()' : '');
+    if (m && m.name === 'now' && isEcmaGlobal(m.object, 'Date')) add(node, `Date.now${called()}`);
+    else if (m && m.name === 'random' && isEcmaGlobal(m.object, 'Math')) add(node, `Math.random${called()}`);
+    else if (ts.isNewExpression(node) && isEcmaGlobal(node.expression, 'Date') && !node.arguments?.length) {
+      add(node, node.arguments ? 'new Date()' : 'new Date');
+    } else if (ts.isCallExpression(node) && isEcmaGlobal(node.expression, 'Date')) {
+      // Called without `new`, Date ignores its arguments and returns the time now, as a string.
+      add(node, 'Date()');
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return found;
+}
+
 /* ------------------------------------------------------------ the program */
 
 /**
@@ -203,7 +251,19 @@ export const store = globalThis.localStorage;
 export let element: HTMLElement | undefined;
 export class Bus extends EventTarget {}
 export const seal = crypto.randomUUID();
+export const noise = crypto.getRandomValues(new Uint8Array(4));
 export const larger = Math.max(1, 2);
+// Date.now() and Math.random() are named in this comment, and in a string below.
+export const stamp = Date.now();
+export const today = new Date();
+export const bare = new Date;
+export const told = Date();
+export const dice = Math.random();
+export const clock = Date.now;
+export const epoch = new Date(0);
+export const utc = Date.UTC(2026, 9, 26);
+export const spelt = 'Date.now() and Math.random()';
+export const held = (Date: { now(): number }) => Date.now();
 export const quoted = 'chrome.storage.sync';
 const window = { document: 1 };
 export const shadowed = window.document;
@@ -257,6 +317,7 @@ describe('the purity check', () => {
         ['HTMLElement', false],
         ['EventTarget', true],
         ['crypto', true],
+        ['crypto', true],
       ],
     );
   });
@@ -296,6 +357,16 @@ describe('the purity check', () => {
       'src/core/imports.ts:11 ./../background/index.ts',
     ]);
   });
+
+  test('finds every read of the clock and the dice, and nothing that only looks like one', () => {
+    // Not `new Date(0)` or `Date.UTC`, which are arithmetic on an instant the
+    // caller gave; not `crypto.getRandomValues`, which PLATFORM allows; not the
+    // comment, the string, or a parameter named `Date`, which is the file's own.
+    assert.deepEqual(
+      clockReads(source(PROBE)).map((r) => r.what),
+      ['Date.now()', 'new Date()', 'new Date', 'Date()', 'Math.random()', 'Date.now'],
+    );
+  });
 });
 
 describe('src/core/', () => {
@@ -333,5 +404,15 @@ describe('src/core/', () => {
       }
     }
     assert.deepEqual(problems, []);
+  });
+
+  test('reads neither the clock nor the dice: the instant is an argument', () => {
+    assert.deepEqual(
+      files.flatMap((f) => clockReads(source(f))).map((r) => `${r.at} ${r.what}`),
+      [],
+      'every interesting decision in src/core/ is a function of its arguments (CLAUDE.md): ' +
+        'take the instant as `now` from the caller, who reads the clock once; and randomness ' +
+        'from crypto.getRandomValues, which PLATFORM allows',
+    );
   });
 });
