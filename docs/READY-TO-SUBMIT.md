@@ -296,7 +296,7 @@ package — "Unsafe assignment to innerHTML" in `popup.js`, `onboarding.js`,
 2026-10-25:
 
 ```text
-Build from the source archive: Node 22 (the version in .nvmrc), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04; this one is Node 22, which is also what CI builds it with on Ubuntu. The four "Unsafe assignment to innerHTML" warnings are in Preact, which is bundled into the four extension pages: each is the library's dangerouslySetInnerHTML path, e.innerHTML = ….__html. No file under src/ uses dangerouslySetInnerHTML or innerHTML.
+Build from the source archive: Node 22.18 or later (.nvmrc says 22; the build runs TypeScript, which Node does with no flag from 22.18.0), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04, inside that range; CI builds it with Node 22 on Ubuntu. The four "Unsafe assignment to innerHTML" warnings are in Preact, which is bundled into the four extension pages: each is the library's dangerouslySetInnerHTML path, e.innerHTML = ….__html. No file under src/ uses dangerouslySetInnerHTML or innerHTML.
 ```
 
 **F4 — Name.** From the package; check it reads:
