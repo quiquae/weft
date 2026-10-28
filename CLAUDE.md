@@ -47,11 +47,12 @@ repository makes.
 
 ## How to work here
 
-Node 22.18 or later (`.nvmrc` and CI say 22, which installs the newest;
-`engines.node` is `^22.18.0 || >=23.6.0`, the first releases that run
-TypeScript with no flag, as `build.mjs` and most tools do —
+Node 22.18 or later (`.nvmrc` and CI's `check` job say 22, which installs
+the newest; `engines.node` is `^22.18.0 || >=23.6.0`, the first releases that
+run TypeScript with no flag, as `build.mjs` and most tools do —
 `tests/tools/node-floor.test.ts` derives it, and 22.17.1 and 23.5.0, measured,
-build nothing). `npm ci`, then
+build nothing; CI's `floor` job runs all of `check` but the browser on 22.18.0
+itself, and the same test fails if it does not). `npm ci`, then
 `npm run packs` if you have touched `tools/seed/*.tsv` — the lexicon packs in
 `src/lexicon/packs/` are generated from those and committed, so a fresh clone
 already has them. Running it anyway is a no-op: since 2026-09-28 it keeps each
