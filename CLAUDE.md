@@ -873,6 +873,15 @@ JWK beside the real `x` and a PEM header each staged with `git add -N`, so
 `git grep` sees them, and the search blinded to 44 characters, which the
 fixture's committed test key catches by name.
 
+**CI failed the first push, on the guard's own text.** The PEM check named
+its needle in full, so once the test file was committed it was the one
+tracked file holding the armour of a private key; on this machine it had
+passed while the file was still untracked, `npm test` having run before
+`git add`. The needle is joined at run time now, both searches were probed
+again with the file tracked, and the rule is in `TODO.md`'s Notes: a guard
+over tracked files must not hold what it searches for, and the final check
+runs on the committed tree.
+
 `package.json` itself did not move, so neither did the install page's
 sitemap date; nothing that ships moved and no artefact group went stale.
 Tools 473 → **481** / 115 → **118** suites, total 1190 → **1198**, in six

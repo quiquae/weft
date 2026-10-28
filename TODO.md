@@ -6841,7 +6841,7 @@ Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
 **2026-10-28 — the version had four copies, and the bump knew of two.**
-Four things a later run would be sorry not to know:
+Five things a later run would be sorry not to know:
 
 1. **CI cannot see a stale lockfile version, and `npm install` can.**
    `npm ci` installs from the lockfile without comparing its root
@@ -6872,6 +6872,13 @@ Four things a later run would be sorry not to know:
    (mode 600) and must stay unread. To probe a guard that reads tracked
    files without committing anything, `git add -N <file>` puts it in the
    index for `git grep`, and `git rm --cached` takes it out again.
+5. **A guard that searches tracked files for a string must not hold the
+   string.** The PEM check was written with its needle in full, passed on
+   this machine while the test file was untracked, and failed in CI on its
+   own text the moment it was committed, the one tracked file holding
+   "PRIVATE" and "KEY-----" side by side. Its needle is joined at run time
+   now. And run the final `npm test` after `git add`, not before: an
+   untracked file is invisible to `git grep` and to `git ls-files`.
 
 **2026-10-28 — core takes the instant from its caller.** Two things a
 later run would be sorry not to know:

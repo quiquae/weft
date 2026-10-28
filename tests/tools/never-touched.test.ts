@@ -47,6 +47,11 @@ function trackedFilesHolding(needle: string): string[] {
 // names it `d`, quoted in JSON and bare or quoted in a TypeScript literal.
 const PRIVATE_MEMBER = /(?:^|[{,\s])["']?d["']?\s*:\s*["'][A-Za-z0-9_-]{43}["']/;
 
+// A PEM private key's armour, put together here so that this file, once
+// tracked, does not hold it: written out whole, it was the one tracked file
+// the search found, in CI, the moment the test was committed.
+const PEM_ARMOUR = ['PRIVATE', 'KEY-----'].join(' ');
+
 // Far wider than one key object, which is about 250 characters as
 // `tools/make-licence.mjs` writes it, so a reordered key is still one object.
 const OBJECT_REACH = 400;
@@ -100,6 +105,6 @@ describe("the publisher's private key", () => {
       [],
       'the private key that mints licences is committed; a licence cannot be revoked, so the key must be rotated',
     );
-    assert.deepEqual(trackedFilesHolding('PRIVATE KEY-----'), [], 'a PEM private key is committed');
+    assert.deepEqual(trackedFilesHolding(PEM_ARMOUR), [], 'a PEM private key is committed');
   });
 });
