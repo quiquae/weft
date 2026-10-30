@@ -1447,6 +1447,33 @@ registered**, and nothing below it can move until it is.
       1217 → **1221**, in six places, `docs/LAUNCH.md:221` first. No
       `CHANGELOG.md` paragraph: nothing that ships moved.
 
+- [ ] **Hold the highlight renderer to `nodeValue`, statically.** Queued
+      2026-10-30 by the run that landed the two items above. CLAUDE.md's
+      first decision is "Edit `nodeValue` in place; never replace a text
+      node", and what holds it is one e2e page,
+      `tests/e2e/pages/reconciler.html`, in Chromium. Read on 2026-10-30:
+      `src/content/render-highlight.ts`, the default renderer, touches the
+      page only at `:60` (`node.nodeValue = record.woven`) and `:92` (the
+      restore), while `render-wrapped.ts` calls `replaceChild` (`:84`) and
+      `insertBefore` (`:112`) by design, for screen-reader users. Nothing
+      refuses a `splitText()` or a `replaceWith()` typed into the highlight
+      renderer, which would pass `tsc`, the unit suites and every e2e test
+      but the reconciler's. The shape: a test in `tests/tools/` that builds
+      a `ts.Program` over `render-highlight.ts`, as
+      `tests/tools/core-purity.test.ts` does over `src/core/`, resolves
+      every call and property assignment to its declaration, and refuses
+      a structural DOM mutation declared by a browser's library — the
+      `Node`, `ChildNode`, `ParentNode`, `Element` and `Text` members that
+      insert, remove, replace, split or normalize, and assignment to
+      `textContent`, `innerHTML` or `outerHTML` — while allowing
+      `nodeValue` and `CharacterData.data`, which edit in place. Decide
+      first whether the rule covers only that file or every module it
+      imports (`weave.ts`, `walker.ts`), by reading what each does to a
+      page node; the tooltip and the styles append their own host, which
+      is not a page text node. Carry core-purity's in-memory probe, so a
+      planted `splitText` fails on every run. About an hour; it moves no
+      shipped file.
+
 ## Next
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**

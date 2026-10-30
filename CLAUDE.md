@@ -898,8 +898,9 @@ as an ungated publish, a button anyone with write access can press, so the
 guard refuses it though B2b may one day want it; and that `INWARD` may call
 `upload-artifact` inward, the files it stores staying with the run.
 
-What needs a human: unchanged. `Now` is empty, and no unchecked item in
-`Next` is agent-shaped.
+What needs a human: unchanged. `Now` holds one agent-shaped item, queued by
+this run: hold the highlight renderer to `nodeValue` with a static guard,
+the first decision above being held today by one e2e page.
 
 ### 2026-10-30 — every pack credited the Latin and Old English dictionaries, and none credited Wiktionary
 
