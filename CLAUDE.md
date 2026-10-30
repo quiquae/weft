@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **491 pass**, 121 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **496 pass**, 124 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -338,6 +338,17 @@ builds and link-checks all 714 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
 pointing at nothing.
+
+**Every action CI uses runs on Node 24, and `release.yml` moves only when
+somebody watches it.** GitHub removed Node 20 from its runners on
+2026-09-23, and an action whose `action.yml` still says `using: node20` runs
+forced onto 24 with a warning. Which major first runs on 24 is read from
+each action's own `action.yml`, never inferred from the version —
+upload-artifact's v5 was still Node 20 — and a composite action runs on the
+actions it pins. `tests/tools/workflow-actions.test.ts` holds every `uses:`
+line to those readings and refuses an action nobody has read. `release.yml`
+stays on its v4s by name, in `HELD`, because it publishes, fires once on a
+tag and cannot be rehearsed; B2b in `TODO.md` says when it moves.
 
 **Nothing self-promotes automatically.** `docs/LAUNCH.md` holds drafts per
 community, to be sent by a human. An automated account posting self-promotion
@@ -822,6 +833,83 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-30 — CI's actions run on Node 24, and a guard reads every `uses:` line
+
+The queue sent this run at the floor job, which #128 landed on 2026-10-28;
+`ci.yml` has had a `floor` job on `'22.18.0'` since. So the work was
+`TODO.md`'s one unchecked item in `Now`, queued by that job's first log:
+both jobs ended on GitHub's warning that `checkout@v4`, `setup-node@v4` and
+`upload-artifact@v4` target Node 20 and run forced onto 24.
+
+**The changelog the warning links was read first.** Node 24 became the
+runners' default on 2026-06-16 and Node 20 was removed from them on
+2026-09-23, the dates its editor's notes give. Nothing failed; the forcing
+is the behaviour.
+
+**A runtime is a fact about `action.yml`, not about the version number.**
+Each action's `action.yml` was read at every major from v4 up, through `gh
+api`, with the release notes. The first on 24 is checkout and setup-node
+v5, deploy-pages v5, and upload-artifact **v6**, its v5 still saying
+`node20`; upload-pages-artifact is composite and runs on the upload-artifact
+it pins, v4.6.2 at its v4 and v7.0.0 at its v5. `ci.yml` and `site.yml`
+take the latest majors: `checkout@v7`, `setup-node@v7`, `upload-artifact@v7`,
+`upload-pages-artifact@v5`, `deploy-pages@v5`. No major between changes an
+input or default these workflows use but one: upload-pages-artifact v4
+leaves hidden files out of the artifact, by `tar --exclude=.[^/]*`, unless
+the step sets `include-hidden-files: true`, which v5 added. The built site
+has none of its 719 paths hidden.
+
+**Two guards.** `tests/tools/workflow-actions.test.ts`, 4 tests in 2
+suites: every `uses:` in every workflow is an action `RUNTIME` has read, at
+or above its first Node 24 major unless `HELD` names it, and a `HELD` line
+that has moved fails; a SHA, a branch, a docker image or a local action is
+refused by name. Red first on exactly the ten lines in `ci.yml` and
+`site.yml`; five probes, each restored by md5, each failing by name. And a
+test in `build-site.test.ts` fails on a hidden built path while `site.yml`
+does not ask for hidden files, shown firing on a `.nojekyll` and a
+`.well-known/security.txt`. **The opt-in is read as a key at the start of a
+line, because `site.yml`'s own comment quotes it**: a substring match would
+have let the comment explaining the rule switch the guard off, and the
+first probe is what showed it had not.
+
+**Measured on GitHub, before and after.** `site.yml`, dispatched on the
+branch: build green in 14 s, deploy skipped, no Node 20 warning, where
+`main`'s last run warned of checkout, setup-node and upload-artifact, the
+last from inside upload-pages-artifact@v3. PR #129's first run: `floor` 43
+s, `check` 3 m 38 s, no Node 20 line in either log, where `main`'s last run
+warned in both jobs; `weft-dist` uploaded at 678 373 bytes, as before. Both
+jobs ran on `ubuntu-26.04`, which the runners' other notice announces, and
+the e2e suite passed there, so that notice needs nothing.
+
+**`release.yml` is held**, as the item said: it publishes, fires once on a
+tag and cannot be rehearsed. `HELD` names its three lines, checkout@v4,
+setup-node@v4 and action-gh-release@v2, whose v3.0.0 moved the runtime and
+nothing else; B2b in `TODO.md` says the tag push will warn, and what to do
+after v1.0.1. A paragraph under the decisions above says the same.
+
+Tools 491 → **496** / 121 → **124** suites, total 1208 → **1213**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **496 tools / 124**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**40 e2e passed and 3 skipped in 4.2 min**, then build and validate again.
+Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that the latest majors beat the first on Node
+24, every major between having been read; that the hidden-file guard
+belongs with this change, the bump being what made the drop silent; and
+that a test holding facts about other repositories in a table is worth its
+upkeep, an action nobody has read failing until somebody does.
+
+What needs a human: unchanged, everything below **B1** and the calls, and
+B2b is new. `Now` is empty, and no unchecked item in `Next` is
+agent-shaped.
 
 ### 2026-10-28 — the floor runs in CI, and a step added to `check` reaches it
 

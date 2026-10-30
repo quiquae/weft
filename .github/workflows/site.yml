@@ -55,7 +55,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # The sitemap dates each hand-written page by the commit that last
           # changed the document behind it. At the default depth of 1 every
@@ -65,7 +65,7 @@ jobs:
           # at all rather than a wrong one, so removing this line loses the
           # dates silently; it does not fail the build.
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -85,7 +85,12 @@ jobs:
       - name: Check every internal link resolves
         run: node tools/check-links.mjs
 
-      - uses: actions/upload-pages-artifact@v3
+      # Since v4 this leaves hidden files out of the artifact, silently,
+      # unless the step sets include-hidden-files: true, which v5 added. The
+      # site builds none, so a .well-known/ or a .nojekyll would build,
+      # link-check and never deploy: tests/tools/build-site.test.ts fails on
+      # one while this step does not ask for them.
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/site
 
@@ -102,4 +107,4 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
