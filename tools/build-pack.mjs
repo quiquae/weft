@@ -42,13 +42,49 @@ const outArg = args.find((a) => a.startsWith('--out='));
 // directory instead of the tracked src/lexicon/packs/.
 const OUT = outArg ? resolve(outArg.slice('--out='.length)) : join(ROOT, 'src/lexicon/packs');
 
-const ATTRIBUTION = [
+// What each pack's claims were read in, so the credit CC BY-SA asks for
+// travels with the data. Every pack shares the first two lines; the rest are
+// its language's own. tests/tools/attribution.test.ts derives what a pack
+// must name from the citations in its ledgers, tools/seed/<lang>-*.tsv, and
+// refuses a source none of them cites, so a line here is a claim about those
+// files. Until 2026-10-30 every pack carried one list, and the French one
+// credited Lewis & Short.
+const SHARED = [
   'Curated core lexicon: Weft contributors, CC BY-SA 4.0.',
   'English frequency bands derived from SUBTLEX-US via the wordfreq project (Brysbaert et al.); SUBTLEX is distributed under terms equivalent to CC BY-SA.',
-  'Latin glosses checked against Lewis & Short, A Latin Dictionary (1879, public domain) and Whitaker’s Words (public domain).',
-  'Old English glosses checked against Bosworth–Toller, An Anglo-Saxon Dictionary (1898, public domain) and Clark Hall, A Concise Anglo-Saxon Dictionary (1894, public domain).',
 ];
+const WIKTIONARY = 'English Wiktionary (Wiktionary contributors, https://en.wiktionary.org, CC BY-SA 4.0)';
+const ETYMOLOGIES = 'Etymologies checked against the Online Etymology Dictionary (Douglas Harper, https://www.etymonline.com) and English Wiktionary.';
+const MODERN = [...SHARED, `Glosses, genders, plurals and verb forms read in ${WIKTIONARY}.`];
+const ATTRIBUTION = {
+  fr: [...MODERN, ETYMOLOGIES],
+  es: MODERN,
+  pt: MODERN,
+  de: MODERN,
+  it: MODERN,
+  la: [
+    ...SHARED,
+    'Latin glosses and genders checked against Lewis & Short, A Latin Dictionary (1879, public domain), and glosses against Whitaker’s Words (public domain).',
+    `Plurals and participles read in ${WIKTIONARY}.`,
+    ETYMOLOGIES,
+    'Grammar checked against Allen and Greenough, New Latin Grammar (1903, public domain).',
+  ],
+  ang: [
+    ...SHARED,
+    'Old English glosses checked against Bosworth–Toller, An Anglo-Saxon Dictionary (1898, public domain) and Clark Hall, A Concise Anglo-Saxon Dictionary (1894, public domain).',
+    `Glosses, genders, plurals and participles read in ${WIKTIONARY}.`,
+    ETYMOLOGIES,
+    'Forms the tables do not print read in Joseph and Elizabeth Mary Wright, Old English Grammar (1914), and Samuel Moore and Thomas A. Knott, The Elements of Old English (1919), both public domain.',
+  ],
+};
 const LICENSE = 'CC-BY-SA-4.0';
+
+/** A language with no lines would ship a pack crediting nobody, so it stops the build. */
+function attributionFor(lang) {
+  const lines = ATTRIBUTION[lang];
+  if (!lines) throw new Error(`no attribution for "${lang}": add its sources to ATTRIBUTION in tools/build-pack.mjs`);
+  return lines;
+}
 
 /* ------------------------------------------------------------------- input */
 
@@ -306,7 +342,7 @@ async function buildPack(lang, core) {
       version: PACK_VERSION,
       entryCount,
       lemmaCount: translated,
-      attribution: ATTRIBUTION,
+      attribution: attributionFor(lang),
       license: LICENSE,
       bands,
       builtAt: new Date().toISOString().slice(0, 10),

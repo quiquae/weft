@@ -18,7 +18,24 @@ definition of stability.
 
 The packs in `src/lexicon/packs/` are generated from `tools/seed/` and
 licensed **CC BY-SA 4.0**. Attribution is carried inside each pack's
-`meta.attribution` so it travels with the data.
+`meta.attribution` so it travels with the data, and each pack names the
+sources its own claims were read in: `tests/tools/attribution.test.ts`
+derives them from the citations in that pack's ledgers,
+`tools/seed/<lang>-*.tsv`, and fails on a pack that does not name one, or
+names a source none of its ledgers cites. Until 2026-10-30 every pack
+carried one list, which credited the Latin and Old English dictionaries in
+all seven packs and English Wiktionary in none.
+
+### English Wiktionary
+
+The ledgers in `tools/seed/` cite English Wiktionary's entries 5 213 times
+and quote them — a definition line, the clause of a headword line that
+prints a plural, a declension or conjugation table's cell — by Wiktionary
+contributors, under **CC BY-SA 4.0** (<https://en.wiktionary.org>). Each
+line names the entry it quotes as `wikt:<language>:<title>`, the section
+for that language of the page `https://en.wiktionary.org/wiki/<title>`, an
+underscore standing for a space. Every pack whose ledgers cite it credits
+it.
 
 ### English frequency bands
 
@@ -145,9 +162,9 @@ French its etymology — names the entry it was read in.
 `npm run packs` builds from the curated seed files only. To go beyond the
 core, **wiktextract** (Tatu Ylönen, MIT) produces machine-readable data from
 Wiktionary at <https://kaikki.org/dictionary/>. That data is **CC BY-SA and
-GFDL**, and anything built from it inherits those terms — which is why the
-packs are share-alike rather than MIT even though nothing from Wiktionary
-ships today.
+GFDL**, and anything built from it inherits those terms — one reason the
+packs are share-alike rather than MIT. Nothing from wiktextract ships today;
+what the ledgers quote from Wiktionary's entries is credited above.
 
 ## Development dependencies
 

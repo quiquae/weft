@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **496 pass**, 124 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **500 pass**, 125 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -420,7 +420,17 @@ names in the same way.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
-Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`).
+Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`),
+and each pack's names the sources its own claims were read in:
+`ATTRIBUTION` in `tools/build-pack.mjs` is per language, and
+`tests/tools/attribution.test.ts` derives what a pack must name from the
+citation prefixes in its ledgers, `tools/seed/<lang>-*.tsv` — `wikt:`,
+`ls:`, `bt:`, `etym:`, `wright:`, `mk:`, `ag:` — refuses a source none of
+them cites, and fails by name on a prefix it does not know, so a new
+dictionary is credited before its first citation lands. Until 2026-10-30
+every pack carried one list: the five modern packs credited Lewis & Short
+and Bosworth–Toller, and none named English Wiktionary, which the ledgers
+cite 5 213 times and quote under its CC BY-SA 4.0 licence.
 
 **A French etymology claim names the dictionary entries it was checked
 against, or it does not ship.** `tools/seed/fr-cousins.tsv` carries a fourth
@@ -833,6 +843,83 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-30 — every pack credited the Latin and Old English dictionaries, and none credited Wiktionary
+
+`Now` was empty and every unchecked item in `Next` says it waits on Creagh,
+so the work was found as #124 found core's purity: a written guarantee
+with nothing behind it. This file, `LICENSE`, `LICENSE-DATA` and
+`docs/THIRD-PARTY.md` all say the lexicons' attribution "travels inside
+every generated pack", and nothing read what it said.
+
+**It said the same four things in all seven packs.** `ATTRIBUTION` in
+`tools/build-pack.mjs` was one list, written before any ledger existed: the
+curated lexicon, SUBTLEX, "Latin glosses checked against Lewis & Short" and
+"Old English glosses checked against Bosworth–Toller". Counting the
+citation prefixes in `tools/seed/<lang>-*.tsv` says what each pack's claims
+were read in: English Wiktionary 5 213 times across all seven, etymonline
+923 times in three, Lewis & Short 617 in Latin, Bosworth–Toller 38, Wright
+8, Allen and Greenough 2, Moore and Knott 1. So the five modern packs
+credited two dictionaries none of their claims was read in, and no pack
+named the one whose entries the ledgers quote under CC BY-SA 4.0, a licence
+whose first condition is credit.
+
+**The rule is derived from the ledgers, and runs both ways.**
+`tests/tools/attribution.test.ts`, 4 tests in a new suite: every source a
+pack's ledgers cite is named in its attribution; no source the test knows
+is named by a pack whose ledgers never cite it; a prefix it does not know
+fails by file and line, so a new dictionary is credited before its first
+citation lands; SUBTLEX is named wherever a pack carries bands; and floors
+of seven packs, a citation in each, every known source cited somewhere and
+more than 5 000 citations, so it cannot pass on an empty read. Red first on
+exactly 25 lines, 13 sources missing and 12 strays, then green once
+`ATTRIBUTION` became per language, `attributionFor()` stopping the build for
+a language with none. Two probes, restored by md5, each failing by name:
+the Spanish pack's Wiktionary line removed, and an `xx:probe` at
+`de-glosses.tsv:62`. Whitaker's Words and Clark Hall stay credited, though
+no ledger cites them: no prefix stands for them, so the rule neither asks
+for them nor refuses them, and the claim predates every ledger.
+
+**What moved: `meta.attribution` and `meta.builtAt` in each pack and
+nothing else**, −174 bytes in all, and a second `npm run packs` moved
+nothing; `index.json` carries no attribution. All 21 shipped pack files are
+byte-identical to `src/lexicon/packs/`, so each package is exactly 174
+bytes lighter than `main`'s, Chrome's 989.649 KB, and all three still print
+990 KB. No surface prints `meta.attribution`: all 31 screenshots
+regenerated on a test build after the pack commit, 10 + 14 + 7 written,
+every one byte-identical, and the three groups are stamped in the commit
+after it. `LICENSE-DATA` names Wiktionary as a source the ledgers quote and
+how a line names its page, and etymonline as credited and not openly
+licensed; `docs/THIRD-PARTY.md` gained a Wiktionary section and lost
+"nothing from Wiktionary ships today". **And `tools/seed/README.md` named
+`npm run packs:extend`**, which `git log -S` finds in that file alone, from
+the first lexicon commit: no `package.json` ever had it. It says so now.
+
+Tools 496 → **500** / 124 → **125** suites, total 1213 → **1217**, in six
+places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because
+the packs ship.
+
+Measured at the end, on Node 26.7, with npm's own exit status captured:
+`npm run test:all` **exit 0** — typecheck clean, 575 unit / 138 suites, 102
+jsdom / 23, **500 tools / 125**, compat 16 dependencies × 3 browsers, 42
+pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4 untracked,
+0 fail / 0 without data, **990 KB × 3** passing `validate`, **40 e2e passed and 3 skipped in 4.4 min**, then
+build and validate again. Separately: `packs:verify` **0 errors / 5
+warnings**; `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a — with the three screenshot groups `ok` on their new stamps.
+
+Assumed, with nobody to ask: that crediting a source a pack's claims were
+read in is not a call, being strictly more accurate than the list it
+replaces; that the credit names the source without calling the pack a
+copy of it, `docs/THIRD-PARTY.md` saying what the ledgers quote and leaving
+the legal reading alone; and that the thirteen comment lines quoting
+etymonline at the feet of the two etymon ledgers are a question to write
+down, not to settle.
+
+What needs a human: unchanged, everything below **B1** and the calls; one
+new question in `TODO.md`'s Notes, the etymonline quotations. `Now` is
+empty again, and no unchecked item in `Next` is agent-shaped.
 
 ### 2026-10-30 — CI's actions run on Node 24, and a guard reads every `uses:` line
 

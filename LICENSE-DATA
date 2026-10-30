@@ -14,15 +14,29 @@ Why share-alike rather than the MIT licence covering the code:
 
   - English frequency bands derive from SUBTLEX-US by way of the wordfreq
     project. SUBTLEX is distributed under terms equivalent to CC BY-SA.
+  - The ledgers in tools/seed/ (<lang>-glosses.tsv, <lang>-plurals.tsv,
+    <lang>-verb-forms.tsv and the rest) cite English Wiktionary's entries and
+    quote them -- a definition line, the clause of a headword line that
+    prints a plural, a table's cell -- by Wiktionary contributors, under
+    CC BY-SA 4.0. Each line names the entry it quotes as
+    wikt:<language>:<title>, which is the section for that language of the
+    page https://en.wiktionary.org/wiki/<title>, an underscore standing for
+    a space.
   - Where coverage is extended from Wiktionary via wiktextract / kaikki.org,
     that data is CC BY-SA and GFDL.
 
-Latin glosses are checked against Lewis & Short, A Latin Dictionary (1879) and
-Whitaker's Words, both public domain. Old English glosses are checked against
-Bosworth-Toller, An Anglo-Saxon Dictionary (1898) and Clark Hall, A Concise
-Anglo-Saxon Dictionary (1894), both public domain. Public-domain sources
-impose no conditions; they are listed for scholarly honesty rather than for
-compliance.
+Latin glosses and genders are checked against Lewis & Short, A Latin
+Dictionary (1879), and glosses against Whitaker's Words, both public domain.
+Old English glosses are checked against Bosworth-Toller, An Anglo-Saxon
+Dictionary (1898) and Clark Hall, A Concise Anglo-Saxon Dictionary (1894),
+both public domain. Public-domain sources impose no conditions; they are
+listed for scholarly honesty rather than for compliance. Etymology claims
+cite the Online Etymology Dictionary (Douglas Harper,
+https://www.etymonline.com), which is not openly licensed, and is credited
+in every pack whose ledgers cite it.
 
 Attribution is carried inside every generated pack, in meta.attribution, so it
-travels with the data rather than living only in this file.
+travels with the data rather than living only in this file. Each pack names
+the sources its own claims were read in, and tests/tools/attribution.test.ts
+fails on a pack that does not name a source its ledgers cite, or that names
+one they never cite.
