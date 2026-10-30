@@ -337,7 +337,12 @@ Edge takes 640×480 or 1280×800, the Chrome five are 1280×800, and the
 builds and link-checks all 714 pages on every push but the deploy job is
 gated on `vars.WEFT_PAGES == 'true'`, because publishing is not reversible the
 way a commit is — once indexed, taking the site down leaves search results
-pointing at nothing.
+pointing at nothing. `tests/tools/publishing.test.ts` holds it, since
+2026-10-30, beside release.yml's own gate: every action a workflow uses is
+named there as publishing or not, a job using `actions/deploy-pages` must
+carry exactly that `if:`, and a workflow using `softprops/action-gh-release`
+must fire on a push of `v*` tags and nothing else. Do not loosen the deploy
+condition to make a site deploy: B3's variable is the switch.
 
 **Every action CI uses runs on Node 24, and `release.yml` moves only when
 somebody watches it.** GitHub removed Node 20 from its runners on
@@ -843,6 +848,58 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-10-30 — the site's deploy gate and the release's tag gate were each held by a sentence
+
+The same run's second PR, found while choosing the first. Two decisions
+above are about publishing outward — the site deploys only when
+`vars.WEFT_PAGES` is `'true'`, and a release is attached only by pushing a
+version tag — and no test read either workflow. Deleting site.yml's `if:`,
+or adding `branches: [main]` beside release.yml's tag, left every check
+green while the next push published.
+
+**`tests/tools/publishing.test.ts`, 4 tests in a new suite, closes the set
+rather than listing the dangerous cases.** Every action any workflow uses is
+named in `OUTWARD`, with its gate, or `INWARD`, with why it publishes
+nothing, and one nobody named fails by file and line — the move `RUNTIME`
+makes for runtimes. A job using `actions/deploy-pages` must carry `if:
+vars.WEFT_PAGES == 'true'` exactly, after `${{ }}`, quotes and a trailing
+comment are set aside, because a substring match would pass `|| github
+.event_name == 'push'`, which deploys on every push. A workflow using
+`softprops/action-gh-release` must fire on a push of `['v*']` tags and on
+nothing else. The reader is pure, text in and jobs out, so in-memory probe
+workflows show it refusing five shapes on every run, the trick
+`core-purity.test.ts` uses; an inline `on:` throws rather than reading as no
+trigger. It guards a correct tree, so three probes on the real workflows
+show it firing: the `if:` deleted names `site.yml:109`, `branches: [main]`
+names `release.yml:79`, an unread `actions/cache@v4` names `ci.yml:20`, each
+restored and checked against `HEAD`.
+
+**Two of those three probes looked silent the first time.** The filter
+grepped node's diff for `+   '`, and node prints a string holding a `'` in
+backticks, so the deploy and release messages went past it; read in full,
+both had fired. A probe is read whole, never through a filter.
+
+Tools 500 → **504** / 125 → **126** suites, total 1217 → **1221**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **504 tools / 126**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**40 e2e passed and 3 skipped in 4.4 min**, then build and validate again.
+Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that `workflow_dispatch` on release.yml counts
+as an ungated publish, a button anyone with write access can press, so the
+guard refuses it though B2b may one day want it; and that `INWARD` may call
+`upload-artifact` inward, the files it stores staying with the run.
+
+What needs a human: unchanged. `Now` is empty, and no unchecked item in
+`Next` is agent-shaped.
 
 ### 2026-10-30 — every pack credited the Latin and Old English dictionaries, and none credited Wiktionary
 

@@ -1420,6 +1420,33 @@ registered**, and nothing below it can move until it is.
       `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because
       the packs ship.
 
+- [x] **Hold the two publishing workflows to the gate each was given.**
+      Done 2026-10-30, the same run's second PR, found while choosing the
+      first: CLAUDE.md says the site "deploys only on request", the deploy
+      job "gated on `vars.WEFT_PAGES == 'true'`", and that a release is
+      attached by pushing a tag, and nothing read either. Deleting the
+      `if:` line, or adding `branches: [main]` beside release.yml's tag,
+      left every check green while the next push published.
+      `tests/tools/publishing.test.ts`, 4 tests in a new suite: every
+      action a workflow uses is named in `OUTWARD` or `INWARD`, and one
+      nobody named fails by file and line; a job using
+      `actions/deploy-pages` must carry `if: vars.WEFT_PAGES == 'true'`
+      exactly, `${{ }}`, quotes and a trailing comment set aside, so a gate
+      that also deploys on another condition fails; a workflow using
+      `softprops/action-gh-release` must fire on a push of `['v*']` tags
+      and nothing else, not on `main` and not by `workflow_dispatch`; and
+      floors of three workflows, ten `uses:` lines and every named action
+      in use. The reader is pure, so in-memory probe workflows — an
+      ungated deploy, a gate with `|| github.event_name == 'push'`, a
+      release on `main`, a dispatchable release and an inline `on:` — show
+      it refusing on every run. It guards a correct tree, so three probes
+      on the real workflows, each restored and checked against `HEAD`,
+      show it firing: the `if:` deleted names `site.yml:109`, `branches:
+      [main]` added names `release.yml:79`, and an unread `actions/cache@v4`
+      names `ci.yml:20`. Tools 500 → **504** / 125 → **126** suites, total
+      1217 → **1221**, in six places, `docs/LAUNCH.md:221` first. No
+      `CHANGELOG.md` paragraph: nothing that ships moved.
+
 ## Next
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
@@ -7004,6 +7031,22 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-30 — the publishing workflows are held to their gates.** Three
+things a later run would be sorry not to know:
+
+1. **A new action is three lines now, in two files**: its runtime in
+   `RUNTIME` in `tests/tools/workflow-actions.test.ts`, and whether it
+   publishes in `OUTWARD`, with its gate, or `INWARD`, with why not, in
+   `tests/tools/publishing.test.ts`. Each test fails by name until its
+   line is written.
+2. **B3's `gh variable set WEFT_PAGES --body true` is the only switch.**
+   The guard refuses any other condition on the deploy job, so a site
+   that should deploy and does not is a missing variable, not a test to
+   loosen.
+3. **node's assertion diff prints a string holding `'` in backticks.**
+   A probe filtered on `+   '` printed nothing for two of three probes
+   that had fired; read a probe's whole output, never a filter of it.
 
 **2026-10-30 — each pack credits its own sources, and the ledgers say
 which.** Five things a later run would be sorry not to know:
