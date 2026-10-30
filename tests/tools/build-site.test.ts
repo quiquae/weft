@@ -21,6 +21,7 @@
  *   9. No page quotes in straight marks but the three that print another
  *      document's copy. See below.
  *  10. A word page prints the pronunciation key the tooltip prints. See below.
+ *  11. Nothing the site builds is a file the deploy leaves out. See below.
  */
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
@@ -144,11 +145,14 @@ let landing: string;
 let pages: { page: string; text: string }[];
 /** Every pronunciation key a word page prints, as it reads, beside the language it is the key to. */
 let keys: { page: string; lang: LangCode; printed: string }[];
+/** Every path the build wrote, files and directories, relative to the site's root. */
+let written: string[];
 
 before(() => {
   const out = mkdtempSync(join(tmpdir(), 'weft-site-'));
   try {
     execFileSync(process.execPath, [TOOL, `--out=${out}`], { stdio: 'pipe' });
+    written = readdirSync(out, { recursive: true }) as string[];
     const xml = readFileSync(join(out, 'sitemap.xml'), 'utf8');
     dates = lastmods(xml);
     landing = readFileSync(join(out, 'index.html'), 'utf8');
@@ -989,5 +993,27 @@ describe('a word page prints the key the tooltip prints', () => {
       const n = keys.filter((k) => k.lang === lang).length;
       assert.ok(n > 300, `only ${n} ${dir} pages print a pronunciation key`);
     }
+  });
+});
+
+/**
+ * `actions/upload-pages-artifact` has left hidden files out of the artifact
+ * since v4, by a `--exclude=.[^/]*` handed to `tar`, unless its step sets
+ * `include-hidden-files: true`, which v5 added. Nothing says so: the site
+ * builds, the links check, and the file is simply not on the deploy. The
+ * site had none on 2026-10-30, when site.yml moved to v5, so the step does
+ * not ask for them, and a `.well-known/` or a `.nojekyll` the builder starts
+ * writing fails here, naming itself, until it does.
+ */
+describe('the deploy carries every file the site builds', () => {
+  const SITE_WORKFLOW = '.github/workflows/site.yml';
+
+  test('no path the builder writes is hidden, while site.yml leaves hidden files out', () => {
+    // 719 on 2026-10-30. A walk that found nothing would pass the rule.
+    assert.ok(written.length > 700, `the walk found only ${written.length} paths`);
+    const asks = /^\s*include-hidden-files:\s*['"]?true['"]?\s*$/m.test(readFileSync(join(ROOT, SITE_WORKFLOW), 'utf8'));
+    if (asks) return;
+    const hidden = written.filter((path) => path.split(/[\\/]/).some((part) => part.startsWith('.')));
+    assert.deepEqual(hidden, [], `${SITE_WORKFLOW} uploads with actions/upload-pages-artifact, which leaves these out of the deploy`);
   });
 });
