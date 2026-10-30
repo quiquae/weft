@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-28:** every automatable check is green, measured at the end
+**State on 2026-10-30:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **491** tool tests / 121 suites, **40** e2e passing
+suites, **496** tool tests / 124 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1332,25 +1332,48 @@ registered**, and nothing below it can move until it is.
       120 → **121** suites, total 1204 → **1208**, in six places,
       `docs/LAUNCH.md:221` first.
 
-- [ ] **Move CI's actions off the Node 20 runtime GitHub has deprecated.**
-      Found 2026-10-28, reading the floor job's first log. Both jobs end on
-      a warning: "Node.js 20 is deprecated. The following actions target
-      Node.js 20 but are being forced to run on Node.js 24:
-      actions/checkout@v4, actions/setup-node@v4", and `check`'s names
-      `actions/upload-artifact@v4` too. They run, forced onto Node 24, so
-      nothing fails today; what GitHub does next is in the changelog the
-      warning links, `github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/`,
-      which was not read. Read it, then each action's own releases for the
-      major that declares Node 24 and what else that major changed —
-      `upload-artifact`'s majors have changed how an artefact of an existing
-      name is treated before. Bump `ci.yml` and `site.yml`, whose
-      `upload-pages-artifact@v3` and `deploy-pages@v4` want the same
-      reading. `ci.yml` is checked by the PR's own run; `site.yml` has no
-      `pull_request` trigger, so run it on the branch with `gh workflow run
-      site.yml --ref <branch>`, its deploy job being gated on
-      `vars.WEFT_PAGES` and so skipped. **Do not touch `release.yml`**: it
-      publishes, fires once and cannot be rehearsed, so leave it at `@v4`
-      and say so in B2. About 40 minutes.
+- [x] **Move CI's actions off the Node 20 runtime GitHub has deprecated.**
+      Done 2026-10-30. The changelog, read: Node 24 became the runners'
+      default on 2026-06-16 and Node 20 was removed from them on 2026-09-23,
+      so an action declaring `using: node20` runs forced onto 24 and its job
+      ends on the warning. `ci.yml` and `site.yml` take `checkout@v7`,
+      `setup-node@v7`, `upload-artifact@v7`, `upload-pages-artifact@v5` and
+      `deploy-pages@v5`, the latest majors. Each action's `action.yml` was
+      read at every major from v4 up, with the release notes: the first on
+      24 is checkout and setup-node v5, deploy-pages v5, and upload-artifact
+      **v6**, its v5 still saying `node20` and calling 24 preliminary;
+      upload-pages-artifact is composite, running on the upload-artifact it
+      pins, v4.6.2 at its v4 and v7.0.0 at its v5. No major between changes
+      an input or default these workflows use — checkout v6 moved persisted
+      credentials into a separate file, v7 refuses fork PRs under
+      `pull_request_target`; setup-node v5 and v6 cache by `packageManager`,
+      which `package.json` does not set, v7 drops a dummy `NODE_AUTH_TOKEN`;
+      upload-artifact v7 adds `archive: false`, defaulting to true. **One
+      did change what deploys**: upload-pages-artifact v4 leaves hidden files
+      out of the artifact (`tar --exclude=.[^/]*`) unless the step sets
+      `include-hidden-files: true`, which v5 added; the built site has none
+      of its 719 paths hidden. `tests/tools/workflow-actions.test.ts`, 4
+      tests in 2 suites, reads every `uses:` line in every workflow and
+      fails on an action `RUNTIME` has not read, one below its first Node 24
+      major unless `HELD` names it, and a `HELD` line that has moved; a SHA,
+      a branch, a docker image or a local action is refused by name. Red
+      first on exactly the ten lines in `ci.yml` and `site.yml`. Five
+      probes, each restored by md5: the floor job back on `checkout@v4`, an
+      unread `actions/cache@v4`, `release.yml`'s checkout bumped (the stale
+      check), a SHA pin, and the reader blinded, which the floor of 10
+      lines catches. A test in `tests/tools/build-site.test.ts` fails on a
+      hidden built path while `site.yml` does not ask for them: three
+      probes — the builder writing a `.nojekyll` and a
+      `.well-known/security.txt`, named; the same with the step opting in,
+      passing; the walk made shallow, caught by its floor. The opt-in is
+      read as a key at the start of a line, because `site.yml`'s own comment
+      quotes it, and a substring match would have let the comment switch the
+      guard off. `site.yml`, run on the branch by `workflow_dispatch` (run
+      41062668147): build green in 14 s, deploy skipped, and no Node 20
+      warning, where `main`'s last run (40262531639) warned of checkout,
+      setup-node and upload-artifact. `release.yml` is held, and B2b says
+      why. Tools 491 → **496** / 121 → **124** suites, total 1208 →
+      **1213**, in six places, `docs/LAUNCH.md:221` first.
 
 ## Next
 
@@ -6823,6 +6846,20 @@ gitignored zips moved, commit that through a PR, *then* tag. Same class as
 the 1.0.1 session's finding that `docs/SUBMIT.md` named five zip filenames
 that no longer existed — a version bump invalidates artefacts, and no count
 sweep looks at artefacts.
+
+**B2b — `release.yml` still runs three actions built for Node 20, on
+purpose.** `actions/checkout@v4`, `actions/setup-node@v4` and
+`softprops/action-gh-release@v2` declare `using: node20`. GitHub removed
+Node 20 from its runners on 2026-09-23 and runs them forced onto Node 24,
+so the tag push in B2 will end on a warning naming all three: that is
+expected, not a failure. `ci.yml` and `site.yml` moved to Node 24 majors on
+2026-10-30; this workflow did not, because it publishes, fires once on a
+tag and cannot be rehearsed, so a change to it is first exercised by the
+release it was meant to make. Move it in a change somebody watches, after
+v1.0.1 is out: `checkout@v7` and `setup-node@v7`, as the other two
+workflows have, and `action-gh-release@v3`, whose v3.0.0 moved the runtime
+and nothing else (read 2026-10-30). Then delete the three `HELD` lines in
+`tests/tools/workflow-actions.test.ts`, which fails until they are gone.
 
 **B3 — Turn on Pages and set `WEFT_PAGES=true`.** Settings → Pages → Source:
 GitHub Actions, then `gh variable set WEFT_PAGES --body true`. Deliberately
