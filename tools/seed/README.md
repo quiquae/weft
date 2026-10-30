@@ -89,8 +89,10 @@ translate a lemma (Old English has no word for "computer").
 
 ## Extending beyond the core
 
-`npm run packs:extend` documents how to fold in
-[wiktextract](https://github.com/tatuylonen/wiktextract) dumps from
-[kaikki.org](https://kaikki.org/dictionary/) for long-tail coverage. That data
-is CC BY-SA / GFDL and its attribution is carried into every generated pack's
-metadata; see `docs/THIRD-PARTY.md`.
+Nothing folds [wiktextract](https://github.com/tatuylonen/wiktextract) dumps
+from [kaikki.org](https://kaikki.org/dictionary/) in yet: an `npm run
+packs:extend` was named here from the first lexicon commit and never
+existed. That data is CC BY-SA / GFDL, so a pack built from it must credit
+it in `meta.attribution`, as each pack credits the dictionaries its ledgers
+cite — `ATTRIBUTION` in `tools/build-pack.mjs`, held to the ledgers by
+`tests/tools/attribution.test.ts`; see `docs/THIRD-PARTY.md`.

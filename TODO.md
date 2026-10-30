@@ -6,7 +6,7 @@
 
 **State on 2026-10-30:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **496** tool tests / 124 suites, **40** e2e passing
+suites, **500** tool tests / 125 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -57,7 +57,10 @@ Old English pack's `bēċ` and `hættas`, 989.499 → 989.503 KB, measured
 against `main`'s three packages built in a `/tmp` worktree; Chrome's is
 989.496 and still prints 989. Chrome's prints **990** from 2026-10-25, by
 the 97 bytes of `shiftDay()`, 989.496 → 989.591 KB, measured the
-same way.
+same way. All three still print 990 on 2026-10-30, each exactly 174 bytes
+lighter than `main`'s, the packs' per-language attribution — Chrome's
+989.819 → 989.649 KB, every shipped pack file byte-identical to
+`src/lexicon/packs/`.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1374,6 +1377,48 @@ registered**, and nothing below it can move until it is.
       setup-node and upload-artifact. `release.yml` is held, and B2b says
       why. Tools 491 → **496** / 121 → **124** suites, total 1208 →
       **1213**, in six places, `docs/LAUNCH.md:221` first.
+
+- [x] **Make each pack credit the sources its own claims were read in.**
+      Done 2026-10-30, found by the run that had no item: `Now` was empty
+      and every unchecked item in `Next` waits on Creagh. CLAUDE.md, the
+      licence files and `docs/THIRD-PARTY.md` all say attribution "travels
+      inside every generated pack", and nothing held what it said. Every
+      pack carried one list, `ATTRIBUTION` in `tools/build-pack.mjs`,
+      written before any ledger existed: the curated lexicon, SUBTLEX, and
+      a line each for the Latin and Old English dictionaries. So the five
+      modern packs credited Lewis & Short and Bosworth–Toller, which none
+      of their claims was read in, and no pack named English Wiktionary,
+      which the ledgers cite **5 213** times and quote — definition lines,
+      headword clauses, table cells — under CC BY-SA 4.0, nor etymonline,
+      which every etymology claim cites. Each language has its own lines
+      now after the two every pack shares, and `attributionFor()` stops the
+      build for a language with none. `tests/tools/attribution.test.ts`, 4
+      tests in a new suite, derives what a pack must name from the citation
+      prefixes in `tools/seed/<lang>-*.tsv` (`wikt:`, `ls:`, `bt:`,
+      `etym:`, `wright:`, `mk:`, `ag:`), refuses a source no ledger of that
+      pack cites, fails by name on a prefix it does not know, wants SUBTLEX
+      wherever a pack carries bands, and has floors: seven packs, a
+      citation in each, every known source cited somewhere, more than 5 000
+      citations. Red first on exactly 25 lines, 13 sources uncredited and
+      12 credited by packs that never cite them; green after `npm run
+      packs`. Two probes, each restored by md5, each failing by name: the
+      Spanish pack's Wiktionary line removed, and an `xx:probe` planted at
+      `de-glosses.tsv:62`. Only `meta.attribution` and `meta.builtAt` moved
+      in each pack, −174 bytes in all, and a second `npm run packs` moved
+      nothing; `index.json` carries no attribution and did not move. All 31
+      screenshots regenerated on a test build after the commit that moved
+      the packs, 10 + 14 + 7 written, every one byte-identical, no surface
+      printing `meta.attribution`, and the three groups are stamped.
+      `LICENSE-DATA` names Wiktionary as a source the ledgers quote, with
+      how a line names its page, and etymonline as credited but not openly
+      licensed; `docs/THIRD-PARTY.md` gained a Wiktionary section and lost
+      "nothing from Wiktionary ships today", which the modern packs, every
+      claim read there, had outgrown. **`tools/seed/README.md` named `npm
+      run packs:extend` from the first lexicon commit, `89cdfda`, and no
+      such script ever existed**; it says so now. Tools 496 → **500** / 124
+      → **125** suites, total 1213 → **1217**, in six places,
+      `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because
+      the packs ship.
 
 ## Next
 
@@ -6959,6 +7004,39 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-10-30 — each pack credits its own sources, and the ledgers say
+which.** Five things a later run would be sorry not to know:
+
+1. **A new source is two lines.** Its prefix and the name a pack must
+   print go into `SOURCES` in `tests/tools/attribution.test.ts`, and the
+   line into `ATTRIBUTION` in `tools/build-pack.mjs` for every language
+   whose ledgers cite it. Until both, its first citation fails by name,
+   "tools/seed/<file>:<line> cites “x:”, which SOURCES does not name".
+2. **Editing `ATTRIBUTION` is a pack change.** Every pack whose lines move
+   takes today's `builtAt`, so about 700 sitemap dates move with it, and
+   the three screenshot groups go stale by provenance. Commit the packs
+   first, then regenerate on a test build and stamp in a later commit:
+   provenance reads commits, so a stamp made before the pack commit is
+   overtaken by it.
+3. **The rule runs one way for a name no ledger cites.** Whitaker's Words
+   and Clark Hall are credited in the Latin and Old English packs, as they
+   always were, and no ledger cites either: no prefix stands for them, so
+   the test neither requires nor refuses them. Do not delete them to make
+   the credit "match" the ledgers; the claim that the glosses were checked
+   against them predates every ledger and cannot be re-read now.
+4. **A citation is any word in a non-comment ledger line that begins with
+   a lower-case prefix and a colon followed by more text.** Today that
+   finds only the seven known prefixes, 6 802 citations, 5 213 of them
+   Wiktionary's. A quote that
+   ever holds such a word — a URL's `https:` — will fail as an unknown
+   prefix: teach `SOURCES`, or move the URL into a comment.
+5. **Thirteen comment lines quote etymonline**, at the feet of
+   `ang-etymons.tsv` (4) and `la-etymons.tsv` (9), recording what the
+   dictionary says of each claim taken out; the longest line is 405
+   characters with its row. etymonline is not openly licensed. These are
+   short quotations for commentary, and nothing ships them; whether to keep
+   them, or paraphrase, is a call nobody has made.
 
 **2026-10-28 — CI runs the floor, and `check` cannot outgrow it.** Four
 things a later run would be sorry not to know:

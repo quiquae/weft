@@ -691,6 +691,16 @@ English *settle* came to mean in the 1550s, where *setl* was any seat; and
 what their entries do now, and every Old English note names the dictionary
 entries it was checked against.
 
+**And every pack credited the same four sources, two of them in languages
+it does not teach.** The lexicons are CC BY-SA 4.0, and each pack carries
+its credit with it. That list was written once, before any claim had been
+read against an entry, so the French, Spanish, Portuguese, German and
+Italian packs credited the Latin and Old English dictionaries, and no pack
+named English Wiktionary — in which every gloss, gender, plural and verb
+form of the five modern packs was read, and the Latin and Old English forms
+too — or the Online Etymology Dictionary, which every etymology cites. Each
+pack now names the sources its own claims were read in.
+
 **And the dashboard counted the night the clocks went back twice.** Its
 daily chart, the week's total, yesterday's figure and the streak each stepped
 back from the present 24 hours at a time, and a day is 25 hours long when the
@@ -723,7 +733,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1213 tests: 575 unit, 102 in jsdom, 496 over the build tools, and
+**Built with** 1217 tests: 575 unit, 102 in jsdom, 500 over the build tools, and
 40 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
