@@ -138,7 +138,13 @@ modules it imports for a value use is declared, and a member the platform
 declares must be named in its `TOUCHES` with why it moves no node, and
 written only where `TOUCHES` says so. The set is closed, so a mutation
 nobody listed fails too, and `RESTRUCTURES` — `splitText`, `replaceWith`,
-`surroundContents` and 34 more — can never be allowed. Members are keyed by
+`surroundContents` and 34 more — can never be allowed. The same file holds
+the rest of the content script, since the same day: every file under
+`src/content/` and each `src/shared/` module the orchestrator imports may
+restructure a tree only through the files and members `OWN_ELEMENTS` names
+— the tooltip, the live region, the fallback `<style>` and the wrapped
+renderer, each with why — so a `parentNode.normalize()` typed into
+`index.ts` fails by file and line. Members are keyed by
 the interface that declares them, because TypeScript's library does:
 `el.textContent = ''`, which replaces children, is `Element.textContent`,
 and a text node's, which edits in place, is `CharacterData.textContent`.
@@ -858,6 +864,69 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-01 — the orchestrator is held to the same refusal, and a file's allowance names its members
+
+`TODO.md`'s one unchecked item in `Now`, queued by the run that held the
+renderer: the highlight path runs through `src/content/index.ts` as well as
+the renderer, and nothing refused a `node.parentNode.normalize()` typed
+there.
+
+**Measured before writing, with the checker.** Every `src/content/` file
+went into the program's roots, and `scan()` read what the content script
+runs: 12 files, 3 597 names, 46 restructurings — `announce.ts` 4,
+`render-wrapped.ts` 7, `styles.ts` 3, `tooltip.ts` 32 — through 15
+file-and-member pairs, and none in the orchestrator, the walker, the
+attention tracker, `weave.ts`, `renderer.ts` or the renderer. The item's
+grep had been right about every file. No import was refused, and no member
+was read off an `any` anywhere, so that is refused across the content
+script too, at no cost.
+
+**Two departures from the item.** It scoped the scan to `src/content/`;
+the orchestrator imports `src/shared/rpc.ts` and `browser.ts` for a value,
+which run in the page as its own modules do, so the scan reads the
+orchestrator's graph as well, stopping at `src/core/`. And it named files;
+`OWN_ELEMENTS` names each file's members too, because a file allowed
+`append` for its own card is not thereby allowed
+`range.surroundContents()`, the usual way to highlight and the call a hover
+highlight in `tooltip.ts` would reach for. Named per file, that probe
+passed.
+
+**Red first** with `OWN_ELEMENTS` empty, naming all 46. Ten probes, each
+restored by md5, each failing by name: `normalize()` in `index.ts` at
+`:985`, `surroundContents()` in `tooltip.ts` at `:415`, an `any`-read in
+`walker.ts`, `removeChild()` in `src/shared/browser.ts` at `:104`, a member
+dropped from `announce.ts`'s list, a stale member, a misspelt one, a file
+the script does not run, a blinded resolver, which the stale check catches
+beside the renderer's own, and an empty walk, which the floor catches. A
+probe test in the first suite shows `strays()` refusing an unnamed file and
+a named file's unlisted member on every run.
+
+**Adding the roots moved none of the renderer's counts**, 407 names and 45
+touches, though `index.ts` declares a global, `Window.__weftActive`: an
+augmentation only adds.
+
+Tools 513 → **518** / 128 → **129** suites, total 1230 → **1235**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **518 tools / 129**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**40 e2e passed and 3 skipped in 4.7 min**, then build and validate again.
+Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that what the content script runs, rather
+than the directory, is the scope the item meant; that a member list per
+file is worth its 15 strings; and that the `dayKey()` guard queued next is
+agent-shaped, being the same move for another decision.
+
+What needs a human: unchanged, everything below **B1** and the calls.
+`Now` holds one agent-shaped item, queued by this run: `dayKey()` held to
+an instant, statically.
 
 ### 2026-11-01 — the renderer is held to `nodeValue` by the checker, and the item's own list missed the usual way to highlight
 

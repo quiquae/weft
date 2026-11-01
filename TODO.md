@@ -1487,25 +1487,67 @@ registered**, and nothing below it can move until it is.
       **1230**, in six places, `docs/LAUNCH.md:221` first. No
       `CHANGELOG.md` paragraph: nothing that ships moved.
 
-- [ ] **Hold the rest of `src/content/` to the same refusal.** Queued
-      2026-11-01 by the run that landed the item above. The highlight path
-      runs through `src/content/index.ts`, the orchestrator both renderers
-      share, as well as through the renderer, and nothing refuses a
-      `node.parentNode.normalize()` typed there. Read on 2026-11-01 by
-      grep: only `render-wrapped.ts`, by design, `tooltip.ts`, its host,
-      shadow root and card, `styles.ts`, its `<style>`, and `announce.ts`,
-      its live region, call anything that restructures; `index.ts`,
-      `walker.ts`, `attention.ts`, `weave.ts` and `renderer.ts` call
-      nothing. The shape: a third `describe` in
-      `tests/tools/highlight-in-place.test.ts` that scans every file under
-      `src/content/` with the same `scan()` and refuses a `restructuring()`
-      touch outside an `OWN_ELEMENTS` table naming those four files with
-      why, which fails too when a named file stops restructuring. A deny
-      list here, not a closed set: the orchestrator touches observers,
-      events and timers, too many members for a closed set to be worth its
-      upkeep, and `TOUCHES` already closes the renderer itself. Add every
-      `src/content/` file to the program's roots first, since today it
-      holds only the renderer's graph. About 30 minutes; it moves no
+- [x] **Hold the rest of `src/content/` to the same refusal.** Done
+      2026-11-01, the run after the one that queued it.
+      `tests/tools/highlight-in-place.test.ts` gained a third `describe`,
+      4 tests, and a probe test in the first, 14 tests in 3 suites where
+      there were 9 in 2. **Measured before writing:** with every
+      `src/content/` file in the program's roots, `scan()` finds 46
+      restructurings in the content script's 12 files, every one in the
+      four the item named — `announce.ts` 4, `render-wrapped.ts` 7,
+      `styles.ts` 3, `tooltip.ts` 32 — through 15 file-and-member pairs,
+      and none in `index.ts`, `walker.ts`, `attention.ts`, `weave.ts`,
+      `renderer.ts` or the renderer; 3 597 names, no refused import, and
+      **no member read off an `any` anywhere**, so that is refused across
+      the content script too, at no cost. **Two departures from the item,
+      each assumed with nobody to ask.** The scan reads what the content
+      script runs, not only `src/content/`: the orchestrator imports
+      `src/shared/rpc.ts` and `browser.ts` for a value, they run in the
+      page as its own modules do, and a restructuring helper there would
+      have escaped. And `OWN_ELEMENTS` lists each file's members as well as
+      the file, because a file allowed `append` for its own card is not
+      thereby allowed `range.surroundContents()`, the usual way to
+      highlight and the call a hover highlight in `tooltip.ts` would reach
+      for — named per file, it passed. Red first with `OWN_ELEMENTS` empty,
+      naming all 46. Ten probes, each restored by md5, each failing by
+      name: `normalize()` in `index.ts` at `:985`, `surroundContents()` in
+      `tooltip.ts` at `:415`, an `any`-read in `walker.ts`, `removeChild()`
+      in `src/shared/browser.ts` at `:104`, a member dropped from
+      `announce.ts`'s list, a stale member, a misspelt one, a file the
+      script does not run, a blinded resolver and an empty walk. The new
+      roots moved none of the renderer's counts, 407 names and 45 touches.
+      Tools 513 → **518** / 128 → **129** suites, total 1230 → **1235**, in
+      six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph:
+      nothing that ships moved.
+
+- [ ] **Hold `dayKey()` to an instant, statically.** Queued 2026-11-01 by
+      the run that landed the item above. CLAUDE.md's decision "a day key
+      is stepped by the calendar, never by 86 400 000" is held by
+      `tests/core/day-arithmetic.test.ts`, which checks `attentionSummary`
+      under `TZ=Europe/London`, and by a sentence in the doc comment of
+      `shiftDay()`, beside it, `src/core/escalation.ts:107`: "Never
+      `dayKey(now - days * 86_400_000)`". Nothing refuses that call typed into a new function,
+      which passes every check but at the hour of a clock change. Read on
+      2026-11-01 by grep: `src/` calls `dayKey` 9 times —
+      `background/index.ts:148`, `background/storage.ts:165`, `:539` and
+      `:596`, `core/stats.ts:115`, `core/lock.ts:205` and `:447`,
+      `core/escalation.ts:139` and `:196` — each with `now` or
+      `Date.now()`, none with arithmetic. The shape: a new suite in
+      `tests/tools/`, `tests/core/` being free of I/O, that asks the
+      checker for every call resolving to `escalation.ts`'s `dayKey` in
+      every file under `src/`, through an alias or a re-export too, and
+      refuses one whose first argument holds a binary `+` or `-`: stepping
+      a key is `shiftDay()`'s. In-memory probe files, as
+      `highlight-in-place.test.ts` serves them, show it refusing
+      `dayKey(now - 86_400_000)`, `dayKey(now - i * DAY)` and an aliased
+      `import { dayKey as key }` on every run. Leave `tests/` out:
+      `tests/core/stats.test.ts:109`, `:116` and `:122` step by `now - d *
+      DAY` from a fixed noon on 14 September 2026, which no clock change
+      reaches, and `day-arithmetic.test.ts:43` and `:46` subtract a day on
+      purpose, to show the hazard. A `new Date(now - n * DAY_MS)` formatted
+      by hand would escape it; the durations `fsrs.ts`, `prune.ts`,
+      `licence.ts` and `background/providers/index.ts` measure in
+      milliseconds are right as they are. About 30 minutes; it moves no
       shipped file.
 
 ## Next
@@ -7092,6 +7134,28 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-01 — the rest of the content script is held to the same
+refusal.** Three things a later run would be sorry not to know:
+
+1. **A new restructuring in one of the four files is one string**, the
+   member in that file's `members` in `OWN_ELEMENTS` in
+   `tests/tools/highlight-in-place.test.ts`, keyed `Interface.member` as
+   the failure prints it; a new file that builds a tree of its own is an
+   entry with `members` and `why`. A restructuring anywhere else — the
+   orchestrator, the walker, the attention tracker, `src/shared/` — has no
+   allowance to ask for: edit the page's text through a renderer.
+2. **The scan reads what the content script runs**, every file under
+   `src/content/` and each module `index.ts` imports for a value, which
+   reaches `src/shared/rpc.ts` and `browser.ts`; `src/core/` stays out,
+   core-purity holding it to no DOM. A `src/shared/` module the background
+   imports and the content script does not is not read, and need not be:
+   it does not run in the page.
+3. **Adding every `src/content/` file to the program's roots moved none of
+   the renderer's counts**, 407 names and 45 touches, though `index.ts`
+   declares a global, `Window.__weftActive`: an augmentation only adds,
+   and the renderer reads nothing of `window`. The new floors are from
+   today's count, 12 files and 3 597 names.
 
 **2026-11-01 — the highlight renderer is held to `nodeValue` by the
 checker.** Three things a later run would be sorry not to know:
