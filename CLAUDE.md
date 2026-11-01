@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **504 pass**, 126 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **513 pass**, 128 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -132,6 +132,16 @@ framework reference is ever invalidated and no monkey-patching is needed. The
 cost — no per-word elements to style or hit-test — is paid back by the CSS
 Custom Highlight API and `caretPositionFromPoint`.
 `tests/e2e/pages/reconciler.html` reproduces the failure directly and passes.
+Since 2026-11-01 `tests/tools/highlight-in-place.test.ts` holds it without a
+browser: it asks the checker where every name `render-highlight.ts` and the
+modules it imports for a value use is declared, and a member the platform
+declares must be named in its `TOUCHES` with why it moves no node, and
+written only where `TOUCHES` says so. The set is closed, so a mutation
+nobody listed fails too, and `RESTRUCTURES` — `splitText`, `replaceWith`,
+`surroundContents` and 34 more — can never be allowed. Members are keyed by
+the interface that declares them, because TypeScript's library does:
+`el.textContent = ''`, which replaces children, is `Element.textContent`,
+and a text node's, which edits in place, is `CharacterData.textContent`.
 A second `wrapped` renderer exists behind the same interface for screen-reader
 users, who need real `lang` attributes; `resolveRenderMode` picks per page.
 See `docs/ARCHITECTURE.md`.
@@ -848,6 +858,90 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-01 — the renderer is held to `nodeValue` by the checker, and the item's own list missed the usual way to highlight
+
+`TODO.md`'s one unchecked item in `Now`, queued by the publishing run: the
+first decision above, edit `nodeValue` in place and never replace a text
+node, was held by one e2e page in Chromium, and a `splitText()` typed into
+`src/content/render-highlight.ts` would have passed `tsc`, the unit suites
+and every other e2e test.
+
+**Scope was read before it was chosen, and the item was wrong about one
+file.** The renderer imports `weave.ts` for a value, and `renderer.ts` and
+`core/types.ts` for types alone; it does not import `walker.ts`, which the
+item named. `weave.ts` is string and array work that touches no node. So
+`tests/tools/highlight-in-place.test.ts`, 9 tests in 2 new suites, reads
+the renderer and every module it imports for a value, transitively, and
+stops at `src/core/`, which core-purity holds to no DOM. A type-only import
+runs nothing and is not read: a probe importing `render-wrapped.ts`'s
+types, whose `replaceChild` would otherwise be read, stays green.
+
+**The set is closed rather than the deny list the item described, and the
+item's own list is the reason.** It named the `Node`, `ChildNode`,
+`ParentNode`, `Element` and `Text` members and three properties; it missed
+`Range`'s four — `surroundContents` is the usual way to highlight —
+`Document.adoptNode`, `Selection.deleteFromDocument` and
+`HTMLElement.innerText`. So every member the platform declares that the
+renderer touches, 22 in 45 uses, is named in `TOUCHES` with why it moves no
+node, only `Node.nodeValue` and `Highlight.priority` may be written, and one
+nobody named fails, as `OUTWARD` and `INWARD` close the workflows' actions.
+`RESTRUCTURES` names 37 members that do restructure and guards `TOUCHES`
+rather than the code, so none can be allowed by anyone who wrote a reason.
+
+**A member is keyed by the interface that declares it, and the library
+decides which that is.** TypeScript 5.9 redeclares `textContent` as
+accessors on `Element`, `CharacterData`, `DocumentFragment`, `Document`,
+`DocumentType` and `Attr`, so `el.textContent = ''`, which replaces the
+children, resolves to `Element.textContent`, and a text node's, which edits
+its data in place, to `CharacterData.textContent`. "Assignment to
+`textContent`", keyed as `Node.textContent`, would have missed every
+element's. A probe holding one use of each of the 37 fails if a key is
+misspelt or the library moves a member, and a member read off an `any`, the
+commonest way a name escapes the checker, is refused as unresolved.
+
+**The five probe tests passed on their first run**, the collector having
+been written with them, which says nothing about whether they can fail.
+Seven mutations of the collector — the owner dropped from the key, every
+use read, ECMAScript counted as the platform, type-only imports read, `any`
+unreported, a key misspelt, nothing erased — each failed the probe test it
+should, each file restored by md5. Then nine plants, each failing by file
+and line: `splitText` at `render-highlight.ts:65`, `surroundContents` with
+the `createElement` it needs, an element's `textContent`, `replaceWith` off
+an `any`, a helper module the renderer imports, named at
+`src/content/__write.ts:2`, and `TOUCHES` allowing `splitText`, losing
+`Range.setEnd`, naming a member nothing touches, and denying `nodeValue`'s
+write.
+
+**A floor of this run's own was vacuous on its first draft.** It counted
+names across every `scan()`, and the probe tests run first, so the
+renderer's floor could have passed on the probes' names after a walk that
+read nothing. It counts the renderer's graph alone now: 407 names and 45
+touches measured, floors at 300 and 30.
+
+Tools 504 → **513** / 126 → **128** suites, total 1221 → **1230**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **513 tools / 128**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**40 e2e passed and 3 skipped in 6.6 min**, then build and validate again.
+Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that a closed set beats the item's deny list,
+the item's list itself missing the usual way to highlight; that a
+type-only import is safe not to read, the build erasing it; that a project
+`.d.ts` is the platform's, `dom-types.d.ts` declaring browser APIs; and
+that the orchestrator is a second item rather than this one, its shape
+being a deny list.
+
+What needs a human: unchanged, everything below **B1** and the calls.
+`Now` holds one agent-shaped item, queued by this run: the rest of
+`src/content/` held to the same refusal.
 
 ### 2026-10-30 — the site's deploy gate and the release's tag gate were each held by a sentence
 
