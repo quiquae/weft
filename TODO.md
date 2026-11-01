@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-10-30:** every automatable check is green, measured at the end
+**State on 2026-11-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **504** tool tests / 126 suites, **40** e2e passing
+suites, **513** tool tests / 128 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1447,31 +1447,65 @@ registered**, and nothing below it can move until it is.
       1217 → **1221**, in six places, `docs/LAUNCH.md:221` first. No
       `CHANGELOG.md` paragraph: nothing that ships moved.
 
-- [ ] **Hold the highlight renderer to `nodeValue`, statically.** Queued
-      2026-10-30 by the run that landed the two items above. CLAUDE.md's
-      first decision is "Edit `nodeValue` in place; never replace a text
-      node", and what holds it is one e2e page,
-      `tests/e2e/pages/reconciler.html`, in Chromium. Read on 2026-10-30:
-      `src/content/render-highlight.ts`, the default renderer, touches the
-      page only at `:60` (`node.nodeValue = record.woven`) and `:92` (the
-      restore), while `render-wrapped.ts` calls `replaceChild` (`:84`) and
-      `insertBefore` (`:112`) by design, for screen-reader users. Nothing
-      refuses a `splitText()` or a `replaceWith()` typed into the highlight
-      renderer, which would pass `tsc`, the unit suites and every e2e test
-      but the reconciler's. The shape: a test in `tests/tools/` that builds
-      a `ts.Program` over `render-highlight.ts`, as
-      `tests/tools/core-purity.test.ts` does over `src/core/`, resolves
-      every call and property assignment to its declaration, and refuses
-      a structural DOM mutation declared by a browser's library — the
-      `Node`, `ChildNode`, `ParentNode`, `Element` and `Text` members that
-      insert, remove, replace, split or normalize, and assignment to
-      `textContent`, `innerHTML` or `outerHTML` — while allowing
-      `nodeValue` and `CharacterData.data`, which edit in place. Decide
-      first whether the rule covers only that file or every module it
-      imports (`weave.ts`, `walker.ts`), by reading what each does to a
-      page node; the tooltip and the styles append their own host, which
-      is not a page text node. Carry core-purity's in-memory probe, so a
-      planted `splitText` fails on every run. About an hour; it moves no
+- [x] **Hold the highlight renderer to `nodeValue`, statically.** Done
+      2026-11-01, the item the run before queued. CLAUDE.md's first
+      decision was held by one e2e page, in Chromium.
+      `tests/tools/highlight-in-place.test.ts`, 9 tests in 2 new suites.
+      **Scope, decided by reading first:** the renderer imports `weave.ts`
+      for a value and `renderer.ts` and `core/types.ts` for types alone;
+      it does not import `walker.ts`, which the item named; and `weave.ts`
+      is string and array work that touches no node. So the rule covers
+      the renderer and every module it imports for a value, transitively,
+      stopping at `src/core/`, which core-purity holds to no DOM. A
+      type-only import is not read: a probe importing `render-wrapped.ts`'s
+      types stays green. **The set is closed, not a deny list:** every
+      platform member the graph touches, 22 of them in 45 uses, is named in
+      `TOUCHES` with why it moves no node, and only `Node.nodeValue` and
+      `Highlight.priority` may be written, so a mutation nobody listed
+      fails too. The item's own list of interfaces missed Range's four
+      (`surroundContents` is the usual way to highlight),
+      `Document.adoptNode`, `Selection.deleteFromDocument` and
+      `HTMLElement.innerText`, which is the case for closing the set;
+      `RESTRUCTURES` names 37 and guards `TOUCHES` rather than the code, so
+      no reason can allow one. **Members are keyed by the interface that
+      declares them**, because TypeScript 5.9's library redeclares
+      `textContent` on `Element`, `CharacterData` and `DocumentFragment`:
+      "assignment to `textContent`" keyed as `Node.textContent` would have
+      missed every element's. A member read off an `any` is refused as
+      unresolved. Red first on all 45 uses with `TOUCHES` empty. The five
+      probe tests passed on their first run, the collector having been
+      written with them, so seven mutations of it, each restored by md5,
+      showed each can fail; and nine plants in the real renderer each
+      failed by file and line — `splitText`, `surroundContents`, an
+      element's `textContent`, `replaceWith` off an `any`, and a helper
+      module `__write.ts` the renderer imports, named at
+      `src/content/__write.ts:2` — besides four on `TOUCHES` itself.
+      Floors from the count, 407 names and 45 touches, read only over the
+      renderer's graph: the first draft counted the probes' names too,
+      which run first, so the floor could have passed on a walk that read
+      nothing. Tools 504 → **513** / 126 → **128** suites, total 1221 →
+      **1230**, in six places, `docs/LAUNCH.md:221` first. No
+      `CHANGELOG.md` paragraph: nothing that ships moved.
+
+- [ ] **Hold the rest of `src/content/` to the same refusal.** Queued
+      2026-11-01 by the run that landed the item above. The highlight path
+      runs through `src/content/index.ts`, the orchestrator both renderers
+      share, as well as through the renderer, and nothing refuses a
+      `node.parentNode.normalize()` typed there. Read on 2026-11-01 by
+      grep: only `render-wrapped.ts`, by design, `tooltip.ts`, its host,
+      shadow root and card, `styles.ts`, its `<style>`, and `announce.ts`,
+      its live region, call anything that restructures; `index.ts`,
+      `walker.ts`, `attention.ts`, `weave.ts` and `renderer.ts` call
+      nothing. The shape: a third `describe` in
+      `tests/tools/highlight-in-place.test.ts` that scans every file under
+      `src/content/` with the same `scan()` and refuses a `restructuring()`
+      touch outside an `OWN_ELEMENTS` table naming those four files with
+      why, which fails too when a named file stops restructuring. A deny
+      list here, not a closed set: the orchestrator touches observers,
+      events and timers, too many members for a closed set to be worth its
+      upkeep, and `TOUCHES` already closes the renderer itself. Add every
+      `src/content/` file to the program's roots first, since today it
+      holds only the renderer's graph. About 30 minutes; it moves no
       shipped file.
 
 ## Next
@@ -7058,6 +7092,26 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-01 — the highlight renderer is held to `nodeValue` by the
+checker.** Three things a later run would be sorry not to know:
+
+1. **A new DOM read in `render-highlight.ts` is one line**, in `TOUCHES` in
+   `tests/tools/highlight-in-place.test.ts`, keyed `Interface.member` as
+   the failure prints it. A write needs `write: true` as well. A member in
+   `RESTRUCTURES` cannot be allowed at all: edit `nodeValue` instead.
+2. **A key is the interface TypeScript's library declares the member on,
+   which is not always where you would look.** `textContent` is declared
+   on `Node` and redeclared as accessors on `Element`, `CharacterData`,
+   `DocumentFragment`, `Document`, `DocumentType` and `Attr`; `collapsed`
+   and `startContainer` are `AbstractRange`'s, not `Range`'s. Read the key
+   off the failure, never off memory.
+3. **TypeScript 5.9's library now declares most of
+   `src/content/dom-types.d.ts`** — `Highlight`, `HighlightRegistry`,
+   `CSS.highlights`, `caretPositionFromPoint` — so those members resolve
+   to two files, which `keyOf()` merges. The file is not redundant:
+   `interface CSS` is what lets `CSS as CSS` type-check, the library
+   giving `CSS` only as a namespace.
 
 **2026-10-30 — the publishing workflows are held to their gates.** Three
 things a later run would be sorry not to know:
