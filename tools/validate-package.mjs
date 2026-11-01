@@ -29,6 +29,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TARGETS } from '../manifest.config.mjs';
+import { installFaults } from './install-permissions.ts';
 import { PUBLISHER_KEY_X } from '../src/core/licence-key.ts';
 import { TEST_LICENCE_PUBLIC_JWK } from '../tests/fixtures/licence-keypair.ts';
 
@@ -91,13 +92,10 @@ async function validate(target, src) {
 
   /* ------------------------------------------------------- shipped seams */
 
-  if (m.host_permissions) {
-    fail(
-      target,
-      `host_permissions present (${m.host_permissions.join(', ')}) — that is the ` +
-        'test-build seam and must never ship; rebuild without --test',
-    );
-  }
+  // No static content_scripts, no host permission at install, and every web
+  // origin optional: the one refusal, which tests/tools/install-permissions
+  // holds every target's manifest to before anything is built.
+  for (const fault of installFaults(m, 'production')) fail(target, fault);
   if (String(m.name).includes('test build')) fail(target, 'name still says "test build"');
 
   /* -------------------------------------------------------- localisation */
