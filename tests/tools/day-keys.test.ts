@@ -276,10 +276,13 @@ function source(name: string): ts.SourceFile {
 
 // Read once, so a renamed or moved dayKey fails here rather than every test
 // below passing on a resolver that matches nothing.
-const DAY_KEY = source(ESCALATION).statements.find(
-  (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.name?.text === 'dayKey',
-);
-if (!DAY_KEY) throw new Error('src/core/escalation.ts declares no function dayKey');
+const DAY_KEY: ts.FunctionDeclaration = ((): ts.FunctionDeclaration => {
+  const found = source(ESCALATION).statements.find(
+    (s): s is ts.FunctionDeclaration => ts.isFunctionDeclaration(s) && s.name?.text === 'dayKey',
+  );
+  if (!found) throw new Error('src/core/escalation.ts declares no function dayKey');
+  return found;
+})();
 
 /* ------------------------------------------------------------ the tests */
 
