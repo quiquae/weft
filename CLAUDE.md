@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **518 pass**, 129 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **524 pass**, 131 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -180,10 +180,14 @@ from a user gesture on Weft's own first-run page, and the content script is
 registered with `scripting.registerContentScripts({persistAcrossSessions: true})`.
 This buys three things: no "read and change all your data on all websites"
 install warning, a clean answer to Chrome's narrow-permission review, and
-users handing over exactly the sites they want. `tests/e2e/licensing.spec.ts`
-("a fresh install is Free, and Free weaves") asserts a fresh install has zero
-granted origins and zero registered content scripts, which makes the answer
-demonstrable rather than assertable.
+users handing over exactly the sites they want. Until 2026-11-01 this
+paragraph said `tests/e2e/licensing.spec.ts` ("a fresh install is Free, and
+Free weaves") asserts a fresh install has zero granted origins and zero
+registered content scripts. It asserts neither — it reads the tier and that
+the page weaves — and no test has ever called either API. What holds today:
+`tools/validate-package.mjs` and `tools/verify-release.mjs` refuse
+`host_permissions` in a built package; no check yet refuses a static
+`content_scripts` by name, which is the first item in `TODO.md`'s `Now`.
 
 **Permissions are per-target, not shared.** Safari has never implemented
 `notifications`, so the Safari build does not declare it and falls back to the
@@ -223,7 +227,14 @@ the dashboard's yesterday, series and streak by 24 hours until 2026-10-25.
 `tests/core/day-arithmetic.test.ts` sets `TZ=Europe/London` in its own
 process, so that CI, which runs in UTC, has the clock changes too, and fails
 first if the zone did not take. A fixture that needs the real `Date.now()`
-takes its yesterday the same way, as noon on the calendar day before.
+takes its yesterday the same way, as noon on the calendar day before. Since
+2026-11-01 `tests/tools/day-keys.test.ts` holds it without a clock: it asks
+the checker for every call that runs `dayKey`, in every file under `src/`,
+through an alias, a re-export or a namespace too, and refuses one whose
+instant does a numeric `+` or `-`, in its argument or in a `const` that
+argument names, and a reference to `dayKey` handed on uncalled, as
+`stamps.map(dayKey)`. Hand `dayKey` the instant as read, and step the key
+with `shiftDay()`.
 
 **Some things are never gated at any price** — accessibility, the never-weave
 list, panic passes, data export, pronunciation and the etymologies.
@@ -864,6 +875,79 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-01 — `dayKey()` is held to the instant it is given, and a decision claimed a test that never existed
+
+`TODO.md`'s one unchecked item in `Now`, queued by the orchestrator's run:
+the decision that a day key is stepped by the calendar was held by
+`day-arithmetic.test.ts` for `attentionSummary` alone, and by a sentence in
+`shiftDay()`'s doc comment, and `dayKey(now - 86_400_000)` typed into a new
+function would have passed every check.
+
+**`tests/tools/day-keys.test.ts`, 6 tests in 2 new suites.** A call is
+`dayKey`'s when the checker's resolved signature is `escalation.ts`'s
+declaration, which reaches an import alias, a re-export and a namespace
+alike; it is refused when its first argument, or the value of a `const` that
+argument names, holds a numeric `+`, `-`, `+=` or `-=`. Beyond the item: a
+reference to `dayKey` neither called, imported nor exported is refused,
+because `stamps.map(dayKey)` is the original bug spelt functionally and no
+check can read its arguments. Not refused, each with a probe line: an index,
+a `+` that joins strings, a property of a `const` object, and the rollover
+hour. Measured: 66 files, 9 calls in 5, exactly the grep's 9, none refused;
+a floor wants 7.
+
+**Red first on a stub**, 4 of 5 failing, the floor reading "only 0 calls".
+**The first green run missed the call through the relay**: an in-memory
+probe importing another in-memory probe resolves only if the host's
+`fileExists` and `readFile` say it is there, since module resolution never
+asks `getSourceFile`. The other two guards' probes import only files on
+disk, so they never met it. A sixth test now compiles the probes, and its
+first run named a type error in the probe itself, `noUncheckedIndexedAccess`
+on an index. **And `tsc` refused what `node` ran**: a module-level `const`
+narrowed by `if (!x) throw` is still `T | undefined` inside a function that
+closes over it, and Node strips the types, so the file passed 6 of 6 and the
+gate's typecheck failed it in 3 seconds. Run `npx tsc --noEmit` on a new
+test file before believing its green run.
+
+Four plants in real files, each restored by md5, each failing by file and
+line: the original bug in `stats.ts` at `:117`, an aliased `keyOf` in the
+dashboard at `index.tsx:10`, a hoisted `const before` in the worker at
+`index.ts:149`, and `stamps.map(dayKey)` at `storage.ts:14`; and five
+mutations of the scanner, a blind resolver caught by the floor and four each
+by its probe line.
+
+**Looking for the next item found a decision above claiming a test that has
+never existed.** "No static `content_scripts`" said the fresh-install e2e
+test asserts zero granted origins and zero registered content scripts; it
+asserts the tier and the weave, and `git log -S getRegisteredContentScripts
+-- tests` is empty. The sentence dates from `ee277d2`, this file's first
+survey. Corrected above to what holds, and the guard queued first in `Now`.
+Found and left: the export's filename, `data.tsx:202`, takes the UTC date,
+so a backup made before 09:00 in Tokyo is named for the day before.
+
+Tools 518 → **524** / 129 → **131** suites, total 1235 → **1241**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the tree
+holding the guard: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **524 tools / 131**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**40 e2e passed and 3 skipped in 5.2 min**, then build and validate again.
+The first run stopped at the typecheck, exit 2, on the closure above. Only
+documents moved after it, so typecheck and `npm test` were run again on the
+final tree.
+
+Assumed, with nobody to ask: that a reference handed on is this item's to
+refuse, being the same bug; that a `const`'s value is the argument's, where
+a `let`'s is not knowable without flow analysis; and that correcting a false
+sentence in this file belongs in the run that found it, the guard behind it
+being the next item's.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item: the manifests held to no static
+`content_scripts`.
 
 ### 2026-11-01 — the orchestrator is held to the same refusal, and a file's allowance names its members
 

@@ -6,7 +6,7 @@
 
 **State on 2026-11-01:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **518** tool tests / 129 suites, **40** e2e passing
+suites, **524** tool tests / 131 suites, **40** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1520,34 +1520,74 @@ registered**, and nothing below it can move until it is.
       six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph:
       nothing that ships moved.
 
-- [ ] **Hold `dayKey()` to an instant, statically.** Queued 2026-11-01 by
-      the run that landed the item above. CLAUDE.md's decision "a day key
-      is stepped by the calendar, never by 86 400 000" is held by
-      `tests/core/day-arithmetic.test.ts`, which checks `attentionSummary`
-      under `TZ=Europe/London`, and by a sentence in the doc comment of
-      `shiftDay()`, beside it, `src/core/escalation.ts:107`: "Never
-      `dayKey(now - days * 86_400_000)`". Nothing refuses that call typed into a new function,
-      which passes every check but at the hour of a clock change. Read on
-      2026-11-01 by grep: `src/` calls `dayKey` 9 times —
-      `background/index.ts:148`, `background/storage.ts:165`, `:539` and
-      `:596`, `core/stats.ts:115`, `core/lock.ts:205` and `:447`,
-      `core/escalation.ts:139` and `:196` — each with `now` or
-      `Date.now()`, none with arithmetic. The shape: a new suite in
-      `tests/tools/`, `tests/core/` being free of I/O, that asks the
-      checker for every call resolving to `escalation.ts`'s `dayKey` in
-      every file under `src/`, through an alias or a re-export too, and
-      refuses one whose first argument holds a binary `+` or `-`: stepping
-      a key is `shiftDay()`'s. In-memory probe files, as
-      `highlight-in-place.test.ts` serves them, show it refusing
-      `dayKey(now - 86_400_000)`, `dayKey(now - i * DAY)` and an aliased
-      `import { dayKey as key }` on every run. Leave `tests/` out:
-      `tests/core/stats.test.ts:109`, `:116` and `:122` step by `now - d *
-      DAY` from a fixed noon on 14 September 2026, which no clock change
-      reaches, and `day-arithmetic.test.ts:43` and `:46` subtract a day on
-      purpose, to show the hazard. A `new Date(now - n * DAY_MS)` formatted
-      by hand would escape it; the durations `fsrs.ts`, `prune.ts`,
-      `licence.ts` and `background/providers/index.ts` measure in
-      milliseconds are right as they are. About 30 minutes; it moves no
+- [x] **Hold `dayKey()` to an instant, statically.** Done 2026-11-01, the
+      run after the one that queued it. `tests/tools/day-keys.test.ts`, 6
+      tests in 2 new suites. The checker is asked for every call whose
+      resolved signature is `escalation.ts`'s `dayKey`, in all 66 files under
+      `src/` — by name, an import alias, a re-export or a namespace, the
+      signature reaching all four — and a call is refused when its instant
+      does arithmetic: a numeric `+` or `-`, or `+=`/`-=`, in its first
+      argument, or in the value of a `const` that argument names, which
+      catches the step hoisted a line up. **Two things beyond the item**,
+      each assumed with nobody to ask: a reference to `dayKey` neither
+      called, imported nor exported is refused too, because
+      `stamps.map(dayKey)` calls it with arguments no check can read and is
+      the functional spelling of the original bug, and `dayKey.bind` or
+      `.call` with it; and three things are not refused, each with a probe
+      line — an index, `stamps[stamps.length - 1]`, which picks a stored
+      instant rather than stepping one; a `+` that joins strings, the
+      checker giving its type; and a property of a `const` object, whose
+      other properties are not the instant. Measured: 9 calls in 5 files,
+      exactly the 9 the grep found, none stepped and none handed on; a
+      floor wants 7. Red first on a stub, 4 of 5 failing, the floor
+      reading "only 0 calls". **The probe's call through the relay was not
+      found on the first green run**, and the cause is worth keeping: an
+      in-memory probe that imports another in-memory probe resolves only if
+      the host's `fileExists` and `readFile` say it is there, since module
+      resolution never asks `getSourceFile`. So a sixth test compiles the
+      probes, and on its first run it named a type error in the probe's own
+      index line, `noUncheckedIndexedAccess`. Four plants in real files,
+      each restored by md5, each failing by file and line: the original bug
+      in `stats.ts` at `:117`, an aliased `keyOf(Date.now() - 7 *
+      86_400_000)` in the dashboard at `index.tsx:10`, a hoisted `const
+      before` in the worker at `index.ts:149`, and `stamps.map(dayKey)` in
+      `storage.ts:14`; and five mutations of the scanner, a blind resolver
+      caught by the floor and four each by its probe line. Tools 518 →
+      **524** / 129 → **131** suites, total 1235 → **1241**, in six places,
+      `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
+      ships moved. Escapes, named in the file's header: a `let` assigned the
+      step in a statement of its own, a wrapper `(t) => dayKey(t)`, and a
+      day key formatted by hand, of which `src/` has none —
+      `escalation.ts:96–99` is the only `getFullYear`/`getMonth`/`getDate`
+      in it.
+
+- [ ] **Hold "no static `content_scripts`, no host permissions at
+      install" to all three manifests.** Queued 2026-11-01 by the run that
+      landed the item above. CLAUDE.md says `tests/e2e/licensing.spec.ts`
+      ("a fresh install is Free, and Free weaves") "asserts a fresh install
+      has zero granted origins and zero registered content scripts, which
+      makes the answer demonstrable rather than assertable". **It asserts
+      neither**: it reads the licence's tier and that the page weaves, and
+      `git log -S getRegisteredContentScripts -- tests` finds no test that
+      has ever called the API; the sentence was written in `ee277d2`, the
+      first survey, and was never true; CLAUDE.md's paragraph says what
+      holds since this run. What does hold: `tools/validate-package.mjs:94`
+      refuses `host_permissions` in every built package, and
+      `tools/verify-release.mjs:94` in the release GitHub serves.
+      What does not: nothing refuses a static `content_scripts` key in any
+      target's manifest, and nothing holds `optional_host_permissions` to
+      `['*://*/*']`. The shape: a test in `tests/tools/` over
+      `buildManifest(target)` for chrome, firefox and safari — no
+      `content_scripts`, no `host_permissions` outside `opts.test`,
+      `optional_host_permissions` exactly `['*://*/*']` — red first by
+      planting a `content_scripts` entry in `manifest.config.mjs` and
+      restoring it by md5; and, if it fits the slot, the e2e assertion the
+      sentence claims, `chrome.permissions.getAll()` and
+      `chrome.scripting.getRegisteredContentScripts()` read from the worker
+      before `configure()` grants anything (`tests/e2e/fixtures.ts:210`
+      grants `origins: []`). Then name the guard in CLAUDE.md's paragraph.
+      Read `manifest.config.mjs:107` first: the test build adds a
+      localhost host permission on purpose. About 45 minutes; it moves no
       shipped file.
 
 ## Next
@@ -7134,6 +7174,31 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-01 — `dayKey()` is held to the instant it is given.** Four
+things a later run would be sorry not to know:
+
+1. **An in-memory probe that imports another in-memory probe needs the
+   host's `fileExists` and `readFile` overridden**, not only
+   `getSourceFile`: module resolution asks whether a file exists, and the
+   import resolves to nothing otherwise, silently. `tests/tools/day-keys.test.ts`
+   does it, and compiles its probes in a test of its own, which names an
+   unresolved import or a type error in the probe directly. The other two
+   checker guards' probes import only files on disk.
+2. **`node --test` strips types, so a new test file can pass 6 of 6 and
+   fail `tsc`.** A module-level `const x = find(); if (!x) throw` is still
+   `T | undefined` inside every function that closes over it; give it a type
+   the closures can read, `const X: T = ((): T => { … })()`. Run
+   `npx tsc --noEmit` before believing a new file's green run.
+3. **Stepping a day in `src/` is `shiftDay(dayKey(now), n)`, and nothing
+   else passes the guard.** A wrapper `(t) => dayKey(t)` or a `let` assigned
+   the step a statement earlier escapes it, and is hiding rather than habit;
+   do not write either to get past a refusal.
+4. **CLAUDE.md claimed a test that never existed.** "No static
+   `content_scripts`" said the fresh-install e2e test asserts zero granted
+   origins and zero registered scripts; no test has ever called either API.
+   When a decision names the test that holds it, open the test: this one
+   had been read past by every survey since the first.
 
 **2026-11-01 — the rest of the content script is held to the same
 refusal.** Three things a later run would be sorry not to know:
