@@ -34,6 +34,17 @@
  * tooltip, the styles and the live region append elements of their own,
  * which are not page text, and it imports none of those either.
  *
+ * The renderer is not the only code in the page, so the rest is held too.
+ * The orchestrator, `index.ts`, walks, observes and weaves through it, and a
+ * `parentNode.normalize()` typed there would merge the very text nodes a
+ * framework holds. So every file the content script runs — each under
+ * `src/content/`, and each module the orchestrator imports for a value,
+ * `src/shared/`'s among them — is read the same way, and a restructuring is
+ * refused outside the files and members `OWN_ELEMENTS` names. That one is a
+ * deny list: the orchestrator touches observers, events, timers and
+ * messages, too many members for a closed set to be worth its upkeep, and
+ * the renderer that edits the page's text is closed already.
+ *
  * The check reads names, as core-purity's does: it is a guard against
  * reaching for a mutation by habit, not against hiding one.
  * `node['split' + 'Text']` and `Object.assign(node, { textContent })` name
@@ -126,6 +137,33 @@ const RESTRUCTURES: Record<string, { how: string; written?: true }> = {
   'Document.open': { how: 'replaces the document' },
   'Document.write': { how: 'inserts parsed markup, or replaces the document' },
   'Document.writeln': { how: 'inserts parsed markup, or replaces the document' },
+};
+
+/**
+ * The files the content script runs, besides the renderer, that restructure a
+ * tree, the members each restructures through, and why: a tree of its own,
+ * or, for the wrapped renderer, the page's text, replaced by design. Members
+ * as well as files, because a file allowed one restructuring is not allowed
+ * them all: the tooltip builds a card with `append`, and a hover highlight
+ * reaching for `range.surroundContents()` there is refused by name.
+ */
+const OWN_ELEMENTS: Record<string, { members: string[]; why: string }> = {
+  'src/content/announce.ts': {
+    members: ['Node.appendChild', 'Element.textContent', 'ChildNode.remove'],
+    why: 'appends a hidden live region of its own to the body, writes into it what a screen reader should say, and removes it when Weft stops',
+  },
+  'src/content/render-wrapped.ts': {
+    members: ['ParentNode.append', 'Element.textContent', 'Node.replaceChild', 'Node.insertBefore', 'Node.removeChild'],
+    why: 'replaces a text node with its own <weft-w> elements, and puts a text node back on revert, by design: screen-reader users need a real lang, and resolveRenderMode picks this renderer per page',
+  },
+  'src/content/styles.ts': {
+    members: ['Element.textContent', 'ParentNode.append', 'ChildNode.remove'],
+    why: 'where an engine has no constructable stylesheets, appends a <style> of its own to the head, and removes it when Weft stops',
+  },
+  'src/content/tooltip.ts': {
+    members: ['Element.attachShadow', 'Element.textContent', 'ParentNode.append', 'ChildNode.remove'],
+    why: 'builds the tooltip: its own <weft-tooltip> host, appended to the body, the closed shadow root it attaches, and the card inside, rebuilt on each hover',
+  },
 };
 
 /* ------------------------------------------------------------ the reader */
@@ -252,6 +290,27 @@ function scan(file: ts.SourceFile): { touches: Touch[]; unresolved: string[]; na
 function restructuring(touch: Touch): boolean {
   const entry = RESTRUCTURES[touch.key];
   return entry !== undefined && (!entry.written || touch.use === 'write');
+}
+
+/** How a touch uses its member, as a failure message says it. */
+function used(touch: Touch): string {
+  return touch.use === 'write' ? 'written' : touch.use === 'call' ? 'called' : 'read';
+}
+
+/**
+ * Each restructuring through a member `own` does not list for its file, as
+ * `src/<file>:<line> Interface.member, called, which …`.
+ */
+function strays(
+  scans: readonly { file: string; touches: readonly Touch[] }[],
+  own: Readonly<Record<string, { members: readonly string[] }>>,
+): string[] {
+  return scans
+    .flatMap((s) => {
+      const members = Object.hasOwn(own, s.file) ? (own[s.file]?.members ?? []) : [];
+      return s.touches.filter((t) => restructuring(t) && !members.includes(t.key));
+    })
+    .map((t) => `${t.at} ${t.key}, ${used(t)}, which ${RESTRUCTURES[t.key]?.how}`);
 }
 
 interface Edge {
@@ -417,7 +476,15 @@ const MUTATIONS_TEXT = [
   'export {};',
 ].join('\n');
 
-const PROBES: Record<string, string> = { [LOOKALIKES]: LOOKALIKES_TEXT, [MUTATIONS]: MUTATIONS_TEXT };
+/** What the orchestrator might type: the page's own text, merged with its neighbours. */
+const ORCHESTRATION = join(SRC, 'content/__orchestrator-probe__.ts');
+const ORCHESTRATION_TEXT = ['declare const text: Text;', 'text.parentNode?.normalize();', 'export {};'].join('\n');
+
+const PROBES: Record<string, string> = {
+  [LOOKALIKES]: LOOKALIKES_TEXT,
+  [MUTATIONS]: MUTATIONS_TEXT,
+  [ORCHESTRATION]: ORCHESTRATION_TEXT,
+};
 
 const config = ts.getParsedCommandLineOfConfigFile(join(ROOT, 'tsconfig.json'), {}, {
   ...ts.sys,
@@ -440,7 +507,18 @@ host.getSourceFile = (name, version, ...rest) => {
 const ambient = (readdirSync(SRC, { recursive: true }) as string[])
   .filter((f) => f.endsWith('.d.ts'))
   .map((f) => join(SRC, f));
-const program = ts.createProgram([RENDERER, ...ambient, ...Object.keys(PROBES)], options, host);
+// Every file under src/content/ the build compiles, whether or not the
+// orchestrator imports it; a .d.ts declares and runs nothing.
+const CONTENT = join(SRC, 'content');
+const contentFiles = (readdirSync(CONTENT, { recursive: true }) as string[])
+  .filter((f) => /\.tsx?$/.test(f) && !f.endsWith('.d.ts'))
+  .map((f) => join(CONTENT, f))
+  .sort();
+const program = ts.createProgram(
+  [...new Set([RENDERER, ...contentFiles, ...ambient, ...Object.keys(PROBES)])],
+  options,
+  host,
+);
 const checker = program.getTypeChecker();
 
 function source(name: string): ts.SourceFile {
@@ -454,6 +532,14 @@ const scanned = graph.files.map((f) => scan(source(f)));
 const touches = scanned.flatMap((s) => s.touches);
 const unresolved = scanned.flatMap((s) => s.unresolved);
 const namesRead = scanned.reduce((n, s) => n + s.names, 0);
+
+// The content script is the orchestrator and every module it imports for a
+// value, src/shared/'s among them, which run in the page as src/content/'s do.
+const ORCHESTRATOR = join(CONTENT, 'index.ts');
+const contentScript = graphOf(ORCHESTRATOR);
+const inPage = [...new Set([...contentFiles, ...contentScript.files])].sort();
+const pageScans = inPage.map((f) => ({ file: relative(ROOT, f), ...scan(source(f)) }));
+const pageNames = pageScans.reduce((n, s) => n + s.names, 0);
 
 /* ------------------------------------------------------------ the tests */
 
@@ -534,6 +620,16 @@ describe('the in-place check', () => {
     assert.deepEqual(verdict('./nowhere.ts', RENDERER), { refused: 'it does not resolve' });
     assert.deepEqual(verdict('a computed name', RENDERER), { refused: 'a computed module, which the check cannot follow' });
   });
+
+  test('refuses a restructuring through a member OWN_ELEMENTS does not list for its file', () => {
+    // A file named for one member is not allowed another, and a file not
+    // named is allowed none.
+    const probe = { file: relative(ROOT, ORCHESTRATION), ...scan(source(ORCHESTRATION)) };
+    const refused = ['src/content/__orchestrator-probe__.ts:2 Node.normalize, called, which merges adjacent text nodes and removes the rest'];
+    assert.deepEqual(strays([probe], {}), refused);
+    assert.deepEqual(strays([probe], { [probe.file]: { members: ['ParentNode.append'] } }), refused);
+    assert.deepEqual(strays([probe], { [probe.file]: { members: ['Node.normalize'] } }), []);
+  });
 });
 
 describe('src/content/render-highlight.ts', () => {
@@ -555,7 +651,7 @@ describe('src/content/render-highlight.ts', () => {
           const entry = TOUCHES[t.key];
           return entry === undefined || (t.use === 'write' && !entry.write);
         })
-        .map((t) => `${t.at} ${t.key}, ${t.use === 'write' ? 'written' : t.use === 'call' ? 'called' : 'read'}${restructuring(t) ? `, which ${RESTRUCTURES[t.key]?.how}` : ''}`),
+        .map((t) => `${t.at} ${t.key}, ${used(t)}${restructuring(t) ? `, which ${RESTRUCTURES[t.key]?.how}` : ''}`),
       [],
       'the highlight renderer edits nodeValue in place and never replaces a text node (CLAUDE.md): ' +
         'edit nodeValue instead; or, for a member that restructures nothing, name it in TOUCHES with why',
@@ -577,6 +673,54 @@ describe('src/content/render-highlight.ts', () => {
         problems.push(`${key}: the renderer no longer touches it, so TOUCHES should not name it`);
       } else if (entry.write && !mine.some((t) => t.use === 'write')) {
         problems.push(`${key}: the renderer no longer writes it, so TOUCHES should not let it`);
+      }
+    }
+    assert.deepEqual(problems, []);
+  });
+});
+
+describe('the content script', () => {
+  test('imports for a value only modules in src/, which the check reads', () => {
+    // Floors, set from the count on 2026-11-01 (12 files, 3 597 names), so a
+    // walk that reads nothing cannot pass for a content script that
+    // restructures nothing.
+    assert.ok(inPage.length >= 10, `only ${inPage.map((f) => relative(ROOT, f)).join(', ')} were read`);
+    assert.ok(pageNames >= 2500, `only ${pageNames} names were read in the content script`);
+    assert.deepEqual(contentScript.refused, []);
+  });
+
+  test('restructures a tree only through the files and members OWN_ELEMENTS names', () => {
+    assert.deepEqual(
+      strays(pageScans, OWN_ELEMENTS),
+      [],
+      'the page’s text is edited in place and never restructured (CLAUDE.md): edit it through the renderer instead; ' +
+        'or, where a file builds a tree of its own, name the file and the member in OWN_ELEMENTS with why',
+    );
+  });
+
+  test('reads no member off an any, where the check cannot say what it touches', () => {
+    assert.deepEqual(
+      pageScans.flatMap((s) => s.unresolved),
+      [],
+      'give the receiver a type, so the checker can resolve the member',
+    );
+  });
+
+  test('OWN_ELEMENTS names only files the content script runs, and members each still restructures through', () => {
+    const problems: string[] = [];
+    for (const [file, { members }] of Object.entries(OWN_ELEMENTS)) {
+      const mine = pageScans.find((s) => s.file === file);
+      if (!mine) {
+        problems.push(`${file}: the content script does not run it, so OWN_ELEMENTS should not name it`);
+        continue;
+      }
+      const through = new Set(mine.touches.filter(restructuring).map((t) => t.key));
+      if (through.size === 0) problems.push(`${file}: it no longer restructures anything, so OWN_ELEMENTS should not name it`);
+      for (const member of members) {
+        if (!RESTRUCTURES[member]) problems.push(`${file}: ${member} is not a member RESTRUCTURES names, so it needs no allowance`);
+        else if (through.size > 0 && !through.has(member)) {
+          problems.push(`${file}: it no longer restructures through ${member}, so OWN_ELEMENTS should not list it`);
+        }
       }
     }
     assert.deepEqual(problems, []);
