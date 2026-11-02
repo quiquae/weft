@@ -11,8 +11,9 @@
  * `tools/validate-package.mjs` refuses a package that still carries them.
  *
  * `tests/tools/install-permissions.test.ts` holds every target's manifest to
- * `installFaults()`, in both builds, and `npm run validate` runs it on the
- * bytes of each built package.
+ * `installFaults()`, in both builds; `npm run validate` runs it on the bytes
+ * of each built package, and `npm run verify:release` on the package GitHub
+ * serves.
  */
 
 /** Every web origin: what the per-origin consent design requests from. */

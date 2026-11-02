@@ -22,6 +22,7 @@ import { existsSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { installFaults } from './install-permissions.ts';
 
 const tag = process.argv[2] ?? '';
 const work = await mkdtemp(join(tmpdir(), 'weft-verify-'));
@@ -89,11 +90,9 @@ const ext = realpathSync(join(work, folder));
 
 const manifest = JSON.parse(await readFile(join(ext, 'manifest.json'), 'utf8'));
 check('manifest is v3', manifest.manifest_version === 3);
-check(
-  'no host permissions ship',
-  manifest.host_permissions === undefined,
-  manifest.host_permissions ? manifest.host_permissions.join(',') : '',
-);
+// The refusal tests/tools/install-permissions holds every manifest to.
+const reach = installFaults(manifest, 'production');
+check('no static content scripts or host permissions ship', reach.length === 0, reach.join('; '));
 check('name is not the test build', !String(manifest.name).includes('test build'));
 check('locales are present', existsSync(join(ext, '_locales', 'en', 'messages.json')));
 

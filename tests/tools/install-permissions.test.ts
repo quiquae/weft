@@ -14,7 +14,8 @@
  * package, and nothing refused a static `content_scripts` key anywhere. So
  * `installFaults()` in `tools/install-permissions.ts` is the one refusal,
  * run here on what `buildManifest()` writes for every target, production
- * and test build, and by `npm run validate` on each built package's bytes.
+ * and test build, by `npm run validate` on each built package's bytes, and
+ * by `npm run verify:release` on the package GitHub serves.
  * The probes are manifests that live only in this file, so the refusal is
  * shown to fire on every run.
  *
@@ -132,14 +133,22 @@ describe('the three manifests', () => {
   });
 });
 
-describe('the package gate', () => {
-  test('npm run validate refuses with the same function, on the bytes it validates', () => {
-    const gate = readFileSync(join(ROOT, 'tools/validate-package.mjs'), 'utf8');
-    assert.match(
-      gate,
-      /import \{ installFaults \} from '\.\/install-permissions\.ts';/,
-      'tools/validate-package.mjs no longer imports installFaults',
-    );
-    assert.match(gate, /installFaults\(m, 'production'\)/, 'tools/validate-package.mjs no longer refuses with it');
-  });
+describe('the package gates', () => {
+  // `npm run validate` reads each package `npm run build:all` writes, and
+  // `npm run verify:release` each one GitHub serves; both refuse with the
+  // function the probes above hold, rather than with a check of their own.
+  for (const [gate, manifest] of [
+    ['tools/validate-package.mjs', 'm'],
+    ['tools/verify-release.mjs', 'manifest'],
+  ] as const) {
+    test(`${gate} refuses with the same function, on the bytes it reads`, () => {
+      const source = readFileSync(join(ROOT, gate), 'utf8');
+      // assert.ok rather than assert.match, which would print the whole file.
+      assert.ok(
+        /import \{ installFaults \} from '\.\/install-permissions\.ts';/.test(source),
+        `${gate} does not import installFaults`,
+      );
+      assert.ok(source.includes(`installFaults(${manifest}, 'production')`), `${gate} does not refuse with it`);
+    });
+  }
 });

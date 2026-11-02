@@ -66,8 +66,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **524 pass**, 131 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **40 pass, 3 skipped**, 1.4 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **536 pass**, 134 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **41 pass, 3 skipped**, 1.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for each of the three |
@@ -183,11 +183,21 @@ install warning, a clean answer to Chrome's narrow-permission review, and
 users handing over exactly the sites they want. Until 2026-11-01 this
 paragraph said `tests/e2e/licensing.spec.ts` ("a fresh install is Free, and
 Free weaves") asserts a fresh install has zero granted origins and zero
-registered content scripts. It asserts neither — it reads the tier and that
-the page weaves — and no test has ever called either API. What holds today:
-`tools/validate-package.mjs` and `tools/verify-release.mjs` refuse
-`host_permissions` in a built package; no check yet refuses a static
-`content_scripts` by name, which is the first item in `TODO.md`'s `Now`.
+registered content scripts. It asserted neither, and no test had ever called
+either API. Since 2026-11-02 `installFaults()` in
+`tools/install-permissions.ts` is the one refusal — a `content_scripts` key
+in either build, `host_permissions` in production, a test build granting
+beyond loopback, a host pattern under `permissions`, and an
+`optional_host_permissions` other than exactly every web origin.
+`tests/tools/install-permissions.test.ts` holds every target's
+`buildManifest()` to it, both builds; `npm run validate` runs it on each
+built package's bytes, and `npm run verify:release` on what GitHub serves.
+And `tests/e2e/privacy.spec.ts` ("what a fresh install may touch") reads
+the real worker after its install handler has run: no static scripts in
+the loaded manifest, granted origins exactly the declared ones, and no
+content script registered until the user names a site. The test build's
+localhost permission (`manifest.config.mjs:107`) is on purpose, and is the
+only host it may name.
 
 **Permissions are per-target, not shared.** Safari has never implemented
 `notifications`, so the Safari build does not declare it and falls back to the

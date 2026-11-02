@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-01:** every automatable check is green, measured at the end
+**State on 2026-11-02:** every automatable check is green, measured at the end
 of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **524** tool tests / 131 suites, **40** e2e passing
+suites, **536** tool tests / 134 suites, **41** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -1561,34 +1561,66 @@ registered**, and nothing below it can move until it is.
       `escalation.ts:96–99` is the only `getFullYear`/`getMonth`/`getDate`
       in it.
 
-- [ ] **Hold "no static `content_scripts`, no host permissions at
-      install" to all three manifests.** Queued 2026-11-01 by the run that
-      landed the item above. CLAUDE.md says `tests/e2e/licensing.spec.ts`
-      ("a fresh install is Free, and Free weaves") "asserts a fresh install
-      has zero granted origins and zero registered content scripts, which
-      makes the answer demonstrable rather than assertable". **It asserts
-      neither**: it reads the licence's tier and that the page weaves, and
-      `git log -S getRegisteredContentScripts -- tests` finds no test that
-      has ever called the API; the sentence was written in `ee277d2`, the
-      first survey, and was never true; CLAUDE.md's paragraph says what
-      holds since this run. What does hold: `tools/validate-package.mjs:94`
-      refuses `host_permissions` in every built package, and
-      `tools/verify-release.mjs:94` in the release GitHub serves.
-      What does not: nothing refuses a static `content_scripts` key in any
-      target's manifest, and nothing holds `optional_host_permissions` to
-      `['*://*/*']`. The shape: a test in `tests/tools/` over
-      `buildManifest(target)` for chrome, firefox and safari — no
-      `content_scripts`, no `host_permissions` outside `opts.test`,
-      `optional_host_permissions` exactly `['*://*/*']` — red first by
-      planting a `content_scripts` entry in `manifest.config.mjs` and
-      restoring it by md5; and, if it fits the slot, the e2e assertion the
-      sentence claims, `chrome.permissions.getAll()` and
-      `chrome.scripting.getRegisteredContentScripts()` read from the worker
-      before `configure()` grants anything (`tests/e2e/fixtures.ts:210`
-      grants `origins: []`). Then name the guard in CLAUDE.md's paragraph.
-      Read `manifest.config.mjs:107` first: the test build adds a
-      localhost host permission on purpose. About 45 minutes; it moves no
-      shipped file.
+- [x] **Hold "no static `content_scripts`, no host permissions at
+      install" to all three manifests.** Done 2026-11-02, the run after it
+      was queued. `installFaults()` in `tools/install-permissions.ts` is one
+      refusal: a `content_scripts` key in either build, an empty one too;
+      `host_permissions` in a production build; a test build's beyond the
+      loopback hosts; a match pattern or `<all_urls>` under `permissions`,
+      which the item did not name and which is the other way to ask for a
+      site at install; and an `optional_host_permissions` other than
+      exactly every web origin. `tests/tools/install-permissions.test.ts`,
+      12 tests in 3 suites: seven on probe manifests that live only in the
+      file, every target's `buildManifest()` in both builds, read from
+      `TARGETS`, and both package gates — `tools/validate-package.mjs` and
+      `tools/verify-release.mjs` refuse with it now, in place of their own
+      `host_permissions` checks. **And the e2e assertion the sentence
+      claimed exists**, in `tests/e2e/privacy.spec.ts`, "what a fresh
+      install may touch": once the install handler has opened the first-run
+      page, which it does only after `registerContentScripts()` resolves,
+      the loaded manifest has no `content_scripts`, `permissions.getAll()`
+      holds exactly the declared origins — the loopback seam here, none in
+      a production build — and `getRegisteredContentScripts()` is empty;
+      then `configure()` names the site and one is registered, so the empty
+      read is shown to see a registration. Red first by plants, each
+      restored by md5: a static `content_scripts` (all three targets, both
+      builds), `host_permissions` outside `opts.test`, the optional widened
+      to `<all_urls>`, the seam widened to `https://*/*`, `<all_urls>`
+      among the core permissions, the function blinded (six probes red,
+      the manifest tests green, which is why the probes exist), and the
+      gate's call removed; a planted `content_scripts` built and validated,
+      exit 1 naming chrome, firefox and safari; and in the browser a static
+      script in the test build, a default of `everywhere-except`, which
+      registers on install, and the read blinded, which the control names.
+      **Found on the way: three reviewer-facing passages** —
+      `docs/SUBMIT.md:184`, `docs/STORE-LISTING.md:319` and
+      `docs/READY-TO-SUBMIT.md:221` — sent a reviewer to `licensing.spec.ts`
+      for the check it never made; they name the two tests now. README's
+      "39 passed, 3 skipped" was two sweeps stale and no longer repeats the
+      count. Tools 524 → **536** / 131 → **134** suites, e2e 40 → **41**,
+      total 1241 → **1254**, in six places, `docs/LAUNCH.md:221` first. No
+      `CHANGELOG.md` paragraph: nothing that ships moved. `verify-release`
+      cannot run until B2, so it was checked to parse and its import to
+      load, not run.
+
+- [ ] **Name a data export for the day it was made, where the user is.**
+      Found 2026-11-01 by the `dayKey()` guard's run and queued by the run
+      above. `src/ui/options/data.tsx:202` names the file
+      `` `weft-${new Date().toISOString().slice(0, 10)}.json` ``, the UTC
+      date, so an export made before 09:00 in Tokyo is named for the day
+      before, and one made after 16:00 in California for the day after. The
+      shape: `dayKey(Date.now(), 0)` from `src/core/escalation.ts:94`, the
+      local calendar date with no rollover, which the day-keys guard reads
+      as an instant handed over unstepped. Test first under
+      `TZ=Asia/Tokyo` at an instant before 09:00 local, as
+      `tests/core/day-arithmetic.test.ts` sets `TZ=Europe/London` in its own
+      process; the filename is built inline in a component, so the first
+      step is a small pure helper the test can call. Leave
+      `src/core/stats.ts:193` alone: `retirementSeries` labels its weeks in
+      UTC on purpose. It moves `src/`, so all three screenshot groups go
+      stale by provenance: regenerate each on a test build, expect
+      byte-identical, and stamp each with `npm run artefacts:verify`. About
+      an hour with the regeneration.
 
 ## Next
 
@@ -7174,6 +7206,32 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-02 — no manifest reaches a site at install, and a fresh install
+is read in the browser.** Four things a later run would be sorry not to
+know:
+
+1. **A match pattern in a block comment ends the comment.** `*://*/*`
+   holds `*/`, so the first draft of
+   `tests/tools/install-permissions.test.ts`'s header closed itself at its
+   sixth line, and Node's type stripper said only "Expected ';', '}' or
+   <eof>", naming neither the pattern nor the comment. Write a pattern in
+   a `/** */` comment as words ("every web origin"), or put it in code.
+2. **The install handler opens the first-run page only after
+   `registerContentScripts()` and `setupContextMenus()` resolve**
+   (`src/background/index.ts`, `onInstalled`), so in an e2e test the
+   onboarding tab appearing is the sign the handler has finished. Poll
+   `context.pages()` for its URL rather than waiting on the `page` event,
+   which can fire before the tab has its URL.
+3. **`host_permissions` is a substring of `optional_host_permissions`**,
+   so a test that a fault "names" a key by `includes()` takes a fault about
+   one for the other. `onlyFault()` in the new test matches the key as a
+   word; and it uses `assert.ok(re.test(source))` where `assert.match`
+   would print a whole source file into the failure.
+4. **Assumed: `tools/verify-release.mjs` takes the shared refusal too**,
+   though it cannot run until B2 (the repository is private and 1.0.1 is
+   untagged). It was checked to parse, and its import to load; the first
+   real `npm run verify:release` after B2 is its first run.
 
 **2026-11-01 — `dayKey()` is held to the instant it is given.** Four
 things a later run would be sorry not to know:
