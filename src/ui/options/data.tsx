@@ -2,6 +2,7 @@ import { useRef, useState } from 'preact/hooks';
 import type { Settings } from '../../core/types.ts';
 import { getLanguage } from '../../core/languages.ts';
 import { send } from '../../shared/rpc.ts';
+import { exportFilename } from '../../core/escalation.ts';
 import { has } from '../../core/entitlements.ts';
 import { Locked } from './pro.tsx';
 import { Notice, Row, Section, Slider, Switch } from '../components/pieces.tsx';
@@ -199,7 +200,7 @@ function DataRow() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `weft-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.download = exportFilename(Date.now());
     anchor.click();
     URL.revokeObjectURL(url);
     setMessage(
