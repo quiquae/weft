@@ -4,12 +4,14 @@ import {
   defaultSettings,
   validateSettings,
   migrateSettings,
-  syncSafeSettings,
+  exportSafeSettings,
+  keepLocalOnly,
+  LOCAL_ONLY_PATHS,
   DIFFICULTY_PRESETS,
   DEFAULT_POS,
   SCHEMA_VERSION,
 } from '../../src/core/settings.ts';
-import { applyPatch } from '../../src/core/patch.ts';
+import { applyPatch, getPath } from '../../src/core/patch.ts';
 import { DEFAULT_EXCLUSIONS } from '../../src/core/sites.ts';
 import { NOW } from '../helpers.ts';
 
@@ -173,23 +175,94 @@ describe('migrateSettings', () => {
   });
 });
 
-describe('syncSafeSettings', () => {
-  test('strips every API key', () => {
-    const s = applyPatch(defaultSettings(NOW, ID), {
-      'providers.deepl.key': 'secret-1',
-      'providers.google.key': 'secret-2',
-      'providers.openai.key': 'secret-3',
-    });
-    const safe = syncSafeSettings(s);
-    assert.equal(safe.providers.deepl.key, '');
-    assert.equal(safe.providers.google.key, '');
-    assert.equal(safe.providers.openai.key, '');
-    assert.equal(s.providers.deepl.key, 'secret-1', 'input must not be mutated');
+/**
+ * The fields that stay on the machine they were typed on.
+ *
+ * Three provider keys and the install id. `exportAll` writes
+ * `exportSafeSettings` and `importAll` writes `keepLocalOnly`, both read
+ * `LOCAL_ONLY_PATHS`, so the list is the one place a fourth key has to be
+ * named — and the last test fails on a settings field named like a secret
+ * that nobody named there. `syncSafeSettings`, which these tests used to hold,
+ * hand-wrote the three keys, left the install id in, and had no caller.
+ */
+describe('the fields that stay on this machine', () => {
+  const KEYED = applyPatch(defaultSettings(NOW, ID), {
+    'providers.deepl.key': 'secret-1',
+    'providers.google.key': 'secret-2',
+    'providers.openai.key': 'secret-3',
   });
 
-  test('keeps non-secret provider configuration', () => {
-    const s = applyPatch(defaultSettings(NOW, ID), { 'providers.openai.model': 'my-model' });
-    assert.equal(syncSafeSettings(s).providers.openai.model, 'my-model');
+  test('an export copy blanks every one of them', () => {
+    const safe = exportSafeSettings(KEYED);
+    for (const path of LOCAL_ONLY_PATHS) assert.equal(getPath(safe, path), '', `${path} survived the export`);
+    assert.equal(KEYED.providers.deepl.key, 'secret-1', 'input must not be mutated');
+    assert.equal(KEYED.installId, ID, 'input must not be mutated');
+  });
+
+  test('an export copy keeps non-secret provider configuration', () => {
+    const s = applyPatch(KEYED, { 'providers.openai.model': 'my-model', 'providers.deepl.free': false });
+    const safe = exportSafeSettings(s);
+    assert.equal(safe.providers.openai.model, 'my-model');
+    assert.equal(safe.providers.deepl.free, false);
+  });
+
+  test('an import keeps this machine’s value for every one of them, and nothing else', () => {
+    const file = applyPatch(defaultSettings(NOW, 'their-install'), {
+      'providers.openai.key': 'their-key',
+      'weave.ceilingRatio': 0.5,
+    });
+    const kept = keepLocalOnly(file, KEYED);
+    for (const path of LOCAL_ONLY_PATHS) {
+      assert.equal(getPath(kept, path), getPath(KEYED, path), `${path} arrived from the file`);
+    }
+    assert.equal(kept.weave.ceilingRatio, 0.5, 'an import kept more than the local-only fields');
+    assert.equal(file.providers.openai.key, 'their-key', 'input must not be mutated');
+  });
+
+  test('every path names a string field, so a misspelt one cannot blank nothing', () => {
+    // setPath creates a path that is not there, so a typo here would write a
+    // new empty field into the export and leave the real key beside it.
+    const d = defaultSettings(NOW, ID);
+    for (const path of LOCAL_ONLY_PATHS) {
+      assert.equal(typeof getPath(d, path), 'string', `${path} is not a string field of the settings`);
+    }
+  });
+
+  test('every field named like a secret is one of them', () => {
+    // Derived from the settings' own shape, not a list: a fourth provider's
+    // key would otherwise go into every export until somebody remembered.
+    // The last segment is read whole, since `a11y.keyboardCursor` contains "key".
+    const SECRET = /^(key|secret|token|password)$|(Key|Secret|Token|Password)$/;
+    const leaves: string[] = [];
+    const walk = (o: unknown, at: string[]): void => {
+      if (o && typeof o === 'object' && !Array.isArray(o)) {
+        for (const [k, v] of Object.entries(o)) walk(v, [...at, k]);
+      } else leaves.push(at.join('.'));
+    };
+    walk(defaultSettings(NOW, ID), []);
+    const secret = leaves.filter((p) => SECRET.test(p.split('.').at(-1) ?? ''));
+    assert.ok(secret.length >= 3, `only ${secret.length} secret-looking fields were found, so the walk read nothing`);
+    for (const path of secret) {
+      assert.ok(LOCAL_ONLY_PATHS.includes(path), `${path} looks like a secret and is not in LOCAL_ONLY_PATHS`);
+    }
+  });
+
+  test('every address a key is sent to stays with the key', () => {
+    // A key kept while its endpoint arrives by file is a key sent wherever the
+    // file says: `providers.openai.key` goes to `providers.openai.baseUrl`.
+    // So a field beside a key that names where requests go is local too.
+    const ADDRESS = /url|endpoint|host/i;
+    const d = defaultSettings(NOW, ID) as unknown as Record<string, unknown>;
+    const beside: string[] = [];
+    for (const path of LOCAL_ONLY_PATHS.filter((p) => p.split('.').at(-1) === 'key')) {
+      const parent = path.split('.').slice(0, -1).join('.');
+      const siblings = Object.keys((getPath(d, parent) ?? {}) as Record<string, unknown>);
+      for (const name of siblings) if (ADDRESS.test(name)) beside.push(`${parent}.${name}`);
+    }
+    assert.ok(beside.length >= 1, 'no address was found beside any key, so the walk read nothing');
+    for (const path of beside) {
+      assert.ok(LOCAL_ONLY_PATHS.includes(path), `${path} is where a key is sent, and a file could change it`);
+    }
   });
 });
 
