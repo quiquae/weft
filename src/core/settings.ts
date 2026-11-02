@@ -530,20 +530,25 @@ export function keepLocalOnly(incoming: Settings, current: Settings): Settings {
  * host this machine never sends from, missing from the file. The options page
  * has no control for `order` or `neverSendHosts`, so a file is the only thing
  * that has ever changed either.
+ *
+ * A literal rather than `Object.freeze()`, as `LOCAL_ONLY_PATHS` is: esbuild
+ * keeps a top-level call it cannot prove pure, so a frozen table rode along,
+ * unread, in every bundle that imports this module — 490 bytes each of the
+ * options page and the first-run page. The type keeps it read-only.
  */
 export const SENDING_PATHS: ReadonlyArray<{
   path: string;
   more: 'on' | 'higher' | 'lower' | 'added' | 'dropped';
   /** What the import message says was left out. */
   label: string;
-}> = Object.freeze([
+}> = [
   { path: 'providers.enabled', more: 'on', label: 'turning lookups on' },
   { path: 'providers.sendContext', more: 'on', label: 'sending sentence context' },
   { path: 'providers.order', more: 'added', label: 'adding a service' },
   { path: 'providers.neverSendHosts', more: 'dropped', label: 'removing a host from the never-send list' },
   { path: 'providers.dailyLookupCap', more: 'higher', label: 'raising the daily lookup limit' },
   { path: 'providers.cacheDays', more: 'lower', label: 'keeping answers for less time' },
-]);
+];
 
 /** The file's value where it sends no more than this machine's, and otherwise what it may have. */
 function noMoreThan(more: (typeof SENDING_PATHS)[number]['more'], file: unknown, here: unknown): unknown {
