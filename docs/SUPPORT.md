@@ -140,7 +140,9 @@ and your reading history, with API keys and the install id stripped. Import
 merges, keeping whichever record shows more learning, so moving between
 machines never loses progress in either direction. Your API keys, and the
 address of any OpenAI-compatible service, stay on the machine you typed them
-on, so type them in again on a new one.
+on, so type them in again on a new one. Switch the translation service on
+there yourself too: an import can turn lookups and sentence context off, but
+never on.
 
 Export is never a paid feature, and neither are accessibility, the
 never-weave list, panic passes, pronunciation or the etymologies. A test

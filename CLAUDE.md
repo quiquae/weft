@@ -64,7 +64,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **588 pass**, 140 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **607 pass**, 142 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **539 pass**, 136 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **42 pass, 3 skipped**, 4.8 min here |
@@ -273,7 +273,17 @@ which sends the key, as a bearer token, wherever the file says.
 `tests/core/settings.test.ts` fails on a field named like a secret, or an
 address beside a key, that the list does not name, and
 `tests/tools/no-sync.test.ts` on any `sync` in `src/`, `docs/PRIVACY.md`
-saying nothing is synced.
+saying nothing is synced. **And a file may make this machine send less to a
+translation service, never more**: `SENDING_PATHS`, beside the list, names
+each provider field that decides what leaves and which way sends more —
+lookups on, sentence context on, a service the order lacks, a never-send
+host dropped, a higher lookup limit, a shorter cache — and
+`sendNoMoreThan()` keeps this machine's value wherever a file's would send
+more, a narrowing landing at once. Until 2026-11-02 an import took them all,
+so keeping the keys left a machine with a key and lookups off one line of a
+file from sending its reading to that key's service. Not the cooldown:
+privacy is not difficulty. The same test file fails on a provider field
+classed as none, or more than one, of local, sending and neither.
 
 **Generated files record when their content was built, not when the build
 ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when

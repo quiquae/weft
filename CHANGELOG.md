@@ -732,6 +732,17 @@ can point a key at another server; the import says so when a file held keys
 it did not bring. The privacy page also described a settings sync that has
 never existed, and says now that nothing is synced.
 
+**An imported file could switch a translation service on.** With the keys
+staying put, a machine holding a key with lookups switched off imported a
+file's `on` as it came, and started sending words to that key's service; a
+file's sentence-context setting did the same for the sentence around each
+word, which the interface calls a separate, explicit opt-in. An import can
+now make Weft send less to a translation service and never more. A file can
+switch lookups or context off, at once, and cannot switch either on, add a
+service, take a host off the never-send list, raise the daily lookup limit
+or shorten how long answers are kept; those stay as the machine has them,
+and the import says what it left out.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -752,7 +763,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1271 tests: 588 unit, 102 in jsdom, 539 over the build tools, and
+**Built with** 1290 tests: 607 unit, 102 in jsdom, 539 over the build tools, and
 42 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
