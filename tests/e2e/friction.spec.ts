@@ -634,6 +634,32 @@ test.describe('taking your data with you', () => {
       'importing an older export erased a pending change — that is a cooldown bypass',
     ).toBe(1);
   });
+
+  test('the button names the file for the day it was made, where the user is', async ({
+    context,
+    extensionId,
+  }) => {
+    /*
+     * `tests/core/export-filename.test.ts` holds the name; this holds that the
+     * button asks for it. The instant is 08:30 on 3 November in Tokyo and
+     * 23:30 on the 2nd in UTC, so a name taken from the UTC date reads the
+     * day before.
+     */
+    const page = await context.newPage();
+    await page.clock.setFixedTime(Date.UTC(2026, 10, 2, 23, 30));
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Emulation.setTimezoneOverride', { timezoneId: 'Asia/Tokyo' });
+    expect(
+      await page.evaluate(() => new Date().getHours()),
+      'the page is not at 08:30 in Tokyo, so this proves nothing',
+    ).toBe(8);
+
+    const download = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Export everything' }).click();
+    expect((await download).suggestedFilename()).toBe('weft-2026-11-03.json');
+    await page.close();
+  });
 });
 
 test.describe('turning a site on from the popup', () => {

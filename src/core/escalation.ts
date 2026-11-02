@@ -116,6 +116,18 @@ export function shiftDay(key: string, days: number): string {
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
 }
 
+/**
+ * What a data export is called: the day it was made, where the user is.
+ *
+ * The rollover is 0 because this is a date on a file rather than a day of
+ * reading, so a backup made at 02:00 on the 3rd belongs to the 3rd. And it is
+ * `dayKey`'s local date rather than `toISOString()`'s, which is UTC's, and
+ * which named a backup made before 09:00 in Tokyo for the day before.
+ */
+export function exportFilename(now: number): string {
+  return `weft-${dayKey(now, 0)}.json`;
+}
+
 export interface TickResult {
   attention: SiteAttention;
   /** True when the day rolled over during this tick. */
