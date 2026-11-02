@@ -7,6 +7,8 @@ import {
   exportSafeSettings,
   keepLocalOnly,
   LOCAL_ONLY_PATHS,
+  sendNoMoreThan,
+  SENDING_PATHS,
   DIFFICULTY_PRESETS,
   DEFAULT_POS,
   SCHEMA_VERSION,
@@ -262,6 +264,99 @@ describe('the fields that stay on this machine', () => {
     assert.ok(beside.length >= 1, 'no address was found beside any key, so the walk read nothing');
     for (const path of beside) {
       assert.ok(LOCAL_ONLY_PATHS.includes(path), `${path} is where a key is sent, and a file could change it`);
+    }
+  });
+});
+
+/**
+ * What a file may change about what this machine sends to a translation service.
+ *
+ * `importAll` reads `sendNoMoreThan` beside `keepLocalOnly`: a file may make
+ * this machine send less, at once, and never more. `SENDING_PATHS` says, for
+ * each field that decides what leaves, which way is more — on rather than
+ * off, a sentence rather than a word, another service, a host this machine
+ * keeps back, more words at a time, the same word again sooner. The last test
+ * fails on a provider field nobody has put in one of the three kinds, so a
+ * fourth way of sending more is decided when it is written, not after a file
+ * has used it.
+ */
+describe('what an import may send', () => {
+  const D = [...DEFAULT_EXCLUSIONS];
+
+  // [path, this machine's value, the file's, what lands]. A file's value lands
+  // exactly when it sends no more; otherwise the machine keeps its own.
+  const CASES: Array<[string, unknown, unknown, unknown]> = [
+    ['providers.enabled', false, true, false],
+    ['providers.enabled', true, false, false],
+    ['providers.sendContext', false, true, false],
+    ['providers.sendContext', true, false, false],
+    ['providers.order', ['deepl'], ['deepl', 'openai'], ['deepl']],
+    ['providers.order', ['deepl', 'openai'], ['openai'], ['openai']],
+    // A service already in the order is one this machine already uses, as a
+    // fallback, so trying it first sends nothing to anyone new.
+    ['providers.order', ['deepl', 'openai'], ['openai', 'deepl'], ['openai', 'deepl']],
+    ['providers.neverSendHosts', [...D, 'mybank.example'], D, [...D, 'mybank.example']],
+    ['providers.neverSendHosts', D, [...D, 'clinic.example'], [...D, 'clinic.example']],
+    ['providers.dailyLookupCap', 500, 5000, 500],
+    ['providers.dailyLookupCap', 5000, 500, 500],
+    ['providers.cacheDays', 90, 1, 90],
+    ['providers.cacheDays', 1, 90, 90],
+  ];
+
+  // The never-send list starts with sixty shipped hosts, which a test name need not spell out.
+  const show = (v: unknown): string =>
+    Array.isArray(v) && D.every((host, i) => v[i] === host)
+      ? JSON.stringify(['…defaults', ...v.slice(D.length)])
+      : JSON.stringify(v);
+
+  for (const [path, here, file, lands] of CASES) {
+    const sends = JSON.stringify(lands) === JSON.stringify(file) ? 'no more' : 'more';
+    test(`${path} ${show(here)} → ${show(file)} sends ${sends}`, () => {
+      const current = applyPatch(defaultSettings(NOW, ID), { [path]: here });
+      const incoming = applyPatch(defaultSettings(NOW, 'their-install'), { [path]: file });
+      const { settings, held } = sendNoMoreThan(incoming, current);
+      assert.deepEqual(getPath(settings, path), lands);
+      assert.deepEqual(held, sends === 'more' ? [path] : [], 'held reports the wrong paths');
+      assert.deepEqual(getPath(incoming, path), file, 'input must not be mutated');
+    });
+  }
+
+  test('leaves everything else in the file alone', () => {
+    const current = defaultSettings(NOW, ID);
+    const incoming = applyPatch(defaultSettings(NOW, 'their-install'), {
+      'providers.enabled': true,
+      'providers.openai.model': 'their-model',
+      'weave.ceilingRatio': 0.5,
+    });
+    const { settings } = sendNoMoreThan(incoming, current);
+    assert.equal(settings.providers.openai.model, 'their-model');
+    assert.equal(settings.weave.ceilingRatio, 0.5, 'sendNoMoreThan held back more than what is sent');
+  });
+
+  test('every provider field is local, sending or neither, and exactly one', () => {
+    // Derived from the settings' own shape: a provider field added later fails
+    // here until somebody decides which way it sends more, or that it cannot.
+    const NEITHER: Record<string, string> = {
+      'providers.deepl.free':
+        'which of DeepL’s two endpoints this machine’s DeepL key goes to, set by the plan the key is on; the same service either way',
+      'providers.openai.model': 'which model answers at this machine’s own address, which a file cannot change',
+    };
+    const leaves: string[] = [];
+    const walk = (o: unknown, at: string[]): void => {
+      if (o && typeof o === 'object' && !Array.isArray(o)) {
+        for (const [k, v] of Object.entries(o)) walk(v, [...at, k]);
+      } else leaves.push(at.join('.'));
+    };
+    walk(defaultSettings(NOW, ID).providers, ['providers']);
+    assert.ok(leaves.length >= 10, `only ${leaves.length} provider fields were found, so the walk read nothing`);
+
+    const sending = SENDING_PATHS.map((s) => s.path);
+    for (const path of leaves) {
+      const kinds = [LOCAL_ONLY_PATHS.includes(path), sending.includes(path), path in NEITHER].filter(Boolean);
+      assert.equal(kinds.length, 1, `${path} is in ${kinds.length} of LOCAL_ONLY_PATHS, SENDING_PATHS and NEITHER`);
+    }
+    for (const path of [...sending, ...Object.keys(NEITHER)]) {
+      assert.ok(leaves.includes(path), `${path} is not a provider field, so it holds nothing back`);
     }
   });
 });

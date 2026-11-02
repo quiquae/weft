@@ -4,6 +4,8 @@ import {
   keepLocalOnly,
   LOCAL_ONLY_PATHS,
   migrateSettings,
+  sendNoMoreThan,
+  SENDING_PATHS,
   validateSettings,
 } from '../core/settings.ts';
 import {
@@ -393,6 +395,14 @@ export interface ImportResult {
  * replaced them with any a file did have; keeping the key and taking the
  * file's address would have sent the key wherever the file said.
  *
+ * **What this machine sends to a translation service** may narrow and never
+ * widen (`sendNoMoreThan`): a file can switch lookups or sentence context
+ * off, at once, and cannot switch either on, add a service, drop a host from
+ * the never-send list, raise the daily lookup limit or keep answers for less
+ * time. With the keys staying put, a machine holding a key with lookups off
+ * was otherwise one line of an imported file from sending its reading to that
+ * key's service. The message names what was left out.
+ *
  * **Settings** are split by `splitImportedSettings`. Harder and cosmetic
  * values land at once; anything easier becomes a patch for `requestChange`
  * and queues against the user's own cooldown. This is what the previous
@@ -434,7 +444,10 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
   const snapshot = await load();
   const { settings: before, lock, attention: mine, introduced } = snapshot;
 
-  const incoming = keepLocalOnly(validateSettings(data['settings'], now, meta.installId), before);
+  const { settings: incoming, held: unsent } = sendNoMoreThan(
+    keepLocalOnly(validateSettings(data['settings'], now, meta.installId), before),
+    before,
+  );
   const { immediate, deferred } = splitImportedSettings(before, incoming);
   await saveSettings(immediate);
   const queued = await queueEasierSettings(lock, immediate, deferred, now, meta.installId);
@@ -452,6 +465,7 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
       queued,
       carriesLockState(data['lock']),
       carriesKeys(data['settings']),
+      unsent,
     ),
   };
 }
@@ -618,6 +632,7 @@ function importMessage(
   queued: number,
   heldLock: boolean,
   heldKeys: boolean,
+  unsent: string[],
 ): string {
   const landed = ['settings'];
   if (cards) landed.push(plural(cards, 'vocabulary record'));
@@ -633,6 +648,14 @@ function importMessage(
   }
   if (heldLock) out.push('Cooldowns and panic passes stay with this machine.');
   if (heldKeys) out.push('API keys stay with this machine: the ones in the file were left out.');
+  if (unsent.length) {
+    const labels = SENDING_PATHS.filter((s) => unsent.includes(s.path)).map((s) => s.label);
+    const said =
+      labels.length > 1 ? `${labels.slice(0, -1).join(', ')} and ${labels.at(-1)}` : (labels[0] ?? '');
+    out.push(
+      `${said.charAt(0).toUpperCase()}${said.slice(1)} ${labels.length === 1 ? 'was' : 'were'} left out: a file cannot make Weft send more to a translation service.`,
+    );
+  }
   return out.join(' ');
 }
 

@@ -509,3 +509,69 @@ export function keepLocalOnly(incoming: Settings, current: Settings): Settings {
   for (const path of LOCAL_ONLY_PATHS) out = setPath(out, path, getPath(current, path));
   return out;
 }
+
+/**
+ * Settings that decide what this machine sends to a translation service, and
+ * which way of changing each one sends more.
+ *
+ * A file may make this machine send less, at once, and never more:
+ * `sendNoMoreThan` keeps this machine's value wherever the file's would send
+ * more. Until 2026-11-02 an import took all of these from the file, so a
+ * machine holding a key with lookups switched off was one `enabled: true` in
+ * an imported file from sending words to that key's service, and one
+ * `sendContext: true` from sending the sentence around each word. Not the
+ * cooldown, which is for difficulty, and not `LOCAL_ONLY_PATHS`, because a
+ * file that sends less is one to take.
+ *
+ * `more` is the direction that sends more: `on`, lookups at all or a sentence
+ * with each word; `higher` and `lower`, more words at a time or the same word
+ * again sooner; `added`, a service this machine's order does not have, a
+ * reorder of the ones it has sending nothing to anyone new; and `dropped`, a
+ * host this machine never sends from, missing from the file. The options page
+ * has no control for `order` or `neverSendHosts`, so a file is the only thing
+ * that has ever changed either.
+ */
+export const SENDING_PATHS: ReadonlyArray<{
+  path: string;
+  more: 'on' | 'higher' | 'lower' | 'added' | 'dropped';
+  /** What the import message says was left out. */
+  label: string;
+}> = Object.freeze([
+  { path: 'providers.enabled', more: 'on', label: 'turning lookups on' },
+  { path: 'providers.sendContext', more: 'on', label: 'sending sentence context' },
+  { path: 'providers.order', more: 'added', label: 'adding a service' },
+  { path: 'providers.neverSendHosts', more: 'dropped', label: 'removing a host from the never-send list' },
+  { path: 'providers.dailyLookupCap', more: 'higher', label: 'raising the daily lookup limit' },
+  { path: 'providers.cacheDays', more: 'lower', label: 'keeping answers for less time' },
+]);
+
+/** The file's value where it sends no more than this machine's, and otherwise what it may have. */
+function noMoreThan(more: (typeof SENDING_PATHS)[number]['more'], file: unknown, here: unknown): unknown {
+  const list = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
+  switch (more) {
+    case 'on':
+      return file === true && here !== true ? here : file;
+    case 'higher':
+      return typeof file === 'number' && typeof here === 'number' && file > here ? here : file;
+    case 'lower':
+      return typeof file === 'number' && typeof here === 'number' && file < here ? here : file;
+    case 'added':
+      return list(file).filter((id) => list(here).includes(id));
+    case 'dropped':
+      return [...new Set([...list(file), ...list(here)])];
+  }
+}
+
+/** `incoming` sending no more to a translation service than `current`, and the paths where it would have. */
+export function sendNoMoreThan(incoming: Settings, current: Settings): { settings: Settings; held: string[] } {
+  let settings = incoming;
+  const held: string[] = [];
+  for (const { path, more } of SENDING_PATHS) {
+    const file = getPath(incoming, path);
+    const kept = noMoreThan(more, file, getPath(current, path));
+    if (JSON.stringify(kept) === JSON.stringify(file)) continue;
+    settings = setPath(settings, path, kept);
+    held.push(path);
+  }
+  return { settings, held };
+}

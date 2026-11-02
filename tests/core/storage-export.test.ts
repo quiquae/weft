@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { dayKey } from '../../src/core/escalation.ts';
 import type { LockState } from '../../src/core/lock.ts';
 import { applyPatch, getPath } from '../../src/core/patch.ts';
+import { DEFAULT_EXCLUSIONS } from '../../src/core/sites.ts';
 import type { MemoryCard, Settings, SiteAttention } from '../../src/core/types.ts';
 
 /**
@@ -444,5 +445,84 @@ describe('API keys', () => {
     });
     const legacy = await (await machine()).importAll({ ...old, settings: before });
     assert.doesNotMatch(legacy.message, /API keys/, 'an old export with no keys was told it had some');
+  });
+});
+
+/**
+ * What this machine sends to a translation service.
+ *
+ * The keys stay put now, which is what made this worth closing: a machine
+ * holding a key with lookups switched off is one `providers.enabled: true`
+ * in an imported file away from sending words to that key's service, and
+ * one `sendContext: true` away from sending the sentence around each word —
+ * the opt-in `src/core/types.ts` calls "a hard privacy guarantee rather than
+ * a preference". `docs/PRIVACY.md` opens "If you never enable a translation
+ * service, Weft makes no network requests at all", and a file is not you.
+ *
+ * So a file may make this machine send less and never more. Narrowing lands
+ * at once, as a harder setting does; widening keeps this machine's value and
+ * the message says what was left out. This is not the cooldown: privacy is
+ * not difficulty, and a reduction in what leaves the machine is never the
+ * direction anybody needs protecting from.
+ */
+describe('what a file may send', () => {
+  /** A machine with a DeepL key typed in and lookups switched off. */
+  async function keyedButOff(over: Record<string, unknown> = {}): Promise<Store> {
+    const store = await machine();
+    await store.saveSettings(
+      applyPatch((await store.load()).settings, { 'providers.deepl.key': 'deepl-planted-7f3a', ...over }),
+    );
+    store.invalidate();
+    return store;
+  }
+
+  test('cannot switch a translation service on, or sentence context, with this machine’s key', async () => {
+    const file = await exportFromASeededMachine();
+    const from = applyPatch(file['settings'] as Settings, {
+      'providers.enabled': true,
+      'providers.sendContext': true,
+    });
+    const here = await keyedButOff();
+    const result = await here.importAll({ ...file, settings: from });
+
+    const after = (await here.load()).settings.providers;
+    assert.equal(after.enabled, false, 'an imported file switched lookups on with this machine’s key');
+    assert.equal(after.sendContext, false, 'an imported file switched on sending the sentence around each word');
+    assert.match(result.message, /lookups on/, 'the message is silent about the lookups it left off');
+    assert.match(result.message, /sentence context/, 'the message is silent about the context it left off');
+    assert.match(result.message, /translation service/);
+  });
+
+  test('can switch them off at once, as a harder setting lands', async () => {
+    const file = await exportFromASeededMachine();
+    const here = await keyedButOff({ 'providers.enabled': true, 'providers.sendContext': true });
+    const result = await here.importAll(file);
+
+    const snapshot = await here.load();
+    assert.equal(snapshot.settings.providers.enabled, false, 'a file that sends less was refused');
+    assert.equal(snapshot.settings.providers.sendContext, false);
+    assert.deepEqual(snapshot.lock.pending, [], 'sending less was put behind a cooldown');
+    assert.doesNotMatch(result.message, /translation service/, 'a narrowing was reported as left out');
+  });
+
+  test('cannot drop a host this machine never sends from', async () => {
+    // The file first: every machine shares one backing store, so making it
+    // after this one would clear this one's settings.
+    const file = await exportFromASeededMachine();
+    const here = await keyedButOff({
+      'providers.neverSendHosts': [...DEFAULT_EXCLUSIONS, 'mybank.example'],
+    });
+    const result = await here.importAll(file);
+    assert.ok(
+      (await here.load()).settings.providers.neverSendHosts.includes('mybank.example'),
+      'a file that did not list a never-send host took it off this machine',
+    );
+    assert.match(result.message, /never-send/);
+  });
+
+  test('says nothing about it when the file sends no more', async () => {
+    const file = await exportFromASeededMachine();
+    const result = await (await keyedButOff()).importAll(file);
+    assert.doesNotMatch(result.message, /translation service/, 'a file that sends no more was told it did');
   });
 });
