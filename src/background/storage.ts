@@ -1,5 +1,11 @@
 import type { MemoryCard, Settings, SiteAttention } from '../core/types.ts';
-import { migrateSettings, validateSettings } from '../core/settings.ts';
+import {
+  exportSafeSettings,
+  keepLocalOnly,
+  LOCAL_ONLY_PATHS,
+  migrateSettings,
+  validateSettings,
+} from '../core/settings.ts';
 import {
   emptyLockState,
   noteClock,
@@ -8,7 +14,7 @@ import {
   splitImportedSettings,
   type LockState,
 } from '../core/lock.ts';
-import type { Patch } from '../core/patch.ts';
+import { getPath, type Patch } from '../core/patch.ts';
 import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey, mergeAttention } from '../core/escalation.ts';
 import { mergeCards } from '../core/fsrs.ts';
@@ -349,12 +355,14 @@ export async function exportAll(): Promise<Record<string, unknown>> {
     format: 'weft-export/1',
     exportedAt: new Date().toISOString(),
     version: __WEFT_VERSION__,
-    // The install id is deliberately omitted: it is the signing key material,
-    // and an export is a file the user may share when reporting a problem.
-    // The licence key and the install id are both omitted: the id is signing
-    // key material and the licence is the customer's property, and an export
-    // is a file people attach to bug reports.
-    settings: { ...snapshot.settings, installId: '' },
+    // An export is a file people attach to bug reports, so nothing in it may
+    // be a secret. The install id is signing key material and the three
+    // provider keys are somebody's paid account: `exportSafeSettings` blanks
+    // every field `LOCAL_ONLY_PATHS` names. Until 2026-11-02 this blanked the
+    // install id alone and the keys went out in clear, while the privacy page
+    // said they were stripped. The licence lives under its own key and is
+    // not read here at all: it is the customer's property.
+    settings: exportSafeSettings(snapshot.settings),
     cards,
     attention: snapshot.attention,
     introduced: snapshot.introduced,
@@ -375,6 +383,13 @@ export interface ImportResult {
  * below: nothing may arrive that makes Weft easier without passing the same
  * gate it would have passed on the options page, and nothing already here
  * may be lost to a file that knows less than this machine does.
+ *
+ * **Local-only fields** — the API keys and the install id — keep this
+ * machine's values whatever the file says (`keepLocalOnly`). An export never
+ * carries them, so a file that does is old or edited, and a key belongs to
+ * the machine it was typed on. Saving the file's settings as they came, as
+ * this did until 2026-11-02, erased a machine's keys whenever it imported a
+ * file that had none, and replaced them with any a file did have.
  *
  * **Settings** are split by `splitImportedSettings`. Harder and cosmetic
  * values land at once; anything easier becomes a patch for `requestChange`
@@ -417,7 +432,7 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
   const snapshot = await load();
   const { settings: before, lock, attention: mine, introduced } = snapshot;
 
-  const incoming = validateSettings(data['settings'], now, meta.installId);
+  const incoming = keepLocalOnly(validateSettings(data['settings'], now, meta.installId), before);
   const { immediate, deferred } = splitImportedSettings(before, incoming);
   await saveSettings(immediate);
   const queued = await queueEasierSettings(lock, immediate, deferred, now, meta.installId);
@@ -429,7 +444,13 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
   invalidate();
   return {
     ok: true,
-    message: importMessage(cards, hosts, queued, carriesLockState(data['lock'])),
+    message: importMessage(
+      cards,
+      hosts,
+      queued,
+      carriesLockState(data['lock']),
+      carriesKeys(data['settings']),
+    ),
   };
 }
 
@@ -562,6 +583,15 @@ function carriesLockState(incoming: unknown): boolean {
   );
 }
 
+/** Whether a file held an API key, which the import left where it was. */
+function carriesKeys(settings: unknown): boolean {
+  return LOCAL_ONLY_PATHS.some((path) => {
+    if (path === 'installId') return false; // never a key, and exports blank it
+    const value = getPath(settings, path);
+    return typeof value === 'string' && value !== '';
+  });
+}
+
 function plural(n: number, word: string): string {
   return `${n} ${word}${n === 1 ? '' : 's'}`;
 }
@@ -574,7 +604,13 @@ function plural(n: number, word: string): string {
  * away. Silence is the part that made it a bug rather than a limitation: a
  * user cannot notice a history they were never told was dropped.
  */
-function importMessage(cards: number, hosts: number, queued: number, heldLock: boolean): string {
+function importMessage(
+  cards: number,
+  hosts: number,
+  queued: number,
+  heldLock: boolean,
+  heldKeys: boolean,
+): string {
   const landed = ['settings'];
   if (cards) landed.push(plural(cards, 'vocabulary record'));
   if (hosts) landed.push(`attention for ${plural(hosts, 'site')}`);
@@ -588,6 +624,7 @@ function importMessage(cards: number, hosts: number, queued: number, heldLock: b
     );
   }
   if (heldLock) out.push('Cooldowns and panic passes stay with this machine.');
+  if (heldKeys) out.push('API keys stay with this machine: the ones in the file were left out.');
   return out.join(' ');
 }
 

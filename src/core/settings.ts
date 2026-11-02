@@ -1,6 +1,7 @@
 import type { LangCode, LetterformId, Pos, Settings, SiteRule } from './types.ts';
 import { DEFAULT_EXCLUSIONS, SITE_PRESETS } from './sites.ts';
 import { isKnownLanguage } from './languages.ts';
+import { getPath, setPath } from './patch.ts';
 
 export const SCHEMA_VERSION = 1;
 
@@ -468,7 +469,19 @@ export function migrateSettings(raw: unknown, now: number, installId: string): S
   return validateSettings(working, now, installId);
 }
 
-/** Settings fields that must never be written to chrome.storage.sync. */
+/**
+ * Settings fields that belong to the machine they were typed on.
+ *
+ * The three provider keys are somebody's paid account, and the install id is
+ * the key material every stored record is signed with (`integrity.ts`). None
+ * of them leaves in an export, because an export is a file people attach to
+ * bug reports, and none arrives in an import: the machine keeps its own value
+ * whatever the file says, so a file written before exports stopped carrying
+ * keys cannot replace one. Each is a string, blanked to ''.
+ *
+ * `privacy.syncSettings` has no reader and nothing is synced. If sync is ever
+ * built, this is the list it must leave behind.
+ */
 export const LOCAL_ONLY_PATHS = [
   'providers.deepl.key',
   'providers.google.key',
@@ -476,15 +489,16 @@ export const LOCAL_ONLY_PATHS = [
   'installId',
 ];
 
-/** A copy of settings safe to sync, with secrets stripped. */
-export function syncSafeSettings(s: Settings): Settings {
-  return {
-    ...s,
-    providers: {
-      ...s.providers,
-      deepl: { ...s.providers.deepl, key: '' },
-      google: { key: '' },
-      openai: { ...s.providers.openai, key: '' },
-    },
-  };
+/** A copy of settings safe to write into a file, with every local-only field blanked. */
+export function exportSafeSettings(s: Settings): Settings {
+  let out = s;
+  for (const path of LOCAL_ONLY_PATHS) out = setPath(out, path, '');
+  return out;
+}
+
+/** `incoming` with every local-only field taken from `current`: what an import may not change. */
+export function keepLocalOnly(incoming: Settings, current: Settings): Settings {
+  let out = incoming;
+  for (const path of LOCAL_ONLY_PATHS) out = setPath(out, path, getPath(current, path));
+  return out;
 }

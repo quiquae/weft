@@ -2,6 +2,7 @@ import { test, describe, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { dayKey } from '../../src/core/escalation.ts';
 import type { LockState } from '../../src/core/lock.ts';
+import { applyPatch, getPath } from '../../src/core/patch.ts';
 import type { MemoryCard, Settings, SiteAttention } from '../../src/core/types.ts';
 
 /**
@@ -322,5 +323,100 @@ describe('a hand-edited settings file', () => {
     const result = await fresh.importAll(file);
     assert.equal(result.ok, true);
     assert.match(result.message, /waiting out the cooldown/i);
+  });
+});
+
+/**
+ * The keys to somebody else's translation account.
+ *
+ * `docs/PRIVACY.md` — the page every store's form links to — and
+ * `docs/SUPPORT.md` both said an export strips API keys, and the options page
+ * said "and no keys" as it saved the file. `exportAll` blanked the install id
+ * and nothing else, so the three provider keys went into a file people attach
+ * to bug reports, in clear.
+ *
+ * The import half is the part that makes the fix safe. `importAll` saved the
+ * file's settings as they came, so a machine holding keys that imported a file
+ * holding none was left with none — a defect between two machines already, and
+ * once exports stop carrying keys it would have been every import. A key
+ * belongs to the machine it was typed on: it never leaves in a file and never
+ * arrives in one, so an export written before this fix cannot quietly replace
+ * one either.
+ */
+describe('API keys', () => {
+  const PLANTED = {
+    'providers.deepl.key': 'deepl-planted-7f3a',
+    'providers.google.key': 'google-planted-91c2',
+    'providers.openai.key': 'sk-planted-4be0',
+  };
+
+  /** A fresh install with all three keys typed in, as the options page would save them. */
+  async function machineWithKeys(): Promise<Store> {
+    const store = await machine();
+    await store.saveSettings(applyPatch((await store.load()).settings, PLANTED));
+    store.invalidate();
+    return store;
+  }
+
+  function keysOn(settings: Settings): Record<string, unknown> {
+    return Object.fromEntries(Object.keys(PLANTED).map((path) => [path, getPath(settings, path)]));
+  }
+
+  test('an export carries none of them, anywhere in the file', async () => {
+    const store = await machineWithKeys();
+    assert.deepEqual(keysOn((await store.load()).settings), PLANTED, 'the keys were never planted');
+    // The text rather than the fields, as the diagnostic report is held: a key
+    // copied anywhere else in the file is as much a leak as one left in place.
+    const text = JSON.stringify(await store.exportAll());
+    for (const key of Object.values(PLANTED)) {
+      assert.ok(!text.includes(key), `the export holds ${key} in clear`);
+    }
+  });
+
+  test('a machine keeps its keys when it imports a file that has none', async () => {
+    const file = await exportFromASeededMachine();
+    const here = await machineWithKeys();
+    await here.importAll(file);
+    assert.deepEqual(keysOn((await here.load()).settings), PLANTED, 'importing a file erased this machine’s keys');
+  });
+
+  test('a key never arrives by file, so an old export cannot replace one', async () => {
+    // An export written before exports stopped carrying keys, or a hand-edited one.
+    const file = await exportFromASeededMachine();
+    const from = applyPatch(file['settings'] as Settings, {
+      'providers.deepl.key': 'deepl-from-the-file',
+      'providers.openai.key': 'sk-from-the-file',
+    });
+
+    const keyed = await machineWithKeys();
+    await keyed.importAll({ ...file, settings: from });
+    assert.deepEqual(keysOn((await keyed.load()).settings), PLANTED, 'a file replaced this machine’s keys');
+
+    const bare = await machine();
+    await bare.importAll({ ...file, settings: from });
+    const landed = keysOn((await bare.load()).settings);
+    assert.deepEqual(
+      landed,
+      { 'providers.deepl.key': '', 'providers.google.key': '', 'providers.openai.key': '' },
+      'a key arrived by file',
+    );
+  });
+
+  test('a file’s install id does not land either', async () => {
+    const file = await exportFromASeededMachine();
+    const here = await machine();
+    const own = (await here.load()).settings.installId;
+    await here.importAll({ ...file, settings: { ...(file['settings'] as Settings), installId: 'forged-id' } });
+    assert.equal((await here.load()).settings.installId, own, 'an imported file replaced the install id');
+  });
+
+  test('says so when a file carried keys it did not bring', async () => {
+    const file = await exportFromASeededMachine();
+    const from = applyPatch(file['settings'] as Settings, { 'providers.openai.key': 'sk-from-the-file' });
+    const result = await (await machine()).importAll({ ...file, settings: from });
+    assert.match(result.message, /API keys/, 'the message is silent about the keys it left out');
+
+    const clean = await (await machine()).importAll(await exportFromASeededMachine());
+    assert.doesNotMatch(clean.message, /API keys/, 'a file with no keys was told it had some');
   });
 });
