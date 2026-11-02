@@ -127,3 +127,56 @@ test.describe('the privacy claim', () => {
     await reader.close();
   });
 });
+
+test.describe('what a fresh install may touch', () => {
+  /*
+   * Weft asks for no site at install. The browser grants an extension the
+   * host permissions its manifest declares and none of its optional ones, so
+   * a production install holds no origin at all, and this test build holds
+   * exactly the loopback seam it declares for the server below. And with no
+   * site the user chose among the origins granted, the worker's install
+   * handler registers no content script.
+   *
+   * CLAUDE.md said this was asserted for a month before anything asserted
+   * it. tests/tools/install-permissions.test.ts holds the manifests; this
+   * holds what the browser made of one.
+   */
+  test('is granted only what its manifest declares, and runs on no page', async ({
+    context,
+    extensionId,
+    worker,
+    configure,
+    origin,
+  }) => {
+    // The install handler opens the first-run page only after
+    // registerContentScripts() has resolved, so its tab says the handler ran.
+    await expect
+      .poll(() => context.pages().some((p) => p.url() === `chrome-extension://${extensionId}/onboarding.html`), {
+        timeout: 20_000,
+        message: 'the install handler never opened the first-run page',
+      })
+      .toBe(true);
+
+    const read = () =>
+      worker.evaluate(async () => {
+        const manifest = chrome.runtime.getManifest();
+        return {
+          staticScripts: manifest.content_scripts ?? null,
+          declared: [...(manifest.host_permissions ?? [])].sort(),
+          granted: [...((await chrome.permissions.getAll()).origins ?? [])].sort(),
+          registered: (await chrome.scripting.getRegisteredContentScripts()).map((s) => s.matches ?? []),
+        };
+      });
+
+    const fresh = await read();
+    expect(fresh.staticScripts, 'the loaded manifest declares static content_scripts').toBeNull();
+    expect(fresh.granted, 'the browser granted an origin the manifest does not declare').toEqual(fresh.declared);
+    expect(fresh.registered, 'a fresh install registered a content script').toEqual([]);
+
+    // The read can see a registration: once the user names the site, there is one.
+    await configure({});
+    const named = await read();
+    expect(named.registered.length, 'naming a site registered no content script, so the empty read proves nothing').toBe(1);
+    expect(named.registered[0]).toContain(`http://${new URL(origin).hostname}/*`);
+  });
+});
