@@ -886,6 +886,88 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-02 — no manifest reaches a site at install, and a fresh install is read in the browser
+
+`TODO.md`'s one unchecked item in `Now`, queued by the `dayKey()` guard's
+run: the decision "no static `content_scripts`, and no host permissions at
+install" named an end-to-end test that never asserted it, and nothing
+refused a static `content_scripts` key in any target's manifest.
+
+**One refusal, read in three places.** `installFaults()` in
+`tools/install-permissions.ts` returns each way a manifest reaches a site
+nobody granted: a `content_scripts` key in either build, an empty one too;
+`host_permissions` in production; a test build's beyond the loopback hosts
+the e2e server listens on; a match pattern or `<all_urls>` under
+`permissions`, which the item did not name and which is the other key a
+site can be asked for under; and an `optional_host_permissions` other than
+exactly every web origin, since narrower cannot request a site the user
+names and wider reaches `file:` pages. `tests/tools/install-permissions.test.ts`,
+12 tests in 3 suites, holds every target's `buildManifest()` to it in both
+builds, `TARGETS` read from the config. `tools/validate-package.mjs` and
+`tools/verify-release.mjs` call it on the bytes they read, in place of the
+`host_permissions` check each carried, and a test holds both to the call.
+The gates are the half the item did not ask for: `build.mjs` writes
+`buildManifest()` verbatim today, and a gate on the built bytes is what
+notices the day it does not.
+
+**And the assertion CLAUDE.md claimed now exists**, in
+`tests/e2e/privacy.spec.ts`, "what a fresh install may touch". The install
+handler opens the first-run page only after `registerContentScripts()`
+resolves, so the tab says the handler has run; the worker then reads
+`getManifest().content_scripts`, `permissions.getAll()` and
+`getRegisteredContentScripts()`. A production install declares no host
+permission and this build declares the loopback seam, so the test asserts
+granted equals declared rather than empty, and the static test holds
+production to declaring none. `configure()` then names the site and one
+script is registered, so the empty read is shown to see a registration.
+
+Red by plants, each restored by md5: on the config, a static
+`content_scripts` (all three targets, both builds), `host_permissions`
+outside `opts.test`, the optional widened to `<all_urls>`, the seam widened
+to `https://*/*`, and `<all_urls>` among the core permissions, each failing
+by target and key; the function blinded, which turns the six refusal probes
+red and leaves the manifest tests green, which is why the probes exist; each
+gate's call missing; a planted `content_scripts` built and validated, exit 1
+naming chrome, firefox and safari; and in the browser a static script in
+the test build, a default of `everywhere-except`, which registers on
+install, and the read blinded, which only the control names.
+
+**Found on the way: the false claim had three copies, all of them copy for
+a reviewer.** `docs/SUBMIT.md`, `docs/STORE-LISTING.md` and
+`docs/READY-TO-SUBMIT.md` each answered the question Chrome's review is
+expected to ask about `*://*/*` by pointing at `licensing.spec.ts`; they
+name the two tests now. README's "39 passed, 3 skipped" was two sweeps
+stale and no longer repeats the count.
+
+**The first draft's header comment closed itself.** The pattern `*://*/*`
+holds `*/`, so the test file's doc comment ended at its sixth line, and
+Node's type stripper said only "Expected ';', '}' or <eof>". In a block
+comment a match pattern is written as words.
+
+Tools 524 → **536** / 131 → **134** suites, e2e 40 → **41**, total 1241 →
+**1254**, in six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md`
+paragraph: nothing that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0** — typecheck clean, 575 unit
+/ 138 suites, 102 jsdom / 23, **536 tools / 134**, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade
+/ 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`,
+**41 e2e passed and 3 skipped in 5.1 min**, then build and validate again.
+Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that the browser test belongs in
+`privacy.spec.ts`, the install prompt being a privacy claim, rather than in
+the licensing test the sentence named; that a host pattern under
+`permissions` is this item's to refuse, being the same claim under another
+key; and that `verify-release.mjs` takes the shared refusal although it
+cannot run until B2, so it was checked to parse and its import to load.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: a data export is named
+for the UTC date, not the user's.
+
 ### 2026-11-01 — `dayKey()` is held to the instant it is given, and a decision claimed a test that never existed
 
 `TODO.md`'s one unchecked item in `Now`, queued by the orchestrator's run:
