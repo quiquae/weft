@@ -713,6 +713,12 @@ went missing altogether. Days are counted on the calendar now. A test found
 it, failing at 03:29 GMT on 25 October 2026, two and a half hours after the
 clocks went back.
 
+**An export was named for the date in UTC.** A backup made before 09:00 in
+Tokyo was named for the day before, and one made after 16:00 in a Californian
+winter for the day after. The file is named for the day it was made, where
+you are, and the day turns at midnight rather than at the 4 a.m. rollover a
+day of reading keeps.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -733,8 +739,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1254 tests: 575 unit, 102 in jsdom, 536 over the build tools, and
-41 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1258 tests: 578 unit, 102 in jsdom, 536 over the build tools, and
+42 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

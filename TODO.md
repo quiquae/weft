@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **575** unit / 138 suites, **102** jsdom / 23
-suites, **536** tool tests / 134 suites, **41** e2e passing
+of this session — typecheck clean, **578** unit / 139 suites, **102** jsdom / 23
+suites, **536** tool tests / 134 suites, **42** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
 passing `npm run validate`. The package grew
@@ -60,7 +60,10 @@ the 97 bytes of `shiftDay()`, 989.496 → 989.591 KB, measured the
 same way. All three still print 990 on 2026-10-30, each exactly 174 bytes
 lighter than `main`'s, the packs' per-language attribution — Chrome's
 989.819 → 989.649 KB, every shipped pack file byte-identical to
-`src/lexicon/packs/`.
+`src/lexicon/packs/` — and on 2026-11-02, each 209 bytes heavier, all of them
+`exportFilename()` in `options.js`, Chrome's 989.649 → 989.854 KB, Firefox's
+989.920 and Safari's 989.860, measured against `main`'s three packages built
+in a `/tmp` worktree.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1603,24 +1606,76 @@ registered**, and nothing below it can move until it is.
       cannot run until B2, so it was checked to parse and its import to
       load, not run.
 
-- [ ] **Name a data export for the day it was made, where the user is.**
-      Found 2026-11-01 by the `dayKey()` guard's run and queued by the run
-      above. `src/ui/options/data.tsx:202` names the file
-      `` `weft-${new Date().toISOString().slice(0, 10)}.json` ``, the UTC
-      date, so an export made before 09:00 in Tokyo is named for the day
-      before, and one made after 16:00 in California for the day after. The
-      shape: `dayKey(Date.now(), 0)` from `src/core/escalation.ts:94`, the
-      local calendar date with no rollover, which the day-keys guard reads
-      as an instant handed over unstepped. Test first under
-      `TZ=Asia/Tokyo` at an instant before 09:00 local, as
-      `tests/core/day-arithmetic.test.ts` sets `TZ=Europe/London` in its own
-      process; the filename is built inline in a component, so the first
-      step is a small pure helper the test can call. Leave
-      `src/core/stats.ts:193` alone: `retirementSeries` labels its weeks in
-      UTC on purpose. It moves `src/`, so all three screenshot groups go
-      stale by provenance: regenerate each on a test build, expect
-      byte-identical, and stamp each with `npm run artefacts:verify`. About
-      an hour with the regeneration.
+- [x] **Name a data export for the day it was made, where the user is.**
+      Done 2026-11-02. `exportFilename(now)` in `src/core/escalation.ts` is
+      `dayKey(now, 0)`, the local calendar date with no rollover, and the
+      options page hands it `Date.now()`. Test-first:
+      `tests/core/export-filename.test.ts`, 3 tests in a new suite, each
+      setting its own zone, CI running in UTC, where the two dates agree,
+      and failing first if the zone did not take. Red on the missing
+      export, then on a stub keeping the old expression, a day out each
+      way: `weft-2026-11-02.json` for Tokyo's 3rd and
+      `weft-2026-11-03.json` for California's 2nd. Green. The default 4 a.m.
+      rollover put back fails the midnight test alone, and the zone
+      assignment blinded names `TZ=Asia/Tokyo did not take`, each restored
+      by md5. **A unit test cannot see the button**, and nothing had ever
+      clicked it, so a test in `friction.spec.ts` clicks "Export everything"
+      at 08:30 on the 3rd in Tokyo, with `page.clock.setFixedTime` and CDP's
+      `Emulation.setTimezoneOverride`, and reads
+      `download.suggestedFilename()`: red on the unwired page,
+      `weft-2026-11-02.json`, and green wired. All 31 shots were regenerated
+      on a test build after the commit that moved `src/`, 10 + 14 + 7
+      written by mtime, every one byte-identical, and the three groups are
+      stamped. Unit 575 → **578** / 138 → **139** suites, e2e 41 → **42**,
+      total 1254 → **1258**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph, because the name ships. Left in UTC on
+      purpose: `retirementSeries`' weeks, `shiftDay()`, and `exportedAt`
+      inside the file, an instant rather than a date. The item's "16:00 in
+      California" is a winter's: in summer it is 17:00.
+
+- [ ] **Take the API keys out of an export, as the privacy page says it
+      does.** Found 2026-11-02 reading `exportAll` for the item above, and
+      measured with the real `src/background/storage.ts` on a Map-backed
+      `chrome.storage.local`, three keys planted: **the export holds all
+      three in clear**, and the licence key, which is stored apart, not at
+      all. `exportAll` (`storage.ts:345`) blanks `installId` and nothing
+      else, and its comment says "an export is a file people attach to bug
+      reports". Four places say otherwise: `docs/PRIVACY.md:25` ("API keys
+      are stripped … before anything is exported") and `:116`,
+      `docs/SUPPORT.md:114` and `:139`, and the message the page prints
+      (`src/ui/options/data.tsx:207`, "and no keys"). `PRIVACY.md` is
+      `/privacy`, the URL every store's form asks for. `syncSafeSettings()`
+      (`src/core/settings.ts:480`) blanks all three, has a test, and has no
+      caller in `src/`; `tests/core/storage-export.test.ts:136` reads the
+      install id alone. Nothing is exposed yet: no store lists Weft and the
+      repository is private. The shape:
+      1. Red first in `storage-export.test.ts`: three planted keys, none in
+         `JSON.stringify(payload)`, the text rather than the fields, as
+         `diagnosticsLeakCheck` holds its report.
+      2. `exportAll` writes `syncSafeSettings(snapshot.settings)`, with
+         `installId: ''`.
+      3. **The import half, without which the fix does damage.** Measured
+         the same way: a machine holding three keys imports a file holding
+         none, and all three are `""` afterwards, `importAll` saving the
+         file's settings as they came, against its own doc comment, "nothing
+         already here may be lost to a file that knows less than this
+         machine does". That is a defect today, between two machines, and
+         after step 2 every import would do it. So `immediate` keeps the
+         machine's own keys. **Assumed, for the run that takes this:** the
+         machine's key wins whatever the file says, a key never arriving by
+         file, so an export written before the fix cannot quietly replace
+         one; `LOCAL_ONLY_PATHS` (`settings.ts:472`), which has no reader
+         either, is the list to read. An e2e seeded through `import-data`
+         sets no key, so nothing there should move.
+      4. `docs/PRIVACY.md:23–25` also describes settings sync, "Turning it
+         on uses `chrome.storage.sync`", and `src/` has no `storage.sync`
+         call and no control that reads `privacy.syncSettings`. A privacy
+         page should describe what ships: say that nothing is synced, and
+         keep the export's sentence, now true. The site builds `/privacy`
+         from this file, so `site:check` and a read of the page belong here.
+      5. It moves `src/`, so regenerate and stamp the three screenshot groups
+         as above, and write a `CHANGELOG.md` paragraph, because the file
+         changes. About 45 minutes.
 
 ## Next
 
@@ -7206,6 +7261,33 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-02 — a data export is named for the user's day.** Four things a
+later run would be sorry not to know:
+
+1. **Assigning `process.env.TZ` takes effect at once, and again each time**,
+   Node's setter telling V8, so one test file can be in two zones as long as
+   each test checks it arrived. An ESM file's imports run before its first
+   line, so `day-arithmetic.test.ts`'s assignment at the top has always run
+   after them, and never needed to come first.
+2. **One e2e test can hold a zone without touching the fixture**:
+   `page.clock.setFixedTime(instant)` before `goto`, and after it
+   `context.newCDPSession(page)` and
+   `Emulation.setTimezoneOverride({ timezoneId })`. Both work on an extension
+   page, the fake `Date`'s local methods follow the override, and
+   `download.suggestedFilename()` reads an anchor's `download` attribute
+   though the page revokes the blob at once.
+3. **A scratch run of `storage.ts` needs almost nothing**: a Map behind
+   `chrome.storage.local`, `__WEFT_VERSION__` and `__WEFT_TARGET__` on
+   `globalThis`, then a dynamic `import()` by absolute path, as
+   `tests/core/storage-export.test.ts` does. It is how the export's keys were
+   measured in a minute, from `/tmp`, with the gate running on the tree.
+4. **`Next` had nothing to move up.** Its three unchecked items each wait on
+   Creagh, so the next item in `Now` is the one this run found. Assumed: that
+   `exportFilename()` belongs beside `dayKey()` in `escalation.ts`, its whole
+   body being a `dayKey` call, rather than in a module of its own; and that the
+   keys are a PR of their own, a change to what the file holds and to what
+   import keeps, where this one renames it.
 
 **2026-11-02 — no manifest reaches a site at install, and a fresh install
 is read in the browser.** Four things a later run would be sorry not to

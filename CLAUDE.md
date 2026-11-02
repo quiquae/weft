@@ -64,10 +64,10 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **575 pass**, 138 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **578 pass**, 139 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **536 pass**, 134 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **41 pass, 3 skipped**, 1.4 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **42 pass, 3 skipped**, 4.8 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for each of the three |
@@ -885,6 +885,82 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-02 — a data export is named for the user's day, and reading `exportAll` found the keys it says it strips
+
+`TODO.md`'s one unchecked item in `Now`, queued by the manifests' run:
+`src/ui/options/data.tsx` named an export from `toISOString()`, the date in
+UTC, so a backup made before 09:00 in Tokyo was named for the day before.
+
+**`exportFilename(now)`, beside `dayKey()` in `src/core/escalation.ts`, is
+`dayKey(now, 0)`**: the local calendar date with no rollover, a date on a file
+not being a day of reading. The page reads the clock once and hands it over,
+core taking no clock. `tests/core/export-filename.test.ts`, 3 tests in a new
+suite, sets each test's zone itself, `Asia/Tokyo` and `America/Los_Angeles`,
+because CI runs in UTC, where the two dates agree and all three would pass on
+the bug, and each fails first if its zone did not take. Red on a missing
+export says nothing about the defect, so a stub keeping the old expression
+came next: a day out each way, `weft-2026-11-02.json` for Tokyo's 3rd and
+`weft-2026-11-03.json` for California's 2nd. Then green. The default 4 a.m.
+rollover put back fails the midnight test and no other, and the zone
+assignment blinded, run under `TZ=UTC`, names both zones, each restored by
+md5.
+
+**A unit test cannot see the button, and nothing had ever clicked it.** Every
+e2e test of the export asks the worker for `export-data` directly, so one line
+of `data.tsx` left on the old expression would have passed every check. A test
+in `friction.spec.ts` clicks "Export everything" with the page at 08:30 on the
+3rd in Tokyo, `page.clock.setFixedTime` and CDP's
+`Emulation.setTimezoneOverride`, and reads `download.suggestedFilename()`: red
+on the unwired page, `weft-2026-11-02.json`, green wired. It reads the page's
+hour first, so a zone that did not take fails by saying so.
+
+All 31 shots were regenerated on a test build after the commit that moved
+`src/`, 10 + 14 + 7 written by mtime, every one byte-identical, and the three
+groups are stamped. The packages grew 209 bytes, all of them `options.js`,
+measured against `main`'s three built in a `/tmp` worktree: Chrome's 989.649 →
+989.854 KB, Firefox's 989.920 and Safari's 989.860, all printing 990. Unit 575
+→ **578** / 138 → **139** suites, e2e 41 → **42**, total 1254 → **1258**, in six
+places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because the
+name ships.
+
+**Reading `exportAll` for this found that an export carries the API keys.**
+Measured from `/tmp` with the real `storage.ts` on a Map-backed
+`chrome.storage.local`, three keys planted: the export holds all three in
+clear. It blanks `installId` and nothing else, while `docs/PRIVACY.md` twice,
+`docs/SUPPORT.md` twice and the message the page prints all say the keys are
+stripped. `syncSafeSettings()` strips them, has a test, and has no caller in
+`src/`. The same run showed a file with no keys erasing the keys of the machine
+importing it, against `importAll`'s own doc comment, so a fix to the export
+alone would make every import do that. And `PRIVACY.md` describes a settings
+sync `src/` does not have. Not fixed here: it changes what the file holds and
+what an import keeps, where this item changes what the file is called. It is
+first in `Now`, with the shape and the assumption. Nothing is exposed yet: no
+store lists Weft and the repository is private.
+
+`Next` had nothing to move up, each unchecked item there waiting on Creagh, so
+the item above is the one in `Now`.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0 in 6 min 14 s** — typecheck
+clean, **578 unit / 139**, 102 jsdom / 23, 536 tools / 134, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass /
+2 degrade / 4 untracked, 0 fail / 0 without data, **990 KB × 3** passing
+`validate`, **42 e2e passed and 3 skipped in 4.8 min**, then build and validate
+again. Separately, `src/core/` having moved: `packs:verify` **0 errors / 5
+warnings**; `npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving; `artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes,
+B2a. Only documents moved after it, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that the e2e test was this item's though it did
+not ask for one, the unit test being unable to fail on the line the bug was on;
+that `exportFilename()` belongs in `escalation.ts`, its whole body being a
+`dayKey` call; and that the keys are a PR of their own.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the export's keys, which the next queued run
+takes.
 
 ### 2026-11-02 — no manifest reaches a site at install, and a fresh install is read in the browser
 
