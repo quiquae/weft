@@ -219,8 +219,9 @@ submission is slower. The question to expect is about `*://*/*`. The answer:
 Weft asks for one site at a time, at runtime, from a click on its own
 first-run page, never at install; the manifest declares no `content_scripts`;
 and a fresh install has zero granted origins and zero registered content
-scripts, which `tests/e2e/licensing.spec.ts` ("a fresh install is Free, and
-Free weaves") asserts.
+scripts, which `tests/tools/install-permissions.test.ts` holds every
+manifest to and `tests/e2e/privacy.spec.ts` ("what a fresh install may
+touch") reads from a real install.
 
 ---
 

@@ -316,9 +316,10 @@ Review takes anywhere from a few hours to a couple of weeks. A first
 submission with `optional_host_permissions: ["*://*/*"]` may draw a question
 about breadth; the answer is that Weft requests per-origin at runtime from a
 user gesture and never at install, which is demonstrable — a fresh install
-reports zero granted origins and zero registered content scripts, and there
-is an automated test asserting exactly that (`tests/e2e/licensing.spec.ts`,
-"a fresh install is Free, and Free weaves").
+reports zero granted origins and zero registered content scripts, and two
+tests hold it: `tests/tools/install-permissions.test.ts` over every
+target's manifest, and `tests/e2e/privacy.spec.ts` ("what a fresh install
+may touch") over a real install.
 
 ### Firefox, separately
 

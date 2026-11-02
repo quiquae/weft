@@ -12,8 +12,8 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 575 unit tests, 102 jsdom tests, 524 tool tests, the
-compatibility audit, all three builds, the package validator, and 40 end-to-end
+runs typecheck, 575 unit tests, 102 jsdom tests, 536 tool tests, the
+compatibility audit, all three builds, the package validator, and 41 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
 
@@ -181,9 +181,13 @@ folder to point "Load unpacked" at.
 which looks broad. The answer is that Weft requests per-origin at runtime from
 a user gesture on its own first-run page and never at install time — and it is
 demonstrable rather than assertable: a fresh install reports zero granted
-origins and zero registered content scripts, with a test asserting exactly
-that (`tests/e2e/licensing.spec.ts`, "a fresh install is Free, and Free
-weaves"). The manifest declares no `content_scripts` at all.
+origins and zero registered content scripts. `tests/tools/install-permissions.test.ts`
+holds every target's manifest to declaring no `content_scripts` and no host
+permission, and `tests/e2e/privacy.spec.ts` ("what a fresh install may
+touch") reads a real install: granted exactly what it declares, and no
+content script registered until the user names a site. Until 2026-11-02
+this paragraph named `tests/e2e/licensing.spec.ts` instead, which asserts
+neither.
 
 Review takes hours to a couple of weeks. A first submission is slower.
 
