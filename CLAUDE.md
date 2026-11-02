@@ -64,7 +64,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **586 pass**, 140 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **588 pass**, 140 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **539 pass**, 136 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **42 pass, 3 skipped**, 4.8 min here |
@@ -258,6 +258,22 @@ revoked, and `docs/PRICING.md` says so rather than pretending otherwise. Test
 builds substitute a throwaway keypair so the e2e suite can mint a real-looking
 key; `tools/validate-package.mjs` greps every shipped bundle for that test key
 and fails if it finds it, and checks the publisher key *is* present.
+
+**A key stays on the machine it was typed on, and so does where it is
+sent.** `LOCAL_ONLY_PATHS` in `src/core/settings.ts` — the three provider
+keys, the OpenAI-compatible base URL and the install id — is read twice:
+`exportSafeSettings()` blanks each in an export, which is a file people attach
+to bug reports, and `keepLocalOnly()` keeps this machine's value of each on
+import, whatever the file says. Until 2026-11-02 an export carried the keys in
+clear while the privacy page said they were stripped, and an import erased or
+replaced them. Do not let an import restore a key from a file for convenience:
+an export written before that date holds one in clear, and a file is plain
+JSON anyone can hand you. Nor take a file's base URL while keeping the key,
+which sends the key, as a bearer token, wherever the file says.
+`tests/core/settings.test.ts` fails on a field named like a secret, or an
+address beside a key, that the list does not name, and
+`tests/tools/no-sync.test.ts` on any `sync` in `src/`, `docs/PRIVACY.md`
+saying nothing is synced.
 
 **Generated files record when their content was built, not when the build
 ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when
@@ -885,6 +901,89 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-02 — an export holds no key now, and keeping a key showed where it is sent
+
+`TODO.md`'s one unchecked item in `Now`, queued by the export filename's run:
+`exportAll` blanked the install id and nothing else, so the three provider keys
+went into a file people attach to bug reports, in clear, where
+`docs/PRIVACY.md` twice, `docs/SUPPORT.md` twice and the options page said they
+were stripped.
+
+**One list, two readers.** `LOCAL_ONLY_PATHS` in `src/core/settings.ts` had no
+reader. `exportSafeSettings()` blanks every field it names, and
+`keepLocalOnly()` copies each from the machine into an imported file before the
+cooldown split, so a key never leaves in a file and never arrives in one, as
+the item assumed. `syncSafeSettings()`, which hand-wrote the three keys, left
+the install id in and had no caller, is gone. Test-first: five tests in a new
+suite of `tests/core/storage-export.test.ts`, each red for its own reason —
+`deepl-planted-7f3a` in the export's text, a key-less file erasing a machine's
+keys, a keyed one replacing them, a forged install id landing, the message
+silent — then green. `tests/core/settings.test.ts` holds the list both ways:
+each path a string field of the defaults, since `setPath()` creates a path that
+is not there and a typo would write a new empty field beside the real key; and
+every field whose last segment is named like a secret listed, the segment read
+whole because `a11y.keyboardCursor` contains "key". Dropping the OpenAI key from
+the list and misspelling a path each fail by name in both files, restored by
+md5.
+
+**The security hook flagged the first commit, and it was right.** Keeping a
+machine's OpenAI key while taking a file's `providers.openai.baseUrl` sends the
+key, as a bearer token, to `${baseUrl}/chat/completions` on whatever server a
+crafted file names — a hole this change opened, since an import used to erase
+the key with everything else. The base URL is local-only too, and a third
+settings test derives the rule from the shape: a field beside a `key` named
+like an address must be listed. The import's new sentence, "API keys stay with
+this machine", reads only fields named `key`, because every export written
+before today carries the default base URL, and an assertion with such a file
+fails on the wider filter. **When a field is made local, ask where it is
+sent.**
+
+**The page described a sync that never shipped.** `docs/PRIVACY.md` said
+turning sync on uses `chrome.storage.sync`; `src/` has no call, and nothing
+reads `privacy.syncSettings`. It says now that Weft never uses
+`chrome.storage.sync`, and `tests/tools/no-sync.test.ts`, 3 tests in 2 new
+suites, parses every file under `src/` and refuses an identifier or string
+`sync`, which is how each of the four spellings of the call is written, shown
+firing on a planted `api.storage.sync.get` (`storage.ts:638`) and on the
+sentence reworded. Both pages also say the export holds reading history, and
+that keys stay on the machine they were typed on; `/privacy` was built and
+read.
+
+All 31 shots were regenerated after the commit that moved `src/`, 14 + 10 + 7
+written. The first documentation run moved `page-tooltip.png` by one woven
+word, "horse" as *cheval* in the article behind the tooltip — 1 740 pixels in a
+160×20 box, the largest channel 255 apart, a glyph, drawn before the clock is
+held — and a second run gave back every byte, so the groups are stamped. Unit
+578 → **588** / 139 → **140** suites, tools 536 → **539** / 134 → **136**,
+total 1258 → **1271**, in six places, `docs/LAUNCH.md:221` first, and a
+`CHANGELOG.md` paragraph, because the file changes. **The first sweep wrote
+586**, counted before the two base-URL tests went in; the gate's count is the
+one to carry.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0** — typecheck clean, **588 unit /
+140**, 102 jsdom / 23, **539 tools / 136**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **990 KB × 3** passing `validate`, **42 e2e
+passed and 3 skipped in 4.8 min**, then build and validate again. Separately,
+`npm run site` then `site:check` **714 pages / 16 118 links**, all resolving,
+and `artefacts:check` **8 groups, 1 stale**, exit 1 — the release notes, B2a.
+`packs:verify` was not run: no pack or seed moved. Each package grew 458 bytes,
+all of them `background.js`, measured against `main`'s three built in a `/tmp`
+worktree: Chrome's 989.854 → 990.301 KB, Firefox's 990.367 and Safari's
+990.308, all printing 990. Only documents moved after the gate, so typecheck
+and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that an export blanks the base URL as well as an
+import keeping it, a custom endpoint travelling with its key or not at all;
+that the import's sentence about keys reads fields named `key` only; and that
+`privacy.syncSettings`, typed and validated with no reader, stays, removing a
+stored field being a change of its own.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: a file can still switch on a
+translation service, or sentence context, on the machine that imports it.
 
 ### 2026-11-02 — a data export is named for the user's day, and reading `exportAll` found the keys it says it strips
 

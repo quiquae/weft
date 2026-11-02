@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **586** unit / 140 suites, **102** jsdom / 23
+of this session — typecheck clean, **588** unit / 140 suites, **102** jsdom / 23
 suites, **539** tool tests / 136 suites, **42** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 990 KB each, all
@@ -63,7 +63,10 @@ lighter than `main`'s, the packs' per-language attribution — Chrome's
 `src/lexicon/packs/` — and on 2026-11-02, each 209 bytes heavier, all of them
 `exportFilename()` in `options.js`, Chrome's 989.649 → 989.854 KB, Firefox's
 989.920 and Safari's 989.860, measured against `main`'s three packages built
-in a `/tmp` worktree.
+in a `/tmp` worktree — and later that day 458 bytes heavier again, all of them
+`background.js`, the export's local-only fields and the import's sentence
+about keys, Chrome's 989.854 → 990.301 KB, Firefox's 990.367 and Safari's
+990.308, measured the same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1633,49 +1636,77 @@ registered**, and nothing below it can move until it is.
       inside the file, an instant rather than a date. The item's "16:00 in
       California" is a winter's: in summer it is 17:00.
 
-- [ ] **Take the API keys out of an export, as the privacy page says it
-      does.** Found 2026-11-02 reading `exportAll` for the item above, and
-      measured with the real `src/background/storage.ts` on a Map-backed
-      `chrome.storage.local`, three keys planted: **the export holds all
-      three in clear**, and the licence key, which is stored apart, not at
-      all. `exportAll` (`storage.ts:345`) blanks `installId` and nothing
-      else, and its comment says "an export is a file people attach to bug
-      reports". Four places say otherwise: `docs/PRIVACY.md:25` ("API keys
-      are stripped … before anything is exported") and `:116`,
-      `docs/SUPPORT.md:114` and `:139`, and the message the page prints
-      (`src/ui/options/data.tsx:207`, "and no keys"). `PRIVACY.md` is
-      `/privacy`, the URL every store's form asks for. `syncSafeSettings()`
-      (`src/core/settings.ts:480`) blanks all three, has a test, and has no
-      caller in `src/`; `tests/core/storage-export.test.ts:136` reads the
-      install id alone. Nothing is exposed yet: no store lists Weft and the
-      repository is private. The shape:
-      1. Red first in `storage-export.test.ts`: three planted keys, none in
-         `JSON.stringify(payload)`, the text rather than the fields, as
-         `diagnosticsLeakCheck` holds its report.
-      2. `exportAll` writes `syncSafeSettings(snapshot.settings)`, with
-         `installId: ''`.
-      3. **The import half, without which the fix does damage.** Measured
-         the same way: a machine holding three keys imports a file holding
-         none, and all three are `""` afterwards, `importAll` saving the
-         file's settings as they came, against its own doc comment, "nothing
-         already here may be lost to a file that knows less than this
-         machine does". That is a defect today, between two machines, and
-         after step 2 every import would do it. So `immediate` keeps the
-         machine's own keys. **Assumed, for the run that takes this:** the
-         machine's key wins whatever the file says, a key never arriving by
-         file, so an export written before the fix cannot quietly replace
-         one; `LOCAL_ONLY_PATHS` (`settings.ts:472`), which has no reader
-         either, is the list to read. An e2e seeded through `import-data`
-         sets no key, so nothing there should move.
-      4. `docs/PRIVACY.md:23–25` also describes settings sync, "Turning it
-         on uses `chrome.storage.sync`", and `src/` has no `storage.sync`
-         call and no control that reads `privacy.syncSettings`. A privacy
-         page should describe what ships: say that nothing is synced, and
-         keep the export's sentence, now true. The site builds `/privacy`
-         from this file, so `site:check` and a read of the page belong here.
-      5. It moves `src/`, so regenerate and stamp the three screenshot groups
-         as above, and write a `CHANGELOG.md` paragraph, because the file
-         changes. About 45 minutes.
+- [x] **Take the API keys out of an export, as the privacy page says it
+      does.** Done 2026-11-02, the run after the export's filename.
+      `exportAll` writes `exportSafeSettings()`, which blanks every field
+      `LOCAL_ONLY_PATHS` (`src/core/settings.ts`) names, and `importAll` runs
+      `keepLocalOnly()` before the cooldown split, so a machine keeps its own
+      keys and install id whatever a file says, as the item's assumption had
+      it. `syncSafeSettings()`, which hand-wrote the three keys and had no
+      caller, is gone: one list, two readers. Test-first: five tests in a new
+      suite of `tests/core/storage-export.test.ts`, each red for its own
+      reason — the export held `deepl-planted-7f3a` in clear, a key-less file
+      erased a machine's keys, a keyed file replaced them, a forged install id
+      landed, and the message was silent about keys left out — then green.
+      The import message now says "API keys stay with this machine" when a
+      file held one. **One departure, and it is the part worth keeping:
+      `providers.openai.baseUrl` is local-only too.** The security hook
+      flagged the first commit: keeping the machine's key while taking a
+      file's base URL sends the key, as a bearer token, to
+      `${baseUrl}/chat/completions` on whatever server a crafted file names —
+      a hole this change opened, an import having erased the key before. A
+      settings test derives the rule from the shape (a field beside a `key`
+      named like an address is local too), and the message reads only fields
+      named `key`, since every pre-fix export carries the default base URL.
+      `tests/core/settings.test.ts` holds the list both ways: every listed
+      path is a string field, so a typo cannot blank nothing, and every field
+      whose last segment is named like a secret is listed, which reads
+      `a11y.keyboardCursor` correctly as not one. Probes, each restored by
+      md5: the OpenAI key dropped from the list and a path misspelt each fail
+      by name in both files. `docs/PRIVACY.md` says nothing is synced, Weft
+      never using `chrome.storage.sync`, and `tests/tools/no-sync.test.ts`, 3
+      tests in 2 new suites, holds the sentence to every parsed file under
+      `src/`, an identifier or string `sync` anywhere refused, shown firing on
+      a planted `api.storage.sync.get` and on the sentence reworded. The page
+      and `docs/SUPPORT.md` now say the export holds reading history too, and
+      that keys stay on the machine they were typed on; `/privacy` was built
+      and read. All 31 shots regenerated after the commit that moved `src/`,
+      14 + 10 + 7 written; the first documentation run moved
+      `page-tooltip.png` by one woven word behind the tooltip, "horse" as
+      *cheval*, drawn before the clock is held, and a second gave back every
+      byte, so the groups are stamped. Unit 578 → **588** / 139 → **140**
+      suites, tools 536 → **539** / 134 → **136**, total 1258 → **1271**, in
+      six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
+
+- [ ] **Keep a file from switching on a translation service, or sentence
+      context, on the machine that imports it.** Found 2026-11-02 doing the
+      item above: `providers.enabled` and `providers.sendContext` are in no
+      `GOVERNED_PATHS` entry and `validateSettings` takes either from a file
+      by `bool()`, so importing a file with both `true` turns on lookups —
+      with this machine's own key and address, now that those stay put — and
+      sends the sentence around each word, where `src/core/types.ts` calls
+      `sendContext` "a hard privacy guarantee rather than a preference … a
+      separate, explicit opt-in rather than something that happens quietly",
+      and `docs/PRIVACY.md` opens "If you never enable a translation service,
+      Weft makes no network requests at all." Not opened by the item above —
+      the file's settings were taken whole before it — but not closed by it
+      either. The shape, assumed for the run that takes it:
+      1. Red first in `tests/core/storage-export.test.ts`: a machine with a
+         key and providers off imports a file with `providers.enabled` and
+         `sendContext` true; both stay false, and the message says so.
+      2. A privacy widening never arrives by file: in `importAll`, beside
+         `keepLocalOnly`, a step keeping the machine's value for each such
+         path when the file's would send more (off → on), while narrowing
+         (on → off) lands at once, as a harder setting does. Which paths:
+         `providers.enabled`, `providers.sendContext`, and `providers.order`
+         only if a new provider in it would be contacted that was not —
+         read `providers/index.ts` first. `neverSendHosts` is re-unioned
+         with the shipped defaults on every load, so only a user's own
+         additions could shrink; decide whether those count.
+      3. The import message says what it left alone, as it does for keys.
+      4. `docs/PRIVACY.md`'s import paragraph says it. It moves `src/`, so
+         regenerate and stamp the three screenshot groups, and a
+         `CHANGELOG.md` paragraph. About 45 minutes.
 
 ## Next
 
@@ -7261,6 +7292,36 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-02 — an export holds no key, and a kept key keeps its address.**
+Five things a later run would be sorry not to know:
+
+1. **When a field is made local-only, ask where it is sent.** The first
+   commit kept a machine's OpenAI key on import and took the file's
+   `providers.openai.baseUrl`, which would have sent the key, as a bearer
+   token, to any server a crafted file named. The security-guidance hook,
+   which reviews each commit's diff after `git commit` runs, caught it; the
+   rule is now derived in `tests/core/settings.test.ts` from the settings'
+   own shape, a field beside a `key` named like an address being local too.
+2. **`setPath()` creates a path that is not there.** A misspelt entry in
+   `LOCAL_ONLY_PATHS` would write a new empty field into every export and
+   leave the real key beside it, which is why a test requires each entry to
+   name a string field of the defaults.
+3. **A secret is matched by its last path segment, read whole.**
+   `a11y.keyboardCursor` contains "key"; `/^(key|secret|token|password)$|
+   (Key|Secret|Token|Password)$/` on the segment is what tells it apart.
+4. **The documentation set can move `page-tooltip.png` by one woven word on
+   its first run.** The three woven pages are drawn before the clock is held,
+   on the attention the run really accrues, so "horse" came out *cheval*
+   once: 1 740 pixels, one 160×20 box, the largest channel 255 apart, which
+   `npm run png:diff` reads as a glyph. A second run gave back every byte.
+   Run the set again before believing a woven-page shot changed.
+5. **Assumed, with nobody to ask:** that an export blanks the base URL as
+   well as an import keeping it, a custom endpoint travelling with its key or
+   not at all; that the import's sentence about keys reads fields named `key`
+   only, every pre-fix export carrying the default base URL; and that
+   `privacy.syncSettings`, typed and validated with no reader, stays,
+   removing a stored field being a change of its own.
 
 **2026-11-02 — a data export is named for the user's day.** Four things a
 later run would be sorry not to know:
