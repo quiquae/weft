@@ -200,14 +200,9 @@ describe('the fields that stay on this machine', () => {
   });
 
   test('an export copy keeps non-secret provider configuration', () => {
-    const s = applyPatch(KEYED, {
-      'providers.openai.model': 'my-model',
-      'providers.openai.baseUrl': 'https://llm.example/v1',
-      'providers.deepl.free': false,
-    });
+    const s = applyPatch(KEYED, { 'providers.openai.model': 'my-model', 'providers.deepl.free': false });
     const safe = exportSafeSettings(s);
     assert.equal(safe.providers.openai.model, 'my-model');
-    assert.equal(safe.providers.openai.baseUrl, 'https://llm.example/v1');
     assert.equal(safe.providers.deepl.free, false);
   });
 
@@ -249,6 +244,24 @@ describe('the fields that stay on this machine', () => {
     assert.ok(secret.length >= 3, `only ${secret.length} secret-looking fields were found, so the walk read nothing`);
     for (const path of secret) {
       assert.ok(LOCAL_ONLY_PATHS.includes(path), `${path} looks like a secret and is not in LOCAL_ONLY_PATHS`);
+    }
+  });
+
+  test('every address a key is sent to stays with the key', () => {
+    // A key kept while its endpoint arrives by file is a key sent wherever the
+    // file says: `providers.openai.key` goes to `providers.openai.baseUrl`.
+    // So a field beside a key that names where requests go is local too.
+    const ADDRESS = /url|endpoint|host/i;
+    const d = defaultSettings(NOW, ID) as unknown as Record<string, unknown>;
+    const beside: string[] = [];
+    for (const path of LOCAL_ONLY_PATHS.filter((p) => p.split('.').at(-1) === 'key')) {
+      const parent = path.split('.').slice(0, -1).join('.');
+      const siblings = Object.keys((getPath(d, parent) ?? {}) as Record<string, unknown>);
+      for (const name of siblings) if (ADDRESS.test(name)) beside.push(`${parent}.${name}`);
+    }
+    assert.ok(beside.length >= 1, 'no address was found beside any key, so the walk read nothing');
+    for (const path of beside) {
+      assert.ok(LOCAL_ONLY_PATHS.includes(path), `${path} is where a key is sent, and a file could change it`);
     }
   });
 });

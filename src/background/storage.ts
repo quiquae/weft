@@ -358,7 +358,7 @@ export async function exportAll(): Promise<Record<string, unknown>> {
     // An export is a file people attach to bug reports, so nothing in it may
     // be a secret. The install id is signing key material and the three
     // provider keys are somebody's paid account: `exportSafeSettings` blanks
-    // every field `LOCAL_ONLY_PATHS` names. Until 2026-11-02 this blanked the
+    // every field `LOCAL_ONLY_PATHS` names, with the address one key is sent to. Until 2026-11-02 this blanked the
     // install id alone and the keys went out in clear, while the privacy page
     // said they were stripped. The licence lives under its own key and is
     // not read here at all: it is the customer's property.
@@ -384,12 +384,14 @@ export interface ImportResult {
  * gate it would have passed on the options page, and nothing already here
  * may be lost to a file that knows less than this machine does.
  *
- * **Local-only fields** — the API keys and the install id — keep this
- * machine's values whatever the file says (`keepLocalOnly`). An export never
- * carries them, so a file that does is old or edited, and a key belongs to
- * the machine it was typed on. Saving the file's settings as they came, as
- * this did until 2026-11-02, erased a machine's keys whenever it imported a
- * file that had none, and replaced them with any a file did have.
+ * **Local-only fields** — the API keys, the address the OpenAI-compatible
+ * key is sent to, and the install id — keep this machine's values whatever
+ * the file says (`keepLocalOnly`). An export never carries them, so a file
+ * that does is old or edited, and a key belongs to the machine it was typed
+ * on. Saving the file's settings as they came, as this did until 2026-11-02,
+ * erased a machine's keys whenever it imported a file that had none, and
+ * replaced them with any a file did have; keeping the key and taking the
+ * file's address would have sent the key wherever the file said.
  *
  * **Settings** are split by `splitImportedSettings`. Harder and cosmetic
  * values land at once; anything easier becomes a patch for `requestChange`
@@ -583,10 +585,16 @@ function carriesLockState(incoming: unknown): boolean {
   );
 }
 
-/** Whether a file held an API key, which the import left where it was. */
+/**
+ * Whether a file held an API key, which the import left where it was.
+ *
+ * Only the fields named `key`: every export written before 2026-11-02 carries
+ * the default base URL, which is local-only too and no key, and a file that
+ * held only that must not be told it held one.
+ */
 function carriesKeys(settings: unknown): boolean {
   return LOCAL_ONLY_PATHS.some((path) => {
-    if (path === 'installId') return false; // never a key, and exports blank it
+    if (path.split('.').at(-1) !== 'key') return false;
     const value = getPath(settings, path);
     return typeof value === 'string' && value !== '';
   });

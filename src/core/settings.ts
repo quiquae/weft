@@ -479,6 +479,12 @@ export function migrateSettings(raw: unknown, now: number, installId: string): S
  * whatever the file says, so a file written before exports stopped carrying
  * keys cannot replace one. Each is a string, blanked to ''.
  *
+ * The OpenAI-compatible base URL is here because it is where that key is
+ * sent, as a bearer token. A machine that kept its key and took a file's
+ * address would send the key to whatever server the file named, so the
+ * address stays with the key, and a custom endpoint, which can carry an
+ * internal host name, does not go out in a bug report either.
+ *
  * `privacy.syncSettings` has no reader and nothing is synced. If sync is ever
  * built, this is the list it must leave behind.
  */
@@ -486,6 +492,7 @@ export const LOCAL_ONLY_PATHS = [
   'providers.deepl.key',
   'providers.google.key',
   'providers.openai.key',
+  'providers.openai.baseUrl',
   'installId',
 ];
 

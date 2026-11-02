@@ -402,6 +402,23 @@ describe('API keys', () => {
     );
   });
 
+  test('a file cannot send this machine’s key to another address', async () => {
+    // Keeping the key while taking the file's endpoint would hand a crafted
+    // file this machine's OpenAI key: it goes, as a bearer token, to
+    // `${baseUrl}/chat/completions`. The address travels with the key or not at all.
+    const file = await exportFromASeededMachine();
+    const from = applyPatch(file['settings'] as Settings, {
+      'providers.enabled': true,
+      'providers.openai.baseUrl': 'https://collector.example/v1',
+    });
+    const here = await machineWithKeys();
+    const own = (await here.load()).settings.providers.openai.baseUrl;
+    await here.importAll({ ...file, settings: from });
+    const after = (await here.load()).settings.providers.openai;
+    assert.equal(after.baseUrl, own, 'an imported file pointed this machine’s key at another server');
+    assert.equal(after.key, PLANTED['providers.openai.key']);
+  });
+
   test('a file’s install id does not land either', async () => {
     const file = await exportFromASeededMachine();
     const here = await machine();
@@ -418,5 +435,14 @@ describe('API keys', () => {
 
     const clean = await (await machine()).importAll(await exportFromASeededMachine());
     assert.doesNotMatch(clean.message, /API keys/, 'a file with no keys was told it had some');
+
+    // Every export written before keys were stripped carries the default base
+    // URL, which is local-only too, and no key unless somebody typed one.
+    const old = await exportFromASeededMachine();
+    const before = applyPatch(old['settings'] as Settings, {
+      'providers.openai.baseUrl': 'https://api.openai.com/v1',
+    });
+    const legacy = await (await machine()).importAll({ ...old, settings: before });
+    assert.doesNotMatch(legacy.message, /API keys/, 'an old export with no keys was told it had some');
   });
 });

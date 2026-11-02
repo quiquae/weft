@@ -22,7 +22,8 @@ All of it in `chrome.storage.local`, on your computer:
 
 Nothing is synced between your devices: Weft never uses
 `chrome.storage.sync`. API keys never leave the machine you typed them on —
-an export strips them, and an import neither brings one nor removes one.
+an export strips them, and an import neither brings one, removes one, nor
+changes where one is sent.
 
 ## What Weft never stores
 
@@ -112,18 +113,20 @@ shortcut. That response is configurable down to "just note it".
 ## Your data is yours
 
 Export writes a JSON file containing your settings, your whole vocabulary and
-your reading history — seconds per site per day — with API keys and the
-install id stripped. The install id is signing key material, the keys are your
-own accounts, and an export is a file you might attach to a bug report. The
-sites you read are in it, so look before you send it.
+your reading history — seconds per site per day — with API keys, the address
+of any OpenAI-compatible service and the install id stripped. The install id
+is signing key material, the keys are your own accounts, and an export is a
+file you might attach to a bug report. The sites you read are in it, so look
+before you send it.
 
 Import merges, keeping whichever record shows more learning, so moving between
 machines never loses progress in either direction. Imported settings go
 through the same validation and clamping as anything read from storage, and are
 re-signed with this install's key. A setting that would make Weft easier waits
 out your cooldown, as if you had changed it by hand. API keys stay where they
-are: a key in the file is left out, and a key on this machine is kept, so on a
-new machine you type yours in again.
+are, and so does the address a key is sent to: a key in the file is left out,
+and a key on this machine is kept, so on a new machine you type yours in
+again.
 
 "Start my vocabulary over" erases every word Weft knows about you and leaves
 your settings alone.
