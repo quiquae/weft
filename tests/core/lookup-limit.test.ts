@@ -70,6 +70,12 @@ describe('a day of lookups, as arithmetic', () => {
     });
     assert.equal(core.takeLookups(undefined, '2026-11-03', 0, 10).granted, 0);
   });
+
+  test('what today has sent is the count kept under today, and nothing else', () => {
+    assert.equal(core.sentToday({ day: '2026-11-03', words: 120 }, '2026-11-03'), 120);
+    assert.equal(core.sentToday({ day: '2026-11-02', words: 120 }, '2026-11-03'), 0);
+    assert.equal(core.sentToday(undefined, '2026-11-03'), 0);
+  });
 });
 
 describe('the daily lookup limit counts a day', () => {

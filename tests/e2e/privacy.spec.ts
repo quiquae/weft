@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures.ts';
+import { dayKey } from '../../src/core/escalation.ts';
 
 /**
  * "0 network requests, ever" — checked against the whole browser, not one page.
@@ -178,5 +179,38 @@ test.describe('what a fresh install may touch', () => {
     const named = await read();
     expect(named.registered.length, 'naming a site registered no content script, so the empty read proves nothing').toBe(1);
     expect(named.registered[0]).toContain(`http://${new URL(origin).hostname}/*`);
+  });
+});
+
+test.describe('what has left this machine today', () => {
+  /*
+   * The daily lookup limit counts the words sent on Weft's day, a failed
+   * request included (`tests/core/lookup-limit.test.ts`). The panel that
+   * counts every request since install also shows that day's words against
+   * the limit, so the limit is checkable the way the request count is,
+   * rather than a sentence on the settings page.
+   *
+   * The log is seeded in storage rather than earned, because nothing in this
+   * suite may reach a real translation service.
+   */
+  test('the network panel shows the day’s words against the limit', async ({ context, extensionId, worker }) => {
+    const log = {
+      requests: 3,
+      words: 1240,
+      hosts: ['api-free.deepl.com'],
+      last: Date.now(),
+      today: { day: dayKey(Date.now(), 4), words: 120 },
+    };
+    await worker.evaluate(async (value) => {
+      await chrome.storage.local.set({ 'weft:network': value });
+    }, log);
+
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
+    await expect(page.getByText(/network requests, carrying 1,240 individual words/)).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.getByText('Today, 120 of the 2,000 words the daily lookup limit allows.')).toBeVisible();
+    await page.close();
   });
 });

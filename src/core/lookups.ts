@@ -22,6 +22,15 @@ export interface LookupDay {
 }
 
 /**
+ * Words the day has sent so far. A count kept under another day is that
+ * day's, and today has sent nothing yet. The dashboard prints it beside the
+ * limit, so the limit is checkable the way the request count is.
+ */
+export function sentToday(spent: LookupDay | undefined, today: string): number {
+  return spent?.day === today ? spent.words : 0;
+}
+
+/**
  * How many of `wanted` words may be sent now, and the day's count once they
  * have been. A count kept under another day is yesterday's and starts again
  * at nothing; a limit lowered below what the day has already sent grants
@@ -33,7 +42,7 @@ export function takeLookups(
   cap: number,
   wanted: number,
 ): { granted: number; spent: LookupDay } {
-  const used = spent?.day === today ? spent.words : 0;
+  const used = sentToday(spent, today);
   const granted = Math.max(0, Math.min(wanted, cap - used));
   return { granted, spent: { day: today, words: used + granted } };
 }

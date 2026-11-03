@@ -13,6 +13,7 @@ import type { LockState } from '../core/lock.ts';
 import type { SiteDecision } from '../core/sites.ts';
 import type { QuizQuestion, QuizResult } from '../core/quiz.ts';
 import type { LicenceStatus } from '../core/licence.ts';
+import type { LookupDay } from '../core/lookups.ts';
 import type { Feature, Tier } from '../core/entitlements.ts';
 
 /**
@@ -109,7 +110,7 @@ export interface ResponseMap {
   'submit-quiz': { passed: boolean; score: number; message: string };
   'get-stats': {
     tier: Tier;
-    network: { requests: number; words: number; last?: number; hosts: string[] };
+    network: { requests: number; words: number; last?: number; hosts: string[]; today?: LookupDay };
     settings: Settings;
     cards: MemoryCard[];
     attention: SiteAttention[];
