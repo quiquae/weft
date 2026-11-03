@@ -3,6 +3,7 @@ import type { Settings } from '../../core/types.ts';
 import { getLanguage } from '../../core/languages.ts';
 import { send } from '../../shared/rpc.ts';
 import { exportFilename } from '../../core/escalation.ts';
+import { whatIsSent } from '../../core/sending.ts';
 import { has } from '../../core/entitlements.ts';
 import { Locked } from './pro.tsx';
 import { Notice, Row, Section, Slider, Switch } from '../components/pieces.tsx';
@@ -15,9 +16,10 @@ import { SIGLA } from './sections.tsx';
  * The packs Weft ships cover a curated core and need no network. A provider
  * extends that to anything, and the privacy story is the reason it can be
  * offered at all: a provider receives isolated words and a part-of-speech
- * hint, never page text. There is no parameter in the interface to put a
- * paragraph in, and the never-send host list is enforced in the background
- * worker rather than in the page.
+ * hint, and the sentence around each only when “Send the surrounding
+ * sentence” is on, which `whatIsSent()` says above the keys. There is no
+ * parameter in the interface to put a paragraph in, and the never-send host
+ * list is enforced in the background worker rather than in the page.
  */
 export function SourcesSection({ c, settings }: { c: Controller; settings: Settings }) {
   const meta = getLanguage(settings.learning.activeTarget);
@@ -73,9 +75,8 @@ export function SourcesSection({ c, settings }: { c: Controller; settings: Setti
       {settings.providers.enabled ? (
         <>
           <Notice>
-            Weft sends single words and a part-of-speech hint. It does not send the page, the
-            sentence, the URL or anything identifying. Words from the never-weave list are never
-            sent at all.
+            {whatIsSent(settings.providers)} Weft does not send the page, the URL or anything
+            identifying. Words from the never-weave list are never sent at all.
           </Notice>
 
           {keyField(

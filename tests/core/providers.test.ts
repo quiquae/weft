@@ -5,6 +5,7 @@ import { google } from '../../src/background/providers/google.ts';
 import { openai } from '../../src/background/providers/openai.ts';
 import type { TranslationRequest } from '../../src/background/providers/types.ts';
 import { settings } from '../helpers.ts';
+import { SENTENCE_RECIPIENTS } from '../../src/core/sending.ts';
 
 /**
  * What actually leaves the machine when a user brings their own API key.
@@ -178,6 +179,38 @@ describe('what a provider must never send', () => {
       // A word list is short. Prose is not.
       assert.ok(body.length < 400, `${name} body is suspiciously long: ${body.length} bytes`);
     }
+  });
+});
+
+describe('who is sent the sentence is what the dashboard says', () => {
+  /**
+   * The dashboard and the settings page name the services sent the sentence
+   * when “Send the surrounding sentence” is on, from `SENTENCE_RECIPIENTS` in
+   * `src/core/sending.ts`. Which services those are is a fact about the
+   * bodies above, so it is read from them, for every provider the worker can
+   * call: a fourth provider, or DeepL taking up its own `context` parameter,
+   * fails here until the words say so.
+   */
+  test('the services whose body carries the sentence are exactly the ones named', async () => {
+    const g = globalThis as unknown as Record<string, unknown>;
+    // The registry imports the worker's storage, which reads these at load.
+    g['__WEFT_TARGET__'] ??= 'chrome';
+    g['chrome'] ??= { storage: { local: {} } };
+    const { PROVIDERS } = await import('../../src/background/providers/index.ts');
+
+    const carriers: string[] = [];
+    for (const [id, provider] of Object.entries(PROVIDERS)) {
+      stubFetch({});
+      await provider.translate(withContext, ctx());
+      assert.ok(bodies.length > 0, `${id} made no request, so this proves nothing about it`);
+      if (bodies.some((body) => body.includes('stone bridge'))) carriers.push(id);
+    }
+    assert.ok(Object.keys(PROVIDERS).length >= 3, 'fewer providers were read than ship');
+    assert.deepEqual(
+      carriers.sort(),
+      [...SENTENCE_RECIPIENTS].sort(),
+      'the services sent the sentence are not the ones src/core/sending.ts names',
+    );
   });
 });
 
