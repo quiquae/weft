@@ -128,6 +128,14 @@ are, and so does the address a key is sent to: a key in the file is left out,
 and a key on this machine is kept, so on a new machine you type yours in
 again.
 
+An import can make Weft send less to a translation service and never more. A
+file can switch lookups or sentence context off, and that lands at once; it
+cannot switch either on, add a service, take a host off the never-send list,
+raise the daily lookup limit or shorten how long answers are kept. Those stay
+as this machine has them, and the import says what it left out, so a
+translation service is only ever switched on by you, on the machine that
+holds the key.
+
 "Start my vocabulary over" erases every word Weft knows about you and leaves
 your settings alone.
 

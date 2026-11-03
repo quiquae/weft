@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **588** unit / 140 suites, **102** jsdom / 23
+of this session — typecheck clean, **607** unit / 142 suites, **102** jsdom / 23
 suites, **539** tool tests / 136 suites, **42** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 990 KB each, all
+packages built at 992 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -66,7 +66,12 @@ lighter than `main`'s, the packs' per-language attribution — Chrome's
 in a `/tmp` worktree — and later that day 458 bytes heavier again, all of them
 `background.js`, the export's local-only fields and the import's sentence
 about keys, Chrome's 989.854 → 990.301 KB, Firefox's 990.367 and Safari's
-990.308, measured the same way.
+990.308, measured the same way — and to **992 KB** on 2026-11-03 by 1 302
+bytes, all of them `background.js`, `SENDING_PATHS`, `sendNoMoreThan()` and
+the import's sentence about what it left out: Chrome's 990.301 → 991.572 KB,
+Firefox's 991.639 and Safari's 991.579, measured against `main`'s three
+packages built in a `/tmp` worktree. A frozen table had first put 490 dead
+bytes into `options.js` and `onboarding.js` each; see Notes.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -636,8 +641,8 @@ or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
 **So the whole of B0 is closed. `Now` holds one agent-shaped item, found on
-2026-10-28: CI's actions declare the Node 20 runtime GitHub has deprecated.
-`Next` holds two items that wait on Creagh's calls and a third that does
+2026-11-02: the daily lookup limit the options page and the privacy page
+promise counts no day, each call being sliced to it alone. `Next` holds two items that wait on Creagh's calls and a third that does
 too since 2026-10-26, the site's favicon, whose check is made and whose
 remedy is a choice.** Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
@@ -1678,35 +1683,74 @@ registered**, and nothing below it can move until it is.
       suites, tools 536 → **539** / 134 → **136**, total 1258 → **1271**, in
       six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
 
-- [ ] **Keep a file from switching on a translation service, or sentence
-      context, on the machine that imports it.** Found 2026-11-02 doing the
-      item above: `providers.enabled` and `providers.sendContext` are in no
-      `GOVERNED_PATHS` entry and `validateSettings` takes either from a file
-      by `bool()`, so importing a file with both `true` turns on lookups —
-      with this machine's own key and address, now that those stay put — and
-      sends the sentence around each word, where `src/core/types.ts` calls
-      `sendContext` "a hard privacy guarantee rather than a preference … a
-      separate, explicit opt-in rather than something that happens quietly",
-      and `docs/PRIVACY.md` opens "If you never enable a translation service,
-      Weft makes no network requests at all." Not opened by the item above —
-      the file's settings were taken whole before it — but not closed by it
-      either. The shape, assumed for the run that takes it:
-      1. Red first in `tests/core/storage-export.test.ts`: a machine with a
-         key and providers off imports a file with `providers.enabled` and
-         `sendContext` true; both stay false, and the message says so.
-      2. A privacy widening never arrives by file: in `importAll`, beside
-         `keepLocalOnly`, a step keeping the machine's value for each such
-         path when the file's would send more (off → on), while narrowing
-         (on → off) lands at once, as a harder setting does. Which paths:
-         `providers.enabled`, `providers.sendContext`, and `providers.order`
-         only if a new provider in it would be contacted that was not —
-         read `providers/index.ts` first. `neverSendHosts` is re-unioned
-         with the shipped defaults on every load, so only a user's own
-         additions could shrink; decide whether those count.
-      3. The import message says what it left alone, as it does for keys.
-      4. `docs/PRIVACY.md`'s import paragraph says it. It moves `src/`, so
-         regenerate and stamp the three screenshot groups, and a
-         `CHANGELOG.md` paragraph. About 45 minutes.
+- [x] **Keep a file from switching on a translation service, or sentence
+      context, on the machine that imports it.** Done 2026-11-02, the run
+      after the keys'. The item's premise held exactly — a machine with a
+      DeepL key and lookups off imported a file's `providers.enabled: true`
+      and `sendContext: true` as they came — and the item's three paths were
+      six. `SENDING_PATHS` in `src/core/settings.ts`, beside
+      `LOCAL_ONLY_PATHS`, names each provider field that decides what leaves
+      and which way sends more: `enabled` and `sendContext` on,
+      `order` gaining a service this machine's lacks (a reorder of the ones it
+      has sends nothing to anyone new, so it lands), `neverSendHosts` losing a
+      host this machine has (the item's question: **a user's own hosts count**,
+      and the result is the union of the file's and this machine's), and, by
+      the same rule, `dailyLookupCap` raised and `cacheDays` lowered.
+      `sendNoMoreThan()` keeps this machine's value wherever a file's would
+      send more, a narrowing landing at once, and `importAll` runs it beside
+      `keepLocalOnly`; the message names what was left out, read whole from a
+      scratch run: "Turning lookups on, sending sentence context and
+      removing a host from the never-send list were left out: a file cannot
+      make Weft send more to a translation service." `order` and
+      `neverSendHosts` have no control on the options page, so a file is the
+      only thing that has ever changed either. Test-first: 4 tests in a new
+      suite of `tests/core/storage-export.test.ts`, red on lookups switched on
+      and on a never-send host dropped, the two narrowing and quiet-file tests
+      green as over-correction guards; 15 in a new suite of
+      `tests/core/settings.test.ts`, red on the missing export, among them one
+      walking the defaults' `providers` and failing on a field classed as
+      none, or more than one, of local, sending and neither — `deepl.free`
+      and `openai.model` are neither, each with its reason in the test.
+      Probes, each restored by md5: `importAll` without the step fails the
+      two widening tests and no other; the union taken out fails the pure
+      case and the integration test; `cacheDays` dropped from the table and
+      `sendContext` misspelt each fail by name. `docs/PRIVACY.md`'s import
+      paragraph and `docs/SUPPORT.md` say it. All 31 shots regenerated after
+      the commit that moved `src/`, 10 + 14 + 7 written, every one
+      byte-identical, and the groups stamped. Each package grew 1 302
+      bytes, all of them `background.js`, once a frozen table was made a
+      literal so the options and first-run bundles stopped carrying it, and
+      prints **992 KB**. Unit 588 → **607** / 140 → **142** suites, total
+      1271 → **1290**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph.
+
+- [ ] **Make the daily lookup limit count a day.** Found 2026-11-02 doing the
+      item above. The options page's "Daily lookup limit" says "A ceiling on
+      calls per day, so a runaway page cannot drain your key",
+      `docs/PRIVACY.md` says "There is a daily lookup cap so a runaway page
+      cannot drain your key", and `src/core/types.ts` types
+      `dailyLookupCap` as "Maximum provider lookups per day". Nothing counts
+      a day. `lookupMissing()` (`src/background/providers/index.ts:82`)
+      slices each call's uncached words to the cap, and the content script
+      sends one call per page load holding at most `PROVIDER_WORD_CAP`, 60
+      words (`src/content/index.ts:50`), so at the default 2000 the cap never
+      bites, and two hundred pages a day can send up to 12 000 uncached
+      words. Found by reading, not run. The shape, assumed for the run that takes it:
+      1. Red first: a stubbed `fetch` and the Map-backed storage of
+         `tests/core/storage-export.test.ts`; with the cap at 100, two calls
+         of 60 uncached words on one day send 100 words in all, and the
+         next day's call sends again.
+      2. A count in storage keyed by `dayKey(now, rolloverHour)`, read in
+         `lookupMissing()` before the slice (the remaining allowance, not
+         the cap) and advanced by each batch's length where
+         `noteNetworkRequest()` is, so a failed request counts, as that
+         log's comment says it must. Cache hits send nothing and count
+         nothing. Arithmetic put in `src/core/` takes a required `now`, as
+         core's rule asks.
+      3. The message an exhausted day returns says so, and the dashboard's
+         network panel may want the day's count; decide, do not guess.
+      4. It moves `src/`, so regenerate and stamp the three screenshot
+         groups, and a `CHANGELOG.md` paragraph. About an hour.
 
 ## Next
 
@@ -7292,6 +7336,45 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-02 — a file may make this machine send less, never more.** Six
+things a later run would be sorry not to know:
+
+1. **`machine()` in `tests/core/storage-export.test.ts` clears the one
+   backing store every machine shares**, so a file must be exported before
+   the machine that imports it is made. Two tests of this run's first draft
+   did it the other way, and one failed with exactly the bug's message — the
+   red looked right and proved nothing. Stubbing the fix out of `importAll`
+   and re-running, after the order was corrected, is what showed the guard
+   fires for its own reason.
+2. **`providers.order` and `providers.neverSendHosts` have no control on the
+   options page.** Only the defaults and imported files have ever set them,
+   so "a user's own never-send hosts" are hosts some file brought; they count
+   all the same, the union keeping them.
+3. **The daily lookup limit is per call, not per day** — queued as the next
+   item, with the numbers. Read before touching the copy that promises it.
+4. **The `lookup-words` handler reads stored settings, not
+   `clampToTier()`'s** (`src/background/index.ts:579`). Not a leak: the
+   content script is handed clamped settings, so a Free install never asks,
+   and only Weft's own contexts can message the worker. Found and left; if
+   the handler is ever reachable another way, clamp it there.
+5. **Assumed, with nobody to ask:** that a user's own never-send hosts count;
+   that reordering the services already in the order sends nothing to anyone
+   new, a fallback being already a recipient; that the daily limit and the
+   cache length are "sending more" by the same rule, the limit guarding the
+   key that stays local; and that `deepl.free` and `openai.model` are
+   neither, choosing among one service's endpoints and models at this
+   machine's own address.
+6. **esbuild keeps a top-level call it cannot prove pure, so
+   `Object.freeze([...])` in a module the UI imports ships in every bundle
+   that imports it, read or not.** `SENDING_PATHS` was frozen at first and
+   put 490 unread bytes into `options.js` and `onboarding.js` each, which the
+   gate's 993 KB showed and the per-file comparison against `main`'s build
+   located. As a literal, the way `LOCAL_ONLY_PATHS` beside it is, both
+   bundles are byte-identical to `main`'s; the `ReadonlyArray` type keeps it
+   read-only. `GOVERNED_PATHS` in `lock.ts` is frozen too, and the UI does
+   not import `lock.ts`, so it costs nothing today. Compare each bundle with
+   `main`'s, not the total: a total says something grew, not where.
 
 **2026-11-02 — an export holds no key, and a kept key keeps its address.**
 Five things a later run would be sorry not to know:
