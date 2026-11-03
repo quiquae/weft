@@ -743,6 +743,17 @@ service, take a host off the never-send list, raise the daily lookup limit
 or shorten how long answers are kept; those stay as the machine has them,
 and the import says what it left out.
 
+**The daily lookup limit counted nothing over a day.** The settings page and
+the privacy page call it a ceiling per day, so a runaway page cannot drain
+your key, and each call was only cut to it on its own: a page sends at most
+sixty words, so at the default 2 000 the limit never bit, and two hundred
+pages could send twelve thousand words in a day. It now counts the words sent
+on Weft's day, which starts at 4 a.m.: a request that fails counts, since its
+words went out, a word answered from the cache does not, and pages loading at
+once, as a browser restoring its tabs does, share one allowance rather than
+each seeing all of it. Once Weft has made a request, the dashboard's network
+panel shows the day's words beside the limit.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -763,8 +774,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1290 tests: 607 unit, 102 in jsdom, 539 over the build tools, and
-42 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1303 tests: 619 unit, 102 in jsdom, 539 over the build tools, and
+43 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

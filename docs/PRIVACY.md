@@ -80,7 +80,10 @@ leaves your computer.
 The never-send host list is enforced in the background worker, not in the page.
 A content script is the wrong place to keep a privacy guarantee.
 
-There is a daily lookup cap so a runaway page cannot drain your key.
+There is a daily lookup limit, so a runaway page cannot drain your key. It
+counts the words sent, a request that fails included, since those words left
+your computer all the same; a word answered from the cache is not sent and
+not counted. Its day starts at 4 a.m., as every day in Weft does.
 
 ## Speech
 

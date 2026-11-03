@@ -6,11 +6,12 @@ import {
   attentionSummary, sortVocabulary, stageOf, vocabStats, wordsRead, type VocabSort,
 } from '../../core/stats.ts';
 import { cardRetrievability, daysUntilDue } from '../../core/fsrs.ts';
-import { formatDuration } from '../../core/escalation.ts';
+import { dayKey, formatDuration } from '../../core/escalation.ts';
 import { buildDiscoveries } from '../../core/discoveries.ts';
 import { entriesByTarget, spelling } from '../../core/lexicon.ts';
 import { earnedMilestones, nextMilestone } from '../../core/milestones.ts';
 import { historyDays } from '../../core/entitlements.ts';
+import { sentToday } from '../../core/lookups.ts';
 import { api } from '../../shared/browser.ts';
 import { useRequest } from '../lib/hooks.ts';
 import { Gloss, Notice, Section, WeaveBand } from '../components/pieces.tsx';
@@ -404,6 +405,12 @@ function Dashboard() {
               ? 'Weft has no account and no server. It only ever goes to the network if you give it your own translation API key, and you have not.'
               : 'Only isolated words are ever sent, never page text. Turn this off under Vocabulary in settings.'}
           </p>
+          {network.requests === 0 ? null : (
+            <p class="muted plot__note">
+              Today, {sentToday(network.today, dayKey(now, settings.attention.rolloverHour)).toLocaleString()} of
+              the {settings.providers.dailyLookupCap.toLocaleString()} words the daily lookup limit allows.
+            </p>
+          )}
         </div>
       </Section>
 

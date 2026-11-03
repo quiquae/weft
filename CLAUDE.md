@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **607 pass**, 142 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **619 pass**, 144 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **539 pass**, 136 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **42 pass, 3 skipped**, 4.8 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **43 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 992 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 993 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -911,6 +911,86 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-03 — the daily lookup limit counts a day, and the dashboard shows it
+
+`TODO.md`'s one unchecked item in `Now`, queued by the import run: the
+options page, `docs/PRIVACY.md` and `src/core/types.ts` all promised a
+ceiling on lookups per day, and `lookupMissing()` sliced each call's uncached
+words to it and counted nothing. A page load sends at most 60 words, so at
+the default 2 000 the limit never bit.
+
+**The count is per batch, and serialised, where the item said once per
+call.** `takeLookups()` in a new `src/core/lookups.ts` is the arithmetic, a
+count kept under another reading day starting again at nothing, and the
+count itself is `today` in the network log. `spendLookups()`, which replaces
+`noteNetworkRequest()`, takes each batch's words from the day and records the
+request in one step, before the request goes, so a failed request counts and
+a cache hit never reaches it. Read once before the slice, as the item had it,
+two pages loading at once would each have read the whole day; so every write
+to `weft:network` goes through one promise chain in the worker. A browser
+restoring its tabs makes exactly that burst, inside one worker's life, which
+is all an in-memory chain has to cover.
+
+**The item left one decision open, and the dashboard prints the day.** The
+network panel is headed "Counted, not promised", and the limit is a promise:
+under the request count it now reads "Today, 120 of the 2,000 words the daily
+lookup limit allows.", only once Weft has made a request, so a fresh
+install's panel and every committed shot are unchanged. Rendered and read. A
+stopped call's message says how many words it held back, but the content
+script logs `reply.error` only in a dev build, so no reader has ever seen any
+provider's error; written up in `TODO.md`'s Notes rather than changed. The
+options row says "the words sent each day" where it said "calls", and the
+privacy page says what counts. The day is `attention.rolloverHour`'s, 4 a.m.,
+which no page has a control for; a first draft of the privacy sentence said
+"unless you have changed it", and a grep of `src/ui` said nobody can.
+
+Test-first: 12 tests in 2 new suites of `tests/core/lookup-limit.test.ts`, on
+a Map-backed `chrome.storage.local`, a stubbed `fetch` whose bodies are what
+the tests count, and `Date.now` held, red on the missing module, on 120 words
+sent under a limit of 100, on 60 where a failed batch should have left 50, on
+no message and on 03:00 sending. Taking the chain out fails the two-at-once
+test alone, at 120, restored by md5. One e2e test in `privacy.spec.ts` seeds
+the network log through the worker and reads the panel, red on the new line
+while the seeded request count rendered.
+
+**Reading the panel for this found the next item.** Its note says "Only
+isolated words are ever sent, never page text." whatever `sendContext` says,
+and with it on, OpenAI's body carries each word's sentence. Queued first in
+`Now`.
+
+All 31 shots regenerated after each of the two commits that moved `src/`, 31
+written each time, every one byte-identical, and the three groups stamped.
+Unit 607 → **619** / 142 → **144** suites, e2e 42 → **43**, total 1290 →
+**1303**, in six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
+paragraph, because the limit ships.
+
+Measured on Node 26.7, with npm's own exit status captured, on the tree
+holding the code: `npm run test:all` **exit 0** — typecheck clean, **619 unit
+/ 144**, 102 jsdom / 23, 539 tools / 136, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **993 KB × 3** passing `validate`, **43
+e2e passed and 3 skipped in 4.4 min**, then build and validate again. Each
+package grew 986 bytes, measured against `main`'s three built in a `/tmp`
+worktree: 701 in `background.js`, 275 in `dashboard.js` and 10 in
+`options.js`, the row's copy, and no other bundle moved. Chrome's 991.572 →
+992.535 KB, Firefox's 992.601 and Safari's 992.541, all printing **993 KB**,
+swept in the command table and `TODO.md`'s state line. Separately `npm run
+site` then `site:check` **714 pages / 16 118 links**, all resolving, and the
+privacy page's new paragraph read off the built page. `packs:verify` was not
+run: no pack or seed moved. Only documents moved after the gate, so typecheck
+and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the limit is one allowance across every
+service, a fallback service being sent the same words again and each sending
+counting; that it counts words, as its slice always did; that the day is the
+attention rollover's; that the dashboard shows the count while the content
+script stays silent; and that a call the limit stops does not fall through to
+the next service.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: the dashboard's "never page
+text" with sentence context on.
 
 ### 2026-11-02 — an import makes Weft send less to a translation service, never more
 
