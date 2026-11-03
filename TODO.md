@@ -8,7 +8,7 @@
 of this session — typecheck clean, **607** unit / 142 suites, **102** jsdom / 23
 suites, **539** tool tests / 136 suites, **42** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 990 KB each, all
+packages built at 992 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -66,7 +66,12 @@ lighter than `main`'s, the packs' per-language attribution — Chrome's
 in a `/tmp` worktree — and later that day 458 bytes heavier again, all of them
 `background.js`, the export's local-only fields and the import's sentence
 about keys, Chrome's 989.854 → 990.301 KB, Firefox's 990.367 and Safari's
-990.308, measured the same way.
+990.308, measured the same way — and to **992 KB** on 2026-11-03 by 1 302
+bytes, all of them `background.js`, `SENDING_PATHS`, `sendNoMoreThan()` and
+the import's sentence about what it left out: Chrome's 990.301 → 991.572 KB,
+Firefox's 991.639 and Safari's 991.579, measured against `main`'s three
+packages built in a `/tmp` worktree. A frozen table had first put 490 dead
+bytes into `options.js` and `onboarding.js` each; see Notes.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1712,9 +1717,12 @@ registered**, and nothing below it can move until it is.
       `sendContext` misspelt each fail by name. `docs/PRIVACY.md`'s import
       paragraph and `docs/SUPPORT.md` say it. All 31 shots regenerated after
       the commit that moved `src/`, 10 + 14 + 7 written, every one
-      byte-identical, and the groups stamped. Unit 588 → **607** / 140 →
-      **142** suites, total 1271 → **1290**, in six places,
-      `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
+      byte-identical, and the groups stamped. Each package grew 1 302
+      bytes, all of them `background.js`, once a frozen table was made a
+      literal so the options and first-run bundles stopped carrying it, and
+      prints **992 KB**. Unit 588 → **607** / 140 → **142** suites, total
+      1271 → **1290**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph.
 
 - [ ] **Make the daily lookup limit count a day.** Found 2026-11-02 doing the
       item above. The options page's "Daily lookup limit" says "A ceiling on
@@ -7329,7 +7337,7 @@ characters) and keywords (100 bytes) are not drafted either.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-11-02 — a file may make this machine send less, never more.** Five
+**2026-11-02 — a file may make this machine send less, never more.** Six
 things a later run would be sorry not to know:
 
 1. **`machine()` in `tests/core/storage-export.test.ts` clears the one
@@ -7357,6 +7365,16 @@ things a later run would be sorry not to know:
    key that stays local; and that `deepl.free` and `openai.model` are
    neither, choosing among one service's endpoints and models at this
    machine's own address.
+6. **esbuild keeps a top-level call it cannot prove pure, so
+   `Object.freeze([...])` in a module the UI imports ships in every bundle
+   that imports it, read or not.** `SENDING_PATHS` was frozen at first and
+   put 490 unread bytes into `options.js` and `onboarding.js` each, which the
+   gate's 993 KB showed and the per-file comparison against `main`'s build
+   located. As a literal, the way `LOCAL_ONLY_PATHS` beside it is, both
+   bundles are byte-identical to `main`'s; the `ReadonlyArray` type keeps it
+   read-only. `GOVERNED_PATHS` in `lock.ts` is frozen too, and the UI does
+   not import `lock.ts`, so it costs nothing today. Compare each bundle with
+   `main`'s, not the total: a total says something grew, not where.
 
 **2026-11-02 — an export holds no key, and a kept key keeps its address.**
 Five things a later run would be sorry not to know:

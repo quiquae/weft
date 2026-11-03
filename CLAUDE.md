@@ -70,7 +70,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **42 pass, 3 skipped**, 4.8 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 990 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 992 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -911,6 +911,97 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-02 — an import makes Weft send less to a translation service, never more
+
+`TODO.md`'s one unchecked item in `Now`, queued by the keys' run:
+`providers.enabled` and `providers.sendContext` were in no `GOVERNED_PATHS`
+entry and `validateSettings` took either from a file, so a machine holding a
+key with lookups switched off imported a file's `true` as it came and began
+sending words to that key's service, and with the second the sentence around
+each.
+
+**Six paths, where the item named three.** `SENDING_PATHS` in
+`src/core/settings.ts`, beside `LOCAL_ONLY_PATHS`, names each provider field
+that decides what leaves and which way of changing it sends more: lookups and
+sentence context switched on; a service the machine's order lacks; a
+never-send host the machine has and the file does not; a higher daily lookup
+limit; a shorter cache. `sendNoMoreThan()` keeps this machine's value wherever
+a file's would send more, a narrowing landing at once, and `importAll` runs it
+beside `keepLocalOnly`; the message names what it left out, read whole from a
+scratch run. Not the cooldown: privacy is not difficulty, and sending less is
+never the direction anybody needs protecting from. The item's two open
+questions were settled by reading `providers/index.ts`: a reorder of services
+already in the order lands, a fallback being a recipient already; and a
+user's own never-send hosts count, the result being the union. The options
+page has no control for `order` or `neverSendHosts`, so only the defaults and
+files have ever set either.
+
+**The first red proved nothing, and a probe is what said so.** Two tests of
+the first draft made the importing machine before the file, and `machine()`
+clears the one backing store every machine shares; one of them failed with
+the bug's own message. Reordered, the four new tests in
+`tests/core/storage-export.test.ts` pass, and stubbing the step out of
+`importAll` fails the two widening tests and no other, the narrowing and
+quiet-file tests being over-correction guards. The fifteen in
+`tests/core/settings.test.ts`, red on the missing export, include one walking
+the defaults' `providers` that fails on a field classed as none, or more than
+one, of local, sending and neither — `deepl.free` and `openai.model` are
+neither, each with its reason — shown firing on `cacheDays` dropped from the
+table and on `sendContext` misspelt. Each probe was restored by md5.
+
+**The gate's 993 KB found dead code no test could.** `SENDING_PATHS` was
+frozen at first, and esbuild keeps a top-level call it cannot prove pure, so
+`Object.freeze([...])` rode, unread, into `options.js` and `onboarding.js`,
+490 bytes each; a per-file comparison with `main`'s three packages, built in a
+`/tmp` worktree, located it where the total only said something grew. As a
+literal, as `LOCAL_ONLY_PATHS` is, both bundles are byte-identical to
+`main`'s, and each package grows 1 302 bytes, all of them `background.js`:
+Chrome's 990.301 → 991.572 KB, Firefox's 991.639 and Safari's 991.579, all
+printing **992 KB**, swept in the command table and `TODO.md`'s state line.
+
+**Reading `lookupMissing` for this found the next item.** The "Daily lookup
+limit" counts no day: each call is sliced to it, a page load sends one call of
+at most 60 words, and the default is 2 000, while the options page and
+`docs/PRIVACY.md` both promise a ceiling per day. Queued first in `Now`. Found
+and left: the `lookup-words` handler reads stored settings rather than
+`clampToTier()`'s, from which nothing leaks, the content script being handed
+clamped ones.
+
+The session was stopped mid-run and continued at 03:02 on the 3rd; its
+in-flight `TODO.md` was committed and pushed before anything long. All 31
+shots were regenerated on the final `src/`, 10 + 14 + 7 written, every one
+byte-identical — the documentation set on its third run, the first two moving
+`page-tooltip.png` by one woven word and `dashboard-milestones.png` by five
+pixels a channel apart, the noise recorded on 2026-11-02 and 2026-10-25 — and
+the three groups are stamped. Unit 588 → **607** / 140 → **142** suites,
+total 1271 → **1290**, in six places, `docs/LAUNCH.md:221` first, and a
+`CHANGELOG.md` paragraph, because the import ships.
+
+Measured on Node 26.7, with npm's own exit status captured, on the final
+tree: `npm run test:all` **exit 0 in about 6 minutes** — typecheck clean,
+**607 unit / 142**, 102 jsdom / 23, 539 tools / 136, compat 16 dependencies ×
+3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **992 KB × 3** passing `validate`, **42
+e2e passed and 3 skipped in 4.7 min**, then build and validate again; the
+first gate, on the frozen table, had exited 0 at 993 KB. Separately: `npm run
+site` then `site:check` **714 pages / 16 118 links**, all resolving, and
+`/privacy`'s new paragraph read off the built page; `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a. `packs:verify` was not
+run: no pack or seed moved. Only documents moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a user's own never-send hosts count, the
+union keeping them; that a reorder of services already in the order sends
+nothing to anyone new; that the daily limit and the cache length are "sending
+more" by the same rule, the limit guarding a key that stays local; that
+`deepl.free` and `openai.model` are neither, choosing among one service's
+endpoints and models at this machine's own address; and that narrowing lands
+silently rather than being reported, as a harder setting does.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: the daily lookup limit that
+counts no day.
 
 ### 2026-11-02 — an export holds no key now, and keeping a key showed where it is sent
 
