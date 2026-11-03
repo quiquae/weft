@@ -166,7 +166,7 @@ export function SourcesSection({ c, settings }: { c: Controller; settings: Setti
           <Row
             siglum={SIGLA.leaf}
             title="Daily lookup limit"
-            detail="A ceiling on calls per day, so a runaway page cannot drain your key."
+            detail="A ceiling on the words sent each day, so a runaway page cannot drain your key."
             value={String(settings.providers.dailyLookupCap)}
           >
             <Slider

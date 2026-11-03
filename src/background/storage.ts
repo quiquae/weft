@@ -21,6 +21,7 @@ import { newInstallId, open, seal } from '../core/integrity.ts';
 import { dayKey, mergeAttention } from '../core/escalation.ts';
 import { mergeCards } from '../core/fsrs.ts';
 import { renameCards } from '../core/renames.ts';
+import { takeLookups, type LookupDay } from '../core/lookups.ts';
 import { pruneAttention, pruneByAge } from '../core/prune.ts';
 import { verifyLicence, type LicenceStatus } from '../core/licence.ts';
 import type { Tier } from '../core/entitlements.ts';
@@ -303,6 +304,11 @@ export interface NetworkLog {
   last?: number;
   /** Hosts contacted, for the user to check against what they expect. */
   hosts: string[];
+  /**
+   * Words sent on the latest reading day a request was made, which is what
+   * the daily lookup limit is counted against. Absent until the first.
+   */
+  today?: LookupDay;
 }
 
 const EMPTY_LOG: NetworkLog = { requests: 0, words: 0, hosts: [] };
@@ -312,22 +318,46 @@ export async function loadNetworkLog(): Promise<NetworkLog> {
 }
 
 /**
- * Record that Weft went to the network.
- *
- * Exists so the privacy claim is checkable rather than asserted. The
- * dashboard shows this number, and for anyone who has not configured a
- * translation key it is zero and stays zero — which is a far better argument
- * than a paragraph promising the same thing.
+ * The tail of every write to the network log, so that two lookups made at
+ * once take their words from one allowance instead of each reading the same
+ * count. A browser restoring fifty tabs makes fifty calls in one second, and
+ * without this each saw the whole day's allowance. Module state is lost when
+ * the worker sleeps, and that is enough: a burst happens inside one worker's
+ * life, and a sleeping worker has nothing in flight.
  */
-export async function noteNetworkRequest(host: string, words: number): Promise<void> {
-  const log = await loadNetworkLog();
-  const hosts = log.hosts.includes(host) ? log.hosts : [...log.hosts, host].slice(-12);
-  await put(KEYS.network, {
-    requests: log.requests + 1,
-    words: log.words + words,
-    last: Date.now(),
-    hosts,
-  } satisfies NetworkLog);
+let networkWrites: Promise<unknown> = Promise.resolve();
+
+/**
+ * Take up to `wanted` words from today's lookup allowance and record that
+ * Weft is going to the network with them, in one step, before it goes.
+ *
+ * Returns how many of the words may be sent, and records nothing when the
+ * answer is none. Recorded before the request, so a request that fails
+ * still counts: the limit bounds what left the machine, and the dashboard's
+ * number is the times Weft went out, not the times it came back.
+ *
+ * The log exists so the privacy claim is checkable rather than asserted. The
+ * dashboard shows it, and for anyone who has not configured a translation
+ * key it is zero and stays zero — which is a far better argument than a
+ * paragraph promising the same thing.
+ */
+export function spendLookups(host: string, wanted: number, today: string, cap: number): Promise<number> {
+  const run = networkWrites.then(async () => {
+    const log = await loadNetworkLog();
+    const { granted, spent } = takeLookups(log.today, today, cap, wanted);
+    if (!granted) return 0;
+    const hosts = log.hosts.includes(host) ? log.hosts : [...log.hosts, host].slice(-12);
+    await put(KEYS.network, {
+      requests: log.requests + 1,
+      words: log.words + granted,
+      last: Date.now(),
+      hosts,
+      today: spent,
+    } satisfies NetworkLog);
+    return granted;
+  });
+  networkWrites = run.catch(() => undefined);
+  return run;
 }
 
 /* --------------------------------------------------------- provider cache */

@@ -1,4 +1,5 @@
 import type { LangCode, LexEntry, Pos, Settings } from '../../core/types.ts';
+import { dayKey } from '../../core/escalation.ts';
 import { getLanguage } from '../../core/languages.ts';
 import { deepl } from './deepl.ts';
 import { google } from './google.ts';
@@ -6,8 +7,8 @@ import { openai } from './openai.ts';
 import { ProviderError, type Provider, type TranslationRequest } from './types.ts';
 import {
   loadProviderCache,
-  noteNetworkRequest,
   saveProviderCache,
+  spendLookups,
   type ProviderCacheEntry,
 } from '../storage.ts';
 
@@ -37,6 +38,11 @@ function cacheKey(source: LangCode, target: LangCode, word: string, pos: Pos): s
  * Providers are tried in the user's order and the first usable answer wins.
  * A failure is reported, never thrown: the page must keep working with the
  * packaged vocabulary when a key expires.
+ *
+ * Every word sent comes off the day's lookup limit first, by `spendLookups`,
+ * which is what makes the limit a day's and not a call's: until 2026-11-03
+ * each call was sliced to the limit on its own, and a page load sends at most
+ * sixty words, so at the default 2 000 it never bit.
  */
 export async function lookupMissing(
   words: Array<{ word: string; pos: Pos; num?: 'sg' | 'pl'; context?: string }>,
@@ -58,6 +64,8 @@ export async function lookupMissing(
 
   const cache = await loadProviderCache();
   const now = Date.now();
+  const today = dayKey(now, settings.attention.rolloverHour);
+  const cap = Math.max(0, settings.providers.dailyLookupCap);
   const ttl = Math.max(1, settings.providers.cacheDays) * DAY_MS;
   const entries: LexEntry[] = [];
   const pending: TranslationRequest[] = [];
@@ -79,10 +87,12 @@ export async function lookupMissing(
 
   if (!pending.length) return { entries, fromCache, fromProvider: 0 };
 
-  const capped = pending.slice(0, Math.max(0, settings.providers.dailyLookupCap));
   const controller = new AbortController();
   let fromProvider = 0;
   let lastError: string | undefined;
+  /** Words this call sent anywhere, so the limit's message can be exact. */
+  const sentNow = new Set<string>();
+  let limited = false;
 
   for (const id of settings.providers.order) {
     const provider = PROVIDERS[id];
@@ -94,17 +104,21 @@ export async function lookupMissing(
     }
 
     try {
-      const remaining = capped.filter(
+      const remaining = pending.filter(
         (r) => !entries.some((e) => e.lemma.toLowerCase() === r.word.toLowerCase()),
       );
       if (!remaining.length) break;
 
-      for (let i = 0; i < remaining.length; i += provider.batchSize) {
-        const batch = remaining.slice(i, i + provider.batchSize);
-        // Logged before the call, so a request that fails still counts. The
-        // number in the dashboard has to be the number of times Weft went
-        // out, not the number of times it succeeded.
-        await noteNetworkRequest(providerHost(provider.id, settings), batch.length);
+      for (let i = 0; i < remaining.length && !limited; i += provider.batchSize) {
+        const wanted = remaining.slice(i, i + provider.batchSize);
+        // Taken from the day before the call, so a request that fails still
+        // counts. The number in the dashboard has to be the number of times
+        // Weft went out, not the number of times it succeeded.
+        const granted = await spendLookups(providerHost(provider.id, settings), wanted.length, today, cap);
+        if (granted < wanted.length) limited = true;
+        if (!granted) break;
+        const batch = wanted.slice(0, granted);
+        for (const request of batch) sentNow.add(request.word);
         const results = await provider.translate(batch, {
           source,
           target,
@@ -141,7 +155,15 @@ export async function lookupMissing(
   await saveProviderCache(cache);
   const outcome: LookupOutcome = { entries, fromCache, fromProvider };
   if (lastError) outcome.error = lastError;
+  else if (limited) outcome.error = limitReached(cap, pending.length - sentNow.size, sentNow.size);
   return outcome;
+}
+
+/** What a call the daily lookup limit stopped says, for the content script. */
+function limitReached(cap: number, unsent: number, sent: number): string {
+  const limit = `The daily lookup limit of ${cap} ${cap === 1 ? 'word' : 'words'}`;
+  if (!sent) return `${limit} is used up for today, so nothing was sent.`;
+  return `${limit} was reached, so ${unsent} ${unsent === 1 ? 'word was' : 'words were'} not sent.`;
 }
 
 /**

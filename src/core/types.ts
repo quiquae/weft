@@ -424,7 +424,10 @@ export interface Settings {
      * opt-in rather than something that happens quietly.
      */
     sendContext: boolean;
-    /** Maximum provider lookups per day, so a key cannot be drained. */
+    /**
+     * Most words sent to a provider in one reading day, failed requests
+     * included, so a key cannot be drained. Counted by `core/lookups.ts`.
+     */
     dailyLookupCap: number;
   };
 
