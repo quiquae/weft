@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-02:** every automatable check is green, measured at the end
-of this session — typecheck clean, **607** unit / 142 suites, **102** jsdom / 23
-suites, **539** tool tests / 136 suites, **42** e2e passing
+**State on 2026-11-03:** every automatable check is green, measured at the end
+of this session — typecheck clean, **619** unit / 144 suites, **102** jsdom / 23
+suites, **539** tool tests / 136 suites, **43** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 992 KB each, all
+packages built at 993 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -71,7 +71,11 @@ bytes, all of them `background.js`, `SENDING_PATHS`, `sendNoMoreThan()` and
 the import's sentence about what it left out: Chrome's 990.301 → 991.572 KB,
 Firefox's 991.639 and Safari's 991.579, measured against `main`'s three
 packages built in a `/tmp` worktree. A frozen table had first put 490 dead
-bytes into `options.js` and `onboarding.js` each; see Notes.
+bytes into `options.js` and `onboarding.js` each; see Notes. And to **993 KB**
+later on 2026-11-03 by 986 bytes, 701 of them `background.js`, the day's
+count and the chain its writes go through, 275 `dashboard.js`, the day's line,
+and 10 `options.js`, the row's copy: Chrome's 991.572 → 992.535 KB,
+Firefox's 992.601 and Safari's 992.541, measured the same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1724,33 +1728,69 @@ registered**, and nothing below it can move until it is.
       1271 → **1290**, in six places, `docs/LAUNCH.md:221` first, and a
       `CHANGELOG.md` paragraph.
 
-- [ ] **Make the daily lookup limit count a day.** Found 2026-11-02 doing the
-      item above. The options page's "Daily lookup limit" says "A ceiling on
-      calls per day, so a runaway page cannot drain your key",
-      `docs/PRIVACY.md` says "There is a daily lookup cap so a runaway page
-      cannot drain your key", and `src/core/types.ts` types
-      `dailyLookupCap` as "Maximum provider lookups per day". Nothing counts
-      a day. `lookupMissing()` (`src/background/providers/index.ts:82`)
-      slices each call's uncached words to the cap, and the content script
-      sends one call per page load holding at most `PROVIDER_WORD_CAP`, 60
-      words (`src/content/index.ts:50`), so at the default 2000 the cap never
-      bites, and two hundred pages a day can send up to 12 000 uncached
-      words. Found by reading, not run. The shape, assumed for the run that takes it:
-      1. Red first: a stubbed `fetch` and the Map-backed storage of
-         `tests/core/storage-export.test.ts`; with the cap at 100, two calls
-         of 60 uncached words on one day send 100 words in all, and the
-         next day's call sends again.
-      2. A count in storage keyed by `dayKey(now, rolloverHour)`, read in
-         `lookupMissing()` before the slice (the remaining allowance, not
-         the cap) and advanced by each batch's length where
-         `noteNetworkRequest()` is, so a failed request counts, as that
-         log's comment says it must. Cache hits send nothing and count
-         nothing. Arithmetic put in `src/core/` takes a required `now`, as
-         core's rule asks.
-      3. The message an exhausted day returns says so, and the dashboard's
-         network panel may want the day's count; decide, do not guess.
-      4. It moves `src/`, so regenerate and stamp the three screenshot
-         groups, and a `CHANGELOG.md` paragraph. About an hour.
+- [x] **Make the daily lookup limit count a day.** Done 2026-11-03, the
+      shape as queued with two departures. The options row, the privacy page
+      and the type each promised a ceiling per day, and `lookupMissing()`
+      only sliced each call's uncached words to it, a page load sending at
+      most 60. `takeLookups()` in a new `src/core/lookups.ts` is the
+      arithmetic, a count kept under another reading day starting again at
+      nothing; the count lives in the network log as `today`, and
+      `spendLookups()` in `src/background/storage.ts`, which replaces
+      `noteNetworkRequest()`, takes each batch's words from it and records
+      the request in one step, before the request, so a failed one counts and
+      a cache hit never reaches it. **Departure one: per batch, and
+      serialised.** The item said to read the allowance once, before the
+      slice; two pages loading at once would each have read the whole day, so
+      every write to `weft:network` goes through one promise chain in the
+      worker, and the test of two calls made at once fails at 120 words with
+      the chain taken out, and only that test, restored by md5. **Departure
+      two, the item's decision: the dashboard prints the day's count**, under
+      the request count, "Today, 120 of the 2,000 words the daily lookup
+      limit allows.", and only once Weft has made a request, so a fresh
+      install's panel and every committed shot are unchanged. The panel is
+      headed "Counted, not promised", and the limit is a promise. A stopped
+      call's message says how many words it held back, but the content script
+      logs `reply.error` only in a dev build, so no reader sees it; see Notes.
+      The day is `attention.rolloverHour`'s, 4 a.m., which no page has a
+      control for, and a test pins it: 03:00 is still the day before. The
+      options row says "the words sent each day" where it said "calls", and
+      `docs/PRIVACY.md` says what counts. Test-first: 12 tests in 2 new
+      suites of `tests/core/lookup-limit.test.ts`, red on the missing module,
+      on 120 words sent under a limit of 100, on 60 where a failed batch
+      should have left 50, on no message and on 03:00 sending; and one e2e
+      test in `privacy.spec.ts` seeding the network log, red on the line
+      missing while the seeded request count rendered. The panel was rendered
+      and read. All 31 shots regenerated after each of the two commits that
+      moved `src/`, 31 written each time, every one byte-identical, and the
+      three groups stamped. Unit 607 → **619** / 142 → **144** suites, e2e 42
+      → **43**, total 1290 → **1303**, in six places, `docs/LAUNCH.md:221`
+      first, and a `CHANGELOG.md` paragraph.
+
+- [ ] **The dashboard says no page text is sent, and with sentence context
+      on, OpenAI is sent the sentence.** Found 2026-11-03 doing the item
+      above. Once Weft has made a request, the network panel's note reads
+      "Only isolated words are ever sent, never page text."
+      (`src/ui/dashboard/index.tsx:406`) whatever `providers.sendContext`
+      says, and with it on `src/background/providers/openai.ts:60` puts each
+      word's sentence in the request body; DeepL's and Google's bodies carry
+      the words alone. `docs/PRIVACY.md` already says the sentence goes out,
+      and the options toggle says so in those words. Found by reading, not
+      run. The shape, assumed for the run that takes it:
+      1. Red first: an e2e test beside "the network panel shows the day's
+         words against the limit" in `tests/e2e/privacy.spec.ts`, seeding
+         the network log the same way and switching sentence context on,
+         reading the note.
+      2. The note says what the settings send: isolated words, or words with
+         the sentence each appears in when context is on, naming the setting
+         and where to turn it off. Read `tests/core/providers.test.ts`, which
+         holds the three bodies, before writing which services get the
+         sentence: today only OpenAI's body carries it.
+      3. "Turn this off under Vocabulary in settings": the section is titled
+         "Vocabulary beyond the packs"; close enough, but check it while the
+         sentence moves.
+      4. It moves `src/`: regenerate and stamp the three screenshot groups
+         (no committed shot shows this branch), and a `CHANGELOG.md`
+         paragraph. About forty minutes.
 
 ## Next
 
@@ -7336,6 +7376,35 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-03 — the daily lookup limit counts a day.** Four things a later
+run would be sorry not to know:
+
+1. **Every write to `weft:network` goes through one promise chain**,
+   `networkWrites` in `src/background/storage.ts`, and `spendLookups()` is
+   the only writer; `noteNetworkRequest()` is gone. A second writer that
+   reads and writes the log outside the chain reopens the race it closes:
+   two calls made at once, as a browser restoring its tabs makes them, each
+   reading the whole day's allowance.
+2. **No reader ever sees a provider's error.** `extendVocabulary()` in
+   `src/content/index.ts` logs `reply.error` only under `__WEFT_DEV__`, so an
+   expired key, a never-send host and a used-up day all look like fewer
+   machine glosses. The dashboard's new line is the one place a used-up day
+   shows. Whether the popup or the options page should say when lookups
+   stopped is a product call, and not queued.
+3. **Background code can be tested on a held clock by replacing
+   `Date.now`.** `tests/core/lookup-limit.test.ts` sets it in `before()` and
+   restores it in `after()`; `lookupMissing()`, the cache's age, `pruneByAge`
+   and the network log all read it, and nothing on that path calls a bare
+   `new Date()`. Import the module under test dynamically, after the stubs:
+   `src/shared/browser.ts` reads `chrome` when it loads.
+4. **Assumed, with nobody to ask:** that the limit is one allowance across
+   every service rather than one per key, a fallback service being sent the
+   same words again and each sending counting; that it counts words, as its
+   slice always did; that the day is the attention rollover's; that the
+   dashboard shows the count and the content script stays silent; and that
+   a call the limit stops does not fall through to the next service, the
+   allowance being shared.
 
 **2026-11-02 — a file may make this machine send less, never more.** Six
 things a later run would be sorry not to know:
