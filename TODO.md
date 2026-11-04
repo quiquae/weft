@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-03:** every automatable check is green, measured at the end
+**State on 2026-11-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **626** unit / 147 suites, **102** jsdom / 23
 suites, **539** tool tests / 136 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 993 KB each, all
+packages built at 994 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -75,7 +75,12 @@ bytes into `options.js` and `onboarding.js` each; see Notes. And to **993 KB**
 later on 2026-11-03 by 986 bytes, 701 of them `background.js`, the day's
 count and the chain its writes go through, 275 `dashboard.js`, the day's line,
 and 10 `options.js`, the row's copy: Chrome's 991.572 → 992.535 KB,
-Firefox's 992.601 and Safari's 992.541, measured the same way.
+Firefox's 992.601 and Safari's 992.541, measured the same way. And to
+**994 KB** on 2026-11-04 by 1 263 bytes, 848 of them `dashboard.js`, the
+network panel's three sentences and the masthead's second, and 415
+`options.js`, the notice above the keys, `background.js` not moving: Chrome's
+992.535 → 993.769 KB, Firefox's 993.835 and Safari's 993.775, measured the
+same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1796,7 +1801,9 @@ registered**, and nothing below it can move until it is.
       the copy's, and a section renamed in the copy fails by name. Both pages
       rendered and read. All 31 shots regenerated after the commit that moved
       `src/`, 31 written, every one byte-identical, and the three groups
-      stamped. Unit 619 → **626** / 144 → **147** suites, e2e 43 → **44**,
+      stamped. Each package grew 1 263 bytes, 848 of them `dashboard.js` and
+      415 `options.js`, and prints **994 KB**. Unit 619 → **626** / 144 →
+      **147** suites, e2e 43 → **44**,
       total 1303 → **1311**, in six places, `docs/LAUNCH.md:221` first, and a
       `CHANGELOG.md` paragraph.
 
