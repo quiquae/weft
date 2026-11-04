@@ -754,6 +754,19 @@ once, as a browser restoring its tabs does, share one allowance rather than
 each seeing all of it. Once Weft has made a request, the dashboard's network
 panel shows the day's words beside the limit.
 
+**Two pages said the sentence never leaves, beside the switch that sends it.**
+With “Send the surrounding sentence” on, an OpenAI-compatible service is sent
+the sentence each word appears in, and the dashboard's network panel still
+said only isolated words are ever sent, never page text, as the settings page
+said, two rows above that switch, that Weft does not send the sentence. Both
+now say what the settings send: single words and a part-of-speech hint, and
+with the sentence switched on, which service is sent it and that DeepL and
+Google never are; the dashboard says where to switch it off. Which services
+those are is read from the request each one is really sent, so the words fail
+a test the day a service starts receiving the sentence. The dashboard's
+heading no longer says Weft sends nothing anywhere while a translation
+service is on.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -774,8 +787,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1303 tests: 619 unit, 102 in jsdom, 539 over the build tools, and
-43 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1311 tests: 626 unit, 102 in jsdom, 539 over the build tools, and
+44 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface
