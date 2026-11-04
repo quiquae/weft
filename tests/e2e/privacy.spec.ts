@@ -1,5 +1,7 @@
 import { test, expect } from './fixtures.ts';
 import { dayKey } from '../../src/core/escalation.ts';
+import { howToStop, whatIsSent } from '../../src/core/sending.ts';
+import { issue, proPayload } from './licence.ts';
 
 /**
  * "0 network requests, ever" — checked against the whole browser, not one page.
@@ -211,6 +213,54 @@ test.describe('what has left this machine today', () => {
       timeout: 10_000,
     });
     await expect(page.getByText('Today, 120 of the 2,000 words the daily lookup limit allows.')).toBeVisible();
+    await page.close();
+  });
+
+  /**
+   * With “Send the surrounding sentence” on, the OpenAI-compatible service is
+   * sent the sentence each word appears in. Until 2026-11-03 the panel said
+   * "Only isolated words are ever sent, never page text." whatever the
+   * setting said, and the settings page's notice "It does not send the page,
+   * the sentence, …" two rows above the switch that sends it. Pro, because a
+   * translation service is, and on Free the panel has none to describe.
+   */
+  test('with sentence context on, the dashboard and the settings say the sentence goes', async ({
+    context,
+    extensionId,
+    worker,
+    rpc,
+  }) => {
+    const licence = await rpc<{ tier: string }>({ type: 'set-licence', key: await issue(proPayload) });
+    expect(licence.tier).toBe('pro');
+    const change = await rpc<{ applied: boolean }>({
+      type: 'request-change',
+      patch: { 'providers.enabled': true, 'providers.sendContext': true },
+    });
+    expect(change.applied).toBe(true);
+    const log = {
+      requests: 1,
+      words: 40,
+      hosts: ['api.openai.com'],
+      last: Date.now(),
+      today: { day: dayKey(Date.now(), 4), words: 40 },
+    };
+    await worker.evaluate(async (value) => {
+      await chrome.storage.local.set({ 'weft:network': value });
+    }, log);
+
+    const sending = { enabled: true, sendContext: true };
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
+    await expect(page.getByText(/network requests, carrying 40 individual words/)).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(`${whatIsSent(sending)} ${howToStop(sending)}`)).toBeVisible();
+    await expect(page.getByText(/never page text/)).toHaveCount(0);
+    // The masthead said Weft "sends nothing anywhere" above this panel too.
+    await expect(page.getByText(/sends nothing anywhere/)).toHaveCount(0);
+    await expect(page.getByText(/sends words only to a translation service you gave it a key for/)).toBeVisible();
+
+    await page.goto(`chrome-extension://${extensionId}/options.html`);
+    await expect(page.getByText(whatIsSent(sending))).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText(/does not send the page, the sentence/)).toHaveCount(0);
     await page.close();
   });
 });

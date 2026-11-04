@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **619 pass**, 144 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **626 pass**, 147 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **539 pass**, 136 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **43 pass, 3 skipped**, 4.4 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **44 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 993 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 994 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -911,6 +911,91 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-04 — the pages say what the settings send, and the heading said nothing left at all
+
+`TODO.md`'s one unchecked item in `Now`, queued by the lookup limit's run:
+once Weft has made a request, the network panel's note read "Only isolated
+words are ever sent, never page text." whatever `providers.sendContext`
+said, and with it on the OpenAI-compatible service is sent each word's
+sentence.
+
+**It was three sentences on two pages.** The settings page's notice above
+the keys said "It does not send the page, the sentence, the URL or anything
+identifying." two rows above “Send the surrounding sentence”, the switch
+that sends it; and the dashboard's masthead said Weft "sends nothing
+anywhere" above a panel counting requests to api.openai.com, which the
+screenshot taken to read the note is what showed. `whatIsSent()` and
+`howToStop()` in a new `src/core/sending.ts` are a function of
+`providers.enabled` and `providers.sendContext`, three states, and both
+pages print `whatIsSent()`; the masthead says "sends words only to a
+translation service you gave it a key for" while lookups are on.
+
+**Which services get the sentence is read from their bodies.**
+`SENTENCE_RECIPIENTS` is `['openai']`, and a test in
+`tests/core/providers.test.ts` runs every provider in the worker's registry
+with a context-bearing request and requires exactly those whose body
+carries the sentence. The registry imports the worker's storage, which
+reads `chrome` and `__WEFT_TARGET__` when it loads, so the test sets both
+first. DeepL's API has a `context` parameter of its own; the day Weft uses
+it, that test fails. The item's step 3 is a test too: the copy names its
+switches and section by their titles, and `tests/core/sending.test.ts`
+reads those titles out of `src/ui/options/data.tsx`.
+
+Test-first: 6 tests in 2 new suites of `tests/core/sending.test.ts` and 1
+in a new suite of `providers.test.ts`, red on the missing module; one e2e
+test in `privacy.spec.ts`, red at the panel's note while the seeded request
+count rendered, then red again on the masthead. It needs Pro, because on
+Free `clampToTier()` switches lookups off in every settings a page is
+handed, so `issue()` and `proPayload` moved out of `licensing.spec.ts` into
+`tests/e2e/licence.ts`. Two probes, restored by md5: a second recipient
+fails the derived test and the copy's, and a section renamed in the copy
+fails by name. Both pages were rendered and read.
+
+All 31 shots regenerated after the commit that moved `src/`, 31 written,
+every one byte-identical, and the three groups stamped: no committed shot
+has lookups on. Each package grew 1 263 bytes, 848 in `dashboard.js` and
+415 in `options.js`, measured against `main`'s Chrome package built in a
+`/tmp` worktree: Chrome's 992.535 → 993.769 KB, Firefox's 993.835 and
+Safari's 993.775, all printing **994 KB**, swept in the command table and
+`TODO.md`'s state line. Unit 619 → **626** / 144 → **147** suites, e2e 43 →
+**44**, total 1303 → **1311**, in six places, `docs/LAUNCH.md:221` first,
+and a `CHANGELOG.md` paragraph, because the copy ships.
+
+**Reading the copy around it found the next item.** `README.md`,
+`docs/PRIVACY.md`'s blockquote, the listing's description in
+`docs/STORE-LISTING.md` and its four copies in `docs/READY-TO-SUBMIT.md`,
+and the landing page's FAQ answer each say a service is never sent page
+text, with no word of the opt-in. Queued first in `Now`.
+
+The session was stopped twice, at 15:00 and again at 00:15, and resumed at
+23:45 and 11:57 with its context; the second resumption found `/tmp`
+cleared and the document sweep uncommitted, and committed and pushed it
+before anything else.
+
+Measured on Node 26.7, with npm's own exit status captured: `npm run
+test:all` **exit 0** on the commit holding the code and the stamps — **44
+e2e passed and 3 skipped in 4.8 min**, **994 KB × 3** passing `validate`,
+then build and validate again; its log went with `/tmp`, so the rest was
+run again on the final tree: typecheck clean, **626 unit / 147**, 102 jsdom
+/ 23, 539 tools / 136, compat 16 dependencies × 3 browsers, 42 pass / 6
+degrade, and 92 manifest keys, 86 pass / 2 degrade / 4 untracked, 0 fail /
+0 without data. Separately `npm run site` then `site:check` **714 pages /
+16 118 links**, all resolving, and `artefacts:check` **8 groups, 1 stale**,
+exit 1 — the release notes, B2a. `packs:verify` was not run: no pack or
+seed moved.
+
+Assumed, with nobody to ask: that the panel's note describes the settings
+now and the count above it the history, counting the requests that carried
+a sentence being a change to the stored log's shape; that naming DeepL and
+Google by hand is enough while `SENTENCE_RECIPIENTS` is derived; that the
+settings notice and the masthead were this item's, being the same claim on
+the same pages; and that the public copy is a PR of its own, the listing
+being copy a store reads.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: the public copy's "never
+page text".
 
 ### 2026-11-03 — the daily lookup limit counts a day, and the dashboard shows it
 

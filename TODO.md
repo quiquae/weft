@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-03:** every automatable check is green, measured at the end
-of this session — typecheck clean, **619** unit / 144 suites, **102** jsdom / 23
-suites, **539** tool tests / 136 suites, **43** e2e passing
+**State on 2026-11-04:** every automatable check is green, measured at the end
+of this session — typecheck clean, **626** unit / 147 suites, **102** jsdom / 23
+suites, **539** tool tests / 136 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 993 KB each, all
+packages built at 994 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -75,7 +75,12 @@ bytes into `options.js` and `onboarding.js` each; see Notes. And to **993 KB**
 later on 2026-11-03 by 986 bytes, 701 of them `background.js`, the day's
 count and the chain its writes go through, 275 `dashboard.js`, the day's line,
 and 10 `options.js`, the row's copy: Chrome's 991.572 → 992.535 KB,
-Firefox's 992.601 and Safari's 992.541, measured the same way.
+Firefox's 992.601 and Safari's 992.541, measured the same way. And to
+**994 KB** on 2026-11-04 by 1 263 bytes, 848 of them `dashboard.js`, the
+network panel's three sentences and the masthead's second, and 415
+`options.js`, the notice above the keys, `background.js` not moving: Chrome's
+992.535 → 993.769 KB, Firefox's 993.835 and Safari's 993.775, measured the
+same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1766,31 +1771,67 @@ registered**, and nothing below it can move until it is.
       → **43**, total 1290 → **1303**, in six places, `docs/LAUNCH.md:221`
       first, and a `CHANGELOG.md` paragraph.
 
-- [ ] **The dashboard says no page text is sent, and with sentence context
-      on, OpenAI is sent the sentence.** Found 2026-11-03 doing the item
-      above. Once Weft has made a request, the network panel's note reads
-      "Only isolated words are ever sent, never page text."
-      (`src/ui/dashboard/index.tsx:406`) whatever `providers.sendContext`
-      says, and with it on `src/background/providers/openai.ts:60` puts each
-      word's sentence in the request body; DeepL's and Google's bodies carry
-      the words alone. `docs/PRIVACY.md` already says the sentence goes out,
-      and the options toggle says so in those words. Found by reading, not
-      run. The shape, assumed for the run that takes it:
-      1. Red first: an e2e test beside "the network panel shows the day's
-         words against the limit" in `tests/e2e/privacy.spec.ts`, seeding
-         the network log the same way and switching sentence context on,
-         reading the note.
-      2. The note says what the settings send: isolated words, or words with
-         the sentence each appears in when context is on, naming the setting
-         and where to turn it off. Read `tests/core/providers.test.ts`, which
-         holds the three bodies, before writing which services get the
-         sentence: today only OpenAI's body carries it.
-      3. "Turn this off under Vocabulary in settings": the section is titled
-         "Vocabulary beyond the packs"; close enough, but check it while the
-         sentence moves.
-      4. It moves `src/`: regenerate and stamp the three screenshot groups
-         (no committed shot shows this branch), and a `CHANGELOG.md`
-         paragraph. About forty minutes.
+- [x] **The dashboard says no page text is sent, and with sentence context
+      on, OpenAI is sent the sentence.** Done 2026-11-04, the shape as queued
+      and twice as wide. The panel's note, the settings page's notice above
+      the keys — "It does not send the page, the sentence, …", two rows above
+      the switch that sends it — and the dashboard's masthead, "sends nothing
+      anywhere" with a service switched on, each said the sentence stayed
+      whatever the settings said. `whatIsSent()` and `howToStop()` in a new
+      `src/core/sending.ts` are a function of `providers.enabled` and
+      `providers.sendContext`, and the panel and the notice both print
+      `whatIsSent()`: single words and a part-of-speech hint, never the
+      sentence; or, with the sentence on, that an OpenAI-compatible service is
+      sent it and DeepL and Google never are; or, with lookups off, that Weft
+      sends no more words. The panel adds where to switch it off, naming
+      “Send the surrounding sentence” or “Use a translation service” under
+      Vocabulary beyond the packs, the item's step 3 settled by a test that
+      reads those titles out of `src/ui/options/data.tsx`. `SENTENCE_RECIPIENTS`
+      is `['openai']`, and a test in `tests/core/providers.test.ts` derives it
+      from every registered provider's real body, so DeepL taking up its own
+      `context` parameter fails until the words say so. The masthead says
+      "sends words only to a translation service you gave it a key for"
+      while lookups are on. Test-first: 6 tests in 2 new suites of
+      `tests/core/sending.test.ts` and 1 in a new suite of
+      `providers.test.ts`, red on the missing module; one e2e test in
+      `privacy.spec.ts`, Pro switched on through `tests/e2e/licence.ts`, the
+      helper moved out of `licensing.spec.ts`, red on the panel's note while
+      the seeded request count rendered, then red again on the masthead. Two
+      probes, restored by md5: a second recipient fails the derived test and
+      the copy's, and a section renamed in the copy fails by name. Both pages
+      rendered and read. All 31 shots regenerated after the commit that moved
+      `src/`, 31 written, every one byte-identical, and the three groups
+      stamped. Each package grew 1 263 bytes, 848 of them `dashboard.js` and
+      415 `options.js`, and prints **994 KB**. Unit 619 → **626** / 144 →
+      **147** suites, e2e 43 → **44**,
+      total 1303 → **1311**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph.
+
+- [ ] **The public copy says a translation service is never sent page text,
+      and the sentence can be.** Found 2026-11-04 doing the item above. With
+      “Send the surrounding sentence” on, an OpenAI-compatible service is
+      sent the sentence each word appears in, and five places say otherwise
+      without the exception: `README.md:322` ("isolated words and a
+      part-of-speech hint, never page text"), `docs/PRIVACY.md:62`'s
+      blockquote ("Never page text."), with "This is structural" after it
+      though `TranslationRequest` has a `context` field, and its "Not the
+      sentence." in the paragraph before the opt-in;
+      `docs/STORE-LISTING.md:76` ("and even then it sends single words,
+      never page text"), whose four copies in `docs/READY-TO-SUBMIT.md`
+      `tests/tools/ready-to-submit.test.ts` holds word for word to it; and
+      `site/index.html:60`'s FAQ answer in the structured data. `docs/PRIVACY.md` also says the sentence "goes to your
+      chosen provider" where only an OpenAI-compatible one is sent it. The
+      shape, assumed for the run that takes it:
+      1. Say the exception where the absolute is said, in the words
+         `whatIsSent()` uses: off by default, and when switched on the
+         sentence goes to an OpenAI-compatible service only.
+      2. The listing's description is the store's copy: edit
+         `docs/STORE-LISTING.md` and let the ready-to-submit test name the
+         four blocks to repaste; check the description against the limits
+         that test holds.
+      3. `site/index.html` is hand-written: run `npm run site` and
+         `site:check`, and read the FAQ answer off the built page.
+      4. No `src/` moves, so no screenshot group does. About forty minutes.
 
 ## Next
 
@@ -7376,6 +7417,40 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-04 — two pages say what the settings send.** Five things a later
+run would be sorry not to know:
+
+1. **What a translation service is sent is said in one place**,
+   `whatIsSent()` and `howToStop()` in `src/core/sending.ts`, and the
+   dashboard's panel and the settings page's notice both print it. Do not
+   type the sentence into either page again: the two pages and the switch
+   between them disagreed for as long as each kept its own.
+2. **`SENTENCE_RECIPIENTS` is held to the bodies, not to a decision.** The
+   test in `tests/core/providers.test.ts` imports the worker's provider
+   registry, which needs `__WEFT_TARGET__` and `chrome` on `globalThis`
+   before it loads, because `src/shared/browser.ts` reads both at import; it
+   sets them only if absent. DeepL's API has a `context` parameter of its
+   own: the day Weft uses it, that test fails, and so should the words.
+3. **A Pro-only state in an e2e test**: `issue(proPayload)` from
+   `tests/e2e/licence.ts`, then `set-licence` and `request-change` over
+   `rpc`. On Free, `clampToTier()` forces `providers.enabled` off in every
+   settings a page is handed, so the panel prints the lookups-off sentence
+   whatever is stored, and `sendContext` is not clamped at all.
+4. **Assumed, with nobody to ask:** that the panel's note describes the
+   settings now and the count above it the history, so requests made with the
+   sentence on and then the sentence switched off read as words only;
+   counting the requests that carried a sentence in `weft:network` would make
+   it a count, and changes the stored log's shape, so it was not done. That
+   naming DeepL and Google by hand is enough while `SENTENCE_RECIPIENTS` is
+   derived: a fourth service that is not sent the sentence goes unnamed, and
+   the words stay true. And that the masthead's "sends nothing anywhere" was
+   this item's, being the same claim on the same page.
+5. **Left alone, each a pre-existing imprecision rather than a false
+   promise:** DeepL and Google are not sent the part-of-speech hint either,
+   which both pages say a service is; and the notice's "Words from the
+   never-weave list are never sent at all" means pages on the never-send host
+   list, which is what `neverSendHosts` holds.
 
 **2026-11-03 — the daily lookup limit counts a day.** Four things a later
 run would be sorry not to know:

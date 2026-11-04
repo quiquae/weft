@@ -1,6 +1,5 @@
 import { test, expect } from './fixtures.ts';
-import { webcrypto } from 'node:crypto';
-import { TEST_LICENCE_PRIVATE_JWK } from '../fixtures/licence-keypair.ts';
+import { issue, proPayload } from './licence.ts';
 
 /**
  * The commercial path, end to end in a real browser.
@@ -18,43 +17,6 @@ import { TEST_LICENCE_PRIVATE_JWK } from '../fixtures/licence-keypair.ts';
  * key and these sign with its private half. `npm run validate` fails if that
  * key ever appears in a shippable package.
  */
-
-const b64url = (b: Buffer | ArrayBuffer) =>
-  Buffer.from(b as Buffer).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-async function issue(payload: Record<string, unknown>, forged = false): Promise<string> {
-  let key: CryptoKey;
-  if (forged) {
-    const pair = await webcrypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
-      'sign',
-      'verify',
-    ]);
-    key = pair.privateKey;
-  } else {
-    key = await webcrypto.subtle.importKey(
-      'jwk',
-      TEST_LICENCE_PRIVATE_JWK,
-      { name: 'ECDSA', namedCurve: 'P-256' },
-      false,
-      ['sign'],
-    );
-  }
-  const part = b64url(Buffer.from(JSON.stringify(payload), 'utf8'));
-  const sig = await webcrypto.subtle.sign(
-    { name: 'ECDSA', hash: 'SHA-256' },
-    key,
-    Buffer.from(part, 'utf8'),
-  );
-  return `WEFT-${part}.${b64url(sig)}`;
-}
-
-const proPayload = {
-  v: 1,
-  id: 'e2e-test',
-  tier: 'pro',
-  name: 'End To End',
-  issued: Date.now(),
-};
 
 test.describe('tiers', () => {
   test('a fresh install is Free, and Free weaves', async ({ context, configure, origin, rpc }) => {

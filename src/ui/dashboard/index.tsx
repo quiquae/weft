@@ -12,6 +12,7 @@ import { entriesByTarget, spelling } from '../../core/lexicon.ts';
 import { earnedMilestones, nextMilestone } from '../../core/milestones.ts';
 import { historyDays } from '../../core/entitlements.ts';
 import { sentToday } from '../../core/lookups.ts';
+import { howToStop, whatIsSent } from '../../core/sending.ts';
 import { api } from '../../shared/browser.ts';
 import { useRequest } from '../lib/hooks.ts';
 import { Gloss, Notice, Section, WeaveBand } from '../components/pieces.tsx';
@@ -148,7 +149,9 @@ function Dashboard() {
       <header class="masthead">
         <h1 class="masthead__title">Progress</h1>
         <p class="masthead__line">
-          Everything here is on this machine. Weft has no account and sends nothing anywhere.
+          {settings.providers.enabled
+            ? 'Everything here is on this machine. Weft has no account, and sends words only to a translation service you gave it a key for.'
+            : 'Everything here is on this machine. Weft has no account and sends nothing anywhere.'}
         </p>
       </header>
 
@@ -403,7 +406,7 @@ function Dashboard() {
           <p class="muted plot__note">
             {network.requests === 0
               ? 'Weft has no account and no server. It only ever goes to the network if you give it your own translation API key, and you have not.'
-              : 'Only isolated words are ever sent, never page text. Turn this off under Vocabulary in settings.'}
+              : [whatIsSent(settings.providers), howToStop(settings.providers)].filter(Boolean).join(' ')}
           </p>
           {network.requests === 0 ? null : (
             <p class="muted plot__note">
