@@ -6,7 +6,7 @@
 
 **State on 2026-11-04:** every automatable check is green, measured at the end
 of this session — typecheck clean, **626** unit / 147 suites, **102** jsdom / 23
-suites, **539** tool tests / 136 suites, **44** e2e passing
+suites, **547** tool tests / 138 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew

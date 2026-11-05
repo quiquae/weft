@@ -197,9 +197,10 @@ last updated 2026-03-12) decides more:
 
 - "the policies state that data transmission refers to any data collected,
   used, transferred, shared, or handled outside the add-on or the local
-  browser". The own-key provider sends words of the page, and with
-  `sendContext` their sentence, to DeepL, Google or OpenAI, so it transmits
-  `websiteContent`, and `required: ["none"]` alone would be false.
+  browser". The own-key provider sends words of the page to DeepL, Google or
+  OpenAI, and with `sendContext` on the sentence each word appears in to an
+  OpenAI-compatible one, so it transmits `websiteContent`, and
+  `required: ["none"]` alone would be false.
 - Optional data "aren't presented during installation …, and they aren't
   granted by default. The extension can request that the user opts in to
   this data collection after installation by calling permissions.request()

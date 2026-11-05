@@ -107,7 +107,7 @@ The screen-time half. Anything that makes Weft easier waits out a cooldown you s
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
 Open source. MIT licensed.
 ```
@@ -244,8 +244,9 @@ finds an error in none of them, so it decides neither; the figures are in
 `SUBMIT-STATUS.md`. Mozilla's page decides more:
 
 - **The value.** Weft sends nothing by default. With the optional own-key
-  provider it sends words from the page — and, with *send context* on,
-  their sentence — to the service the user chose. Mozilla counts that:
+  provider it sends words from the page to the service the user chose — and,
+  with “Send the surrounding sentence” on, the sentence each word appears in
+  to an OpenAI-compatible one. Mozilla counts that:
   "data transmission refers to any data collected, used, transferred,
   shared, or handled outside the add-on or the local browser", and its type
   is `websiteContent`, "anything visible on a website". So
@@ -339,7 +340,7 @@ The screen-time half. Anything that makes Weft easier waits out a cooldown you s
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
 Open source. MIT licensed.
 ```
@@ -504,7 +505,7 @@ The screen-time half. Anything that makes Weft easier waits out a cooldown you s
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
 Open source. MIT licensed.
 ```
@@ -606,7 +607,7 @@ The screen-time half. Anything that makes Weft easier waits out a cooldown you s
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never page text.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
 Open source. MIT licensed.
 ```
@@ -628,8 +629,10 @@ it refuses —
 
 **S5 — App Privacy.** The listing's disclosures say nothing is collected (as
 in C11). The one thing to weigh first: with the optional own-key provider,
-single words go to the translation service the user picked. Read Apple's
-definition of "collect" before choosing *Data Not Collected*.
+single words go to the translation service the user picked, and with “Send
+the surrounding sentence” on, the sentence each word appears in goes to an
+OpenAI-compatible one. Read Apple's definition of "collect" before choosing
+*Data Not Collected*.
 
 **S6 — Trader status, price, submit.** Trader status is BLOCKED 4. Price:
 free. Then submit the build for review.
