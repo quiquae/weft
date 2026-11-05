@@ -35,9 +35,6 @@ export const HOST_TTL_DAYS = 90;
 /** Provider cache entries kept at most. */
 export const MAX_PROVIDER_ENTRIES = 5000;
 
-/** Provider translations older than this are re-fetched rather than trusted. */
-export const PROVIDER_TTL_DAYS = 180;
-
 const DAY_MS = 86_400_000;
 
 export interface PruneResult<T> {
@@ -81,15 +78,20 @@ export interface Aged {
 /**
  * Same shape for the provider cache: expire, then cap by recency.
  *
+ * How long is required, and is the reader's own “Keep answers for”: until
+ * 2026-11-05 it defaulted to a `PROVIDER_TTL_DAYS` of 180, so every save
+ * pruned at six months while the slider offered a year, and a word the
+ * reader had asked to keep was sent again. One store has one length.
+ *
  * Generic over the value so that this does not have to import the background
  * layer's `ProviderCacheEntry` — core stays free of anything above it.
  */
 export function pruneByAge<T extends Aged>(
   cache: Record<string, T>,
   now: number,
-  opts: { ttlDays?: number; max?: number } = {},
+  opts: { ttlDays: number; max?: number },
 ): PruneResult<Record<string, T>> {
-  const ttl = opts.ttlDays ?? PROVIDER_TTL_DAYS;
+  const ttl = opts.ttlDays;
   const max = opts.max ?? MAX_PROVIDER_ENTRIES;
   const cutoff = now - ttl * DAY_MS;
 

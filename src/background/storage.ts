@@ -371,10 +371,12 @@ export async function loadProviderCache(): Promise<Record<string, ProviderCacheE
   return (await raw<Record<string, ProviderCacheEntry>>(KEYS.providerCache)) ?? {};
 }
 
+/** Saved, and pruned, at the length the reader keeps answers for. */
 export async function saveProviderCache(
   entries: Record<string, ProviderCacheEntry>,
+  keepDays: number,
 ): Promise<void> {
-  const { kept } = pruneByAge(entries, Date.now());
+  const { kept } = pruneByAge(entries, Date.now(), { ttlDays: keepDays });
   await put(KEYS.providerCache, kept);
 }
 

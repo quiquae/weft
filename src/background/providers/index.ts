@@ -31,9 +31,11 @@ function cacheKey(source: LangCode, target: LangCode, word: string, pos: Pos): s
  * Look up words that the shipped pack does not contain.
  *
  * Cache first, always. A provider call is slow, costs the user money and
- * leaves their machine, so a word is only ever sent once: the cache is keyed
- * on language pair, part of speech and word, and lives until the configured
- * expiry.
+ * leaves their machine, so a word is not sent again while its answer is
+ * kept: the cache is keyed on language pair, part of speech and word, and an
+ * answer is kept, and served, for as many days as “Keep answers for” says —
+ * one length for both, `keepDays` below — and for the newest
+ * `MAX_PROVIDER_ENTRIES` words at most.
  *
  * Providers are tried in the user's order and the first usable answer wins.
  * A failure is reported, never thrown: the page must keep working with the
@@ -66,7 +68,8 @@ export async function lookupMissing(
   const now = Date.now();
   const today = dayKey(now, settings.attention.rolloverHour);
   const cap = Math.max(0, settings.providers.dailyLookupCap);
-  const ttl = Math.max(1, settings.providers.cacheDays) * DAY_MS;
+  const keepDays = Math.max(1, settings.providers.cacheDays);
+  const ttl = keepDays * DAY_MS;
   const entries: LexEntry[] = [];
   const pending: TranslationRequest[] = [];
   let fromCache = 0;
@@ -151,8 +154,10 @@ export async function lookupMissing(
   // Object.entries and breaking, which keeps an arbitrary subset rather than
   // the newest, while the one in core/prune.ts caps at 5,000 by recency.
   // Two bounds on the same store is one bound too many; the survivor is the
-  // one with tests.
-  await saveProviderCache(cache);
+  // one with tests. So are two lengths: the save prunes at the `keepDays`
+  // the read above serves for, where until 2026-11-05 it pruned at 180 days
+  // whatever the setting said.
+  await saveProviderCache(cache, keepDays);
   const outcome: LookupOutcome = { entries, fromCache, fromProvider };
   if (lastError) outcome.error = lastError;
   else if (limited) outcome.error = limitReached(cap, pending.length - sentNow.size, sentNow.size);
