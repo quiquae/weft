@@ -59,22 +59,29 @@ did not understand.
 
 Off by default. Bring your own key. One rule shapes the whole interface:
 
-> A provider receives **isolated words and a part-of-speech hint**. Never page
-> text.
+> A provider receives **single words and a part-of-speech hint**, never the
+> page. The sentence each word appears in goes to an OpenAI-compatible service
+> only if you turn on “Send the surrounding sentence”, which is off by
+> default; DeepL and Google are never sent it.
 
 This is structural, not a promise. `TranslationRequest` has no `text` field
-and no `html` field. There is no parameter to put a paragraph in, so a
-provider cannot be handed a paragraph of your reading by accident.
+and no `html` field, so a provider cannot be handed a paragraph of your
+reading by accident. Beyond the word, its part of speech and its number it has
+one field, `context`, which only “Send the surrounding sentence” fills and only
+an OpenAI-compatible service's request carries: the sentence the word sits
+in, cut at about 220 characters.
 
-What actually leaves your machine, per word, once ever: the word, its guessed
-part of speech, and its number. Not the sentence. Not the page. Not the URL.
-Not anything identifying. Answers are cached for as long as you configure, so
-a word is sent at most once.
+What actually leaves your machine, per word: the word, its guessed part of
+speech, and its number. Not the sentence, unless you turn on “Send the
+surrounding sentence” below, and then only to an OpenAI-compatible service.
+Not the page. Not the URL. Not anything identifying. Answers are cached for as long as you configure, so a word is
+sent at most once in that time.
 
-**Sending one sentence of context** improves accuracy for ambiguous words and
-is a separate, explicit opt-in that is off by default. When it is on, one
-sentence of whatever you are reading goes to your chosen provider. That is
-stated in the interface in those words, because it is a real change in what
+**“Send the surrounding sentence”** improves accuracy for words with several
+meanings, and is a separate, explicit opt-in that is off by default. When it
+is on, an OpenAI-compatible service is sent the sentence each word appears in
+along with the word; DeepL and Google are never sent it. The settings page
+says so above the keys while it is on, because it is a real change in what
 leaves your computer.
 
 The never-send host list is enforced in the background worker, not in the page.

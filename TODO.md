@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-04:** every automatable check is green, measured at the end
+**State on 2026-11-05:** every automatable check is green, measured at the end
 of this session — typecheck clean, **626** unit / 147 suites, **102** jsdom / 23
-suites, **539** tool tests / 136 suites, **44** e2e passing
+suites, **547** tool tests / 138 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew
@@ -1807,31 +1807,45 @@ registered**, and nothing below it can move until it is.
       total 1303 → **1311**, in six places, `docs/LAUNCH.md:221` first, and a
       `CHANGELOG.md` paragraph.
 
-- [ ] **The public copy says a translation service is never sent page text,
-      and the sentence can be.** Found 2026-11-04 doing the item above. With
-      “Send the surrounding sentence” on, an OpenAI-compatible service is
-      sent the sentence each word appears in, and five places say otherwise
-      without the exception: `README.md:322` ("isolated words and a
-      part-of-speech hint, never page text"), `docs/PRIVACY.md:62`'s
-      blockquote ("Never page text."), with "This is structural" after it
-      though `TranslationRequest` has a `context` field, and its "Not the
-      sentence." in the paragraph before the opt-in;
-      `docs/STORE-LISTING.md:76` ("and even then it sends single words,
-      never page text"), whose four copies in `docs/READY-TO-SUBMIT.md`
-      `tests/tools/ready-to-submit.test.ts` holds word for word to it; and
-      `site/index.html:60`'s FAQ answer in the structured data. `docs/PRIVACY.md` also says the sentence "goes to your
-      chosen provider" where only an OpenAI-compatible one is sent it. The
-      shape, assumed for the run that takes it:
-      1. Say the exception where the absolute is said, in the words
-         `whatIsSent()` uses: off by default, and when switched on the
-         sentence goes to an OpenAI-compatible service only.
-      2. The listing's description is the store's copy: edit
-         `docs/STORE-LISTING.md` and let the ready-to-submit test name the
-         four blocks to repaste; check the description against the limits
-         that test holds.
-      3. `site/index.html` is hand-written: run `npm run site` and
-         `site:check`, and read the FAQ answer off the built page.
-      4. No `src/` moves, so no screenshot group does. About forty minutes.
+- [x] **The public copy says a translation service is never sent page text,
+      and the sentence can be.** Done 2026-11-05, the shape as queued, and a
+      guard the item did not ask for. With “Send the surrounding sentence”
+      on, an OpenAI-compatible service is sent the sentence each word appears
+      in, and the README, the privacy page's blockquote, the listing's
+      description with its four pasted copies, and the landing page's FAQ
+      answer each said a service is never sent page text. Each says the
+      exception now, in `whatIsSent()`'s words: single words and a
+      part-of-speech hint, never the page; the sentence only to an
+      OpenAI-compatible service and only with the switch on, which is off by
+      default; DeepL and Google never. The privacy page's "This is
+      structural" says what is: no `text` or `html` field, and one more,
+      `context`, which only the switch fills and only an OpenAI-compatible
+      service's request carries, the sentence cut at about 220 characters.
+      Its "per word, once ever" was false as well, an answer being cached for
+      `cacheDays` and the word sent again after, and says "at most once in
+      that time". S5's Apple note said only that words go, and says the
+      sentence can too.
+
+      **The guard is `tests/tools/sending-copy.test.ts`**, 8 tests in 2
+      suites, over the README, every tracked Markdown file under `docs/` and
+      the hand-written pages under `site/`, read as paragraphs and list items,
+      and for HTML as every structured-data string, `<meta>` content and text
+      block. A paragraph saying page text or the sentence never leaves must
+      name the switch, by the title `whatIsSent()` quotes; a paragraph saying
+      the sentence is sent must name every service `SENTENCE_RECIPIENTS`
+      lists, by `whatIsSent()`'s name for it. Red first on ten paragraphs for
+      the first rule — the five places, the four description copies counted
+      apart, the privacy page's "Not the sentence.", and the listing's
+      "Website content?" answer, "Never sentences … unless the user …
+      enables sentence context" — and three for the second: the privacy
+      page's "goes to your chosen provider", and the Firefox call's
+      paraphrase in `docs/READY-TO-SUBMIT.md`'s F0 and `docs/SUBMIT-STATUS.md`,
+      which sent the sentence "to the service the user chose" and "to DeepL,
+      Google or OpenAI". `\bsends?\b` missed the README's "Sending one
+      sentence" until the gerund joined it, with a probe. Tools 539 → **547**
+      / 136 → **138** suites, total 1311 → **1319**, in six places,
+      `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph and no
+      screenshot group moved: nothing under `src/` did.
 
 ## Next
 
@@ -7417,6 +7431,43 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-05 — the public copy says the sentence can be sent.** Five things
+a later run would be sorry not to know:
+
+1. **`tests/tools/sending-copy.test.ts` reads every public document**, and
+   its two rules are satisfied by naming things, not by avoiding words. A
+   paragraph that says page text or the sentence never leaves names the
+   switch, “Send the surrounding sentence”, which the test reads out of
+   `whatIsSent()`; a paragraph that names the switch or says the sentence is
+   sent names “OpenAI-compatible”, read through `SENTENCE_RECIPIENTS`. A
+   paragraph that only says a setting is switched off — the privacy page's
+   import paragraph, "sentence context off" — triggers neither. Rewrite a
+   paragraph it names; do not add an exemption, there is none to add.
+2. **Its units are a reader's**: a Markdown paragraph or list item, with a
+   fence, a comment or a heading ending it, so each pasted block in
+   `docs/READY-TO-SUBMIT.md` is read as the box it goes into; and for a
+   hand-written page, every structured-data string, every `<meta>` content
+   and every text block, a `<p>` wrapped across lines being one. The
+   landing page's FAQ is in its structured data only, so that is where its
+   answer was found.
+3. **"Never the page" is the claim that stays true** with the switch on: the
+   sentence is cut at about 220 characters by `sentenceOf()` and no request
+   carries the page. "Never page text" is false, the sentence being page
+   text, and the guard refuses it without the switch beside it.
+4. **Left alone, each written down:** `src/background/providers/types.ts:7`
+   still opens "a provider receives isolated words, not page text", true of
+   the default and qualified by the `context` field two sentences later; a
+   comment under `src/` stales all three screenshot groups by provenance, so
+   take it with the next change that moves `src/`. `docs/LAUNCH.md:217`'s
+   "nothing leaves your machine" is about the licence check, which makes no
+   request. The listing's "Website content? No." stands, being C11's call
+   and F0's; only its explanation changed.
+5. **Assumed, with nobody to ask:** that a store description may name a
+   settings switch by its title; that `docs/SUBMIT-STATUS.md`, a dated
+   record, could have one clause about Weft corrected, its measurements
+   untouched; and that F0's and S5's paraphrases were this item's, saying
+   where the sentence goes.
 
 **2026-11-04 — two pages say what the settings send.** Five things a later
 run would be sorry not to know:

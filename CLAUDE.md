@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **626 pass**, 147 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **539 pass**, 136 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **547 pass**, 138 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **44 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -911,6 +911,71 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-05 — the public copy says the sentence can be sent, and a test reads it
+
+`TODO.md`'s one unchecked item in `Now`, queued by the dashboard's run: with
+“Send the surrounding sentence” on, an OpenAI-compatible service is sent the
+sentence each word appears in, and five public places said a service is
+never sent page text — `README.md`, `docs/PRIVACY.md`'s blockquote, the
+listing's description in `docs/STORE-LISTING.md` with its four copies in
+`docs/READY-TO-SUBMIT.md`, and the landing page's FAQ answer.
+
+**Each says the exception where the absolute was**, in `whatIsSent()`'s
+words: single words and a part-of-speech hint, never the page, and the
+sentence only to an OpenAI-compatible service, only with the switch on, off
+by default; DeepL and Google never. "Never the page" is the claim that holds:
+`sentenceOf()` cuts the sentence at about 220 characters and no request
+carries the page. The privacy page's "This is structural" names `context`,
+the field only the switch fills, and its "goes to your chosen provider" and
+"per word, once ever" were false and are gone, an answer being cached for
+`cacheDays` and the word sent again after.
+
+**The guard is `tests/tools/sending-copy.test.ts`, 8 tests in 2 suites**,
+over the README, every tracked Markdown file under `docs/` and the
+hand-written pages under `site/`, read as a reader does: Markdown paragraphs
+and list items, a fence, comment or heading ending one, and for HTML every
+structured-data string, `<meta>` content and text block. A paragraph saying
+page text or the sentence never leaves names the switch, by the title
+`whatIsSent()` quotes; a paragraph saying the sentence is sent names every
+service in `SENTENCE_RECIPIENTS`, by `whatIsSent()`'s name for it. Red first
+on ten paragraphs for the first rule — the five places, the four copies
+counted apart, the privacy page's "Not the sentence." and the listing's
+"Website content?" answer — and three for the second: "your chosen
+provider", and the Firefox call's paraphrases in `docs/READY-TO-SUBMIT.md`'s
+F0 and `docs/SUBMIT-STATUS.md`, which sent the sentence "to the service the
+user chose" and "to DeepL, Google or OpenAI". `\bsends?\b` missed the
+README's "Sending one sentence", so the gerund joined it, with a probe. The
+listing's "Website content? No." stands, being C11's call and F0's.
+
+A probe put the old sentence back in Safari's pasted description: the
+ready-to-submit test named `docs/READY-TO-SUBMIT.md:590` and the new guard
+`:610`, the file restored by md5. One checks a copy against its source, the
+other the claim against the code, which is why a consistency check alone
+would pass four identical false copies. Both pages were read off the built
+site. Tools 539 → **547** / 136 → **138** suites, total 1311 → **1319**, in
+six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph and no
+screenshot group moved: nothing under `src/` did.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the copy and the guard: `npm run test:all` **exit 0** — typecheck
+clean, 626 unit / 147, 102 jsdom / 23, **547 tools / 138**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass
+/ 2 degrade / 4 untracked, 0 fail / 0 without data, **994 KB × 3** passing
+`validate`, **44 e2e passed and 3 skipped in 4.7 min**, then build and
+validate again. Separately `npm run site` then `site:check` **714 pages /
+16 118 links**, all resolving, and `artefacts:check` **8 groups, 1 stale**,
+exit 1 — the release notes, B2a. `packs:verify` was not run: no pack or seed
+moved. Only documents moved after the gate, so typecheck and `npm test` were
+run again on the final tree.
+
+Assumed, with nobody to ask: that a store description may name a settings
+switch by its title; that `docs/SUBMIT-STATUS.md`, a dated record, could have
+one clause describing Weft corrected, its measurements untouched; and that
+F0's and S5's paraphrases were this item's, saying where the sentence goes.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+is empty, and the three unchecked items in `Next` each wait on Creagh.
 
 ### 2026-11-04 — the pages say what the settings send, and the heading said nothing left at all
 

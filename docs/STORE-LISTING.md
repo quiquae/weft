@@ -73,7 +73,9 @@ works offline. Weft asks for access to no website until you name the sites
 yourself, which is why it installs without the warning about reading all your
 data. Optionally you can add your own DeepL, Google or OpenAI-compatible key
 for words beyond the built-in lexicons — and even then it sends single words,
-never page text.
+never the page. An OpenAI-compatible service is sent the sentence each word
+appears in as well, but only if you turn on “Send the surrounding sentence”,
+which is off by default.
 
 Open source. MIT licensed.
 
@@ -154,10 +156,11 @@ the vocabulary it has taught. There is no second function.
   it never leaves the device.
 - **User activity?** No. Nothing is transmitted.
 - **Website content?** No. If the user configures their own translation API
-  key, individual words are sent to the provider they chose. Never sentences,
-  paragraphs, URLs or page content — unless the user separately and explicitly
-  enables sentence context, which is off by default and described in the
-  interface.
+  key, individual words are sent to the provider they chose, never paragraphs,
+  URLs or the page. Only an OpenAI-compatible provider is also sent the
+  sentence each word appears in, and only if the user turns on “Send the
+  surrounding sentence”, which is off by default and described where it is
+  switched on.
 
 **Certifications:** we do not sell or transfer user data to third parties
 outside approved use cases; we do not use or transfer user data for purposes

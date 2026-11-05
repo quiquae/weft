@@ -266,7 +266,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 626 unit + 102 jsdom + 539 over the build tools
+npm test               # 626 unit + 102 jsdom + 547 over the build tools
 npm run test:e2e       # 44 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules
@@ -319,10 +319,13 @@ Weft ships a never-weave list covering money, mail, credentials and health,
 checked before anything else and before any lexicon is even loaded. A language
 tool has no business between you and your bank.
 
-If you enable a translation service, it receives **isolated words and a
-part-of-speech hint, never page text**. There is no parameter in that
-interface to put a paragraph in. Sending one sentence of surrounding context
-improves accuracy and is a separate, explicit opt-in.
+If you enable a translation service, it receives **single words and a
+part-of-speech hint**, never the page: its request carries the word, its part
+of speech and whether it is plural, and one more field that only a separate
+opt-in fills. With “Send the surrounding sentence” on, and it is off by
+default, an OpenAI-compatible service is also sent the sentence each word
+appears in, which helps with words that have several meanings. DeepL and
+Google are never sent it.
 
 Full detail, including what the integrity signing does and does not protect
 against, is in [docs/PRIVACY.md](docs/PRIVACY.md).
