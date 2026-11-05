@@ -767,6 +767,16 @@ a test the day a service starts receiving the sentence. The dashboard's
 heading no longer says Weft sends nothing anywhere while a translation
 service is on.
 
+**“Keep answers for” went to a year and the cache kept six months.** The
+settings page offers to keep a translation service's answers for one day to a
+year, and every save of the cache dropped any answer older than 180 days
+whatever it said, so a word its reader had asked to keep for a year was sent
+again after six months. The cache now keeps each answer for exactly as long
+as the setting says, and no longer: an answer older than the setting, which
+Weft would never have used, is not kept either. The settings page and the
+privacy page said a word is only ever sent once; they now say it is not sent
+again while its answer is kept, for the 5,000 most recent words at most.
+
 **Nothing looked at generated artefacts, so they went stale in silence.**
 Three times running, a session found a committed generated file the tree had
 moved past: a version bump left `docs/SUBMIT.md` naming five zip filenames
@@ -787,7 +797,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1319 tests: 626 unit, 102 in jsdom, 547 over the build tools, and
+**Built with** 1326 tests: 630 unit, 102 in jsdom, 550 over the build tools, and
 44 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
