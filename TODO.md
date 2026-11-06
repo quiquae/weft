@@ -1888,44 +1888,50 @@ registered**, and nothing below it can move until it is.
       → **1326**, in six places, `docs/LAUNCH.md:221` first, and a
       `CHANGELOG.md` paragraph.
 
-- [ ] **The privacy page says Weft stores no identifier but the install
-      id, and a Pro licence carries its buyer's name.** Found 2026-11-05
-      reading the storage table for the cache. "What Weft never stores"
-      says "No identifiers beyond a random install id used as HMAC key
-      material", and a licence installed through the options page is
-      stored as `weft:licence`, whose payload carries `name`, "who it was
-      issued to, shown back to them in settings", and `id`, an "opaque
-      licence id, for the publisher's own records"
-      (`src/core/licence.ts:31`). It is checked on the machine and sent
-      nowhere, so nothing is collected, but the sentence is false for every
-      Pro user and the page never says a licence is kept. And the table
-      headed "What Weft stores, and where" lists six kinds where `KEYS` in
-      `src/background/storage.ts` names nine stores: `weft:licence`,
-      `weft:network` (request and word counts, the time of the last, the
-      day's words, and up to 12 provider hostnames), `weft:introduced`
-      (today's new words) and `weft:meta` (the install id, the version and
-      when it was installed) have no row, and `weft:lock`'s panic budget,
-      tamper count and last clock reading sit beside the two rows it has.
-      The shape:
-      1. A row per store in the table, in a reader's words, the licence's
-         saying what it holds and that it is checked here and sent
-         nowhere; the "never stores" sentence saying the licence's name
-         beside the install id.
-      2. A test in `tests/tools/` that reads `KEYS` out of `storage.ts` —
-         by the checker, as `core-purity.test.ts` reads names, or the
-         object literal — and requires each store to be named by a row of
-         the table through a `STORES` map from key to the words its row
-         uses, so a tenth store fails until the page says what it holds;
-         and the licence payload's fields read from `LicencePayload`, so a
-         field added there fails until the row names it.
-      3. The table's numbers held to the code as the cache's are: 60 days
-         of history (`MAX_HISTORY` in `src/core/escalation.ts`), 500 hosts
-         and 90 days unattended (`MAX_HOSTS`, `HOST_TTL_DAYS` in
-         `src/core/prune.ts`), the last 200 changes (`LOG_CAP` in
-         `src/core/lock.ts`).
-      Docs and a test only: no `src/` file moves, so no screenshot group
-      does. `docs/PRIVACY.md` is `/privacy`, the URL every store's form
-      takes. About an hour.
+- [x] **The privacy page says Weft stores no identifier but the install
+      id, and a Pro licence carries its buyer's name.** Done 2026-11-06, the
+      shape as queued, with one rule the item did not ask for. "What Weft
+      never stores" said "No identifiers beyond a random install id", and a
+      licence installed on the options page is stored as `weft:licence`,
+      the signed key whole, whose payload carries `name`, "who it was
+      issued to", and `id`, "for the publisher's own records"; the page
+      never mentioned a licence. The table listed six kinds where `KEYS`
+      names nine stores. It has a row for each now: the install record, the
+      words introduced today, a commitment record beside the pending
+      changes and the audit log — panic passes, the tamper count and its
+      penalty, the clock's last reading — the licence, and the network log.
+      Attention's row says its 500-domain cap and the 90 days after which a
+      domain is dropped, which it did not. The licence's row names every
+      field a licence holds and says it is checked here, sent nowhere and
+      never put in an export, `exportAll` leaving it out as "the customer's
+      property"; the identifier sentence names its name and id.
+
+      **The guard is `tests/tools/privacy-stores.test.ts`**, 8 tests in 2
+      suites. The stores are read off `KEYS`, and `STORES` names the rows
+      describing each, both ways, so a tenth store fails until the page says
+      what it holds. The rule the item did not ask for: no file under `src/`
+      but `src/background/storage.ts` may touch `storage.local`, `session`
+      or `sync`, and every `raw`, `put` and `remove` there takes a `KEYS.`
+      key, since a store written past `KEYS` is one this check cannot see —
+      measured first, only `storage.ts` touches storage, through `raw`,
+      `put` and one `remove`. `LicencePayload`'s fields are read off the
+      interface and the licence's row must name each through
+      `LICENCE_FIELDS`; a paragraph denying identifiers must name the
+      licence's; and the table's numbers are held to `MAX_HISTORY`,
+      `MAX_HOSTS`, `HOST_TTL_DAYS` and `LOG_CAP`. Red first on the five
+      missing rows, the six licence fields, the identifier sentence and
+      attention's 500 and 90. The reader's own probe test was red too,
+      reading the table's blank header row `| | |` as a row named " ", and
+      a row name must start with a non-space now. Seven probes, each
+      restored by md5, each failing its own test by name: a tenth store in
+      `KEYS`, the licence's name dropped from its row, a `chrome.storage`
+      read in the options page, attention's cap misstated, an `email`
+      field added to the licence, a `put` under a key `KEYS` lacks, and the
+      identifier sentence without the licence. The built `/privacy` was read
+      row by row. Tools 550 → **558** / 138 → **140** suites, total 1326 →
+      **1334**, in six places, `docs/LAUNCH.md:221` first. No
+      `CHANGELOG.md` paragraph and no screenshot group moved: nothing under
+      `src/` did.
 
 ## Next
 
@@ -7511,6 +7517,30 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-06 — the privacy page names every store.** Four things a later
+run would be sorry not to know:
+
+1. **The storage table is held to `KEYS`.** A new store in
+   `src/background/storage.ts` fails `tests/tools/privacy-stores.test.ts`
+   until `docs/PRIVACY.md` has a row saying what it holds and `STORES` in
+   the test names that row; a store written anywhere but through `raw`,
+   `put` and `remove` with a `KEYS.` key fails too. A new field in
+   `LicencePayload` fails until the licence's row names it. Write the row;
+   there is no exemption list to add to.
+2. **The licence is the customer's and never leaves**: `exportAll` does not
+   read it, and verification is local. The page says so in the licence's
+   row; keep it true if an export ever wants the licence.
+3. **The session was stopped after the first PR's gate and resumed a day
+   later with `/tmp` wiped**, the gate's log with it. Logs and scratch files
+   went to `~/.cache/weft-run/` after that, which survived; it is deleted at
+   the end of this run.
+4. **Left alone, a call for a human:** "What Weft never stores" says "No
+   browsing history", beside a table that keeps up to 60 days of seconds per
+   domain for up to 500 domains. It is a coarse history of the sites a
+   reader named, kept on the machine, and whether "No browsing history"
+   should say "beyond the attention above" is a judgement about privacy copy
+   a store reviewer reads. Not changed.
 
 **2026-11-05 — the cache keeps what “Keep answers for” says.** Five things a
 later run would be sorry not to know:

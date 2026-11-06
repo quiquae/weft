@@ -299,6 +299,18 @@ options page and fails if an answer a day younger is not served after a
 save, and `tests/tools/sending-copy.test.ts` fails on a paragraph saying how
 often a word is sent that does not name “Keep answers for”.
 
+**The privacy page names every store, and what a licence carries.** The
+table in `docs/PRIVACY.md` headed "What Weft stores, and where" has a row for
+each store `KEYS` in `src/background/storage.ts` names, and
+`tests/tools/privacy-stores.test.ts` reads `KEYS` and fails on a store with
+no row, a storage call outside the storage layer or under a key `KEYS`
+lacks, a `LicencePayload` field the licence's row does not name, and a
+number in the table the code does not keep. Until 2026-11-06 the table had
+six kinds of nine stores and never mentioned a licence, and "No identifiers
+beyond a random install id" was false for every Pro user, whose licence
+carries the name it was issued to and an id. Add a store and its row
+together.
+
 **Generated files record when their content was built, not when the build
 ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when
 everything else about that pack is byte-identical, and only stamps today when
@@ -925,6 +937,64 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-06 — the privacy page said Weft keeps no identifier, and a licence holds its buyer's name
+
+The same run's second PR, the item the first one queued, taken after the
+session was stopped and resumed the next afternoon with an hour and a half
+left. "What Weft never stores" said "No identifiers beyond a random install
+id", and a licence installed on the options page is stored as
+`weft:licence`, the signed key whole, whose payload carries `name`, "who it
+was issued to", and `id`, "for the publisher's own records". The page never
+mentioned a licence, and its table listed six kinds where `KEYS` names nine
+stores.
+
+**Measured before writing: only `src/background/storage.ts` touches
+storage**, through `raw`, `put` and one `remove`, every one under a `KEYS.`
+key, and nothing is kept in `localStorage`, `storage.session` or IndexedDB.
+So the table can be derived from `KEYS`. It has a row for each store now —
+the install record, the words introduced today, a commitment record beside
+the pending changes and the audit log, the licence, the network log — and
+attention's row says its 500-domain cap and the 90 days after which a domain
+is dropped. The licence's row names every field a licence holds and says it
+is checked here, sent nowhere and never put in an export, which `exportAll`
+leaves it out of as "the customer's property"; the identifier sentence names
+its name and id.
+
+**The guard is `tests/tools/privacy-stores.test.ts`, 8 tests in 2 suites**:
+a row for every store through `STORES`, both ways; no storage call outside
+the storage layer or under a key `KEYS` lacks, the rule the item did not ask
+for, since a store written past `KEYS` is one the check cannot see;
+`LicencePayload`'s fields named in the licence's row; a paragraph denying
+identifiers naming the licence's; and the table's numbers held to
+`MAX_HISTORY`, `MAX_HOSTS`, `HOST_TTL_DAYS` and `LOG_CAP`. Red first on the
+five missing rows, the six licence fields, the identifier sentence and
+attention's 500 and 90 — and on the reader's own probe, which read the
+table's blank header row `| | |` as a row named " ". Seven probes, each
+restored by md5, each failing its own test by name. The built `/privacy` was
+read row by row. Tools 550 → **558** / 138 → **140** suites, total 1326 →
+**1334**, in six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md`
+paragraph and no screenshot group moved: nothing under `src/` did.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the page and the guard: `npm run test:all` **exit 0 in 5 min 38 s** —
+typecheck clean, 630 unit / 148, 102 jsdom / 23, **558 tools / 140**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **994 KB × 3**
+passing `validate`, **44 e2e passed and 3 skipped in 4.5 min**, then build and
+validate again. Separately `npm run site` then `site:check` **714 pages /
+16 118 links**, all resolving. Only documents moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the table's row names may be a reader's
+words, "Commitment record" and "Install record", where the code says `lock`
+and `meta`; that a guard over the storage layer's calls belongs with this
+item, the table being derivable only if every store goes through `KEYS`; and
+that "No browsing history", beside 60 days of seconds per domain, is a call
+for a human, written into `TODO.md`'s Notes and not changed.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+is empty, and the three unchecked items in `Next` each wait on Creagh.
 
 ### 2026-11-05 — “Keep answers for” offered a year, and the cache kept six months
 
