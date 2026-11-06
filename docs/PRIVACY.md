@@ -13,12 +13,17 @@ All of it in `chrome.storage.local`, on your computer:
 
 | | |
 |---|---|
+| Install record | A random install id, the version installed and when it was installed |
 | Settings | Languages, density, site lists, friction configuration |
 | Vocabulary | One record per word: how often it has appeared, how often you revealed it, and its FSRS stability and difficulty |
-| Attention | Seconds per registrable domain per day, and up to 60 days of daily totals |
+| Words introduced today | The new words you met today, so the daily limit on new words holds across pages |
+| Attention | Seconds per registrable domain per day, and up to 60 days of daily totals, for at most 500 domains; a domain with no attention for 90 days is dropped |
 | Pending changes | Difficulty reductions waiting out their cooldown |
 | An audit log | The last 200 difficulty changes you made |
+| Commitment record | The panic passes used today and when the current one ends, how many times Weft has found its stored state edited behind its back, when it last did and until when that holds the difficulty up, and the latest time the clock has shown, so a clock wound back is noticed |
+| Licence | If you install one: the licence as issued — its format version, tier, its id, the name it was issued to, when it was issued and when it expires. It is checked on this machine, sent nowhere, and never put in an export |
 | Provider cache | If you enable a translation service: word → translation, for as many days as “Keep answers for” says, 90 unless you change it, and for the 5,000 most recent words at most |
+| Network log | Nothing until a translation service is used; then how many requests Weft has made and how many words they carried, when the last was, the words sent today against the daily lookup limit, and the services’ hostnames |
 
 Nothing is synced between your devices: Weft never uses
 `chrome.storage.sync`. API keys never leave the machine you typed them on —
@@ -29,8 +34,10 @@ changes where one is sent.
 
 No page content. No URLs — attention is keyed on the registrable domain, so
 `twitter.com` and never `twitter.com/some/thread`. No browsing history. No
-identifiers beyond a random install id used as HMAC key material. No account,
-because there is nothing to have an account with.
+identifiers beyond a random install id used as HMAC key material and, if you
+install a licence, the name it was issued to and its id, which are checked on
+this machine and sent nowhere. No account, because there is nothing to have
+an account with.
 
 ## Telemetry
 
