@@ -4,9 +4,9 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-05:** every automatable check is green, measured at the end
-of this session — typecheck clean, **626** unit / 147 suites, **102** jsdom / 23
-suites, **547** tool tests / 138 suites, **44** e2e passing
+**State on 2026-11-06:** every automatable check is green, measured at the end
+of this session — typecheck clean, **630** unit / 148 suites, **102** jsdom / 23
+suites, **550** tool tests / 138 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew
@@ -80,7 +80,9 @@ Firefox's 992.601 and Safari's 992.541, measured the same way. And to
 network panel's three sentences and the masthead's second, and 415
 `options.js`, the notice above the keys, `background.js` not moving: Chrome's
 992.535 → 993.769 KB, Firefox's 993.835 and Safari's 993.775, measured the
-same way.
+same way. And on 2026-11-05 by 97 bytes, the cache's one length, 18 of them
+`background.js` and 79 `options.js`, Chrome's 993.769 → 993.863 KB, still
+printing 994.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -1846,6 +1848,84 @@ registered**, and nothing below it can move until it is.
       / 136 → **138** suites, total 1311 → **1319**, in six places,
       `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph and no
       screenshot group moved: nothing under `src/` did.
+
+- [x] **“Keep answers for” offered a year and the cache kept 180 days.**
+      Done 2026-11-05, found the same day: `Now` was empty and the three
+      unchecked items in `Next` each wait on Creagh, so the privacy page's
+      storage table was read against the code. Its provider-cache row said
+      "so a word is only ever sent once", the claim the run before had
+      corrected 57 lines further down and left here; so did the options
+      row's detail, above a slider offering 1 to 365 days, and a comment in
+      `src/background/providers/index.ts`. Reading why found the defect:
+      `lookupMissing()` served an answer for `cacheDays`, but
+      `saveProviderCache()` pruned at `PROVIDER_TTL_DAYS`, 180, on every
+      save, so from 181 days up the slider promised a length the store
+      never kept, and a word kept for a year was sent again at six months.
+      `pruneByAge()` takes the length as a required argument now and
+      `PROVIDER_TTL_DAYS` is gone, so `tsc` refuses a save that does not
+      say how long; `saveProviderCache()` is handed the `keepDays` the read
+      serves for, `Math.max(1, cacheDays)`, in one place. The store also
+      keeps no answer older than the setting, which it would never serve.
+      Test-first: `tests/core/provider-cache.test.ts`, 4 tests in a new
+      suite, reads the slider's maximum out of the row that sets
+      `providers.cacheDays` and requires an answer a day younger than it to
+      be served after a save; red on "an answer 364 days old was not kept,
+      under “Keep answers for” 365 days" and on a 31-day answer stored under
+      30, green after. `tests/tools/sending-copy.test.ts` gains a third
+      rule, 3 tests: a paragraph saying how often a word is sent names
+      “Keep answers for”, read off the same row, and one naming it says
+      90 days and 5,000 words as `defaultSettings()` and
+      `MAX_PROVIDER_ENTRIES` set them; red on exactly `docs/PRIVACY.md:14`,
+      the table, and `:74`, "sent at most once in that time", which was
+      false past 180 days and past the cap. The options row imports
+      `MAX_PROVIDER_ENTRIES`. All 31 shots regenerated after the commit that
+      moved `src/`, the documentation set twice, its first run moving
+      `dashboard-milestones.png` by 5 pixels a channel apart, the recorded
+      noise, and its second writing all 14 byte-identical; the three groups
+      are stamped. Chrome's package grew 97 bytes, 993.769 → 993.863 KB,
+      `background.js` +18 and `options.js` +79, and prints **994 KB**. Unit
+      626 → **630** / 147 → **148** suites, tools 547 → **550**, total 1319
+      → **1326**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph.
+
+- [ ] **The privacy page says Weft stores no identifier but the install
+      id, and a Pro licence carries its buyer's name.** Found 2026-11-05
+      reading the storage table for the cache. "What Weft never stores"
+      says "No identifiers beyond a random install id used as HMAC key
+      material", and a licence installed through the options page is
+      stored as `weft:licence`, whose payload carries `name`, "who it was
+      issued to, shown back to them in settings", and `id`, an "opaque
+      licence id, for the publisher's own records"
+      (`src/core/licence.ts:31`). It is checked on the machine and sent
+      nowhere, so nothing is collected, but the sentence is false for every
+      Pro user and the page never says a licence is kept. And the table
+      headed "What Weft stores, and where" lists six kinds where `KEYS` in
+      `src/background/storage.ts` names nine stores: `weft:licence`,
+      `weft:network` (request and word counts, the time of the last, the
+      day's words, and up to 12 provider hostnames), `weft:introduced`
+      (today's new words) and `weft:meta` (the install id, the version and
+      when it was installed) have no row, and `weft:lock`'s panic budget,
+      tamper count and last clock reading sit beside the two rows it has.
+      The shape:
+      1. A row per store in the table, in a reader's words, the licence's
+         saying what it holds and that it is checked here and sent
+         nowhere; the "never stores" sentence saying the licence's name
+         beside the install id.
+      2. A test in `tests/tools/` that reads `KEYS` out of `storage.ts` —
+         by the checker, as `core-purity.test.ts` reads names, or the
+         object literal — and requires each store to be named by a row of
+         the table through a `STORES` map from key to the words its row
+         uses, so a tenth store fails until the page says what it holds;
+         and the licence payload's fields read from `LicencePayload`, so a
+         field added there fails until the row names it.
+      3. The table's numbers held to the code as the cache's are: 60 days
+         of history (`MAX_HISTORY` in `src/core/escalation.ts`), 500 hosts
+         and 90 days unattended (`MAX_HOSTS`, `HOST_TTL_DAYS` in
+         `src/core/prune.ts`), the last 200 changes (`LOG_CAP` in
+         `src/core/lock.ts`).
+      Docs and a test only: no `src/` file moves, so no screenshot group
+      does. `docs/PRIVACY.md` is `/privacy`, the URL every store's form
+      takes. About an hour.
 
 ## Next
 
@@ -7431,6 +7511,46 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-05 — the cache keeps what “Keep answers for” says.** Five things a
+later run would be sorry not to know:
+
+1. **The cache has one length, and it is an argument.** `pruneByAge()` in
+   `src/core/prune.ts` takes `ttlDays` as required, and the only caller,
+   `saveProviderCache()`, is handed `keepDays` from `lookupMissing()`, the
+   same `Math.max(1, settings.providers.cacheDays)` the read serves for. Do
+   not give `pruneByAge()` a default back: a default is exactly how the
+   save came to prune at 180 days under a slider offering 365.
+   `MAX_PROVIDER_ENTRIES`, 5,000, still caps it by recency, and both copy
+   places now say so.
+2. **When a run corrects a claim, grep the claim's other wordings across
+   the whole repository.** The run before fixed "per word, once ever" in
+   the privacy page's sending paragraph and wrote "at most once in that
+   time" there, which was false too; the same page's table, 57 lines up,
+   still said "only ever sent once", as did the options row and a comment.
+   `git grep -i -e 'sent once' -e 'once ever'` finds all three.
+3. **`sending-copy.test.ts` reads public documents, not the options page.**
+   Its third rule holds the privacy page's numbers to the code, but the
+   options row's detail is held only by importing `MAX_PROVIDER_ENTRIES`;
+   a copy rule over `src/ui` strings would need a JSX reader, and was not
+   built.
+4. **The privacy page's storage table is not every store, and one omission
+   makes a sentence false.** `KEYS` in `src/background/storage.ts` names
+   nine; the table lists six kinds and says nothing of the licence, the
+   network log, today's introduced words or the install record. A Pro
+   licence carries `name`, "who it was issued to", and `id`, "for the
+   publisher's own records" (`src/core/licence.ts:31`), so "No identifiers
+   beyond a random install id" under "What Weft never stores" is false for
+   every Pro user, and the page never mentions a licence at all. Queued
+   first in `Now`.
+5. **Assumed, with nobody to ask:** that the store should keep no answer
+   older than the setting, as well as every answer younger, so a reader who
+   shortens the setting and then lengthens it has the older answers asked
+   for again — the privacy page says answers are kept for as long as the
+   setting says, and keeping more than it says is storing what the reader
+   chose not to keep; and that `PROVIDER_TTL_DAYS`'s 180 had no reason
+   beyond being a default, its comment saying only that older answers "are
+   re-fetched rather than trusted", which the reader's own setting decides.
 
 **2026-11-05 — the public copy says the sentence can be sent.** Five things
 a later run would be sorry not to know:

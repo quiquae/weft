@@ -18,7 +18,7 @@ All of it in `chrome.storage.local`, on your computer:
 | Attention | Seconds per registrable domain per day, and up to 60 days of daily totals |
 | Pending changes | Difficulty reductions waiting out their cooldown |
 | An audit log | The last 200 difficulty changes you made |
-| Provider cache | If you enable a translation service: word → translation, so a word is only ever sent once |
+| Provider cache | If you enable a translation service: word → translation, for as many days as “Keep answers for” says, 90 unless you change it, and for the 5,000 most recent words at most |
 
 Nothing is synced between your devices: Weft never uses
 `chrome.storage.sync`. API keys never leave the machine you typed them on —
@@ -74,8 +74,10 @@ in, cut at about 220 characters.
 What actually leaves your machine, per word: the word, its guessed part of
 speech, and its number. Not the sentence, unless you turn on “Send the
 surrounding sentence” below, and then only to an OpenAI-compatible service.
-Not the page. Not the URL. Not anything identifying. Answers are cached for as long as you configure, so a word is
-sent at most once in that time.
+Not the page. Not the URL. Not anything identifying. Each answer is kept for
+as many days as “Keep answers for” says, 90 unless you change it, and for the
+5,000 most recent words at most, and a word is not sent again while its
+answer is kept.
 
 **“Send the surrounding sentence”** improves accuracy for words with several
 meanings, and is a separate, explicit opt-in that is off by default. When it

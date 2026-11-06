@@ -4,6 +4,7 @@ import { getLanguage } from '../../core/languages.ts';
 import { send } from '../../shared/rpc.ts';
 import { exportFilename } from '../../core/escalation.ts';
 import { whatIsSent } from '../../core/sending.ts';
+import { MAX_PROVIDER_ENTRIES } from '../../core/prune.ts';
 import { has } from '../../core/entitlements.ts';
 import { Locked } from './pro.tsx';
 import { Notice, Row, Section, Slider, Switch } from '../components/pieces.tsx';
@@ -151,7 +152,7 @@ export function SourcesSection({ c, settings }: { c: Controller; settings: Setti
           <Row
             siglum={SIGLA.leaf}
             title="Keep answers for"
-            detail="A word is only ever sent once. Longer caching means fewer calls and a smaller bill."
+            detail={`A word is not sent again while its answer is kept, for the ${MAX_PROVIDER_ENTRIES.toLocaleString()} most recent words at most. Longer caching means fewer calls and a smaller bill.`}
             value={`${settings.providers.cacheDays} days`}
           >
             <Slider

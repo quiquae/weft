@@ -6,7 +6,6 @@ import {
   MAX_HOSTS,
   HOST_TTL_DAYS,
   MAX_PROVIDER_ENTRIES,
-  PROVIDER_TTL_DAYS,
 } from '../../src/core/prune.ts';
 import type { SiteAttention } from '../../src/core/types.ts';
 
@@ -109,12 +108,15 @@ describe('pruneAttention', () => {
 describe('pruneByAge', () => {
   const entry = (at: number) => ({ tgt: 'chien', at });
 
+  /** How long the reader keeps answers, which the cache is always handed. */
+  const TTL = 90;
+
   test('drops entries past the TTL', () => {
     const cache = {
       fresh: entry(NOW),
-      stale: entry(NOW - (PROVIDER_TTL_DAYS + 1) * DAY),
+      stale: entry(NOW - (TTL + 1) * DAY),
     };
-    const { kept, dropped } = pruneByAge(cache, NOW);
+    const { kept, dropped } = pruneByAge(cache, NOW, { ttlDays: TTL });
     assert.equal(dropped, 1);
     assert.deepEqual(Object.keys(kept), ['fresh']);
   });
@@ -122,7 +124,7 @@ describe('pruneByAge', () => {
   test('caps at MAX_PROVIDER_ENTRIES by recency', () => {
     const cache: Record<string, { tgt: string; at: number }> = {};
     for (let i = 0; i < MAX_PROVIDER_ENTRIES + 100; i++) cache[`w${i}`] = entry(NOW - i * 1000);
-    const { kept, dropped } = pruneByAge(cache, NOW);
+    const { kept, dropped } = pruneByAge(cache, NOW, { ttlDays: TTL });
     assert.equal(Object.keys(kept).length, MAX_PROVIDER_ENTRIES);
     assert.equal(dropped, 100);
     assert.ok(kept.w0, 'newest entry evicted');
@@ -130,7 +132,7 @@ describe('pruneByAge', () => {
 
   test('respects explicit overrides', () => {
     const cache = { a: entry(NOW), b: entry(NOW - 1000), c: entry(NOW - 2000) };
-    const { kept } = pruneByAge(cache, NOW, { max: 2 });
+    const { kept } = pruneByAge(cache, NOW, { ttlDays: TTL, max: 2 });
     assert.deepEqual(Object.keys(kept), ['a', 'b']);
   });
 
@@ -139,7 +141,7 @@ describe('pruneByAge', () => {
     // right — it will simply be fetched again — but crashing on it would take
     // the service worker down on every save.
     const cache = { legacy: { tgt: 'chien' } as { tgt: string; at: number } };
-    const { kept, dropped } = pruneByAge(cache, NOW);
+    const { kept, dropped } = pruneByAge(cache, NOW, { ttlDays: TTL });
     assert.equal(dropped, 1);
     assert.deepEqual(kept, {});
   });

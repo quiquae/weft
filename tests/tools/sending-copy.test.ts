@@ -19,6 +19,15 @@
  * Markdown file under `docs/` and the hand-written pages under `site/`: the
  * site prints `docs/PRIVACY.md` and `docs/SUPPORT.md` as `/privacy` and
  * `/support`, and every store's form links to the first.
+ *
+ * And a third, since 2026-11-05: a paragraph that says how often a word is
+ * sent names the setting that decides it, “Keep answers for”, by the title of
+ * the options row that sets `providers.cacheDays`, and one that names it says
+ * the length it starts at and the most words the cache keeps, as the code
+ * sets them. The privacy page said a word "is only ever sent once" in its
+ * table and "at most once in that time" a page below, and the options row
+ * said the first above a slider offering a year, while every save pruned the
+ * cache at 180 days.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
@@ -28,6 +37,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { ProviderId } from '../../src/core/types.ts';
 import { SENTENCE_RECIPIENTS, whatIsSent } from '../../src/core/sending.ts';
+import { MAX_PROVIDER_ENTRIES } from '../../src/core/prune.ts';
+import { settings } from '../helpers.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -59,6 +70,25 @@ const SENDS = [
   /\bsentences?\b[^.;:]*?\b(?:goes|go|sent|leaves?|receives?)\b/i,
   /\b(?:sends?|sending|sent|receives?)\b[^.;:]*?\bsentences?\b/i,
 ];
+
+/** The title of the options row that sets how long an answer is kept, read off the page. */
+const KEEP = (() => {
+  const source = readFileSync(join(ROOT, 'src/ui/options/data.tsx'), 'utf8');
+  const bound = source.indexOf("c.set('providers.cacheDays'");
+  const title = /\btitle="([^"]+)"/.exec(source.slice(source.lastIndexOf('<Row', bound), bound));
+  if (bound < 0 || !title) throw new Error('no options row sets providers.cacheDays, or it has no title');
+  return title[1]!;
+})();
+
+/** What the cache's bounds are, as the code sets them and the copy writes them. */
+const KEPT_DAYS = String(settings().providers.cacheDays);
+const KEPT_WORDS = MAX_PROVIDER_ENTRIES.toLocaleString('en');
+
+/** A word said to be sent once, or once ever. */
+const ONCE = /\bsent\b[^.;:]*?\bonce\b|\bonce\s+ever\b/i;
+
+/** Says how often a word is sent, and not what decides it. */
+const unboundedOnce = (u: Unit) => ONCE.test(u.text) && !u.text.includes(KEEP);
 
 const namesSwitch = (u: Unit) => SWITCHES.some((name) => u.text.includes(name));
 
@@ -189,6 +219,24 @@ describe('what the public copy says a translation service is sent', () => {
     );
   });
 
+  test('a paragraph that says how often a word is sent names the setting that decides it', () => {
+    assert.deepEqual(
+      paragraphs.filter(unboundedOnce).map(quote),
+      [],
+      `a word is sent again once its answer is older than “${KEEP}”, or is not among the newest ${KEPT_WORDS}`,
+    );
+  });
+
+  test('a paragraph that names how long answers are kept says the bounds the code sets', () => {
+    const told = paragraphs.filter((u) => u.text.includes(KEEP));
+    assert.ok(told.length >= 2, `only ${told.length} paragraphs name “${KEEP}”: ${told.map(quote).join('; ')}`);
+    assert.deepEqual(
+      told.filter((u) => !u.text.includes(KEPT_DAYS) || !u.text.includes(KEPT_WORDS)).map(quote),
+      [],
+      `answers are kept for ${KEPT_DAYS} days unless the reader changes it, and for the newest ${KEPT_WORDS} words at most`,
+    );
+  });
+
   test('the public copy says the sentence can be sent', () => {
     const told = paragraphs.filter(namesSwitch);
     assert.ok(
@@ -250,5 +298,14 @@ describe('the reader', () => {
     assert.ok(unnamedRecipients(u('Sending one sentence of surrounding context is a separate opt-in.')));
     assert.ok(!unnamedRecipients(u(`With “${name}” on, an ${NAMES.openai} service is sent the sentence.`)));
     assert.ok(!unnamedRecipients(u('A file can switch lookups or sentence context off, and that lands at once.')));
+  });
+
+  test('refuses a claim of how often a word is sent without the setting that decides it', () => {
+    const u = (text: string): Unit => ({ where: 'probe', text });
+    assert.ok(unboundedOnce(u('Word → translation, so a word is only ever sent once.')));
+    assert.ok(unboundedOnce(u('What leaves your machine, per word, once ever.')));
+    assert.ok(unboundedOnce(u('Answers are cached for as long as you configure, so a word is sent at most once in that time.')));
+    assert.ok(!unboundedOnce(u(`Kept for as many days as “${KEEP}” says, so a word is sent at most once in that time.`)));
+    assert.ok(!unboundedOnce(u('Worth doing only once you are ready to be present.')));
   });
 });
