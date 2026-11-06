@@ -7599,7 +7599,7 @@ characters) and keywords (100 bytes) are not drafted either.
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
 
-**2026-11-06 — Pro is sold as what it does.** Five things a later run
+**2026-11-06 — Pro is sold as what it does.** Seven things a later run
 would be sorry not to know:
 
 1. **What Pro sells is `SOLD`, never `FEATURES`.** `FEATURES` in
@@ -7627,6 +7627,18 @@ would be sorry not to know:
    too; that the free options page's note reads "Pro adds what is listed
    below"; and that the release-notes template in `tools/release.mjs` is
    copy, `RELEASE-1.0.1.md` regenerating from it at B2a.
+6. **A context that times out in setup is the machine first.** The first
+   gate failed `licensing.spec.ts:58` and `privacy.spec.ts:104` with "Test
+   timeout of 60000ms exceeded while setting up "context"" while
+   `mediaanalysisd` used 207% of a CPU; both passed alone in 9 s and the
+   next gate passed whole. `ps -Ao pcpu,comm -r | head` before re-reading
+   code.
+7. **Left alone, a call for a human:** the providers feature is sold as
+   "Unlimited vocabulary", beside a daily lookup limit whose slider stops at
+   20,000 words and a cache of the 5,000 most recent answers, and says it
+   weaves "any word on the page" where lookups take the most frequent words
+   a page's packs lack. It is the one Pro claim left that says more than the
+   code does; renaming it is copy a buyer reads.
 
 **2026-11-06 — the privacy page names every store.** Four things a later
 run would be sorry not to know:
