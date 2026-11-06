@@ -65,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **630 pass**, 148 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
+| `npm run test:dom` | jsdom tests | **106 pass**, 24 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **45 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
@@ -264,6 +264,19 @@ code that deliver it, `DELIVERED`, and refuses a page reading `FEATURES`, a
 lock or gate under `src/ui/` naming a feature not sold, and copy promising
 one, by `PROMISES`. To sell one again, build it, set `shipped`, and write
 its line; whether to build them is Creagh's, in `TODO.md`.
+
+**A Hard Mode file carries its own way out.** The options page promises
+"the file you download contains its own removal instructions", and
+`docs/HARD-MODE.md` rests Hard Mode's defence on it, so each file
+`src/background/hard-mode.ts` writes holds its install and removal steps as
+comments its installer skips: an XML comment and a `PayloadDescription` in
+the macOS profile, `;` lines in the `.reg`, and `//` lines in the JSON, which
+Chrome's managed-policy loader parses with comments allowed
+(`JSON_PARSE_CHROMIUM_EXTENSIONS`, since before Chrome 116). Until
+2026-11-06 the page showed the steps and the download held none of them.
+`tests/dom/hard-mode.test.ts` reads each file as its installer would and
+fails on one with no way out. Do not strip the JSON's comments to make it
+strict JSON: they are the way out.
 
 **Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,

@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-06:** every automatable check is green, measured at the end
-of this session — typecheck clean, **630** unit / 148 suites, **102** jsdom / 23
+of this session — typecheck clean, **630** unit / 148 suites, **106** jsdom / 24
 suites, **565** tool tests / 141 suites, **45** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
@@ -1984,6 +1984,78 @@ registered**, and nothing below it can move until it is.
       `*-05-settings.png` moved, the rest byte-identical, and the three
       groups' stamps deleted, their content having changed. Building or
       dropping the four is Creagh's, first in `Next`.
+
+- [x] **Write Hard Mode's way out into the file it undoes.** Done
+      2026-11-06. `Now` was empty and the four unchecked items in `Next`
+      wait on Creagh, so a written promise was read against the code:
+      `docs/HARD-MODE.md`, which no run had read, about the feature Pro now
+      leads with. Its case that Hard Mode is "defensible rather than malware
+      behaviour" rests on three things, and the second, "the removal
+      procedure ships inside the generated file", was false, as was the
+      options page's "the file you download contains its own removal
+      instructions": the page showed the steps, and the download button
+      writes only the file. The macOS profile's one mention of removal was
+      the key `PayloadRemovalDisallowed`, the Linux file was bare JSON, and
+      the `.reg` file pointed at a `weft-hard-mode-remove.reg` nobody had
+      been given. And the macOS steps sent everyone to Privacy & Security >
+      Profiles, where Apple's guide, read at its macOS 27 version, says
+      General > Device Management; they called a 49-line file "40 lines of
+      XML"; the Linux steps gave no way out of the Chromium directory they
+      offered; and the guide said "Weft makes no network requests, at all".
+
+      **Each file now carries its own instructions**, install and removal,
+      as comments its reader skips: an XML comment and a
+      `PayloadDescription` in the profile, which Apple's schema says is
+      "shown on the Detail screen for the profile"; `;` lines in the `.reg`,
+      the removal block among them, ASCII only; and `//` lines in the JSON,
+      which Chrome reads past (see Notes). The guide says the same, both
+      macOS paths, and that Weft asks no server of its own. The guard is
+      `tests/dom/hard-mode.test.ts`, 4 tests in 1 suite, reading each file
+      as its installer would: the profile through jsdom's strict XML parser,
+      the JSON with Chrome's comments set aside, the `.reg` line by line.
+      Red first on all four, each for its own reason; three probes, each
+      restored by md5: `--` in the comment, the description unescaped, an
+      em dash in the `.reg`. `plutil -lint` passes the new profile on this
+      Mac. Also `src/background/providers/types.ts:7`'s "not page text" is
+      "never the page", the comment Notes queued for the next change to
+      `src/`. jsdom 102 → **106** / 23 → **24** suites, total 1342 →
+      **1346**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph. All 31 shots regenerated: store and
+      first-run byte-identical, the documentation set's three runs each
+      moving recorded noise and every shot matching its commit in one of
+      them, so the three groups are stamped.
+
+- [ ] **Make Hard Mode's file one the browser running Weft obeys, or say
+      it is for Chrome.** Found 2026-11-06 reading `docs/HARD-MODE.md`.
+      `src/background/hard-mode.ts` writes Google Chrome's policy in every
+      build — the `com.google.Chrome` domain,
+      `HKLM\SOFTWARE\Policies\Google\Chrome`,
+      `/etc/opt/chrome/policies/managed/` and the Chrome Web Store's update
+      URL — naming `api.runtime.id`, and the options page offers it to every
+      Pro user: `has(c.tier, 'hard-mode')`, no build check
+      (`src/ui/options/commitment.tsx:146`). So:
+      1. **Firefox**: `runtime.id` is `weft@weft.study`, so the file is a
+         Chrome policy naming a Firefox add-on, which neither browser obeys.
+         Firefox has policies of its own (`policies.json`, the
+         `org.mozilla.firefox` domain, `HKLM\SOFTWARE\Policies\Mozilla\Firefox`),
+         whose `ExtensionSettings` `force_installed` needs an
+         `install_url`, AMO's, which exists only once Weft is listed (B6).
+      2. **Edge** runs the Chrome package, so the build cannot tell and the
+         browser can (`navigator.userAgentData.brands`). Edge reads its own
+         policy locations and update URL, and whether its listing keeps the
+         Chrome Web Store's id is to be read too; Microsoft Learn documents
+         all of it, and its MCP server reaches it.
+      3. **Safari**: no Chrome policy applies, and B6 already asks whether
+         the Safari build sells Pro at all.
+      The Firefox, Edge and Safari descriptions in `docs/READY-TO-SUBMIT.md`
+      say Hard Mode "generates a browser policy making the extension
+      unremovable", which is true in Chrome alone. **Agent-shaped**: make
+      the row honest per browser — Edge's own policy in Edge, after reading
+      Microsoft's; on the Firefox and Safari builds, a row saying Hard Mode
+      is for Chrome and Edge rather than a file nothing obeys — with a test
+      per build, of the kind `tests/dom/hard-mode.test.ts` is. **Creagh's**:
+      building Firefox's, and whether those three stores' copy keeps Hard
+      Mode, which `Next`'s first item already makes a question about Pro.
 
 ## Next
 
@@ -7594,10 +7666,68 @@ buttons, so the Safari build has to drop Pro or sell it through In-App
 Purchase. That is a product call, not an agent's. The Safari subtitle (30
 characters) and keywords (100 bytes) are not drafted either.
 
+**B7 — Install each Hard Mode file once, on a machine you can spare.**
+Hard Mode is the first thing Pro sells, and nothing in this repository
+records any of its three files being installed: doing it needs an
+administrator password and changes the machine, which no unattended run may
+do. Before B4 makes Pro buyable, generate each from a Pro install
+(Settings → Commitment → Hard Mode) and check, per platform: it installs as
+its own comments say; `chrome://policy` lists `ExtensionSettings`; the
+Remove button is gone from `chrome://extensions`; and the removal written
+into the file brings it back. On macOS, check the profile's description is
+shown where you remove it, and that Chrome obeys a profile installed by
+hand on a Mac no MDM manages. On Linux, `chrome://policy` reading the file
+at all is the check that its `//` comments are allowed, which Chromium's
+source says and nobody has watched. And one case to try on purpose: the
+policy names the Chrome Web Store's update URL, so an install loaded
+unpacked from the GitHub release has an id the store does not know.
+
 ## Notes
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-06 — Hard Mode's file holds its own way out.** Seven things a
+later run would be sorry not to know:
+
+1. **A generated file is held by reading it as its consumer does**, in
+   `tests/dom/hard-mode.test.ts`: jsdom's strict XML parser for the profile,
+   Chrome's comment rule for the JSON, regedit's line grammar for the
+   `.reg`. Edge's and Firefox's variants get tests of the same kind. Do not
+   compare `contents` with `instructions`: one string feeds both, so they
+   would agree whatever either said.
+2. **Chrome reads a managed-policy JSON file with comments allowed**, and
+   has since before 116: `config_dir_policy_loader.cc` passes
+   `JSON_PARSE_CHROMIUM_EXTENSIONS | JSON_ALLOW_TRAILING_COMMAS`,
+   `json_reader.h` makes the first include `JSON_ALLOW_COMMENTS`, and
+   `json_parser.cc` eats comments before every token, the first one too.
+   Read in the chromium mirror on raw.githubusercontent.com at `main` and
+   at the `116.0.5845.0` tag. Do not take the `//` lines out to make the
+   file "real JSON": they are the way out.
+3. **macOS moved profiles.** Apple's Mac User Guide, read at its macOS 27
+   version, puts them in General > Device Management and removes one with
+   "the Remove button". The version the move came in was not read, the
+   guide's older versions having no address the reader could follow, so the
+   steps give both paths and no boundary.
+4. **Apple publishes the profile schema** at
+   `raw.githubusercontent.com/apple/device-management/release/mdm/profiles/TopLevel.yaml`:
+   `PayloadDescription` is "shown on the Detail screen for the profile".
+   Apple's `/documentation/` pages render titles only to a fetcher.
+5. **A Perl probe with a wide character double-encodes the whole file**
+   unless it runs with `-CSD -Mutf8` or writes the character as bytes
+   (`\xe2\x80\x94`). The first non-ASCII probe here mangled every em dash
+   and failed the macOS test, not the Windows one it aimed at. Read a
+   probe's message, not only its exit.
+6. **No Hard Mode file has been installed on a real machine**, as far as
+   this repository records; B7 asks Creagh, before B4. Left alone:
+   `docs/HARD-MODE.md`'s "the specific abuse Chrome began blocking for
+   policy-installed extensions on unmanaged devices in 2026", not read
+   against a source.
+7. **Assumed, with nobody to ask:** that the file may carry the install
+   steps as well as the removal ones, the guide saying "alongside the
+   instructions for installing it"; that both macOS paths, with no version
+   named, beat one path wrong for some readers; and that the Chromium
+   directory the install step offered needed its own removal command.
 
 **2026-11-06 — Pro is sold as what it does.** Seven things a later run
 would be sorry not to know:
