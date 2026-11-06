@@ -9,6 +9,23 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Pro is sold as what it does.** The options page's Pro section, the
+site's pricing page, its pitch, the README and the landing page sold eight
+features, and four of them could not be had: both rows of language chips set
+one language whatever the tier, so "every language at once" was the free
+tier with the lock taken off; no control sets a site's own language; the
+phrases switch weaves nothing more, because no pack has an English phrase to
+match; and nothing imports a word list. The free options page even said "Pro
+is for using several at once". Each feature now says whether it ships, the
+pages list only those that do — Hard Mode, your own translation key, a
+vocabulary check before any setting gets easier, and sixty days of attention
+history — and the lock rows for the other two are gone. The history row says
+what it does: the free dashboard charts a week and Pro's sixty days, where it
+claimed a per-site breakdown both tiers have and a graduation chart nothing
+draws, and the chart's title says the days it draws, where a free reader's
+said "last day" above seven bars. A test holds every feature sold to the code
+that delivers it and fails on copy promising one that is not.
+
 **An import kept half of what an export carried, and let the other half
 through a door that was supposed to be locked.** `exportAll` writes settings,
 vocabulary, attention, today's introduced words and the cooldown state;
@@ -797,7 +814,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1334 tests: 630 unit, 102 in jsdom, 558 over the build tools, and
+**Built with** 1341 tests: 630 unit, 102 in jsdom, 565 over the build tools, and
 44 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

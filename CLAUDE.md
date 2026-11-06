@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **630 pass**, 148 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **558 pass**, 140 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **44 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -250,6 +250,20 @@ with `shiftDay()`.
 list, panic passes, data export, pronunciation and the etymologies.
 `tests/core/entitlements.test.ts` fails and names the offender if one moves
 behind the paywall.
+
+**Pro sells what Pro does.** `shipped` on each feature in `FEATURES`
+(`src/core/entitlements.ts`) says whether the product has it, and the
+options page's Pro section and `/pricing` render `SOLD`, the features that
+ship. Until 2026-11-06 both, with `PITCH`, the README, the landing page and
+the release-notes template, sold eight features, and four could not be had:
+every language at once (the chips write one language whatever the tier),
+a language per site (no control sets a rule's `target`), phrases (no pack
+has one) and your own word lists (nothing imports one).
+`tests/tools/pro-features.test.ts` holds every feature sold to the file and
+code that deliver it, `DELIVERED`, and refuses a page reading `FEATURES`, a
+lock or gate under `src/ui/` naming a feature not sold, and copy promising
+one, by `PROMISES`. To sell one again, build it, set `shipped`, and write
+its line; whether to build them is Creagh's, in `TODO.md`.
 
 **Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,

@@ -6,7 +6,7 @@
 
 **State on 2026-11-06:** every automatable check is green, measured at the end
 of this session — typecheck clean, **630** unit / 148 suites, **102** jsdom / 23
-suites, **558** tool tests / 140 suites, **44** e2e passing
+suites, **565** tool tests / 141 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew
@@ -1933,6 +1933,55 @@ registered**, and nothing below it can move until it is.
       `CHANGELOG.md` paragraph and no screenshot group moved: nothing under
       `src/` did.
 
+- [x] **Sell Pro as what it does.** Done 2026-11-06. `Now` was empty and
+      the three unchecked items in `Next` wait on Creagh, so a written
+      promise was read against the code, as the runs before did for the
+      privacy page: the Pro section of the options page, the site's
+      `/pricing`, `PITCH`, the README, the landing page and the release-notes
+      template sold eight features, and **four could not be had at any
+      price.** "Every language at once": both rows of language chips write
+      `learning.targetLangs` as one language whatever the tier, and nothing
+      but the free clamp reads it. "A different language per site":
+      `siteDecision` honours a rule's `target` and no control sets one.
+      "Phrases, not just words": the switch and the selector's three-word
+      windows exist, and **not one pack has an English phrase** — no entry
+      of pos `phrase`, no multi-word English key in any of the seven — so
+      turning it on weaves nothing more. "Your own word lists": nothing
+      imports a lexicon. The free options page said "Pro is for using
+      several at once". And "The whole history" claimed a per-site
+      breakdown both tiers are shown and a graduation chart nothing draws
+      (`retirementSeries()` has no caller), where the free dashboard charts
+      a week under a title saying "last day".
+
+      **Each feature says whether it ships**, `shipped` in `FEATURES`, and
+      `SOLD` in `src/core/entitlements.ts` is what the two pages render. The
+      four stay in the data model, the free clamp still guarding them, and
+      the lock rows for multi-language and phrases are gone from the
+      options page, the phrases switch with them. The history row says what
+      it does, and the chart's title says the days it draws, "last 7 days"
+      on Free. Pro is sold as Hard Mode, your own translation key, a
+      vocabulary check before any setting gets easier, and sixty days of
+      attention history.
+
+      **The guard is `tests/tools/pro-features.test.ts`**, 7 tests in 1
+      suite: every feature sold names in `DELIVERED` the file and code that
+      deliver it, and a line for a feature not sold fails; no page reads
+      `FEATURES`; nothing under `src/ui/` names a feature not sold; and no
+      copy promises one, by the words `PROMISES` gives each, over the README,
+      every tracked `docs/*.md`, `site/*.html`, `src/ui/`, `pricing.ts`,
+      `build-site.mjs` and `release.mjs`. Red first on the four undelivered
+      features, the two pages reading `FEATURES`, the two lock rows and 19
+      promising lines. Four probes, each restored by md5, each failing its
+      own test by name: `custom-lexicon` shipped, the old note back in
+      `pro.tsx`, `pro.tsx` reading `FEATURES`, and a lock naming `phrases`.
+      Tools 558 → **565** / 140 → **141** suites, total 1334 → **1341**, in
+      six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
+      paragraph. All 36 shots regenerated: `dashboard.png`, the four
+      options shots, `06-options-top.png`, `07-help.png` and the two
+      `*-05-settings.png` moved, the rest byte-identical, and the three
+      groups' stamps deleted, their content having changed. Building or
+      dropping the four is Creagh's, first in `Next`.
+
 ## Next
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
@@ -2141,6 +2190,33 @@ registered**, and nothing below it can move until it is.
       apart, the drift of 2026-10-08, and its second gave back every
       committed byte, so the three groups are stamped. Tools 442 → **448** /
       106 → **107** suites, in six places, `docs/LAUNCH.md:221` first.
+
+- [ ] **Build or drop the four Pro features that were sold and never
+      built.** Found 2026-11-06 and taken off sale the same day (the ticked
+      item in `Now`). Pro is now Hard Mode, your own translation key, a
+      vocabulary check before any setting gets easier, and sixty days of
+      history, which is thin beside $3.50 a month; the four are what the
+      pitch led with. For each, build it and sell it, or delete it:
+      1. **Every language at once.** Nothing reads `learning.targetLangs`
+         but the free clamp. Building it means deciding what "active" does:
+         several languages woven on one page, or several kept and one
+         chosen — the second is what Free already has, cards being kept per
+         language. The chips are `multi={false}` in both rows of
+         `src/ui/options/sections.tsx`.
+      2. **A different language per site.** `siteDecision`
+         (`src/core/sites.ts`) already honours a rule's `target`; it needs a
+         control on the sites page and the popup, and the free clamp already
+         drops the override.
+      3. **Phrases.** The selector matches English windows of up to three
+         words; a pack needs phrase rows (`tools/seed/*.tsv`, English with a
+         space), each read against a dictionary as the ledgers require.
+      4. **Your own word lists.** Nothing exists: an import format, a store
+         (and a row in the privacy page's table, which its test will demand),
+         and the selector reading it beside the pack.
+      To sell one again: set `shipped: true` and write its `DELIVERED` line
+      in `tests/tools/pro-features.test.ts`; its old copy is in `FEATURES`.
+      **Not agent-shaped before the yes**: what Pro is, and costs, is
+      Creagh's. B4 should wait on it, since it makes Pro buyable.
 
 - [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
       Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
@@ -7437,7 +7513,9 @@ UTC `https://weft.lemonsqueezy.com/checkout/buy/weft-pro-yearly` returned
 `404`. A reviewer can click one. The free tier does not need it, so the
 choice is to fix it and rebuild the zips before submitting, or to submit
 knowing that; `docs/READY-TO-SUBMIT.md` puts it as BLOCKED 3. *Needs: a Lemon
-Squeezy account.*
+Squeezy account.* **And settle what Pro is first**: until 2026-11-06 it was sold
+with four features it does not have, and the first unchecked item in `Next`
+is the decision about them.
 
 **B5 — Submit to the Chrome Web Store.** Everything a machine can check has
 been checked. **Work down `docs/READY-TO-SUBMIT.md`**, which has every step
@@ -7517,6 +7595,35 @@ characters) and keywords (100 bytes) are not drafted either.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-06 — Pro is sold as what it does.** Five things a later run
+would be sorry not to know:
+
+1. **What Pro sells is `SOLD`, never `FEATURES`.** `FEATURES` in
+   `src/core/entitlements.ts` still holds the four features not built, with
+   their old copy, so the free clamp can keep guarding them and selling one
+   again is a flag and a line. `tests/tools/pro-features.test.ts` fails on a
+   page reading `FEATURES`, on a feature sold with no `DELIVERED` line, and
+   on copy promising a feature not sold, by `PROMISES`; write the line or
+   change the copy, there is no exemption list.
+2. **No pack has a phrase.** Not one row of the seven is of pos `phrase` or
+   has an English key with a space, so the phrases switch only made the
+   selector scan three-word windows for nothing. The selector's code is
+   right and tested; the data was never written.
+3. **`retirementSeries()` in `src/core/stats.ts` has no caller**, beside
+   `upcoming()`: the graduation chart the history row promised was never
+   drawn. Both are kept, being tested and cheap.
+4. **`git checkout -- <file>` to undo a probe reverts every uncommitted edit
+   in that file**, which this run did to `entitlements.ts` and re-applied
+   from its own script. The journal says it on 2026-09-29; it bit again.
+   Commit before probing, or probe on a copy and restore by md5.
+5. **Assumed, with nobody to ask:** that a feature a buyer cannot use is
+   taken off sale rather than left for Creagh to decide, the change being a
+   flag per feature and nothing being sold until B4; that the phrases
+   switch goes with its lock, a switch that changes nothing being a promise
+   too; that the free options page's note reads "Pro adds what is listed
+   below"; and that the release-notes template in `tools/release.mjs` is
+   copy, `RELEASE-1.0.1.md` regenerating from it at B2a.
 
 **2026-11-06 — the privacy page names every store.** Four things a later
 run would be sorry not to know:
