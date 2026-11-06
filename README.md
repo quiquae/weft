@@ -186,9 +186,9 @@ It is words that graduated.
 Old English. The whole lexicon for it, the whole escalation curve, the whole
 tooltip, your vocabulary and progress, and export. Not a trial.
 
-**Pro** adds every language at once, a different language per site, Hard Mode,
-your own translation key for unlimited vocabulary, phrases, the full history
-and custom word lists. $3.50 a month, $24 a year, or $59 once.
+**Pro** adds Hard Mode, your own translation key for unlimited vocabulary, a
+vocabulary check before any setting gets easier, and sixty days of attention
+history. $3.50 a month, $24 a year, or $59 once.
 
 Some things are never gated at any price: accessibility, the never-weave list,
 panic passes, and exporting your own data. There is a test that fails if
@@ -266,8 +266,8 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 630 unit + 102 jsdom + 558 over the build tools
-npm run test:e2e       # 44 tests in a real Chromium with the extension loaded
+npm test               # 630 unit + 102 jsdom + 565 over the build tools
+npm run test:e2e       # 45 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest

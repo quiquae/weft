@@ -152,9 +152,9 @@ ${log || '(none)'}
 
 ---
 
-Free for one language, forever. [Pro](https://weft.study/pricing) adds every
-language at once, a different one per site, Hard Mode, and your own
-translation key.
+Free for one language, forever. [Pro](https://weft.study/pricing) adds Hard
+Mode, your own translation key, a vocabulary check before any setting gets
+easier, and sixty days of attention history.
 `;
 
 if (dry) {

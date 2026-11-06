@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { FEATURES, featureInfo, type Feature } from '../../core/entitlements.ts';
+import { SOLD, featureInfo, type Feature } from '../../core/entitlements.ts';
 import { describeLicence, needsAttention } from '../../core/licence.ts';
 import { PLANS, PRICING_URL, formatPrice } from '../../core/pricing.ts';
 import { Notice, Row, Section } from '../components/pieces.tsx';
@@ -39,7 +39,7 @@ export function ProSection({ c }: { c: Controller }) {
       note={
         isPro
           ? 'Verified on this machine against a key compiled into the extension. Weft makes no request to check it — there is no activation server and nothing to phone home.'
-          : 'Free is one language, forever, with the whole lexicon for it and the whole idea. Pro is for using several at once.'
+          : 'Free is one language, forever, with the whole lexicon for it and the whole idea. Pro adds what is listed below.'
       }
     >
       {licence && licence.kind !== 'none' ? (
@@ -69,7 +69,7 @@ export function ProSection({ c }: { c: Controller }) {
             detail="Everything below is off on Free. Nothing below is something Weft needs in order to work."
           >
             <ul class="pro__list">
-              {FEATURES.filter((f) => f.tier === 'pro').map((f) => (
+              {SOLD.map((f) => (
                 <li key={f.id}>
                   <strong>{f.label}</strong>
                   <span>{f.detail}</span>

@@ -66,8 +66,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **630 pass**, 148 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **102 pass**, 23 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **558 pass**, 140 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **44 pass, 3 skipped**, 4.4 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **45 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 994 KB unpacked for each of the three |
@@ -250,6 +250,20 @@ with `shiftDay()`.
 list, panic passes, data export, pronunciation and the etymologies.
 `tests/core/entitlements.test.ts` fails and names the offender if one moves
 behind the paywall.
+
+**Pro sells what Pro does.** `shipped` on each feature in `FEATURES`
+(`src/core/entitlements.ts`) says whether the product has it, and the
+options page's Pro section and `/pricing` render `SOLD`, the features that
+ship. Until 2026-11-06 both, with `PITCH`, the README, the landing page and
+the release-notes template, sold eight features, and four could not be had:
+every language at once (the chips write one language whatever the tier),
+a language per site (no control sets a rule's `target`), phrases (no pack
+has one) and your own word lists (nothing imports one).
+`tests/tools/pro-features.test.ts` holds every feature sold to the file and
+code that deliver it, `DELIVERED`, and refuses a page reading `FEATURES`, a
+lock or gate under `src/ui/` naming a feature not sold, and copy promising
+one, by `PROMISES`. To sell one again, build it, set `shipped`, and write
+its line; whether to build them is Creagh's, in `TODO.md`.
 
 **Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,
@@ -937,6 +951,109 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-06 — Pro sold eight features, and four could not be had at any price
+
+`Now` was empty and the three unchecked items in `Next` each wait on
+Creagh, so a written promise was read against the code, as the privacy page
+was the run before. `docs/PRICING.md` was the one page of promises to a
+buyer that no test reads, and reading it sent the run to `FEATURES` in
+`src/core/entitlements.ts`, which the options page's Pro section and the
+site's `/pricing` render.
+
+**Four of the eight could not be used, each measured before anything
+moved.** "Every language at once": both rows of language chips are
+`multi={false}` and write `learning.targetLangs: [id]` whatever the tier,
+and nothing reads `targetLangs` but the free clamp, so on Pro a lock row
+disappeared and nothing else changed. "A different language per site":
+`siteDecision` honours a rule's `target`, and no control on any page sets
+one. "Phrases, not just words": the switch and the selector's three-word
+windows are real, and no pack of the seven has a row of pos `phrase` or an
+English key with a space, so the switch lengthened the scan and wove
+nothing more. "Your own word lists": nothing imports a lexicon. The free
+options page said "Pro is for using several at once", the first of them.
+And the history row claimed a per-site breakdown both tiers are shown and a
+graduation chart nothing draws, `retirementSeries()` having no caller, over
+a free dashboard that titled its seven-bar chart "Attention, last day".
+
+**They are off sale, not deleted.** `shipped` on each feature says whether
+the product has it, and `SOLD`, beside `FEATURES`, is what the two pages
+render; the four keep their copy and the free clamp keeps guarding their
+settings, so selling one again is a flag and a line. The lock rows for
+multi-language and phrases are gone from the options page, the phrases
+switch with its row. `PITCH`, the pricing page's description, now built
+from it, the README, the landing page's body and FAQ, and the release-notes
+template `tools/release.mjs` writes sell Hard Mode, your own translation
+key, a vocabulary check before any setting gets easier, and sixty days of
+attention history. The history row says the free dashboard charts a week
+and Pro's sixty days, and the chart's title reads the series it draws.
+
+**The guard is `tests/tools/pro-features.test.ts`, 7 tests in 1 suite**:
+every feature sold names in `DELIVERED` the file and code that deliver it,
+a line for a feature not sold fails, no page reads `FEATURES`, nothing
+under `src/ui/` quotes a feature not sold, and no copy promises one by the
+words `PROMISES` gives each, over the README, every tracked `docs/*.md`,
+`site/*.html`, `src/ui/`, `pricing.ts`, `build-site.mjs` and `release.mjs`.
+A feature is read as sold unless it says otherwise, so one added without a
+word is held. Red first on the four, the two pages reading `FEATURES`, the
+two lock rows and 19 promising lines; four probes, each restored by md5,
+each failing its own test by name. An e2e test in `friction.spec.ts` holds
+the chart's title to the days in the chart's own label, red on "Attention,
+last day" with the old expression restored by md5, and green after.
+
+**A probe was undone with `git checkout -- <file>`, which took the fix with
+it**: every uncommitted edit to `entitlements.ts`, re-applied from the
+script that made them, and the WIP was committed before the next probe. The
+journal says so on 2026-09-29. Commit before probing.
+
+All 36 shots were regenerated twice. Nine moved, every one for the change:
+`dashboard.png` by its title; `options.png` 556 px shorter, 8 964 → 8 408;
+`options-dark.png` and `06-options-top.png` without the lock row; and
+`options-density.png`, `07-help.png` and the two `*-05-settings.png`
+shifted under the rows removed above them. The rest came back
+byte-identical. The second documentation run moved `options.png` again, the
+full-page noise of 2026-10-08, and its bytes are the ones committed. The
+three groups' stamps are deleted, their content having changed. The site,
+built and read: `/pricing` lists exactly the four.
+
+**The first gate failed twice on "Test timeout of 60000ms exceeded while
+setting up "context""**, `licensing.spec.ts:58` and `privacy.spec.ts:104`
+at 1.4 and 1.1 min, with `mediaanalysisd` at 207% of a CPU and a load
+average of 23. Neither test touches what moved; both passed alone in 9 s,
+and the second gate passed whole. A context that times out in setup is the
+machine before it is the code.
+
+The session was stopped after the second gate finished and resumed at
+20:02 with the queue's task re-sent; the branch was pushed before anything
+else moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the e2e test: `npm run test:all` **exit 0** —
+typecheck clean, 630 unit / 148, 102 jsdom / 23, **565 tools / 141**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **994 KB × 3**
+passing `validate`, **45 e2e passed and 3 skipped in 5.9 min**, then build and
+validate again; the gate before it, on the same code without the e2e test,
+exited 0 at 44 in 5.4 min. Separately `npm run site` then `site:check` **714
+pages / 16 118 links**, all resolving, and `artefacts:check` **8 groups, 1
+stale**, exit 1 — the release notes, B2a. `packs:verify` was not run: no
+pack or seed moved. The packages print 994 KB as before; the bytes were not
+measured against `main`. Tools 558 → **565** / 140 → **141** suites, e2e 44
+→ **45**, total 1334 → **1342**, in six places, `docs/LAUNCH.md:221` first,
+and a `CHANGELOG.md` paragraph, because the Pro section ships. Only
+documents moved after the gate, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that a feature a buyer cannot use is taken off
+sale rather than left for Creagh to decide, the change being a flag per
+feature and nothing being sold before B4; that the phrases switch goes with
+its lock, a switch that changes nothing being a promise too; that the free
+note reads "Pro adds what is listed below"; and that the release-notes
+template is copy, `RELEASE-1.0.1.md` regenerating from it at B2a.
+
+What needs a human: unchanged, everything below **B1** and the calls, and a
+new first item in `Next`: build or drop the four, which decides what Pro is
+before B4 makes it buyable.
 
 ### 2026-11-06 — the privacy page said Weft keeps no identifier, and a licence holds its buyer's name
 

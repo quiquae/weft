@@ -14,8 +14,6 @@ import {
   loadPackIndex,
   type PackIndex,
 } from '../../shared/packs.ts';
-import { has } from '../../core/entitlements.ts';
-import { Locked } from './pro.tsx';
 import { Chips, Notice, Row, Section, Slider, Switch, WeaveBand, oneWordIn, percent } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
 
@@ -106,12 +104,6 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
         <Notice tone={activeAvailability.kind === 'unavailable' ? 'warn' : 'info'}>
           {availabilityNote(activeAvailability, meta.name)}
         </Notice>
-      ) : null}
-
-      {!has(c.tier, 'multi-language') ? (
-        <Row siglum={SIGLA.tongue} title="One at a time">
-          <Locked feature="multi-language" />
-        </Row>
       ) : null}
 
       <Row siglum={SIGLA.tongue} title="Modern languages">
@@ -212,22 +204,6 @@ export function LanguageSection({ c, settings }: { c: Controller; settings: Sett
           step={1}
           onChange={(v) => void c.set('learning.introduceNewPerDay', v)}
         />
-      </Row>
-
-      <Row
-        siglum={SIGLA.thread}
-        title="Phrases as well as words"
-        detail="Weave “as well as” and “at the same time” as units, once single words have stopped being difficult."
-      >
-        {has(c.tier, 'phrases') ? (
-          <Switch
-            checked={settings.learning.phrasesEnabled}
-            label={settings.learning.phrasesEnabled ? 'Weaving phrases too' : 'Single words only'}
-            onChange={(next) => void c.set('learning.phrasesEnabled', next)}
-          />
-        ) : (
-          <Locked feature="phrases" />
-        )}
       </Row>
 
       <Row

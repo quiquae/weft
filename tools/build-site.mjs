@@ -26,7 +26,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
-import { FEATURES } from '../src/core/entitlements.ts';
+import { SOLD } from '../src/core/entitlements.ts';
 import { entriesByTarget, spelling } from '../src/core/lexicon.ts';
 import { getLanguage } from '../src/core/languages.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
@@ -843,7 +843,7 @@ function installPage(version) {
 
 function pricingPage() {
   const url = `${SITE}/pricing`;
-  const pro = FEATURES.filter((f) => f.tier === 'pro');
+  const pro = SOLD;
 
   // Rows that are free on both sides matter more than the paid ones: they are
   // the evidence that the free tier is a product rather than a trailer.
@@ -858,10 +858,7 @@ function pricingPage() {
     ['Accessibility', 'Never a paid feature'],
   ];
 
-  const description =
-    'Weft Free is one language forever, with the whole lexicon and the whole idea. ' +
-    'Pro adds every language at once, a different one per site, Hard Mode, and your own ' +
-    'translation key. From $24 a year, or $59 once.';
+  const description = `${PITCH} From $24 a year, or $59 once.`;
 
   return {
     path: 'pricing.html',
