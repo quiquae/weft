@@ -965,6 +965,99 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-06 — Hard Mode's file said nothing about taking it off
+
+`Now` was empty and the four unchecked items in `Next` each wait on Creagh,
+so a written promise was read against the code, as the two runs before did:
+`docs/HARD-MODE.md`, which no run had opened, about the feature Pro has led
+with since the four came off sale.
+
+**The safety argument was kept on screen and broken in the file.** The guide
+calls Hard Mode "defensible rather than malware behaviour" for three reasons,
+the second that "the removal procedure ships inside the generated file", and
+the options page tells a buyer "the file you download contains its own
+removal instructions". The page showed the steps; the download button writes
+only the file. Measured by importing the generator with `chrome.runtime.id`
+stubbed: the macOS profile's one mention of removal was the key
+`PayloadRemovalDisallowed`, the Linux file was bare JSON, and the `.reg`
+file pointed at a removal file nobody had been given. The page is closed the
+moment the file is saved.
+
+**Each file now holds its own instructions**, as comments its reader skips:
+an XML comment and a `PayloadDescription`, which Apple's schema
+(`apple/device-management`, `TopLevel.yaml`) says is "shown on the Detail
+screen for the profile"; `;` lines in the `.reg`, the removal block among
+them, ASCII only, since regedit never reads a version 5 file as UTF-8; and
+`//` lines in the JSON. **The JSON half was checked before it was written**,
+because a file Chrome refuses switches Hard Mode off without a word:
+`config_dir_policy_loader.cc`, read in the chromium mirror at `main` and at
+the `116.0.5845.0` tag, Weft's floor, parses with
+`JSON_PARSE_CHROMIUM_EXTENSIONS`, which includes `JSON_ALLOW_COMMENTS`, and
+`json_parser.cc` eats comments before the first token too.
+
+**Writing the steps down found them aimed at an old pane.** Apple's Mac User
+Guide, read at its macOS 27 version, keeps profiles in General > Device
+Management and removes one with "the Remove button"; every step said Privacy
+& Security > Profiles. Both are named now, with no version boundary, the
+guide's older versions having no address the reader could follow. The
+instructions called a 49-line profile "40 lines of XML", the Linux steps
+offered Chromium's directory with no way out of it, and the guide said "Weft
+makes no network requests, at all", false with lookups on; it says Weft has
+no server and asks none of its own.
+
+Test-first: `tests/dom/hard-mode.test.ts`, 4 tests in 1 suite, red on all
+four, each for its own reason — no comment naming General > Device
+Management, no `[-key]` line, no `rm`, "40 lines of a 49-line file". It
+reads each file as its installer would, the profile through jsdom's XML
+parser, shown first to refuse a `--` in a comment and a bare `&`. Three
+probes, each restored by md5, each failing by name; the first non-ASCII
+probe failed the wrong test, Perl without `-Mutf8` having double-encoded
+every em dash in the file. `plutil -lint` passes the new profile on this
+Mac. And `src/background/providers/types.ts:7`'s "not page text" says
+"never the page", Notes having queued it for the next change to `src/`.
+
+All 31 shots were regenerated on a test build after the last change to
+`src/`: store and first-run byte-identical, and the documentation set's three
+runs moved three, one and one shots by the recorded noise — 5 pixels a
+channel apart, 47 at most 16 apart, the 1 740-pixel woven word — every shot
+matching its commit in at least one run, so the committed bytes stand and
+the three groups are stamped. jsdom 102 → **106** / 23 → **24** suites,
+total 1342 → **1346**, in six places, `docs/LAUNCH.md:221` first, and a
+`CHANGELOG.md` paragraph, because the generator ships.
+
+**Found and queued, not fixed:** the generator writes Google Chrome's policy
+in every build, and the options page offers it to every Pro user. On Firefox
+the file names `weft@weft.study` under Chrome's paths; in Edge, which runs
+the Chrome package, it writes where Edge never reads; on Safari nothing
+applies. First in `Now`, with what is agent-shaped and what is Creagh's. And
+no record shows a Hard Mode file installed on a real machine, which needs an
+administrator password: **B7**.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code, the guide and the stamps: `npm run test:all` **exit 0** —
+typecheck clean, 630 unit / 148, **106 jsdom / 24**, 565 tools / 141, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **994 KB × 3**
+passing `validate`, **45 e2e passed and 3 skipped in 6.7 min**, then build
+and validate again. Chrome's package is 591 bytes heavier than `main`'s, all
+of them `background.js`, measured against `main`'s built in a scratch
+worktree: 993.621 → 994.198 KB, still printing 994; `main`'s own was 242
+bytes under the 993.863 recorded on 2026-11-05, #144 having moved it
+unmeasured. `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. `packs:verify` and `site:check` were not run: no pack, seed or
+site page moved. The session was stopped after the gate finished and resumed
+at 23:53, its branch pushed before anything else moved; only documents moved
+after the gate, so typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the file may carry the install steps as
+well as the removal ones, the guide saying "alongside the instructions for
+installing it"; that both macOS paths, with no version named, beat one path
+wrong for some readers; and that the Chromium directory the install step
+offered needed its own removal command.
+
+What needs a human: unchanged, everything below **B1** and the calls, and
+**B7**, new. `Now` holds one agent-shaped item: Hard Mode per browser.
+
 ### 2026-11-06 — Pro sold eight features, and four could not be had at any price
 
 `Now` was empty and the three unchecked items in `Next` each wait on

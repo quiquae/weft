@@ -82,7 +82,10 @@ network panel's three sentences and the masthead's second, and 415
 992.535 → 993.769 KB, Firefox's 993.835 and Safari's 993.775, measured the
 same way. And on 2026-11-05 by 97 bytes, the cache's one length, 18 of them
 `background.js` and 79 `options.js`, Chrome's 993.769 → 993.863 KB, still
-printing 994.
+printing 994. And on 2026-11-06 by 591 bytes, all of them `background.js`,
+Hard Mode's files carrying their own way out, Chrome's 993.621 → 994.198 KB
+against `main`'s, still printing 994 — `main`'s having fallen 242 bytes from
+993.863 with #144, which did not measure it.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
