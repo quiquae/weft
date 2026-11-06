@@ -20,7 +20,12 @@ Three things make it defensible rather than malware behaviour:
 1. **You install it yourself**, deliberately, on your own machine, with an
    administrator password you type.
 2. **The removal procedure ships inside the generated file**, in plain words,
-   alongside the instructions for installing it. Nothing is hidden.
+   alongside the instructions for installing it, as comments the file's own
+   reader skips — and on macOS in the profile's description too, which
+   Apple's profile reference says is "shown on the Detail screen for the
+   profile". Nothing is hidden. The page that generates the file is closed
+   the moment you save it; the file is what you find again, months later, on
+   the day you want out.
 3. **Weft touches neither the default search engine nor the new tab page**,
    which is the specific abuse Chrome began blocking for policy-installed
    extensions on unmanaged devices in 2026. A policy that pins only this
@@ -33,22 +38,27 @@ not ship a profile you cannot remove.
 ## Generating it
 
 Settings → Commitment → Hard Mode. Pick your platform, click Generate, read
-the file — it is about forty lines and it names exactly one extension id —
-then download and install it.
+the file — it is short, these instructions are written into it, and it names
+exactly one extension id — then download and install it.
 
 ## macOS
 
 ```
-1. Save the file as weft-hard-mode.mobileconfig
-2. Double-click it. System Settings opens to Privacy & Security > Profiles.
-3. Click the profile, then Install. Enter your administrator password.
+1. Save the file as weft-hard-mode.mobileconfig, and open it.
+2. Open System Settings > General > Device Management
+   (Privacy & Security > Profiles on older macOS).
+3. Double-click the profile under Downloaded, then click Install.
+   Enter your administrator password.
 4. Quit Chrome completely (Cmd-Q) and reopen it.
 5. Check chrome://policy — ExtensionSettings should be listed.
 ```
 
-To remove: System Settings → Privacy & Security → Profiles, select "Weft —
-Hard Mode", click the minus button, enter your administrator password, restart
-Chrome.
+To remove: System Settings → General → Device Management (Privacy & Security
+→ Profiles on older macOS), select "Weft — Hard Mode", click Remove, enter
+your administrator password, restart Chrome. The path is
+[Apple's](https://support.apple.com/guide/mac-help/configuration-profiles-standardize-settings-mh35561/mac),
+read on 2026-11-06 at its macOS 27 version; until then this page named
+Privacy & Security alone, which macOS has since moved.
 
 ## Windows
 
@@ -67,7 +77,8 @@ Windows Registry Editor Version 5.00
 [-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionSettings\<id>]
 ```
 
-Or delete the key by hand in `regedit`. Then restart Chrome.
+Or delete the key by hand in `regedit`. Then restart Chrome. The same lines
+are in the file you downloaded, as comments: leave out the semicolons.
 
 ## Linux
 
@@ -79,7 +90,11 @@ sudo cp weft-hard-mode.json /etc/opt/chrome/policies/managed/
 For Chromium, use `/etc/chromium/policies/managed/` instead. Restart Chrome
 and check `chrome://policy`.
 
-To remove: `sudo rm /etc/opt/chrome/policies/managed/weft-hard-mode.json`.
+To remove: `sudo rm /etc/opt/chrome/policies/managed/weft-hard-mode.json`,
+or `sudo rm /etc/chromium/policies/managed/weft-hard-mode.json` for Chromium.
+Both are written into the file as `//` comments, which Chrome reads past: it
+parses a managed-policy file with comments allowed, and has since before
+Chrome 116.
 
 ## What it does not do
 
@@ -95,15 +110,18 @@ removing the extension to escape them.
 ## The system clock, which is the honest weak point
 
 A cooldown is a stored timestamp compared against `Date.now()`. So winding
-your system clock forward clears any change you have queued, immediately.
-Weft does not prevent this, and this section exists because you should hear
-it here rather than work it out yourself.
+your system clock forward ends the wait on every change you have queued,
+immediately — though a vocabulary check, if you turned one on, still has to
+be passed. Weft does not prevent this, and this section exists because you
+should hear it here rather than work it out yourself.
 
 **Why it is not fixed.** Telling "the clock says next week" apart from "the
 browser was closed for a week" needs a time source you cannot edit — which
-means asking a server what time it is. Weft makes no network requests, at
-all, and there is a test asserting it; trading that for a screen-time tool
-that can be beaten by holding down the power button is a bad trade.
+means asking a server what time it is. Weft has no server to ask, and asks
+none of its own: with lookups off it makes no network request at all, which
+`tests/e2e/privacy.spec.ts` asserts, and with them on it talks only to the
+translation service you gave it a key for. Trading that for a screen-time
+tool that can be beaten by holding down the power button is a bad trade.
 
 The other candidate fix is worse. Weft could require the wait to elapse in
 *observed* time — counting alarm ticks rather than comparing timestamps — but
