@@ -280,6 +280,39 @@ test.describe('the progress page', () => {
     await expect(dashboard.locator('.tile').first()).toBeVisible();
   });
 
+  test('titles the attention chart by the days it draws', async ({
+    context,
+    extensionId,
+    configure,
+    rpc,
+    origin,
+  }) => {
+    /*
+     * The summary asks for at least a week, so a free reader's chart draws
+     * seven days, and until 2026-11-06 its title read the tier's history
+     * length instead and said "Attention, last day" above the seven bars.
+     * The chart states its own days in its label, so the title is held to
+     * that rather than to a number typed here.
+     */
+    await configure({});
+    await rpc({
+      type: 'record-attention',
+      host: new URL(origin).hostname,
+      seconds: 600,
+      url: `${origin}/article.html`,
+    });
+
+    const page = await context.newPage();
+    await page.goto(`chrome-extension://${extensionId}/dashboard.html`);
+    const section = page.locator('section.section', { has: page.locator('.chart__svg') });
+    await expect(section.locator('h2')).toBeVisible({ timeout: 10_000 });
+
+    const drawn = (await section.locator('.chart__svg').getAttribute('aria-label')) ?? '';
+    const days = /last (\d+) days/.exec(drawn)?.[1];
+    expect(days, `the chart's label reads "${drawn}"`).toBeTruthy();
+    await expect(section.locator('h2')).toHaveText(`Attention, last ${days} days`);
+  });
+
   test('tells a word’s story from whichever of its rows carries it', async ({
     context,
     extensionId,

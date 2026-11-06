@@ -814,8 +814,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1341 tests: 630 unit, 102 in jsdom, 565 over the build tools, and
-44 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1342 tests: 630 unit, 102 in jsdom, 565 over the build tools, and
+45 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

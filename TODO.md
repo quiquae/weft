@@ -6,7 +6,7 @@
 
 **State on 2026-11-06:** every automatable check is green, measured at the end
 of this session — typecheck clean, **630** unit / 148 suites, **102** jsdom / 23
-suites, **565** tool tests / 141 suites, **44** e2e passing
+suites, **565** tool tests / 141 suites, **45** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew
@@ -1974,9 +1974,12 @@ registered**, and nothing below it can move until it is.
       promising lines. Four probes, each restored by md5, each failing its
       own test by name: `custom-lexicon` shipped, the old note back in
       `pro.tsx`, `pro.tsx` reading `FEATURES`, and a lock naming `phrases`.
-      Tools 558 → **565** / 140 → **141** suites, total 1334 → **1341**, in
-      six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
-      paragraph. All 36 shots regenerated: `dashboard.png`, the four
+      The chart's title is held by an e2e test in `friction.spec.ts` that
+      reads the days off the chart's own label, red first on "Attention,
+      last day" against "last 7 days". Tools 558 → **565** / 140 → **141**
+      suites, e2e 44 → **45**, total 1334 → **1342**, in six places,
+      `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph. All 36
+      shots regenerated: `dashboard.png`, the four
       options shots, `06-options-top.png`, `07-help.png` and the two
       `*-05-settings.png` moved, the rest byte-identical, and the three
       groups' stamps deleted, their content having changed. Building or
