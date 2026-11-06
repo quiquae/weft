@@ -4,7 +4,7 @@ import type { LangCode, Pos, Settings } from '../../core/types.ts';
  * Optional translation providers, for vocabulary beyond the shipped packs.
  *
  * Off by default, bring-your-own-key, and constrained by one rule that shapes
- * the whole interface: a provider receives isolated words, not page text.
+ * the whole interface: a provider receives isolated words, never the page.
  *
  * That is why `TranslationRequest` has no `text` field and no `html` field.
  * It carries a word, its part of speech and its number — the minimum needed
