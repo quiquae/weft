@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-05:** every automatable check is green, measured at the end
+**State on 2026-11-06:** every automatable check is green, measured at the end
 of this session — typecheck clean, **630** unit / 148 suites, **102** jsdom / 23
 suites, **550** tool tests / 138 suites, **44** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -80,7 +80,9 @@ Firefox's 992.601 and Safari's 992.541, measured the same way. And to
 network panel's three sentences and the masthead's second, and 415
 `options.js`, the notice above the keys, `background.js` not moving: Chrome's
 992.535 → 993.769 KB, Firefox's 993.835 and Safari's 993.775, measured the
-same way.
+same way. And on 2026-11-05 by 97 bytes, the cache's one length, 18 of them
+`background.js` and 79 `options.js`, Chrome's 993.769 → 993.863 KB, still
+printing 994.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure

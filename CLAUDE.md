@@ -987,7 +987,19 @@ as `weft:licence`, carries the buyer's `name` and a licence `id`; the page
 never mentions a licence, and its table names six kinds of what `KEYS` holds
 nine stores of. Queued first in `Now`.
 
-MEASUREMENT_LINE
+Measured on Node 26.7, with npm's own exit status captured, on the final
+tree: `npm run test:all` **exit 0 in 5 min 20 s** — typecheck clean, **630
+unit / 148**, 102 jsdom / 23, **550 tools / 138**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **994 KB × 3** passing `validate`, **44
+e2e passed and 3 skipped in 4.2 min**, then build and validate again. Its
+first run, on the 5th, exited 0 too, and its log went with `/tmp` when the
+session was stopped and resumed the next afternoon; the branch's three
+commits were pushed before anything else moved, and the gate was run again.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**,
+all resolving, `/privacy` read off the built page, and `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a. `packs:verify` was not
+run: no pack or seed moved.
 
 Assumed, with nobody to ask: that the store should keep no answer older than
 the setting, as well as every answer younger, so a reader who shortens it and
