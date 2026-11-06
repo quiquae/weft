@@ -285,6 +285,20 @@ file from sending its reading to that key's service. Not the cooldown:
 privacy is not difficulty. The same test file fails on a provider field
 classed as none, or more than one, of local, sending and neither.
 
+**An answer is kept for as long as “Keep answers for” says, and no longer.**
+`lookupMissing()` serves a translation service's answer for
+`Math.max(1, cacheDays)` days and hands that same `keepDays` to
+`saveProviderCache()`, and `pruneByAge()` takes the length as a required
+argument, so a save cannot prune at a length the reader did not choose.
+Until 2026-11-05 it defaulted to `PROVIDER_TTL_DAYS`, 180, under a slider
+offering 365, and a word kept for a year was sent again at six months. Do
+not give it a default back. `MAX_PROVIDER_ENTRIES`, 5,000, still caps the
+cache by recency, and the privacy page and the options row say both.
+`tests/core/provider-cache.test.ts` reads the slider's maximum off the
+options page and fails if an answer a day younger is not served after a
+save, and `tests/tools/sending-copy.test.ts` fails on a paragraph saying how
+often a word is sent that does not name “Keep answers for”.
+
 **Generated files record when their content was built, not when the build
 ran.** `tools/build-pack.mjs` keeps the `builtAt` a pack already carries when
 everything else about that pack is byte-identical, and only stamps today when
@@ -911,6 +925,78 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-05 — “Keep answers for” offered a year, and the cache kept six months
+
+`Now` was empty and the three unchecked items in `Next` each wait on Creagh,
+so the privacy page's storage table was read against the code. Its
+provider-cache row said "so a word is only ever sent once" — the claim the run
+below corrected 57 lines further down the same page, and left here — and so
+did the options row's detail, above a slider offering 1 to 365 days, and a
+comment in `src/background/providers/index.ts`.
+
+**Asking why it was false found the defect.** `lookupMissing()` serves an
+answer for `cacheDays`, and `saveProviderCache()` pruned the store at
+`PROVIDER_TTL_DAYS`, 180, on every save, whatever the setting said. So from
+181 days up the slider promised a length the store never kept, and a word its
+reader had asked to keep for a year was sent again after six months. The run
+below's own sentence, "Answers are cached for as long as you configure, so a
+word is sent at most once in that time", was false past 180 days and past the
+5,000-answer cap. Two lengths on one store: the comment above the save call
+already recorded the same shape for two caps.
+
+**`pruneByAge()` takes the length as a required argument now**, and
+`PROVIDER_TTL_DAYS` is gone, so `tsc` refuses a save that does not say how
+long; `saveProviderCache()` is handed the `keepDays` the read serves for,
+computed once. The store also keeps no answer older than the setting, which it
+would never serve. Test-first: `tests/core/provider-cache.test.ts`, 4 tests in
+a new suite, on `lookup-limit.test.ts`'s Map-backed storage, held clock and
+stubbed `fetch`, reads the slider's maximum out of the options row that sets
+`providers.cacheDays` and requires an answer a day younger than it to be
+served after a save: red on "an answer 364 days old was not kept, under “Keep
+answers for” 365 days" and on a 31-day answer stored under 30, green after,
+with an over-correction guard, an answer older than the setting asked for
+again, passing both sides.
+
+**The copy names the setting, and a third rule holds it.** The options row
+says a word is not sent again while its answer is kept, for the 5,000 most
+recent words at most, importing `MAX_PROVIDER_ENTRIES`; the privacy page's
+table and paragraph say as many days as “Keep answers for” says, 90 unless
+you change it, and the same cap. `tests/tools/sending-copy.test.ts` gains 3
+tests: a paragraph saying how often a word is sent names “Keep answers for”,
+read off the same row, and one naming it states 90 days and 5,000 words as
+`defaultSettings()` and `MAX_PROVIDER_ENTRIES` set them. Red on exactly
+`docs/PRIVACY.md:14`, the table, and `:74`, and on the floor, no paragraph
+naming the setting; a probe test shows the rule refusing all three wordings
+the claim has had.
+
+All 31 shots were regenerated on a test build after the commit that moved
+`src/`. The documentation set's first run moved `dashboard-milestones.png` by
+5 pixels, the largest channel 1 apart, the noise recorded on 2026-10-25 and
+2026-11-02, and its second wrote all 14 byte-identical; the three groups are
+stamped. Chrome's package grew 97 bytes, 993.769 → 993.863 KB, `background.js`
++18 and `options.js` +79, measured against `main`'s built in a `/tmp`
+worktree, and prints **994 KB**. Unit 626 → **630** / 147 → **148** suites,
+tools 547 → **550**, total 1319 → **1326**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph, because the cache
+ships.
+
+**Reading the table for this found the next item.** "What Weft never stores"
+says "No identifiers beyond a random install id", and a Pro licence, stored
+as `weft:licence`, carries the buyer's `name` and a licence `id`; the page
+never mentions a licence, and its table names six kinds of what `KEYS` holds
+nine stores of. Queued first in `Now`.
+
+MEASUREMENT_LINE
+
+Assumed, with nobody to ask: that the store should keep no answer older than
+the setting, as well as every answer younger, so a reader who shortens it and
+lengthens it again has the older words asked for again; and that 180 days had
+no reason beyond being a default.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, queued by this run: the licence the privacy page
+does not mention.
 
 ### 2026-11-05 — the public copy says the sentence can be sent, and a test reads it
 
