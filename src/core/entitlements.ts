@@ -37,6 +37,13 @@ export interface FeatureInfo {
   /** Why someone would want it, in the user's terms. */
   detail: string;
   tier: Tier;
+  /**
+   * Whether the product has it. A feature that is not shipped is not sold:
+   * the Pro section and `/pricing` render `SOLD`, and
+   * `tests/tools/pro-features.test.ts` holds every feature sold to the code
+   * that delivers it and refuses copy promising one that is not.
+   */
+  shipped: boolean;
 }
 
 export const FEATURES: FeatureInfo[] = [
@@ -46,6 +53,9 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Free covers one language at a time, and you can change which. Pro keeps them all active so you can switch without losing your place in any of them.',
     tier: 'pro',
+    // Both rows of language chips write one language whatever the tier, and
+    // nothing but the free clamp reads `targetLangs`. Measured 2026-11-06.
+    shipped: false,
   },
   {
     id: 'per-site-language',
@@ -53,6 +63,8 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'French on the feeds, Latin on Wikipedia, Old English on the long reads. Each site keeps its own vocabulary and its own progress.',
     tier: 'pro',
+    // `siteDecision` honours a rule's `target`, and no control sets one.
+    shipped: false,
   },
   {
     id: 'hard-mode',
@@ -60,6 +72,7 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Generates the browser policy that stops Weft being removed without an administrator password. The only mechanism that actually holds.',
     tier: 'pro',
+    shipped: true,
   },
   {
     id: 'providers',
@@ -67,6 +80,7 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Point Weft at your own DeepL, Google or OpenAI-compatible key and it will weave any word on the page, not only the checked core lexicon.',
     tier: 'pro',
+    shipped: true,
   },
   {
     id: 'phrases',
@@ -74,13 +88,17 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Weave "as well as" and "at the same time" as units, once single words have stopped being difficult.',
     tier: 'pro',
+    // The selector matches windows of up to three words when it is on, and
+    // no pack has an English phrase for a window to match.
+    shipped: false,
   },
   {
     id: 'extended-history',
     label: 'The whole history',
     detail:
-      'Free shows today and your vocabulary. Pro keeps sixty days of attention, the per-site breakdown, and how fast words are graduating.',
+      'Free charts the last week of your attention. Pro charts sixty days of it, as far back as Weft keeps.',
     tier: 'pro',
+    shipped: true,
   },
   {
     id: 'unlock-quiz',
@@ -88,6 +106,7 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Require a vocabulary check before any setting gets easier, so the way out is itself practice.',
     tier: 'pro',
+    shipped: true,
   },
   {
     id: 'custom-lexicon',
@@ -95,8 +114,17 @@ export const FEATURES: FeatureInfo[] = [
     detail:
       'Import a lexicon — a course glossary, a reading list, a field vocabulary — and Weft will weave from it.',
     tier: 'pro',
+    // Nothing imports a lexicon.
+    shipped: false,
   },
 ];
+
+/**
+ * The Pro features on sale: the ones the product has. Every page that says
+ * what Pro adds renders this, never `FEATURES`, which also holds the ones not
+ * built.
+ */
+export const SOLD: FeatureInfo[] = FEATURES.filter((f) => f.tier === 'pro' && f.shipped);
 
 /**
  * Capabilities no tier ever removes.

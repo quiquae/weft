@@ -286,7 +286,7 @@ function Dashboard() {
 
       <Section
         siglum="⁄⁄"
-        title={`Attention, last ${days === 1 ? "day" : `${days} days`}`}
+        title={`Attention, last ${attn.series.length} days`}
         note="Time counted only while a taxed page was visible, focused, and you were actually doing something. A tab left open overnight is not attention."
       >
         <div class="plot">

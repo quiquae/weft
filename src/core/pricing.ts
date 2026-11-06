@@ -75,8 +75,8 @@ export function planById(id: Plan['id']): Plan {
 /** The single sentence that has to do the selling. */
 export const PITCH =
   'Weft Free is one language, forever, with the whole lexicon and the whole idea. ' +
-  'Pro adds every language at once, a different one per site, Hard Mode, and your own ' +
-  'translation key for unlimited vocabulary.';
+  'Pro adds Hard Mode, your own translation key for unlimited vocabulary, a vocabulary ' +
+  'check before any setting gets easier, and sixty days of attention history.';
 
 /** Where someone goes to buy. Kept here so the extension links correctly. */
 export const PRICING_URL = 'https://weft.study/pricing';

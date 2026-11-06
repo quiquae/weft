@@ -186,9 +186,9 @@ It is words that graduated.
 Old English. The whole lexicon for it, the whole escalation curve, the whole
 tooltip, your vocabulary and progress, and export. Not a trial.
 
-**Pro** adds every language at once, a different language per site, Hard Mode,
-your own translation key for unlimited vocabulary, phrases, the full history
-and custom word lists. $3.50 a month, $24 a year, or $59 once.
+**Pro** adds Hard Mode, your own translation key for unlimited vocabulary, a
+vocabulary check before any setting gets easier, and sixty days of attention
+history. $3.50 a month, $24 a year, or $59 once.
 
 Some things are never gated at any price: accessibility, the never-weave list,
 panic passes, and exporting your own data. There is a test that fails if
