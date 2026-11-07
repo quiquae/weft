@@ -24,6 +24,21 @@ export const api: typeof chrome =
 export const ENGINE = __WEFT_TARGET__;
 
 /**
+ * The brands the running browser names itself by, empty where it names none.
+ *
+ * The build says which package this is, never which Chromium browser runs the
+ * Chrome one: Microsoft Edge runs it unchanged. `navigator.userAgentData` has
+ * been in every Chromium since 90, Weft's floor being 116, and in neither
+ * Firefox nor Safari, whose builds never need to ask. Read only where the
+ * answer changes what Weft can honestly offer, which is Hard Mode's file.
+ */
+export function uaBrands(): string[] {
+  const data = (globalThis.navigator as { userAgentData?: { brands?: Array<{ brand: string }> } } | undefined)
+    ?.userAgentData;
+  return data?.brands?.map((entry) => entry.brand) ?? [];
+}
+
+/**
  * Capabilities, not engines.
  *
  * `isFirefox` used to live here, defined as `typeof browser !== 'undefined'`

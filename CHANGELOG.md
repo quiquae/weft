@@ -23,6 +23,19 @@ profiles, beside the Privacy & Security > Profiles they named alone; the Linux
 steps say how to remove the file from Chromium's directory as well as
 Chrome's; and the instructions no longer call a 49-line profile "40 lines".
 
+**Hard Mode offers a file only where the browser obeys it.** The settings
+page offered Google Chrome's policy in every build and every browser: on
+Firefox it named a Firefox add-on under Chrome's paths, Microsoft Edge, which
+runs the Chrome package unchanged, never reads Chrome's policy locations, and
+on Safari nothing applies. A file nothing obeys looks like Hard Mode and holds
+nothing, and whoever installed it finds out on the day they try to remove
+Weft and can. In Google Chrome the row is as it was; in Firefox, Safari,
+Edge and any other browser that names itself, it says that the file is one
+Chrome obeys and this browser reads no policy written for Chrome, on either
+tier, and the worker refuses to write one there too. Edge's own policy waits
+on Weft's Edge Add-ons listing: Microsoft's documentation says Edge
+force-installs an extension from anywhere else only on a managed machine.
+
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
 features, and four of them could not be had: both rows of language chips set
@@ -828,8 +841,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1346 tests: 630 unit, 106 in jsdom, 565 over the build tools, and
-45 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1356 tests: 637 unit, 108 in jsdom, 565 over the build tools, and
+46 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

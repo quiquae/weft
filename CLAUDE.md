@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **630 pass**, 148 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **106 pass**, 24 suites, ~9 s wall clock here |
+| `npm run test:unit` | pure-core tests, no browser | **637 pass**, 150 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **108 pass**, 25 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **45 pass, 3 skipped**, 4.4 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **46 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 994 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 996 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -277,6 +277,23 @@ Chrome's managed-policy loader parses with comments allowed
 `tests/dom/hard-mode.test.ts` reads each file as its installer would and
 fails on one with no way out. Do not strip the JSON's comments to make it
 strict JSON: they are the way out.
+
+**And a Hard Mode file is offered only where the browser obeys it.** A
+managed policy holds only in the browser that reads it, and Weft writes
+Google Chrome's. `hardModeHere()` in `src/core/hard-mode.ts` decides from
+the build and the brands the browser names itself by (`uaBrands()`,
+`navigator.userAgentData`), because Microsoft Edge runs the Chrome package
+unchanged: Chrome keeps its file; Firefox, Safari, Edge and any other
+browser that names itself get a row saying it reads no policy written for
+Chrome, on either tier, and the worker's `profileFor()` refuses there too.
+Until 2026-11-07 every build offered Chrome's file to everyone. Do not hand
+Edge Chrome's file "for now": Edge reads `com.microsoft.Edge` and
+`Policies\Microsoft\Edge`, and Microsoft documents that it force-installs
+an extension from outside Edge Add-ons only on a managed machine, so Edge's
+own file waits on Weft's Edge Add-ons copy (`TODO.md`).
+`tests/core/hard-mode.test.ts`, `tests/dom/hard-mode.test.ts` and an e2e
+test in `licensing.spec.ts`, which makes the page's browser name itself as
+Chrome and then as Edge, hold it.
 
 **Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,
@@ -964,6 +981,100 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — Hard Mode handed Chrome's file to browsers that never read it
+
+`TODO.md`'s one unchecked item in `Now`, queued by the run before:
+`src/background/hard-mode.ts` writes Google Chrome's policy in every build,
+and the settings page offered it to every Pro user. On Firefox it named a
+Firefox add-on under Chrome's paths; Microsoft Edge runs the Chrome package
+and reads `com.microsoft.Edge` and `Policies\Microsoft\Edge`, never Chrome's;
+on Safari nothing applies.
+
+**Microsoft's page split the item.** Its `ExtensionSettings` page, read
+through the Microsoft Learn MCP server, gives Edge's locations — a `REG_SZ`
+JSON value under `SOFTWARE\Policies\Microsoft\Edge`, a plist key on macOS,
+no Linux listed — Edge's own `toolbar_state`, Edge Add-ons' update URL, and
+this: "apps and extensions from outside the Microsoft Edge Add-ons website
+can only be forced installed if the instance is joined to a Microsoft Active
+Directory domain or joined to Microsoft Azure Active Directory", on macOS
+only if "managed via MDM, joined to a domain via MCX". Hard Mode is for a
+personal machine, so Edge's file must name Weft's Edge Add-ons copy, which
+does not exist before B5. So this run gave every browser that does not
+obey Chrome's file an honest row, and queued Edge's file first in `Now`
+with every reading.
+
+**`hardModeHere()` in a new `src/core/hard-mode.ts` decides**, from the
+build and the brands the browser names itself by — `uaBrands()` in
+`src/shared/browser.ts`, `navigator.userAgentData`, which TypeScript's DOM
+library does not declare. GREASE and the Chrome family (Google Chrome,
+Chromium, HeadlessChrome, Chrome for Testing) keep Chrome's file; Firefox,
+Safari, Edge and any other browser that names itself get `noPolicyHere()`,
+"… reads no policy written for Chrome, so Weft offers no file here: one that
+nothing obeys would look like Hard Mode and hold nothing", on either tier,
+so a Free user there is not sold it; and `profileFor()` in the worker
+refuses there on its own, reading the build as the constant esbuild inlines
+so one test process can ask all three.
+
+Test-first. 7 unit tests in 2 suites of `tests/core/hard-mode.test.ts`,
+red on a stub keeping today's behaviour on exactly the defect cases, with
+Chrome and Chromium-only passing as the guards against over-correcting; 2
+jsdom tests in a new suite of `tests/dom/hard-mode.test.ts`, red on "the
+firefox build wrote a macos file" and "Edge was handed a macos file"; and
+an e2e test in `licensing.spec.ts` that makes the page's browser name itself
+Chrome and then Edge through `page.addInitScript`, which reaches a
+`chrome-extension://` page, red against `HEAD`'s settings page, restored by
+md5: Edge was offered "Generate the policy file".
+
+`docs/HARD-MODE.md` has a "Which browsers" section, and
+`docs/READY-TO-SUBMIT.md` says before the Firefox, Edge and Safari
+descriptions, outside the paste blocks its test holds, that their Hard Mode
+clause is true in Chrome alone. Left for Creagh: that shared description,
+and the Pro section and `/pricing`, which still sell Hard Mode in every
+build. Unit 630 → **637** / 148 → **150** suites, jsdom 106 → **108** / 24 →
+**25**, e2e 45 → **46**, total 1346 → **1356**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph.
+
+**The packages print 996 KB** where they printed 994: 1 484 bytes, 730 in
+`background.js` and 754 in `options.js`, each carrying the decision and its
+sentence, Chrome's 994.198 → 995.647 KB, Firefox's 995.716 and Safari's
+995.654, measured against `main`'s Chrome package built in a `/tmp`
+worktree.
+
+All 31 shots were regenerated on a test build after the commit that moved
+`src/`: store and first-run byte-identical. In four documentation runs
+`dashboard-milestones.png` moved by 5 pixels 1 apart once, `page-tooltip.png`
+by its 1 740-pixel woven word twice, `dashboard.png` by 3 175 pixels at most
+39 apart once, its bundle byte-identical to `main`'s, and `options.png` by 47
+pixels at most 16 apart every time — the Ceiling band's ticks and the
+rounded corners of a notice and two buttons, no text, the signature
+2026-11-06 recorded. `main`'s code, drawn twice in the `/tmp` worktree, gave
+back every committed byte the first time and the branch's `options.png`,
+byte for byte, the second. So the committed bytes stand and the three
+groups are stamped. **A noisy shot that never matches on the branch is
+answered by the other tree**, not by more runs of the same one.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the documents: `npm run test:all` **exit 0** —
+typecheck clean, **637 unit / 150**, **108 jsdom / 25**, 565 tools / 141,
+compat 16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest
+keys, 86 pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **996 KB ×
+3** passing `validate`, **46 e2e passed and 3 skipped in 5.8 min**, then
+build and validate again. `packs:verify` and `site:check` were not run: no
+pack, seed or site page moved. Only `CLAUDE.md` and `TODO.md` moved after
+the gate, so typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a Free user in Firefox, Safari or Edge is
+better told there is no file than sold one; that the worker should refuse
+as well as the page; that an honest Edge row now beats Edge's file written
+before any Edge copy exists to name; and that Vivaldi, which names itself
+only Chromium, and plain Chromium on macOS or Windows, which read their own
+locations, stay as they were.
+
+What needs a human: unchanged, everything below **B1** and the calls, and
+two copy calls this made sharper: the Hard Mode clause of the description
+Firefox, Edge and Safari share, and Pro selling Hard Mode in those builds.
+`Now` holds one agent-shaped item: Edge's own file.
 
 ### 2026-11-06 — Hard Mode's file said nothing about taking it off
 

@@ -3,6 +3,8 @@ import type { Settings } from '../../core/types.ts';
 import { describeWait } from '../../core/lock.ts';
 import { send } from '../../shared/rpc.ts';
 import { has } from '../../core/entitlements.ts';
+import { hardModeHere, noPolicyHere } from '../../core/hard-mode.ts';
+import { uaBrands } from '../../shared/browser.ts';
 import { Locked } from './pro.tsx';
 import { Chips, Notice, Row, Section, Slider, Switch, minutes } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
@@ -18,6 +20,7 @@ import { SIGLA } from './sections.tsx';
  * cooldown you already set.
  */
 export function CommitmentSection({ c, settings }: { c: Controller; settings: Settings }) {
+  const here = hardModeHere(__WEFT_TARGET__, uaBrands());
   return (
     <Section
       siglum={SIGLA.locked}
@@ -143,7 +146,12 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
         />
       </Row>
 
-      {has(c.tier, 'hard-mode') ? (
+      {here.file === null ? (
+        // A file nothing obeys would look like Hard Mode and hold nothing, so
+        // where the browser reads no policy Weft writes, the row says so on
+        // either tier rather than offering one or selling one.
+        <Row siglum={SIGLA.locked} title="Hard Mode" detail={noPolicyHere(here.browser)} />
+      ) : has(c.tier, 'hard-mode') ? (
         <HardMode settings={settings} c={c} />
       ) : (
         <Row siglum={SIGLA.locked} title="Hard Mode">

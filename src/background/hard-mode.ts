@@ -1,4 +1,5 @@
-import { api } from '../shared/browser.ts';
+import { api, uaBrands } from '../shared/browser.ts';
+import { hardModeHere, noPolicyHere } from '../core/hard-mode.ts';
 
 /**
  * Hard Mode: OS-level enforcement.
@@ -264,7 +265,21 @@ ${policy}
   return { filename: 'weft-hard-mode.json', contents, instructions };
 }
 
-export function profileFor(platform: 'macos' | 'windows' | 'linux'): PolicyProfile {
+/**
+ * The file for this platform, written only where the browser obeys it.
+ *
+ * The settings page offers it only there too (`hardModeHere()`); this refuses
+ * on its own as well, so a page that one day offers the button in the wrong
+ * place still hands nobody a file that looks like Hard Mode and holds nothing.
+ * The build is read as the constant esbuild inlines rather than `ENGINE`, so
+ * the tests can ask each build in one process.
+ */
+export function profileFor(
+  platform: 'macos' | 'windows' | 'linux',
+  brands: readonly string[] = uaBrands(),
+): PolicyProfile {
+  const here = hardModeHere(__WEFT_TARGET__, brands);
+  if (here.file === null) throw new Error(noPolicyHere(here.browser));
   switch (platform) {
     case 'macos':
       return macosProfile();

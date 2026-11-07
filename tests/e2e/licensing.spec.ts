@@ -138,4 +138,52 @@ test.describe('tiers', () => {
     // Nothing should still be locked.
     await expect(page.locator('.locked')).toHaveCount(0);
   });
+
+  /**
+   * Hard Mode is a policy file, and a policy holds only in the browser that
+   * reads it. Microsoft Edge runs the Chrome package unchanged, so only the
+   * brands the browser names itself by can tell the two apart, and the unit
+   * tests cannot see whether the settings page reads them. This one makes the
+   * page's browser name itself as Chrome and then as Edge, with Pro on, and
+   * reads the row: until 2026-11-07 both were offered Chrome's file.
+   */
+  test('the settings page offers Hard Mode’s file in Chrome, and in Edge says why it offers none', async ({
+    context,
+    extensionId,
+    rpc,
+  }) => {
+    const licence = await rpc<{ tier: string }>({ type: 'set-licence', key: await issue(proPayload) });
+    expect(licence.tier).toBe('pro');
+
+    for (const [brand, offered] of [
+      ['Google Chrome', true],
+      ['Microsoft Edge', false],
+    ] as const) {
+      const page = await context.newPage();
+      await page.addInitScript((name) => {
+        Object.defineProperty(Navigator.prototype, 'userAgentData', {
+          configurable: true,
+          get: () => ({
+            brands: [
+              { brand: 'Not_A Brand', version: '8' },
+              { brand: 'Chromium', version: '140' },
+              { brand: name, version: '140' },
+            ],
+          }),
+        });
+      }, brand);
+      await page.goto(`chrome-extension://${extensionId}/options.html`);
+
+      const row = page.locator('.section', { hasText: 'Commitment' }).locator('.row', { hasText: 'Hard Mode' });
+      await expect(row.first()).toBeVisible({ timeout: 10_000 });
+      const generate = row.locator('button', { hasText: 'Generate the policy file' });
+      if (offered) {
+        await expect(generate).toBeVisible();
+      } else {
+        await expect(row).toContainText('Microsoft Edge reads no policy written for Chrome');
+        await expect(generate).toHaveCount(0);
+      }
+      await page.close();
+    }
+  });
 });
