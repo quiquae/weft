@@ -39,6 +39,19 @@ export function uaBrands(): string[] {
 }
 
 /**
+ * Where the store this copy came from serves its updates, undefined for an
+ * unpacked copy. Each store writes its own address into the manifest of every
+ * copy it serves (the Chrome Web Store
+ * `https://clients2.google.com/service/update2/crx`, Edge Add-ons
+ * `https://edge.microsoft.com/extensionwebstorebase/v1/crx`, read off a CRX
+ * fetched from each on 2026-11-07), so it says which store a policy has to
+ * name for this copy. Read only for Hard Mode's file, as the brands are.
+ */
+export function updateUrl(): string | undefined {
+  return api.runtime.getManifest().update_url;
+}
+
+/**
  * Capabilities, not engines.
  *
  * `isFirefox` used to live here, defined as `typeof browser !== 'undefined'`

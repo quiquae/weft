@@ -1,5 +1,13 @@
-import { api, uaBrands } from '../shared/browser.ts';
-import { hardModeHere, noPolicyHere } from '../core/hard-mode.ts';
+import { api, uaBrands, updateUrl } from '../shared/browser.ts';
+import {
+  HARD_MODE_PLATFORMS,
+  MISSING_PLATFORMS,
+  STORE_UPDATE_URL,
+  hardModeHere,
+  noPolicyHere,
+  type Platform,
+  type PolicyBrowser,
+} from '../core/hard-mode.ts';
 
 /**
  * Hard Mode: OS-level enforcement.
@@ -23,6 +31,12 @@ import { hardModeHere, noPolicyHere } from '../core/hard-mode.ts';
  *    is the specific abuse Chrome began blocking for policy-installed
  *    extensions on unmanaged devices in 2026. A policy that only pins this
  *    extension is unaffected by that change.
+ *
+ * Microsoft Edge runs the Chrome package and reads a policy of its own, so it
+ * has a file of its own: the same `ExtensionSettings`, under Edge's domain
+ * and registry key, naming Edge Add-ons' update address. Edge force-installs
+ * an extension from anywhere else only on a machine an organisation manages
+ * (`src/core/hard-mode.ts`), so the file is for the Edge Add-ons copy.
  */
 
 export interface PolicyProfile {
@@ -34,6 +48,84 @@ export interface PolicyProfile {
 function extensionId(): string {
   return api.runtime.id;
 }
+
+/**
+ * What a browser's file says and where it puts it. Chrome's reproduces, byte
+ * for byte, the file Weft wrote before Edge had one of its own.
+ *
+ * Edge's facts are Microsoft's, read 2026-11-07: the macOS preference domain
+ * `com.microsoft.Edge` ("Configure Microsoft Edge policy settings for macOS
+ * using a property list"), the key `SOFTWARE\Policies\Microsoft\Edge`, and
+ * `toolbar_state`, which the ExtensionSettings guide gives from Edge 103,
+ * where Chrome's is `toolbar_pin`. Microsoft documents ExtensionSettings on
+ * Windows only as a string of JSON; Chromium's registry reader, which Edge
+ * builds on, reads a dictionary policy from its subkeys too
+ * (`RegistryDict::ConvertToJSON`), which is the form Chrome's file writes, and
+ * the one whose removal deletes Weft's key alone.
+ */
+interface Browser {
+  store: PolicyBrowser;
+  /** As its steps name it, and with the article a sentence gives it. */
+  name: string;
+  a: string;
+  /** How a heading names the browser, where the file is not Chrome's. */
+  heading: string;
+  /** The scheme of its own pages: chrome://policy, edge://policy. */
+  scheme: string;
+  /** Its macOS preference domain, which the profile's payload sets. */
+  domain: string;
+  /** Its policy key under HKEY_LOCAL_MACHINE. */
+  registry: string;
+  /** The setting that keeps Weft's icon on the toolbar, in this browser's words. */
+  toolbar: readonly [string, string];
+  /** What its files are saved as, before the extension. */
+  stem: string;
+  /**
+   * The profile as System Settings lists it, and the identifiers that keep
+   * Chrome's and Edge's apart, since installing a profile replaces any other
+   * with its identifier.
+   */
+  profile: { name: string; id: string; payloadName: string; payloadId: string; uuid: string };
+}
+
+const BROWSERS: Record<PolicyBrowser, Browser> = {
+  chrome: {
+    store: 'chrome',
+    name: 'Chrome',
+    a: 'a Chrome',
+    heading: '',
+    scheme: 'chrome',
+    domain: 'com.google.Chrome',
+    registry: 'SOFTWARE\\Policies\\Google\\Chrome',
+    toolbar: ['toolbar_pin', 'force_pinned'],
+    stem: 'weft-hard-mode',
+    profile: {
+      name: 'Weft — Hard Mode',
+      id: 'study.weft.hardmode',
+      payloadName: 'Weft — Hard Mode (Chrome)',
+      payloadId: 'study.weft.hardmode.chrome',
+      uuid: '0001',
+    },
+  },
+  edge: {
+    store: 'edge',
+    name: 'Edge',
+    a: 'an Edge',
+    heading: ', in Microsoft Edge',
+    scheme: 'edge',
+    domain: 'com.microsoft.Edge',
+    registry: 'SOFTWARE\\Policies\\Microsoft\\Edge',
+    toolbar: ['toolbar_state', 'force_shown'],
+    stem: 'weft-hard-mode-edge',
+    profile: {
+      name: 'Weft — Hard Mode (Edge)',
+      id: 'study.weft.hardmode.edge',
+      payloadName: 'Weft — Hard Mode (Edge)',
+      payloadId: 'study.weft.hardmode.edge.policy',
+      uuid: '0002',
+    },
+  },
+};
 
 /** A text as comment lines, each behind the marker its format skips. */
 function commented(text: string, marker: string): string {
@@ -58,32 +150,32 @@ function xmlText(text: string): string {
 const MACOS_PROFILES =
   'System Settings > General > Device Management (Privacy & Security > Profiles on older macOS)';
 
-export function macosProfile(): PolicyProfile {
+export function macosProfile(b: Browser = BROWSERS.chrome): PolicyProfile {
   const id = extensionId();
-  const uuid = `weft-${id.slice(0, 8)}`;
+  const uuid = `weft-${id.slice(0, 8)}-${b.profile.uuid}`;
 
-  const instructions = `Hard Mode for macOS
+  const instructions = `Hard Mode for macOS${b.heading}
 
 What this does
-  Installs a Chrome managed-policy profile that marks Weft as force-installed.
-  Chrome will then refuse to disable or remove the extension from
-  chrome://extensions. The Remove button goes away.
+  Installs ${b.a} managed-policy profile that marks Weft as force-installed.
+  ${b.name} will then refuse to disable or remove the extension from
+  ${b.scheme}://extensions. The Remove button goes away.
 
 To install
-  1. Save the downloaded file as weft-hard-mode.mobileconfig, and open it.
+  1. Save the downloaded file as ${b.stem}.mobileconfig, and open it.
   2. Open ${MACOS_PROFILES}.
   3. Double-click the profile under Downloaded, then click Install. Enter your
      administrator password.
-  4. Quit Chrome completely (Cmd-Q) and reopen it.
-  5. Check chrome://policy. You should see ExtensionSettings listed.
+  4. Quit ${b.name} completely (Cmd-Q) and reopen it.
+  5. Check ${b.scheme}://policy. You should see ExtensionSettings listed.
 
 To remove it
   This is deliberately not hidden from you, and it is written into the file
   as well, so it is there when you come looking.
   1. Open ${MACOS_PROFILES}.
-  2. Select "Weft — Hard Mode" and click Remove.
+  2. Select "${b.profile.name}" and click Remove.
   3. Enter your administrator password.
-  4. Restart Chrome. The extension becomes removable again.
+  4. Restart ${b.name}. The extension becomes removable again.
 
   Note that PayloadRemovalDisallowed is set to false in this profile, which
   means you can always take it off with your own admin password. Weft will not
@@ -100,9 +192,9 @@ Extension id: ${id}
   // System Settings shows a profile's description and never the file, so the
   // way out is said again there, where somebody stands when they want it.
   const description =
-    'Stops Weft being disabled or removed in Chrome without an administrator password. ' +
-    `To take it off: open ${MACOS_PROFILES}, select Weft — Hard Mode, click Remove, ` +
-    'enter your administrator password, then restart Chrome.';
+    `Stops Weft being disabled or removed in ${b.name} without an administrator password. ` +
+    `To take it off: open ${MACOS_PROFILES}, select ${b.profile.name}, click Remove, ` +
+    `enter your administrator password, then restart ${b.name}.`;
 
   const contents = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -115,15 +207,15 @@ ${instructions.replace(/\n$/, '').replace(/^(?=.)/gm, '  ')}
   <array>
     <dict>
       <key>PayloadType</key>
-      <string>com.google.Chrome</string>
+      <string>${b.domain}</string>
       <key>PayloadIdentifier</key>
-      <string>study.weft.hardmode.chrome</string>
+      <string>${b.profile.payloadId}</string>
       <key>PayloadUUID</key>
-      <string>${uuid}-0001-0000-0000-000000000001</string>
+      <string>${uuid}-0000-0000-000000000001</string>
       <key>PayloadVersion</key>
       <integer>1</integer>
       <key>PayloadDisplayName</key>
-      <string>Weft — Hard Mode (Chrome)</string>
+      <string>${b.profile.payloadName}</string>
       <key>ExtensionSettings</key>
       <dict>
         <key>${id}</key>
@@ -131,9 +223,9 @@ ${instructions.replace(/\n$/, '').replace(/^(?=.)/gm, '  ')}
           <key>installation_mode</key>
           <string>force_installed</string>
           <key>update_url</key>
-          <string>https://clients2.google.com/service/update2/crx</string>
-          <key>toolbar_pin</key>
-          <string>force_pinned</string>
+          <string>${STORE_UPDATE_URL[b.store]}</string>
+          <key>${b.toolbar[0]}</key>
+          <string>${b.toolbar[1]}</string>
         </dict>
       </dict>
     </dict>
@@ -141,9 +233,9 @@ ${instructions.replace(/\n$/, '').replace(/^(?=.)/gm, '  ')}
   <key>PayloadDescription</key>
   <string>${xmlText(description)}</string>
   <key>PayloadDisplayName</key>
-  <string>Weft — Hard Mode</string>
+  <string>${b.profile.name}</string>
   <key>PayloadIdentifier</key>
-  <string>study.weft.hardmode</string>
+  <string>${b.profile.id}</string>
   <key>PayloadOrganization</key>
   <string>Installed by the user, for the user</string>
   <key>PayloadRemovalDisallowed</key>
@@ -153,44 +245,44 @@ ${instructions.replace(/\n$/, '').replace(/^(?=.)/gm, '  ')}
   <key>PayloadType</key>
   <string>Configuration</string>
   <key>PayloadUUID</key>
-  <string>${uuid}-0001-0000-0000-000000000000</string>
+  <string>${uuid}-0000-0000-000000000000</string>
   <key>PayloadVersion</key>
   <integer>1</integer>
 </dict>
 </plist>
 `;
 
-  return { filename: 'weft-hard-mode.mobileconfig', contents, instructions };
+  return { filename: `${b.stem}.mobileconfig`, contents, instructions };
 }
 
-export function windowsProfile(): PolicyProfile {
+export function windowsProfile(b: Browser = BROWSERS.chrome): PolicyProfile {
   const id = extensionId();
-  const key = `HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionSettings\\${id}`;
+  const key = `HKEY_LOCAL_MACHINE\\${b.registry}\\ExtensionSettings\\${id}`;
 
   // ASCII only: regedit reads a version 5 file as UTF-16 or the ANSI code
   // page, never as the UTF-8 a Blob writes.
-  const instructions = `Hard Mode for Windows
+  const instructions = `Hard Mode for Windows${b.heading}
 
 What this does
-  Adds a Chrome policy marking Weft as force-installed. Chrome will then
-  refuse to disable or remove it from chrome://extensions.
+  Adds ${b.a} policy marking Weft as force-installed. ${b.name} will then
+  refuse to disable or remove it from ${b.scheme}://extensions.
 
 To install
-  1. Save the downloaded file as weft-hard-mode.reg.
+  1. Save the downloaded file as ${b.stem}.reg.
   2. Right-click it and choose Merge. Approve the administrator prompt.
-  3. Close Chrome completely and reopen it.
-  4. Check chrome://policy to confirm ExtensionSettings is listed.
+  3. Close ${b.name} completely and reopen it.
+  4. Check ${b.scheme}://policy to confirm ExtensionSettings is listed.
 
 To remove it
-  Save these lines as weft-hard-mode-remove.reg and merge it, as
-  administrator. Inside weft-hard-mode.reg they are comments: leave out the
+  Save these lines as ${b.stem}-remove.reg and merge it, as
+  administrator. Inside ${b.stem}.reg they are comments: leave out the
   semicolons that start them.
 
     Windows Registry Editor Version 5.00
 
     [-${key}]
 
-  Then restart Chrome. Or open regedit and delete the key by hand.
+  Then restart ${b.name}. Or open regedit and delete the key by hand.
 
 Extension id: ${id}
 `;
@@ -201,13 +293,14 @@ ${commented(instructions, ';')}
 
 [${key}]
 "installation_mode"="force_installed"
-"update_url"="https://clients2.google.com/service/update2/crx"
-"toolbar_pin"="force_pinned"
+"update_url"="${STORE_UPDATE_URL[b.store]}"
+"${b.toolbar[0]}"="${b.toolbar[1]}"
 `;
 
-  return { filename: 'weft-hard-mode.reg', contents, instructions };
+  return { filename: `${b.stem}.reg`, contents, instructions };
 }
 
+/** Chrome's alone: Edge has no Linux file (`HARD_MODE_PLATFORMS`). */
 export function linuxProfile(): PolicyProfile {
   const id = extensionId();
   const policy = JSON.stringify(
@@ -215,7 +308,7 @@ export function linuxProfile(): PolicyProfile {
       ExtensionSettings: {
         [id]: {
           installation_mode: 'force_installed',
-          update_url: 'https://clients2.google.com/service/update2/crx',
+          update_url: STORE_UPDATE_URL.chrome,
           toolbar_pin: 'force_pinned',
         },
       },
@@ -266,25 +359,31 @@ ${policy}
 }
 
 /**
- * The file for this platform, written only where the browser obeys it.
+ * The file for this platform, in the policy of the browser running Weft,
+ * written only where that browser obeys it.
  *
  * The settings page offers it only there too (`hardModeHere()`); this refuses
  * on its own as well, so a page that one day offers the button in the wrong
  * place still hands nobody a file that looks like Hard Mode and holds nothing.
  * The build is read as the constant esbuild inlines rather than `ENGINE`, so
- * the tests can ask each build in one process.
+ * the tests can ask each build in one process, and the brands and the store
+ * this copy came from are the worker's own unless a test names them.
  */
 export function profileFor(
-  platform: 'macos' | 'windows' | 'linux',
+  platform: Platform,
   brands: readonly string[] = uaBrands(),
+  update: string | undefined = updateUrl(),
 ): PolicyProfile {
-  const here = hardModeHere(__WEFT_TARGET__, brands);
-  if (here.file === null) throw new Error(noPolicyHere(here.browser));
+  const here = hardModeHere(__WEFT_TARGET__, brands, update);
+  if (here.file === null) throw new Error(noPolicyHere(here));
+  if (!HARD_MODE_PLATFORMS[here.file].includes(platform)) {
+    throw new Error(MISSING_PLATFORMS[here.file] ?? `Weft writes no ${platform} file for ${here.file}.`);
+  }
   switch (platform) {
     case 'macos':
-      return macosProfile();
+      return macosProfile(BROWSERS[here.file]);
     case 'windows':
-      return windowsProfile();
+      return windowsProfile(BROWSERS[here.file]);
     case 'linux':
       return linuxProfile();
   }

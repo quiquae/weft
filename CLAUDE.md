@@ -64,8 +64,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **637 pass**, 150 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **108 pass**, 25 suites, ~9 s wall clock here |
+| `npm run test:unit` | pure-core tests, no browser | **643 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **46 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
