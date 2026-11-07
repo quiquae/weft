@@ -125,9 +125,10 @@ If you want a real guarantee, that is what [Hard Mode](HARD-MODE.md) is: it
 moves enforcement into an operating-system managed policy, where the extension
 cannot disable itself and neither can you without an administrator password.
 
-Detected tampering pins difficulty at the ceiling for the day rather than
-resetting anything, so editing storage is a losing move rather than a
-shortcut. That response is configurable down to "just note it".
+Detected tampering pins difficulty at the ceiling for 12 hours from the last
+time it is noticed, rather than resetting anything, so editing storage is a
+losing move rather than a shortcut. Turning the clock back is answered the
+same way. That response is configurable down to "just note it".
 
 ## Your data is yours
 

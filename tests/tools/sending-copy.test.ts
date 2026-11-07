@@ -61,9 +61,14 @@ const ON = whatIsSent({ enabled: true, sendContext: true });
 /** The switch that sends the sentence, by the title the product's copy gives it. */
 const SWITCHES = [...ON.matchAll(/“([^”]+)”/g)].map((m) => m[1]!);
 
-/** A service said never to be sent page text, or the sentence. */
+/**
+ * A service said never to be sent page text, or the sentence. "No sentence",
+ * since 2026-11-07: `docs/ARCHITECTURE.md` closed on "No sentence-level
+ * translation. The unit of work is a word, everywhere, including on the
+ * provider path", which every other form here missed.
+ */
 const DENIES =
-  /\b(?:never|not|no)\s+(?:any\s+)?page text\b|\b(?:never|not)\s+(?:the|a|any)\s+sentences?\b|\bnever\s+sentences\b/i;
+  /\b(?:never|not|no)\s+(?:any\s+)?page text\b|\b(?:never|not)\s+(?:the|a|any)\s+sentences?\b|\bnever\s+sentences\b|\bno\s+sentences?\b/i;
 
 /** The sentence said to be sent, to go somewhere, or to be received. */
 const SENDS = [
