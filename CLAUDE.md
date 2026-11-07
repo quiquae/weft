@@ -990,6 +990,89 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-07 — Edge has its own Hard Mode file, for the copy Edge will hold
+
+`TODO.md`'s one unchecked item in `Now`, queued by the run before with every
+reading made: Edge runs the Chrome package and reads its own policy, so the
+settings page had told everyone in Edge that Hard Mode had no file.
+
+**The file is Chrome's, in Edge's words.** The same `ExtensionSettings`,
+under `com.microsoft.Edge` on macOS and `SOFTWARE\Policies\Microsoft\Edge` on
+Windows, naming Edge Add-ons' update address and keeping the icon with
+`toolbar_state: force_shown`, which Microsoft's ExtensionSettings guide, read
+again this run through the Microsoft Learn MCP server, gives from Edge 103;
+Chrome's is `toolbar_pin`. The worker's macOS and Windows templates take a
+`Browser` record, and **Chrome's three files are byte for byte what they
+were**: `profileFor()`'s output was snapshotted from a scratch import before
+the first edit and compared after the last. Edge has no Linux file, Microsoft
+listing the policy for Windows and macOS: `HARD_MODE_PLATFORMS` drops the
+chip and `MISSING_PLATFORMS` says why beneath the other two.
+
+**Which copy is read off the manifest.** Edge force-installs an extension
+from outside Edge Add-ons only on a managed machine, so `hardModeHere()`
+takes `updateUrl()`, the manifest's `update_url`, which each store writes
+into the copy it serves: Edge Add-ons' copy, or an unpacked one, is offered
+Edge's file, and any other, the Chrome Web Store's among them, gets a row
+saying Edge holds the policy only for a copy installed from Edge Add-ons.
+The store is read by the address's host, so `http://` or a trailing slash
+cannot hide it, and an address that is neither store's is refused, where
+the item would have offered it a file naming Edge Add-ons.
+
+**Writing the profile found a trap the item did not name.** macOS replaces
+an installed profile with any other carrying its `PayloadIdentifier`, so
+Edge's reusing `study.weft.hardmode` would have taken Chrome's Hard Mode off
+the moment Edge's went on. Edge's has identifiers of its own and is listed
+"Weft — Hard Mode (Edge)", its files are `weft-hard-mode-edge.*`, and a test
+holds the two profiles apart. **When one template starts writing a second
+file, ask which of its constants were the first file's identity.**
+
+Test-first: 7 unit tests red on a stub keeping today's behaviour, the guards
+of Chrome's passing; 7 jsdom tests red on the unchanged worker, Chrome's ten
+passing; and the e2e test in `licensing.spec.ts`, which now expects Edge to
+be offered a file with no Linux chip, red against `main`'s settings page
+built in a `/tmp` worktree, "Microsoft Edge" finding no Generate button. The
+macOS test now reads the profile's listed name off the file, where a list
+had typed it, and requires the steps to give that name and not a longer one.
+Two probes, each restored by md5: Edge's profile given Chrome's identifier,
+and Chrome's `toolbar_pin` in Edge's file, each failing by name. `plutil
+-lint` passes Edge's profile. The e2e test checks only what the page offers:
+the worker reads its own brands, and in the test only the page names itself
+Edge (`TODO.md`'s Notes).
+
+All 31 shots were regenerated on the commit that moved `src/`: 30
+byte-identical, and `options.png` moved by the recorded 47 pixels at most 16
+apart. The settings page's DOM in Chrome is unchanged by construction, all
+three chips and no sentence, so the committed bytes stand and the three
+groups are stamped. The packages print **999 KB** where they printed 996:
+3 394 bytes, `background.js` +2 029 and `options.js` +1 364, every other
+bundle byte-identical, Chrome's 995.647 → 998.961 KB, Firefox's 999.029 and
+Safari's 998.968, measured against `main`'s three packages built in the
+worktree. Unit 637 → **643** / 150 → **151** suites, jsdom 108 → **119** /
+25 → **26**, total 1356 → **1373**, in six places, `docs/LAUNCH.md:221`
+first, and `README.md`'s e2e line, which the last sweep left at 45; and a
+`CHANGELOG.md` paragraph, the earlier paragraph's Edge clauses brought to
+the net result.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the documents: `npm run test:all` **exit 0** — typecheck
+clean, **643 unit / 151**, **119 jsdom / 26**, 565 tools / 141, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass
+/ 2 degrade / 4 untracked, 0 fail / 0 without data, **999 KB × 3** passing
+`validate`, **46 e2e passed and 3 skipped in 6.6 min**, then build and
+validate again. `packs:verify` and `site:check` were not run: no pack, seed or
+site page moved. Only `CLAUDE.md` and `TODO.md` moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that an unpacked copy in Edge is offered Edge's
+file, as one in Chrome always was Chrome's; that an update address that is
+neither store's is refused in Edge; that Edge's file names Edge in its
+heading where Chrome's, unchanged, names none; and that `force_shown` is the
+counterpart of Chrome's `force_pinned`.
+
+What needs a human: unchanged, everything below **B1** and the calls; B7 now
+asks for Edge's two files as well. `Now` is empty, because every unchecked
+item in `Next` waits on Creagh.
+
 ### 2026-11-07 — Hard Mode handed Chrome's file to browsers that never read it
 
 `TODO.md`'s one unchecked item in `Now`, queued by the run before:
