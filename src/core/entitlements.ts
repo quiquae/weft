@@ -124,7 +124,7 @@ export const FEATURES: FeatureInfo[] = [
  * what Pro adds renders this, never `FEATURES`, which also holds the ones not
  * built.
  */
-export const SOLD: FeatureInfo[] = FEATURES.filter((f) => f.tier === 'pro' && f.shipped);
+export const SOLD: FeatureInfo[] = /* @__PURE__ */ FEATURES.filter((f) => f.tier === 'pro' && f.shipped);
 
 /**
  * Capabilities no tier ever removes.
@@ -144,7 +144,7 @@ export const NEVER_GATED = [
   'etymologies',
 ] as const;
 
-const PRO_ONLY = new Set<Feature>(FEATURES.filter((f) => f.tier === 'pro').map((f) => f.id));
+const PRO_ONLY = /* @__PURE__ */ new Set<Feature>(/* @__PURE__ */ FEATURES.filter((f) => f.tier === 'pro').map((f) => f.id));
 
 export function has(tier: Tier, feature: Feature): boolean {
   if (tier === 'pro') return true;

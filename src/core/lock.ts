@@ -30,7 +30,7 @@ export const GOVERNED_PATHS: ReadonlyArray<{
   /** direction that makes the page easier */
   easier: 'lower' | 'higher' | 'false' | 'true' | 'shorter-list' | 'longer-list';
   label: string;
-}> = Object.freeze([
+}> = /* @__PURE__ */ Object.freeze([
   { path: 'weave.baseRatio', kind: 'reduce-difficulty', easier: 'lower', label: 'starting density' },
   { path: 'weave.ceilingRatio', kind: 'lower-ceiling', easier: 'lower', label: 'maximum density' },
   { path: 'weave.maxPerSentence', kind: 'reduce-difficulty', easier: 'lower', label: 'words per sentence' },
@@ -506,8 +506,9 @@ export const TAMPER_PENALTY_HOURS = 12;
  * Deliberately escalates rather than resets. A learner who edits storage to
  * lower the ratio finds it pinned at the ceiling for 12 hours, and a second
  * edit holds it that long again; the incentive to try is therefore negative.
- * This is friction, not security — the signing key ships inside the extension
- * and a determined user can forge it. docs/PRIVACY.md says so in plain words
+ * This is friction, not security — the signing key is derived from the install
+ * id, stored beside what it signs, by a recipe in the source, and a determined
+ * user can forge a signature. docs/PRIVACY.md says so in plain words
  * rather than implying otherwise.
  */
 export function recordTamper(

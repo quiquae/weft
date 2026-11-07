@@ -48,8 +48,8 @@ export type LicenceStatus =
   | { kind: 'expired'; tier: 'free'; payload: LicencePayload }
   | { kind: 'invalid'; tier: 'free'; reason: string };
 
-const enc = new TextEncoder();
-const dec = new TextDecoder();
+const enc = /* @__PURE__ */ new TextEncoder();
+const dec = /* @__PURE__ */ new TextDecoder();
 
 /* ------------------------------------------------------------ base64url */
 

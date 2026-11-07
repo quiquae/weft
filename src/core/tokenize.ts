@@ -40,13 +40,17 @@ const WEAK_ABBREVIATIONS = new Set([
  * A word: letters, optionally joined by an internal apostrophe or hyphen.
  * Hyphenated compounds stay one token on purpose — swapping half of
  * "well-known" reads as a typo rather than as a lesson.
+ *
+ * esbuild writes a pattern like this one, with a `\p{…}` outside a class, as
+ * `new RegExp(…)`, a call it cannot drop unread; so each is returned from an
+ * arrow called at once, and that call is marked pure.
  */
-const WORD_RE = /^\p{L}[\p{L}\p{M}]*(?:[’'’\-][\p{L}\p{M}]+)*/u;
+const WORD_RE = /* @__PURE__ */ (() => /^\p{L}[\p{L}\p{M}]*(?:[’'’\-][\p{L}\p{M}]+)*/u)();
 const DIGIT_RE = /^[\p{Nd}]+(?:[.,:\/][\p{Nd}]+)*/u;
 const SPACE_RE = /^\s+/u;
-const UPPER_RE = /^\p{Lu}/u;
-const HAS_LOWER_RE = /\p{Ll}/u;
-const LOWER_START_RE = /^\p{Ll}/u;
+const UPPER_RE = /* @__PURE__ */ (() => /^\p{Lu}/u)();
+const HAS_LOWER_RE = /* @__PURE__ */ (() => /\p{Ll}/u)();
+const LOWER_START_RE = /* @__PURE__ */ (() => /^\p{Ll}/u)();
 const PARAGRAPH_RE = /\n[^\S\n]*\n/;
 const SENTENCE_END = new Set(['.', '!', '?', '…', '。', '！', '？']);
 /** Punctuation that closes a sentence but belongs to it. */
@@ -276,7 +280,7 @@ export function matchCase(replacement: string, original: string): string {
 /* ------------------------------------------------------- junk recognisers */
 
 const URLISH = /(?:https?:\/\/|www\.|\.(?:com|org|net|io|gov|edu|co|dev)\b)/i;
-const CAMEL = /^\p{Ll}[\p{Ll}\p{Nd}]*\p{Lu}/u;
+const CAMEL = /* @__PURE__ */ (() => /^\p{Ll}[\p{Ll}\p{Nd}]*\p{Lu}/u)();
 
 /**
  * Punctuation that, when directly adjacent to a word with no whitespace

@@ -49,5 +49,9 @@ declare const __WEFT_LICENCE_KEY__: JsonWebKey | undefined;
 export const LICENCE_PUBLIC_KEY_JWK: JsonWebKey =
   typeof __WEFT_LICENCE_KEY__ === 'undefined' ? PUBLISHER_PUBLIC_KEY_JWK : __WEFT_LICENCE_KEY__;
 
-/** The publisher's key, regardless of build. For assertions only. */
-export const PUBLISHER_KEY_X = PUBLISHER_PUBLIC_KEY_JWK.x;
+/**
+ * The publisher's key, regardless of build. For assertions only. Read inside an
+ * arrow called at once, the call marked pure, because esbuild cannot drop a
+ * property read, and this one kept the whole key in bundles that never read it.
+ */
+export const PUBLISHER_KEY_X = /* @__PURE__ */ (() => PUBLISHER_PUBLIC_KEY_JWK.x)();

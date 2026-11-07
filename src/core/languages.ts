@@ -12,7 +12,11 @@ import type { LangCode, LanguageMeta, LetterformId } from './types.ts';
  * you are being shown where your own word came from.
  */
 
-const L = (m: LanguageMeta): LanguageMeta => m;
+/**
+ * Types one entry. Marked as having no side effects so that esbuild can drop the
+ * table from a bundle that never reads it, which it cannot for an unmarked call.
+ */
+const L = /* @__NO_SIDE_EFFECTS__ */ (m: LanguageMeta): LanguageMeta => m;
 
 export const LANGUAGES: Record<LangCode, LanguageMeta> = {
   /* ------------------------------------------------------- source languages */
