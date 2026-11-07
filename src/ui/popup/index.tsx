@@ -32,6 +32,24 @@ interface Sample {
   reason?: string;
 }
 
+/**
+ * The origin to ask the browser for, for the page the popup is on.
+ *
+ * The page's own scheme, not a wildcard. Asking for *:// requests http and
+ * https together, which is broader than the reader is looking at and a worse
+ * thing to put in a permission prompt. Ports are deliberately absent: Chrome
+ * match patterns reject them and ignore them when matching.
+ */
+function siteOrigins(url: string): string[] | null {
+  try {
+    const u = new URL(url);
+    const scheme = u.protocol.replace(':', '');
+    return u.hostname && scheme ? [`${scheme}://${u.hostname}/*`] : null;
+  } catch {
+    return null;
+  }
+}
+
 function Popup() {
   const [state, setState] = useState<PageState | null>(null);
   const [sample, setSample] = useState<Sample | null>(null);
@@ -40,6 +58,13 @@ function Popup() {
   const [index, setIndex] = useState<PackIndex | null>(null);
   const [tabUrl, setTabUrl] = useState<string>('');
   const [adding, setAdding] = useState(false);
+  /**
+   * Whether the browser holds this site's permission, asked only where the
+   * site is on the list. Onboarding keeps a site whose prompt was declined,
+   * and nothing is registered there, so a density would describe a page that
+   * is not being woven. Null where it was not asked, or could not be.
+   */
+  const [held, setHeld] = useState<boolean | null>(null);
 
   useEffect(() => {
     void loadPackIndex().then(setIndex);
@@ -51,6 +76,10 @@ function Popup() {
       const url = tab?.url ?? '';
       setTabUrl(url);
       const next = await send({ type: 'get-page-state', url });
+      const origins = siteOrigins(url);
+      if (origins && (next?.decision.mode === 'taxed' || next?.decision.mode === 'gentle')) {
+        setHeld(await api.permissions.contains({ origins }).catch(() => null));
+      }
       setState(next);
       setLoading(false);
       if (tab?.id !== undefined) {
@@ -134,26 +163,15 @@ function Popup() {
    * right way round and comes free from the existing lock rules.
    */
   async function addThisSite() {
-    let host = '';
-    let scheme = '';
-    try {
-      const u = new URL(tabUrl);
-      host = u.hostname;
-      // The page's own scheme, not a wildcard. Asking for *:// requests
-      // http and https together, which is broader than the reader is
-      // looking at and a worse thing to put in a permission prompt. Ports
-      // are deliberately absent: Chrome match patterns reject them and
-      // ignore them when matching.
-      scheme = u.protocol.replace(':', '');
-    } catch {
+    const origins = siteOrigins(tabUrl);
+    if (!origins) {
       setMessage('Weft could not read this page\u2019s address.');
       return;
     }
-    if (!host || !scheme) return;
+    const host = new URL(tabUrl).hostname;
 
     setAdding(true);
     try {
-      const origins = [`${scheme}://${host}/*`];
       // Ask only if Weft does not already hold it. Chrome shows its native
       // dialog for permissions.request whether or not the origin is already
       // granted, so skipping the call is the difference between one click
@@ -176,6 +194,34 @@ function Popup() {
 
       // Registration is what actually puts the content script on the page,
       // and the open tab predates it, so it needs a reload to pick it up.
+      await send({ type: 'reregister-scripts' });
+      const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+      if (tab?.id !== undefined) await api.tabs.reload(tab.id);
+      window.close();
+    } catch (err) {
+      setMessage(`The browser refused: ${(err as Error).message}`);
+    } finally {
+      setAdding(false);
+    }
+  }
+
+  /**
+   * Ask the browser again for a site already on the list.
+   *
+   * The request is the first thing the click does, because a browser grants
+   * a permission only to a gesture, and the site is already listed, so
+   * nothing else needs changing before the content script is registered.
+   */
+  async function grantThisSite() {
+    const origins = siteOrigins(tabUrl);
+    if (!origins) return;
+    setAdding(true);
+    try {
+      const ok = await api.permissions.request({ origins });
+      if (!ok) {
+        setMessage('Access was not granted, so nothing is woven here.');
+        return;
+      }
       await send({ type: 'reregister-scripts' });
       const [tab] = await api.tabs.query({ active: true, currentWindow: true });
       if (tab?.id !== undefined) await api.tabs.reload(tab.id);
@@ -254,6 +300,23 @@ function Popup() {
             </button>
           </div>
         </>
+      ) : held === false ? (
+        <>
+          <Notice tone="warn">
+            <span class="pop__host">{hostLabel || 'This site'}</span> is on your list, but the
+            browser has not granted Weft access to it, so nothing is woven here.
+          </Notice>
+          <div class="pop__actions">
+            <button
+              type="button"
+              data-variant="primary"
+              disabled={adding || !hostLabel}
+              onClick={() => void grantThisSite()}
+            >
+              {adding ? 'Asking the browser…' : `Grant access to ${hostLabel || 'this site'}`}
+            </button>
+          </div>
+        </>
       ) : (
         <>
           <WeaveBand ratio={state.ratio} animate label={`${Math.round(state.ratio * 100)} percent woven`} />
@@ -289,7 +352,9 @@ function Popup() {
       {message ? <Notice>{message}</Notice> : null}
 
       <div class="pop__actions">
-        {(decision.mode === 'taxed' || decision.mode === 'gentle') && !state.panicActive ? (
+        {(decision.mode === 'taxed' || decision.mode === 'gentle') &&
+        !state.panicActive &&
+        held !== false ? (
           <button type="button" onClick={() => void panic()}>
             Plain English for {settings.friction.panicMinutes} min
           </button>
