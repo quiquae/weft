@@ -53,8 +53,8 @@ running count of every request Weft has made.
 
 **A licence cannot be revoked.** There is nowhere to publish a revocation.
 
-- A **yearly** licence carries an expiry date and simply stops verifying when
-  it passes.
+- A **monthly** or **yearly** licence carries an expiry date and simply stops
+  verifying when it passes.
 - A **lifetime** key works forever. If one leaked widely the only remedy would
   be rotating the signing key, which invalidates every licence issued and means
   reissuing them all. The lifetime price reflects that risk rather than

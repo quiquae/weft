@@ -15,18 +15,22 @@ is showing:
   below that line adds it — it asks the browser for access to that one
   origin, and nothing else. Weft ships with access to no website at all, so
   a site that has never been named is the ordinary state, not a fault.
-- **"Weft never touches this page."** The page matched the never-weave list:
-  money, mail, credentials, health and government. That check runs before
-  every other rule and before a lexicon is even loaded. You can edit the
-  list in Settings, but taking something off it is a difficulty-reducing
-  change and waits out a cooldown.
+- **"Weft never touches this page."** The page matched the never-weave list,
+  and the line names the pattern it matched. The list ships covering mail,
+  money, passwords and sign-in, health and government, checkouts and forms
+  you cannot take back, and the places you write rather than read, such as
+  Google Docs and Notion; the browser's own pages are never woven either.
+  That check runs before every other rule and before a lexicon is even
+  loaded. You can edit the list in Settings → **Sites** → **Never weave**.
+  Adding a site to the never-weave list makes Weft easier, so it waits out a
+  cooldown; taking one off applies at once.
 - **"A panic pass is running."** Plain English, deliberately, until the pass
   expires.
 - **A warning naming what went wrong.** The background worker did not
-  answer, the page is already in the language you are learning, or the word
-  list failed to load. Silence would be the least useful failure a product
-  can have, so each of those is reported rather than left to look like
-  nothing happening.
+  answer, the page declares a language other than English, so there is
+  nothing to weave from, or the word list failed to load. Silence would be
+  the least useful failure a product can have, so each of those is reported
+  rather than left to look like nothing happening.
 
 If the popup says a percentage and the page still looks like English, read it
 again more slowly. At low density a few percent of the words is a handful per
@@ -36,9 +40,10 @@ screen, which is the intended dose for the first few days.
 
 ### Nothing is woven on any site
 
-Open the first-run page from Settings and check that at least one site is
-listed and that the browser has actually granted it. A site can be on your
-list with its permission declined; the popup on that site says so.
+Open Settings → **Sites** and check that at least one site is listed and
+that the browser has actually granted it: the section says which listed
+sites it has not, and asks for them in one click. A site can be on your list
+with its permission declined; the popup on that site says so too.
 
 ### A site is on my list and still does nothing
 
@@ -95,8 +100,8 @@ trusting a summary of it.
 
 **Nothing is transmitted.** The report exists only on that page until you
 copy it somewhere yourself. A support form that quietly posted a diagnostic
-bundle would make a liar of the dashboard one screen over, which says no
-network request has ever been made.
+bundle would make a liar of the dashboard one screen over, which counts every
+network request Weft has ever made.
 
 Then open an issue with it attached, at
 [the Weft issue tracker](https://github.com/quiquae/weft/issues).
@@ -122,8 +127,9 @@ it to help you, and no reply from Weft will ever ask for it.
 
 Your licence is verified locally against a key compiled into the extension.
 There is no activation server and no request at purchase or launch, which has
-one honest cost: **a licence cannot be revoked**. A yearly licence carries an
-expiry date and stops verifying when it passes; a lifetime key works forever.
+one honest cost: **a licence cannot be revoked**. A monthly or yearly licence
+carries an expiry date and stops verifying when it passes; a lifetime key
+works forever.
 
 If a licence expires, nothing you learned is deleted. One language stays
 active and every word you know stays known.
@@ -136,8 +142,9 @@ what leaves your machine, which is nothing unless you go out of your way.
 
 ## Taking your data with you
 
-Settings → export writes a JSON file of your settings, your whole vocabulary
-and your reading history, with API keys and the install id stripped. Import
+Settings → **Your data** → **Export everything** writes a JSON file of your
+settings, your whole vocabulary and your reading history, with API keys and
+the install id stripped. Import
 merges, keeping whichever record shows more learning, so moving between
 machines never loses progress in either direction. Your API keys, and the
 address of any OpenAI-compatible service, stay on the machine you typed them
