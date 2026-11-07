@@ -102,9 +102,10 @@ Then open an issue with it attached, at
 [the Weft issue tracker](https://github.com/quiquae/weft/issues).
 
 A report that says what you expected, what happened, and which page it
-happened on is worth ten that say it is broken. The whole extension is a few
-thousand lines and the interesting half is pure functions with no I/O, so a
-specific claim is usually checkable in minutes.
+happened on is worth ten that say it is broken. The decisions that matter —
+which word to weave, how hard the page should be, whether a change may land
+yet — are pure functions with no I/O, so a specific claim is usually
+checkable in minutes.
 
 ## What Weft will never ask you for
 

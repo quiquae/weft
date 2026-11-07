@@ -778,6 +778,54 @@ test.describe('turning a site on from the popup', () => {
   });
 });
 
+test.describe('the popup on a listed site the browser never granted', () => {
+  /*
+   * Onboarding keeps the sites a reader chose even when the permission prompt
+   * is declined, and the settings page warns of each one; but the popup on
+   * such a site printed "6% of the content words is in French" over a page
+   * no content script is registered on, where docs/SUPPORT.md says it names
+   * the missing grant and offers to ask the browser again.
+   */
+  test('names the missing grant and offers to ask, instead of a density', async ({
+    context,
+    extensionId,
+    rpc,
+  }) => {
+    // The test build holds the loopback hosts and nothing else, so this one
+    // is listed and never granted, as a declined prompt leaves it.
+    const url = 'https://example.com/article.html';
+    await rpc({
+      type: 'complete-onboarding',
+      patch: {
+        'sites.taxed': [{ pattern: 'example.com', enabled: true, escalate: true }],
+        'sites.gentle': [],
+      },
+      origins: [],
+    });
+
+    const popup = await context.newPage();
+    await popup.addInitScript(
+      ({ url }) => {
+        const query = chrome.tabs.query.bind(chrome.tabs);
+        (chrome.tabs as unknown as { query: unknown }).query = async (info: unknown) => {
+          const real = await query(info as chrome.tabs.QueryInfo);
+          return real.map((tab) => ({ ...tab, url }));
+        };
+      },
+      { url },
+    );
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+
+    await expect(popup.getByText(/has not granted/i), 'the popup did not say the site is not granted').toBeVisible({
+      timeout: 10_000,
+    });
+    // Not clicked: Chrome's permission dialog cannot be dismissed from here.
+    await expect(popup.getByRole('button', { name: /grant access to example\.com/i })).toBeVisible();
+    await expect(popup.getByText(/of the content words is in/i), 'a density was printed over an unwoven page').toHaveCount(0);
+    await popup.close();
+  });
+});
+
 test.describe('the progress page before you have done anything', () => {
   /*
    * A fresh install opening Progress used to meet "You have read 0 words",

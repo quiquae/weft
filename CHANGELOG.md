@@ -58,6 +58,14 @@ at night held into the next morning. Each says twelve hours now. And the
 popup's notice blamed the stored settings alone, though a clock turned back
 shows it too; it names both.
 
+**The popup says when a site on your list was never granted.** The first-run
+page keeps the sites you chose even when you decline the browser's permission
+prompt, and the settings page warns of each one, but the popup on such a site
+printed a density, "6% of the content words is in French", over a page Weft
+cannot touch. It says now that the site is on your list and the browser has
+not granted Weft access to it, with a button that asks again; once you say
+yes, the page reloads woven.
+
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
 features, and four of them could not be had: both rows of language chips set
@@ -863,8 +871,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1378 tests: 644 unit, 119 in jsdom, 569 over the build tools, and
-46 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1379 tests: 644 unit, 119 in jsdom, 569 over the build tools, and
+47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

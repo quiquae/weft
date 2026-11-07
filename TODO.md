@@ -6,9 +6,9 @@
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
-suites, **569** tool tests / 142 suites, **46** e2e passing
+suites, **569** tool tests / 142 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 999 KB each, all
+packages built at 1000 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -98,7 +98,10 @@ Safari's 998.968, measured against `main`'s three packages built in a `/tmp`
 worktree, every other bundle byte-identical. And by 130 bytes the same day,
 the tamper penalty's length said in the settings row and the popup:
 `background.js` +10, `options.js` +67 and `popup.js` +53, Chrome's 998.960 →
-999.087 KB against `main`'s, still printing 999.
+999.087 KB against `main`'s, still printing 999. And to **1000 KB** later that
+day by 1 001 bytes, all of them `popup.js`, the notice and button for a listed
+site the browser never granted: Chrome's 999.087 → 1000.065 KB, Firefox's
+1000.133 and Safari's 1000.072.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -667,13 +670,11 @@ three, and `tests/tools/node-floor.test.ts` fails if no job is on the floor
 or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
-**So the whole of B0 is closed. `Now` holds one agent-shaped item, found on
-2026-11-07: the popup on a listed site the browser never granted prints a
-density where `docs/SUPPORT.md` says it names the missing grant. Every
-unchecked item in `Next` waits on a call of Creagh's:** the four Pro
-features sold and never built, the Firefox data-collection declaration, the
-Safari subtitle, the site's favicon, and how Firefox 140 to 145 should draw
-a woven word. A run that finds `Now` empty reads a written promise against
+**So the whole of B0 is closed. `Now` holds no unchecked item, as of
+2026-11-07, and every unchecked item in `Next` waits on a call of
+Creagh's:** the four Pro features sold and never built, the Firefox
+data-collection declaration, the Safari subtitle, the site's favicon, and
+how Firefox 140 to 145 should draw a woven word. A run that finds `Now` empty reads a written promise against
 the code, as the runs of 2026-11-05 to -07 did. Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
 and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
@@ -2192,37 +2193,22 @@ registered**, and nothing below it can move until it is.
       total 1373 → **1378**, in six places, `docs/LAUNCH.md:221` first, and
       a `CHANGELOG.md` paragraph.
 
-- [ ] **The popup on a listed site the browser never granted prints a
-      density, not the missing grant.** Found 2026-11-07, reading
-      `docs/SUPPORT.md` against the code after the item above. Onboarding
-      records the sites a reader chose even when the permission prompt is
-      declined ("Access was not granted, so nothing will be woven yet",
-      `src/ui/onboarding/index.tsx:95`), and the settings page's Sites
-      section warns of it with a grant button; but the popup on such a site
-      gets a taxed `decision` from the worker and prints "6% of the content
-      words is in French" and the attention line, over a page no content
-      script is registered on. `docs/SUPPORT.md` says "the popup on that
-      site says so" and that it "offers to ask the browser again", and then
-      tells a reader who sees a percentage over English to "read it again
-      more slowly". The shape: whenever `decision.mode` is `taxed` or
-      `gentle`, the popup asks `api.permissions.contains()` for the tab's
-      origin, built as `addThisSite()` builds it; when it is not held, a
-      notice takes the band's place — on the list, not granted, so nothing
-      is woven — with a button that requests it from the click, as
-      `addThisSite()` does, then sends `reregister-scripts` and reloads the
-      tab. Test-first, in e2e: open `popup.html` with the tab's URL stubbed
-      by an init script, as `screenshots.spec.ts` does, at an origin the
-      test build does not grant (`https://example.com/article`), with that
-      host added to `sites.taxed` through the worker; red on today's popup,
-      which prints the percentage. Do not click the button in the test:
-      Chrome's permission dialog cannot be dismissed from Playwright. About
-      45 minutes, and then `docs/SUPPORT.md` holds as written but for one
-      clause to correct in the same change: "the whole extension is a few
-      thousand lines", where `src/` holds 16 920 lines of TypeScript. Its
-      other claims were read and hold — the three popup states it quotes,
-      `Alt+Shift+R` and `Alt+Shift+N` with the panic pass unbound
-      (`manifest.config.mjs:78`), the export and import rules, and the
-      never-gated list.
+- [x] **The popup on a listed site the browser never granted prints a
+      density, not the missing grant.** Done 2026-11-07, the same run's
+      second PR, as the item planned it. The popup asks
+      `permissions.contains()` for the tab's origin wherever the site is
+      taxed or gentle, before its first draw, and where it is not held a
+      notice takes the band's place — the site is on your list and the
+      browser has not granted Weft access to it, so nothing is woven — with
+      "Grant access to <host>", which requests it from the click,
+      re-registers the content script and reloads the tab. The panic pass is
+      not offered there. `siteOrigins()` is the one derivation of the origin,
+      which `addThisSite()` spelled out on its own. An e2e test in
+      `friction.spec.ts`, red first on the old popup's "of the content words
+      is in French.", and the whole file's 25 green. `docs/SUPPORT.md` holds
+      as written now, and its "a few thousand lines" is gone. E2e 46 →
+      **47**, total 1378 → **1379**, in six places, `docs/LAUNCH.md:221`
+      first, and a `CHANGELOG.md` paragraph. The packages print **1000 KB**.
 
 ## Next
 
@@ -7887,6 +7873,27 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, last — the popup names a missing grant.** Four things a later
+run would be sorry not to know:
+
+1. **A popup e2e test can stand on a host nobody serves.** The popup asks
+   the worker for the page's state by URL and the browser for its
+   permission by origin, so stubbing `chrome.tabs.query` to
+   `https://example.com/article.html`, a host the test build never grants,
+   reproduces a declined prompt without a page. Do not click "Grant access"
+   in a test: Chrome's permission dialog cannot be dismissed from
+   Playwright.
+2. **The check runs before the popup's first draw**, so the density never
+   flashes on an unwoven page; a `contains` that throws reads as unknown,
+   `null`, and the popup draws as it did, a warning that might be false
+   being worse than none.
+3. **The packages print 1000 KB now**, 1 001 bytes of `popup.js` taking
+   Chrome's from 999.087 to 1000.065 KB. Nothing caps them; every "999 KB"
+   in the journals is history.
+4. **Assumed, with nobody to ask:** that the notice replaces the density
+   rather than sitting beside it, the density being false there; and that
+   the panic pass goes with it, a page in plain English needing no pass.
 
 **2026-11-07, latest — a tamper penalty lasts 12 hours, and the copy says
 so.** Six things a later run would be sorry not to know:
