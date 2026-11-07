@@ -24,7 +24,7 @@ interface Sample {
    * Why nothing was woven, when the answer is not obvious.
    *
    * The content script has several early returns — the worker did not
-   * answer, the page is already in the language being learned, the lexicon
+   * answer, the page declares a language other than the reader's, the lexicon
    * would not load — and each one left the reader looking at an ordinary
    * page with no explanation anywhere. Silence is the least useful failure
    * a product can have: it is indistinguishable from being broken.
