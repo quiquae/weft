@@ -318,6 +318,14 @@ Reads the web back to you with some words woven into another language. Difficult
 
 **F6 — Description.**
 
+**Decide before pasting:** the screen-time paragraph's last clause, that
+Hard Mode "generates a browser policy making the extension unremovable",
+is true in Google Chrome alone. In Firefox the settings page says Hard Mode
+has no file there, because Firefox reads no policy written for Chrome
+(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
+something they can look for and not find; dropping it here means a
+Firefox variant of the description in `docs/STORE-LISTING.md`.
+
 <details><summary>Description — click to open, then copy</summary>
 
 <!-- paste: description -->
@@ -483,6 +491,14 @@ description come from the package and cannot be typed here; they will read as
 in C3. Description — Edge wants 250 to 10 000 characters, and `npm test`
 fails if this stops fitting:
 
+**Decide before pasting:** the screen-time paragraph's last clause, that
+Hard Mode "generates a browser policy making the extension unremovable",
+is true in Google Chrome alone. In Microsoft Edge the settings page says Hard Mode
+has no file there, because Microsoft Edge reads no policy written for Chrome
+(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
+something they can look for and not find; dropping it here means a
+Microsoft Edge variant of the description in `docs/STORE-LISTING.md`.
+
 <details><summary>Description — click to open, then copy</summary>
 
 <!-- paste: description -->
@@ -584,6 +600,14 @@ https://weft.study/privacy
 ```
 
 **S4 — Version information.** Description, 4 000 characters at most:
+
+**Decide before pasting:** the screen-time paragraph's last clause, that
+Hard Mode "generates a browser policy making the extension unremovable",
+is true in Google Chrome alone. In Safari the settings page says Hard Mode
+has no file there, because Safari reads no policy written for Chrome
+(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
+something they can look for and not find; dropping it here means a
+Safari variant of the description in `docs/STORE-LISTING.md`.
 
 <details><summary>Description — click to open, then copy</summary>
 

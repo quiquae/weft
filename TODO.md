@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-06:** every automatable check is green, measured at the end
-of this session — typecheck clean, **630** unit / 148 suites, **106** jsdom / 24
-suites, **565** tool tests / 141 suites, **45** e2e passing
+of this session — typecheck clean, **637** unit / 150 suites, **108** jsdom / 25
+suites, **565** tool tests / 141 suites, **46** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 994 KB each, all
 passing `npm run validate`. The package grew
@@ -2028,37 +2028,75 @@ registered**, and nothing below it can move until it is.
       moving recorded noise and every shot matching its commit in one of
       them, so the three groups are stamped.
 
-- [ ] **Make Hard Mode's file one the browser running Weft obeys, or say
-      it is for Chrome.** Found 2026-11-06 reading `docs/HARD-MODE.md`.
-      `src/background/hard-mode.ts` writes Google Chrome's policy in every
-      build — the `com.google.Chrome` domain,
-      `HKLM\SOFTWARE\Policies\Google\Chrome`,
-      `/etc/opt/chrome/policies/managed/` and the Chrome Web Store's update
-      URL — naming `api.runtime.id`, and the options page offers it to every
-      Pro user: `has(c.tier, 'hard-mode')`, no build check
-      (`src/ui/options/commitment.tsx:146`). So:
-      1. **Firefox**: `runtime.id` is `weft@weft.study`, so the file is a
-         Chrome policy naming a Firefox add-on, which neither browser obeys.
-         Firefox has policies of its own (`policies.json`, the
-         `org.mozilla.firefox` domain, `HKLM\SOFTWARE\Policies\Mozilla\Firefox`),
-         whose `ExtensionSettings` `force_installed` needs an
-         `install_url`, AMO's, which exists only once Weft is listed (B6).
-      2. **Edge** runs the Chrome package, so the build cannot tell and the
-         browser can (`navigator.userAgentData.brands`). Edge reads its own
-         policy locations and update URL, and whether its listing keeps the
-         Chrome Web Store's id is to be read too; Microsoft Learn documents
-         all of it, and its MCP server reaches it.
-      3. **Safari**: no Chrome policy applies, and B6 already asks whether
-         the Safari build sells Pro at all.
-      The Firefox, Edge and Safari descriptions in `docs/READY-TO-SUBMIT.md`
-      say Hard Mode "generates a browser policy making the extension
-      unremovable", which is true in Chrome alone. **Agent-shaped**: make
-      the row honest per browser — Edge's own policy in Edge, after reading
-      Microsoft's; on the Firefox and Safari builds, a row saying Hard Mode
-      is for Chrome and Edge rather than a file nothing obeys — with a test
-      per build, of the kind `tests/dom/hard-mode.test.ts` is. **Creagh's**:
-      building Firefox's, and whether those three stores' copy keeps Hard
-      Mode, which `Next`'s first item already makes a question about Pro.
+- [x] **Make Hard Mode's file one the browser running Weft obeys, or say
+      it is for Chrome.** First slice done 2026-11-07: **Hard Mode offers a
+      file only where the browser obeys it.** `hardModeHere()` in a new
+      `src/core/hard-mode.ts` decides from the build and the brands the
+      browser names itself by (`uaBrands()` in `src/shared/browser.ts`,
+      `navigator.userAgentData`, in every Chromium since 90): Google Chrome,
+      Chromium, HeadlessChrome and Chrome for Testing keep Chrome's file;
+      the Firefox and Safari builds, Microsoft Edge and any other browser
+      that names itself (Brave, Opera) get a row printing `noPolicyHere()`,
+      "… reads no policy written for Chrome, so Weft offers no file here",
+      on either tier, so a Free user there is not sold it either; and
+      `profileFor()` in the worker refuses there on its own. Tests, red
+      first on a stub keeping today's behaviour: 7 in 2 suites of
+      `tests/core/hard-mode.test.ts`, 2 in a new suite of
+      `tests/dom/hard-mode.test.ts` ("the firefox build wrote a macos
+      file"), and one e2e test in `licensing.spec.ts` that makes the
+      settings page's browser name itself Chrome and then Edge, with Pro
+      on, red against the old page, which offered Edge "Generate the policy
+      file". `docs/HARD-MODE.md` has a "Which browsers" section, and
+      `docs/READY-TO-SUBMIT.md` says before the Firefox, Edge and Safari
+      descriptions that their Hard Mode clause is true in Chrome alone.
+      Not changed, and Creagh's: the shared description itself, and the Pro
+      section and `/pricing`, which still sell Hard Mode in every build
+      (Notes). Edge's own file is the next item.
+
+- [ ] **Give Microsoft Edge its own Hard Mode file, for Weft's Edge Add-ons
+      copy.** The second slice of the item above. Read on 2026-11-07 in
+      Microsoft's page for `ExtensionSettings`
+      (`learn.microsoft.com/deployedge/microsoft-edge-policies/extensionsettings`,
+      through the Microsoft Learn MCP server) and its guide
+      (`…/microsoft-edge-manage-extensions-ref-guide`):
+      1. **Where:** Windows `SOFTWARE\Policies\Microsoft\Edge`, value name
+         `ExtensionSettings`, `REG_SZ` holding the JSON — the only form
+         Microsoft documents; macOS preference key `ExtensionSettings`, a
+         plist dict, under Edge's domain (`com.microsoft.Edge`: confirm the
+         payload type on Microsoft's macOS configuration page). Supported
+         on Windows ≥ 77, macOS ≥ 77 and Android; **Linux is not listed**,
+         so Edge on Linux offers no file unless a Microsoft page says it
+         reads `/etc/opt/edge/policies/managed/`.
+      2. **What:** per extension `installation_mode: force_installed`,
+         `update_url` and Edge's own `toolbar_state: force_shown` (not
+         Chrome's `toolbar_pin`). Edge Add-ons' update URL is
+         `https://edge.microsoft.com/extensionwebstorebase/v1/crx`.
+      3. **Which copy:** "apps and extensions from outside the Microsoft
+         Edge Add-ons website can only be forced installed if the instance
+         is joined to a Microsoft Active Directory domain or joined to
+         Microsoft Azure Active Directory", and on macOS "if the instance is
+         managed via MDM, joined to a domain via MCX". So on a personal
+         machine Edge's file holds only for the copy installed from Edge
+         Add-ons, whose id Microsoft assigns at listing and `runtime.id`
+         reads. A copy installed into Edge from the Chrome Web Store cannot
+         be held there, and its row should say so. Which store a copy came
+         from is the `update_url` the store writes into its manifest ("the
+         exact update URL stated in the extension manifest"), so
+         `api.runtime.getManifest().update_url` — unverified on a real store
+         install.
+      4. **The `.reg` test's grammar** reads every value as `"name"="value"`
+         with no escaped quote, which a `REG_SZ` JSON value breaks, and
+         deleting that value (`"ExtensionSettings"=-`) removes every
+         extension's settings, where Chrome's file deletes only Weft's
+         subkey. Read Chromium's `components/policy/core/common/registry_dict.cc`
+         for whether Edge converts a subkey as Chrome does before choosing.
+      Then `hardModeHere()` gains `{ file: 'edge' }` for Edge's brands, the
+      worker writes Edge's file, `docs/HARD-MODE.md`'s Edge bullet and the
+      Edge note in `docs/READY-TO-SUBMIT.md` move with it, and the tests
+      read each Edge file as Edge would. **About 90 minutes.** Testing it
+      end to end waits on the Edge listing (B5). **Creagh's**: Firefox's
+      own file, which needs Weft on addons.mozilla.org (B6), and whether the
+      Firefox, Edge and Safari copy keeps Hard Mode.
 
 ## Next
 

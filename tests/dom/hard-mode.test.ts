@@ -149,3 +149,44 @@ describe('the Hard Mode file you download says how to take it off', () => {
     }
   });
 });
+
+/**
+ * The settings page offers the file only where the browser obeys it
+ * (`hardModeHere()` in `src/core/hard-mode.ts`). The worker that writes it
+ * refuses on its own as well, so a page that one day offers the button in the
+ * wrong place still hands nobody a file that looks like Hard Mode and holds
+ * nothing. Until 2026-11-07 every build wrote Chrome's policy for whoever asked.
+ */
+describe('no file is written for a browser that would not obey it', () => {
+  test('the Firefox and Safari builds refuse on every platform, naming the browser', () => {
+    for (const [target, browser] of [
+      ['firefox', 'Firefox'],
+      ['safari', 'Safari'],
+    ] as const) {
+      g['__WEFT_TARGET__'] = target;
+      try {
+        for (const platform of ['macos', 'windows', 'linux'] as const) {
+          assert.throws(
+            () => profileFor(platform),
+            new RegExp(`${browser} reads no policy written for Chrome`),
+            `the ${target} build wrote a ${platform} file`,
+          );
+        }
+      } finally {
+        g['__WEFT_TARGET__'] = 'chrome';
+      }
+    }
+  });
+
+  test('the Chrome package refuses in Microsoft Edge, and writes in Google Chrome', () => {
+    for (const platform of ['macos', 'windows', 'linux'] as const) {
+      assert.throws(
+        () => profileFor(platform, ['Not_A Brand', 'Chromium', 'Microsoft Edge']),
+        /Microsoft Edge reads no policy written for Chrome/,
+        `Edge was handed a ${platform} file`,
+      );
+      const { contents } = profileFor(platform, ['Not_A Brand', 'Chromium', 'Google Chrome']);
+      assert.ok(contents.includes(ID), `Google Chrome was not handed its ${platform} file`);
+    }
+  });
+});

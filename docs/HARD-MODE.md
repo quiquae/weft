@@ -35,6 +35,31 @@ On macOS the generated profile sets `PayloadRemovalDisallowed` to `false`,
 which means you can always take it off with your own admin password. Weft will
 not ship a profile you cannot remove.
 
+## Which browsers
+
+The file is Google Chrome's managed policy, so Hard Mode holds in Google
+Chrome, and in Chromium on Linux, which reads the directory the Linux steps
+name. Everywhere else Weft offers no file, and the settings page says so on
+either tier: a file nothing obeys would look like Hard Mode and hold nothing,
+and you would find out on the day you tried to remove Weft and could. The
+worker that writes the file refuses there as well.
+
+- **Microsoft Edge** runs the same package as Chrome and reads its own
+  policy, under `com.microsoft.Edge` and `HKLM\SOFTWARE\Policies\Microsoft\Edge`,
+  never Chrome's. Microsoft's page for `ExtensionSettings`, read on
+  2026-11-07, says Edge force-installs an extension from outside Edge Add-ons
+  only on a machine joined to a domain or managed by MDM, so Edge's own file
+  has to name Weft's Edge Add-ons copy, which exists once Weft is listed
+  there.
+- **Firefox** has policies of its own, in `policies.json`, and they
+  force-install an add-on from an `install_url`, which for Weft would be its
+  addons.mozilla.org listing.
+- **Safari** reads no Chrome policy, and Weft writes none of Safari's.
+
+Which Chromium browser is running is read from the brands it names itself by
+(`navigator.userAgentData`), because Edge runs the Chrome package unchanged
+and only the browser can tell the two apart.
+
 ## Generating it
 
 Settings → Commitment → Hard Mode. Pick your platform, click Generate, read
