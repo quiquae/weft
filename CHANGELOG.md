@@ -9,6 +9,17 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Each page carries only what it reads of the shared code.** Eleven of the
+modules every page shares left code in every bundle that imported them, read
+or not, because the bundler keeps what it cannot prove does nothing: a call, a
+property read, a template that interpolates a name, a spread, and a `\p{…}`
+pattern, which it rewrites as a call. The dashboard carried the whole table of
+Pro features and their copy, which it never shows. Each is droppable now, and
+the package is 4 651 bytes smaller: the dashboard 2 452, the background worker
+1 076, the settings page 723, the first-run page 202 and the content script
+198. Nothing any page does has changed. A test bundles each shared module
+imported for nothing, as the build bundles it, and fails if anything is left.
+
 **Hard Mode's file says how to take it off.** The options page told a buyer
 "the file you download contains its own removal instructions", and it did not:
 the page showed the steps and the download held none of them. The macOS
@@ -885,7 +896,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1400 tests: 644 unit, 119 in jsdom, 590 over the build tools, and
+**Built with** 1406 tests: 644 unit, 119 in jsdom, 596 over the build tools, and
 47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

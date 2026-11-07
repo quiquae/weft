@@ -66,11 +66,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **590 pass**, 149 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **596 pass**, 152 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1001 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 996 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -173,6 +173,21 @@ ECMAScript's: `Date.now`, an argument-less `new Date()`, `Date()` and
 `daysUntilDue()` and three expiry checks in `licence.ts` read it themselves
 until then. Randomness is `crypto.getRandomValues`, `PLATFORM`'s, for an
 install id.
+
+**And a core module imported for one name brings nothing else with it.**
+esbuild keeps a top-level statement it cannot prove does nothing in every
+bundle that imports its module, read or not: an unmarked call, a `new` it does
+not know, a property read, a template joining a name, a spread, and a `\p{…}`
+pattern, which it writes as `new RegExp(…)`. Until 2026-11-07 eleven core
+modules did, and the dashboard carried the whole feature table it never shows.
+`tests/tools/core-tree-shaking.test.ts` bundles each core module imported for
+nothing, as `build.mjs` bundles it, and fails on anything left that `MUST_RUN`,
+empty, does not name with why it must run; it asks esbuild rather than reading
+the source, because a reading for calls misses the other four. Cure a finding
+with `/* @__PURE__ */` on the call, `/* @__NO_SIDE_EFFECTS__ */` on a helper
+whose calls are all pure, or a marked arrow called at once; never a mark on a
+call whose value is thrown away, which deletes it, and which the same file
+refuses.
 
 **No static `content_scripts`, and no host permissions at install.**
 `optional_host_permissions: ['*://*/*']` is requested per-origin at runtime
@@ -1002,6 +1017,82 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — esbuild asked what a core module leaves behind, and three of eleven were not calls
+
+`TODO.md`'s one unchecked item in `Now`, queued by the never-weave run: find
+every top-level call in `src/core/` that rides into a bundle that never reads
+it, and guard the rest "by the checker as `core-purity.test.ts` does".
+
+**Measured first, and the measurement changed the guard.** Each core module
+was bundled as `build.mjs` bundles it, imported for nothing: **11 of 31** left
+code behind, 28 statements. Eight modules held the calls the item expected —
+`Object.freeze` in `fsrs.ts`, `lock.ts`, `similarity.ts` and `pos-guess.ts`,
+`FEATURES.filter` twice in `entitlements.ts`, `new TextEncoder` and
+`TextDecoder` in `integrity.ts` and `licence.ts`, and fourteen calls to
+`languages.ts`'s identity helper `L`. Three held none: `PUBLISHER_KEY_X =
+PUBLISHER_PUBLIC_KEY_JWK.x`, a property read, which kept the whole key in
+`options.js`; `PLANS`, whose templates interpolate `CHECKOUT_BASE`; and five
+`\p{…}` patterns in `tokenize.ts`, which esbuild writes as `new RegExp(…)` for
+every engine the build targets, `chrome116` alone included. And `new
+Set([...PREPOSITIONS, …])` keeps its spread even marked. A reading of the
+source for unmarked calls could not see the three and would have asked for a
+mark that does nothing, so the guard asks esbuild. **When a guard stands in for
+a tool's judgement, ask the tool**: its rules are what ship, not a reading of
+them.
+
+**`tests/tools/core-tree-shaking.test.ts`, 6 tests in 3 suites.** Every core
+module imported for nothing leaves nothing, unless `MUST_RUN`, empty, names the
+statement with why it must run, the targets and defines read off `build.mjs`;
+a probe module that never touches disk pins what esbuild keeps and drops, so an
+upgrade that changes a rule fails there first; and a pure mark on a call whose
+value is thrown away, which deletes the call from every bundle, is refused.
+Red first on all 28; three probes, each restored by md5: the mark off
+`sites.ts` names `DEFAULT_EXCLUSIONS` and `NEVER_WEAVE_KINDS`, a marked
+discarded freeze names `sites.ts:459`, and a stale `MUST_RUN` line fails by
+name. The cures: `/* @__PURE__ */` on the calls, both marks on `PRO_ONLY`,
+since esbuild drops a marked call only if its arguments are droppable;
+`/* @__NO_SIDE_EFFECTS__ */` on `L` and on `pricing.ts`'s new `buy()`, which
+takes the template; and an arrow called at once, that call marked, for the
+property read, the spread and the five patterns. `PUBLISHER_KEY_X` keeps its
+name and value, `validate-package.mjs` and `never-touched.test.ts` reading it.
+Both comments the privacy run left are corrected: the key is derived from the
+install id, stored beside what it signs, and only the salt ships.
+
+**What it bought:** Chrome's bundles 329 011 → 324 360 bytes — `dashboard.js`
+−2 452, the feature table and its copy, which the dashboard never shows,
+`background.js` −1 076, `options.js` −723, `onboarding.js` −202, `content.js`
+−198, `popup.js` ±0 — so the packages print **996 KB** where they printed 1001:
+Chrome's 1000.810 → 996.268 KB, Firefox's 996.336, Safari's 996.274, the
+publisher key still in `background.js`. Measured outside core the same way:
+`src/ui/components` and `src/ui/lib` leave only Preact's own import-time
+runtime, and `src/shared/browser.ts` its `api`, read by every importer;
+nothing of Weft's. All 31 shots were regenerated on a test build after the
+commit that moved `src/`, 10 + 14 + 7 written, every one byte-identical, and
+the three groups stamped. Tools 590 → **596** / 149 → **152** suites, total
+1400 → **1406**, in six places, `docs/LAUNCH.md:221` first, and a
+`CHANGELOG.md` paragraph, because the bundles ship.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code, the stamps and the documents: `npm run test:all` **exit 0** —
+typecheck clean, 644 unit / 151, 119 jsdom / 26, **596 tools / 152**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass /
+2 degrade / 4 untracked, 0 fail / 0 without data, **996 KB × 3** passing
+`validate`, **47 e2e passed and 3 skipped in 5.8 min**, then build and validate
+again. Separately `npm run site` then `site:check` **714 pages / 16 118
+links**, all resolving, `/pricing` printing the same three checkout addresses,
+and `artefacts:check` **8 groups, 1 stale**, the release notes, B2a.
+`packs:verify` was not run: no pack or seed moved. Only this entry moved after
+the gate, so typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that asking esbuild is the item done rather than
+changed, the checker being unable to see a measured three of eleven; that an
+arrow called at once is acceptable where no mark reaches, each with a line
+saying why; and that the store description is the next document to read,
+being the copy Google reviews.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the store description read claim by claim.
 
 ### 2026-11-07 — the privacy page, read to its end, and five of its errors were in the listing too
 

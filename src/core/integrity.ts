@@ -7,16 +7,17 @@
  * detected and answered by escalating difficulty rather than honouring the
  * edit.
  *
- * What this is not: security. The key material is derived from data that ships
- * inside the extension, so anyone willing to read the source can forge a valid
- * signature. That is fine and it is stated plainly in docs/PRIVACY.md. The goal
+ * What this is not: security. The key is derived from the install id, which is
+ * generated at install and stored beside the data it signs, by a recipe and a
+ * salt that ship inside the extension, so anyone willing to read the source can
+ * forge a valid signature. That is fine and it is stated plainly in docs/PRIVACY.md. The goal
  * is to make the lazy bypass cost more effort than doing the reading, which is
  * exactly the same bargain every screen-time tool on a general-purpose computer
  * makes. Anyone who wants a hard guarantee should use Hard Mode, which moves
  * enforcement into an OS-level managed policy.
  */
 
-const enc = new TextEncoder();
+const enc = /* @__PURE__ */ new TextEncoder();
 
 /** Build-time salt. Rotating this invalidates every existing signature. */
 const SALT = 'weft/v1/state-integrity';

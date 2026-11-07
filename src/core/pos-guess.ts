@@ -57,15 +57,19 @@ const NOT_REALLY_PLURAL = /(?:ss|us|is|as|ous|ics)$/;
  * **quick** brown fox". After a determiner, a word followed by one of these
  * is the head noun; a word followed by another bare word might be either, and
  * the guesser says so rather than picking.
+ *
+ * Built inside an arrow called at once, the call marked pure, because esbuild
+ * cannot drop a spread unread, and with it the three sets it spreads.
  */
-const PHRASE_CLOSERS = new Set([
-  ...PREPOSITIONS,
-  ...COPULAS,
-  ...MODALS,
-  'and', 'or', 'but', 'than', 'that', 'which', 'who', 'while', 'when', 'where',
-  'yesterday', 'today', 'tomorrow', 'now', 'then', 'soon', 'again', 'here',
-  'there', 'always', 'never', 'often', 'still', 'already', 'too', 'also',
-]);
+const PHRASE_CLOSERS = /* @__PURE__ */ (() =>
+  new Set([
+    ...PREPOSITIONS,
+    ...COPULAS,
+    ...MODALS,
+    'and', 'or', 'but', 'than', 'that', 'which', 'who', 'while', 'when', 'where',
+    'yesterday', 'today', 'tomorrow', 'now', 'then', 'soon', 'again', 'here',
+    'there', 'always', 'never', 'often', 'still', 'already', 'too', 'also',
+  ]))();
 
 /**
  * Suffixes reliable enough to act on.
@@ -75,7 +79,7 @@ const PHRASE_CLOSERS = new Set([
  * adjective, and "publish" is not an adjective either. A suffix earns its
  * place here only if the counterexamples are rare enough to enumerate.
  */
-const SUFFIX_POS: ReadonlyArray<readonly [RegExp, Pos]> = Object.freeze([
+const SUFFIX_POS: ReadonlyArray<readonly [RegExp, Pos]> = /* @__PURE__ */ Object.freeze([
   [/(?:tion|sion|ness|ment|ity|ance|ence|ency|ship|hood|dom|ism|ist|ology|acy)$/, 'noun'],
   [/(?:ous|ful|less|able|ible|ical|like)$/, 'adj'],
   [/(?:ise|ize|ify)$/, 'verb'],

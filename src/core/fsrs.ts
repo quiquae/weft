@@ -18,7 +18,7 @@ import type { Grade, MemoryCard } from './types.ts';
  */
 
 /** Reference FSRS-6 default weights (21 parameters). */
-export const DEFAULT_W: readonly number[] = Object.freeze([
+export const DEFAULT_W: readonly number[] = /* @__PURE__ */ Object.freeze([
   0.212, 1.2931, 2.3065, 8.2956, 6.4133, 0.8334, 3.0194, 0.001, 1.8722, 0.1666, 0.796, 1.4835,
   0.0614, 0.2629, 1.6483, 0.6014, 1.8729, 0.5425, 0.0912, 0.0658, 0.1542,
 ]);
@@ -29,7 +29,7 @@ const INIT_S_MAX = 100;
 const DAY_MS = 86_400_000;
 
 /** Per-parameter clamp ranges, mirroring the reference implementation. */
-const CLAMPS: ReadonlyArray<readonly [number, number]> = Object.freeze([
+const CLAMPS: ReadonlyArray<readonly [number, number]> = /* @__PURE__ */ Object.freeze([
   [S_MIN, INIT_S_MAX],
   [S_MIN, INIT_S_MAX],
   [S_MIN, INIT_S_MAX],

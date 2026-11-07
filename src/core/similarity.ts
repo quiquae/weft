@@ -147,7 +147,7 @@ export function levenshteinSimilarity(a: string, b: string): number {
  * word by word. A pair matching one of these is more learnable than its raw
  * edit distance suggests, so it earns a bonus.
  */
-const SUFFIX_CORRESPONDENCES: ReadonlyArray<readonly [RegExp, RegExp]> = Object.freeze([
+const SUFFIX_CORRESPONDENCES: ReadonlyArray<readonly [RegExp, RegExp]> = /* @__PURE__ */ Object.freeze([
   [/tion$/, /(?:tion|cion|zione|cao|ction|tione)$/],
   [/ity$/, /(?:ite|idad|ita|idade|itat)$/],
   [/ous$/, /(?:eux|oso|os)$/],

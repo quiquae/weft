@@ -30,6 +30,13 @@ export interface Plan {
 
 export const CHECKOUT_BASE = 'https://weft.lemonsqueezy.com/checkout/buy';
 
+/**
+ * A plan's checkout address. A helper rather than a template in each plan,
+ * because esbuild cannot drop a template that interpolates a name, and `PLANS`
+ * rode into every bundle that imports this file for its addresses alone.
+ */
+const buy = /* @__NO_SIDE_EFFECTS__ */ (slug: string): string => `${CHECKOUT_BASE}/${slug}`;
+
 export const PLANS: Plan[] = [
   {
     id: 'monthly',
@@ -38,7 +45,7 @@ export const PLANS: Plan[] = [
     currency: 'USD',
     per: 'per month',
     note: 'Cancel whenever. Your vocabulary stays either way.',
-    checkout: `${CHECKOUT_BASE}/weft-pro-monthly`,
+    checkout: buy('weft-pro-monthly'),
   },
   {
     id: 'yearly',
@@ -48,7 +55,7 @@ export const PLANS: Plan[] = [
     per: 'per year',
     note: 'Works out at $2 a month.',
     featured: true,
-    checkout: `${CHECKOUT_BASE}/weft-pro-yearly`,
+    checkout: buy('weft-pro-yearly'),
   },
   {
     id: 'lifetime',
@@ -57,7 +64,7 @@ export const PLANS: Plan[] = [
     currency: 'USD',
     per: 'once',
     note: 'One key, no renewal, no server to outlive.',
-    checkout: `${CHECKOUT_BASE}/weft-pro-lifetime`,
+    checkout: buy('weft-pro-lifetime'),
   },
 ];
 
