@@ -66,11 +66,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **590 pass**, 149 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **596 pass**, 152 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1001 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 996 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -173,6 +173,21 @@ ECMAScript's: `Date.now`, an argument-less `new Date()`, `Date()` and
 `daysUntilDue()` and three expiry checks in `licence.ts` read it themselves
 until then. Randomness is `crypto.getRandomValues`, `PLATFORM`'s, for an
 install id.
+
+**And a core module imported for one name brings nothing else with it.**
+esbuild keeps a top-level statement it cannot prove does nothing in every
+bundle that imports its module, read or not: an unmarked call, a `new` it does
+not know, a property read, a template joining a name, a spread, and a `\p{…}`
+pattern, which it writes as `new RegExp(…)`. Until 2026-11-07 eleven core
+modules did, and the dashboard carried the whole feature table it never shows.
+`tests/tools/core-tree-shaking.test.ts` bundles each core module imported for
+nothing, as `build.mjs` bundles it, and fails on anything left that `MUST_RUN`,
+empty, does not name with why it must run; it asks esbuild rather than reading
+the source, because a reading for calls misses the other four. Cure a finding
+with `/* @__PURE__ */` on the call, `/* @__NO_SIDE_EFFECTS__ */` on a helper
+whose calls are all pure, or a marked arrow called at once; never a mark on a
+call whose value is thrown away, which deletes it, and which the same file
+refuses.
 
 **No static `content_scripts`, and no host permissions at install.**
 `optional_host_permissions: ['*://*/*']` is requested per-origin at runtime

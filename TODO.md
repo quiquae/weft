@@ -6,9 +6,9 @@
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
-suites, **590** tool tests / 149 suites, **47** e2e passing
+suites, **596** tool tests / 152 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1001 KB each, all
+packages built at 996 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -108,6 +108,12 @@ bytes, the never-weave list held a kind at a time and the pages naming all six:
 1000.810 KB, measured against `main`'s built in a `/tmp` worktree. A top-level
 `flatMap` had first put the whole list, 1 246 bytes nothing there reads, into
 `options.js`; see Notes.
+And back to **996 KB** later on 2026-11-07 by 4 651 bytes, eleven core modules
+leaving nothing now in a bundle that never reads them: `dashboard.js` −2 452,
+the whole feature table, `background.js` −1 076, `options.js` −723,
+`onboarding.js` −202 and `content.js` −198, `popup.js` unchanged; Chrome's
+1000.810 → 996.268 KB, Firefox's 996.336 and Safari's 996.274, measured against
+the same tree built before the marks.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2319,31 +2325,51 @@ registered**, and nothing below it can move until it is.
       → **590** / 145 → **149** suites, total 1389 → **1400**, in six
       places. Nothing under `src/` moved. See Notes.
 
-- [ ] **Find every top-level call in `src/core/` that rides into a bundle
-      that never reads it, and hold the rest.** Queued 2026-11-07, the second
-      sighting of one trap: esbuild keeps a top-level call it cannot prove
-      pure in every bundle that imports the module, read or not. A frozen
-      `SENDING_PATHS` put 490 dead bytes each into `options.js` and
-      `onboarding.js` on 2026-11-03, and the `flatMap` deriving
-      `DEFAULT_EXCLUSIONS` put 1 246 into `options.js` on 2026-11-07; both
-      were found only because a printed size moved, and a size that does not
-      cross a kilobyte moves nothing. Measure first: list every top-level
-      `const` in `src/core/` initialised by a call or a `new`, and for each,
-      which built bundles carry it (`grep` a string unique to it in
-      `dist/chrome/*.js`) and which import a name that reads it. Then guard
-      what the measurement shows, in `tests/tools/`, by the checker as
-      `core-purity.test.ts` does: a top-level call not marked
-      `/* @__PURE__ */` is refused unless a list names it with why it must run
-      wherever its module is imported. Red first by taking the mark off
-      `src/core/sites.ts`. While `src/core/` is open, correct two comments
-      the privacy run left, since it moved nothing under `src/`:
-      `src/core/integrity.ts`'s header says the key material "is derived
-      from data that ships inside the extension" and `src/core/lock.ts`'s
-      `recordTamper` doc that "the signing key ships inside the extension";
-      the key is derived from the install id, which is generated at install
-      and stored beside the data it signs, and only the salt ships. About 45 minutes; a mark added in `src/core/`
-      moves no pixel, but it moves every screenshot group's provenance, so
-      regenerate, compare and stamp.
+- [x] **Find every top-level call in `src/core/` that rides into a bundle
+      that never reads it, and hold the rest.** Done 2026-11-07, and the
+      guard asks esbuild rather than the checker, for a measured reason.
+      Bundling each core module imported for nothing, as `build.mjs` bundles
+      it, left code behind for **11 of 31**, 28 statements, and three of the
+      eleven were not calls at all: a property read (`PUBLISHER_KEY_X`, which
+      kept the whole key in `options.js`), templates interpolating a name
+      (`PLANS`), and five `\p{…}` patterns in `tokenize.ts`, which esbuild
+      writes as `new RegExp(…)` for every engine the build targets. A spread
+      in `new Set([...])` keeps itself even when marked. So a reading of the
+      source for unmarked calls would have missed three modules and asked for
+      a mark that does nothing. `tests/tools/core-tree-shaking.test.ts`, 6
+      tests in 3 suites: every core module imported for nothing leaves
+      nothing, unless `MUST_RUN` (empty) names the statement with why; a
+      probe module that never touches disk pins what esbuild keeps and drops;
+      and a pure mark on a call whose value is thrown away, which deletes it,
+      is refused. Red first on all 28; three probes restored by md5, the mark
+      off `sites.ts` naming `DEFAULT_EXCLUSIONS`. Fixed with
+      `/* @__PURE__ */` marks, `/* @__NO_SIDE_EFFECTS__ */` on `languages.ts`'s
+      `L` and `pricing.ts`'s new `buy()`, and an arrow called at once for what
+      no mark reaches. Chrome's bundles lose **4 651 bytes**: `dashboard.js`
+      −2 452, the whole feature table, `background.js` −1 076, `options.js`
+      −723, `onboarding.js` −202, `content.js` −198; the packages print
+      **996 KB**. Both stale key comments corrected. All 31 shots regenerated,
+      every one byte-identical, three groups stamped. Tools 590 → **596** /
+      149 → **152** suites, total 1400 → **1406**, in six places. See Notes.
+
+- [ ] **Read the store description in `docs/STORE-LISTING.md` claim by
+      claim against the code.** Queued 2026-11-07. It is the copy Google
+      reviews and every stranger at the store reads first, pasted four times
+      into `docs/READY-TO-SUBMIT.md`, and no run has read it whole: guards
+      hold slices of it — "never page text" (`sending-copy.test.ts`), what Pro
+      promises (`pro-features.test.ts`), the permission justifications
+      (`privacy-permissions.test.ts`), the paste blocks to the listing
+      (`ready-to-submit.test.ts`) — and nothing holds the rest: seven
+      languages and 356 checked lemmas, offline, no account, the screen-reader
+      mode, FSRS-6, difficulty rising with attention, the tooltip's fields,
+      the cooldowns. Read each sentence against the code, as `docs/PRIVACY.md`
+      and `docs/SUPPORT.md` were, and fix the listing and its four copies
+      together, the paste blocks' test requiring it. Two calls stay Creagh's
+      and are not this item's: "money, mail, credentials and health" (Notes,
+      the never-weave run) and "Open source. MIT licensed.", untrue until B2.
+      About 60 minutes; documents only, unless a claim is the code's to meet.
+      `docs/PEDAGOGY.md` is the other document no run has read claim by
+      claim, and is the item after this one.
 
 ## Next
 
@@ -8011,6 +8037,52 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, latest — esbuild asked what it keeps.** Seven things a later
+run would be sorry not to know:
+
+1. **The guard asks esbuild, not the checker, and the item said the
+   checker.** Measured on esbuild 0.24.2 with the build's three targets and
+   `minifySyntax`, by bundling small cases: kept unread are any unmarked call,
+   a `new` it does not know (`new TextEncoder()`), a property read, a template
+   or a `+` that joins a name, a spread even inside a marked `new Set`, and a
+   `\p{…}` outside a character class, which it writes as `new RegExp(…)` even
+   for `chrome116` alone (`[\p{Nd}]` inside a class it leaves a literal, and
+   drops). Dropped: a marked call whose arguments are droppable, `new Set` of
+   literals, `new Map()`, a plain pattern, a call to a helper marked
+   `@__NO_SIDE_EFFECTS__`, and a marked arrow called at once with anything in
+   it. A source reading for unmarked calls could not see three of the eleven
+   modules and would have asked for a mark on the spread, where a mark does
+   nothing.
+2. **The probe in `core-tree-shaking.test.ts` pins those rules.** An esbuild
+   upgrade that changes one fails "finds what esbuild keeps" first; read which
+   name moved before touching a mark.
+3. **A pure mark on a call whose value is thrown away deletes the call** from
+   every bundle, so the third suite refuses one in `src/core/`. A call that has
+   to run goes unmarked and its statement into `MUST_RUN`, with why.
+4. **The three cures, in order:** `/* @__PURE__ */` before a call or `new`
+   (both on `new Set(/* @__PURE__ */ X.filter(…))`, since esbuild drops a
+   marked call only if every argument is droppable); `/* @__NO_SIDE_EFFECTS__ */`
+   on a helper every call to which is pure (`L`, `buy()`); and for a property
+   read, a spread or a `\p{…}` pattern, an arrow called at once, that call
+   marked. `PUBLISHER_KEY_X` keeps its name and value: `tools/validate-package.mjs`
+   and `never-touched.test.ts` read it.
+5. **Outside `src/core/` nothing of Weft's leaks.** Measured the same way:
+   `src/ui/components` and `src/ui/lib` leave only Preact's own import-time
+   runtime, which every page bundle runs anyway; `src/shared/browser.ts` leaves
+   its `api`, a global read every importer uses; the rest is entry points and
+   modules only one bundle imports. Not queued.
+6. **What it bought:** Chrome's bundles 329 011 → 324 360 bytes,
+   `dashboard.js` −2 452 (the feature table and its copy, which the dashboard
+   never shows), `background.js` −1 076, `options.js` −723, `onboarding.js`
+   −202, `content.js` −198, `popup.js` ±0; the packages 1000.810 → 996.268 KB,
+   Firefox's 996.336, Safari's 996.274, all printing 996 and passing
+   `validate`, the publisher key still in `background.js`.
+7. **Assumed, with nobody to ask:** that departing from the item's "by the
+   checker" for a measured reason is the item done, not changed; that an arrow
+   called at once is acceptable style where no mark reaches, each with a line
+   saying why; and that the store description is the next document to read,
+   it being what Google reviews.
 
 **2026-11-07, latest — the privacy page read claim by claim.** Seven things
 a later run would be sorry not to know:
