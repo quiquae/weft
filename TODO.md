@@ -2059,49 +2059,68 @@ registered**, and nothing below it can move until it is.
       (Notes). Edge's own file is the next item.
 
 - [ ] **Give Microsoft Edge its own Hard Mode file, for Weft's Edge Add-ons
-      copy.** The second slice of the item above. Read on 2026-11-07 in
-      Microsoft's page for `ExtensionSettings`
-      (`learn.microsoft.com/deployedge/microsoft-edge-policies/extensionsettings`,
-      through the Microsoft Learn MCP server) and its guide
-      (`…/microsoft-edge-manage-extensions-ref-guide`):
-      1. **Where:** Windows `SOFTWARE\Policies\Microsoft\Edge`, value name
-         `ExtensionSettings`, `REG_SZ` holding the JSON — the only form
-         Microsoft documents; macOS preference key `ExtensionSettings`, a
-         plist dict, under Edge's domain (`com.microsoft.Edge`: confirm the
-         payload type on Microsoft's macOS configuration page). Supported
-         on Windows ≥ 77, macOS ≥ 77 and Android; **Linux is not listed**,
-         so Edge on Linux offers no file unless a Microsoft page says it
-         reads `/etc/opt/edge/policies/managed/`.
-      2. **What:** per extension `installation_mode: force_installed`,
-         `update_url` and Edge's own `toolbar_state: force_shown` (not
-         Chrome's `toolbar_pin`). Edge Add-ons' update URL is
-         `https://edge.microsoft.com/extensionwebstorebase/v1/crx`.
-      3. **Which copy:** "apps and extensions from outside the Microsoft
-         Edge Add-ons website can only be forced installed if the instance
-         is joined to a Microsoft Active Directory domain or joined to
-         Microsoft Azure Active Directory", and on macOS "if the instance is
-         managed via MDM, joined to a domain via MCX". So on a personal
-         machine Edge's file holds only for the copy installed from Edge
-         Add-ons, whose id Microsoft assigns at listing and `runtime.id`
-         reads. A copy installed into Edge from the Chrome Web Store cannot
-         be held there, and its row should say so. Which store a copy came
-         from is the `update_url` the store writes into its manifest ("the
-         exact update URL stated in the extension manifest"), so
-         `api.runtime.getManifest().update_url` — unverified on a real store
-         install.
-      4. **The `.reg` test's grammar** reads every value as `"name"="value"`
-         with no escaped quote, which a `REG_SZ` JSON value breaks, and
-         deleting that value (`"ExtensionSettings"=-`) removes every
-         extension's settings, where Chrome's file deletes only Weft's
-         subkey. Read Chromium's `components/policy/core/common/registry_dict.cc`
-         for whether Edge converts a subkey as Chrome does before choosing.
-      Then `hardModeHere()` gains `{ file: 'edge' }` for Edge's brands, the
-      worker writes Edge's file, `docs/HARD-MODE.md`'s Edge bullet and the
-      Edge note in `docs/READY-TO-SUBMIT.md` move with it, and the tests
-      read each Edge file as Edge would. **About 90 minutes.** Testing it
-      end to end waits on the Edge listing (B5). **Creagh's**: Firefox's
-      own file, which needs Weft on addons.mozilla.org (B6), and whether the
-      Firefox, Edge and Safari copy keeps Hard Mode.
+      copy.** The second slice of the item above. Every reading it needs was
+      made on 2026-11-07; this is the build.
+      1. **Where.** Windows: `SOFTWARE\Policies\Microsoft\Edge`, the policy
+         `ExtensionSettings`, which Microsoft documents only as a `REG_SZ`
+         holding the JSON. Chromium's reader takes the subkey form Chrome's
+         `.reg` writes too: `RegistryDict::ConvertToJSON` in
+         `components/policy/core/common/registry_dict.cc` (main, read
+         2026-11-07) converts each subkey of a dictionary policy into a
+         nested dictionary, as well as parsing a JSON string, and Edge builds
+         on Chromium's `components/policy`. So write
+         `ExtensionSettings\<id>` as Chrome's file does, whose removal deletes
+         only Weft's subkey — where deleting the documented value would take
+         every extension's settings with it. Not yet seen working in a real
+         Edge. macOS: the preference domain is `com.microsoft.Edge`,
+         case-sensitive and every channel's since build 78.0.249.2
+         (Microsoft's "Configure Microsoft Edge policy settings for macOS
+         using a property list"), so the profile's `PayloadType` is that
+         domain, as Chrome's is `com.google.Chrome`. **Linux: no file.**
+         `ExtensionSettings` lists Windows ≥ 77, macOS ≥ 77 and Android, and a
+         search of Microsoft Learn for Edge's Linux policy directory found no
+         page.
+      2. **What.** Per extension `installation_mode: force_installed`,
+         `update_url`, and Edge's own `toolbar_state: force_shown`, not
+         Chrome's `toolbar_pin`. Edge Add-ons' update URL is
+         `https://edge.microsoft.com/extensionwebstorebase/v1/crx`. The steps
+         say Edge where Chrome's say Chrome: `edge://policy`,
+         `edge://extensions`, quit Edge.
+      3. **Which copy.** Microsoft's `ExtensionSettings` page: "apps and
+         extensions from outside the Microsoft Edge Add-ons website can only
+         be forced installed if the instance is joined to a Microsoft Active
+         Directory domain or joined to Microsoft Azure Active Directory", and
+         on macOS "if the instance is managed via MDM, joined to a domain via
+         MCX". So on a personal machine the file holds only for the copy from
+         Edge Add-ons, whose id `runtime.id` reads. **Which store a copy came
+         from is in its manifest**: a CRX fetched from each store on
+         2026-11-07 carries that store's `update_url` in `manifest.json` —
+         `https://clients2.google.com/service/update2/crx` from the Chrome Web
+         Store (Google Docs Offline, `ghbmnnjooekpmoecnnnilnnbdlolhkhi`) and
+         `https://edge.microsoft.com/extensionwebstorebase/v1/crx` from Edge
+         Add-ons (uBlock Origin's Edge listing,
+         `odfafepnkmbhccpbejgmiehpchacaeak`) — so
+         `api.runtime.getManifest().update_url` says it; an unpacked copy has
+         none. A copy from the Chrome Web Store running in Edge gets a row
+         saying Edge holds only its own store's copies on a machine nobody
+         manages. To fetch again: `curl -sSL -o x.crx
+         'https://clients2.google.com/service/update2/crx?response=redirect&prodversion=140.0&acceptformat=crx2,crx3&x=id%3D<id>%26uc'`
+         or `'https://edge.microsoft.com/extensionwebstorebase/v1/crx?response=redirect&prod=chromiumcrx&prodchannel=&x=id%3D<id>%26installsource%3Dondemand%26uc'`,
+         into an empty directory, then `unzip -p x.crx manifest.json`, which
+         reads past the CRX3 header.
+      4. **The build.** `hardModeHere()` takes the manifest's `update_url`
+         and returns `{ file: 'edge' }` for Edge's brands unless it is the
+         Chrome Web Store's; `profileFor()` takes the browser, and the Linux
+         chip is not offered in Edge; the `.reg` test's grammar already reads
+         subkey values, and its `[-key]` rule carries over. Tests per browser
+         of the `tests/dom/hard-mode.test.ts` kind; the e2e test in
+         `licensing.spec.ts` now expects Edge to be offered a file, its copy
+         being unpacked. Then `docs/HARD-MODE.md`'s Edge sections, the Edge
+         note in `docs/READY-TO-SUBMIT.md`, a `CHANGELOG.md` paragraph and
+         the counts. **About 60 minutes**, and testing it end to end waits on
+         the Edge listing (B5). **Creagh's**: Firefox's own file, which needs
+         Weft on addons.mozilla.org (B6), and whether the Firefox, Edge and
+         Safari copy keeps Hard Mode.
 
 ## Next
 
