@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **569 pass**, 142 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **576 pass**, 144 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1001,6 +1001,74 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — the support page said the never-weave list works backwards
+
+`Now` was empty and every unchecked item in `Next` waits on Creagh, so a
+written promise was read against the code: `docs/SUPPORT.md`, published as
+`/support`, the address every store listing gives, which the run before had
+read only for the one claim it fixed. Its reader is somebody for whom Weft is
+not working, who will do what it says. The session was stopped at 08:28 by
+the account's usage limit and resumed at 09:53 with its context; the work in
+flight was committed and pushed before anything else moved.
+
+**Six claims were false or short of the code.** Taking a site off the
+never-weave list "is a difficulty-reducing change and waits out a cooldown":
+`GOVERNED_PATHS` judges a *longer* never-weave list the easier one, so
+adding waits and taking one off applies at once, as the settings row has
+always said. "Open the first-run page from Settings": nothing links it; only
+the install handler opens it, and Settings → **Sites** lists the ungranted
+sites and asks for them in one click. The list's kinds, "money, mail,
+credentials, health and government", where it also covers checkouts and
+forms and the places you write, Google Docs and Notion among them. A page
+"already in the language you are learning", where the check refuses any page
+declaring a language other than English. The dashboard "which says no
+network request has ever been made", which it says only until one is. And "a
+yearly licence carries an expiry", where a monthly one does too, which
+`docs/PRICING.md` also left out.
+
+**The never-weave list is the one list whose longer form is the easier one**,
+which is why a sentence written from the taxed and gentle lists gets it
+backwards. The guard, `tests/tools/support-directions.test.ts`, 7 tests in 2
+suites, reads every sentence in the source, the README, `docs/*.md` and
+`site/*.html` that says which change to the list waits and holds it to
+`directionOf()`, and holds the user documents' bold-quoted interface lines to
+`src/ui/` and their `Settings → **…**` paths to titles and controls the
+settings page has, refusing a path not written in bold. **The backwards
+sentence said "the list" and "it"**, the list named a sentence earlier, so the
+reader carries a paragraph's subject until it names another list: one that
+judged only sentences naming the list could never have been red on it. Red
+first on exactly that sentence and the two unbolded paths, the export's and
+`docs/HARD-MODE.md`'s; four probes, each restored by md5, each failing by
+name. Tools 569 → **576** / 142 → **144** suites, total 1379 → **1386**, in
+six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing
+that ships moved.
+
+**Found and queued, not fixed:** the settings row names four of the list's
+six kinds, and the content script's reason prints "This page is not in EN";
+both are copy in `src/`, which moves the screenshot groups, so they are the
+first item in `Now`. And nothing says how a buyer gets a licence key, or how
+a monthly subscriber's expiring key is replaced, keys being signed on
+Creagh's machine with no server: written into **B4**.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard and the documents: `npm run test:all` **exit 0** —
+typecheck clean, 644 unit / 151, 119 jsdom / 26, **576 tools / 144**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1000 KB × 3**
+passing `validate`, **47 e2e passed and 3 skipped in 5.2 min**, then build
+and validate again. Separately `npm run site` then `site:check` **714 pages /
+16 118 links**, all resolving, `/support` printing the corrected sentence.
+`packs:verify` was not run: no pack or seed moved. Only documents moved after
+the gate, so typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the support page may name the settings row
+by its title as a step of a path; that "passwords and sign-in" and "the places
+you write rather than read" stand for the list's own comments; and that the
+licence question is Creagh's, not a copy fix.
+
+What needs a human: unchanged, everything below **B1** and the calls, and B4
+now asks how a key reaches a buyer.
 
 ### 2026-11-07 — the popup names a missing grant, as the support page said it did
 
