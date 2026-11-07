@@ -9,6 +9,20 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Hard Mode's file says how to take it off.** The options page told a buyer
+"the file you download contains its own removal instructions", and it did not:
+the page showed the steps and the download held none of them. The macOS
+profile's only mention of removal was a key, the Linux file was bare JSON, and
+the Windows file pointed at a removal file nobody had been given. The page is
+closed the moment the file is saved, so the way out was missing from the one
+thing a user keeps. Each file now carries its own instructions, as comments
+its installer skips, and the macOS profile says them again in its
+description, which System Settings shows on the profile's detail screen. The
+macOS steps name General > Device Management, where current macOS keeps
+profiles, beside the Privacy & Security > Profiles they named alone; the Linux
+steps say how to remove the file from Chromium's directory as well as
+Chrome's; and the instructions no longer call a 49-line profile "40 lines".
+
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
 features, and four of them could not be had: both rows of language chips set
@@ -814,7 +828,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1342 tests: 630 unit, 102 in jsdom, 565 over the build tools, and
+**Built with** 1346 tests: 630 unit, 106 in jsdom, 565 over the build tools, and
 45 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
