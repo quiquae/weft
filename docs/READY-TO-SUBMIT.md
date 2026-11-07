@@ -320,9 +320,9 @@ Reads the web back to you with some words woven into another language. Difficult
 
 **Decide before pasting:** the screen-time paragraph's last clause, that
 Hard Mode "generates a browser policy making the extension unremovable",
-is true in Google Chrome alone. In Firefox the settings page says Hard Mode
-has no file there, because Firefox reads no policy written for Chrome
-(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
+is true in Google Chrome and Microsoft Edge alone. In Firefox the settings
+page says Hard Mode has no file there, because Firefox reads no policy
+written for Chrome or Edge (TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
 something they can look for and not find; dropping it here means a
 Firefox variant of the description in `docs/STORE-LISTING.md`.
 
@@ -491,13 +491,14 @@ description come from the package and cannot be typed here; they will read as
 in C3. Description — Edge wants 250 to 10 000 characters, and `npm test`
 fails if this stops fitting:
 
-**Decide before pasting:** the screen-time paragraph's last clause, that
-Hard Mode "generates a browser policy making the extension unremovable",
-is true in Google Chrome alone. In Microsoft Edge the settings page says Hard Mode
-has no file there, because Microsoft Edge reads no policy written for Chrome
-(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
-something they can look for and not find; dropping it here means a
-Microsoft Edge variant of the description in `docs/STORE-LISTING.md`.
+**The clause holds here:** the screen-time paragraph's last clause, that
+Hard Mode "generates a browser policy making the extension unremovable", is
+true in Microsoft Edge for the copy this listing serves. Since 2026-11-07
+Weft writes Edge's own policy, on Windows and macOS, for its copy from Edge
+Add-ons, which is the only copy Edge force-installs on a machine nobody
+manages; a copy from the Chrome Web Store running in Edge is told why it
+has none (`docs/HARD-MODE.md`, Microsoft Edge). Edge on Linux has no file,
+Microsoft listing the policy for Windows and macOS only.
 
 <details><summary>Description — click to open, then copy</summary>
 
@@ -603,9 +604,9 @@ https://weft.study/privacy
 
 **Decide before pasting:** the screen-time paragraph's last clause, that
 Hard Mode "generates a browser policy making the extension unremovable",
-is true in Google Chrome alone. In Safari the settings page says Hard Mode
-has no file there, because Safari reads no policy written for Chrome
-(TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
+is true in Google Chrome and Microsoft Edge alone. In Safari the settings
+page says Hard Mode has no file there, because Safari reads no policy
+written for Chrome or Edge (TODO.md, Hard Mode per browser). Keeping the clause promises a reviewer
 something they can look for and not find; dropping it here means a
 Safari variant of the description in `docs/STORE-LISTING.md`.
 

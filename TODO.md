@@ -8,7 +8,7 @@
 of this session — typecheck clean, **643** unit / 151 suites, **119** jsdom / 26
 suites, **565** tool tests / 141 suites, **46** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 996 KB each, all
+packages built at 999 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -91,6 +91,11 @@ and 754 `options.js`, the decision of where Hard Mode has a file and the
 sentence for where it has none, which each bundle carries: Chrome's 994.198
 → 995.647 KB, Firefox's 995.716 and Safari's 995.654, measured against
 `main`'s Chrome package built in a `/tmp` worktree.
+And to **999 KB** later on 2026-11-07 by 3 394 bytes, 2 029 of them
+`background.js` and 1 364 `options.js`, Edge's own Hard Mode file and the
+row that offers it: Chrome's 995.647 → 998.961 KB, Firefox's 999.029 and
+Safari's 998.968, measured against `main`'s three packages built in a `/tmp`
+worktree, every other bundle byte-identical.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure

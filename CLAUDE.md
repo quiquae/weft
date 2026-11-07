@@ -70,7 +70,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **46 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 996 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 999 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -280,20 +280,28 @@ strict JSON: they are the way out.
 
 **And a Hard Mode file is offered only where the browser obeys it.** A
 managed policy holds only in the browser that reads it, and Weft writes
-Google Chrome's. `hardModeHere()` in `src/core/hard-mode.ts` decides from
-the build and the brands the browser names itself by (`uaBrands()`,
-`navigator.userAgentData`), because Microsoft Edge runs the Chrome package
-unchanged: Chrome keeps its file; Firefox, Safari, Edge and any other
-browser that names itself get a row saying it reads no policy written for
-Chrome, on either tier, and the worker's `profileFor()` refuses there too.
-Until 2026-11-07 every build offered Chrome's file to everyone. Do not hand
-Edge Chrome's file "for now": Edge reads `com.microsoft.Edge` and
-`Policies\Microsoft\Edge`, and Microsoft documents that it force-installs
-an extension from outside Edge Add-ons only on a managed machine, so Edge's
-own file waits on Weft's Edge Add-ons copy (`TODO.md`).
-`tests/core/hard-mode.test.ts`, `tests/dom/hard-mode.test.ts` and an e2e
-test in `licensing.spec.ts`, which makes the page's browser name itself as
-Chrome and then as Edge, hold it.
+Google Chrome's and Microsoft Edge's. `hardModeHere()` in
+`src/core/hard-mode.ts` decides from the build, the brands the browser names
+itself by (`uaBrands()`, `navigator.userAgentData`), because Edge runs the
+Chrome package unchanged, and the store the copy came from (`updateUrl()`,
+the manifest's `update_url`, which each store writes into the copy it
+serves). Chrome keeps its file; Edge gets its own, `com.microsoft.Edge` and
+`Policies\Microsoft\Edge`, for the copy from Edge Add-ons, because
+Microsoft documents that Edge force-installs an extension from anywhere else
+only on a managed machine, and a copy from the Chrome Web Store in Edge gets
+a row saying so; an unpacked copy, a developer's, gets its browser's file;
+and Firefox, Safari and any other browser that names itself get a row saying
+it reads no policy written for Chrome or Edge, on either tier. The worker's
+`profileFor()` refuses wherever the page offers nothing. Until 2026-11-07
+every build offered Chrome's file to everyone, and then Edge none. Edge has
+no Linux file, Microsoft listing the policy for Windows and macOS only
+(`HARD_MODE_PLATFORMS`); do not write one to a guessed directory. Chrome's
+three files are byte for byte what they were before Edge had one, and
+Edge's macOS profile carries its own identifiers: installing a profile
+replaces any other with its `PayloadIdentifier`, so sharing Chrome's would
+make Edge's file remove Chrome's Hard Mode. `tests/core/hard-mode.test.ts`,
+`tests/dom/hard-mode.test.ts` and an e2e test in `licensing.spec.ts`, which
+makes the page's browser name itself as Chrome and then as Edge, hold it.
 
 **Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,
