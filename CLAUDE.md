@@ -1058,7 +1058,19 @@ groups are stamped. Tools 576 → **579** / 144 → **145** suites, total 1386 �
 **1389**, in six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
 paragraph.
 
-@@GATE@@
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the mark and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, 644 unit / 151, 119 jsdom / 26, **579 tools / 145**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1001 KB × 3**
+passing `validate` (Chrome's 1000.810 KB, Firefox's 1000.878, Safari's
+1000.816), **47 e2e passed and 3 skipped in 5.3 min**, then build and
+validate again; the gate before the mark exited 0 too, at 1002 KB.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving, `/privacy` printing both new sentences, and `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a. `packs:verify` was not
+run: no pack or seed moved. Only this paragraph moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
 
 Assumed, with nobody to ask: that the kinds are `/support`'s words and its
 six, health and government being one; that the README and the privacy page
