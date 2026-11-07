@@ -315,9 +315,11 @@ Everything is on your machine. There is no account, no server, and no
 telemetry — the setting for telemetry does not exist rather than defaulting to
 off, and validation refuses to turn it on.
 
-Weft ships a never-weave list covering money, mail, credentials and health,
-checked before anything else and before any lexicon is even loaded. A language
-tool has no business between you and your bank.
+Weft ships a never-weave list covering mail, money, passwords and sign-in,
+health and government, checkouts and forms you cannot take back, and the
+places you write rather than read, checked before anything else and before any
+lexicon is even loaded. A language tool has no business between you and your
+bank.
 
 If you enable a translation service, it receives **single words and a
 part-of-speech hint**, never the page: its request carries the word, its part

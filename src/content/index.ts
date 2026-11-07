@@ -891,7 +891,7 @@ async function boot(): Promise<void> {
   if (!documentLanguageMatches(state.settings.learning.sourceLang)) {
     // Not a fault: weaving French into a French page would be nonsense.
     // But it is invisible, and "nothing happened" needs a reason.
-    inactiveReason = `This page is not in ${state.settings.learning.sourceLang.toUpperCase()}, so there is nothing to weave from.`;
+    inactiveReason = `This page is not in ${getLanguage(state.settings.learning.sourceLang).name}, so there is nothing to weave from.`;
     return;
   }
 

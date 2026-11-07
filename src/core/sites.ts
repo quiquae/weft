@@ -196,35 +196,65 @@ const FORBIDDEN_SCHEMES = new Set([
 ]);
 
 /**
- * Default never-touch list. Chosen on the principle that Weft must not be
- * between you and your money, your health, your identity, or anything you are
- * about to sign. Users can remove entries; they cannot remove them silently
- * (it is a difficulty-reducing change and goes through the cooldown).
+ * What the never-weave list covers, a kind at a time, in the words the pages
+ * that set it use. Chosen on the principle that Weft must not be between you
+ * and your money, your health, your identity, or anything you are about to
+ * sign. The settings row, the first-run page and `/support` each name every
+ * kind, and `tests/tools/support-directions.test.ts` holds them to this list.
+ * Users can take entries off it, which makes Weft harder and so applies at
+ * once; adding one makes Weft easier, and waits out the cooldown.
  */
-export const DEFAULT_EXCLUSIONS: string[] = [
-  // Mail and messaging where precision matters
-  'mail.google.com', 'outlook.com', 'outlook.office.com', 'outlook.live.com',
-  'mail.proton.me', 'proton.me', 'fastmail.com', 'zoho.com', 'mail.yahoo.com',
-  // Money
-  'paypal.com', 'stripe.com', 'wise.com', 'revolut.com', 'venmo.com',
-  'coinbase.com', 'chase.com', 'bankofamerica.com', 'wellsfargo.com',
-  'citibank.com', 'capitalone.com', 'americanexpress.com', 'schwab.com',
-  'fidelity.com', 'vanguard.com', 'hsbc.com', 'barclays.co.uk', 'lloydsbank.com',
-  'monzo.com', 'nationwide.co.uk', 'santander.co.uk',
-  // Credentials and security
-  '1password.com', 'lastpass.com', 'bitwarden.com', 'dashlane.com',
-  'accounts.google.com', 'login.microsoftonline.com', 'appleid.apple.com',
-  'id.atlassian.com', 'auth0.com', 'okta.com',
-  // Health and government
-  'myuhc.com', 'mychart.com', 'nhs.uk', 'irs.gov', 'ssa.gov', 'gov.uk',
-  'usa.gov', 'uscis.gov', 'dmv.ca.gov', 'healthcare.gov',
-  // Checkout and forms you cannot un-submit
-  'amazon.com/gp/buy', 'checkout.stripe.com', 'docs.google.com/forms',
-  'turbotax.intuit.com', 'hrblock.com',
-  // Where you are writing, not reading
-  'docs.google.com', 'notion.so', 'overleaf.com', 'figma.com',
-  'github.com/*/*/compare', 'mail.superhuman.com',
+export const NEVER_WEAVE_KINDS: ReadonlyArray<{ kind: string; patterns: readonly string[] }> = [
+  {
+    kind: 'mail', // and messaging, where precision matters
+    patterns: [
+      'mail.google.com', 'outlook.com', 'outlook.office.com', 'outlook.live.com',
+      'mail.proton.me', 'proton.me', 'fastmail.com', 'zoho.com', 'mail.yahoo.com',
+    ],
+  },
+  {
+    kind: 'money',
+    patterns: [
+      'paypal.com', 'stripe.com', 'wise.com', 'revolut.com', 'venmo.com',
+      'coinbase.com', 'chase.com', 'bankofamerica.com', 'wellsfargo.com',
+      'citibank.com', 'capitalone.com', 'americanexpress.com', 'schwab.com',
+      'fidelity.com', 'vanguard.com', 'hsbc.com', 'barclays.co.uk', 'lloydsbank.com',
+      'monzo.com', 'nationwide.co.uk', 'santander.co.uk',
+    ],
+  },
+  {
+    kind: 'passwords and sign-in',
+    patterns: [
+      '1password.com', 'lastpass.com', 'bitwarden.com', 'dashlane.com',
+      'accounts.google.com', 'login.microsoftonline.com', 'appleid.apple.com',
+      'id.atlassian.com', 'auth0.com', 'okta.com',
+    ],
+  },
+  {
+    kind: 'health and government',
+    patterns: [
+      'myuhc.com', 'mychart.com', 'nhs.uk', 'irs.gov', 'ssa.gov', 'gov.uk',
+      'usa.gov', 'uscis.gov', 'dmv.ca.gov', 'healthcare.gov',
+    ],
+  },
+  {
+    kind: 'checkouts and forms you cannot take back',
+    patterns: [
+      'amazon.com/gp/buy', 'checkout.stripe.com', 'docs.google.com/forms',
+      'turbotax.intuit.com', 'hrblock.com',
+    ],
+  },
+  {
+    kind: 'the places you write rather than read',
+    patterns: [
+      'docs.google.com', 'notion.so', 'overleaf.com', 'figma.com',
+      'github.com/*/*/compare', 'mail.superhuman.com',
+    ],
+  },
 ];
+
+/** The never-weave list Weft ships: every kind's patterns, in order. */
+export const DEFAULT_EXCLUSIONS: string[] = NEVER_WEAVE_KINDS.flatMap((k) => k.patterns);
 
 /** Curated presets for onboarding, so the first run is one click. */
 export const SITE_PRESETS: Array<{

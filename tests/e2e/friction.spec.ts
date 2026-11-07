@@ -1,4 +1,5 @@
 import { test, expect, squash } from './fixtures.ts';
+import { getLanguage } from '../../src/core/languages.ts';
 
 /**
  * The behaviour that makes Weft more than a vocabulary toy: difficulty that
@@ -941,9 +942,11 @@ test.describe('saying why nothing happened', () => {
     );
     await popup.goto(`chrome-extension://${extensionId}/popup.html`);
 
+    // The language by its name: until 2026-11-07 the line read "This page is
+    // not in EN", the code the settings store.
     await expect(
-      popup.getByText(/not in EN|nothing to weave from/i),
-      'the popup said nothing about why the page was left alone',
+      popup.getByText(`This page is not in ${getLanguage('en').name}, so there is nothing to weave from.`),
+      'the popup said nothing about why the page was left alone, or named its language by code',
     ).toBeVisible({ timeout: 10_000 });
 
     await popup.close();
