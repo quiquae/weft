@@ -857,8 +857,8 @@ let page: WeftPage | null = null;
  * Why this page is not being woven, when the answer would surprise someone.
  *
  * boot() has six early returns and three of them are failures a reader
- * cannot see: the worker did not answer, the page is already in the
- * language they are learning, or the lexicon would not load. In each case
+ * cannot see: the worker did not answer, the page declares a language
+ * other than the one they read in, or the lexicon would not load. In each case
  * they switched Weft on, the page looks entirely normal, and nothing
  * anywhere says why — which reads as a broken extension rather than as a
  * considered decision.
@@ -891,7 +891,7 @@ async function boot(): Promise<void> {
   if (!documentLanguageMatches(state.settings.learning.sourceLang)) {
     // Not a fault: weaving French into a French page would be nonsense.
     // But it is invisible, and "nothing happened" needs a reason.
-    inactiveReason = `This page is not in ${state.settings.learning.sourceLang.toUpperCase()}, so there is nothing to weave from.`;
+    inactiveReason = `This page is not in ${getLanguage(state.settings.learning.sourceLang).name}, so there is nothing to weave from.`;
     return;
   }
 

@@ -318,7 +318,7 @@ export function SitesSection({ c, settings }: { c: Controller; settings: Setting
         siglum={SIGLA.shield}
         locked
         title="Never weave"
-        detail="Beats every other rule. Weft ships this list covering money, mail, credentials and health, because a language tool has no business between you and any of those. Adding to it is a reduction in difficulty and goes through the cooldown."
+        detail="Beats every other rule. Weft ships this list covering mail, money, passwords and sign-in, health and government, checkouts and forms you cannot take back, and the places you write rather than read, because a language tool has no business between you and any of those. Adding to it is a reduction in difficulty and goes through the cooldown."
       >
         <ExclusionList
           patterns={settings.sites.excluded}

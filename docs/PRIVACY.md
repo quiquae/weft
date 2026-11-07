@@ -48,14 +48,15 @@ the type.
 
 ## The never-weave list
 
-Weft ships a deny-list covering money, mail, credentials, health and
-government, checked **before any other rule** and before a lexicon is even
-loaded. A language tool that translates half the words in your online banking
+Weft ships a deny-list covering mail, money, passwords and sign-in, health
+and government, checkouts and forms you cannot take back, and the places you
+write rather than read, checked **before any other rule** and before a lexicon
+is even loaded. A language tool that translates half the words in your online banking
 is not a language tool, it is a hazard.
 
-You can add to it. You can remove entries, but removing one is a
-difficulty-reducing change and goes through the cooldown — deliberately, since
-"take my bank off the safe list" is not a decision to make in a hurry.
+You can add to it, which makes Weft easier, so it waits out the cooldown.
+Taking an entry off makes Weft harder, so that applies at once, as anything
+harder does.
 
 The provider half of that list cannot be pruned at all. Validation
 re-unions the shipped defaults on every load, so a translation service can

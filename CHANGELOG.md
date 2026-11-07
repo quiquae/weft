@@ -66,6 +66,20 @@ cannot touch. It says now that the site is on your list and the browser has
 not granted Weft access to it, with a button that asks again; once you say
 yes, the page reloads woven.
 
+**The pages that set the never-weave list say what it covers.** The settings
+row and the first-run page said the list covers money, mail, credentials and
+health. It also keeps Weft off government sites, checkouts and forms you
+cannot take back, and the places you write rather than read, Google Docs and
+Notion among them, so a reader who found those unwoven saw no reason on the
+page that sets the list. Both name all six kinds now, as the README and the
+privacy page do. The privacy page also said that taking a site off the list
+waits out the cooldown; it applies at once, as anything that makes Weft harder
+does, and adding one is what waits. The popup's reason for a page in another
+language names the language, "This page is not in English", where it printed
+the code, "EN", and the settings page's help row says a page in a language
+other than English is left alone, where it said a page already in the language
+being learned.
+
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
 features, and four of them could not be had: both rows of language chips set
@@ -871,7 +885,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1386 tests: 644 unit, 119 in jsdom, 576 over the build tools, and
+**Built with** 1389 tests: 644 unit, 119 in jsdom, 579 over the build tools, and
 47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

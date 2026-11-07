@@ -6,9 +6,9 @@
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
-suites, **576** tool tests / 144 suites, **47** e2e passing
+suites, **579** tool tests / 145 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1000 KB each, all
+packages built at 1001 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -101,7 +101,13 @@ the tamper penalty's length said in the settings row and the popup:
 999.087 KB against `main`'s, still printing 999. And to **1000 KB** later that
 day by 1 001 bytes, all of them `popup.js`, the notice and button for a listed
 site the browser never granted: Chrome's 999.087 → 1000.065 KB, Firefox's
-1000.133 and Safari's 1000.072.
+1000.133 and Safari's 1000.072. And to **1001 KB** later that day by 762
+bytes, the never-weave list held a kind at a time and the pages naming all six:
+`onboarding.js` +386, `background.js` +283 and `options.js` +99, and
+`content.js` −6, the language's name for its code, Chrome's 1000.065 →
+1000.810 KB, measured against `main`'s built in a `/tmp` worktree. A top-level
+`flatMap` had first put the whole list, 1 246 bytes nothing there reads, into
+`options.js`; see Notes.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2247,21 +2253,81 @@ registered**, and nothing below it can move until it is.
       six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph:
       nothing that ships moved.
 
-- [ ] **Say the never-weave list's six kinds of site on the settings page, and
-      name the page's language rather than its code.** Found 2026-11-07
-      reading `docs/SUPPORT.md`. The settings row (`src/ui/options/sites.tsx:321`)
-      says Weft "ships this list covering money, mail, credentials and
-      health"; `DEFAULT_EXCLUSIONS` covers government, checkouts and forms
-      you cannot take back, and the places you write, too, so a reader who
-      finds Notion or Google Docs unwoven sees no reason on the page that
-      sets it. And the content script's reason for a page in another
-      language (`src/content/index.ts:894`) prints
-      `sourceLang.toUpperCase()`, "This page is not in EN", where
-      `getLanguage(sourceLang).name` reads "English". Both are copy in
-      `src/`, so all three screenshot groups go stale: regenerate, read
-      `options.png` (the row is in the full-page shot), and stamp. The new
-      `support-directions` guard will still find the row's direction
-      sentence; keep "Adding to it" in it. About 40 minutes.
+- [x] **Say the never-weave list's six kinds of site on the settings page, and
+      name the page's language rather than its code.** Done 2026-11-07, on
+      four pages where the item named one, and the guard it needed found two
+      more copies of the claim #151 fixed. `NEVER_WEAVE_KINDS` in
+      `src/core/sites.ts` holds the list a kind at a time, in `/support`'s
+      words — mail, money, passwords and sign-in, health and government,
+      checkouts and forms you cannot take back, and the places you write
+      rather than read — and `DEFAULT_EXCLUSIONS` is its patterns in order,
+      the same list to the byte (md5 of its JSON before and after). A third
+      suite of `tests/tools/support-directions.test.ts`, 3 tests, holds every
+      sentence naming two of the kinds, in `src/` and the user documents, to
+      all six, in the kinds' own words: red first on exactly the settings
+      row, the first-run page's notice, the README and the privacy page, and
+      green after. The store listing and the landing page still say "money,
+      mail, credentials and health", which the test leaves out by name as a
+      summary rather than an account; a call in Notes. **The direction reader
+      #151 built could not see two backwards claims**: the privacy page's
+      never-weave section said removing an entry "is a difficulty-reducing
+      change and goes through the cooldown", and the list's own doc comment
+      said the same. It knew the list only as "never-weave", where the page
+      says deny-list and the comment never-touch list; it split a doc comment
+      into a paragraph per line at each leading `*`, Markdown's list-item
+      rule; and it forgot a heading's subject at the next paragraph. It reads
+      all three now, each with a probe, and was red first naming exactly the
+      two. The popup's reason says "This page is not in English": the e2e test
+      in `friction.spec.ts` asserts the language's name from `getLanguage()`,
+      red first on the alert's "This page is not in EN". Reading `07-help.png`
+      found the settings page's help row saying a page "already being in the
+      language you are learning" is left alone, the claim #151 corrected on
+      `/support`; it says "in a language other than English" now, with two
+      source comments. All 31 shots regenerated twice, the same bytes both
+      times: `options.png` 19 px taller, `03-onboarding-sites.png` 40 px,
+      `07-help.png` the new sentence, and the store set unchanged and
+      stamped. Tools 576 → **579** / 144 → **145** suites, total 1386 →
+      **1389**, in six places, `docs/LAUNCH.md:221` first, and a
+      `CHANGELOG.md` paragraph. The packages print **1001 KB**, after a
+      `/* @__PURE__ */` took 1 246 dead bytes back out of `options.js`; see
+      Notes.
+
+- [ ] **Read the rest of `docs/PRIVACY.md` claim by claim against the code.**
+      Queued 2026-11-07. It is published as `/privacy`, the policy URL the
+      Chrome Web Store requires, and the never-weave run found a backwards
+      claim in a section of it nobody had read, which only a guard happening
+      to learn the page's name for the list could see. Held already, so not
+      to be read twice: the storage table (`privacy-stores.test.ts`), what is
+      sent to a translation service (`sending-copy.test.ts`), sync
+      (`no-sync.test.ts`), the tamper penalty's length
+      (`penalty-copy.test.ts`), and the never-weave section (this run). Not
+      yet read: **Telemetry**, **Speech**, **What the integrity signing does
+      and does not do**, **Your data is yours** past the export's keys,
+      **Permissions, and why each one** against `buildManifest()` for each
+      target, and **Reporting a problem** against `src/ui/options/help.tsx`.
+      Read each against the code, fix what is false, and guard any class you
+      find rather than the one sentence. About 40 minutes; nothing under
+      `src/` should need to move, so no screenshot group should go stale.
+
+- [ ] **Find every top-level call in `src/core/` that rides into a bundle
+      that never reads it, and hold the rest.** Queued 2026-11-07, the second
+      sighting of one trap: esbuild keeps a top-level call it cannot prove
+      pure in every bundle that imports the module, read or not. A frozen
+      `SENDING_PATHS` put 490 dead bytes each into `options.js` and
+      `onboarding.js` on 2026-11-03, and the `flatMap` deriving
+      `DEFAULT_EXCLUSIONS` put 1 246 into `options.js` on 2026-11-07; both
+      were found only because a printed size moved, and a size that does not
+      cross a kilobyte moves nothing. Measure first: list every top-level
+      `const` in `src/core/` initialised by a call or a `new`, and for each,
+      which built bundles carry it (`grep` a string unique to it in
+      `dist/chrome/*.js`) and which import a name that reads it. Then guard
+      what the measurement shows, in `tests/tools/`, by the checker as
+      `core-purity.test.ts` does: a top-level call not marked
+      `/* @__PURE__ */` is refused unless a list names it with why it must run
+      wherever its module is imported. Red first by taking the mark off
+      `src/core/sites.ts`. About 45 minutes; a mark added in `src/core/`
+      moves no pixel, but it moves every screenshot group's provenance, so
+      regenerate, compare and stamp.
 
 ## Next
 
@@ -7929,6 +7995,49 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, latest — the never-weave list has three names, and a doc
+comment is one paragraph.** Six things a later run would be sorry not to know:
+
+1. **A reader keyed on one name of a thing misses every sentence that uses
+   another.** The never-weave list is a "deny-list" on the privacy page and
+   in `src/core/sites.ts`'s header, and was a "never-touch list" in its own
+   doc comment, and both places said taking an entry off it waits. Before
+   writing a reader for claims about something, `git grep` for its other
+   names. `NAMES_LIST` in `support-directions.test.ts` takes all three now.
+2. **`\n(?=\s*[-*+]\s)` is Markdown's list-item rule and also every doc
+   comment's continuation line**, so in source the direction reader saw only
+   a claim written whole on one line. It splits on a leading `*` in `.md`
+   files only. A reader shared between Markdown and source has to be told
+   which it is reading.
+3. **A kind is named in `NEVER_WEAVE_KINDS`'s exact words.** A sentence naming
+   two of the kinds is a listing, and a listing must name all six, word for
+   word, so a seventh kind added to the list fails every listing until each
+   names it. `src/core/sites.ts` is left out as the list itself.
+4. **A top-level call in `src/core/` rides into every bundle that imports its
+   module**, read or not: `DEFAULT_EXCLUSIONS = NEVER_WEAVE_KINDS.flatMap(…)`
+   took the whole list into `options.js`, 1 246 bytes it never reads, and
+   the first build printed 1002 KB. `/* @__PURE__ */` on the call lets
+   esbuild drop it there, measured by `grep -c hrblock.com` in each bundle
+   against `main`'s: `background.js` and `onboarding.js` carry it, as they
+   did. It is the second sighting, after a frozen `SENDING_PATHS` on
+   2026-11-03, and the next item in `Now` is the guard.
+5. **Two calls for Creagh, neither changed.** The store description (the
+   four pasted copies in `docs/READY-TO-SUBMIT.md` with it) and the landing
+   page say "money, mail, credentials and health": true, and a summary, so
+   the listing test leaves them out by name; naming all six there would make
+   the description a sentence longer. And the privacy page had argued that
+   taking a site off the list should wait, "take my bank off the safe list is
+   not a decision to make in a hurry"; the code has never done that, a
+   shorter never-weave list being harder and so applied at once, and the
+   provider half of the list re-unions the shipped defaults, so no word from
+   a bank is ever sent. Whether a *shipped* entry should be slower to remove
+   than a user's own is a product call, and would be a change to
+   `src/core/lock.ts`.
+6. **Only one surface printed a language code as copy**, measured with
+   `git grep 'toUpperCase()' -- src`: the content script's reason. DeepL's
+   `source_lang` is an API parameter and stays. `sourceLang` is validated to a
+   known language, so `getLanguage()` cannot throw there.
 
 **2026-11-07, latest — the support page read claim by claim.** Six things a
 later run would be sorry not to know:

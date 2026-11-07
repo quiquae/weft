@@ -33,6 +33,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { directionOf } from '../../src/core/lock.ts';
+import { DEFAULT_EXCLUSIONS, NEVER_WEAVE_KINDS } from '../../src/core/sites.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const read = (file: string) => readFileSync(join(ROOT, file), 'utf8');
@@ -131,10 +132,16 @@ interface Claim {
   clause: string;
 }
 
-/** A sentence that names the never-weave list, another list, or one already named. */
-const NAMES_LIST = /\bnever[- ]weave\b/i;
+/**
+ * A sentence that names the never-weave list, another list, or one already
+ * named. The list has gone by three names: the privacy page calls it a
+ * deny-list and the source a never-touch list, and both said until
+ * 2026-11-07 that taking an entry off it waits, which a reader that knew only
+ * "never-weave" could not see. An entry of the list is the list's too.
+ */
+const NAMES_LIST = /\bnever[- ]weave\b|\bnever-touch list\b|\bdeny-list\b/i;
 const OTHER_LIST = /\b(?:taxed|gentle)\b/i;
-const ANAPHOR = /\b(?:the list|this list|it)\b/i;
+const ANAPHOR = /\b(?:the list|this list|it|entry|entries)\b/i;
 const ADD = /\badd(?:s|ed|ing)?\b/i;
 const REMOVE =
   /\b(?:remov(?:e|es|ed|ing)|tak(?:e|es|en|ing)\s+(?:\w+\s+){0,2}off|drop(?:s|ped|ping)?|delet(?:e|es|ed|ing))\b/i;
@@ -167,9 +174,21 @@ function claims(where: string, text: string): Claim[] {
     if (NAMES_LIST.test(row[1]!)) named.push(...sentencesOf(row[2]!).map((s) => `${row[1]}: ${s}`));
   }
   // A paragraph or a list item that names the list goes on calling it "the
-  // list" or "it" until it names another.
-  for (const paragraph of text.split(/\n\s*\n|\n(?=\s*(?:[-*+]|\d+\.)\s)/)) {
-    let naming = false;
+  // list" or "it" until it names another, and so does every paragraph under
+  // a heading that names it, as the privacy page's "The never-weave list"
+  // does, until the next heading.
+  // A line opening with `*` is a list item in Markdown and the next line of
+  // a doc comment in source, which read line by line could never name the
+  // list and say which way it goes in one paragraph, as the source's own
+  // account of the list did not.
+  const item = /\.md$/.test(where) ? /\n(?=\s*(?:[-*+]|\d+\.)\s)/ : /\n(?=\s*(?:[-+]|\d+\.)\s)/;
+  let section = false;
+  for (const paragraph of text.split(new RegExp(`\\n\\s*\\n|${item.source}`))) {
+    if (/^\s*#{1,6}\s/.test(paragraph)) {
+      section = NAMES_LIST.test(paragraph);
+      continue;
+    }
+    let naming = section;
     for (const sentence of sentencesOf(prose(paragraph))) {
       if (NAMES_LIST.test(sentence)) naming = true;
       else if (OTHER_LIST.test(sentence)) naming = false;
@@ -278,7 +297,22 @@ describe('which change to the never-weave list is said to wait', () => {
       '<Row\n  title="Never weave"\n  detail="Beats every other rule. Adding to it goes through the cooldown."\n>',
     );
     assert.equal(row.length, 1, 'a settings row’s detail was not read under its title');
+    const section = claims(
+      'probe.md',
+      '## The never-weave list\n\nWeft ships a deny-list.\n\n' +
+        'You can remove entries, but removing one is a difficulty-reducing change and goes through the cooldown.\n\n' +
+        '## Gentle sites\n\nRemoving one from the list waits out the cooldown.',
+    );
+    assert.equal(section.length, 1, 'a paragraph under a heading naming the list was not read, or one under the next was');
+    assert.ok(misstated(section[0]!), 'taking an entry off a never-weave section was accepted as waiting');
+    const otherName = claims(
+      'probe.ts',
+      '/**\n * Default never-touch list. Users can remove entries; they cannot remove\n' +
+        ' * them silently (it is a difficulty-reducing change and goes through the cooldown).\n */',
+    );
+    assert.equal(otherName.length, 1, 'the list was not read under its other name');
     for (const text of [
+      'Two swaps never touch. Remove it and it waits out the cooldown.',
       'Words from the never-weave list are never sent at all.',
       'Take a site off the list and it waits out a cooldown.',
       'The never-weave list beats every other rule.',
@@ -301,6 +335,89 @@ describe('which change to the never-weave list is said to wait', () => {
       found.filter(misstated).map((c) => `${c.where}: “${c.clause}”`),
       [],
       'adding to the never-weave list makes Weft easier and waits; taking a site off applies at once',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// What the never-weave list covers.
+
+/** A kind's words, whole, wherever a line break falls between them. */
+const namesKind = (sentence: string, kind: string) =>
+  new RegExp(`\\b${kind.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')}\\b`, 'i').test(sentence);
+
+interface Listing {
+  where: string;
+  sentence: string;
+  missing: string[];
+}
+
+/**
+ * Every sentence that lists what the never-weave list covers, read with its
+ * tags left in, since a settings row's detail is an attribute of one. A
+ * sentence naming two of the list's kinds is listing them; one naming a
+ * single kind is not, as "your mail is never woven" is not.
+ */
+function listings(where: string, text: string): Listing[] {
+  const flat = text
+    .split('\n')
+    .map((line) => line.replace(/^\s*(?:\*|\/\/)\s?/, ''))
+    .join(' ')
+    .replace(/[*`_]/g, '')
+    .replace(/\s+/g, ' ');
+  return flat
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => NEVER_WEAVE_KINDS.filter((k) => namesKind(sentence, k.kind)).length >= 2)
+    .map((sentence) => ({
+      where,
+      sentence,
+      missing: NEVER_WEAVE_KINDS.filter((k) => !namesKind(sentence, k.kind)).map((k) => k.kind),
+    }));
+}
+
+/**
+ * The shipped pages and the documents a user is sent to. Not the list itself,
+ * which names every kind by construction, and not the store listing or the
+ * landing page, whose "money, mail, credentials and health" is a summary of
+ * what the list covers rather than an account of it, a call `TODO.md` leaves
+ * for a human.
+ */
+const ACCOUNTS = [...tracked('src/*.ts', 'src/*.tsx').filter((f) => f !== 'src/core/sites.ts'), ...USER_DOCS];
+const listed = ACCOUNTS.flatMap((file) => listings(file, read(file)));
+
+describe('what the never-weave list is said to cover', () => {
+  test('the shipped list is its kinds, a kind at a time', () => {
+    assert.deepEqual(DEFAULT_EXCLUSIONS, NEVER_WEAVE_KINDS.flatMap((k) => k.patterns));
+    // Six on 2026-11-07.
+    assert.ok(NEVER_WEAVE_KINDS.length >= 6, `only ${NEVER_WEAVE_KINDS.length} kinds`);
+    assert.deepEqual(NEVER_WEAVE_KINDS.filter((k) => k.patterns.length === 0).map((k) => k.kind), []);
+    assert.equal(new Set(DEFAULT_EXCLUSIONS).size, DEFAULT_EXCLUSIONS.length, 'a pattern is in two kinds');
+  });
+
+  test('the reader finds a listing, and what it leaves out', () => {
+    const partial = listings('probe', 'Weft ships this list covering money, mail, credentials and health. It is checked first.');
+    assert.equal(partial.length, 1, 'a sentence naming two kinds was not read as a listing');
+    assert.deepEqual(partial[0]!.missing, NEVER_WEAVE_KINDS.map((k) => k.kind).filter((k) => k !== 'mail' && k !== 'money'));
+    assert.deepEqual(listings('probe', 'Your mail is never woven. Nor is an email.'), [], 'one kind was read as a listing');
+    const row = listings(
+      'probe.tsx',
+      '<Row\n  title="Never weave"\n  detail="Beats every other rule. It covers ' +
+        NEVER_WEAVE_KINDS.map((k) => k.kind).join(',\n ') +
+        '."\n>',
+    );
+    assert.equal(row.length, 1, 'a settings row’s detail was not read');
+    assert.deepEqual(row[0]!.missing, [], 'a kind broken across a line was not found');
+  });
+
+  test('every sentence that lists what the never-weave list covers names every kind', () => {
+    assert.ok(ACCOUNTS.length >= 60, `only ${ACCOUNTS.length} files were read`);
+    for (const page of ['src/ui/options/sites.tsx', 'src/ui/onboarding/index.tsx', 'docs/SUPPORT.md']) {
+      assert.ok(listed.some((l) => l.where === page), `${page} no longer says what the never-weave list covers`);
+    }
+    assert.deepEqual(
+      listed.filter((l) => l.missing.length).map((l) => `${l.where}: “${l.sentence}” leaves out ${l.missing.join('; ')}`),
+      [],
+      'name every kind the list ships, in its words: ' + NEVER_WEAVE_KINDS.map((k) => k.kind).join(', '),
     );
   });
 });

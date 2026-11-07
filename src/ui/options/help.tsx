@@ -116,8 +116,8 @@ export function HelpSection({ c }: { c: Controller }) {
       <Row siglum={SIGLA.leaf} title="If a page is not being woven">
         <p class="muted">
           Open the Weft button on that page. It says what is happening there and why — the site not
-          being on your list, a panic pass running, the page already being in the language you are
-          learning, or the word list failing to load. It is quicker than guessing.
+          being on your list, a panic pass running, the page being in a language other than English,
+          or the word list failing to load. It is quicker than guessing.
         </p>
         <div class="help__actions">
           <a class="button" href={api.runtime.getURL('dashboard.html')}>

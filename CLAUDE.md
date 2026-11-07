@@ -66,11 +66,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **576 pass**, 144 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **579 pass**, 145 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1000 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1001 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1001,6 +1001,88 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — the never-weave list had three names, and the guard knew one
+
+`TODO.md`'s one unchecked item in `Now`, queued by the support page's run:
+the settings row said the never-weave list covers "money, mail, credentials
+and health", where it ships six kinds, and the content script's reason for a
+page in another language printed "This page is not in EN".
+
+**It was four pages, not one.** `NEVER_WEAVE_KINDS` in `src/core/sites.ts`
+holds the list a kind at a time, in `/support`'s words — mail, money,
+passwords and sign-in, health and government, checkouts and forms you cannot
+take back, and the places you write rather than read — and
+`DEFAULT_EXCLUSIONS` is its patterns in order, the same list to the byte. A
+third suite of `tests/tools/support-directions.test.ts`, 3 tests, holds every
+sentence naming two of the kinds, in `src/` and the user documents, to all
+six in those words: red first on exactly the settings row, the first-run
+page's notice, the README and the privacy page. The store listing and the
+landing page keep "money, mail, credentials and health", a summary the test
+leaves out by name, and a call in `TODO.md`'s Notes.
+
+**The direction reader #151 built missed two copies of the claim it was built
+for.** The privacy page's never-weave section said removing an entry "is a
+difficulty-reducing change and goes through the cooldown", and the list's own
+doc comment the same. The reader knew the list only as "never-weave", where
+the page calls it a deny-list and the comment a never-touch list; it split a
+doc comment into a paragraph per line, since a leading `*` is a Markdown list
+item; and it forgot a heading's subject at the next paragraph. It reads all
+three now, each with a probe, red first naming exactly the two. **A reader
+keyed on one name of a thing misses the sentences that use another**: grep for
+the other names before trusting it.
+
+The popup's reason says "This page is not in English", and the e2e test in
+`friction.spec.ts` asserts the language's name from `getLanguage()`, red first
+on the alert's "not in EN". Reading `07-help.png` found the settings page's
+help row saying a page "already being in the language you are learning" is
+left alone, the claim #151 corrected on `/support`; it says "in a language
+other than English" now, with two source comments.
+
+All 31 shots were regenerated after the copy's commit, twice, the same bytes
+both times: `options.png` 19 px taller, `03-onboarding-sites.png` 40 px,
+`07-help.png` the new sentence, and the store set byte-identical. **The first
+gate printed 1002 KB, and the bundles said why**: `options.js` had grown 1 345
+bytes, and `grep -c hrblock.com` found the whole never-weave list in it, where
+`main`'s carried none. The derivation's top-level `flatMap` is a call esbuild
+cannot prove pure, so it rode into every bundle importing the module, read or
+not — the trap a frozen `SENDING_PATHS` set on 2026-11-03. `/* @__PURE__ */`
+on the call took the 1 246 dead bytes back out, and the packages print **1001
+KB**: 762 bytes against `main`'s, `onboarding.js` +386, `background.js` +283,
+`options.js` +99 and `content.js` −6, Chrome's 1000.065 → 1000.810 KB, built
+in a `/tmp` worktree. **A size that does not cross a kilobyte would have hidden
+it**, so a guard is queued in `Now`. All 31 shots were regenerated again after
+the mark, every one byte-identical but `dashboard-milestones.png`, which moved
+by the recorded 5 pixels 1 apart and matched on a second run, and the three
+groups are stamped. Tools 576 → **579** / 144 → **145** suites, total 1386 →
+**1389**, in six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
+paragraph.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the mark and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, 644 unit / 151, 119 jsdom / 26, **579 tools / 145**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1001 KB × 3**
+passing `validate` (Chrome's 1000.810 KB, Firefox's 1000.878, Safari's
+1000.816), **47 e2e passed and 3 skipped in 5.3 min**, then build and
+validate again; the gate before the mark exited 0 too, at 1002 KB.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving, `/privacy` printing both new sentences, and `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a. `packs:verify` was not
+run: no pack or seed moved. Only this paragraph moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the kinds are `/support`'s words and its
+six, health and government being one; that the README and the privacy page
+are accounts of the list and the store listing and landing page summaries of
+it; and that the privacy page's case for a slower removal is a product call,
+not a copy fix.
+
+What needs a human: unchanged, everything below **B1** and the calls, and two
+new calls in Notes: the store description's four kinds, and whether a shipped
+entry should be slower to take off than a user's own. `Now` holds two
+agent-shaped items: the rest of the privacy page, read claim by claim, and the
+guard for a top-level call riding into a bundle.
 
 ### 2026-11-07 — the support page said the never-weave list works backwards
 

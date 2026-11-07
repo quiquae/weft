@@ -278,8 +278,9 @@ function Onboarding() {
           </p>
 
           <Notice>
-            Money, mail, credentials and health sites are never woven, whatever you pick. That list
-            ships with Weft and is checked before anything else.
+            Whatever you pick, Weft never touches mail, money, passwords and sign-in, health and
+            government, checkouts and forms you cannot take back, or the places you write rather
+            than read. That list ships with Weft and is checked before anything else.
           </Notice>
 
           {message ? <Notice tone="warn">{message}</Notice> : null}
