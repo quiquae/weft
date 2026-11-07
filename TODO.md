@@ -4,11 +4,11 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-06:** every automatable check is green, measured at the end
+**State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **637** unit / 150 suites, **108** jsdom / 25
 suites, **565** tool tests / 141 suites, **46** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 994 KB each, all
+packages built at 996 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -86,6 +86,11 @@ printing 994. And on 2026-11-06 by 591 bytes, all of them `background.js`,
 Hard Mode's files carrying their own way out, Chrome's 993.621 → 994.198 KB
 against `main`'s, still printing 994 — `main`'s having fallen 242 bytes from
 993.863 with #144, which did not measure it.
+And to **996 KB** on 2026-11-07 by 1 484 bytes, 730 of them `background.js`
+and 754 `options.js`, the decision of where Hard Mode has a file and the
+sentence for where it has none, which each bundle carries: Chrome's 994.198
+→ 995.647 KB, Firefox's 995.716 and Safari's 995.654, measured against
+`main`'s Chrome package built in a `/tmp` worktree.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -7727,6 +7732,50 @@ unpacked from the GitHub release has an id the store does not know.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07 — Hard Mode offers a file only where the browser obeys it.**
+Six things a later run would be sorry not to know:
+
+1. **Edge's own file cannot hold yet, and Microsoft says why.** Its page
+   for `ExtensionSettings`, read through the Microsoft Learn MCP server,
+   limits a force-install from outside Edge Add-ons to a domain-joined or
+   Azure AD-joined Windows machine and an MDM- or MCX-managed Mac. Hard
+   Mode is for a personal machine, so Edge's file must name Weft's Edge
+   Add-ons copy, which does not exist before B5. That is why this run gave
+   Edge an honest row and queued its file, with every reading, as the top
+   item in `Now`.
+2. **Which Chromium browser runs the Chrome package is read from
+   `navigator.userAgentData.brands`**, through `uaBrands()` in
+   `src/shared/browser.ts`; TypeScript's DOM library does not declare it,
+   so the shim casts. `hardModeHere()` treats a brand that is not GREASE
+   (`/^Not.A.Brand$/i`) and not Google Chrome, Chromium or HeadlessChrome
+   as another browser. Vivaldi names itself only Chromium, so it still
+   gets Chrome's file, which it does not obey; and plain Chromium on macOS
+   or Windows reads `org.chromium.Chromium` and `Policies\Chromium`, not
+   Chrome's. Both are as they were before, and neither is common enough to
+   have held this slice up.
+3. **An e2e test can make a page name itself as another browser**:
+   `page.addInitScript` defining `Navigator.prototype.userAgentData` runs in
+   a `chrome-extension://` page too, before its first script. That is how
+   `licensing.spec.ts` reads the row as Chrome and as Edge.
+4. **The Pro section and `/pricing` still sell Hard Mode in every build**,
+   from `SOLD`, and the store description shared by all four stores says it
+   "generates a browser policy making the extension unremovable". In the
+   Firefox, Safari and Edge builds the row now says there is no file, so
+   both are copy a buyer there can check and not find. Selling per build
+   and the per-store description are Creagh's, with the item's Creagh half;
+   `docs/READY-TO-SUBMIT.md` says so before each of those three
+   descriptions, outside the paste blocks its test holds.
+5. **`navigator.userAgentData` is not in `tools/compat.ts`'s dependency
+   list.** It degrades to no brands where missing, which keeps Chrome's
+   file, and only the Chrome build consults it, so nothing the audit
+   guards is at stake; adding it would move the audit's counts in five
+   documents.
+6. **Assumed, with nobody to ask:** that a Free user in Firefox, Safari or
+   Edge is better told there is no file than sold one ("Part of Pro"); that
+   the worker should refuse as well as the page; and that an honest row
+   for Edge now beats Edge's file written before any Edge copy exists to
+   name.
 
 **2026-11-06 — Hard Mode's file holds its own way out.** Seven things a
 later run would be sorry not to know:
