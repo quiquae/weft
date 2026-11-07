@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 644 unit tests, 119 jsdom tests, 579 tool tests, the
+runs typecheck, 644 unit tests, 119 jsdom tests, 588 tool tests, the
 compatibility audit, all three builds, the package validator, and 47 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -179,7 +179,8 @@ folder to point "Load unpacked" at.
 
 **The question to expect** is about `optional_host_permissions: ["*://*/*"]`,
 which looks broad. The answer is that Weft requests per-origin at runtime from
-a user gesture on its own first-run page and never at install time — and it is
+a user gesture on one of its own pages — the first-run page, Settings →
+**Sites** or the toolbar popup — and never at install time — and it is
 demonstrable rather than assertable: a fresh install reports zero granted
 origins and zero registered content scripts. `tests/tools/install-permissions.test.ts`
 holds every target's manifest to declaring no `content_scripts` and no host

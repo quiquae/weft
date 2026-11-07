@@ -266,7 +266,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 644 unit + 119 jsdom + 579 over the build tools
+npm test               # 644 unit + 119 jsdom + 588 over the build tools
 npm run test:e2e       # 47 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules

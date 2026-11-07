@@ -202,3 +202,87 @@ describe('the readers', () => {
     assert.deepEqual([...rows], [['A', 'one thing']]);
   });
 });
+
+/**
+ * The words the privacy page's account of an export uses for each store an
+ * export carries. Until 2026-11-07 it named the settings, the vocabulary and
+ * the reading history, and an export also carries the words introduced today
+ * and the commitment record, which an import then never reads: a file that
+ * is attached to bug reports held two stores the page did not mention.
+ */
+const EXPORTED: Record<string, string> = {
+  'weft:settings': 'settings',
+  'weft:cards': 'vocabulary',
+  'weft:attention': 'reading history',
+  'weft:introduced': 'words introduced today',
+  'weft:lock': 'commitment record',
+};
+
+/** `KEYS` as written: each property's name and the store it is. */
+function keyNames(source: string): Map<string, string> {
+  const block = /const KEYS = \{([\s\S]*?)\} as const;/.exec(source);
+  if (!block) throw new Error('src/background/storage.ts has no `const KEYS = { … } as const`');
+  return new Map([...block[1]!.matchAll(/^\s*(\w+):\s*'([^']+)',?\s*$/gm)].map((m) => [m[1]!, m[2]!]));
+}
+
+/** The body of one top-level function in the storage layer. */
+function body(source: string, name: string): string {
+  const start = source.indexOf(`export async function ${name}(`);
+  if (start < 0) throw new Error(`src/background/storage.ts has no \`export async function ${name}\``);
+  return source.slice(start, source.indexOf('\n}\n', start));
+}
+
+/** Every store `exportAll` writes into the file, by the property it writes it under. */
+function exportedStores(source: string): string[] {
+  const names = keyNames(source);
+  const returned = /return \{([\s\S]*)\};/.exec(body(source, 'exportAll'))?.[1] ?? '';
+  return [...returned.matchAll(/^ {4}(\w+)[:,]/gm)].map((m) => names.get(m[1]!)).filter((s): s is string => !!s);
+}
+
+/** Every store `importAll` takes from a file, rather than only asking whether it is there. */
+function importedStores(source: string): string[] {
+  const names = keyNames(source);
+  return [...body(source, 'importAll').matchAll(/(?<!carries\w*\()data\['(\w+)'\]/g)]
+    .map((m) => names.get(m[1]!))
+    .filter((s): s is string => !!s);
+}
+
+/** The privacy page's "Your data is yours", as sentences, emphasis and code marks dropped. */
+function yourData(doc: string): string {
+  const [, section = ''] = doc.split('## Your data is yours');
+  return section.split(/\n## /)[0]!.replace(/[*`]/g, '').replace(/\s+/g, ' ');
+}
+
+describe('what the privacy page says an export carries', () => {
+  const exported = exportedStores(STORAGE);
+  const imported = importedStores(STORAGE);
+  const section = yourData(PRIVACY);
+
+  test('every store an export carries is named in EXPORTED, and no other', () => {
+    assert.ok(exported.length >= 4, `only ${exported.length} stores were read off exportAll`);
+    assert.ok(imported.length >= 3, `only ${imported.length} stores were read off importAll`);
+    const unnamed = exported.filter((s) => !(s in EXPORTED));
+    const stale = Object.keys(EXPORTED).filter((s) => !exported.includes(s));
+    assert.deepEqual(unnamed, [], `an export carries ${unnamed.join(', ')}, which EXPORTED gives no words`);
+    assert.deepEqual(stale, [], `EXPORTED names ${stale.join(', ')}, which no export carries`);
+  });
+
+  test('the sentence that says what an export writes names every store it carries', () => {
+    const sentence = /Export writes [^.]*\./.exec(section)?.[0] ?? '';
+    assert.ok(sentence, 'no sentence of “Your data is yours” begins “Export writes”');
+    const missing = exported.filter((s) => !sentence.toLowerCase().includes(EXPORTED[s]!.toLowerCase()));
+    assert.deepEqual(
+      missing.map((s) => `${s} (“${EXPORTED[s]}”)`),
+      [],
+      'the export sentence leaves out stores the file carries',
+    );
+  });
+
+  test('a store an export carries and an import never reads is said to stay where it is', () => {
+    const sentences = section.split(/(?<=[.:;])\s+/);
+    const unsaid = exported
+      .filter((s) => !imported.includes(s))
+      .filter((s) => !sentences.some((t) => t.toLowerCase().includes(EXPORTED[s]!.toLowerCase()) && /\bnever\b/i.test(t)));
+    assert.deepEqual(unsaid, [], `nothing says an import never brings back ${unsaid.join(', ')}`);
+  });
+});

@@ -218,7 +218,7 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 > verify in the network panel. The trade is that a licence cannot be revoked,
 > which is stated on the pricing page rather than hidden.
 >
-> Free for one language. Source is open, 1389 tests, and the lexicon pipeline
+> Free for one language. Source is open, 1398 tests, and the lexicon pipeline
 > and the Latin/Old English IPA generator are in the repo.
 
 ### Lobsters
@@ -237,8 +237,9 @@ will not read a product pitch.
 >
 > Worth posting here for one reason other extension authors might want: Weft
 > declares **no static content_scripts and no host permissions**. Access is
-> requested per-origin from a user gesture on the first-run page, then the
-> content script is registered at runtime with
+> requested per-origin from a user gesture on one of Weft's own pages — the
+> first-run page, its settings page or the toolbar popup — then the content
+> script is registered at runtime with
 > `chrome.scripting.registerContentScripts({ persistAcrossSessions: true })`.
 >
 > That means it installs with none of the scary warnings — no "read and change
