@@ -1071,10 +1071,20 @@ before any Edge copy exists to name; and that Vivaldi, which names itself
 only Chromium, and plain Chromium on macOS or Windows, which read their own
 locations, stay as they were.
 
+After #146 landed, the Edge item's four open questions were answered and
+written into it, in a second, documents-only PR: Edge's macOS domain is
+`com.microsoft.Edge` (Microsoft's macOS page); Microsoft documents no Linux
+location; Chromium's `RegistryDict::ConvertToJSON` reads a dictionary
+policy from a subkey as well as from a JSON string; and each store writes
+its own `update_url` into the manifest it serves, read off a CRX fetched
+from each, so a running copy can tell which store it came from. **No
+extension is installed in either browser on this Mac**, so that last answer
+came from the stores' own downloads; the item keeps the two fetch URLs.
+
 What needs a human: unchanged, everything below **B1** and the calls, and
 two copy calls this made sharper: the Hard Mode clause of the description
 Firefox, Edge and Safari share, and Pro selling Hard Mode in those builds.
-`Now` holds one agent-shaped item: Edge's own file.
+`Now` holds one agent-shaped item: Edge's own file, about 60 minutes.
 
 ### 2026-11-06 — Hard Mode's file said nothing about taking it off
 
