@@ -6,7 +6,7 @@
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
-suites, **579** tool tests / 145 suites, **47** e2e passing
+suites, **590** tool tests / 149 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1001 KB each, all
 passing `npm run validate`. The package grew
@@ -2292,22 +2292,32 @@ registered**, and nothing below it can move until it is.
       `/* @__PURE__ */` took 1 246 dead bytes back out of `options.js`; see
       Notes.
 
-- [ ] **Read the rest of `docs/PRIVACY.md` claim by claim against the code.**
-      Queued 2026-11-07. It is published as `/privacy`, the policy URL the
-      Chrome Web Store requires, and the never-weave run found a backwards
-      claim in a section of it nobody had read, which only a guard happening
-      to learn the page's name for the list could see. Held already, so not
-      to be read twice: the storage table (`privacy-stores.test.ts`), what is
-      sent to a translation service (`sending-copy.test.ts`), sync
-      (`no-sync.test.ts`), the tamper penalty's length
-      (`penalty-copy.test.ts`), and the never-weave section (this run). Not
-      yet read: **Telemetry**, **Speech**, **What the integrity signing does
-      and does not do**, **Your data is yours** past the export's keys,
-      **Permissions, and why each one** against `buildManifest()` for each
-      target, and **Reporting a problem** against `src/ui/options/help.tsx`.
-      Read each against the code, fix what is false, and guard any class you
-      find rather than the one sentence. About 40 minutes; nothing under
-      `src/` should need to move, so no screenshot group should go stale.
+- [x] **Read the rest of `docs/PRIVACY.md` claim by claim against the code.**
+      Done 2026-11-07. Telemetry, the tamper paragraph, the import's
+      validation and re-signing, the diagnostic report and "Start my
+      vocabulary over" hold; nine claims did not, five of them repeated in
+      the listing and its pasted copies. The signing key "ships inside the
+      extension", where it is derived from the install id, which the same
+      page calls key material; Hard Mode "a real guarantee", where it stops
+      only Weft's removal, and only in Chrome and in Edge for its Edge
+      Add-ons copy; remote voices "served by the operating system vendor",
+      where Weft names a language and the browser picks the voice; the
+      export named three of the five stores it carries and never said the
+      commitment record is not imported; `alarms` ran "the daily rollover",
+      which no alarm does, and named neither the panic pass's alarm nor the
+      vocabulary's minute write; `notifications` left out the panic pass
+      from the keyboard; host access was asked "from the first-run page",
+      where Settings → Sites and the popup ask too, in six accounts; "a few
+      thousand lines"; and "a reviewer comparing versions will see" `idle`
+      and `unlimitedStorage` go, both having left before 1.0.0. Guards:
+      `tests/tools/privacy-permissions.test.ts`, 8 tests in 3 suites, holds
+      the table to every target's manifest, every alarm and notification to
+      both accounts of its permission, and every file calling
+      `permissions.request` to every account of where Weft asks; a new suite
+      of `privacy-stores.test.ts`, 3 tests, holds the export sentence to
+      `exportAll`. Red first on each, five probes restored by md5. Tools 579
+      → **590** / 145 → **149** suites, total 1389 → **1400**, in six
+      places. Nothing under `src/` moved. See Notes.
 
 - [ ] **Find every top-level call in `src/core/` that rides into a bundle
       that never reads it, and hold the rest.** Queued 2026-11-07, the second
@@ -2325,7 +2335,13 @@ registered**, and nothing below it can move until it is.
       `core-purity.test.ts` does: a top-level call not marked
       `/* @__PURE__ */` is refused unless a list names it with why it must run
       wherever its module is imported. Red first by taking the mark off
-      `src/core/sites.ts`. About 45 minutes; a mark added in `src/core/`
+      `src/core/sites.ts`. While `src/core/` is open, correct two comments
+      the privacy run left, since it moved nothing under `src/`:
+      `src/core/integrity.ts`'s header says the key material "is derived
+      from data that ships inside the extension" and `src/core/lock.ts`'s
+      `recordTamper` doc that "the signing key ships inside the extension";
+      the key is derived from the install id, which is generated at install
+      and stored beside the data it signs, and only the salt ships. About 45 minutes; a mark added in `src/core/`
       moves no pixel, but it moves every screenshot group's provenance, so
       regenerate, compare and stamp.
 
@@ -7995,6 +8011,49 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, latest — the privacy page read claim by claim.** Seven things
+a later run would be sorry not to know:
+
+1. **`docs/PRIVACY.md` holds now, section by section**, so nobody need pay for
+   it twice: the short version's "no network requests at all" (asserted by
+   `tests/e2e/privacy.spec.ts`), Telemetry (`privacy.telemetry` is typed as
+   the literal `false` and `validateSettings` writes `false`), the tamper
+   paragraph and its "just note it" chip, the import's validation and
+   re-signing, `splitImportedSettings`, the keys, sending less and never more,
+   "Start my vocabulary over" (the cards and today's introduced words; settings
+   and attention are kept), the diagnostic report (counts only,
+   `src/core/diagnostics.ts`), and the six permissions per target, Safari
+   without `notifications`, `contextMenus` on the `action` context alone.
+2. **A guard derived from what the code does cannot see a job the copy
+   invents.** "The daily rollover" is no alarm's, and no derivation of the
+   alarms could refuse it, so `NOT_DONE` in `privacy-permissions.test.ts`
+   names it with why. The reading day is worked out by `dayKey()` whenever a
+   counter is read or written; nothing is scheduled at 4 a.m.
+3. **`/\bSites\b/i` passed the old listing**, on "the sites the user
+   selects". A case-insensitive match on a word that is also a section title
+   names nothing; the rule matches "Sites" or "settings page" with case.
+4. **The voice a word is spoken in is the browser's choice.** Weft sets
+   `utterance.lang` and no voice. Google Chrome 156, launched here by
+   Playwright, listed 180 voices and none with `localService` false, but
+   Playwright disables component extensions, so that cannot say whether a
+   normal Chrome profile has Google's network voices; the page names no
+   vendor rather than one nobody measured. Reading `localService` and
+   preferring a local voice would be a product change, not a copy fix.
+5. **`idle` and `unlimitedStorage` left in `4a68345`, 2026-09-15**, four
+   days before `v1.0.0`; `git show v1.0.0:manifest.config.mjs` declares
+   neither, so no store or user has seen them.
+6. **Two source comments still say the signing key ships inside the
+   extension** — `src/core/integrity.ts`'s header and `recordTamper`'s doc in
+   `src/core/lock.ts`. A docs-only PR left them, an edit under `src/` staling
+   all three screenshot groups; they are in the next item in `Now`, which
+   opens `src/core/` anyway.
+7. **Assumed, with nobody to ask:** that Hard Mode's tier is pricing, not
+   privacy, so the page does not say it is Pro; that an export's contents
+   include the commitment record's audit log as written, last 50 entries;
+   and that the listing's host-permission justification, pasted into Chrome's
+   and Edge's forms, may name the popup and the settings page as the places
+   a reviewer will find `permissions.request`.
 
 **2026-11-07, latest — the never-weave list has three names, and a doc
 comment is one paragraph.** Six things a later run would be sorry not to know:

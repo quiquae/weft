@@ -88,8 +88,9 @@ storage is used.
 
 **alarms** — Difficulty-reducing settings changes are held behind a cooldown
 that must expire reliably. An MV3 service worker is terminated when idle, so
-an alarm is the only way for a stored cooldown to apply on time. Also used for
-the daily rollover of attention counters.
+an alarm is the only way for a stored cooldown to apply on time. Also used to
+end a panic pass on time and to write the learner's vocabulary to storage once
+a minute.
 
 **scripting** — The content script is registered at runtime with
 `registerContentScripts` for exactly the origins the user has granted, rather
@@ -106,14 +107,16 @@ progress and settings pages. (Named `menus` in Safari and Firefox; the code
 resolves whichever the browser provides.)
 
 **notifications** — Informs the user when a settings change they queued has
-finished its cooldown and taken effect. **Not requested in the Safari build**,
+finished its cooldown and taken effect, and answers a panic pass asked for with
+the keyboard shortcut. **Not requested in the Safari build**,
 which has no notifications API; there the toolbar badge is used instead.
 
 ### Two permissions that were removed, and why the answer matters
 
 An earlier draft of this listing justified two permissions Weft did not need.
-Both are gone from the manifest, and the reasoning is recorded here because a
-reviewer comparing versions will see them disappear.
+Both left the manifest on 2026-09-15, four days before 1.0.0, so no released
+version declared either and no store has seen them; the reasoning is recorded
+here so that neither comes back.
 
 **`idle` was never used at all.** It had zero call sites. The justification
 claimed it was how attention is distinguished from a parked tab — "the core of
@@ -132,8 +135,9 @@ browsing. `src/core/prune.ts` now bounds both, with a test asserting the
 serialised size stays well under quota, so the permission is unnecessary.
 
 **optional_host_permissions (`*://*/*`)** — Requested per-origin at runtime,
-from a user gesture on the extension's own first-run page, for only the sites
-the user selects. Never requested at install time.
+from a user gesture on one of the extension's own pages — the first-run page,
+the settings page's Sites section, or the toolbar popup on the site being read
+— for only the sites the user selects. Never requested at install time.
 
 ## Single purpose statement
 

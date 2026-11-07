@@ -104,11 +104,14 @@ not counted. Its day starts at 4 a.m., as every day in Weft does.
 
 ## Speech
 
-Pronunciation uses the browser's built-in `speechSynthesis`. On most platforms
-that is local. On some, some voices are served remotely by the operating
-system vendor — that is between your OS and its vendor, and Weft has no
-visibility into it. Latin and Old English have no voice anywhere, so they show
-IPA and never call it.
+Pronunciation uses the browser's built-in `speechSynthesis`, and only when you
+press the speaker button in a tooltip. Weft does not choose the voice: it
+names the language and the browser picks one. On most platforms that voice is
+local; on some, some voices are synthesised remotely, and a word spoken with
+one leaves your computer. Which it is lies between your browser and your
+operating system, and Weft does not ask. Weft offers Latin and Old English no
+voice, so their tooltips show an IPA transcription instead, where the pack
+has one, and never call it.
 
 ## What the integrity signing does and does not do
 
@@ -116,15 +119,19 @@ Weft HMAC-signs its settings, lock state and attention counters with a key
 derived from your install id, and notices when they have been edited behind
 its back.
 
-**This is a tripwire, not security.** The key material ships inside the
-extension. Anyone willing to read the source can forge a valid signature. The
-goal is to make the lazy bypass cost more effort than doing the reading, which
+**This is a tripwire, not security.** The key is derived from your install
+id, which sits in the same storage as the data it signs, by a recipe anyone
+can read in the source, so anyone willing to read the source can forge a
+valid signature. The goal is to make the lazy bypass cost more effort than doing the reading, which
 is the same bargain every screen-time tool on a general-purpose computer
 makes.
 
-If you want a real guarantee, that is what [Hard Mode](HARD-MODE.md) is: it
-moves enforcement into an operating-system managed policy, where the extension
-cannot disable itself and neither can you without an administrator password.
+If you want a real guarantee, [Hard Mode](HARD-MODE.md) is one, of one thing:
+an operating-system managed policy under which the browser will not let Weft
+be disabled or removed without an administrator password. It does not stop
+stored settings being edited; it stops Weft being removed to escape them. Its
+file holds in Google Chrome, and in Microsoft Edge for the copy from Edge
+Add-ons; anywhere else Weft offers none.
 
 Detected tampering pins difficulty at the ceiling for 12 hours from the last
 time it is noticed, rather than resetting anything, so editing storage is a
@@ -133,15 +140,21 @@ same way. That response is configurable down to "just note it".
 
 ## Your data is yours
 
-Export writes a JSON file containing your settings, your whole vocabulary and
-your reading history — seconds per site per day — with API keys, the address
-of any OpenAI-compatible service and the install id stripped. The install id
+Export writes a JSON file containing your settings, your whole vocabulary,
+your reading history — seconds per site per day — the words introduced today
+and the commitment record, with the last 50 entries of its audit log, and with
+API keys, the address of any OpenAI-compatible service and the install id
+stripped. The install id
 is signing key material, the keys are your own accounts, and an export is a
 file you might attach to a bug report. The sites you read are in it, so look
 before you send it.
 
 Import merges, keeping whichever record shows more learning, so moving between
-machines never loses progress in either direction. Imported settings go
+machines never loses progress in either direction. The commitment record is
+never imported: every part of it would make Weft easier arriving from a file
+— a pending change already due, a day's panic passes refilled, a tampering
+count lowered — so it stays with the machine that earned it, and the import
+says so. Imported settings go
 through the same validation and clamping as anything read from storage, and are
 re-signed with this install's key. A setting that would make Weft easier waits
 out your cooldown, as if you had changed it by hand. API keys stay where they
@@ -165,31 +178,33 @@ your settings alone.
 | Permission | Why |
 |---|---|
 | `storage` | Settings and vocabulary, locally |
-| `alarms` | Cooldown expiry and the daily rollover must survive the service worker being killed |
+| `alarms` | Applying a change whose cooldown has ended, ending a panic pass, and writing your vocabulary to storage once a minute, all of which must survive the service worker being stopped |
 | `scripting` | Registering the content script for the sites you granted |
 | `tabs` | Reading the current tab's URL to decide whether to weave, and telling open tabs that settings changed |
 | `contextMenus` | Right-click entries on the toolbar button |
-| `notifications` | Telling you when a queued change has applied. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used |
+| `notifications` | Telling you when a queued change has applied, and answering a panic pass asked for from the keyboard. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used |
 
-That is the whole list. Two permissions an earlier version declared have been
-removed: `idle`, which had no call sites at all — attention is measured in
-the content script, which needs no permission — and `unlimitedStorage`, which
-was covering for two stores that grew without bound and are now capped. The
-full reasoning is in
-[the store listing](STORE-LISTING.md#two-permissions-that-were-removed-and-why-the-answer-matters),
-recorded there because a reviewer comparing two versions will see them go.
+That is the whole list. Two permissions an early draft declared were removed
+before the first release, so no version anyone installed has asked for either:
+`idle`, which had no call sites at all — attention is measured in the content
+script, which needs no permission — and `unlimitedStorage`, which was covering
+for two stores that grew without bound and are now capped. The full reasoning
+is in
+[the store listing](STORE-LISTING.md#two-permissions-that-were-removed-and-why-the-answer-matters).
 
 **No host permissions at install time.** Weft cannot read any website until
 you name the sites, which is why it installs without the "read and change all
-your data on all websites" warning. Host access is requested per-origin from
-the first-run page, and the content script is registered at runtime for
-exactly those origins.
+your data on all websites" warning. Host access is requested per origin, from a
+click on one of Weft's own pages — the first-run page, Settings → **Sites**,
+or the toolbar popup on the site you are reading — and the content script is
+registered at runtime for exactly those origins.
 
 ## Reporting a problem
 
-The whole extension is a few thousand lines and the interesting half is pure
-functions with no I/O. If a claim in this document is wrong, it is checkable —
-and [Support](SUPPORT.md) is where to say so. The diagnostic report Weft
+The decisions that matter — which word to weave, how hard a page should be,
+whether a change may land yet — are pure functions with no I/O, and a test
+holds them so, which makes a claim in this document checkable. If one is
+wrong, [Support](SUPPORT.md) is where to say so. The diagnostic report Weft
 assembles for a bug report carries counts and settings, never which sites you
 read or which words you know, and it is shown to you in full before you copy
 it because nothing sends it for you.

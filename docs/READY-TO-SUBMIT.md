@@ -155,7 +155,7 @@ Stores settings and the learner's vocabulary locally. No remote storage is used.
 
 <!-- paste: permission:alarms -->
 ```text
-Difficulty-reducing settings changes are held behind a cooldown that must expire reliably. An MV3 service worker is terminated when idle, so an alarm is the only way for a stored cooldown to apply on time. Also used for the daily rollover of attention counters.
+Difficulty-reducing settings changes are held behind a cooldown that must expire reliably. An MV3 service worker is terminated when idle, so an alarm is the only way for a stored cooldown to apply on time. Also used to end a panic pass on time and to write the learner's vocabulary to storage once a minute.
 ```
 
 `scripting`
@@ -183,14 +183,14 @@ Two entries on the extension's own toolbar button, for the progress and settings
 
 <!-- paste: permission:notifications -->
 ```text
-Informs the user when a settings change they queued has finished its cooldown and taken effect. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
+Informs the user when a settings change they queued has finished its cooldown and taken effect, and answers a panic pass asked for with the keyboard shortcut. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
 ```
 
 Host permission (`*://*/*`, optional), if the form lists it:
 
 <!-- paste: permission:optional_host_permissions -->
 ```text
-Requested per-origin at runtime, from a user gesture on the extension's own first-run page, for only the sites the user selects. Never requested at install time.
+Requested per-origin at runtime, from a user gesture on one of the extension's own pages — the first-run page, the settings page's Sites section, or the toolbar popup on the site being read — for only the sites the user selects. Never requested at install time.
 ```
 
 **C10 — Remote code:** *No, I am not using remote code.* `npm run validate`
@@ -216,8 +216,9 @@ is an optional licence bought outside the store (see BLOCKED 3 and 4).
 
 **C14 — Submit for review.** Review takes hours to a couple of weeks; a first
 submission is slower. The question to expect is about `*://*/*`. The answer:
-Weft asks for one site at a time, at runtime, from a click on its own
-first-run page, never at install; the manifest declares no `content_scripts`;
+Weft asks for one site at a time, at runtime, from a click on one of its own
+pages — the first-run page, Settings → **Sites** or the toolbar popup — never
+at install; the manifest declares no `content_scripts`;
 and a fresh install has zero granted origins and zero registered content
 scripts, which `tests/tools/install-permissions.test.ts` holds every
 manifest to and `tests/e2e/privacy.spec.ts` ("what a fresh install may
@@ -438,7 +439,7 @@ Stores settings and the learner's vocabulary locally. No remote storage is used.
 
 <!-- paste: permission:alarms -->
 ```text
-Difficulty-reducing settings changes are held behind a cooldown that must expire reliably. An MV3 service worker is terminated when idle, so an alarm is the only way for a stored cooldown to apply on time. Also used for the daily rollover of attention counters.
+Difficulty-reducing settings changes are held behind a cooldown that must expire reliably. An MV3 service worker is terminated when idle, so an alarm is the only way for a stored cooldown to apply on time. Also used to end a panic pass on time and to write the learner's vocabulary to storage once a minute.
 ```
 
 `scripting`
@@ -466,14 +467,14 @@ Two entries on the extension's own toolbar button, for the progress and settings
 
 <!-- paste: permission:notifications -->
 ```text
-Informs the user when a settings change they queued has finished its cooldown and taken effect. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
+Informs the user when a settings change they queued has finished its cooldown and taken effect, and answers a panic pass asked for with the keyboard shortcut. Not requested in the Safari build, which has no notifications API; there the toolbar badge is used instead.
 ```
 
 Host permission (`*://*/*`, optional), if the form lists it:
 
 <!-- paste: permission:optional_host_permissions -->
 ```text
-Requested per-origin at runtime, from a user gesture on the extension's own first-run page, for only the sites the user selects. Never requested at install time.
+Requested per-origin at runtime, from a user gesture on one of the extension's own pages — the first-run page, the settings page's Sites section, or the toolbar popup on the site being read — for only the sites the user selects. Never requested at install time.
 ```
 
 **E7 — Remote code:** *No, I am not using remote code.* **Data usage:** tick
