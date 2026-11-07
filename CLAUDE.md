@@ -64,9 +64,9 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **643 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **565 pass**, 141 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **569 pass**, 142 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **46 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -225,6 +225,18 @@ is decoding with, for almost no vocabulary.
 nor restarts one, and re-requesting the same change does not move it.
 Cancelling a queued change is instant and free: friction on the way *out* of a
 commitment would be coercion. Anything that makes Weft harder applies at once.
+
+**A tamper penalty lasts 12 hours, and every sentence that says how long
+says so.** `recordTamper()` holds difficulty at the ceiling for
+`TAMPER_PENALTY_HOURS` (`src/core/lock.ts`) from the last time tampering is
+noticed — settings that fail their signature, or the clock turned back.
+Until 2026-11-07 the settings row, its choice, the popup's notice, the
+privacy page and `docs/ARCHITECTURE.md` said "for the day", over a variable
+named `endOfDayPenalty`. `tests/tools/penalty-copy.test.ts` reads every
+tracked source file, the README, `docs/*.md` and `site/*.html`, and fails on
+a sentence pinning difficulty at the ceiling for another length. Do not
+"fix" the code toward the reading day instead: ending at the next 4 a.m.
+rollover holds five minutes for tampering found at 03:55.
 
 **A day key is stepped by the calendar, never by 86 400 000.** A day is 25
 hours long on the night the clocks go back and 23 on the night they go
@@ -989,6 +1001,85 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — a tamper penalty lasts 12 hours, and five places said the day
+
+`Now` was empty and every unchecked item in `Next` waits on Creagh, so a
+written promise was read against the code, as the runs before did:
+`docs/ARCHITECTURE.md`, the one document of promises no run had opened, which
+`TODO.md` named nowhere. **Most of it holds**, listed in `TODO.md`'s Notes so
+nobody reads it twice. Five claims did not.
+
+**The one that reached shipped copy:** a failed signature "pins difficulty at
+the ceiling for the day". `recordTamper()` holds it twelve hours from the last
+notice, in a variable named `endOfDayPenalty`, and the settings row, its
+choice, the popup ("for today") and the privacy page said the day too: a
+penalty noticed at 08:00 lifted at 20:00, and one noticed at 22:00 held until
+10:00. The popup also said "Stored settings failed their integrity check" for
+a clock turned back, the misattribution `tests/core/lock.test.ts` refuses in
+the audit log. **The copy moved, not the code**: ending at the next rollover
+holds five minutes for tampering at 03:55 and shortens every penalty found
+after 16:00. `TAMPER_PENALTY_HOURS` names the length, each surface says 12
+hours, and the popup names both causes. `tests/tools/penalty-copy.test.ts`,
+4 tests in a new suite, reads every tracked source file, the README,
+`docs/*.md` and `site/*.html` for a sentence pinning difficulty at the ceiling
+for a length of time: red first on a missing export, then on exactly the five
+copy sites and the popup's cause. A unit test pins the length from the last
+notice, the clock's included.
+
+**The other four were the document's own:** the unit suite "under a second",
+~9 s here; "150 lines" of build, where `build.mjs` is 289; icons reproducible
+"anywhere Node runs", true of their pixels and not their bytes, as 2026-10-01
+measured; and "the unit of work is a word, everywhere, including on the
+provider path", with no word of “Send the surrounding sentence”, the class
+2026-11-05 cleared from five public places. `sending-copy.test.ts`'s denial
+pattern did not know "No sentence-level translation"; it reads "No sentence"
+now, and a probe with the old paragraph names `docs/ARCHITECTURE.md:217`,
+restored by md5. Its Baseline sentence said Firefox 149; MDN gives 140,
+partial to 148, and **the partial range is a finding**: `::highlight()` draws
+no `text-decoration` before Firefox 146, and `HighlightRenderer.supported()`
+is true from 140, so on 140–145 a woven word loses its underline and a
+retired word is drawn as plain text. Queued in `Next` as a call, with a
+recommendation.
+
+All 31 shots were regenerated on a test build after the commit that moved
+`src/`: `options.png` 19 px taller, the row read and saying 12 hours and the
+clock, and `07-help.png`, framed below it, the same text at a new sub-pixel
+offset, 7 255 pixels with a channel 203 apart; both byte-identical on a second
+run. `options-density.png` moved by its known 13 pixels once and came back.
+The store group is stamped, and the other two groups' stamps deleted, their
+content having changed. Unit 643 → **644**, tools 565 → **569** / 141 →
+**142** suites, total 1373 → **1378**, in six places, `docs/LAUNCH.md:221`
+first, and a `CHANGELOG.md` paragraph.
+
+**Reading `docs/SUPPORT.md` next found the next item, queued first in
+`Now`.** Onboarding keeps a site whose permission prompt was declined, and
+the settings page warns of it, but the popup on that site prints a density
+over a page nothing is registered on, where the support page says the popup
+names the missing grant and offers to ask again.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0** — typecheck clean, **644
+unit / 151**, 119 jsdom / 26, **569 tools / 142**, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **999 KB × 3** passing `validate`, **46
+e2e passed and 3 skipped in 5.5 min**, then build and validate again.
+Chrome's package grew 130 bytes, measured against `main`'s built in a `/tmp`
+worktree: `background.js` +10, the constant's name, and `options.js` +67 and
+`popup.js` +53, the longer copy, 998.960 → 999.087 KB, still printing 999.
+Separately `npm run site` then `site:check` **714 pages / 16 118 links**, all
+resolving, `/privacy` printing the new sentence, and `artefacts:check` **8
+groups, 1 stale**, exit 1 — the release notes, B2a. `packs:verify` was not
+run: no pack or seed moved. Only documents moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the copy writes the length as a number
+where the code holds it; that the settings row may name the clock, which
+`docs/HARD-MODE.md` already says the response covers; and that the Baseline
+date stands with Firefox 140.
+
+What needs a human: unchanged, everything below **B1** and the calls, and one
+new call: how Firefox 140 to 145 should draw a woven word.
 
 ### 2026-11-07 — Edge has its own Hard Mode file, for the copy Edge will hold
 

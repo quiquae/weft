@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
-of this session — typecheck clean, **643** unit / 151 suites, **119** jsdom / 26
-suites, **565** tool tests / 141 suites, **46** e2e passing
+of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
+suites, **569** tool tests / 142 suites, **46** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 999 KB each, all
 passing `npm run validate`. The package grew
@@ -95,7 +95,10 @@ And to **999 KB** later on 2026-11-07 by 3 394 bytes, 2 029 of them
 `background.js` and 1 364 `options.js`, Edge's own Hard Mode file and the
 row that offers it: Chrome's 995.647 → 998.961 KB, Firefox's 999.029 and
 Safari's 998.968, measured against `main`'s three packages built in a `/tmp`
-worktree, every other bundle byte-identical.
+worktree, every other bundle byte-identical. And by 130 bytes the same day,
+the tamper penalty's length said in the settings row and the popup:
+`background.js` +10, `options.js` +67 and `popup.js` +53, Chrome's 998.960 →
+999.087 KB against `main`'s, still printing 999.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -665,10 +668,13 @@ or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
 **So the whole of B0 is closed. `Now` holds one agent-shaped item, found on
-2026-11-02: the daily lookup limit the options page and the privacy page
-promise counts no day, each call being sliced to it alone. `Next` holds two items that wait on Creagh's calls and a third that does
-too since 2026-10-26, the site's favicon, whose check is made and whose
-remedy is a choice.** Since
+2026-11-07: the popup on a listed site the browser never granted prints a
+density where `docs/SUPPORT.md` says it names the missing grant. Every
+unchecked item in `Next` waits on a call of Creagh's:** the four Pro
+features sold and never built, the Firefox data-collection declaration, the
+Safari subtitle, the site's favicon, and how Firefox 140 to 145 should draw
+a woven word. A run that finds `Now` empty reads a written promise against
+the code, as the runs of 2026-11-05 to -07 did. Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
 and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
 otherwise what is holding the release up, and neither is the version any
@@ -2151,6 +2157,73 @@ registered**, and nothing below it can move until it is.
          Safari copy keeps Hard Mode — Edge's listing now can, and
          `docs/READY-TO-SUBMIT.md` says so before Edge's description.
 
+- [x] **Say how long a tamper penalty holds, where five places said "the
+      day".** Done 2026-11-07, found by reading `docs/ARCHITECTURE.md`
+      against the code, the one document of promises no run had opened:
+      `Now` was empty and every unchecked item in `Next` waits on Creagh.
+      `recordTamper()` holds difficulty at the ceiling for twelve hours from
+      the last time tampering is noticed — the variable was named
+      `endOfDayPenalty` — and the settings row that chooses the response,
+      its choice, the popup's notice ("for today"), `docs/PRIVACY.md`,
+      `docs/ARCHITECTURE.md` and the function's own doc comment all said
+      "for the day". A penalty noticed at 08:00 lifted at 20:00 and one
+      noticed at 22:00 held until 10:00. The length is
+      `TAMPER_PENALTY_HOURS` in `src/core/lock.ts` now, and every one says
+      12 hours. The popup's notice also said "Stored settings failed their
+      integrity check" when the clock was what moved, the misattribution
+      `tests/core/lock.test.ts` refuses in the audit log; it names both.
+      **The copy moved, not the code**: see Notes for why "until the next
+      rollover" was not taken. Guard: `tests/tools/penalty-copy.test.ts`,
+      4 tests in a new suite, reads every tracked source file, the README,
+      `docs/*.md` and `site/*.html` for a sentence pinning difficulty at
+      the ceiling for a length of time, and was red first on exactly the
+      five copy sites and the popup's cause; a unit test pins the length,
+      from the last notice, the clock's included. The same commit corrects
+      `docs/ARCHITECTURE.md`'s four other false claims — the unit suite
+      "under a second", "150 lines" of build where `build.mjs` is 289, icons
+      byte-reproducible "anywhere Node runs", and a provider path carrying
+      words alone with no word of the switch that sends the sentence — and
+      `tests/tools/sending-copy.test.ts` reads "No sentence" as a denial,
+      the form that let the last one past: a probe with the old paragraph
+      names `docs/ARCHITECTURE.md:217`. Two shots moved, both reproduced
+      on a second run: `options.png`, 19 px taller, and `07-help.png`,
+      framed on the section below the row and so at a new sub-pixel offset.
+      Unit 643 → **644**, tools 565 → **569** / 141 → **142** suites,
+      total 1373 → **1378**, in six places, `docs/LAUNCH.md:221` first, and
+      a `CHANGELOG.md` paragraph.
+
+- [ ] **The popup on a listed site the browser never granted prints a
+      density, not the missing grant.** Found 2026-11-07, reading
+      `docs/SUPPORT.md` against the code after the item above. Onboarding
+      records the sites a reader chose even when the permission prompt is
+      declined ("Access was not granted, so nothing will be woven yet",
+      `src/ui/onboarding/index.tsx:95`), and the settings page's Sites
+      section warns of it with a grant button; but the popup on such a site
+      gets a taxed `decision` from the worker and prints "6% of the content
+      words is in French" and the attention line, over a page no content
+      script is registered on. `docs/SUPPORT.md` says "the popup on that
+      site says so" and that it "offers to ask the browser again", and then
+      tells a reader who sees a percentage over English to "read it again
+      more slowly". The shape: whenever `decision.mode` is `taxed` or
+      `gentle`, the popup asks `api.permissions.contains()` for the tab's
+      origin, built as `addThisSite()` builds it; when it is not held, a
+      notice takes the band's place — on the list, not granted, so nothing
+      is woven — with a button that requests it from the click, as
+      `addThisSite()` does, then sends `reregister-scripts` and reloads the
+      tab. Test-first, in e2e: open `popup.html` with the tab's URL stubbed
+      by an init script, as `screenshots.spec.ts` does, at an origin the
+      test build does not grant (`https://example.com/article`), with that
+      host added to `sites.taxed` through the worker; red on today's popup,
+      which prints the percentage. Do not click the button in the test:
+      Chrome's permission dialog cannot be dismissed from Playwright. About
+      45 minutes, and then `docs/SUPPORT.md` holds as written but for one
+      clause to correct in the same change: "the whole extension is a few
+      thousand lines", where `src/` holds 16 920 lines of TypeScript. Its
+      other claims were read and hold — the three popup states it quotes,
+      `Alt+Shift+R` and `Alt+Shift+N` with the panic pass unbound
+      (`manifest.config.mjs:78`), the export and import rules, and the
+      never-gated list.
+
 ## Next
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
@@ -2484,6 +2557,32 @@ registered**, and nothing below it can move until it is.
       `site/index.html:19` link the icon, and `site:check` and the icons'
       artefact group would take the new file. Not agent-shaped before the
       yes.
+
+- [ ] **Decide how Firefox 140 to 145 draws a woven word.** Found
+      2026-11-07, reading `docs/ARCHITECTURE.md`'s Baseline sentence against
+      MDN's data in `node_modules/@mdn/browser-compat-data`.
+      `HighlightRenderer.supported()` (`src/content/render-highlight.ts:38`)
+      is true wherever `Highlight` and `CSS.highlights` exist, which is
+      Firefox 140 on, but `::highlight()` draws no `text-decoration` there
+      before Firefox 146 (`css.selectors.highlight`, "partial" 140–148,
+      bug 1845446) and no `text-shadow` before 149. `src/content/styles.ts`
+      draws a woven and a revealed word with a tint and an underline, and a
+      retired word with an underline alone, so on Firefox 140–145 a woven
+      word loses its underline and a retired one is drawn as plain text.
+      The ESR 140 branch keeps 140's styling for its whole life. The compat
+      audit names `HighlightRenderer.supported() → WrappedRenderer` as the
+      fallback for `css.selectors.highlight`, which holds below 140 and not
+      in the partial range. **Not seen in a browser**: Playwright's Firefox
+      is newer than 145. The choices:
+      1. The Firefox build takes the wrapped renderer below 146, reading the
+         version from `navigator.userAgent`, as 128–139 already do for want
+         of the API: real underlines, at the structural cost the wrapped
+         renderer always has. Recommended.
+      2. A retired word gets a faint tint as well, so no highlight is drawn
+         by a decoration alone: a visual call, in every browser.
+      3. Leave it: 146 shipped in December 2025.
+      Either fix wants the audit's fallback line to say what holds in the
+      partial range. Not agent-shaped before the yes.
 
 - [x] **Weave `ċiriċan` for "churches", as the table and Bülbring print
       it.** Done 2026-10-25, in the PR after the one that found it: the
@@ -7788,6 +7887,50 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, latest — a tamper penalty lasts 12 hours, and the copy says
+so.** Six things a later run would be sorry not to know:
+
+1. **`docs/ARCHITECTURE.md` was read claim by claim, and most of it holds**,
+   so nobody need pay for it twice: `resolveRenderMode()`'s order, the
+   owned-node `WeakSet` (`src/content/index.ts:135`), settings, lock and
+   attention signed with a key derived from the install id and cards not,
+   a failed signature keeping the data, the one-minute flush alarm, four
+   interface surfaces, the by-host intersection (`src/core/sites.ts:392`),
+   `MULTI_PART_SUFFIXES` for want of the Public Suffix List, no main-world
+   injection, the tie-break seeded by a hash of the text, attention counted
+   only when visible and focused, and Firefox's event page. Five claims
+   were false and are corrected (the ticked item in `Now`). Not checked:
+   the Public Suffix List's "~230 KB" and "five real bugs".
+2. **The copy moved to the code, not the code to the copy.** "Until the
+   next reading day" (the 4 a.m. rollover) was the other reading, and the
+   variable's old name, `endOfDayPenalty`, says somebody meant it; but it
+   holds five minutes for tampering found at 03:55, and less than today's
+   twelve hours for anything found after 16:00, so it makes Weft easier and
+   opens a gap. If "the day" was the design, the end wants to be the later
+   of the two, and that is Creagh's call; `TAMPER_PENALTY_HOURS` and the
+   copy test are where it would land.
+3. **The popup's notice names both causes rather than the one that
+   happened**, because `PageState` carries `penaltyActive` alone. Saying
+   which, or "until 17:42", means carrying the cause and `penaltyUntil`
+   through `PageState` from the lock's log; nothing is wrong without it.
+4. **A change to a row above a framed shot moves the framed shot.**
+   `07-help.png` is framed on the help section by `frameOn`, below the
+   commitment row, which grew by a fraction over 18 px, so every glyph
+   under it landed on a new sub-pixel offset: 7 255 pixels, the largest
+   channel 203 apart, and the text identical. A channel 170 apart is not
+   by itself a changed word; read the shot, as was done here.
+5. **To find a real change in a full-page shot, count strong differences
+   per row.** `options.png`'s known slider noise is at row ~1709, so the
+   first differing row says nothing; the first row with more than 20
+   pixels over 40 apart in a channel, top-aligned, was 4484, the row
+   itself. Ten lines on `decode()` in `tools/png.ts`, whose field is
+   `bpp`, not `channels`, which reads every row as equal.
+6. **Assumed, with nobody to ask:** that the copy writes the length as a
+   number where the code holds it, and each says "12 hours"; that the
+   settings row may name the clock, which `docs/HARD-MODE.md` already says
+   the response covers; and that "Baseline since June 2025" stands with
+   Firefox 140, MDN marking 140 to 148 partial.
 
 **2026-11-07, later — Microsoft Edge has its own Hard Mode file.** Seven
 things a later run would be sorry not to know:

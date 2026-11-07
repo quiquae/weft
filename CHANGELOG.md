@@ -48,6 +48,16 @@ for Edge, Microsoft listing the policy for Windows and macOS only, and the
 two macOS profiles carry different identifiers, so installing Edge's never
 replaces Chrome's. Chrome's files are byte for byte what they were.
 
+**The settings page and the popup say how long a tamper penalty lasts.** When
+Weft finds its stored settings edited behind its back, or the clock turned
+back, it holds difficulty at the ceiling for twelve hours from the last time it
+noticed. The settings row that chooses that response, the choice itself, the
+popup's notice and the privacy page all said "for the day" or "for today", so
+a penalty noticed in the morning was lifted that evening and one noticed late
+at night held into the next morning. Each says twelve hours now. And the
+popup's notice blamed the stored settings alone, though a clock turned back
+shows it too; it names both.
+
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
 features, and four of them could not be had: both rows of language chips set
@@ -853,7 +863,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1373 tests: 643 unit, 119 in jsdom, 565 over the build tools, and
+**Built with** 1378 tests: 644 unit, 119 in jsdom, 569 over the build tools, and
 46 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
