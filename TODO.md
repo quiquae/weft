@@ -6,7 +6,7 @@
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
-suites, **569** tool tests / 142 suites, **47** e2e passing
+suites, **576** tool tests / 144 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1000 KB each, all
 passing `npm run validate`. The package grew
@@ -2209,6 +2209,59 @@ registered**, and nothing below it can move until it is.
       as written now, and its "a few thousand lines" is gone. E2e 46 →
       **47**, total 1378 → **1379**, in six places, `docs/LAUNCH.md:221`
       first, and a `CHANGELOG.md` paragraph. The packages print **1000 KB**.
+
+- [x] **The support page told a reader the never-weave list works backwards,
+      and sent them to a page Settings does not link.** Done 2026-11-07,
+      found by reading `docs/SUPPORT.md` claim by claim against the code:
+      `Now` was empty and every unchecked item in `Next` waits on Creagh,
+      and the run before had read only the claim it fixed. It is published
+      as `/support`, the support address every store listing gives, and its
+      reader is somebody for whom Weft is not working. Six claims were false
+      or short of the code: taking a site off the never-weave list "is a
+      difficulty-reducing change and waits out a cooldown", where
+      `GOVERNED_PATHS` (`src/core/lock.ts:47`) judges a *longer* never-weave
+      list the easier one, so adding waits and taking one off applies at once,
+      as the settings row itself says; "Open the first-run page from
+      Settings", which nothing links (only the worker's install handler
+      opens it), where Settings → **Sites** lists the ungranted sites and asks
+      for them in one click; the list "money, mail, credentials, health and
+      government", where `DEFAULT_EXCLUSIONS` (`src/core/sites.ts:204`) also
+      covers checkouts and forms and the places you write, Google Docs and
+      Notion among them; the page "already in the language you are
+      learning", where `documentLanguageMatches()` refuses any page declaring
+      a language other than English; the dashboard "which says no network
+      request has ever been made", which it says only until one is; and "a
+      yearly licence carries an expiry", where a monthly one does too, as
+      `docs/PRICING.md` also omitted. Guard:
+      `tests/tools/support-directions.test.ts`, 7 tests in 2 suites: every
+      interface line a user document quotes in bold is printed by `src/ui/`;
+      every `Settings → **…**` path is written in bold and each step is a
+      title or control the settings page has; and every sentence in the
+      source, the README, `docs/*.md` or `site/*.html` saying which change to
+      the never-weave list waits says what `directionOf()` says. Red first on
+      exactly the backwards sentence and the two unbolded paths (the export's
+      and `docs/HARD-MODE.md`'s); four probes, each restored by md5, each
+      failing by name: a quoted popup line changed, a path step misspelt,
+      the direction reversed in `docs/SUPPORT.md`, and in the settings row.
+      Tools 569 → **576** / 142 → **144** suites, total 1379 → **1386**, in
+      six places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph:
+      nothing that ships moved.
+
+- [ ] **Say the never-weave list's six kinds of site on the settings page, and
+      name the page's language rather than its code.** Found 2026-11-07
+      reading `docs/SUPPORT.md`. The settings row (`src/ui/options/sites.tsx:321`)
+      says Weft "ships this list covering money, mail, credentials and
+      health"; `DEFAULT_EXCLUSIONS` covers government, checkouts and forms
+      you cannot take back, and the places you write, too, so a reader who
+      finds Notion or Google Docs unwoven sees no reason on the page that
+      sets it. And the content script's reason for a page in another
+      language (`src/content/index.ts:894`) prints
+      `sourceLang.toUpperCase()`, "This page is not in EN", where
+      `getLanguage(sourceLang).name` reads "English". Both are copy in
+      `src/`, so all three screenshot groups go stale: regenerate, read
+      `options.png` (the row is in the full-page shot), and stamp. The new
+      `support-directions` guard will still find the row's direction
+      sentence; keep "Adding to it" in it. About 40 minutes.
 
 ## Next
 
@@ -7769,7 +7822,10 @@ choice is to fix it and rebuild the zips before submitting, or to submit
 knowing that; `docs/READY-TO-SUBMIT.md` puts it as BLOCKED 3. *Needs: a Lemon
 Squeezy account.* **And settle what Pro is first**: until 2026-11-06 it was sold
 with four features it does not have, and the first unchecked item in `Next`
-is the decision about them.
+is the decision about them. **And settle how a buyer gets a key**: keys are signed
+on Creagh's machine by `tools/make-licence.mjs`, with no server, so nothing
+yet turns a Lemon Squeezy order into a key, and a monthly plan's key expires
+and must be replaced each month (found 2026-11-07; see Notes).
 
 **B5 — Submit to the Chrome Web Store.** Everything a machine can check has
 been checked. **Work down `docs/READY-TO-SUBMIT.md`**, which has every step
@@ -7873,6 +7929,44 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, latest — the support page read claim by claim.** Six things a
+later run would be sorry not to know:
+
+1. **`docs/SUPPORT.md` holds now, claim by claim**, so nobody need pay for it
+   twice: the popup's three quoted lines and its warnings, the per-origin
+   request in `siteOrigins()`, Latin and Old English having `ttsLang: null`,
+   the two bound shortcuts and the unbound panic pass, Settings → **Help** →
+   **Gather the details** and what the report holds, the export's stripped
+   fields, the never-gated list, and the import's "never on". Six claims
+   were false or short of the code and are corrected (the ticked item in
+   `Now`).
+2. **The never-weave list is the one list whose longer form is the easier
+   one.** A longer taxed or gentle list weaves more; a longer never-weave
+   list weaves less, so adding to it waits and taking a site off applies at
+   once. Copy written from the other two lists gets it backwards, which is
+   what the support page did; the settings row always had it right.
+3. **The guard reads anaphora inside a paragraph.** The backwards sentence
+   said "the list" and "it", the list being named a sentence earlier, so a
+   reader that judged only sentences naming the list could never have been
+   red on it. A paragraph or list item that names the never-weave list goes
+   on meaning it by "the list" or "it" until it names the taxed or gentle
+   list. A `>` alone on a line closes a JSX tag, not a quote: the first
+   reader stripped it as a Markdown quote marker and read the settings row
+   twice.
+4. **Nothing says how a buyer gets a licence key, or how a monthly one
+   renews.** Keys are signed by `tools/make-licence.mjs` with the private
+   key on Creagh's machine, and there is no server, so each purchase means a
+   key minted and sent by hand, and a monthly subscriber needs a new key
+   every month, its old one expiring. Written into **B4**; it is Creagh's.
+5. **Not fixed, queued first in `Now`:** the settings row's four kinds of
+   site where the list ships six, and the language reason's "EN". Both move
+   `src/` and the screenshot groups, which a documents-only PR did not.
+6. **Assumed, with nobody to ask:** that "the places you write rather than
+   read" may stand for the list's own comment, "where you are writing, not
+   reading"; that "passwords and sign-in" may stand for its "credentials and
+   security"; and that the support page may name a settings row by its
+   title, "Never weave", as a step of a path.
 
 **2026-11-07, last — the popup names a missing grant.** Four things a later
 run would be sorry not to know:

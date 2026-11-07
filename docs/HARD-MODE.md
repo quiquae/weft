@@ -68,9 +68,9 @@ and only the browser can tell the two apart.
 
 ## Generating it
 
-Settings → Commitment → Hard Mode. Pick your platform, click Generate, read
-the file — it is short, these instructions are written into it, and it names
-exactly one extension id — then download and install it.
+Settings → **Commitment** → **Hard Mode**. Pick your platform, click
+Generate, read the file — it is short, these instructions are written into
+it, and it names exactly one extension id — then download and install it.
 
 ## macOS
 
