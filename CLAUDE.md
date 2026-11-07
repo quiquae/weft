@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **588 pass**, 148 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **590 pass**, 149 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1002,6 +1002,92 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — the privacy page, read to its end, and five of its errors were in the listing too
+
+`TODO.md`'s top item in `Now`, queued by the never-weave run: the six
+sections of `docs/PRIVACY.md` no run had read, against the code. Telemetry,
+the tamper paragraph, the import's validation, re-signing and cooldown, the
+keys, sending less and never more, "Start my vocabulary over" and the
+diagnostic report hold. Nine claims did not.
+
+**The signing key was said to ship inside the extension**, two paragraphs
+above the page calling the install id "signing key material": the key is
+HKDF of a salt that ships and the install id, generated at install and kept
+beside what it signs. **Hard Mode was "a real guarantee"**, in a section about
+forged signatures; it guarantees one thing, that Weft cannot be disabled or
+removed without an administrator password, and only in Chrome and in Edge for
+its Edge Add-ons copy. **Speech** blamed remote voices on "the operating
+system vendor"; Weft names a language and the browser picks the voice, and it
+speaks only when the speaker button is pressed. The **export** sentence named
+three of the five stores `exportAll` writes, and nothing said the commitment
+record is never imported. And "a few thousand lines" was the sentence the
+support page dropped; `src/` is 17 020.
+
+**Four were permission justifications, and the listing had them too.**
+`alarms` ran "the daily rollover of attention counters", which no alarm does
+— the three it sets apply a change whose cooldown ended, end a panic pass and
+write the vocabulary each minute — in the privacy table and in the
+justification `docs/STORE-LISTING.md` gives Google, pasted twice into
+`docs/READY-TO-SUBMIT.md`. `notifications` named neither account's second
+job, a panic pass asked for from the keyboard. Host access was asked "from
+the first-run page" in six accounts — the privacy page, the listing's
+justification and its two copies, the answers `READY-TO-SUBMIT.md` and
+`SUBMIT.md` give a reviewer, and a launch draft — where the popup and
+Settings → **Sites** call `permissions.request` too: a form a reviewer reads
+beside the code that contradicts it. And "a reviewer comparing versions will
+see" `idle` and `unlimitedStorage` go, where both left in `4a68345`, four days
+before 1.0.0.
+
+**The guards read the jobs off the code.**
+`tests/tools/privacy-permissions.test.ts`, 8 tests in 3 suites: the table
+names exactly the permissions every target's `buildManifest()` declares, a
+row a target leaves out naming it; every `alarms.create` under `src/` and
+every `notify(` in the worker is a job `ALARMS` or `NOTICES` names, with the
+words both accounts must use, and `NOT_DONE` refuses the rollover, which no
+derivation could see; every file calling `permissions.request` is in
+`REQUESTERS`, and every paragraph of `README.md`, `docs/*.md` or `site/*.html`
+naming the first-run page beside a request names all three. A new suite of
+`privacy-stores.test.ts`, 3 tests, holds the "Export writes" sentence to
+`exportAll`'s keys through `KEYS`, and a store `importAll` never reads to a
+sentence saying so. Red first on 8 faults, then 2, then 9; five probes
+restored by md5 — `idle` declared, Safari's clause dropped, an alarm nobody
+named, a notification of nothing, the network log exported — each failing by
+name. **`/\bSites\b/i` passed the old listing on "the sites the user
+selects"**, which reading the red run's passes caught; the rule matches with
+case.
+
+Google Chrome 156, launched by Playwright, listed 180 voices and none remote,
+but Playwright disables component extensions, so the page names no vendor
+(`TODO.md`'s Notes). No screenshot group moved: nothing under `src/` did, and
+the two comments in `src/core/` repeating "ships inside the extension" are in
+the next item. Tools 579 → **590** / 145 → **149** suites, total 1389 →
+**1400**, in six places, `docs/LAUNCH.md:221` first; the first sweep wrote
+588, counted before the third suite went in, and the gate's count is the one
+carried. No `CHANGELOG.md` paragraph: nothing that ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guards and the documents: `npm run test:all` **exit 0** —
+typecheck clean, 644 unit / 151, 119 jsdom / 26, **590 tools / 149**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1001 KB × 3**
+passing `validate`, **47 e2e passed and 3 skipped in 7.7 min**, then build
+and validate again. Separately `npm run site` then `site:check` **714 pages
+/ 16 118 links**, all resolving, `/privacy` printing every corrected
+sentence, and `artefacts:check` **8 groups, 1 stale**, exit 1 — the release
+notes, B2a. `packs:verify` was not run: no pack or seed moved. The counts
+and this entry moved after the gate's tools step, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that Hard Mode's tier is pricing, not privacy;
+that the listing's host justification may name the popup and the settings
+page, the places a reviewer will find `permissions.request`; and that the
+reviewer answers in `READY-TO-SUBMIT.md` and `SUBMIT.md` and the launch draft
+were this item's, being the same claim.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, the guard for a top-level call riding into a
+bundle, now with two comments to correct.
 
 ### 2026-11-07 — the never-weave list had three names, and the guard knew one
 
