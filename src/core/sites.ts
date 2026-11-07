@@ -253,8 +253,12 @@ export const NEVER_WEAVE_KINDS: ReadonlyArray<{ kind: string; patterns: readonly
   },
 ];
 
-/** The never-weave list Weft ships: every kind's patterns, in order. */
-export const DEFAULT_EXCLUSIONS: string[] = NEVER_WEAVE_KINDS.flatMap((k) => k.patterns);
+/**
+ * The never-weave list Weft ships: every kind's patterns, in order. Marked
+ * pure because esbuild keeps a top-level call it cannot prove pure, and
+ * without the mark the whole list rode, unread, into `options.js`.
+ */
+export const DEFAULT_EXCLUSIONS: string[] = /* @__PURE__ */ NEVER_WEAVE_KINDS.flatMap((k) => k.patterns);
 
 /** Curated presets for onboarding, so the first run is one click. */
 export const SITE_PRESETS: Array<{
