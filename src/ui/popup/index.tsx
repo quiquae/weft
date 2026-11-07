@@ -279,8 +279,8 @@ function Popup() {
 
           {state.penaltyActive ? (
             <Notice tone="warn">
-              Stored settings failed their integrity check, so difficulty is pinned at the ceiling
-              for today.
+              Weft noticed its stored settings edited or its clock turned back, so difficulty is
+              pinned at the ceiling for 12 hours from the last time it noticed.
             </Notice>
           ) : null}
         </>

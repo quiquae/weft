@@ -140,12 +140,12 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
       <Row
         siglum={SIGLA.locked}
         title="If stored settings are edited"
-        detail="Weft signs its own difficulty settings and notices when they have been changed behind its back. Escalating pins difficulty at the ceiling for the day, which makes editing storage a losing move rather than a shortcut."
+        detail="Weft signs its own difficulty settings and notices when they have been changed behind its back, or the clock has been turned back. Escalating pins difficulty at the ceiling for 12 hours from the last time it noticed, which makes editing storage a losing move rather than a shortcut."
       >
         <Chips
           multi={false}
           options={[
-            { id: 'escalate', label: 'pin at the ceiling for the day' },
+            { id: 'escalate', label: 'pin at the ceiling for 12 hours' },
             { id: 'ignore', label: 'just note it' },
           ]}
           selected={[settings.friction.tamperResponse]}

@@ -492,13 +492,23 @@ export function panicActive(state: LockState, now: number): boolean {
 /* ------------------------------------------------------------------ tamper */
 
 /**
+ * How long a detected tampering holds difficulty at the ceiling, from the last
+ * time it was noticed. The settings page, the popup's notice and the privacy
+ * page each say this length, and tests/tools/penalty-copy.test.ts holds every
+ * sentence that says how long to it: until 2026-11-07 they all said "for the
+ * day" while this held twelve hours from whenever the tampering was found.
+ */
+export const TAMPER_PENALTY_HOURS = 12;
+
+/**
  * Response to detected tampering with stored state.
  *
  * Deliberately escalates rather than resets. A learner who edits storage to
- * lower the ratio finds it pinned at the ceiling for the rest of the day; the
- * incentive to try is therefore negative. This is friction, not security — the
- * signing key ships inside the extension and a determined user can forge it.
- * docs/PRIVACY.md says so in plain words rather than implying otherwise.
+ * lower the ratio finds it pinned at the ceiling for 12 hours, and a second
+ * edit holds it that long again; the incentive to try is therefore negative.
+ * This is friction, not security — the signing key ships inside the extension
+ * and a determined user can forge it. docs/PRIVACY.md says so in plain words
+ * rather than implying otherwise.
  */
 export function recordTamper(
   state: LockState,
@@ -509,12 +519,12 @@ export function recordTamper(
   if (settings.friction.tamperResponse === 'ignore') {
     return { ...state, tamperCount: state.tamperCount + 1, lastTamperAt: now };
   }
-  const endOfDayPenalty = now + 12 * 3_600_000;
+  const until = now + TAMPER_PENALTY_HOURS * 3_600_000;
   return {
     ...state,
     tamperCount: state.tamperCount + 1,
     lastTamperAt: now,
-    penaltyUntil: Math.max(state.penaltyUntil ?? 0, endOfDayPenalty),
+    penaltyUntil: Math.max(state.penaltyUntil ?? 0, until),
     log: appendLog(state.log, {
       at: now,
       summary,

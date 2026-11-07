@@ -16,6 +16,7 @@ import {
   directionOf,
   describeWait,
   splitImportedSettings,
+  TAMPER_PENALTY_HOURS,
 } from '../../src/core/lock.ts';
 import { settings, NOW } from '../helpers.ts';
 
@@ -271,6 +272,18 @@ describe('tamper response', () => {
     const firstEnd = state.penaltyUntil as number;
     state = recordTamper(state, s, NOW + 3_600_000);
     assert.ok((state.penaltyUntil as number) > firstEnd);
+  });
+
+  test('the penalty holds TAMPER_PENALTY_HOURS from the last time it was noticed', () => {
+    // The settings page, the popup and the privacy page say how long, and
+    // tests/tools/penalty-copy.test.ts holds them to this number.
+    const s = settings({ 'friction.tamperResponse': 'escalate' });
+    const first = recordTamper(emptyLockState(NOW), s, NOW);
+    assert.equal(first.penaltyUntil, NOW + TAMPER_PENALTY_HOURS * 3_600_000);
+    const again = recordTamper(first, s, NOW + 3_600_000);
+    assert.equal(again.penaltyUntil, NOW + 3_600_000 + TAMPER_PENALTY_HOURS * 3_600_000);
+    const rewound = noteClock(noteClock(emptyLockState(NOW), s, NOW).state, s, NOW - 3 * 3_600_000);
+    assert.equal(rewound.state.penaltyUntil, NOW - 3 * 3_600_000 + TAMPER_PENALTY_HOURS * 3_600_000);
   });
 });
 
