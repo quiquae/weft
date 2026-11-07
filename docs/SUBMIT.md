@@ -13,7 +13,7 @@ npm run test:all
 ```
 
 runs typecheck, 644 unit tests, 119 jsdom tests, 569 tool tests, the
-compatibility audit, all three builds, the package validator, and 46 end-to-end
+compatibility audit, all three builds, the package validator, and 47 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
 

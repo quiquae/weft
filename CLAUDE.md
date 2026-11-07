@@ -67,10 +67,10 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **569 pass**, 142 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **46 pass, 3 skipped**, 4.4 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 999 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1000 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1001,6 +1001,60 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-07 — the popup names a missing grant, as the support page said it did
+
+The same run's second PR, the item the first queued. Onboarding keeps a
+site whose permission prompt was declined, and the settings page's Sites
+section warns of it, but the popup on that site printed "6% of the content
+words is in French" and the attention line over a page no content script is
+registered on — and `docs/SUPPORT.md` said, twice, that the popup names the
+missing grant and offers to ask again.
+
+**The popup asks the browser before it first draws.** Wherever the site is
+taxed or gentle, `permissions.contains()` for the tab's origin —
+`siteOrigins()`, now the one derivation, which `addThisSite()` also uses —
+and where it is not held a notice takes the band's place, with "Grant access
+to <host>", which requests it from the click, re-registers the content
+script and reloads the tab; the panic pass is not offered there. A
+`contains` that throws reads as unknown and draws as before.
+
+Test-first: an e2e test in `friction.spec.ts` opens the popup with the
+tab's URL stubbed to `https://example.com/article.html`, a host the test
+build never grants, listed through the worker; red on the old popup, whose
+snapshot read "of the content words is in French.", green after, and the
+file's 25 pass, the refactored "Weave this site" among them. The button is
+not clicked: Chrome's permission dialog cannot be dismissed from
+Playwright. `docs/SUPPORT.md`'s "the whole extension is a few thousand
+lines", where `src/` holds 16 920 lines of TypeScript, says instead what
+the core-purity guard holds.
+
+All 31 shots were regenerated after the commit that moved `src/`, every one
+byte-identical — no shot shows a listed site without its grant — and the
+three groups are stamped. E2e 46 → **47**, total 1378 → **1379**, in six
+places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph. **The
+packages print 1000 KB now**: 1 001 bytes, all `popup.js`, Chrome's 999.087
+→ 1000.065 KB, Firefox's 1000.133 and Safari's 1000.072, against #149's.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, 644 unit / 151, 119 jsdom / 26, 569 tools / 142, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1000 KB × 3**
+passing `validate`, **47 e2e passed and 3 skipped in 5.8 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. Separately `npm run site` then `site:check` **714 pages
+/ 16 118 links**, all resolving, `/support` having moved. Only documents
+moved after the gate, so typecheck and `npm test` were run again on the
+final tree.
+
+Assumed, with nobody to ask: that the notice replaces the density rather
+than sitting beside it, the density being false there; that the panic pass
+goes with it; and that a `contains` that fails should raise no warning that
+might be false.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+is empty again, and every unchecked item in `Next` waits on Creagh.
 
 ### 2026-11-07 — a tamper penalty lasts 12 hours, and five places said the day
 
