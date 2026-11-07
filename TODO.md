@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-07:** every automatable check is green, measured at the end
-of this session — typecheck clean, **637** unit / 150 suites, **108** jsdom / 25
+of this session — typecheck clean, **643** unit / 151 suites, **119** jsdom / 26
 suites, **565** tool tests / 141 suites, **46** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 996 KB each, all
+packages built at 999 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -91,6 +91,11 @@ and 754 `options.js`, the decision of where Hard Mode has a file and the
 sentence for where it has none, which each bundle carries: Chrome's 994.198
 → 995.647 KB, Firefox's 995.716 and Safari's 995.654, measured against
 `main`'s Chrome package built in a `/tmp` worktree.
+And to **999 KB** later on 2026-11-07 by 3 394 bytes, 2 029 of them
+`background.js` and 1 364 `options.js`, Edge's own Hard Mode file and the
+row that offers it: Chrome's 995.647 → 998.961 KB, Firefox's 999.029 and
+Safari's 998.968, measured against `main`'s three packages built in a `/tmp`
+worktree, every other bundle byte-identical.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2058,9 +2063,35 @@ registered**, and nothing below it can move until it is.
       section and `/pricing`, which still sell Hard Mode in every build
       (Notes). Edge's own file is the next item.
 
-- [ ] **Give Microsoft Edge its own Hard Mode file, for Weft's Edge Add-ons
-      copy.** The second slice of the item above. Every reading it needs was
-      made on 2026-11-07; this is the build.
+- [x] **Give Microsoft Edge its own Hard Mode file, for Weft's Edge Add-ons
+      copy.** Done 2026-11-07, the second slice of the item above, as the
+      readings below planned it, with three departures: Edge refuses any
+      copy whose update address is not Edge Add-ons', not only the Chrome
+      Web Store's, an unpacked copy, with none, still being offered the
+      file, and the store is read by the address's host; Edge's macOS
+      profile takes
+      identifiers of its own (`study.weft.hardmode.edge`, UUID segment
+      `0002`, listed as "Weft — Hard Mode (Edge)"), because installing a
+      profile replaces any other with its `PayloadIdentifier`; and Edge's
+      files are saved as `weft-hard-mode-edge.*`, so they can sit beside
+      Chrome's. **Built:** `hardModeHere()` takes the manifest's
+      `update_url` (`updateUrl()` in `src/shared/browser.ts`) and returns
+      `{ file: 'edge' }`, or `{ file: null, reason: 'store' }` for another
+      store's copy in Edge, whose row says Edge holds the policy only for a
+      copy installed from Edge Add-ons; `HARD_MODE_PLATFORMS` and
+      `MISSING_PLATFORMS` say Edge has no Linux file, and the settings page
+      shows Edge macOS and Windows chips with that sentence beneath them;
+      the worker's three templates take a `Browser` record, and Chrome's
+      three files are byte-identical to before, measured by snapshotting
+      `profileFor()`'s output before the edit. Tests red first: 7 unit on a
+      stub keeping today's behaviour, 7 jsdom on the unchanged worker, and
+      the e2e test against `main`'s page in a `/tmp` worktree ("Microsoft
+      Edge": no Generate button). Two probes, each restored by md5: Edge's
+      profile given Chrome's identifier, and Chrome's `toolbar_pin` in
+      Edge's file. Unit 637 → **643** / 150 → **151** suites, jsdom 108 →
+      **119** / 25 → **26**, total 1356 → **1373**, in six places,
+      `docs/LAUNCH.md:221` first, and `README.md`'s e2e line, which said 45.
+      The readings, as they were planned:
       1. **Where.** Windows: `SOFTWARE\Policies\Microsoft\Edge`, the policy
          `ExtensionSettings`, which Microsoft documents only as a `REG_SZ`
          holding the JSON. Chromium's reader takes the subkey form Chrome's
@@ -2108,19 +2139,17 @@ registered**, and nothing below it can move until it is.
          or `'https://edge.microsoft.com/extensionwebstorebase/v1/crx?response=redirect&prod=chromiumcrx&prodchannel=&x=id%3D<id>%26installsource%3Dondemand%26uc'`,
          into an empty directory, then `unzip -p x.crx manifest.json`, which
          reads past the CRX3 header.
-      4. **The build.** `hardModeHere()` takes the manifest's `update_url`
-         and returns `{ file: 'edge' }` for Edge's brands unless it is the
-         Chrome Web Store's; `profileFor()` takes the browser, and the Linux
-         chip is not offered in Edge; the `.reg` test's grammar already reads
-         subkey values, and its `[-key]` rule carries over. Tests per browser
-         of the `tests/dom/hard-mode.test.ts` kind; the e2e test in
-         `licensing.spec.ts` now expects Edge to be offered a file, its copy
-         being unpacked. Then `docs/HARD-MODE.md`'s Edge sections, the Edge
-         note in `docs/READY-TO-SUBMIT.md`, a `CHANGELOG.md` paragraph and
-         the counts. **About 60 minutes**, and testing it end to end waits on
-         the Edge listing (B5). **Creagh's**: Firefox's own file, which needs
-         Weft on addons.mozilla.org (B6), and whether the Firefox, Edge and
-         Safari copy keeps Hard Mode.
+      4. **The build**, as planned: `hardModeHere()` takes the manifest's
+         `update_url`; `profileFor()` writes the running browser's file and
+         refuses Linux in Edge; the `.reg` test's grammar and its `[-key]`
+         rule carried over to Edge's file unchanged; the e2e test expects
+         Edge to be offered a file, its copy being unpacked; then the docs,
+         a `CHANGELOG.md` paragraph and the counts. It took about 40
+         minutes. Testing it on a real Edge waits on the Edge listing (B5)
+         and B7. **Creagh's**, and unchanged: Firefox's own file, which
+         needs Weft on addons.mozilla.org (B6), and whether the Firefox and
+         Safari copy keeps Hard Mode — Edge's listing now can, and
+         `docs/READY-TO-SUBMIT.md` says so before Edge's description.
 
 ## Next
 
@@ -7733,7 +7762,8 @@ characters) and keywords (100 bytes) are not drafted either.
 
 **B7 — Install each Hard Mode file once, on a machine you can spare.**
 Hard Mode is the first thing Pro sells, and nothing in this repository
-records any of its three files being installed: doing it needs an
+records any of its five files being installed — Chrome's three, and since
+2026-11-07 Edge's two: doing it needs an
 administrator password and changes the machine, which no unattended run may
 do. Before B4 makes Pro buyable, generate each from a Pro install
 (Settings → Commitment → Hard Mode) and check, per platform: it installs as
@@ -7746,11 +7776,66 @@ at all is the check that its `//` comments are allowed, which Chromium's
 source says and nobody has watched. And one case to try on purpose: the
 policy names the Chrome Web Store's update URL, so an install loaded
 unpacked from the GitHub release has an id the store does not know.
+In Edge, with the copy from Edge Add-ons (B5), the same checks at
+`edge://policy` and `edge://extensions` on Windows and macOS. The `.reg`
+writes `ExtensionSettings\<id>` as a subkey, where Microsoft documents the
+policy as one string of JSON; Chromium's registry reader takes both, which
+its source says and nobody has watched in Edge. And with Chrome's and
+Edge's profiles both installed on one Mac, check each lists apart and
+removes alone.
 
 ## Notes
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-07, later — Microsoft Edge has its own Hard Mode file.** Seven
+things a later run would be sorry not to know:
+
+1. **`Now` is empty, and was left so on purpose.** Every unchecked item in
+   `Next` waits on Creagh (the four unsold Pro features, the Firefox
+   data-collection calls, the Safari subtitle, the favicon's remedy), so
+   none was moved up: an item a run cannot do is no item for `Now`.
+2. **The page and the worker each decide for themselves**, from their own
+   `navigator.userAgentData` and their own manifest, and in a real browser
+   they agree. In the e2e test only the page is made to name itself Edge,
+   so the test checks what the page offers and never clicks Generate there:
+   the worker would answer as HeadlessChrome and write Chrome's file. Do not
+   "fix" the test by clicking; override the worker's brands too, as
+   `holdWorkerClock()` evaluates in the worker, if it ever needs the file.
+3. **Which store a copy came from is read by the update address's host**,
+   `edge.microsoft.com` or `clients2.google.com`, so `http://` or a trailing
+   slash cannot hide it. Only Edge reads it: a copy from Edge Add-ons
+   running in Chrome would still be offered Chrome's file, which names the
+   Chrome Web Store's address and would not hold; Chrome installs no
+   off-store CRX on Windows or macOS outside developer mode, so it was left.
+4. **Edge's macOS profile has identifiers of its own on purpose.** A profile
+   replaces any installed profile with its `PayloadIdentifier`, so Edge's
+   sharing `study.weft.hardmode` would have made installing it take Chrome's
+   Hard Mode off without a word. `tests/dom/hard-mode.test.ts` holds the
+   identifier, display name and UUID apart, and a probe giving Edge
+   Chrome's identifier fails it.
+5. **Chrome's three files are byte-identical to `main`'s**, proved by
+   importing `profileFor()` with stubbed globals before the edit and after
+   it and comparing filename, contents and instructions; the scratch script
+   lived in `/tmp` and is gone. Hard-wrapped prose in a template keeps its
+   wrapping for the browser it was written for: one line of prose in
+   Edge's `.reg` runs to 82 characters where Chrome's stay under 80, beside
+   key lines past 100 in both, and regedit minds neither.
+6. **The previous note's item 4 is narrower now.** Edge's settings row
+   offers a file, so of the builds selling Hard Mode with no file behind it
+   only Firefox and Safari remain, and `docs/READY-TO-SUBMIT.md` says the
+   clause holds in Edge's listing. Whether Pro sells Hard Mode in the
+   Firefox and Safari builds is still Creagh's.
+7. **Assumed, with nobody to ask:** that an unpacked copy in Edge is offered
+   Edge's file, as one in Chrome always was Chrome's, though neither holds
+   for an id no store serves; that a copy with an update address that is
+   neither store's is refused in Edge rather than offered a file naming Edge
+   Add-ons; that Edge's file names Edge in its heading ("Hard Mode for
+   Windows, in Microsoft Edge") where Chrome's, unchanged, names none; and
+   that `toolbar_state: force_shown`, which Microsoft's guide gives from
+   Edge 103, is the right counterpart of Chrome's `force_pinned`, Weft's
+   floor being 116.
 
 **2026-11-07 — Hard Mode offers a file only where the browser obeys it.**
 Six things a later run would be sorry not to know:

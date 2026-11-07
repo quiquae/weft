@@ -29,12 +29,24 @@ Firefox it named a Firefox add-on under Chrome's paths, Microsoft Edge, which
 runs the Chrome package unchanged, never reads Chrome's policy locations, and
 on Safari nothing applies. A file nothing obeys looks like Hard Mode and holds
 nothing, and whoever installed it finds out on the day they try to remove
-Weft and can. In Google Chrome the row is as it was; in Firefox, Safari,
-Edge and any other browser that names itself, it says that the file is one
-Chrome obeys and this browser reads no policy written for Chrome, on either
-tier, and the worker refuses to write one there too. Edge's own policy waits
-on Weft's Edge Add-ons listing: Microsoft's documentation says Edge
-force-installs an extension from anywhere else only on a managed machine.
+Weft and can. In Google Chrome the row is as it was; in Firefox, Safari and
+any other browser that names itself, it says that the file is one Chrome and
+Edge obey and this browser reads no policy written for either, on either
+tier, and the worker refuses to write one there too.
+
+**Microsoft Edge has a Hard Mode file of its own.** Edge runs the Chrome
+package and reads its own policy, so the settings page writes Edge's: the
+same `ExtensionSettings`, under `com.microsoft.Edge` on macOS and
+`SOFTWARE\Policies\Microsoft\Edge` on Windows, naming Edge Add-ons' update
+address and keeping the icon on the toolbar with Edge's own `toolbar_state`.
+Microsoft documents that Edge force-installs an extension from outside Edge
+Add-ons only on a machine joined to a domain or managed by MDM, so the file
+is for the copy from Edge Add-ons, which Weft tells apart by the update
+address each store writes into the copy it serves; a copy from the Chrome
+Web Store running in Edge is told why it has none. There is no Linux file
+for Edge, Microsoft listing the policy for Windows and macOS only, and the
+two macOS profiles carry different identifiers, so installing Edge's never
+replaces Chrome's. Chrome's files are byte for byte what they were.
 
 **Pro is sold as what it does.** The options page's Pro section, the
 site's pricing page, its pitch, the README and the landing page sold eight
@@ -841,7 +853,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1356 tests: 637 unit, 108 in jsdom, 565 over the build tools, and
+**Built with** 1373 tests: 643 unit, 119 in jsdom, 565 over the build tools, and
 46 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

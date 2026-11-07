@@ -6,8 +6,8 @@ browser extension, and no amount of client-side cleverness changes it.
 
 Rather than pretend otherwise, Weft generates the one mechanism that does
 work: a browser **managed-policy profile** that marks the extension
-`force_installed`. Chrome then refuses to let a non-administrator disable or
-uninstall it. The Remove button goes away.
+`force_installed`. The browser then refuses to let a non-administrator
+disable or uninstall it. The Remove button goes away.
 
 ## Read this before you install it
 
@@ -37,20 +37,26 @@ not ship a profile you cannot remove.
 
 ## Which browsers
 
-The file is Google Chrome's managed policy, so Hard Mode holds in Google
-Chrome, and in Chromium on Linux, which reads the directory the Linux steps
-name. Everywhere else Weft offers no file, and the settings page says so on
-either tier: a file nothing obeys would look like Hard Mode and hold nothing,
-and you would find out on the day you tried to remove Weft and could. The
-worker that writes the file refuses there as well.
+The file is the running browser's own managed policy, and Weft writes two:
+Google Chrome's, which holds in Google Chrome and in Chromium on Linux, which
+reads the directory the Linux steps name; and Microsoft Edge's, which holds
+in Edge for the copy of Weft from Edge Add-ons. Everywhere else Weft offers
+no file, and the settings page says so on either tier: a file nothing obeys
+would look like Hard Mode and hold nothing, and you would find out on the
+day you tried to remove Weft and could. The worker that writes the file
+refuses there as well.
 
 - **Microsoft Edge** runs the same package as Chrome and reads its own
   policy, under `com.microsoft.Edge` and `HKLM\SOFTWARE\Policies\Microsoft\Edge`,
-  never Chrome's. Microsoft's page for `ExtensionSettings`, read on
-  2026-11-07, says Edge force-installs an extension from outside Edge Add-ons
-  only on a machine joined to a domain or managed by MDM, so Edge's own file
-  has to name Weft's Edge Add-ons copy, which exists once Weft is listed
-  there.
+  never Chrome's, so it has a file of its own ([below](#microsoft-edge)).
+  Microsoft's page for `ExtensionSettings`, read on 2026-11-07, says Edge
+  force-installs an extension from outside Edge Add-ons only on a machine
+  joined to a domain or managed by MDM, so on a machine nobody manages the
+  file holds for Weft's Edge Add-ons copy alone. Each store writes its own
+  update address into the copy it serves, which is how Weft tells them
+  apart, and a copy from the Chrome Web Store running in Edge is told why it
+  has no file. Microsoft lists the policy for Windows and macOS only, so
+  there is no Linux file for Edge.
 - **Firefox** has policies of its own, in `policies.json`, and they
   force-install an add-on from an `install_url`, which for Weft would be its
   addons.mozilla.org listing.
@@ -120,6 +126,49 @@ or `sudo rm /etc/chromium/policies/managed/weft-hard-mode.json` for Chromium.
 Both are written into the file as `//` comments, which Chrome reads past: it
 parses a managed-policy file with comments allowed, and has since before
 Chrome 116.
+
+## Microsoft Edge
+
+Edge's file is named `weft-hard-mode-edge`, so it can sit beside Chrome's,
+and its macOS profile carries an identifier of its own, so installing one
+never replaces the other. Its steps are Chrome's, in Edge's pages:
+
+```
+macOS
+1. Save the file as weft-hard-mode-edge.mobileconfig, and open it.
+2. Open System Settings > General > Device Management
+   (Privacy & Security > Profiles on older macOS).
+3. Double-click the profile under Downloaded, then click Install.
+   Enter your administrator password.
+4. Quit Edge completely (Cmd-Q) and reopen it.
+5. Check edge://policy — ExtensionSettings should be listed.
+
+Windows
+1. Save the file as weft-hard-mode-edge.reg
+2. Right-click it and choose Merge. Approve the administrator prompt.
+3. Close Edge completely and reopen it.
+4. Check edge://policy.
+```
+
+To remove on macOS, select "Weft — Hard Mode (Edge)" in the same pane, click
+Remove, enter your administrator password and restart Edge. On Windows,
+merge this as administrator, then restart Edge:
+
+```
+Windows Registry Editor Version 5.00
+
+[-HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge\ExtensionSettings\<id>]
+```
+
+Both ways out are in the file, as they are in Chrome's. The policy is the
+same `ExtensionSettings`, naming Edge Add-ons' update address and keeping
+the icon on the toolbar with Edge's own `toolbar_state`, where Chrome's is
+`toolbar_pin`. Microsoft documents it on Windows as one string value holding
+JSON; the file writes the extension's own subkey instead, as Chrome's does,
+which Chromium's registry reader, the one Edge builds on, reads as the same
+policy, and removing it then deletes Weft's key and no other extension's
+settings. No record yet shows either browser's file installed on a real
+machine.
 
 ## What it does not do
 

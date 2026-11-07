@@ -145,9 +145,12 @@ test.describe('tiers', () => {
    * brands the browser names itself by can tell the two apart, and the unit
    * tests cannot see whether the settings page reads them. This one makes the
    * page's browser name itself as Chrome and then as Edge, with Pro on, and
-   * reads the row: until 2026-11-07 both were offered Chrome's file.
+   * reads the row: until 2026-11-07 both were offered Chrome's file, and then
+   * Edge none. Edge is offered its own now, for Windows and macOS, because
+   * this copy is unpacked, as a developer's is: the copy from the Chrome Web
+   * Store is the one Edge would not hold, and the unit tests read that.
    */
-  test('the settings page offers Hard Mode’s file in Chrome, and in Edge says why it offers none', async ({
+  test('the settings page offers Hard Mode’s file in Chrome, and in Edge offers Edge’s without Linux', async ({
     context,
     extensionId,
     rpc,
@@ -155,7 +158,7 @@ test.describe('tiers', () => {
     const licence = await rpc<{ tier: string }>({ type: 'set-licence', key: await issue(proPayload) });
     expect(licence.tier).toBe('pro');
 
-    for (const [brand, offered] of [
+    for (const [brand, linux] of [
       ['Google Chrome', true],
       ['Microsoft Edge', false],
     ] as const) {
@@ -176,13 +179,11 @@ test.describe('tiers', () => {
 
       const row = page.locator('.section', { hasText: 'Commitment' }).locator('.row', { hasText: 'Hard Mode' });
       await expect(row.first()).toBeVisible({ timeout: 10_000 });
-      const generate = row.locator('button', { hasText: 'Generate the policy file' });
-      if (offered) {
-        await expect(generate).toBeVisible();
-      } else {
-        await expect(row).toContainText('Microsoft Edge reads no policy written for Chrome');
-        await expect(generate).toHaveCount(0);
-      }
+      await expect(row.locator('button', { hasText: 'Generate the policy file' }), brand).toBeVisible();
+      await expect(row.locator('.chip', { hasText: 'Windows' }), brand).toBeVisible();
+      await expect(row.locator('.chip', { hasText: 'Linux' }), brand).toHaveCount(linux ? 1 : 0);
+      if (!linux) await expect(row).toContainText('there is no Linux file for Edge');
+      await expect(row).not.toContainText('reads no policy written for Chrome');
       await page.close();
     }
   });

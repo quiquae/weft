@@ -3,8 +3,15 @@ import type { Settings } from '../../core/types.ts';
 import { describeWait } from '../../core/lock.ts';
 import { send } from '../../shared/rpc.ts';
 import { has } from '../../core/entitlements.ts';
-import { hardModeHere, noPolicyHere } from '../../core/hard-mode.ts';
-import { uaBrands } from '../../shared/browser.ts';
+import {
+  HARD_MODE_PLATFORMS,
+  MISSING_PLATFORMS,
+  hardModeHere,
+  noPolicyHere,
+  type Platform,
+  type PolicyBrowser,
+} from '../../core/hard-mode.ts';
+import { uaBrands, updateUrl } from '../../shared/browser.ts';
 import { Locked } from './pro.tsx';
 import { Chips, Notice, Row, Section, Slider, Switch, minutes } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
@@ -20,7 +27,7 @@ import { SIGLA } from './sections.tsx';
  * cooldown you already set.
  */
 export function CommitmentSection({ c, settings }: { c: Controller; settings: Settings }) {
-  const here = hardModeHere(__WEFT_TARGET__, uaBrands());
+  const here = hardModeHere(__WEFT_TARGET__, uaBrands(), updateUrl());
   return (
     <Section
       siglum={SIGLA.locked}
@@ -148,11 +155,12 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
 
       {here.file === null ? (
         // A file nothing obeys would look like Hard Mode and hold nothing, so
-        // where the browser reads no policy Weft writes, the row says so on
-        // either tier rather than offering one or selling one.
-        <Row siglum={SIGLA.locked} title="Hard Mode" detail={noPolicyHere(here.browser)} />
+        // where the browser reads no policy Weft writes, or Edge would not
+        // hold it for this copy, the row says so on either tier rather than
+        // offering one or selling one.
+        <Row siglum={SIGLA.locked} title="Hard Mode" detail={noPolicyHere(here)} />
       ) : has(c.tier, 'hard-mode') ? (
-        <HardMode settings={settings} c={c} />
+        <HardMode settings={settings} c={c} file={here.file} />
       ) : (
         <Row siglum={SIGLA.locked} title="Hard Mode">
           <Locked feature="hard-mode" />
@@ -162,13 +170,13 @@ export function CommitmentSection({ c, settings }: { c: Controller; settings: Se
   );
 }
 
-const PLATFORMS = [
-  { id: 'macos' as const, label: 'macOS' },
-  { id: 'windows' as const, label: 'Windows' },
-  { id: 'linux' as const, label: 'Linux' },
+const PLATFORMS: Array<{ id: Platform; label: string }> = [
+  { id: 'macos', label: 'macOS' },
+  { id: 'windows', label: 'Windows' },
+  { id: 'linux', label: 'Linux' },
 ];
 
-function detectPlatform(): 'macos' | 'windows' | 'linux' {
+function detectPlatform(): Platform {
   const ua = navigator.userAgent;
   if (/Mac/i.test(ua)) return 'macos';
   if (/Win/i.test(ua)) return 'windows';
@@ -183,9 +191,15 @@ function detectPlatform(): 'macos' | 'windows' | 'linux' {
  * browser extension, and rather than pretend otherwise this generates the one
  * mechanism that does work — a managed policy marking the extension
  * force-installed — and hands over the removal instructions in the same file.
+ * The file is the policy of the browser running Weft, Chrome's or Edge's, and
+ * the platforms offered are the ones that browser has a file for.
  */
-function HardMode({ settings, c }: { settings: Settings; c: Controller }) {
-  const [platform, setPlatform] = useState<'macos' | 'windows' | 'linux'>(detectPlatform());
+function HardMode({ settings, c, file }: { settings: Settings; c: Controller; file: PolicyBrowser }) {
+  const platforms = PLATFORMS.filter((option) => HARD_MODE_PLATFORMS[file].includes(option.id));
+  const detected = detectPlatform();
+  const [platform, setPlatform] = useState<Platform>(
+    platforms.some((option) => option.id === detected) ? detected : (platforms[0]?.id ?? 'macos'),
+  );
   const [profile, setProfile] = useState<{ filename: string; contents: string; instructions: string } | null>(
     null,
   );
@@ -230,7 +244,7 @@ function HardMode({ settings, c }: { settings: Settings; c: Controller }) {
         <div class="inline">
           <Chips
             multi={false}
-            options={PLATFORMS}
+            options={platforms}
             selected={[platform]}
             onToggle={(id) => {
               setPlatform(id);
@@ -241,6 +255,11 @@ function HardMode({ settings, c }: { settings: Settings; c: Controller }) {
             {profile ? 'Regenerate' : 'Generate the policy file'}
           </button>
         </div>
+        {MISSING_PLATFORMS[file] ? (
+          <p class="row__detail" style={{ margin: 0 }}>
+            {MISSING_PLATFORMS[file]}
+          </p>
+        ) : null}
 
         {profile ? (
           <div class="hardmode">
