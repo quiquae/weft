@@ -220,4 +220,21 @@ describe('the bookkeeping that decides what a page shows', () => {
     assert.equal(swaps.length, applied[0]!.swaps.length, 'the words woven are not the words on the page');
     assert.equal(document.querySelector('p')!.textContent, applied[0]!.woven);
   });
+
+  test('a re-weave in wrapped mode reaches the nodes the renderer replaced', async () => {
+    // Reverting a wrapped weave puts a fresh text node back, so by then the
+    // record's key is a node no longer on the page. Read by its keys, the
+    // re-weave skipped every node and left the page in English after the
+    // first time the density moved.
+    paragraph(PARAGRAPH);
+    const settings = defaultSettings(Date.now(), 'test');
+    const page = open(stateFor(0.2, settings), new WrappedRenderer(settings, 'fr'));
+    await settle();
+    const before = document.querySelectorAll('p [data-weft-swap]').length;
+    assert.ok(before > 0, 'the paragraph wove no word at 20%');
+    page.applySettings(settings, 0.35, 1);
+    await settle();
+    const after = document.querySelectorAll('p [data-weft-swap]').length;
+    assert.ok(after >= before, `the re-weave left ${after} of the ${before} words woven`);
+  });
 });
