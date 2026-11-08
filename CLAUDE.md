@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **666 pass**, 154 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **608 pass**, 157 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **615 pass**, 158 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **48 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1054,6 +1054,90 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — a density is a share of the words Weft knows, and a test was waiting for the old words
+
+`TODO.md`'s topmost unchecked item in `Now`: the settings page's Resting
+density and Ceiling rows said "6% of content words" and the popup "1 word in
+17 of the content words is in French", where `selectSwaps()` weaves
+`round(ratio × eligible)` and `eligible` counts only the words with an entry
+in the pack. **Measured, not assumed**: with the real selector at level 1,
+one content word in nine has an entry in the README and in
+`docs/PEDAGOGY.md`, three in five on the e2e pages, which are written from
+the pack's own words. So on prose like the README "6% of content words" was
+about 0.7% of them, ninefold over.
+
+**The copy is the first-run page's phrase everywhere a density is a share**:
+the two rows, the popup, the Standard preset's detail and the landing demo's
+readout and its comment, whose candidates are exactly the words the demo
+knows. Standard said "around 1 word in 16" and Taster "about 1 word in 30"
+directly above a first-run hint printing 17 and 33, `oneWordIn()` rounding
+1/0.06 to 17; both quote the page's figure now. Committed and Monastic give
+percentages that were already the page's.
+
+**The item missed one site, and it was a test.** `friction.spec.ts` refuses
+a density over an unwoven page with `getByText(/of the content words is
+in/i)` and `toHaveCount(0)`: renamed copy and that refusal passes on any
+popup, though it was red-first when written. **A negative assertion written
+in the copy's words goes vacuous when the copy moves**, so the guard now
+compiles that regex and runs it against the popup's own line.
+
+The guard is `tests/tools/density-copy.test.ts`, 7 tests in a new suite: no
+copy in the source, README, `docs/*.md` or `site/*.html` gives a share of
+"content words", the class's own name left where it is one ("Content words
+carry the meaning"); every line under `src/ui/` printing a density through
+`oneWordIn()` names the share, `CONTINUES` excusing the first-run page's
+ceiling hint, the second of a pair; the demo's readout does; a preset's "1
+word in N" is the N the page prints; and the e2e refusal matches the popup.
+`RECORDS` excuses `docs/SUBMIT-STATUS.md`, a dated record of a shot. Red
+first on 6 sites, 3 lines, the readout and Taster's 30; the cross-check red
+once the copy moved, until the e2e test did. A throwaway spec measured the
+longer row value unclipped from 1280 to 420 px, and was deleted.
+
+All 31 shots regenerated twice on a test build, 10 + 14 + 7 written each
+time, the second run byte-identical to the first. Six moved, each inside
+one box `png:diff` gave: the row values in `options.png`,
+`options-density.png` and both `*-05-settings.png`, the popup's sentence in
+`popup.png`, the Standard aside in `02-onboarding-density.png`. All six were
+read; the three groups' "no change" stamps are deleted. Tools 608 → **615**
+/ 157 → **158** suites, total 1441 → **1448**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph. **The packages
+grew 23 bytes**, `options.js` +17, `popup.js` +3 and `onboarding.js` +3,
+Chrome's 1001.948 → 1001.970 KB, measured against `main`'s built in a `/tmp`
+worktree, still printing 1002.
+
+**Measuring the share found the next item, queued first in `Now`.**
+`bandWindow(level)` slides, `[level − 1, level + 1]`, where `SelectorInput`'s
+comment says higher levels widen it, and every pack carries bands 1–4 only:
+eligible words at levels 1 to 6 on the README are 148, 150, 33, 2, 0, 0. A
+reader who picks C1 or C2 in Settings → Level is woven almost nothing, under
+a popup still printing a density.
+
+The session was stopped at 11:42 by the account's session limit and resumed
+at 12:02 with its context; the gate had finished before the stop and its
+log survived, and the in-flight documents were committed and pushed before
+anything else moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the shots: `npm run test:all` **exit 0** — typecheck
+clean, 666 unit / 154, 119 jsdom / 26, **615 tools / 158**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1002 KB × 3**
+passing `validate`, **48 e2e passed and 3 skipped in 5.4 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, exit 1 — the
+release notes, B2a. `packs:verify` was not run: no pack or seed moved. Only
+documents and a test's comment moved after the gate, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the demo's denominator, its candidates,
+is exactly "the words Weft knows", the passage being built so; that the
+preset figures should match the page's rounding rather than stay round
+numbers beside it; and that the presets naming no denominator are a call,
+written into `TODO.md`'s Notes, not a defect.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds two agent-shaped items: Levels C1 and C2, and `docs/PEDAGOGY.md` read
+claim by claim.
 
 ### 2026-11-08 — a change that waits lands on the list as it is
 

@@ -9,6 +9,17 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**The density says what it is a share of.** Weft weaves a share of the words
+it has a dictionary entry for, not of every word on the page, and the settings
+page's Resting density and Ceiling rows, the toolbar popup and the Standard
+preset called it a share of "content words". Most content words have no
+entry — in this project's own README, eight in nine — so there "6% of content
+words" overstated the density nearly ninefold. They say "of the words Weft
+knows" now, as the first-run page always did, and so does the demo on the
+landing page. The Taster and Standard
+presets quote the resting density the page prints beside them, about 1 word in
+33 and 1 in 17, where they said 30 and 16.
+
 **A change that waits no longer undoes what you did while it waited.** A
 change to a site list waited out its cooldown and then replaced the whole
 list, so a site added to the taxed list while a removal waited was dropped
@@ -935,7 +946,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1441 tests: 666 unit, 119 in jsdom, 608 over the build tools, and
+**Built with** 1448 tests: 666 unit, 119 in jsdom, 615 over the build tools, and
 48 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

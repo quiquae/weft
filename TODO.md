@@ -6,7 +6,7 @@
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **666** unit / 154 suites, **119** jsdom / 26
-suites, **608** tool tests / 157 suites, **48** e2e passing
+suites, **615** tool tests / 158 suites, **48** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1002 KB each, all
 passing `npm run validate`. The package grew
@@ -126,7 +126,9 @@ way. And to **1001 KB** the same day by 1 518 bytes, 759 each in
 governed: Chrome's 999.541 → 1001.023 KB, measured the same way. And to
 **1002 KB** the same day by 947 bytes, all of them `background.js`, a queued
 list change landing as a merge: Chrome's 1001.023 → 1001.948 KB, measured
-the same way.
+the same way. And by 23 bytes the same day, the density said as a share of
+the words Weft knows: `options.js` +17, `popup.js` +3 and `onboarding.js` +3,
+Chrome's 1001.948 → 1001.970 KB, still printing 1002, measured the same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -695,9 +697,10 @@ three, and `tests/tools/node-floor.test.ts` fails if no job is on the floor
 or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
-**So the whole of B0 is closed. `Now` holds no unchecked item, as of
-2026-11-07, and every unchecked item in `Next` waits on a call of
-Creagh's:** the four Pro features sold and never built, the Firefox
+**So the whole of B0 is closed. `Now` holds two agent-shaped items, as of
+2026-11-08 — Levels C1 and C2 weaving almost nothing, and
+`docs/PEDAGOGY.md` read claim by claim — and every unchecked item in `Next`
+waits on a call of Creagh's:** the four Pro features sold and never built, the Firefox
 data-collection declaration, the Safari subtitle, the site's favicon, and
 how Firefox 140 to 145 should draw a woven word. A run that finds `Now` empty reads a written promise against
 the code, as the runs of 2026-11-05 to -07 did. Since
@@ -2468,19 +2471,55 @@ registered**, and nothing below it can move until it is.
       comparison. `docs/PRIVACY.md`'s Pending changes row says a change
       carries its list. Unit 661 → **666** / 153 → **154**. See Notes.
 
-- [ ] **Say what the density is a share of, on the settings page and the
-      popup.** Found 2026-11-08. The Resting density and Ceiling rows
-      (`options/sections.tsx:252`, `:270`) say "6% of content words" and
-      the popup (`popup/index.tsx:324`) "of the content words is in
-      French", where `weaveRatio` is a share of the words with a dictionary
-      entry (`eligible` in `selectSwaps`): on Free, the pack's 356 lemmas,
-      not every content word. The first-run page already says "of the words
-      Weft knows" (`onboarding/index.tsx:219`), and the store listing does
-      now. PR #12 chose "content words" in 2026-09; the cure is the first-run
-      page's words, and the Standard preset's copy (`settings.ts:65`) and
-      the landing demo's readout (`site/index.html:507`), whose passage is
-      built so every candidate has an entry, decided case by case. Moves
-      `src/`, so the screenshot groups regenerate. About 45 minutes.
+- [x] **Say what the density is a share of, on the settings page and the
+      popup.** Done 2026-11-08. The Resting density and Ceiling rows, the
+      popup, the Standard preset and the landing demo's readout say "of the
+      words Weft knows", the first-run page's phrase, where they said "content
+      words": `selectSwaps()` weaves `round(ratio × eligible)`, and `eligible`
+      counts only words with a pack entry — measured with the real selector at
+      level 1, one content word in nine in the README and in
+      `docs/PEDAGOGY.md`, three in five on the e2e pages. Taster and Standard
+      quote the resting figure the page prints beside them, about 1 word in 33
+      and 1 in 17, where they said 30 and 16; the first-run page shows each
+      directly above "At rest — 1 word in 17". **The item missed one site, and
+      it was a test**: `friction.spec.ts`'s refusal of a density over an
+      unwoven page looked for "of the content words is in", so the copy change
+      alone would have left it passing on any popup. Guard:
+      `tests/tools/density-copy.test.ts`, 7 tests in a new suite — no copy
+      gives a share of "content words" (the class's own name is untouched),
+      every `oneWordIn()` line names the share unless `CONTINUES` says why, the
+      demo's readout does, a preset's "1 word in N" is the N the page prints,
+      and the e2e refusal's regex matches the popup's own line. Red first on 6
+      sites, 3 lines, the readout and Taster's 30; the cross-check red once the
+      copy moved, until the e2e test did. Six shots moved, each inside one box,
+      a second run byte-identical; the three groups' stamps deleted. No row
+      overflows from 1280 to 420 px. Tools 608 → **615** / 157 → **158**,
+      total 1441 → **1448**; +23 bytes, still 1002 KB. **Found and queued
+      first below: Levels C1 and C2 weave almost nothing.**
+
+- [ ] **Levels C1 and C2 weave almost nothing, because the band window slides
+      past every band the packs have.** Found 2026-11-08, measuring the item
+      above. `bandWindow(level)` (`src/core/selector.ts:97`) is
+      `[level − 1, level + 1]`, so it slides where `SelectorInput`'s comment
+      says higher levels "widen the band window", and all seven packs carry
+      bands 1–4 only (French: 364, 182, 33 and 8 entries). Eligible words at
+      levels 1 to 6, `selectSwaps()` at ratio 1: on the README 148, 150, 33,
+      2, **0**, **0**; on `tests/e2e/pages/article.html` 61, 61, 16, **0**, 0,
+      0. So a reader who picks "C1 — fluent" or "C2 — near-native" in
+      Settings → Level — the one control that sets it; the first-run page
+      offers none, and progression adds a level per 200 retired words, so it
+      reaches 2 at most — is woven nothing new, retired words alone bypassing
+      the window, while the popup prints the ratio its settings and attention
+      give, "1 word in 17 of the words Weft knows is in French", over an
+      unwoven page. Recommended: keep the window from leaving every band a
+      pack has — clamp it to the pack's top band, which `index.json`'s `bands`
+      give — rather than drop C1 and C2 from the chips, which a fluent reader
+      would read as "not for me"; whether C2 should mean anything more than
+      "the rarest words Weft has" is a call, and the clamp decides nothing
+      against it. Test-first: a level-6 selection on a pack of bands 1–4 has
+      an eligible word, red today, and the comment says what the window does.
+      Moves `src/core/`, so the screenshot groups regenerate. About 60
+      minutes.
 
 - [ ] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
       sources.** Queued 2026-11-07 as the item after the store description:
@@ -8154,6 +8193,44 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — a density is a share of the words Weft knows.** Five things a
+later run would be sorry not to know:
+
+1. **A refusal written in the copy's words goes vacuous when the copy
+   moves.** `friction.spec.ts` refused `getByText(/of the content words is
+   in/i)` with `toHaveCount(0)`, red-first when it was written, and the copy
+   change alone would have left it passing on any popup at all.
+   `density-copy.test.ts` now compiles that regex and runs it against the
+   popup's own line. When copy changes, grep `tests/` for the old words too,
+   and look hardest at the negative assertions: `toHaveCount(0)`,
+   `doesNotMatch`, `not.toContain`.
+2. **How much of a page the pack covers, measured.** `selectSwaps()` at
+   level 1 and ratio 1, function words counted off a standard list: the
+   README has 1 295 content words and 148 eligible, 11%;
+   `docs/PEDAGOGY.md` 1 004 and 111, 11%; `tests/e2e/pages/article.html`
+   102 and 61, 60%; `showcase.html` 169 and 99, 59%. The e2e pages are
+   written from the pack's own words, which is why every screenshot looks
+   denser than a real page: "6% of the words Weft knows" on prose like the
+   README is about 0.7% of its content words.
+3. **The phrase is one literal in two guards.** `store-description.test.ts`
+   holds the listing to "of the words Weft knows" and `density-copy.test.ts`
+   the settings page, the popup, the presets and the demo; rewording it means
+   both, the first-run page and the e2e refusal.
+4. **Taster, Committed and Monastic give a share with no denominator**
+   ("About 1 word in 33 to start", "Ten percent at rest"), and were left: a
+   preset's detail is read on the first-run page directly above "At rest — 1
+   word in 17 of the words Weft knows", and on the settings page beside the
+   rows that say it. Whether each should say it too is a call, not a defect.
+5. **`docs/SUBMIT-STATUS.md` still quotes "28% of content words — 1 word in
+   4"**, what `chrome-05-settings.png` printed at the 2026-10-24 gate; it is
+   a dated record, and `RECORDS` in the guard excuses it by name. The shot
+   prints "28% of the words Weft knows" now; the next full gate run should
+   say so in its own record.
+
+The session was stopped by the account's session limit at 11:42 and resumed
+at 12:02; the gate had finished, exit 0, before the stop, and its log in
+`/tmp` survived. The job JSON's `started_at` is the resume's.
 
 **2026-11-08 — a queued list change lands as a merge.** Two things a later
 run would be sorry not to know:

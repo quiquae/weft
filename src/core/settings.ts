@@ -46,7 +46,7 @@ export const DIFFICULTY_PRESETS: DifficultyPreset[] = [
     label: 'Taster',
     tagline: 'A few words, no pressure',
     detail:
-      'About 1 word in 30 to start, rising slowly to 1 in 8. Five-minute cooldown, three panic passes a day. Use this for a week to find out whether you like the feeling.',
+      'About 1 word in 33 to start, rising slowly to 1 in 8. Five-minute cooldown, three panic passes a day. Use this for a week to find out whether you like the feeling.',
     patch: {
       'weave.baseRatio': 0.03,
       'weave.ceilingRatio': 0.12,
@@ -62,7 +62,7 @@ export const DIFFICULTY_PRESETS: DifficultyPreset[] = [
     label: 'Standard',
     tagline: 'Noticeable, still readable',
     detail:
-      'Starts around 1 word in 16 and climbs towards a third of the content words after half an hour on a feed. Fifteen-minute cooldown on anything that makes it easier.',
+      'Starts around 1 word in 17 and climbs towards a third of the words Weft knows after half an hour on a feed. Fifteen-minute cooldown on anything that makes it easier.',
     patch: {
       'weave.baseRatio': 0.06,
       'weave.ceilingRatio': 0.35,

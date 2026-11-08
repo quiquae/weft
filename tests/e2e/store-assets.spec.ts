@@ -248,7 +248,7 @@ test.describe('store assets', () => {
      * re-derives that across the whole range rather than trusting it.
      *
      * Thirty minutes is also the figure the listing's own copy uses — density
-     * climbing towards a third of the content words "after half an hour on a
+     * climbing towards a third of the words Weft knows "after half an hour on a
      * feed" — so the tile now agrees with the sentence beside it instead of
      * undercutting a progress panel with six seconds.
      *
