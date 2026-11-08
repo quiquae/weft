@@ -47,6 +47,15 @@ export interface PageState {
   penaltyActive: boolean;
 }
 
+/**
+ * The e2e harness's way to set a scene: settings written as they come, past
+ * the lock, as `complete-onboarding` wrote them every time until 2026-11-08.
+ * Only a test build's worker answers it; every other build compiles the
+ * handler out, and `tools/validate-package.mjs` refuses a package that
+ * carries this name. It is not in `Request`, so no page can send it.
+ */
+export const CONFIGURE_FOR_TEST = 'configure-for-test';
+
 export type Request =
   | { type: 'get-page-state'; url: string }
   | { type: 'get-pack'; source: LangCode; target: LangCode }
@@ -120,7 +129,8 @@ export interface ResponseMap {
   'grant-origins': { granted: boolean };
   'get-granted-origins': { origins: string[] };
   'reregister-scripts': { ok: true; registered: number };
-  'complete-onboarding': { ok: true; granted: boolean };
+  /** `queued` counts the paths that made Weft easier and wait out the cooldown. */
+  'complete-onboarding': { ok: true; granted: boolean; queued: number };
   'export-data': { payload: unknown };
   'import-data': { ok: boolean; message: string };
   'reset-vocabulary': { ok: true };

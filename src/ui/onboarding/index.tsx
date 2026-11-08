@@ -33,6 +33,7 @@ function Onboarding() {
   const [pack, setPack] = useState<LexPack | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [granted, setGranted] = useState(false);
+  const [queued, setQueued] = useState(0);
   const [index, setIndex] = useState<PackIndex | null>(null);
 
   useEffect(() => {
@@ -104,7 +105,7 @@ function Onboarding() {
     const gentle = chosenSites.flatMap((id) => rulesFromPreset(id).gentle);
     const preset = DIFFICULTY_PRESETS.find((p) => p.id === presetId);
 
-    await send({
+    const reply = await send({
       type: 'complete-onboarding',
       patch: {
         ...(preset?.patch ?? {}),
@@ -115,6 +116,7 @@ function Onboarding() {
       },
       origins,
     });
+    setQueued(reply?.queued ?? 0);
     setStep('done');
   }
 
@@ -310,6 +312,13 @@ function Onboarding() {
             Open one of the sites you chose and read for a minute. Words will start appearing in{' '}
             {lang.name}. Hover one to see the English back.
           </p>
+          {queued ? (
+            <Notice tone="warn">
+              Weft was already set up here, so {queued === 1 ? 'one setting' : `${queued} settings`}{' '}
+              that would make it easier {queued === 1 ? 'is' : 'are'} waiting out the cooldown, as
+              on the settings page. Cancelling there is free.
+            </Notice>
+          ) : null}
           {!granted && origins.length ? (
             <Notice tone="warn">
               Site access was not granted, so nothing is woven yet. Open settings to grant it.

@@ -13,6 +13,7 @@ import {
   panicActive,
   penaltyActive,
   requestChange,
+  splitOnboarding,
   usePanicPass,
 } from '../core/lock.ts';
 import { cardId, isRetirable, newCard, reviewCard } from '../core/fsrs.ts';
@@ -26,7 +27,7 @@ import { describeLicence } from '../core/licence.ts';
 import { newInstallId } from '../core/integrity.ts';
 import { api, can, contextMenus } from '../shared/browser.ts';
 import { fail, ok } from '../shared/rpc.ts';
-import type { PageState, Request, ResponseMap } from '../shared/messages.ts';
+import { CONFIGURE_FOR_TEST, type PageState, type Request, type ResponseMap } from '../shared/messages.ts';
 import * as store from './storage.ts';
 import { profileFor } from './hard-mode.ts';
 import { lookupMissing } from './providers/index.ts';
@@ -513,21 +514,37 @@ const handlers: Handlers = {
     return { ok: true, registered };
   },
 
+  /**
+   * Finish the first-run page.
+   *
+   * The page can be opened again at any time — it is a file in the
+   * extension, at a URL anyone can type — so only the first finish writes
+   * freely. Every one after goes through `splitOnboarding`: harder lands,
+   * easier waits out the cooldown, as on the options page and in an import.
+   */
   'complete-onboarding': async (request) => {
     const snapshot = await store.load();
     const now = Date.now();
-    const next = validateSettings(
+    const incoming = validateSettings(
       { ...snapshot.settings, ...applyPatchShallow(snapshot.settings, request.patch), onboarded: true },
       now,
       snapshot.settings.installId,
     );
-    await store.saveSettings(next);
+    const { immediate, deferred } = splitOnboarding(snapshot.settings, incoming);
+    await store.saveSettings(immediate);
+    const queued = await store.queueEasierSettings(
+      snapshot.lock,
+      immediate,
+      deferred,
+      now,
+      snapshot.settings.installId,
+    );
     const granted = request.origins.length
       ? await api.permissions.contains({ origins: request.origins })
       : true;
     await registerContentScripts();
     await broadcastSettingsChanged();
-    return { ok: true, granted };
+    return { ok: true, granted, queued };
   },
 
   'export-data': async () => ({ payload: await store.exportAll() }),
@@ -628,6 +645,33 @@ function applyPatchShallow(base: Settings, patch: Record<string, unknown>): Part
 }
 
 /* ---------------------------------------------------------------- routing */
+
+/**
+ * The test build's scene-setter, and nobody else's.
+ *
+ * The e2e suite sets up every test's settings through one message. It was
+ * `complete-onboarding`, which wrote whatever it was given; since that
+ * judges every finish after the first, a spec that sets several scenes in
+ * turn — Old English after French, a lower density after a higher one —
+ * needs a write the lock does not judge. That is a capability a test build
+ * has and a shipped one must not: `__WEFT_TEST__` is false in every other
+ * build, so esbuild drops this branch and `configureForTest` with it.
+ */
+if (__WEFT_TEST__) Object.assign(handlers, { [CONFIGURE_FOR_TEST]: configureForTest });
+
+async function configureForTest(request: { patch: Record<string, unknown> }): Promise<{ ok: true }> {
+  const snapshot = await store.load();
+  await store.saveSettings(
+    validateSettings(
+      { ...snapshot.settings, ...applyPatchShallow(snapshot.settings, request.patch), onboarded: true },
+      Date.now(),
+      snapshot.settings.installId,
+    ),
+  );
+  await registerContentScripts();
+  await broadcastSettingsChanged();
+  return { ok: true };
+}
 
 api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const request = message as Request;

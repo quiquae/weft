@@ -953,3 +953,49 @@ test.describe('saying why nothing happened', () => {
     await reader.close();
   });
 });
+
+test.describe('the first-run page, opened again', () => {
+  /*
+   * The first-run page is a file in the extension, at a URL anyone can type,
+   * and until 2026-11-08 finishing it wrote whatever it was given, every
+   * time: open it again, choose Taster, finish, and the starting density,
+   * the ceiling and the gain all dropped at once, past the cooldown that
+   * governs each of them on the settings page. Only the first finish writes
+   * freely now.
+   */
+  test('cannot make Weft easier at once', async ({ context, extensionId, configure, rpc }) => {
+    type Weave = { settings: { weave: { baseRatio: number; ceilingRatio: number } } };
+    // The harness's write marks the install onboarded, as a first finish does.
+    await configure({});
+    const before = await rpc<Weave>({ type: 'get-settings' });
+
+    const ob = await context.newPage();
+    // Finishing asks the browser for the chosen sites, and Chrome's dialog
+    // cannot be answered from here; the worker is the part under test.
+    await ob.addInitScript(() => {
+      (chrome.permissions as unknown as { request: unknown }).request = async () => true;
+    });
+    await ob.goto(`chrome-extension://${extensionId}/onboarding.html`);
+    await ob.getByRole('button', { name: 'Next' }).click();
+    await ob.getByRole('button', { name: 'Taster' }).click();
+    await ob.getByRole('button', { name: 'Next' }).click();
+    await ob.getByRole('button', { name: /grant access to/i }).click();
+    await expect(ob.getByText(/waiting out the cooldown/i), 'the page did not say what is waiting').toBeVisible({
+      timeout: 10_000,
+    });
+    await ob.close();
+
+    const after = await rpc<Weave>({ type: 'get-settings' });
+    expect(after.settings.weave.baseRatio, 'the starting density dropped at once').toBe(
+      before.settings.weave.baseRatio,
+    );
+    expect(after.settings.weave.ceilingRatio, 'the ceiling dropped at once').toBe(before.settings.weave.ceilingRatio);
+    const { lock } = await rpc<{ lock: { pending: Array<{ patch: Record<string, unknown> }> } }>({
+      type: 'get-stats',
+    });
+    expect(
+      lock.pending.some((change) => 'weave.baseRatio' in change.patch),
+      'Taster is not waiting out the cooldown',
+    ).toBe(true);
+  });
+});

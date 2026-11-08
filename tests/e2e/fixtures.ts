@@ -13,6 +13,7 @@ import { join, dirname, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { CONFIGURE_FOR_TEST } from '../../src/shared/messages.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const EXTENSION = join(HERE, '../../dist/chrome');
@@ -196,18 +197,24 @@ export const test = base.extend<WeftFixtures>({
     await page.close();
   },
 
+  /*
+   * Through the test build's own message, not `complete-onboarding`. That
+   * one judges every finish after the first, so the second scene of a
+   * generator spec — Old English after French, a lower density after a
+   * higher one — would wait out a cooldown and photograph the scene before.
+   * The test build answers CONFIGURE_FOR_TEST and a shipped one cannot.
+   */
   configure: async ({ rpc, origin }, use) => {
     const host = new URL(origin).hostname;
     const configure = async (patch: Record<string, unknown>) => {
       await rpc({
-        type: 'complete-onboarding',
+        type: CONFIGURE_FOR_TEST,
         patch: {
           'sites.taxed': [{ pattern: host, enabled: true, escalate: true }],
           'sites.gentle': [],
           'learning.introduceNewPerDay': 500,
           ...patch,
         },
-        origins: [],
       });
       // Registration is what actually puts the content script on the page.
       await rpc({ type: 'reregister-scripts' });

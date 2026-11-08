@@ -503,13 +503,14 @@ export async function importAll(payload: unknown): Promise<ImportResult> {
 }
 
 /**
- * Hand the easier half of an import to the cooldown.
+ * Hand the easier half of an import, or of a second pass through the
+ * first-run page, to the cooldown.
  *
  * `requestChange` applies it itself when no cooldown is configured, which is
  * the user's own setting and not something to second-guess here. Returns how
  * many paths are actually waiting, so the message can be true.
  */
-async function queueEasierSettings(
+export async function queueEasierSettings(
   lock: LockState,
   settings: Settings,
   deferred: Patch,
