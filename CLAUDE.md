@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **596 pass**, 152 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **601 pass**, 154 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1017,6 +1017,90 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — the store description sold Pro as optional, and the cooldown it promises leaks nine ways
+
+`TODO.md`'s one unchecked item in `Now`, queued by the tree-shaking run: the
+store description, the copy Google reviews, read claim by claim against the
+code. Most of it holds — the tooltip on hover, FSRS-6's 21 reference weights,
+retirement for good (`retiredAt` is sticky) and outside the budget, the quiz
+drawn from words seen, the stored clock, the panic pass's daily limit, the
+walker's skip list, the seven packs and the three French cousin examples.
+
+**Seven claims did not, three of them about the world.** It offered Hard Mode,
+the vocabulary check and your own translation key as "optional", with no word
+that each is Pro, and `clampToTier()` switches all three off on Free. "Forty
+minutes on an infinite feed and you are reading a third in French", where
+`weaveRatio` is a share of the words with a dictionary entry, `eligible` in
+`selectSwaps`; it says "a third of the words Weft knows" now, the first-run
+page's phrase. "Most of the rest [of English] shares a Latin root", where
+Finkenstaedt and Wolff count Latin at about 28% of English, French 28% and the
+Germanic stock 25%: "nearly as much again from Latin, which French grew out
+of". Latin and Old English "which nobody else offers", where Language Lens on
+AMO lists Latin. FSRS-6 "the algorithm Anki uses", where Anki's manual calls
+FSRS an alternative to enable and names FSRS-5. And the diglot weave
+"replicated since", where `docs/PEDAGOGY.md` cites two studies and calls the
+evidence good rather than overwhelming. The README, the landing page and both
+launch drafts carried four of them, and the directory blurb in
+`docs/LAUNCH.md` said the woven word is "usually the literal ancestor of the
+one it replaced", which measured 40% of Old English rows and 2% of Latin ones,
+Latin being borrowed from.
+
+**The guard is `tests/tools/store-description.test.ts`, 5 tests in 2 suites**:
+a paragraph offering a Pro feature on sale says Pro, by an `OFFERS` line per
+feature that must match the feature's own copy in `FEATURES`; the density it
+quotes is `weaveRatio` on the defaults at the minutes it names, and says "of
+the words Weft knows"; the languages it names are the shipped packs, counted
+by the number word before them; and each French cousin example is the
+tooltip's note, through `entriesByTarget()`. Red first on exactly the three
+unmarked offers and the unqualified share; five probes, restored by md5, each
+failing by name — "Six languages", "diurnal", Gothic, "half", and an `OFFERS`
+line removed. The four pasted copies were regenerated from the listing by a
+script applying `ready-to-submit.test.ts`'s paste form, and that test agrees.
+
+**The promise the description makes about cooldowns is false nine ways, and
+it is the next item.** "Anything that makes Weft easier waits out a
+cooldown", said in seven places, rests on `assessPatch()`, which judges only
+`GOVERNED_PATHS`; an unlisted path is `neutral`, and `requestChange()` applies
+anything not `easier` at once. Under the real `assessPatch`, a taxed rule's
+escalation switch and base and ceiling sliders, edited in place, read
+`neutral`, since a rule list is judged by length and enabled count; so do
+"Recovery while you are away" to 100%, which zeroes the day's tax after
+fifteen minutes away, "If stored settings are edited" set to "just note it",
+after which `load()` keeps a forged settings object with no penalty, the
+sites mode, the quiz's word count and pass mark, and the parts of speech —
+where lowering the global ceiling, the control, reads `easier`. **A guarantee
+stated in seven places is still a claim until a test enumerates what it
+covers.** Queued first in `Now` with the shape and the guard that would have
+caught it; it moves `src/` and all three screenshot groups, which did not fit
+this run.
+
+Tools 596 → **601** / 152 → **154** suites, total 1406 → **1411**, in six
+places, `docs/LAUNCH.md:221` first. No `CHANGELOG.md` paragraph: nothing that
+ships moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard and the documents: `npm run test:all` **exit 0** —
+typecheck clean, 644 unit / 151, 119 jsdom / 26, **601 tools / 154**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **996 KB × 3**
+passing `validate`, **47 e2e passed and 3 skipped in 5.0 min**, then build and
+validate again. Separately `npm run site` then `site:check` **714 pages /
+16 118 links**, all resolving, the landing page carrying the corrected
+sentence. `packs:verify` was not run: no pack or seed moved. Only `TODO.md`
+and this entry moved after the gate, so typecheck and `npm test` were run
+again on the final tree.
+
+Assumed, with nobody to ask: that saying a paid feature is paid is copy, not a
+pricing call; that a store description may name its tiers in a short "Free,
+and Pro." paragraph built from `PITCH`; that a claim no source can support is
+removed rather than softened; and that the cooldown leak is a fix for its own
+PR, being code.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds three agent-shaped items: the cooldown's nine leaks, the density's share
+on the settings page and the popup, and `docs/PEDAGOGY.md` read claim by
+claim.
 
 ### 2026-11-07 — esbuild asked what a core module leaves behind, and three of eleven were not calls
 

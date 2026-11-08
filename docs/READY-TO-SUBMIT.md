@@ -91,23 +91,25 @@ Reads the web back to you with some words woven into another language. Difficult
 ```text
 Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
 
-Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and a third of the words Weft knows are in French.
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
-You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
-Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, for anyone who wants the same device taken as far as it goes.
 
-A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+
+Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
 
 Open source. MIT licensed.
 ```
@@ -333,23 +335,25 @@ Firefox variant of the description in `docs/STORE-LISTING.md`.
 ```text
 Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
 
-Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and a third of the words Weft knows are in French.
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
-You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
-Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, for anyone who wants the same device taken as far as it goes.
 
-A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+
+Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
 
 Open source. MIT licensed.
 ```
@@ -507,23 +511,25 @@ Microsoft listing the policy for Windows and macOS only.
 ```text
 Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
 
-Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and a third of the words Weft knows are in French.
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
-You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
-Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, for anyone who wants the same device taken as far as it goes.
 
-A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+
+Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
 
 Open source. MIT licensed.
 ```
@@ -617,23 +623,25 @@ Safari variant of the description in `docs/STORE-LISTING.md`.
 ```text
 Some of the words on the pages you read are in another language. The longer you stay on a page, the more of them there are.
 
-Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and you are reading a third in French.
+Weft weaves a proportion of the words on a page into a language you are learning, and raises that proportion with the time you actually spend looking at the page. Five minutes on a news article costs you almost nothing. Forty minutes on an infinite feed and a third of the words Weft knows are in French.
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and replicated since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
-You already know more French than you think. A very large part of English arrived from French, and most of the rest shares a Latin root with it, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
+You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
-Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, which nobody else offers, for anyone who wants the same device taken as far as it goes.
+Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin and Old English, for anyone who wants the same device taken as far as it goes.
 
-A real memory model. Weft schedules with FSRS-6, the algorithm Anki uses. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
+A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance, optionally behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. Optionally you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+
+Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
 
 Open source. MIT licensed.
 ```
