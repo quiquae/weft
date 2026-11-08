@@ -9,6 +9,14 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**A change that waits no longer undoes what you did while it waited.** A
+change to a site list waited out its cooldown and then replaced the whole
+list, so a site added to the taxed list while a removal waited was dropped
+when the removal landed, and a site taken off the never-weave list came back
+when a queued addition landed. A waiting change now remembers the list as it
+stood when you asked, and lands only what it changed: what you did to the
+list in the meantime stays done.
+
 **Two more controls that made Weft easier no longer skip the cooldown.** The
 Letterforms switches for Old English, whose own row calls orthography "a
 difficulty axis of its own" — off writes þ as th and drops the macrons, which
@@ -927,7 +935,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1436 tests: 661 unit, 119 in jsdom, 608 over the build tools, and
+**Built with** 1441 tests: 666 unit, 119 in jsdom, 608 over the build tools, and
 48 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

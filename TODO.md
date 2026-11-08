@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **661** unit / 153 suites, **119** jsdom / 26
+of this session — typecheck clean, **666** unit / 154 suites, **119** jsdom / 26
 suites, **608** tool tests / 157 suites, **48** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1001 KB each, all
+packages built at 1002 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -123,7 +123,10 @@ And to **1000 KB** later on 2026-11-08 by 482 bytes, `background.js` +205 and
 notice saying what waits: Chrome's 999.070 → 999.541 KB, measured the same
 way. And to **1001 KB** the same day by 1 518 bytes, 759 each in
 `background.js` and `options.js`, the eight paths the derived guard found
-governed: Chrome's 999.541 → 1001.023 KB, measured the same way.
+governed: Chrome's 999.541 → 1001.023 KB, measured the same way. And to
+**1002 KB** the same day by 947 bytes, all of them `background.js`, a queued
+list change landing as a merge: Chrome's 1001.023 → 1001.948 KB, measured
+the same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2447,28 +2450,23 @@ registered**, and nothing below it can move until it is.
       `easier: 'false'`, test-first. Unit 659 → **661**, tools 601 → **608**
       / 154 → **157**, total 1427 → **1436**, in six places. See Notes.
 
-- [ ] **Stop a queued list change overwriting what was added while it
-      waited.** The item's third part, found 2026-11-08 governing the nine.
-      `applyReadyChanges()` applies a queued list whole (`applyPatch` in
-      `src/core/lock.ts`), so a list changed at once during the cooldown is
-      reverted when the queued change lands. Four lists, not one: on
-      `sites.taxed` and `sites.gentle` a removal queues and an addition
-      lands at once, so the addition is dropped; on `sites.excluded` an
-      addition queues and a removal lands, so the removed entry comes back;
-      and on `learning.posPreference`, as on the site lists, a removal
-      queues and an addition is dropped. Shape: a three-way merge.
-      Store, beside the pending patch, the value each list path was judged
-      against (`base`, optional on `PendingChange`, so changes queued before
-      it apply whole as today); at apply time, for each entry — by
-      `pattern` for a rule list, by value for a string list — take the
-      patch's where the patch changed it from `base`, drop what the patch
-      removed from `base`, and keep what is in the current list and was in
-      neither, in the current list's order, the patch's additions after.
-      Test-first in `tests/core/lock.test.ts`: a rule added during the
-      cooldown survives the queued removal; an excluded entry removed during
-      it stays removed; a change queued with no `base` applies whole. Moves
-      `src/core/`, so the three screenshot groups regenerate. About 60
-      minutes.
+- [x] **Stop a queued list change overwriting what was added while it
+      waited.** Done 2026-11-08, the item's third part, the same run's third
+      PR. `requestChange()` stores, beside a queued patch, each list in it as
+      it stood when judged (`PendingChange.base`, optional, in
+      `src/core/types.ts`), and `applyReadyChanges()` lands the change
+      through `landingPatch()`, a three-way merge — an entry the change set
+      lands, one it removed goes, one it never touched keeps whatever was
+      done to it since, the current order holding and the change's additions
+      after; rules keyed by `pattern`, strings by value, entries compared by
+      content whatever their key order, and a list with a key twice landing
+      whole. A change queued before carries no `base` and applies whole, as
+      it did. Test-first: 5 tests in a new suite of `tests/core/lock.test.ts`,
+      red on exactly the three defect cases (a site added during a removal's
+      cooldown, an edit in place beside a later edit, an entry taken off the
+      never-weave list); the key-order test shown to fail with a plain
+      comparison. `docs/PRIVACY.md`'s Pending changes row says a change
+      carries its list. Unit 661 → **666** / 153 → **154**. See Notes.
 
 - [ ] **Say what the density is a share of, on the settings page and the
       popup.** Found 2026-11-08. The Resting density and Ceiling rows
@@ -8156,6 +8154,20 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — a queued list change lands as a merge.** Two things a later
+run would be sorry not to know:
+
+1. **`base` is what makes it a merge.** With only the patch and the list as
+   it is, an entry missing from the patch is either one the change removed
+   or one added since, and nothing can tell which; the list as it stood
+   when the change was judged settles it. A change queued before
+   2026-11-08 carries none and lands whole, which is the old behaviour on
+   purpose: there is nothing to merge against.
+2. **The merge is in `landingPatch()`, not `applyPatch()`**, so an import's
+   deferred half and a second first-run finish, which both queue through
+   `requestChange`, carry a `base` too. The lock record is sealed and opened
+   whole, so the field survives storage with no validator to teach.
 
 **2026-11-08 — every path a page writes, classed.** Three things a later
 run would be sorry not to know:
