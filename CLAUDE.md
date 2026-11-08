@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **671 pass**, 155 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **674 pass**, 156 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **626 pass**, 160 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **48 pass, 3 skipped**, 3.7 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1002 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1003 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -236,6 +236,25 @@ to English as the page gets harder around it, so selection is pinned: whatever
 is on screen stays, and rising difficulty only appends. Function words are
 never woven — replacing "the", "of", "and" destroys the scaffolding the reader
 is decoding with, for almost no vocabulary.
+
+**A node's budget is rounded by its own draw, and a re-weave reaches every
+candidate node.** The content script selects one text node at a time, so a
+page's density is the sum of its nodes' budgets. `selectSwaps()` rounds
+`ratio × eligible` up or down by `u`, drawn from the node's seed on a stream
+apart from the tie-breaking jitter (`BUDGET_STREAM` in `src/core/selector.ts`),
+so a node weaves its share on average, the same way on every re-render, and a
+fixed `u` under a rising ratio only ever rounds up later, which the pinning
+relies on. Until 2026-11-08 it rounded to the nearest, so at the default 6% a
+node needed nine eligible words to weave one, and the README wove 2 of its 161
+at rest. Do not swap the draw for a carry across nodes: that makes a
+paragraph's swaps depend on the nodes before it, so a framework re-render
+weaves it differently. And `reweaveAll()` revisited only the nodes holding a
+record, so a node that wove nothing at rest was never woven however far the
+density rose: the README loaded at rest and escalated to 35% wove 8 of its
+share of 56. `unwoven` in `src/content/index.ts` keeps those nodes, and a
+re-weave queues them for the idle scanner, so they cost the synchronous
+re-weave nothing. The selector's short-paragraph suite holds the share, and an
+e2e test in `friction.spec.ts` weaves a page from a resting density of 0.
 
 **Cooldowns are stored, not scheduled, and a list lands as a merge.** A
 queued change carries each list it changes as it stood when it was judged
@@ -1054,6 +1073,89 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — a page of short paragraphs weaves its share, and escalation reaches the paragraphs that wove nothing
+
+`TODO.md`'s topmost unchecked item in `Now`, queued by the band window's run:
+`selectSwaps()` weaves `Math.round(ratio × eligible)` per text node, so at the
+default 6% a node needs nine eligible words to weave one. **Measured first**,
+with the real selector a paragraph at a time and each seeded from its own text
+as the content script seeds it: the README, French, wove **2** of its 161
+eligible words at rest, where its share is 9.7, and `docs/PEDAGOGY.md` 3 of
+112.
+
+**Modelling escalation the way the code runs it found the larger defect.**
+`reweaveAll()` revisits only the nodes holding a record, and a node that
+weaves nothing gets none, so a paragraph that wove nothing at rest was never
+woven however far the density rose. Woven fresh at 35% the README gives 52
+words and looks fine; loaded at 6% and re-woven at 35% it gave **8**, of a
+share of 56. At a resting density of 0, which the settings page's slider
+offers, a page never wove at all, and the translation services' top-up, which
+re-weaves after adding words, could not reach a paragraph whose only words it
+had added. **Measure the sequence a page goes through, not the state it ends
+in.**
+
+**Neither shape the item offered.** A carry across nodes gives an exact page
+total and makes a paragraph's swaps depend on the nodes read before it, so a
+framework re-render weaves it differently; rounding up the first word
+overshoots. The budget is `floor(ratio × eligible + u)`, `u` drawn from the
+node's seed on a stream of its own, `BUDGET_STREAM`, so the jitter and every
+ranking are what they were and a node whose new rounding agrees with the old
+weaves exactly what it did. A node weaves its share on average, the same way
+on every re-render, and a fixed `u` under a rising ratio only ever rounds up
+later, so the pinning path needed no change. And `unwoven` keeps the nodes
+that wove nothing; a re-weave queues them for the idle scanner, which adds
+words to text that shows English, so the page never flashes back and the
+synchronous re-weave costs what it did. `weaveNode()` refuses a node holding a
+record, since a node queued twice would otherwise have its woven text read as
+English, and `suspend()` empties the queue, so nothing queued weaves during a
+panic pass.
+
+Test-first: 3 unit tests in a new suite of `tests/core/selector.test.ts`, 400
+distinct three-word paragraphs each selected alone, red on "at 6%, 400 short
+paragraphs wove 0 words where their share is 72.0, ± 24.1"; the corpus check
+and the floor-or-ceiling, never-falling budget pass on both roundings, as
+guards. An e2e test in `friction.spec.ts`, a resting density of 0 and a steep
+curve, red on "Expected: > 0, Received: 0" after sixteen seconds of reading.
+Measured after, French: the README 12 at rest and 55 escalated, of 9.7 and 56;
+`docs/PEDAGOGY.md` 9 and 35, of 6.7 and 39; the article page 4 and 21, of 3.7
+and 21; Latin and Old English within a word or two.
+
+All 31 shots regenerated on a test build after the commit that moved `src/`,
+14 + 10 + 7 written. Six store shots moved, all for one paragraph: the fourth
+of `showcase.html` wove five words and weaves four, the Chrome frames leaving
+"two" English where they wove *deux* and the Apple frames *soir*, so the Apple
+reveal now hovers *forêt*, the first woven word of that paragraph, with its
+line saying English took it. A second store run agreed byte for byte. The
+documentation and first-run sets came back byte-identical and are stamped;
+the store group's "no change" stamp is deleted. **The packages print 1003
+KB**: 347 bytes, `content.js` +304 and `onboarding.js` +43, Chrome's 1002.316
+→ 1002.655 KB, measured against `main`'s built in a `/tmp` worktree. Unit 671
+→ **674** / 155 → **156**, e2e 48 → **49**, total 1464 → **1468**, in six
+places, `docs/LAUNCH.md:221` first, a `CHANGELOG.md` paragraph, and two
+paragraphs of `docs/ARCHITECTURE.md`'s Selection.
+
+Measured on Node 26.7, with npm's own exit status captured, on the tree
+holding the code and the shots: `npm run test:all` **exit 0** — typecheck
+clean, **674 unit / 156**, 119 jsdom / 26, 626 tools / 160, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass /
+2 degrade / 4 untracked, 0 fail / 0 without data, **1003 KB × 3** passing
+`validate`, **49 e2e passed and 3 skipped in 4.8 min**, then build and validate
+again. `artefacts:check` **8 groups, 1 stale**, the release notes, B2a.
+`packs:verify` and `site:check` were not run: no pack moved, and the site
+builder does not import the selector. Only documents moved after the gate, so
+typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the escalation defect belonged to this item,
+being the same promise on the same pages; that a page's count varying around
+its share, the README drawing 12 against 9.7, is the honest cost of an
+order-free rounding; and that the landing demo keeps rounding to the nearest,
+rounding one passage rather than a node at a time.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds one agent-shaped item, `docs/PEDAGOGY.md` read claim by claim, and
+`Next` gains one, a harness for the content script's page object outside the
+browser.
 
 ### 2026-11-08 — B2, C1 and C2 wove nothing, and the item's remedy would have left them so
 

@@ -99,6 +99,27 @@ attention-linked difficulty must never do. The fix is explicit rather than
 emergent: when difficulty is rising, the words currently on screen are passed
 in as `pinned` and accepted first, outside the budget.
 
+The content script selects one text node at a time, so a page's density is the
+sum of its nodes' budgets, and a budget is the ratio's share of the node's
+eligible words **rounded down or up by a draw seeded from the same text**. A
+node weaves its share on average, so a page of short paragraphs weaves the
+page's share. Rounded to the nearest, a node needed half a word of share before
+it wove one — nine eligible words at the default 6% — and until 2026-11-08 the
+README wove 2 of its 161 eligible words at rest, measured with the French pack,
+where its share is 9.7, and 12 on the day it changed. The draw is fixed for the
+text, so a rising ratio only ever rounds a node up later, never down, and a
+node's budget never falls below the words it already shows.
+
+And a re-weave reaches every candidate node, not only those that have woven a
+word. A node that weaves nothing gets no record, and until 2026-11-08 a
+re-weave revisited only the records, so the README loaded at rest and escalated
+to the 35% ceiling wove 8 words where its share is 56, 55 on the day it
+changed, and a page at a resting density of 0 stayed in English for good. The
+nodes that wove nothing are kept now, and a re-weave queues them for the idle
+scanner: they show English, so weaving them later adds words without the page
+flashing back to English, and the synchronous part of a re-weave costs what it
+did.
+
 Scoring is additive across factors but **multiplicative on the gates**.
 Confidence and ambiguity multiply rather than add, because a low-confidence
 mapping must not be rescuable by being a nice cognate: a wrong translation

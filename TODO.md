@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **671** unit / 155 suites, **119** jsdom / 26
-suites, **626** tool tests / 160 suites, **48** e2e passing
+of this session — typecheck clean, **674** unit / 156 suites, **119** jsdom / 26
+suites, **626** tool tests / 160 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1002 KB each, all
+packages built at 1003 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -132,7 +132,11 @@ Chrome's 1001.948 → 1001.970 KB, still printing 1002, measured the same way.
 And by 354 bytes the same day, the band window kept inside the pack:
 `content.js` +181 and `onboarding.js` +173, Chrome's 1001.970 → 1002.316 KB,
 Firefox's 1002.385 and Safari's 1002.323, all still printing 1002, measured
-the same way. `npm run test:all` exits 0 end to end.
+the same way. And to **1003 KB** the same day by 347 bytes, each node's budget
+rounded by its own draw and a re-weave reaching the nodes that wove nothing:
+`content.js` +304 and `onboarding.js` +43, Chrome's 1002.316 → 1002.655 KB,
+measured the same way, all three printing 1003. `npm run test:all` exits 0
+end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
 by figure, in `docs/SUBMIT-STATUS.md`.** It passes — `test:all`, `packs:verify`,
@@ -2530,27 +2534,32 @@ registered**, and nothing below it can move until it is.
       154 → **155**, tools 615 → **626** / 158 → **160**, total 1448 →
       **1464**. See Notes.
 
-- [ ] **At the resting density a page of short paragraphs weaves almost
-      nothing, because each text node rounds its own budget.** Found
-      2026-11-08, measuring the item above. `selectSwaps()` weaves
-      `Math.round(ratio × eligible)` (`src/core/selector.ts`), and the content
-      script calls it once per text node (`weaveNode`, `src/content/index.ts`)
-      with no carry between nodes, so at the default 6% a node needs 9
-      eligible words before it weaves one. Measured with the French pack at
-      level 1, split at blank lines, which a rendered page splits further at
-      every link and inline element: the README weaves **2** of its 161
-      eligible words, 1 in 80, where the popup prints "1 word in 17 of the
-      words Weft knows"; `docs/PEDAGOGY.md` 2 of 108; the e2e article page,
-      long paragraphs written from the pack's words, 4 of 61, close to the
-      claim. At the 35% ceiling the README weaves 52, near its 56. Shape to
-      weigh: carry the fractional budget across a page's nodes — each node
-      weaves `round(ratio × eligible so far) − woven so far` — which keeps
-      selection prefix-monotone within a node but makes a node's swaps depend
-      on the nodes before it, so the pinning and re-weave paths need reading
-      first; or round up the first word of each node, which overshoots on
-      pages of many small nodes. Moves `src/content/` and every screenshot
-      group, which the e2e suite weaves at configured densities, so expect
-      shots to move. About 90 minutes; split if the pinning path is involved.
+- [x] **At the resting density a page of short paragraphs weaves almost
+      nothing, because each text node rounds its own budget.** Done
+      2026-11-08, with a second defect the measuring found. Rounded to the
+      nearest, a node needed nine eligible words to weave one at 6%: the
+      README, French, per paragraph, wove **2** of its 161 eligible at rest
+      where its share is 9.7. Neither shape the item offered: a carry across
+      nodes makes a paragraph's swaps depend on the nodes before it, so a
+      framework re-render weaves it differently, and rounding up the first
+      word overshoots. `selectSwaps()` now takes `floor(ratio × eligible +
+      u)`, `u` drawn from the node's seed on a stream of its own
+      (`BUDGET_STREAM`), so the tie-breaking jitter and every ranking are
+      unchanged, a node weaves its share on average, and a fixed `u` under a
+      rising ratio only ever rounds up later, which is why the pinning path
+      needed no change. **And `reweaveAll()` revisited only the nodes holding
+      a record**, so a node that wove nothing at rest was never woven however
+      far the density rose, nor one whose words a translation service had
+      just supplied: the README loaded at 6% and escalated to the 35% ceiling
+      wove **8** where its share is 56, 20 with the rounding fixed, and at a
+      resting density of 0, which the settings page offers, a page never wove
+      at all. `unwoven` keeps those nodes and a re-weave queues them for the
+      idle scanner; it weaves 55 now. Test-first: 3 unit tests in a new suite,
+      red on "at 6%, 400 short paragraphs wove 0 words where their share is
+      72.0, ± 24.1", and an e2e test in `friction.spec.ts` from a resting
+      density of 0, red on "Expected: > 0, Received: 0". Six store shots
+      moved, the documentation and first-run sets did not. Unit 671 → **674**
+      / 155 → **156**, e2e 48 → **49**, total 1464 → **1468**. See Notes.
 
 - [ ] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
       sources.** Queued 2026-11-07 as the item after the store description:
@@ -2559,6 +2568,20 @@ registered**, and nothing below it can move until it is.
       "tested since" now leans on it. About 60 minutes.
 
 ## Next
+
+- [ ] **Give the content script's page object a harness outside the browser.**
+      Found 2026-11-08. `WeftPage` in `src/content/index.ts` keeps four
+      pieces of bookkeeping — `records`, `unwoven`, `owned` and the pending
+      queue — and every defect found in them so far (the wrapped renderer's
+      observer undoing its own weave, a re-weave skipping a detached key, a
+      re-weave reaching only records) is held only by an e2e test in a real
+      Chromium. Two guards added that day, `weaveNode()` refusing a node that
+      holds a record and `suspend()` emptying the queue, have no test at all.
+      The class is not exported and the module boots and registers a message
+      listener at import (`void boot()`, `api.runtime.onMessage`), so the
+      first step is moving the class to a module of its own and constructing
+      it in jsdom with a stub renderer and a stubbed `send`. About 90 minutes;
+      read the import side effects first.
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
       Done 2026-10-26, the run after the palette's. `SERIF` in
@@ -8224,6 +8247,45 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — a node rounds its budget by its own draw, and a re-weave
+reaches every node.** Six things a later run would be sorry not to know:
+
+1. **Model the sequence the code runs, not the state it ends in.** The item
+   measured the resting density. Weaving each paragraph at rest and then
+   re-weaving at 35% the way `reweaveAll()` does is what found that a
+   re-weave reached only nodes holding a record: a fresh weave at 35% gave
+   the README 52 words and looked fine, and the sequence gave 8.
+2. **Why a draw and not a carry, so nobody swaps them back.** A carry gives
+   an exact page total but depends on the order nodes are read in — the
+   scan's, the records' insertion order, a mutation's — so a re-rendered
+   paragraph would weave differently. The draw is the text's own. Its cost
+   is that one page's count varies around its share: the README draws 12
+   against 9.7, `showcase.html` 3 against 5.9. That is a draw, not a bias;
+   the unit suite holds 400 paragraphs within three standard deviations.
+3. **The draw is a stream of its own on purpose**, `mulberry32(seed ^
+   BUDGET_STREAM)`, not the jitter generator's first draw. Taking it from
+   the jitter stream would have moved every tie-break on every page; as
+   built, a node whose new rounding agrees with the old weaves exactly what
+   it did, which is why six shots moved and not thirty-one.
+4. **Two guards in `src/content/index.ts` have no test of their own.**
+   `weaveNode()` refuses a node holding a record: a node queued twice would
+   otherwise, in highlight mode, have its woven text read as English and
+   woven again, and its revert would restore the woven text. `suspend()`
+   empties the pending queue, so nothing queued weaves during a panic pass;
+   `resume()` reads the page again. Nothing drives `WeftPage` outside a
+   browser, so neither could be held; queued first in `Next`.
+5. **The landing page's demo still rounds to the nearest**,
+   `Math.round(ratio * candidates)` in `site/index.html`, and that is right:
+   it rounds one passage of 23 candidates, not a node at a time, and
+   `demo-curve.test.ts` pins the figures it prints.
+6. **The scratch script was `/tmp/weft-dither/measure.ts`, deleted.** It
+   split each page at blank lines, seeded each paragraph with
+   `hashString(paragraph)` as the content script does, and modelled
+   escalation by re-weaving at 35% with each paragraph's rest swaps pinned
+   and the others read fresh. The e2e pages over-split nothing; a rendered
+   README splits further at every link, which only makes the old rounding
+   look worse.
 
 **2026-11-08 — the band window slides inside the pack.** Five things a later
 run would be sorry not to know:
