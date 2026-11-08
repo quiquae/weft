@@ -4,7 +4,7 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-07:** every automatable check is green, measured at the end
+**State on 2026-11-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
 suites, **601** tool tests / 154 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
@@ -2352,24 +2352,101 @@ registered**, and nothing below it can move until it is.
       every one byte-identical, three groups stamped. Tools 590 → **596** /
       149 → **152** suites, total 1400 → **1406**, in six places. See Notes.
 
-- [ ] **Read the store description in `docs/STORE-LISTING.md` claim by
-      claim against the code.** Queued 2026-11-07. It is the copy Google
-      reviews and every stranger at the store reads first, pasted four times
-      into `docs/READY-TO-SUBMIT.md`, and no run has read it whole: guards
-      hold slices of it — "never page text" (`sending-copy.test.ts`), what Pro
-      promises (`pro-features.test.ts`), the permission justifications
-      (`privacy-permissions.test.ts`), the paste blocks to the listing
-      (`ready-to-submit.test.ts`) — and nothing holds the rest: seven
-      languages and 356 checked lemmas, offline, no account, the screen-reader
-      mode, FSRS-6, difficulty rising with attention, the tooltip's fields,
-      the cooldowns. Read each sentence against the code, as `docs/PRIVACY.md`
-      and `docs/SUPPORT.md` were, and fix the listing and its four copies
-      together, the paste blocks' test requiring it. Two calls stay Creagh's
-      and are not this item's: "money, mail, credentials and health" (Notes,
-      the never-weave run) and "Open source. MIT licensed.", untrue until B2.
-      About 60 minutes; documents only, unless a claim is the code's to meet.
-      `docs/PEDAGOGY.md` is the other document no run has read claim by
-      claim, and is the item after this one.
+- [x] **Read the store description in `docs/STORE-LISTING.md` claim by
+      claim against the code.** Done 2026-11-08. Most of it holds — the
+      tooltip on hover, FSRS-6 (21 reference weights), retirement for good
+      (`retiredAt` is sticky) and outside the budget, the quiz drawn from
+      words seen, the stored clock, the panic pass's daily limit, the
+      walker's skip list, seven packs, the three French cousin examples.
+      Seven claims did not. It offered Hard Mode, the vocabulary check and
+      your own translation key as "optional", with no word that each is Pro,
+      which `clampToTier()` switches off on Free; "you are reading a third in
+      French", where `weaveRatio` is a share of the words with a dictionary
+      entry; "most of the rest [of English] shares a Latin root", where
+      Finkenstaedt and Wolff count Latin at about 28%, French 28%, Germanic
+      25%; Latin and Old English "which nobody else offers", where Language
+      Lens, a Firefox add-on, lists Latin; FSRS-6 "the algorithm Anki uses",
+      where Anki's manual calls FSRS an alternative you enable and names
+      FSRS-5; and the diglot weave "replicated since", where
+      `docs/PEDAGOGY.md` cites two studies and calls the evidence good
+      rather than overwhelming. The README, the landing page and both launch
+      drafts carried four of them, and the directory blurb in
+      `docs/LAUNCH.md` said the woven word is "usually the literal ancestor
+      of the one it replaced": 40% of Old English rows, 2% of Latin ones.
+      Guard: `tests/tools/store-description.test.ts`, 5 tests in 2 suites —
+      a paragraph offering a Pro feature on sale says Pro, the quoted density
+      is the default curve at the minutes named and says "of the words Weft
+      knows", the languages named are the packs that ship, and each cousin
+      example is the tooltip's note. Red first on the three unmarked offers
+      and the unqualified share; five probes restored by md5. Tools 596 →
+      **601** / 152 → **154** suites, total 1406 → **1411**, in six places.
+      Nothing under `src/` moved. **Found and queued below: nine settings
+      that make Weft easier skip the cooldown.** See Notes.
+
+- [ ] **Govern the nine settings that make Weft easier at once.** Found
+      2026-11-08 reading the store description, whose "Anything that makes
+      Weft easier waits out a cooldown" is also promised by `README.md:134`,
+      `site/index.html:262`, the first-run page (`onboarding/index.tsx:319`),
+      the settings page's commitment note (`options/commitment.tsx:35`), the
+      Standard preset's copy (`settings.ts:65`) and `docs/SUPPORT.md:79`.
+      `assessPatch()` judges only `GOVERNED_PATHS`, an unlisted path is
+      `neutral`, and `requestChange()` applies anything not `easier` at once.
+      Measured with the real `assessPatch` against defaults: all nine read
+      `neutral`, where lowering the global ceiling, the control, reads
+      `easier`. Each has a control:
+      1. **A taxed rule's escalation switch, base and ceiling sliders**
+         (`options/sites.tsx:117`, `:128`, `:145`). `sites.taxed` is judged
+         by length and enabled count only, so editing a rule in place is
+         neutral: drag reddit's ceiling to 6% and it applies now. The worst,
+         and three of the nine.
+      2. **"Recovery while you are away"**, `attention.decayPerHourAway`, a
+         slider to 100% (`sections.tsx:317`). At 100% `decayAttention`
+         retains 0, so fifteen minutes away (`currentAttentionSeconds`
+         decays after 0.25 h) zeroes the day's tax.
+      3. **"If stored settings are edited"** → "just note it",
+         `friction.tamperResponse` (`commitment.tsx:151`): `recordTamper()`
+         then adds no penalty, and `load()` keeps a forged settings object,
+         so every cooldown is one storage edit away.
+      4. **Sites mode** "everywhere except" → "only my list", `sites.mode`
+         (`sites.tsx:244`): every unlisted page loses its gentle dose.
+      5. **The quiz's word count and pass mark**, `friction.quizWordCount`
+         and `quizPassThreshold` (Pro, `commitment.tsx:81`, `:95`): two.
+      6. **Parts of speech**, `learning.posPreference` (`sections.tsx:182`):
+         `entryAllowed()` refuses a part of speech left out, so the eligible
+         set and the budget shrink.
+      Shape: compare a rule list rule by rule, by pattern, so a rule whose
+      `escalate` turns off, or whose ratios fall, is easier; give
+      `tamperResponse` and `sites.mode` an ordered direction (`ignore` and
+      `taxed-only` the easier ends); add the rest with their easier
+      direction. Then the guard that would have caught it: derive every
+      `c.set('<path>'` under `src/ui/options/` and `src/ui/onboarding/` and
+      require each path be governed or named in a `NEUTRAL` table with why —
+      style, reveal, a11y and the keys are not difficulty. Ambiguous, so
+      decide in that table: `learning.retireKnownWords` (off makes learned
+      words count against the budget, which weaves fewer). Test-first in
+      `tests/core/lock.test.ts`. It moves `src/`, so all three screenshot
+      groups regenerate and are stamped. About 90 minutes; split the guard
+      off if the rule-list comparison takes longer.
+
+- [ ] **Say what the density is a share of, on the settings page and the
+      popup.** Found 2026-11-08. The Resting density and Ceiling rows
+      (`options/sections.tsx:252`, `:270`) say "6% of content words" and
+      the popup (`popup/index.tsx:324`) "of the content words is in
+      French", where `weaveRatio` is a share of the words with a dictionary
+      entry (`eligible` in `selectSwaps`): on Free, the pack's 356 lemmas,
+      not every content word. The first-run page already says "of the words
+      Weft knows" (`onboarding/index.tsx:219`), and the store listing does
+      now. PR #12 chose "content words" in 2026-09; the cure is the first-run
+      page's words, and the Standard preset's copy (`settings.ts:65`) and
+      the landing demo's readout (`site/index.html:507`), whose passage is
+      built so every candidate has an entry, decided case by case. Moves
+      `src/`, so the screenshot groups regenerate. About 45 minutes.
+
+- [ ] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
+      sources.** Queued 2026-11-07 as the item after the store description:
+      the other document of claims no run has read whole. It cites three
+      studies and states the defaults' reasons; the store description's
+      "tested since" now leans on it. About 60 minutes.
 
 ## Next
 
@@ -8037,6 +8114,54 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — the store description, read against the code.** Six things
+a later run would be sorry not to know:
+
+1. **The three claims about the world, and where each was read.** English
+   vocabulary: Finkenstaedt and Wolff, *Ordered Profusion* (1973), about
+   80 000 words of the Shorter Oxford, third edition — French 28.3%, Latin
+   28.24%, Germanic 25%, Greek 5.32% — read in secondary sources by a search
+   on 2026-11-08, the book itself not reached. Those are dictionary entries,
+   not running text, where the Germanic share dominates, so "nearly as much
+   again from Latin" is the dictionary's count and "most of the rest shares a
+   Latin root" was false either way. Latin elsewhere: Language Lens by nemo,
+   on AMO, "replaces words on webpages with their foreign equivalents" and
+   lists "Welsh, and Latin"; it names no Old English. Do not restore "which
+   nobody else offers", nor write it of Old English alone: nobody can show
+   it. Anki: its manual (`docs.ankiweb.net/deck-options.html`) calls FSRS
+   "an alternative to Anki's legacy SuperMemo 2 (SM-2) algorithm", to
+   "Enable", and names FSRS-5 only, so the listing says "the open-source
+   memory model Anki also offers", true whichever version Anki ships.
+2. **Pro is marked where it is offered, and a paragraph says what it adds**,
+   in `PITCH`'s four. Assumed the disclosure is copy, not a call: the three
+   are paid in the code, and AMO's F11 box ("requires payment") was already
+   ticked. The guard holds the store description only, where nothing else
+   says Pro; the README's Hard Mode (`:157`) and quiz (`:144`) paragraphs and
+   the landing page's (`:268`) say nothing of Pro either, each beside a Pro
+   paragraph of its own (`README.md:189`, `site/index.html:316`). Widening
+   the rule to them is a choice, not queued.
+3. **"A third of the words Weft knows" is the first-run page's phrase**, and
+   the ratio's real denominator: `selectSwaps` counts as `eligible` a word
+   with a usable dictionary entry. A beginner's page is also capped by the
+   daily new-word budget, 12 a day, below the curve; the listing describes
+   the density setting and does not say so.
+4. **The four pasted copies were regenerated from the listing** by a
+   30-line script applying `ready-to-submit.test.ts`'s paste form, kept
+   nowhere; that test is what says they agree.
+5. **Left, as calls or as true:** "money, mail, credentials and health" and
+   "Open source. MIT licensed." (Creagh's, as before); the Hard Mode clause
+   in the Firefox and Safari copies (Creagh's, `READY-TO-SUBMIT.md`); "Five
+   minutes on a news article costs you almost nothing" — the News preset is
+   gentle, a fixed 6%, and 14.5% on a taxed news site; and "the time you
+   actually spend looking at the page", where attention is kept per site per
+   day, the page's time being part of it.
+6. **The cooldown leaks, measured, and it is the next item.** Nine settings
+   with controls read `neutral` under the real `assessPatch` and apply at
+   once; the measurement script is in the item's own words. Found because
+   "anything that makes Weft easier waits" was a claim to check, not a
+   decision to trust: **a guarantee stated in seven places is still a claim
+   until a test enumerates what it covers.**
 
 **2026-11-07, latest — esbuild asked what it keeps.** Seven things a later
 run would be sorry not to know:
