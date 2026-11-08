@@ -162,7 +162,12 @@ The selector scores each candidate on:
   mostly be meeting, which falls from about 6.2 at A1 to 3.2 at C2.
 - **Band fit** — proximity to the current level, in a window of one band below
   for consolidation and one above for stretch. Widening it further mixes A1
-  and C2 vocabulary, which reads as noise.
+  and C2 vocabulary, which reads as noise. The window never runs past the
+  highest band the pack has: every pack tops out at band 4, roughly B2, so at
+  B2, C1 and C2 it slides down to bands 2 to 4, the rarest words Weft has, put
+  first by the frequency and band-fit scores. Until 2026-11-08 it slid past
+  them, and those three levels wove nothing on ordinary prose, even at the
+  ceiling.
 - **Guessability** — sentence length, saturating at twelve words. A longer
   sentence carries more context to recover the word from.
 - **Ambiguity** — a multiplicative penalty. "light" with eight senses is a bad

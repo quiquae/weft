@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **666** unit / 154 suites, **119** jsdom / 26
-suites, **615** tool tests / 158 suites, **48** e2e passing
+of this session — typecheck clean, **671** unit / 155 suites, **119** jsdom / 26
+suites, **626** tool tests / 160 suites, **48** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1002 KB each, all
 passing `npm run validate`. The package grew
@@ -129,7 +129,10 @@ list change landing as a merge: Chrome's 1001.023 → 1001.948 KB, measured
 the same way. And by 23 bytes the same day, the density said as a share of
 the words Weft knows: `options.js` +17, `popup.js` +3 and `onboarding.js` +3,
 Chrome's 1001.948 → 1001.970 KB, still printing 1002, measured the same way.
-`npm run test:all` exits 0 end to end.
+And by 354 bytes the same day, the band window kept inside the pack:
+`content.js` +181 and `onboarding.js` +173, Chrome's 1001.970 → 1002.316 KB,
+Firefox's 1002.385 and Safari's 1002.323, all still printing 1002, measured
+the same way. `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
 by figure, in `docs/SUBMIT-STATUS.md`.** It passes — `test:all`, `packs:verify`,
@@ -2497,29 +2500,57 @@ registered**, and nothing below it can move until it is.
       total 1441 → **1448**; +23 bytes, still 1002 KB. **Found and queued
       first below: Levels C1 and C2 weave almost nothing.**
 
-- [ ] **Levels C1 and C2 weave almost nothing, because the band window slides
-      past every band the packs have.** Found 2026-11-08, measuring the item
-      above. `bandWindow(level)` (`src/core/selector.ts:97`) is
-      `[level − 1, level + 1]`, so it slides where `SelectorInput`'s comment
-      says higher levels "widen the band window", and all seven packs carry
-      bands 1–4 only (French: 364, 182, 33 and 8 entries). Eligible words at
-      levels 1 to 6, `selectSwaps()` at ratio 1: on the README 148, 150, 33,
-      2, **0**, **0**; on `tests/e2e/pages/article.html` 61, 61, 16, **0**, 0,
-      0. So a reader who picks "C1 — fluent" or "C2 — near-native" in
-      Settings → Level — the one control that sets it; the first-run page
-      offers none, and progression adds a level per 200 retired words, so it
-      reaches 2 at most — is woven nothing new, retired words alone bypassing
-      the window, while the popup prints the ratio its settings and attention
-      give, "1 word in 17 of the words Weft knows is in French", over an
-      unwoven page. Recommended: keep the window from leaving every band a
-      pack has — clamp it to the pack's top band, which `index.json`'s `bands`
-      give — rather than drop C1 and C2 from the chips, which a fluent reader
-      would read as "not for me"; whether C2 should mean anything more than
-      "the rarest words Weft has" is a call, and the clamp decides nothing
-      against it. Test-first: a level-6 selection on a pack of bands 1–4 has
-      an eligible word, red today, and the comment says what the window does.
-      Moves `src/core/`, so the screenshot groups regenerate. About 60
-      minutes.
+- [x] **Levels C1 and C2 weave almost nothing, because the band window slides
+      past every band the packs have.** Done 2026-11-08, the run after the
+      density copy's. **The item's remedy would not have fixed it, and it
+      missed a level.** Clamping the level to the pack's top band gives C1 and
+      C2 B2's window, bands 3 and 4, and B2 already wove nothing: with the
+      French pack at the 35% ceiling, per paragraph as the content script
+      weaves, B2 wove **0** on the README (2 eligible), on
+      `docs/PEDAGOGY.md` (3) and on the e2e article page (0). Bands 3 and 4
+      hold 23 lemmas of 356, too few for any window confined to them. So
+      `bandWindow(level, topBand)` stays one band either side of the level
+      and, where that runs past the pack's top band, **slides down to end
+      there, three bands wide**: at top band 4, B2, C1 and C2 get bands 2 to
+      4, B1's window, ranked rarest first by `idealZipf` and band fit. It
+      never slides up, so A1 keeps two bands; A1 to B1 are unchanged on every
+      pack. `topBand` is a required field of `SelectorInput`, read off
+      `topBandOf(pack.meta)` by both callers, the content script and the
+      first-run preview. Measured after, French: README 42 eligible / 11
+      woven at 35% at B2, C1 and C2 (were 2/0, 0/0, 0/0), PEDAGOGY 21 / 5,
+      article 16 / 5; Old English and Latin the same within one word.
+      Test-first: 5 unit tests in a new suite, red on a stub keeping today's
+      window, among them every level and top band 1 to 6 held to inside the
+      pack, as high as it may reach and as wide as the pack allows; and
+      `tests/tools/level-reach.test.ts`, 11 tests in 2 suites, red on all
+      seven packs and both callers: every level weaves at the ceiling on the
+      README and the article page, and every `selectSwaps(` call under `src/`
+      passes `topBand: topBandOf(`. All 31 shots regenerated, 14 + 10 + 7,
+      every one byte-identical, the three groups stamped. Unit 666 → **671** /
+      154 → **155**, tools 615 → **626** / 158 → **160**, total 1448 →
+      **1464**. See Notes.
+
+- [ ] **At the resting density a page of short paragraphs weaves almost
+      nothing, because each text node rounds its own budget.** Found
+      2026-11-08, measuring the item above. `selectSwaps()` weaves
+      `Math.round(ratio × eligible)` (`src/core/selector.ts`), and the content
+      script calls it once per text node (`weaveNode`, `src/content/index.ts`)
+      with no carry between nodes, so at the default 6% a node needs 9
+      eligible words before it weaves one. Measured with the French pack at
+      level 1, split at blank lines, which a rendered page splits further at
+      every link and inline element: the README weaves **2** of its 161
+      eligible words, 1 in 80, where the popup prints "1 word in 17 of the
+      words Weft knows"; `docs/PEDAGOGY.md` 2 of 108; the e2e article page,
+      long paragraphs written from the pack's words, 4 of 61, close to the
+      claim. At the 35% ceiling the README weaves 52, near its 56. Shape to
+      weigh: carry the fractional budget across a page's nodes — each node
+      weaves `round(ratio × eligible so far) − woven so far` — which keeps
+      selection prefix-monotone within a node but makes a node's swaps depend
+      on the nodes before it, so the pinning and re-weave paths need reading
+      first; or round up the first word of each node, which overshoots on
+      pages of many small nodes. Moves `src/content/` and every screenshot
+      group, which the e2e suite weaves at configured densities, so expect
+      shots to move. About 90 minutes; split if the pinning path is involved.
 
 - [ ] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
       sources.** Queued 2026-11-07 as the item after the store description:
@@ -8193,6 +8224,42 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — the band window slides inside the pack.** Five things a later
+run would be sorry not to know:
+
+1. **The item's numbers already showed its remedy failing.** It measured B2
+   at 2 eligible words on the README and still proposed giving C1 and C2
+   B2's window. A budget is `round(ratio × eligible)` per text node, so 2
+   eligible across a page's paragraphs weaves nothing even at 35%. Before
+   building a queued remedy, run it through the arithmetic the item itself
+   printed.
+2. **What changed for a six-band pack, which none ships.** The rule is one
+   band either side of the level, slid down to end at the top band, so at top
+   band 6 C2's window is bands 4 to 6 where it was 5 and 6. No pack has
+   bands 5 or 6; if one ever does, `bandWindow(6, 6)` is pinned in
+   `tests/core/selector.test.ts` and says why.
+3. **Raising the level still makes the page sparser at once, and that is a
+   call, not a defect.** The lock judges a higher level harder and applies
+   it immediately, and above A2 the window drops band 1, where most of a
+   page's known words are: at 35% the README weaves 52 words at A1 and 11
+   at B1 to C2. Rarer words, fewer of them. Before this change C2 wove none,
+   which made Your level a way to switch Weft off with no cooldown; now it is
+   a quarter. Whether level should narrow what is eligible or only rank it
+   is Creagh's.
+4. **B1, B2, C1 and C2 now share one window on every shipped pack**, bands 2
+   to 4, and differ only in which words come first. The Your level row says
+   it "sets which difficulty band of words you meet"; whether it should say
+   the dictionary runs out above B1, or whether C1 and C2 should mean more
+   than its rarest words, is the call the item left open, and nothing here
+   decided it. Band fit still scores against the raw level, so at C2 bands 2
+   and 3 both score 0 on it and only frequency orders them; clamping the
+   level in `scoreCandidate` too would grade them, and was left alone.
+5. **Measure with the selector the way the content script calls it**: once
+   per paragraph, not once per page. Whole-page, the README at B2 wove one
+   word and looked fixed; per paragraph it wove none. The scratch script
+   was `/tmp/weft-band/measure.ts`, deleted; it split at blank lines and
+   summed `selectSwaps()` over the parts.
 
 **2026-11-08 — a density is a share of the words Weft knows.** Five things a
 later run would be sorry not to know:

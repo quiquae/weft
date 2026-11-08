@@ -1,6 +1,6 @@
 import { useMemo } from 'preact/hooks';
 import type { LexPack, Settings } from '../../core/types.ts';
-import { selectSwaps } from '../../core/selector.ts';
+import { selectSwaps, topBandOf } from '../../core/selector.ts';
 import { tokenize } from '../../core/tokenize.ts';
 import { hashString } from '../../core/rand.ts';
 import { applyLetterforms } from '../../core/letterforms.ts';
@@ -57,6 +57,7 @@ export function Preview({
       ratio,
       settings,
       effectiveLevel: settings.learning.level,
+      topBand: topBandOf(pack.meta),
       introducedToday: new Set(),
       pageLemmaCounts: new Map(),
       seed: hashString(SAMPLE),
