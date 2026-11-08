@@ -9,6 +9,20 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**A page of short paragraphs weaves its share, and keeps weaving as you
+read.** Weft decides how many words to weave one paragraph at a time, and it
+rounded each paragraph's share to the nearest word, so at the default resting
+density a paragraph needed nine words Weft knows before it wove one: this
+project's README, read with French, wove 2 of its 161 known words at rest,
+where the popup's "1 word in 17" promises about 10. Each paragraph now rounds
+up or down by a draw of its own, always the same for the same text, so a page
+weaves its share. And as attention raised the density, Weft revisited only
+the paragraphs that had already woven a word, so the rest stayed in English
+however long you read — the same README, loaded at rest and read up to the
+ceiling, ended at 8 words of the 56 promised, and with the resting density set
+to 0 a page never wove at all. Every paragraph is revisited now, and the same
+README ends at 55.
+
 **B2, C1 and C2 weave now.** Your level, on the settings page, offers A1
 to C2, and each level admits words from a band of difficulty around it. Every
 language's dictionary stops at about B2, and above that the band ran past it:
@@ -954,8 +968,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1464 tests: 671 unit, 119 in jsdom, 626 over the build tools, and
-48 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1468 tests: 674 unit, 119 in jsdom, 626 over the build tools, and
+49 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface
