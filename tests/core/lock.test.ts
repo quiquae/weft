@@ -81,6 +81,98 @@ describe('assessPatch', () => {
   });
 });
 
+/**
+ * Every control that makes Weft easier waits, as seven pages promise.
+ *
+ * Until 2026-11-08 `assessPatch` judged only the paths `GOVERNED_PATHS`
+ * named, and a rule list by its length and enabled count, so nine controls
+ * that make Weft easier read `neutral` and `requestChange` applied them at
+ * once: a taxed rule's escalation switch and its base and ceiling sliders,
+ * edited in place; "Recovery while you are away"; "If stored settings are
+ * edited"; the sites mode; the quiz's word count and pass mark; and the parts
+ * of speech woven. Each case below names its own direction both ways, so a
+ * fix that read everything as easier fails too.
+ */
+describe('every control that makes Weft easier waits', () => {
+  const rule = { pattern: 'reddit.com', enabled: true, escalate: true, origin: 'user' as const };
+  const taxed = (over: Record<string, unknown>) => ({ 'sites.taxed': [{ ...rule, ...over }] });
+  const base = () => settings({ 'sites.taxed': [rule] });
+  const dir = (s: ReturnType<typeof settings>, patch: Record<string, unknown>) =>
+    assessPatch(s, patch).direction;
+
+  test("a taxed rule's escalation switched off in place is easier, and back on harder", () => {
+    assert.equal(dir(base(), taxed({ escalate: false })), 'easier');
+    assert.equal(dir(settings({ 'sites.taxed': [{ ...rule, escalate: false }] }), taxed({ escalate: true })), 'harder');
+  });
+
+  test("a taxed rule's own ceiling or base lowered in place is easier, raised harder", () => {
+    assert.equal(dir(base(), taxed({ ceilingRatio: 0.06 })), 'easier');
+    assert.equal(dir(base(), taxed({ ceilingRatio: 0.6 })), 'harder');
+    assert.equal(dir(base(), taxed({ baseRatio: 0 })), 'easier');
+    assert.equal(dir(base(), taxed({ baseRatio: 0.2 })), 'harder');
+    // An override equal to the setting it replaces changes nothing.
+    assert.equal(dir(base(), taxed({ ceilingRatio: base().weave.ceilingRatio })), 'neutral');
+  });
+
+  test("a gentle rule's dose lowered in place is easier", () => {
+    const g = { pattern: 'wikipedia.org', enabled: true, escalate: false, origin: 'user' as const };
+    const s = settings({ 'sites.gentle': [g] });
+    assert.equal(dir(s, { 'sites.gentle': [{ ...g, baseRatio: 0.01 }] }), 'easier');
+    assert.equal(dir(s, { 'sites.gentle': [{ ...g, baseRatio: 0.2 }] }), 'harder');
+  });
+
+  test('reordering rules is neutral, and a patch with one rule easier is easier', () => {
+    const other = { pattern: 'x.com', enabled: true, escalate: true, origin: 'user' as const };
+    const s = settings({ 'sites.taxed': [rule, other] });
+    assert.equal(dir(s, { 'sites.taxed': [other, rule] }), 'neutral');
+    assert.equal(dir(s, { 'sites.taxed': [{ ...rule, ceilingRatio: 0.9 }, { ...other, escalate: false }] }), 'easier');
+  });
+
+  test('faster recovery while you are away is easier, slower harder', () => {
+    assert.equal(dir(settings(), { 'attention.decayPerHourAway': 1 }), 'easier');
+    assert.equal(dir(settings(), { 'attention.decayPerHourAway': 0.1 }), 'harder');
+  });
+
+  test('just noting tampering is easier than pinning the ceiling, and back is harder', () => {
+    assert.equal(dir(settings(), { 'friction.tamperResponse': 'ignore' }), 'easier');
+    assert.equal(dir(settings({ 'friction.tamperResponse': 'ignore' }), { 'friction.tamperResponse': 'escalate' }), 'harder');
+  });
+
+  test('weaving only my list is easier than everywhere except, and back is harder', () => {
+    const everywhere = settings({ 'sites.mode': 'everywhere-except' });
+    assert.equal(dir(everywhere, { 'sites.mode': 'taxed-only' }), 'easier');
+    assert.equal(dir(settings({ 'sites.mode': 'taxed-only' }), { 'sites.mode': 'everywhere-except' }), 'harder');
+  });
+
+  test('a shorter quiz or a lower pass mark is easier', () => {
+    assert.equal(dir(settings(), { 'friction.quizWordCount': 1 }), 'easier');
+    assert.equal(dir(settings(), { 'friction.quizWordCount': 12 }), 'harder');
+    assert.equal(dir(settings(), { 'friction.quizPassThreshold': 0.1 }), 'easier');
+    assert.equal(dir(settings(), { 'friction.quizPassThreshold': 0.95 }), 'harder');
+  });
+
+  test('weaving fewer parts of speech is easier, more harder, a reorder neutral', () => {
+    const pos = settings().learning.posPreference;
+    assert.ok(pos.length >= 2, 'the default weaves more than one part of speech');
+    assert.equal(dir(settings(), { 'learning.posPreference': pos.slice(0, 1) }), 'easier');
+    assert.equal(dir(settings({ 'learning.posPreference': pos.slice(0, 1) }), { 'learning.posPreference': pos }), 'harder');
+    assert.equal(dir(settings(), { 'learning.posPreference': [...pos].reverse() }), 'neutral');
+  });
+
+  test('requestChange queues them rather than applying them', () => {
+    const s = settings({ 'sites.taxed': [rule], 'friction.cooldownMinutes': 15 });
+    for (const patch of [
+      taxed({ ceilingRatio: 0.06 }),
+      { 'attention.decayPerHourAway': 1 },
+      { 'friction.tamperResponse': 'ignore' },
+    ]) {
+      const res = requestChange(emptyLockState(NOW), s, patch, NOW, ids);
+      assert.equal(res.applied, false, `${Object.keys(patch)[0]} applied at once`);
+      assert.equal(res.state.pending.length, 1);
+    }
+  });
+});
+
 describe('requestChange', () => {
   test('harder changes apply immediately', () => {
     const s = settings();

@@ -1,4 +1,4 @@
-import type { PanicState, PendingChange, PendingChangeKind, Settings } from './types.ts';
+import type { PanicState, PendingChange, PendingChangeKind, Settings, SiteRule } from './types.ts';
 import { applyPatch, diffPaths, getPath, patchKey, setPath, type Patch } from './patch.ts';
 import { dayKey } from './escalation.ts';
 
@@ -27,8 +27,14 @@ import { dayKey } from './escalation.ts';
 export const GOVERNED_PATHS: ReadonlyArray<{
   path: string;
   kind: PendingChangeKind;
-  /** direction that makes the page easier */
-  easier: 'lower' | 'higher' | 'false' | 'true' | 'shorter-list' | 'longer-list';
+  /**
+   * Direction that makes the page easier. `rules` judges a site list rule by
+   * rule, by pattern, so a rule edited in place to weave less is easier;
+   * `value` names the one setting of a choice that is the easier end.
+   */
+  easier: 'lower' | 'higher' | 'false' | 'true' | 'shorter-list' | 'longer-list' | 'rules' | 'value';
+  /** For `easier: 'value'`, the choice that makes Weft easier. */
+  value?: string;
   label: string;
 }> = /* @__PURE__ */ Object.freeze([
   { path: 'weave.baseRatio', kind: 'reduce-difficulty', easier: 'lower', label: 'starting density' },
@@ -39,14 +45,20 @@ export const GOVERNED_PATHS: ReadonlyArray<{
   { path: 'attention.enabled', kind: 'disable-all', easier: 'false', label: 'the attention tax' },
   { path: 'attention.gainPerMinute', kind: 'reduce-difficulty', easier: 'lower', label: 'how fast difficulty climbs' },
   { path: 'attention.dailyCapMinutes', kind: 'reduce-difficulty', easier: 'lower', label: 'daily attention cap' },
+  { path: 'attention.decayPerHourAway', kind: 'reduce-difficulty', easier: 'higher', label: 'recovery while you are away' },
   { path: 'learning.level', kind: 'reduce-difficulty', easier: 'lower', label: 'your level' },
   { path: 'learning.minConfidence', kind: 'reduce-difficulty', easier: 'higher', label: 'confidence threshold' },
   { path: 'learning.introduceNewPerDay', kind: 'reduce-difficulty', easier: 'lower', label: 'new words per day' },
-  { path: 'sites.taxed', kind: 'disable-site', easier: 'shorter-list', label: 'the taxed site list' },
-  { path: 'sites.gentle', kind: 'disable-site', easier: 'shorter-list', label: 'the gentle site list' },
+  { path: 'learning.posPreference', kind: 'reduce-difficulty', easier: 'shorter-list', label: 'parts of speech woven' },
+  { path: 'sites.mode', kind: 'disable-site', easier: 'value', value: 'taxed-only', label: 'where Weft weaves' },
+  { path: 'sites.taxed', kind: 'disable-site', easier: 'rules', label: 'the taxed site list' },
+  { path: 'sites.gentle', kind: 'disable-site', easier: 'rules', label: 'the gentle site list' },
   { path: 'sites.excluded', kind: 'disable-site', easier: 'longer-list', label: 'the never-weave list' },
   { path: 'friction.cooldownMinutes', kind: 'reduce-friction', easier: 'lower', label: 'the cooldown itself' },
   { path: 'friction.requireQuizToUnlock', kind: 'reduce-friction', easier: 'false', label: 'the unlock quiz' },
+  { path: 'friction.quizWordCount', kind: 'reduce-friction', easier: 'lower', label: 'quiz length' },
+  { path: 'friction.quizPassThreshold', kind: 'reduce-friction', easier: 'lower', label: 'quiz pass mark' },
+  { path: 'friction.tamperResponse', kind: 'reduce-friction', easier: 'value', value: 'ignore', label: 'what editing stored settings costs' },
   { path: 'friction.panicPassesPerDay', kind: 'reduce-friction', easier: 'higher', label: 'daily panic passes' },
   { path: 'friction.panicMinutes', kind: 'reduce-friction', easier: 'higher', label: 'panic pass length' },
   { path: 'friction.hardMode', kind: 'reduce-friction', easier: 'false', label: 'hard mode' },
@@ -55,8 +67,14 @@ export const GOVERNED_PATHS: ReadonlyArray<{
 
 export type Direction = 'easier' | 'harder' | 'neutral';
 
-/** Which way a single path change moves difficulty. */
-export function directionOf(path: string, from: unknown, to: unknown): Direction {
+/**
+ * Which way a single path change moves difficulty.
+ *
+ * `current`, when given, supplies the settings a site rule's own ratios fall
+ * back to, so an override is judged against what it replaces. `assessPatch`
+ * always gives it.
+ */
+export function directionOf(path: string, from: unknown, to: unknown, current?: Settings): Direction {
   const rule = GOVERNED_PATHS.find((g) => g.path === path);
   if (!rule) return 'neutral';
   if (JSON.stringify(from) === JSON.stringify(to)) return 'neutral';
@@ -95,9 +113,62 @@ export function directionOf(path: string, from: unknown, to: unknown): Direction
       const b = Array.isArray(to) ? to.length : 0;
       return b > a ? 'easier' : b < a ? 'harder' : 'neutral';
     }
+    case 'rules':
+      return ruleListDirection(from, to, path === 'sites.taxed', current);
+    case 'value':
+      return to === rule.value ? 'easier' : from === rule.value ? 'harder' : 'neutral';
     default:
       return 'neutral';
   }
+}
+
+/**
+ * A site list judged rule by rule, by pattern.
+ *
+ * Until 2026-11-08 a list was judged by its length and how many rules were
+ * on, so a rule edited in place — its escalation switched off, its own
+ * ceiling or base dragged down on the settings page — read neutral and
+ * applied at once. A rule taken off, or switched off, is easier; one added or
+ * switched on is harder; a rule on before and after is easier when it weaves
+ * less, by its own ratios against the settings they replace, and on a taxed
+ * list when it stops escalating. Any easier rule makes the list easier, as
+ * any easier path makes a patch easier.
+ */
+function ruleListDirection(from: unknown, to: unknown, taxed: boolean, current?: Settings): Direction {
+  const rules = (v: unknown): Map<string, SiteRule> =>
+    new Map(
+      (Array.isArray(v) ? v : [])
+        .filter((r): r is SiteRule => !!r && typeof r === 'object' && typeof (r as SiteRule).pattern === 'string')
+        .map((r) => [r.pattern, r]),
+    );
+  const before = rules(from);
+  const after = rules(to);
+  let easier = false;
+  let harder = false;
+  const compare = (a: number | undefined, b: number | undefined): void => {
+    if (a === undefined || b === undefined) return;
+    if (b < a) easier = true;
+    else if (b > a) harder = true;
+  };
+
+  for (const pattern of before.keys()) if (!after.has(pattern)) easier = true;
+  for (const pattern of after.keys()) if (!before.has(pattern)) harder = true;
+  for (const [pattern, a] of before) {
+    const b = after.get(pattern);
+    if (!b) continue;
+    const wasOn = a.enabled !== false;
+    const isOn = b.enabled !== false;
+    if (wasOn && !isOn) easier = true;
+    if (!wasOn && isOn) harder = true;
+    if (!wasOn || !isOn) continue;
+    compare(a.baseRatio ?? current?.weave.baseRatio, b.baseRatio ?? current?.weave.baseRatio);
+    if (taxed) {
+      if (a.escalate && !b.escalate) easier = true;
+      if (!a.escalate && b.escalate) harder = true;
+      compare(a.ceilingRatio ?? current?.weave.ceilingRatio, b.ceilingRatio ?? current?.weave.ceilingRatio);
+    }
+  }
+  return easier ? 'easier' : harder ? 'harder' : 'neutral';
 }
 
 function countEnabled(v: unknown): number {
@@ -124,7 +195,7 @@ export function assessPatch(current: Settings, patch: Patch): ChangeAssessment {
   for (const path of paths) {
     const from = getPath(current, path);
     const to = patch[path];
-    const d = directionOf(path, from, to);
+    const d = directionOf(path, from, to, current);
     const rule = GOVERNED_PATHS.find((g) => g.path === path);
 
     if (rule) {
