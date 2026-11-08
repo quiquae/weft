@@ -3,6 +3,7 @@ import type {
   LangCode,
   LexEntry,
   MemoryCard,
+  PackMeta,
   Pos,
   Settings,
   Swap,
@@ -42,10 +43,17 @@ export interface SelectorInput {
   ratio: number;
   settings: Settings;
   /**
-   * Level after progression, 1..6. Higher levels widen the band window and
-   * shift preference towards less common words.
+   * Level after progression, 1..6. A higher level moves the band window up,
+   * as far as the pack's top band, and shifts preference towards less common
+   * words.
    */
   effectiveLevel: number;
+  /**
+   * The highest band the loaded pack has, `topBandOf(pack.meta)`. The band
+   * window slides down to end here rather than run past every band the pack
+   * has. Required, so a caller cannot forget it.
+   */
+  topBand: number;
   /** Lemmas already introduced today, used for the daily new-word budget. */
   introducedToday: Set<string>;
   /** Occurrences of each lemma already woven on this page. */
@@ -88,15 +96,39 @@ export interface SelectionResult {
 /* -------------------------------------------------------------- band window */
 
 /**
- * Which difficulty bands a learner at `level` may be shown.
+ * Which difficulty bands a learner at `level` may be shown, from a pack whose
+ * highest band is `topBand`.
  *
- * The window is asymmetric on purpose: one band below (consolidation) and one
- * above (stretch). Krashen's i+1 in list form. Widening it further produces
- * pages that mix A1 and C2 vocabulary, which reads as noise.
+ * One band below the level (consolidation) and one above (stretch): Krashen's
+ * i+1 in list form. Widening it further produces pages that mix A1 and C2
+ * vocabulary, which reads as noise. At A1 there is no band below, so the
+ * window is two bands.
+ *
+ * And it never runs past the pack's top band. Where it would, it slides down
+ * to end there, still three bands wide, so a level above everything a pack
+ * has meets the rarest words it has, put first by `idealZipf` and band fit,
+ * rather than none. Every pack shipped tops out at band 4, and until
+ * 2026-11-08 C2's window, bands 5 and 6, held no word of any pack, C1's 4
+ * lemmas of 356 and B2's 23, and all three wove nothing on ordinary prose even
+ * at the ceiling. It slides only downwards: sliding up at A1 would hand a
+ * beginner words above their level, the failure that makes people uninstall,
+ * where sliding down hands an advanced reader easier ones, which only
+ * stretches them less.
  */
-export function bandWindow(level: number): { min: number; max: number } {
+export function bandWindow(level: number, topBand: number): { min: number; max: number } {
   const l = Math.max(1, Math.min(6, Math.round(level)));
-  return { min: Math.max(1, l - 1), max: Math.min(6, l + 1) };
+  const top = Math.max(1, Math.min(6, Math.round(topBand)));
+  const max = Math.min(l + 1, top);
+  return { min: Math.max(1, Math.min(l - 1, max - 2)), max };
+}
+
+/**
+ * The highest band a pack has, which the band window may not run past. A pack
+ * that names no band restricts nothing.
+ */
+export function topBandOf(meta: Pick<PackMeta, 'bands'>): number {
+  if (!meta.bands.length) return 6;
+  return Math.max(1, Math.min(6, Math.max(...meta.bands)));
 }
 
 /** Zipf frequency a learner at this level should mostly be meeting. */
@@ -227,7 +259,7 @@ export function entryAllowed(entry: LexEntry, input: SelectorInput): FilterReaso
   if (entry.senses > s.maxSenses) return { ok: false, why: 'ambiguous' };
   if (entry.pos === 'phrase' && !s.phrasesEnabled) return { ok: false, why: 'phrases-off' };
 
-  const { min, max } = bandWindow(input.effectiveLevel);
+  const { min, max } = bandWindow(input.effectiveLevel, input.topBand);
   if (entry.band < min || entry.band > max) return { ok: false, why: 'band' };
 
   // Function words are excluded unless the learner explicitly asked for them:

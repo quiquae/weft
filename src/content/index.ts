@@ -1,5 +1,5 @@
 import type { Grade, LexEntry, LexPack, MemoryCard, Settings } from '../core/types.ts';
-import { selectSwaps } from '../core/selector.ts';
+import { selectSwaps, topBandOf } from '../core/selector.ts';
 import { looksLikeJunk, tokenize, wordTokens } from '../core/tokenize.ts';
 import { hashString } from '../core/rand.ts';
 import { guessPos, sentenceOf } from '../core/pos-guess.ts';
@@ -257,6 +257,7 @@ class WeftPage {
       ratio: this.ratio,
       settings: this.state.settings,
       effectiveLevel: this.state.effectiveLevel,
+      topBand: topBandOf(this.pack.meta),
       introducedToday: this.introducedToday,
       pageLemmaCounts: this.pageLemmaCounts,
       // Seeded from the text itself, so the same paragraph always weaves the

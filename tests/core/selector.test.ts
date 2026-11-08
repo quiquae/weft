@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { selectSwaps, bandWindow, idealZipf, effectiveLevel, entryAllowed } from '../../src/core/selector.ts';
+import { selectSwaps, bandWindow, idealZipf, effectiveLevel, entryAllowed, topBandOf } from '../../src/core/selector.ts';
 import type { SelectorInput } from '../../src/core/selector.ts';
 import { tokenize } from '../../src/core/tokenize.ts';
 import { settings, entry, lookupFrom, card, cardMap, NOW } from '../helpers.ts';
@@ -56,6 +56,7 @@ function baseInput(over: Partial<SelectorInput> = {}): SelectorInput {
     ratio: 0.5,
     settings: settings({ 'learning.introduceNewPerDay': 500 }),
     effectiveLevel: 1,
+    topBand: 6,
     introducedToday: new Set<string>(),
     pageLemmaCounts: new Map(),
     seed: 12345,
@@ -317,12 +318,11 @@ describe('case preservation', () => {
 });
 
 describe('band window and level helpers', () => {
-  test('bandWindow is i+1 around the level, clamped to 1..6', () => {
-    assert.deepEqual(bandWindow(1), { min: 1, max: 2 });
-    assert.deepEqual(bandWindow(3), { min: 2, max: 4 });
-    assert.deepEqual(bandWindow(6), { min: 5, max: 6 });
-    assert.deepEqual(bandWindow(99), { min: 5, max: 6 });
-    assert.deepEqual(bandWindow(-4), { min: 1, max: 2 });
+  test('inside a pack of six bands, bandWindow is i+1 around the level', () => {
+    assert.deepEqual(bandWindow(1, 6), { min: 1, max: 2 });
+    assert.deepEqual(bandWindow(3, 6), { min: 2, max: 4 });
+    assert.deepEqual(bandWindow(5, 6), { min: 4, max: 6 });
+    assert.deepEqual(bandWindow(-4, 6), { min: 1, max: 2 });
   });
 
   test('idealZipf falls as the level rises', () => {
@@ -338,6 +338,67 @@ describe('band window and level helpers', () => {
     assert.equal(effectiveLevel(1, 200), 2);
     assert.equal(effectiveLevel(1, 2000), 6);
     assert.equal(effectiveLevel(6, 2000), 6);
+  });
+});
+
+describe('the band window stays inside the bands a pack has', () => {
+  // Every shipped pack tops out at band 4, and until 2026-11-08 the window
+  // slid past it: C2 looked for bands 5 and 6, which no pack has, C1 for
+  // band 4 and above, 4 lemmas of 356, and B2 for bands 3 to 5, 23 of them.
+  test('past the top band it slides down to end there, three bands wide', () => {
+    assert.deepEqual(bandWindow(4, 4), { min: 2, max: 4 });
+    assert.deepEqual(bandWindow(5, 4), { min: 2, max: 4 });
+    assert.deepEqual(bandWindow(6, 4), { min: 2, max: 4 });
+    assert.deepEqual(bandWindow(99, 4), { min: 2, max: 4 });
+    assert.deepEqual(bandWindow(6, 6), { min: 4, max: 6 });
+  });
+
+  test('for every level and top band: inside the pack, as high as it may reach, as wide as the pack allows', () => {
+    for (let top = 1; top <= 6; top++) {
+      for (let level = 1; level <= 6; level++) {
+        const { min, max } = bandWindow(level, top);
+        const at = `level ${level} on a pack whose top band is ${top} gets [${min}, ${max}]`;
+        assert.ok(1 <= min && min <= max && max <= top, `${at}, outside the pack's bands`);
+        assert.equal(max, Math.min(level + 1, top), `${at}, short of the highest band it may reach`);
+        // At A1 there is no band below, so the window is two bands; it never
+        // slides up, which would hand a beginner words above their level.
+        assert.equal(max - min + 1, Math.min(level === 1 ? 2 : 3, top), `${at}, narrower than the pack allows`);
+        if (level + 1 <= top) {
+          assert.deepEqual({ min, max }, { min: Math.max(1, level - 1), max: level + 1 }, `${at}, though i+1 fits`);
+        }
+      }
+    }
+  });
+
+  test('topBandOf reads the highest band a pack has', () => {
+    assert.equal(topBandOf({ bands: [1, 2, 3, 4] }), 4);
+    assert.equal(topBandOf({ bands: [3, 1] }), 3);
+    assert.equal(topBandOf({ bands: [9] }), 6);
+    // A pack that names no band restricts nothing.
+    assert.equal(topBandOf({ bands: [] }), 6);
+  });
+
+  test('a level above every band a pack has still weaves', () => {
+    // PACK holds bands 1 and 2, as the shipped packs hold 1 to 4.
+    const top = topBandOf({ bands: [...new Set(PACK.map((e) => e.band))] });
+    assert.equal(top, 2);
+    for (const level of [3, 4, 5, 6]) {
+      const r = selectSwaps(baseInput({ ratio: 1, effectiveLevel: level, topBand: top }));
+      assert.ok(r.eligible > 0, `level ${level} found no eligible word in a pack whose top band is ${top}`);
+      assert.ok(r.swaps.length > 0, `level ${level} wove nothing from a pack whose top band is ${top}`);
+    }
+  });
+
+  test('a higher level puts the rarer words first', () => {
+    const mean = (r: ReturnType<typeof selectSwaps>) =>
+      r.swaps.reduce((sum, s) => sum + s.entry.zipf, 0) / r.swaps.length;
+    const low = selectSwaps(baseInput({ ratio: 0.3, effectiveLevel: 1, topBand: 2 }));
+    const high = selectSwaps(baseInput({ ratio: 0.3, effectiveLevel: 6, topBand: 2 }));
+    assert.ok(low.swaps.length > 0 && high.swaps.length > 0, 'both levels must weave for the comparison to mean anything');
+    assert.ok(
+      mean(high) < mean(low),
+      `level 6 wove words of mean Zipf ${mean(high).toFixed(2)}, no rarer than level 1's ${mean(low).toFixed(2)}`,
+    );
   });
 });
 
