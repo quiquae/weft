@@ -257,6 +257,82 @@ describe('finishing the first-run page', () => {
   });
 });
 
+/*
+ * A queued list change was applied whole when its cooldown ended, so a list
+ * changed at once while it waited was overwritten: a site added to the taxed
+ * list during the cooldown of a removal was dropped when the removal landed,
+ * and an entry taken off the never-weave list came back with a queued
+ * addition. A change carries the lists it was judged against now, and lands
+ * as a merge onto the list as it is.
+ */
+describe('a queued list change lands on the list as it is now', () => {
+  const rule = (pattern: string, over: Record<string, unknown> = {}) => ({
+    pattern,
+    enabled: true,
+    escalate: true,
+    origin: 'user' as const,
+    ...over,
+  });
+  const later = NOW + 16 * MIN;
+  const queue = (s: ReturnType<typeof settings>, patch: Record<string, unknown>) => {
+    const res = requestChange(emptyLockState(NOW), s, patch, NOW, ids);
+    assert.equal(res.applied, false, 'the change was meant to queue');
+    return res.state;
+  };
+  const now = (s: ReturnType<typeof settings>, patch: Record<string, unknown>) => {
+    const res = requestChange(emptyLockState(NOW), s, patch, NOW + MIN, ids);
+    assert.equal(res.applied, true, 'the change was meant to apply at once');
+    return res.settings;
+  };
+
+  test('a site added during the cooldown survives the removal it waited beside', () => {
+    const s = settings({ 'sites.taxed': [rule('a.example'), rule('b.example')] });
+    const state = queue(s, { 'sites.taxed': [rule('a.example')] });
+    const added = now(s, { 'sites.taxed': [rule('a.example'), rule('b.example'), rule('d.example')] });
+    const landed = applyReadyChanges(state, added, later).settings;
+    assert.deepEqual(landed.sites.taxed.map((r) => r.pattern), ['a.example', 'd.example']);
+  });
+
+  test('an edit in place lands, and a rule the change left alone keeps a later edit', () => {
+    const s = settings({ 'sites.taxed': [rule('a.example'), rule('b.example')] });
+    const state = queue(s, { 'sites.taxed': [rule('a.example', { escalate: false }), rule('b.example')] });
+    const raised = now(s, { 'sites.taxed': [rule('a.example'), rule('b.example', { ceilingRatio: 0.9 })] });
+    const landed = applyReadyChanges(state, raised, later).settings;
+    assert.equal(landed.sites.taxed.find((r) => r.pattern === 'a.example')?.escalate, false);
+    assert.equal(landed.sites.taxed.find((r) => r.pattern === 'b.example')?.ceilingRatio, 0.9);
+  });
+
+  test('a rule the change left alone is still alone when its keys come in another order', () => {
+    const s = settings({ 'sites.taxed': [rule('a.example'), rule('b.example')] });
+    const b = s.sites.taxed[1];
+    assert.ok(b, 'no second rule');
+    const reordered = Object.fromEntries(Object.entries(b).reverse());
+    const state = queue(s, { 'sites.taxed': [rule('a.example', { escalate: false }), reordered] });
+    const raised = now(s, { 'sites.taxed': [rule('a.example'), rule('b.example', { ceilingRatio: 0.9 })] });
+    const landed = applyReadyChanges(state, raised, later).settings;
+    assert.equal(landed.sites.taxed.find((r) => r.pattern === 'b.example')?.ceilingRatio, 0.9);
+  });
+
+  test('an entry taken off the never-weave list stays off when a queued addition lands', () => {
+    const s = settings({ 'sites.excluded': ['x.example', 'y.example'] });
+    const state = queue(s, { 'sites.excluded': ['x.example', 'y.example', 'z.example'] });
+    const removed = now(s, { 'sites.excluded': ['x.example'] });
+    const landed = applyReadyChanges(state, removed, later).settings;
+    assert.deepEqual(landed.sites.excluded, ['x.example', 'z.example']);
+  });
+
+  test('a change queued before it carried its lists applies whole, as it did', () => {
+    const s = settings({ 'sites.taxed': [rule('a.example'), rule('b.example')] });
+    const state = queue(s, { 'sites.taxed': [rule('a.example')] });
+    const [change] = state.pending;
+    assert.ok(change, 'nothing was queued');
+    const { base: _base, ...old } = change;
+    const added = now(s, { 'sites.taxed': [rule('a.example'), rule('b.example'), rule('d.example')] });
+    const landed = applyReadyChanges({ ...state, pending: [old] }, added, later).settings;
+    assert.deepEqual(landed.sites.taxed.map((r) => r.pattern), ['a.example']);
+  });
+});
+
 describe('requestChange', () => {
   test('harder changes apply immediately', () => {
     const s = settings();

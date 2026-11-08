@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **661 pass**, 153 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **666 pass**, 154 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **608 pass**, 157 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **48 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1001 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1002 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -237,8 +237,12 @@ is on screen stays, and rising difficulty only appends. Function words are
 never woven — replacing "the", "of", "and" destroys the scaffolding the reader
 is decoding with, for almost no vocabulary.
 
-**Cooldowns are stored, not scheduled.** Closing the browser neither cancels
-nor restarts one, and re-requesting the same change does not move it.
+**Cooldowns are stored, not scheduled, and a list lands as a merge.** A
+queued change carries each list it changes as it stood when it was judged
+(`PendingChange.base`), and `applyReadyChanges` lands it as a three-way
+merge onto the list as it is: until 2026-11-08 it landed whole, so a site
+added at once while a removal waited was dropped. Closing the browser neither
+cancels nor restarts one, and re-requesting the same change does not move it.
 Cancelling a queued change is instant and free: friction on the way *out* of a
 commitment would be coercion. Anything that makes Weft harder applies at once.
 
@@ -1050,6 +1054,58 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — a change that waits lands on the list as it is
+
+The same run's third PR, the item's third and last part, taken with an hour
+left. `applyReadyChanges()` applied a queued list whole, so a list changed at
+once while the change waited was overwritten, and on four lists: on the
+taxed and gentle lists and the parts of speech a removal queues and an
+addition lands at once, so the addition was dropped; on the never-weave list
+an addition queues and a removal lands, so the removed entry came back.
+
+**A merge needs the list as it stood, and nothing kept it.** With the patch
+and the list as it is, an entry missing from the patch is one the change
+removed or one added since, and nothing can tell which. `requestChange()`
+now stores each list in a queued patch as it was judged
+(`PendingChange.base`), and `landingPatch()` lands the change as a three-way
+merge: what it set lands, what it removed goes, what it never touched keeps
+whatever was done to it since, the current order holding and the change's
+additions after. Rules are keyed by `pattern` and strings by value, entries
+compared by content whatever their key order, and a list with a key twice
+lands whole. A change queued before carries no `base` and lands whole, as
+it did. The lock record is sealed and opened whole, so the field needed no
+validator; an import's deferred half and a second first-run finish queue
+through `requestChange` and carry one too.
+
+Test-first: 5 tests in a new suite of `tests/core/lock.test.ts`, red on
+exactly the three defect cases, the no-`base` guard passing; the key-order
+test was shown to fail with a plain `JSON.stringify` comparison, restored by
+md5. `docs/PRIVACY.md`'s Pending changes row says a change carries its list.
+All 31 shots regenerated, every one byte-identical, three groups stamped.
+Unit 661 → **666** / 153 → **154** suites, total 1436 → **1441**, in six
+places, and a `CHANGELOG.md` paragraph. **The packages print 1002 KB**: 947
+bytes, all of them `background.js`, Chrome's 1001.023 → 1001.948 KB against
+`main`'s built in a `/tmp` worktree.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, **666 unit / 154**, 119 jsdom / 26, 608 tools / 157, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1002 KB × 3**
+passing `validate`, **48 e2e passed and 3 skipped in 6.1 min**, then build
+and validate again. Only documents moved after it, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a user's later edit to a rule the change
+never touched should survive it, the later decision standing; that an entry
+the change edited and the user removed since stays removed; and that the
+change's additions go after the current list rather than where the patch
+put them, order among rules changing nothing but which matches first.
+
+What needs a human: unchanged, everything below **B1** and the calls. `Now`
+holds two agent-shaped items: the density's share on the settings page and
+the popup, and `docs/PEDAGOGY.md` read claim by claim.
 
 ### 2026-11-08 — every path a page writes is classed, and the first reading found two more
 
