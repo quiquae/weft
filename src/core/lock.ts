@@ -42,6 +42,16 @@ export const GOVERNED_PATHS: ReadonlyArray<{
   { path: 'weave.maxPerSentence', kind: 'reduce-difficulty', easier: 'lower', label: 'words per sentence' },
   { path: 'weave.minWordGap', kind: 'reduce-difficulty', easier: 'higher', label: 'spacing between woven words' },
   { path: 'weave.protectShortSentences', kind: 'reduce-difficulty', easier: 'higher', label: 'short-sentence protection' },
+  // Each "Keep …" switch on the Letterforms row, whose own copy calls
+  // orthography "a difficulty axis of its own": off writes þ as th and drops
+  // the macrons, which reads far easier. Ungoverned until 2026-11-08.
+  { path: 'weave.letterforms.macrons', kind: 'reduce-difficulty', easier: 'false', label: 'macrons' },
+  { path: 'weave.letterforms.thorn', kind: 'reduce-difficulty', easier: 'false', label: 'the letter þ' },
+  { path: 'weave.letterforms.eth', kind: 'reduce-difficulty', easier: 'false', label: 'the letter ð' },
+  { path: 'weave.letterforms.ash', kind: 'reduce-difficulty', easier: 'false', label: 'the letter æ' },
+  { path: 'weave.letterforms.wynn', kind: 'reduce-difficulty', easier: 'false', label: 'the letter ƿ' },
+  { path: 'weave.letterforms.yogh', kind: 'reduce-difficulty', easier: 'false', label: 'the letter ȝ' },
+  { path: 'weave.letterforms.longS', kind: 'reduce-difficulty', easier: 'false', label: 'the long s' },
   { path: 'attention.enabled', kind: 'disable-all', easier: 'false', label: 'the attention tax' },
   { path: 'attention.gainPerMinute', kind: 'reduce-difficulty', easier: 'lower', label: 'how fast difficulty climbs' },
   { path: 'attention.dailyCapMinutes', kind: 'reduce-difficulty', easier: 'lower', label: 'daily attention cap' },
@@ -50,6 +60,9 @@ export const GOVERNED_PATHS: ReadonlyArray<{
   { path: 'learning.minConfidence', kind: 'reduce-difficulty', easier: 'higher', label: 'confidence threshold' },
   { path: 'learning.introduceNewPerDay', kind: 'reduce-difficulty', easier: 'lower', label: 'new words per day' },
   { path: 'learning.posPreference', kind: 'reduce-difficulty', easier: 'shorter-list', label: 'parts of speech woven' },
+  // On, a retired word is woven outside the budget; off, it spends it, so
+  // fewer words are woven. Ungoverned until 2026-11-08.
+  { path: 'learning.retireKnownWords', kind: 'reduce-difficulty', easier: 'false', label: 'retiring words you know' },
   { path: 'sites.mode', kind: 'disable-site', easier: 'value', value: 'taxed-only', label: 'where Weft weaves' },
   { path: 'sites.taxed', kind: 'disable-site', easier: 'rules', label: 'the taxed site list' },
   { path: 'sites.gentle', kind: 'disable-site', easier: 'rules', label: 'the gentle site list' },

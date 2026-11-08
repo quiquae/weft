@@ -9,6 +9,15 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Two more controls that made Weft easier no longer skip the cooldown.** The
+Letterforms switches for Old English, whose own row calls orthography "a
+difficulty axis of its own" — off writes þ as th and drops the macrons, which
+reads far easier — and "Retire words you know" switched off, which spends the
+day's share on words already learned, each applied at once. Both wait out the
+cooldown now, like every other change that makes Weft easier. A test reads
+every setting the pages write and fails on one the cooldown does not judge
+that nobody has said is not difficulty, which is how these two were found.
+
 **Opening the first-run page again no longer makes Weft easier at once.** The
 first-run page is a file in the extension, at an address anyone can type, and
 finishing it wrote whatever it was given, every time: open it again, choose
@@ -918,7 +927,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1427 tests: 659 unit, 119 in jsdom, 601 over the build tools, and
+**Built with** 1436 tests: 661 unit, 119 in jsdom, 608 over the build tools, and
 48 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

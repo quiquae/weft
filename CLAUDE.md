@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **659 pass**, 153 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **661 pass**, 153 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **601 pass**, 154 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **608 pass**, 157 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **48 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1000 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1001 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -259,6 +259,21 @@ scenes in turn — Old English after French, a lower density after a higher —
 and would photograph the scene before. `tests/e2e/friction.spec.ts` ("the
 first-run page, opened again") finishes the real page a second time with
 Taster and finds the density where it was.
+
+**Every settings path a page writes is judged by the lock, or says why
+not.** `assessPatch` judges what `GOVERNED_PATHS` names and calls every other
+path neutral, and `requestChange` applies a neutral change at once: that is
+how nine controls made Weft easier at once until 2026-11-08, and then two
+more. `tests/tools/governed-paths.test.ts` derives the paths from the pages —
+every call the checker resolves to the options controller's `set` or
+`setMany`, every `request-change` and `complete-onboarding` patch, and a
+template path expanded through its substitution's literal type — and each
+must be in `GOVERNED_PATHS` or in its `NEUTRAL` with why it is not
+difficulty: accessibility, what the tooltip shows, how a woven word is drawn,
+and the translation services, privacy not being difficulty. A write it
+cannot see through is named in `DYNAMIC` with every path it can be. Class a
+new control in the change that adds it. A letterform switch and "Retire
+words you know" are difficulty, because each changes what there is to read.
 
 **A tamper penalty lasts 12 hours, and every sentence that says how long
 says so.** `recordTamper()` holds difficulty at the ceiling for
@@ -1035,6 +1050,59 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — every path a page writes is classed, and the first reading found two more
+
+The same run's second PR, the item's second part. Every write the options
+page makes goes through `request-change`, so the lock already judges them;
+what nothing held was that each path is one the lock knows, and the nine
+were paths it did not. **Measured by the guard itself:** 54 calls to the
+controller's `set` and `setMany` under `src/ui/` and three message patches —
+the controller's own, the popup's and the first-run page's — writing 59
+distinct paths, among them one template (`weave.letterforms.${id}`) and four
+writes read through `DYNAMIC`.
+
+**`tests/tools/governed-paths.test.ts`, 7 tests in 3 suites**, asks the
+checker which calls resolve to the `Controller` interface's `set` and
+`setMany`, so a controller passed under another name is read, reads each
+`request-change` and `complete-onboarding` patch, and expands a template
+through its substitution's literal type, `LetterformId` giving seven paths.
+Each must be governed or in `NEUTRAL` with why; a write it cannot read is in
+`DYNAMIC` with its paths, the key fields checked as literals in their file;
+every table is held both ways. An in-memory probe shows it refusing an
+unnamed `set`, an unnamed `setMany` key and a path in a variable on every
+run, and a write planted in `sections.tsx` was named at `:217`, restored by
+md5.
+
+**Its first run named eight paths, and they were two more controls**: the
+Letterforms row's seven "Keep …" switches, whose own copy says "Orthography
+is a difficulty axis of its own. Turning thorn and macrons off makes the
+same vocabulary far easier to read on day one", and "Retire words you know",
+whose off spends the budget on retired words (`selector.ts:390`). Both are
+governed, `easier: 'false'`, test-first in the nine's suite, red on
+`neutral` both ways and on `requestChange` applying them. `wouldQueue` has no
+reader in any component, so no pixel moved: the three groups were
+regenerated, `page-tooltip.png` and `options-density.png` each moving by
+their recorded noise in one run of three and matching in another, and the
+committed bytes stand. Unit 659 → **661**, tools 601 → **608** / 154 →
+**157** suites, total 1427 → **1436**, in six places, and a `CHANGELOG.md`
+paragraph. **The packages print 1001 KB**: 1 518 bytes, 759 each in
+`background.js` and `options.js`, the two bundles importing `lock.ts`,
+Chrome's 999.541 → 1001.023 KB against `main`'s built in a `/tmp` worktree.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, **661 unit / 153**, 119 jsdom / 26, **608 tools / 157**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1001 KB × 3**
+passing `validate`, **48 e2e passed and 3 skipped in 5.6 min**, then build
+and validate again. Only documents moved after it, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a letterform and the retirement switch are
+difficulty, the row's own copy saying so of the first; that the translation
+services stay outside the cooldown though lookups off may weave fewer words;
+and that the queued list's overwrite is a PR of its own, being a merge.
 
 ### 2026-11-08 — the first-run page writes freely once, and the harness has its own door
 

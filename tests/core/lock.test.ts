@@ -161,12 +161,33 @@ describe('every control that makes Weft easier waits', () => {
     assert.equal(dir(settings(), { 'learning.posPreference': [...pos].reverse() }), 'neutral');
   });
 
+  // The two below were found by deriving every path the pages write
+  // (tests/tools/governed-paths.test.ts), the first time it ran.
+  test('a letterform switched off is easier, and back on harder', () => {
+    // The row's own copy: "Turning thorn and macrons off makes the same
+    // vocabulary far easier to read on day one."
+    assert.equal(dir(settings(), { 'weave.letterforms.macrons': false }), 'easier');
+    assert.equal(dir(settings(), { 'weave.letterforms.thorn': true }), 'harder');
+    assert.equal(dir(settings({ 'weave.letterforms.thorn': true }), { 'weave.letterforms.thorn': false }), 'easier');
+  });
+
+  test('never retiring known words is easier, and retiring them harder', () => {
+    // On, a retired word is woven outside the budget; off, it spends it.
+    assert.equal(dir(settings(), { 'learning.retireKnownWords': false }), 'easier');
+    assert.equal(
+      dir(settings({ 'learning.retireKnownWords': false }), { 'learning.retireKnownWords': true }),
+      'harder',
+    );
+  });
+
   test('requestChange queues them rather than applying them', () => {
     const s = settings({ 'sites.taxed': [rule], 'friction.cooldownMinutes': 15 });
     for (const patch of [
       taxed({ ceilingRatio: 0.06 }),
       { 'attention.decayPerHourAway': 1 },
       { 'friction.tamperResponse': 'ignore' },
+      { 'weave.letterforms.macrons': false },
+      { 'learning.retireKnownWords': false },
     ]) {
       const res = requestChange(emptyLockState(NOW), s, patch, NOW, ids);
       assert.equal(res.applied, false, `${Object.keys(patch)[0]} applied at once`);
