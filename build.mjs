@@ -70,6 +70,11 @@ const sharedOptions = {
     __WEFT_VERSION__: JSON.stringify(VERSION),
     __WEFT_TARGET__: JSON.stringify(TARGET),
     __WEFT_DEV__: JSON.stringify(DEV),
+    // True only in a `--test` build, whose worker answers the e2e harness's
+    // CONFIGURE_FOR_TEST (src/shared/messages.ts). Every other build folds
+    // the branch that registers it, and tools/validate-package.mjs refuses a
+    // package carrying the message's name.
+    __WEFT_TEST__: JSON.stringify(TEST),
     // 'undefined' as a literal, not the string: the ternary in
     // licence-key.ts then folds at build time and the test key is absent
     // from shipped bytes entirely rather than merely unused.

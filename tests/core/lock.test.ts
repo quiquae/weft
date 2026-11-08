@@ -16,8 +16,10 @@ import {
   directionOf,
   describeWait,
   splitImportedSettings,
+  splitOnboarding,
   TAMPER_PENALTY_HOURS,
 } from '../../src/core/lock.ts';
+import { DIFFICULTY_PRESETS } from '../../src/core/settings.ts';
 import { settings, NOW } from '../helpers.ts';
 
 let seq = 0;
@@ -170,6 +172,67 @@ describe('every control that makes Weft easier waits', () => {
       assert.equal(res.applied, false, `${Object.keys(patch)[0]} applied at once`);
       assert.equal(res.state.pending.length, 1);
     }
+  });
+});
+
+/*
+ * The first-run page writes a whole set of settings in one message, and
+ * until 2026-11-08 the worker saved it with nothing checked, every time.
+ * So opening onboarding.html again and finishing it with Taster dropped the
+ * starting density, the ceiling and the gain at once — every governed path,
+ * past the cooldown. The first time there is nothing to be easier than;
+ * every time after, it is one more way of changing settings.
+ */
+describe('finishing the first-run page', () => {
+  const preset = (id: string) => {
+    const found = DIFFICULTY_PRESETS.find((p) => p.id === id);
+    assert.ok(found, `no ${id} preset`);
+    return found.patch;
+  };
+
+  test('the first time, the whole of it lands, Taster included', () => {
+    const current = settings();
+    const incoming = settings({ ...preset('taster'), onboarded: true });
+    const { immediate, deferred } = splitOnboarding(current, incoming);
+    assert.deepEqual(deferred, {});
+    assert.deepEqual(immediate, incoming);
+  });
+
+  test('every time after, what makes Weft easier waits', () => {
+    const current = settings({ onboarded: true });
+    const incoming = settings({ ...preset('taster'), onboarded: true });
+    const { immediate, deferred } = splitOnboarding(current, incoming);
+    assert.equal(deferred['weave.baseRatio'], incoming.weave.baseRatio);
+    assert.equal(deferred['weave.ceilingRatio'], incoming.weave.ceilingRatio);
+    assert.equal(immediate.weave.baseRatio, current.weave.baseRatio, 'the starting density dropped at once');
+    assert.equal(immediate.weave.ceilingRatio, current.weave.ceilingRatio, 'the ceiling dropped at once');
+  });
+
+  test('and what makes it harder lands at once', () => {
+    const current = settings({ onboarded: true });
+    const incoming = settings({ ...preset('committed'), onboarded: true });
+    const { immediate, deferred } = splitOnboarding(current, incoming);
+    assert.deepEqual(deferred, {});
+    assert.equal(immediate.weave.baseRatio, incoming.weave.baseRatio);
+    assert.equal(immediate.weave.ceilingRatio, incoming.weave.ceilingRatio);
+  });
+
+  test('a site taken off the taxed list waits too', () => {
+    const two = [
+      { pattern: 'a.example', enabled: true, escalate: true },
+      { pattern: 'b.example', enabled: true, escalate: true },
+    ];
+    const current = settings({ onboarded: true, 'sites.taxed': two });
+    const incoming = settings({ onboarded: true, 'sites.taxed': two.slice(0, 1) });
+    const { immediate, deferred } = splitOnboarding(current, incoming);
+    assert.deepEqual(deferred['sites.taxed'], two.slice(0, 1));
+    assert.equal(immediate.sites.taxed.length, 2);
+  });
+
+  test('an imported file never takes the flag away, which would reopen the door', () => {
+    const current = settings({ onboarded: true });
+    const { immediate } = splitImportedSettings(current, settings({ onboarded: false }));
+    assert.equal(immediate.onboarded, true);
   });
 });
 

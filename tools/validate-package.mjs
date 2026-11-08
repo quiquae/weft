@@ -32,6 +32,7 @@ import { TARGETS } from '../manifest.config.mjs';
 import { installFaults } from './install-permissions.ts';
 import { PUBLISHER_KEY_X } from '../src/core/licence-key.ts';
 import { TEST_LICENCE_PUBLIC_JWK } from '../tests/fixtures/licence-keypair.ts';
+import { CONFIGURE_FOR_TEST } from '../src/shared/messages.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src');
@@ -223,6 +224,25 @@ async function validate(target, src) {
         target,
         "the publisher's licence public key is not in this package, so no " +
           'real licence can ever verify',
+      );
+    }
+  }
+
+  /* ------------------------------------------------ the test seam */
+
+  /*
+   * A test build's worker answers CONFIGURE_FOR_TEST, which writes settings
+   * past the lock so the e2e harness can set its scenes. In a shipped package
+   * it would be a page's way round every cooldown, so the build folds it out
+   * (`__WEFT_TEST__`) and this refuses a package that still names it.
+   */
+  for (const name of await readdir(dir)) {
+    if (extname(name) !== '.js') continue;
+    if ((await readFile(join(dir, name), 'utf8')).includes(CONFIGURE_FOR_TEST)) {
+      fail(
+        target,
+        `${name} names "${CONFIGURE_FOR_TEST}", the test build's way past the cooldown; ` +
+          'rebuild without --test',
       );
     }
   }

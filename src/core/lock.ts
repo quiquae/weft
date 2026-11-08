@@ -337,7 +337,34 @@ export function splitImportedSettings(
     immediate = setPath(immediate, path, getPath(current, path));
   }
 
+  // A file cannot un-onboard the machine. The flag says this install has
+  // been through the first-run page, and `splitOnboarding` lets that page
+  // write freely only while it is false — so a file carrying `false`, or
+  // an export from before onboarding, or `settings: {}`, would reopen the
+  // door the cooldown keeps shut.
+  if (current.onboarded) immediate = { ...immediate, onboarded: true };
+
   return { immediate, deferred };
+}
+
+/**
+ * Settle what finishing the first-run page writes.
+ *
+ * The first time, nothing has been committed to: the defaults are not a
+ * choice anyone made, so the whole of it lands, Taster included. Every time
+ * after, the page is one more way of changing settings, and it is held to
+ * the rule the options page and an import already follow — harder lands at
+ * once, anything easier becomes a patch for `requestChange` and waits out
+ * the user's cooldown. Until 2026-11-08 the worker saved the page's patch
+ * with nothing checked, so opening `onboarding.html` again and choosing
+ * Taster dropped every governed path at once.
+ */
+export function splitOnboarding(
+  current: Settings,
+  incoming: Settings,
+): { immediate: Settings; deferred: Patch } {
+  if (!current.onboarded) return { immediate: incoming, deferred: {} };
+  return splitImportedSettings(current, incoming);
 }
 
 /**
