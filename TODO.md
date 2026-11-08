@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **659** unit / 153 suites, **119** jsdom / 26
-suites, **601** tool tests / 154 suites, **48** e2e passing
+of this session — typecheck clean, **661** unit / 153 suites, **119** jsdom / 26
+suites, **608** tool tests / 157 suites, **48** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1000 KB each, all
+packages built at 1001 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -121,7 +121,9 @@ judged rule by rule and the six paths they join, Chrome's 996.268 → about
 And to **1000 KB** later on 2026-11-08 by 482 bytes, `background.js` +205 and
 `onboarding.js` +277, a second finish of the first-run page governed and the
 notice saying what waits: Chrome's 999.070 → 999.541 KB, measured the same
-way.
+way. And to **1001 KB** the same day by 1 518 bytes, 759 each in
+`background.js` and `options.js`, the eight paths the derived guard found
+governed: Chrome's 999.541 → 1001.023 KB, measured the same way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2429,48 +2431,44 @@ registered**, and nothing below it can move until it is.
       **659**, e2e 47 → **48**, total 1421 → **1427**, in six places; the
       packages print **1000 KB**. See Notes.
 
-- [ ] **Hold every control to the lock by derivation, and stop a queued list
-      change overwriting what was added while it waited.** The rest of the
-      item found 2026-11-08 governing the nine; its first part, the
-      first-run page, is done above.
-      1. ~~**`complete-onboarding` applies any patch at any time.** The
-         handler (`src/background/index.ts:516`) saves the patch with
-         `saveSettings` and checks nothing, so opening `onboarding.html`
-         again, choosing Taster and finishing drops the starting density,
-         ceiling and gain at once — every governed path, past the cooldown.
-         Shape: once `settings.onboarded` is true, send the patch through
-         `requestChange` (harder parts land, easier ones queue), or refuse
-         it. Measure first: e2e `configure()` (`tests/e2e/fixtures.ts:199`)
-         calls it in every test, so the fixture needs a seam of its own,
-         test build only, or a fresh profile per test that is never
-         onboarded.~~ Done above.
-      2. **The guard that would have caught the nine.** Measured
-         2026-11-08: the options page writes 46 literal paths through
-         `c.set('<path>'`, one template (`weave.letterforms.${id}`, style)
-         and one variable (`data.tsx:45`, the provider key fields), and
-         `setMany` with the language chips' two keys and `preset.patch`; every
-         one goes through `request-change`, so the lock judges them, and the
-         guard's job is only that each is classed. Outside `GOVERNED_PATHS`:
-         `a11y.*`, `reveal.*`, `weave.renderMode`, `weave.style.*` and
-         `weave.letterforms.*` (style and access, never gated), `providers.*`
-         (privacy, held by `sendNoMoreThan`, not the cooldown),
-         `learning.targetLangs` (read by nothing but the free clamp), and
-         `learning.retireKnownWords`, the one to decide. Read the popup's
-         `request-change` patches too, and the onboarding page's.
-         Original note: Derive every path
-         written by `c.set('<path>'` and `setMany` under `src/ui/options/`
-         and `src/ui/onboarding/`, and require each be in `GOVERNED_PATHS`
-         or a `NEUTRAL` table with why — style, reveal, a11y, the keys.
-         `learning.retireKnownWords` is the one to decide there: off makes
-         a retired word count against the budget, which weaves fewer.
-      3. **A queued list change overwrites what was added while it waited.**
-         `applyReadyChanges()` applies the queued `sites.taxed` array whole
-         (`applyPatch`, `lock.ts:477`), so a site added at once during the
-         cooldown is dropped when the change lands. True of a removal before
-         this run; true of an in-place edit since. Shape: store the rules the
-         change was judged against beside its patch and apply the difference,
-         or apply per pattern.
-      About 60 minutes left: the guard first, about 35, then the list.
+- [x] **Hold every control to the lock by derivation.** Done 2026-11-08,
+      the item's second part, the same run's second PR.
+      `tests/tools/governed-paths.test.ts`, 7 tests in 3 suites, asks the
+      checker which calls resolve to the options controller's `set` and
+      `setMany`, reads every `request-change` and `complete-onboarding`
+      patch, and expands a template path through its substitution's literal
+      type; each of the 59 paths the pages write must be in
+      `GOVERNED_PATHS` or in its `NEUTRAL` with why, a write it cannot read
+      in `DYNAMIC` with its paths, and every table held both ways. An
+      in-memory probe shows it firing on every run. **Its first run found two
+      more controls that made Weft easier at once**: the Letterforms row's
+      seven switches, whose own copy calls orthography "a difficulty axis of
+      its own", and "Retire words you know" switched off. Both governed,
+      `easier: 'false'`, test-first. Unit 659 → **661**, tools 601 → **608**
+      / 154 → **157**, total 1427 → **1436**, in six places. See Notes.
+
+- [ ] **Stop a queued list change overwriting what was added while it
+      waited.** The item's third part, found 2026-11-08 governing the nine.
+      `applyReadyChanges()` applies a queued list whole (`applyPatch` in
+      `src/core/lock.ts`), so a list changed at once during the cooldown is
+      reverted when the queued change lands. Four lists, not one: on
+      `sites.taxed` and `sites.gentle` a removal queues and an addition
+      lands at once, so the addition is dropped; on `sites.excluded` an
+      addition queues and a removal lands, so the removed entry comes back;
+      and on `learning.posPreference`, as on the site lists, a removal
+      queues and an addition is dropped. Shape: a three-way merge.
+      Store, beside the pending patch, the value each list path was judged
+      against (`base`, optional on `PendingChange`, so changes queued before
+      it apply whole as today); at apply time, for each entry — by
+      `pattern` for a rule list, by value for a string list — take the
+      patch's where the patch changed it from `base`, drop what the patch
+      removed from `base`, and keep what is in the current list and was in
+      neither, in the current list's order, the patch's additions after.
+      Test-first in `tests/core/lock.test.ts`: a rule added during the
+      cooldown survives the queued removal; an excluded entry removed during
+      it stays removed; a change queued with no `base` applies whole. Moves
+      `src/core/`, so the three screenshot groups regenerate. About 60
+      minutes.
 
 - [ ] **Say what the density is a share of, on the settings page and the
       popup.** Found 2026-11-08. The Resting density and Ceiling rows
@@ -8158,6 +8156,28 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — every path a page writes, classed.** Three things a later
+run would be sorry not to know:
+
+1. **Class a new control in the change that adds it.**
+   `tests/tools/governed-paths.test.ts` fails naming the file and line of a
+   `set` or `setMany` path, or a message patch's key, that is neither in
+   `GOVERNED_PATHS` nor in its `NEUTRAL`. A template path is expanded
+   through its substitution's type, so a template over a plain `string`
+   fails as unreadable until `DYNAMIC` names its paths.
+2. **What `NEUTRAL` holds, and why each.** Accessibility (never gated),
+   what the tooltip shows when asked (`reveal.*`), how a woven word is drawn
+   (`weave.renderMode`, `weave.style.*`), `learning.targetLangs` (read only
+   by the free clamp, beside the governed `activeTarget`), and every
+   `providers.*` path. Turning lookups off may weave fewer words a pack does
+   not cover, and it still lands at once: a cooldown on sending less would
+   hold a reader's words on their way out, and privacy is not difficulty.
+3. **Letterforms are difficulty by the product's own words.** The row's
+   detail says turning thorn and macrons off "makes the same vocabulary far
+   easier to read on day one". The row shows only for a historical
+   language, so a French learner never meets the cooldown on it; an import
+   that changes one is split as any other.
 
 **2026-11-08 — the first-run page's back door, closed.** Four things a
 later run would be sorry not to know:
