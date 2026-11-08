@@ -896,7 +896,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1406 tests: 644 unit, 119 in jsdom, 596 over the build tools, and
+**Built with** 1411 tests: 644 unit, 119 in jsdom, 601 over the build tools, and
 47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

@@ -6,8 +6,8 @@ you stay on a page, the more of them there are.**
 Weft is a browser extension that weaves a proportion of the words on a page
 into a language you are learning, and raises that proportion with the time you
 actually spend looking at the page. Five minutes on a news article costs you
-almost nothing. Forty minutes on an infinite feed and you are reading a third
-in French, and more than half of it if you raise the ceiling.
+almost nothing. Forty minutes on an infinite feed and a third of the words Weft
+knows are in French, and more than half of them if you raise the ceiling.
 
 Point at a word and it gives you the English back.
 
@@ -60,9 +60,9 @@ woven as infinitives and why Latin drops in as a nominative.
 Weft does not just show you a foreign word. It tells you which English word
 it is related to, which is usually the thing that makes it stick.
 
-A very large part of English arrived from French, and most of the rest shares
-a Latin root with it — so the French word on your page is often already
-inside an English word you use:
+A very large part of English arrived from French, and nearly as much again from
+Latin, which French grew out of — so the French word on your page is often
+already inside an English word you use:
 
 | French | | English | related to |
 |---|---|---|---|
@@ -167,8 +167,8 @@ and the removal instructions ship inside the same file. See
 
 ![Progress](docs/screens/dashboard.png)
 
-Weft schedules with **FSRS-6**, the same memory model Anki uses, ported
-directly from the reference implementation. That is not decoration: "which
+Weft schedules with **FSRS-6**, the open-source memory model Anki also offers,
+ported directly from the reference implementation. That is not decoration: "which
 words should be in the target language right now?" is exactly the question a
 spaced-repetition scheduler answers. A word whose retrievability has decayed
 to around 0.7 is the word that most benefits from being seen again, and a word
@@ -266,7 +266,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 644 unit + 119 jsdom + 596 over the build tools
+npm test               # 644 unit + 119 jsdom + 601 over the build tools
 npm run test:e2e       # 47 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules

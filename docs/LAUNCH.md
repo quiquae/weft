@@ -100,8 +100,8 @@ standalone. If in doubt, message the moderators — they answer.
 >
 > What I added is the bit I actually wanted: the proportion goes **up with the
 > time you spend on the page**. Five minutes on an article costs you almost
-> nothing. Forty minutes on a feed and you are reading a third in French, and
-> more than half of it if you turn the ceiling up. The time I was going to lose
+> nothing. Forty minutes on a feed and a third of the words Weft knows are in
+> French, and more than half of them if you turn the ceiling up. The time I was going to lose
 > anyway now buys vocabulary.
 >
 > There is a demo on the site — a paragraph and a slider, no install — because
@@ -218,7 +218,7 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 > verify in the network panel. The trade is that a licence cannot be revoked,
 > which is stated on the pricing page rather than hidden.
 >
-> Free for one language. Source is open, 1406 tests, and the lexicon pipeline
+> Free for one language. Source is open, 1411 tests, and the lexicon pipeline
 > and the Latin/Old English IPA generator are in the repo.
 
 ### Lobsters
@@ -261,10 +261,10 @@ for it.
 > **Description:** Weft weaves words of the language you are learning into the
 > pages you already read, and raises the proportion with the time you spend
 > there. Five minutes on an article costs you almost nothing; forty minutes on
-> a feed and you are reading a third in French. Point at any word to get the
-> English back. Seven languages including Latin and Old English, where the word
-> on the page is usually the literal ancestor of the one it replaced. No
-> account, no server, works offline.
+> a feed and a third of the words Weft knows are in French. Point at any word to
+> get the English back. Seven languages including Latin and Old English, where
+> most of the words on the page are the ancestor or the source of an English
+> word you already know. No account, no server, works offline.
 
 ---
 
