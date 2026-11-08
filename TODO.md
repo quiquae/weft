@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **644** unit / 151 suites, **119** jsdom / 26
+of this session — typecheck clean, **654** unit / 152 suites, **119** jsdom / 26
 suites, **601** tool tests / 154 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 996 KB each, all
+packages built at 999 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -114,6 +114,10 @@ the whole feature table, `background.js` −1 076, `options.js` −723,
 `onboarding.js` −202 and `content.js` −198, `popup.js` unchanged; Chrome's
 1000.810 → 996.268 KB, Firefox's 996.336 and Safari's 996.274, measured against
 the same tree built before the marks.
+And to **999 KB** on 2026-11-08 by 2 870 bytes, 1 435 each in `background.js`
+and `options.js`, the two bundles that import `lock.ts`: the nine controls
+judged rule by rule and the six paths they join, Chrome's 996.268 → about
+999.07 KB, measured against `main`'s Chrome package built in a `/tmp` worktree.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2383,50 +2387,53 @@ registered**, and nothing below it can move until it is.
       Nothing under `src/` moved. **Found and queued below: nine settings
       that make Weft easier skip the cooldown.** See Notes.
 
-- [ ] **Govern the nine settings that make Weft easier at once.** Found
-      2026-11-08 reading the store description, whose "Anything that makes
-      Weft easier waits out a cooldown" is also promised by `README.md:134`,
-      `site/index.html:262`, the first-run page (`onboarding/index.tsx:319`),
-      the settings page's commitment note (`options/commitment.tsx:35`), the
-      Standard preset's copy (`settings.ts:65`) and `docs/SUPPORT.md:79`.
-      `assessPatch()` judges only `GOVERNED_PATHS`, an unlisted path is
-      `neutral`, and `requestChange()` applies anything not `easier` at once.
-      Measured with the real `assessPatch` against defaults: all nine read
-      `neutral`, where lowering the global ceiling, the control, reads
-      `easier`. Each has a control:
-      1. **A taxed rule's escalation switch, base and ceiling sliders**
-         (`options/sites.tsx:117`, `:128`, `:145`). `sites.taxed` is judged
-         by length and enabled count only, so editing a rule in place is
-         neutral: drag reddit's ceiling to 6% and it applies now. The worst,
-         and three of the nine.
-      2. **"Recovery while you are away"**, `attention.decayPerHourAway`, a
-         slider to 100% (`sections.tsx:317`). At 100% `decayAttention`
-         retains 0, so fifteen minutes away (`currentAttentionSeconds`
-         decays after 0.25 h) zeroes the day's tax.
-      3. **"If stored settings are edited"** → "just note it",
-         `friction.tamperResponse` (`commitment.tsx:151`): `recordTamper()`
-         then adds no penalty, and `load()` keeps a forged settings object,
-         so every cooldown is one storage edit away.
-      4. **Sites mode** "everywhere except" → "only my list", `sites.mode`
-         (`sites.tsx:244`): every unlisted page loses its gentle dose.
-      5. **The quiz's word count and pass mark**, `friction.quizWordCount`
-         and `quizPassThreshold` (Pro, `commitment.tsx:81`, `:95`): two.
-      6. **Parts of speech**, `learning.posPreference` (`sections.tsx:182`):
-         `entryAllowed()` refuses a part of speech left out, so the eligible
-         set and the budget shrink.
-      Shape: compare a rule list rule by rule, by pattern, so a rule whose
-      `escalate` turns off, or whose ratios fall, is easier; give
-      `tamperResponse` and `sites.mode` an ordered direction (`ignore` and
-      `taxed-only` the easier ends); add the rest with their easier
-      direction. Then the guard that would have caught it: derive every
-      `c.set('<path>'` under `src/ui/options/` and `src/ui/onboarding/` and
-      require each path be governed or named in a `NEUTRAL` table with why —
-      style, reveal, a11y and the keys are not difficulty. Ambiguous, so
-      decide in that table: `learning.retireKnownWords` (off makes learned
-      words count against the budget, which weaves fewer). Test-first in
-      `tests/core/lock.test.ts`. It moves `src/`, so all three screenshot
-      groups regenerate and are stamped. About 90 minutes; split the guard
-      off if the rule-list comparison takes longer.
+- [x] **Govern the nine settings that make Weft easier at once.** Done
+      2026-11-08, the same run's second PR. A site list is judged rule by
+      rule, by pattern (`ruleListDirection()` in `src/core/lock.ts`): a rule
+      off or switched off is easier, one added or switched on harder, and a
+      rule on before and after is easier when its own base or ceiling falls,
+      judged against the setting it replaces — `directionOf` takes `current`
+      and `assessPatch` gives it — or, taxed, when it stops escalating.
+      `GOVERNED_PATHS` gains recovery while away (`higher`), the parts of
+      speech (`shorter-list`, a reorder neutral), the quiz's length and pass
+      mark (`lower`), and the sites mode and the tamper response by a new
+      `value` direction naming the easier end, `taxed-only` and `ignore`.
+      Test-first: 10 tests in a new suite of `tests/core/lock.test.ts`, red
+      on `neutral` where `easier` was expected, every case judged both ways
+      so a fix reading everything as easier fails too. The import's split
+      reads `assessPatch`, so it governs the nine as well — and closes a
+      second hole in the length rule, which `dashboard.png` showed: a list
+      swapped for a longer one with the user's own site gone read harder and
+      applied at once. Unit 644 → **654**; the packages print **999 KB**. The
+      derived guard and the first-run page are the next item.
+
+- [ ] **Close the first-run page's back door, and hold every control to the
+      lock by derivation.** Found 2026-11-08 governing the nine.
+      1. **`complete-onboarding` applies any patch at any time.** The
+         handler (`src/background/index.ts:516`) saves the patch with
+         `saveSettings` and checks nothing, so opening `onboarding.html`
+         again, choosing Taster and finishing drops the starting density,
+         ceiling and gain at once — every governed path, past the cooldown.
+         Shape: once `settings.onboarded` is true, send the patch through
+         `requestChange` (harder parts land, easier ones queue), or refuse
+         it. Measure first: e2e `configure()` (`tests/e2e/fixtures.ts:199`)
+         calls it in every test, so the fixture needs a seam of its own,
+         test build only, or a fresh profile per test that is never
+         onboarded.
+      2. **The guard that would have caught the nine.** Derive every path
+         written by `c.set('<path>'` and `setMany` under `src/ui/options/`
+         and `src/ui/onboarding/`, and require each be in `GOVERNED_PATHS`
+         or a `NEUTRAL` table with why — style, reveal, a11y, the keys.
+         `learning.retireKnownWords` is the one to decide there: off makes
+         a retired word count against the budget, which weaves fewer.
+      3. **A queued list change overwrites what was added while it waited.**
+         `applyReadyChanges()` applies the queued `sites.taxed` array whole
+         (`applyPatch`, `lock.ts:477`), so a site added at once during the
+         cooldown is dropped when the change lands. True of a removal before
+         this run; true of an in-place edit since. Shape: store the rules the
+         change was judged against beside its patch and apply the difference,
+         or apply per pattern.
+      About 90 minutes; the back door first, it being the widest.
 
 - [ ] **Say what the density is a share of, on the settings page and the
       popup.** Found 2026-11-08. The Resting density and Ceiling rows
@@ -8156,9 +8163,16 @@ a later run would be sorry not to know:
    gentle, a fixed 6%, and 14.5% on a taxed news site; and "the time you
    actually spend looking at the page", where attention is kept per site per
    day, the page's time being part of it.
-6. **The cooldown leaks, measured, and it is the next item.** Nine settings
-   with controls read `neutral` under the real `assessPatch` and apply at
-   once; the measurement script is in the item's own words. Found because
+6. **The cooldown leaked, measured, and the same run's second PR closed the
+   nine.** Nine settings with controls read `neutral` under the real
+   `assessPatch` and applied at once. A site list is judged rule by rule now,
+   which also closed a hole nobody had listed — a list swapped for a longer
+   one, the user's own site gone, read harder by its length — and
+   `dashboard.png` grew a line saying so. Left, in the next item: the
+   first-run page's `complete-onboarding`, which applies any patch at any
+   time; the derived guard; and a queued list change applied whole. Not
+   measured: how many changes a per-site slider queues while dragged, which
+   it shares with the governed global sliders. Found because
    "anything that makes Weft easier waits" was a claim to check, not a
    decision to trust: **a guarantee stated in seven places is still a claim
    until a test enumerates what it covers.**

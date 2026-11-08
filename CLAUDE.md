@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **644 pass**, 151 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **654 pass**, 152 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **601 pass**, 154 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 996 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 999 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1017,6 +1017,72 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — the nine controls wait now, and the first-run page is the tenth
+
+The same run's second PR, the item the first queued, taken with eighty
+minutes left: nine controls that make Weft easier read `neutral` under
+`assessPatch()` and applied at once.
+
+**A site list is judged rule by rule, by pattern.** `ruleListDirection()` in
+`src/core/lock.ts`: a rule taken off or switched off is easier, one added or
+switched on harder, and a rule on before and after is easier when its own
+base or ceiling falls, judged against the setting it replaces, or, on the
+taxed list, when it stops escalating; any easier rule makes the list easier.
+`directionOf` takes `current` for those fallbacks and `assessPatch` gives it,
+so a per-site override no longer compares against nothing. The other six join
+`GOVERNED_PATHS`: recovery while away, `higher`; the parts of speech,
+`shorter-list`, so a reorder stays neutral; the quiz's length and pass mark,
+`lower`; and the sites mode and the tamper response by a new `value`
+direction that names the easier end, `taxed-only` and `ignore`. The import's
+split diffs over `GOVERNED_PATHS` and judges with `assessPatch`, so an
+imported file is governed the same way without an edit there.
+
+Test-first: 10 tests in a new suite of `tests/core/lock.test.ts`, red on
+exactly `neutral` where `easier` was expected, each case judged both ways so a
+fix that read everything as easier fails too, and `requestChange` shown to
+queue three of them. Unit 644 → **654** / 151 → **152** suites, total 1411 →
+**1421**, in six places, `docs/LAUNCH.md:221` first, and a `CHANGELOG.md`
+paragraph, because the commitment layer ships.
+
+**Reading the handlers for the seam found a tenth, wider than the nine.**
+`complete-onboarding` saves any patch with `saveSettings` and checks nothing,
+so opening the first-run page again and finishing it with Taster drops every
+governed setting at once. e2e `configure()` calls it in every test, so the fix
+needs a seam of its own, and it is the next item with the derived guard over
+every `c.set` path and one hazard this change widens: a queued list change is
+applied whole, so a site added while it waits is dropped when it lands — true
+of a removal before today, and of an in-place edit since.
+
+**Regenerating the screenshots showed the length rule's second hole.** All 31
+were regenerated on a test build after the commit that moved `src/`: 30
+byte-identical, and `dashboard.png` 19 px taller, its change log reading "the
+taxed site list → 15 entries" beside the density. The spec's import swaps its
+one taxed site for the defaults' fifteen, which by length read harder and
+applied at once, dropping the site the user taxed; judged by pattern it is
+easier and queues, and the spec cancels it. **A list judged by its length lets
+a swap for a longer one through**: tax two sites you never visit in place of
+the one you do, and it read harder. A second run of the documentation set gave
+the same bytes. The store and first-run groups are stamped, and the
+documentation group's stamp deleted, its content having changed. **The
+packages print 999 KB**: 2 870 bytes, 1 435 each in `background.js` and
+`options.js`, the two bundles importing `lock.ts`, Chrome's 996.268 → about
+999.07 KB against `main`'s built in a `/tmp` worktree.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code: `npm run test:all` **exit 0** — typecheck clean, **654
+unit / 152**, 119 jsdom / 26, 601 tools / 154, compat 16 dependencies × 3
+browsers, 42 pass / 6 degrade, and 92 manifest keys, 86 pass / 2 degrade / 4
+untracked, 0 fail / 0 without data, **999 KB × 3** passing `validate`, **47
+e2e passed and 3 skipped in 5.2 min**, then build and validate again. Only
+documents, the stamps and the one shot moved after it, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a rule switched off and then removed may
+still count the removal as easier, as before; that a per-site slider may
+behave as the governed global sliders do when dragged down, queueing and
+snapping back, which nobody has counted; and that the first-run page's back door is its own PR, its
+fix reaching every e2e test.
 
 ### 2026-11-08 — the store description sold Pro as optional, and the cooldown it promises leaks nine ways
 

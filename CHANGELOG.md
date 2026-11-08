@@ -9,6 +9,17 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Nine controls that made Weft easier no longer skip the cooldown.** Weft
+promises that anything making it easier waits, and the settings page had nine
+controls that applied at once: a taxed site's own escalation switch and its
+starting and maximum density, edited in place; "Recovery while you are away",
+whose 100% cleared a day's attention after fifteen minutes away; "If stored
+settings are edited", set to just note it; the sites mode, from everywhere to
+only your list; the vocabulary check's length and pass mark; and the parts of
+speech woven. Each now waits out the cooldown like every other easier change,
+and anything that makes Weft harder still applies at once. An imported file
+that would make any of them easier is queued the same way.
+
 **Each page carries only what it reads of the shared code.** Eleven of the
 modules every page shares left code in every bundle that imported them, read
 or not, because the bundler keeps what it cannot prove does nothing: a call, a
@@ -896,7 +907,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1411 tests: 644 unit, 119 in jsdom, 601 over the build tools, and
+**Built with** 1421 tests: 654 unit, 119 in jsdom, 601 over the build tools, and
 47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
