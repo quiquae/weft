@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { selectSwaps, bandWindow, idealZipf, effectiveLevel, entryAllowed, topBandOf } from '../../src/core/selector.ts';
 import type { SelectorInput } from '../../src/core/selector.ts';
 import { tokenize } from '../../src/core/tokenize.ts';
+import { hashString } from '../../src/core/rand.ts';
 import { settings, entry, lookupFrom, card, cardMap, NOW } from '../helpers.ts';
 import type { LexEntry } from '../../src/core/types.ts';
 
@@ -88,6 +89,77 @@ describe('prefix monotonicity', () => {
       const n = selectSwaps(baseInput({ ratio: r })).swaps.length;
       assert.ok(n >= last, `count fell from ${last} to ${n} at ratio ${r}`);
       last = n;
+    }
+  });
+});
+
+describe('a page of short paragraphs weaves its share', () => {
+  // The content script selects one text node at a time, so a page's density is
+  // the sum of each node's budget. Rounded per node, a node needs half a word
+  // of share before it weaves one: at the default 6% that is nine eligible
+  // words, and a page of short paragraphs, which a rendered page splits
+  // further at every link, wove almost nothing. Above the half-word mark the
+  // same rounding overshoots, every node rounding up at once. So each node
+  // is read as the content script reads it, alone and seeded from its own
+  // text, and the page is held to its share.
+  const ADJ = ['quick', 'brown', 'lazy', 'tired', 'warm', 'old', 'young', 'black', 'green', 'distant', 'wise', 'heavy'];
+  const NOUN = ['fox', 'dog', 'cat', 'window', 'house', 'water', 'stone', 'bridge', 'king', 'horse', 'field', 'mountain', 'woman', 'book'];
+  const PARAGRAPHS = Array.from(
+    { length: 400 },
+    (_, i) =>
+      `By the ${ADJ[i % ADJ.length]} gate in town ${i} a ${NOUN[i % NOUN.length]} ` +
+      `waited near the ${NOUN[(i * 5 + 3) % NOUN.length]} for us.`,
+  );
+  const alone = (text: string, ratio: number) =>
+    selectSwaps(baseInput({ tokens: tokenize(text), ratio, seed: hashString(text) }));
+  const pct = (ratio: number) => `${Math.round(ratio * 100)}%`;
+
+  test('every paragraph has three eligible words, each placeable', () => {
+    for (const text of PARAGRAPHS) {
+      const all = alone(text, 1);
+      assert.equal(all.eligible, 3, `"${text}" has ${all.eligible} eligible words`);
+      assert.equal(all.swaps.length, 3, `"${text}" places ${all.swaps.length} of its 3`);
+    }
+  });
+
+  test('each selected alone, they weave the ratio’s share of their eligible words', () => {
+    for (const ratio of [0.06, 0.12, 0.2, 0.35]) {
+      let woven = 0;
+      let share = 0;
+      let variance = 0;
+      for (const text of PARAGRAPHS) {
+        const result = alone(text, ratio);
+        woven += result.swaps.length;
+        const exact = ratio * result.eligible;
+        share += exact;
+        const f = exact - Math.floor(exact);
+        variance += f * (1 - f);
+      }
+      // Three standard deviations of a page whose every node rounds its share
+      // up or down at random, plus a word.
+      const slack = 3 * Math.sqrt(variance) + 1;
+      assert.ok(
+        Math.abs(woven - share) <= slack,
+        `at ${pct(ratio)}, ${PARAGRAPHS.length} short paragraphs wove ${woven} words ` +
+          `where their share is ${share.toFixed(1)}, ± ${slack.toFixed(1)}`,
+      );
+    }
+  });
+
+  test('a paragraph’s budget is its share rounded down or up, and never falls as the ratio rises', () => {
+    for (const text of PARAGRAPHS.slice(0, 60)) {
+      let last = -1;
+      for (let step = 0; step <= 100; step++) {
+        const ratio = step / 100;
+        const result = alone(text, ratio);
+        const exact = ratio * result.eligible;
+        assert.ok(
+          result.budget >= Math.floor(exact) && result.budget <= Math.ceil(exact),
+          `"${text}" at ${pct(ratio)}: budget ${result.budget} for a share of ${exact.toFixed(2)}`,
+        );
+        assert.ok(result.budget >= last, `"${text}": budget fell from ${last} to ${result.budget} at ${pct(ratio)}`);
+        last = result.budget;
+      }
     }
   });
 });

@@ -32,6 +32,13 @@ import { hashString, mulberry32 } from './rand.ts';
 /** Per-page cap on how often one lemma may be woven, before it is penalised. */
 const DEFAULT_MAX_REPEATS = 3;
 
+/**
+ * Mixed into a node's seed for the draw that rounds its budget, so the draw
+ * is a stream of its own and the tie-breaking jitter, drawn from the seed
+ * itself, is the same as it was before the budget was dithered.
+ */
+const BUDGET_STREAM = 0x9e3779b9;
+
 export interface SelectorInput {
   tokens: Token[];
   /** Surface-form lookup into the loaded pack. */
@@ -83,7 +90,10 @@ export interface SelectionResult {
   considered: number;
   /** Word tokens that had at least one usable dictionary entry. */
   eligible: number;
-  /** Budget the ratio produced. */
+  /**
+   * Budget the ratio produced: its share of the eligible words, rounded down
+   * or up by a draw seeded from the text.
+   */
   budget: number;
   /** Lemmas woven here that the learner has never met before. */
   newLemmas: string[];
@@ -341,7 +351,8 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
   const { tokens, settings } = input;
   const words = wordTokens(tokens);
   const sentenceCounts = sentenceWordCounts(tokens);
-  const rng = mulberry32(input.seed ?? hashString(tokens.map((t) => t.text).join('')));
+  const seed = input.seed ?? hashString(tokens.map((t) => t.text).join(''));
+  const rng = mulberry32(seed);
 
   const candidates: ScoredCandidate[] = [];
   let eligible = 0;
@@ -405,7 +416,20 @@ export function selectSwaps(input: SelectorInput): SelectionResult {
     return a.window.start - b.window.start;
   });
 
-  const budget = Math.max(0, Math.round(input.ratio * eligible));
+  // The ratio's share of the eligible words, rounded down or up by a draw
+  // seeded from this text. The content script selects one text node at a
+  // time, so a page's density is the sum of its nodes' budgets, and rounded
+  // to the nearest a node needed half a word of share before it wove one: at
+  // the default 6%, nine eligible words, so a page of short paragraphs wove
+  // almost nothing, and above the half-word mark every node rounded up at
+  // once. Rounded up with a probability equal to the fraction, a node weaves
+  // its share on average and a page of them weaves the page's. The draw is
+  // the text's own, so a paragraph weaves the same way however often a
+  // framework re-renders it, whatever the nodes around it, and a fixed draw
+  // under a rising ratio only ever rounds up later, never down: the budget
+  // never falls as the ratio rises, which the pinning below relies on.
+  const roundUp = mulberry32((seed ^ BUDGET_STREAM) >>> 0)();
+  const budget = Math.max(0, Math.floor(input.ratio * eligible + roundUp));
   const swaps: Swap[] = [];
   const newLemmas: string[] = [];
   const perSentence = new Map<number, number>();

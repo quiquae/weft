@@ -99,6 +99,18 @@ class WeftPage {
   private announcer: Announcer;
   private observer: MutationObserver | null = null;
   private records = new Map<Text, WovenRecord>();
+  /**
+   * Candidate text nodes that wove nothing the last time they were read.
+   *
+   * A node that weaves no word gets no record, and a re-weave at a new ratio
+   * revisited only the records, so a paragraph too short to weave a word at
+   * rest was never woven at all, however far the density rose, and neither was
+   * one whose only words a translation service had just supplied. Measured on
+   * the README with the French pack, a page loaded at the default 6% and
+   * escalated to the 35% ceiling wove 20 words where its share is 56, and at a
+   * resting density of 0 a page stayed in English for good.
+   */
+  private unwoven = new Set<Text>();
   private walkerOptions: WalkerOptions;
   private cards = new Map<string, MemoryCard>();
   private introducedToday = new Set<string>();
@@ -241,6 +253,10 @@ class WeftPage {
   }
 
   private weaveNode(node: Text, pinned?: Set<string>): void {
+    this.unwoven.delete(node);
+    // Woven since it was queued: its value is the woven text now, and reading
+    // that as English would weave the page twice over.
+    if (this.records.has(node)) return;
     if (!node.isConnected) return;
     const text = node.nodeValue;
     if (!text) return;
@@ -271,7 +287,10 @@ class WeftPage {
       this.collectUnmatched(tokens);
     }
 
-    if (!result.swaps.length) return;
+    if (!result.swaps.length) {
+      this.unwoven.add(node);
+      return;
+    }
 
     for (const lemma of result.newLemmas) this.introducedToday.add(lemma);
     for (const swap of result.swaps) {
@@ -352,6 +371,13 @@ class WeftPage {
       this.weaveNode(record.node, pinned.get(record));
     }
     this.renderer.flush();
+
+    // A node that wove nothing has no record to revisit, so it is read again
+    // as a fresh one. It shows English now, so weaving it in idle time adds
+    // words without the page flashing back to English, and the re-weave
+    // stays as cheap as the records it had.
+    const pending = new Set(this.pendingNodes);
+    this.enqueue([...this.unwoven].filter((node) => !pending.has(node)));
   }
 
   /* --------------------------------------------------- provider top-up */
@@ -481,6 +507,7 @@ class WeftPage {
         // weave we just applied.
         if (this.owned.has(removed)) continue;
         if (removed.nodeType === Node.TEXT_NODE) {
+          this.unwoven.delete(removed as Text);
           const record = this.records.get(removed as Text);
           if (record) {
             this.renderer.revert(record);
@@ -779,6 +806,9 @@ class WeftPage {
   /** Remove every trace of weaving but stay alive, ready to resume. */
   suspend(): void {
     for (const node of [...this.records.keys()]) this.revertNode(node);
+    // Nothing queued may weave while suspended; resume() reads the page again.
+    this.pendingNodes.length = 0;
+    this.unwoven.clear();
     this.tooltip.hide();
     this.pageLemmaCounts.clear();
   }
@@ -824,6 +854,7 @@ class WeftPage {
     this.tooltip.destroy();
     removePageStyles();
     this.records.clear();
+    this.unwoven.clear();
     window.__weftActive = false;
   }
 }

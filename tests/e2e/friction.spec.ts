@@ -52,6 +52,52 @@ test.describe('the attention tax', () => {
     expect(after).toBeGreaterThan(before);
   });
 
+  test('a paragraph that wove nothing at rest is woven as difficulty climbs', async ({
+    context,
+    configure,
+    origin,
+  }) => {
+    // A re-weave at a new ratio revisited only the text nodes that had already
+    // woven a word, so a paragraph too short to weave one at rest was never
+    // woven at all, however long the reader stayed: measured on the README
+    // with the French pack, a page loaded at the default 6% and escalated to
+    // the 35% ceiling wove 20 words where its share is 56. A resting density
+    // of 0, which the settings page offers, makes every paragraph one of
+    // those, and the page stayed in plain English for good.
+    await configure({
+      'weave.baseRatio': 0,
+      'weave.ceilingRatio': 0.9,
+      'attention.gainPerMinute': 2,
+      'attention.idleThresholdSec': 120,
+      'weave.renderMode': 'wrapped',
+      'weave.minWordGap': 1,
+      'weave.maxPerSentence': 12,
+    });
+
+    const page = await context.newPage();
+    await page.goto(`${origin}/article.html`);
+    await page.bringToFront();
+    const words = page.locator('weft-w');
+    await page.waitForTimeout(1_500);
+    await expect(words, 'a word was woven at a resting density of 0').toHaveCount(0);
+
+    const deadline = Date.now() + 16_000;
+    let x = 200;
+    while (Date.now() < deadline) {
+      x = x === 200 ? 260 : 200;
+      await page.mouse.move(x, 300);
+      await page.mouse.wheel(0, 1);
+      await page.waitForTimeout(400);
+    }
+
+    await expect
+      .poll(async () => words.count(), {
+        timeout: 20_000,
+        message: 'the density rose and no paragraph that wove nothing at rest was woven',
+      })
+      .toBeGreaterThan(0);
+  });
+
   test('words already woven stay woven as difficulty climbs', async ({
     context,
     configure,
