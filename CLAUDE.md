@@ -1055,6 +1055,89 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-08 — B2, C1 and C2 wove nothing, and the item's remedy would have left them so
+
+`TODO.md`'s topmost unchecked item in `Now`, queued by the density copy's run
+an hour before: `bandWindow(level)` was `[level − 1, level + 1]` whatever the
+pack held, every pack tops out at band 4, so C2's window, bands 5 and 6, held
+no word of any pack. Recommended: clamp the window to the pack's top band.
+
+**Measured before choosing, and the remedy failed on the item's own
+numbers.** With the French pack at the 35% ceiling, run per paragraph as the
+content script weaves, a text node at a time, B2 wove **0** on the README (2
+eligible), on `docs/PEDAGOGY.md` (3) and on the e2e article page (0). So B2
+was broken too, and the clamp, which gives C1 and C2 B2's window, bands 3 and
+4, 23 lemmas of 356, would have left all three weaving nothing. The item
+printed B2's 2 eligible words and bolded only the zeros. **Run a queued
+remedy through the arithmetic its item printed before building it**: a budget
+is `round(ratio × eligible)` per node, and 2 eligible across a page's
+paragraphs is nothing at any density.
+
+**The window slides instead of shrinking.** `bandWindow(level, topBand)`
+stays one band either side of the level and, where that runs past the pack's
+top band, slides down to end there, three bands wide: at top band 4, B2, C1
+and C2 get bands 2 to 4, B1's window, ranked rarest first by `idealZipf` and
+band fit. It never slides up, which would hand a beginner words above their
+level, so A1 keeps two bands, and A1 to B1 are unchanged on every pack.
+`topBand` is a required field of `SelectorInput`, read off
+`topBandOf(pack.meta)`, so `tsc` names a caller that forgets it; the content
+script and the first-run preview are the only two.
+
+**Why it mattered past a fluent reader**: Your level is governed with
+`easier: 'lower'`, so raising it applies at once, and C2 wove nothing — one
+click switched Weft off with no cooldown. Raising it still makes the page
+sparser at once, 52 words at A1 and 11 at B1 to C2 on the README at 35%, and
+whether level should narrow what is eligible or only rank it is in `TODO.md`'s
+Notes as a call.
+
+Test-first: 5 unit tests in a new suite, red on a stub keeping today's window,
+the existing tests green on it, among them every level and top band 1 to 6
+held to inside the pack, as high as it may reach and as wide as the pack
+allows; and `tests/tools/level-reach.test.ts`, 11 tests in 2 suites, red on
+all seven packs and both callers: every level weaves at the ceiling on the
+README and the article page, and every `selectSwaps(` call under `src/`
+passes `topBand: topBandOf(`. Measured after, French: B2, C1 and C2 weave 11
+of 42 eligible on the README at 35%, 5 of 21 on `docs/PEDAGOGY.md`, 5 of 16
+on the article page; Old English and Latin within one word.
+`docs/PEDAGOGY.md`'s band-fit bullet says the window slides.
+
+**Measuring found the next item, queued first in `Now`.** The content script
+rounds each text node's budget alone, so at the 6% resting density a node
+needs 9 eligible words to weave one: the README weaves 2 of its 161 eligible
+words, 1 in 80, under a popup printing 1 in 17.
+
+All 31 shots regenerated on a test build after the commit that moved `src/`,
+14 + 10 + 7 written, every one byte-identical — every e2e page weaves at
+level 1 — and the three groups stamped. Unit 666 → **671** / 154 → **155**,
+tools 615 → **626** / 158 → **160**, total 1448 → **1464**, in six places,
+`docs/LAUNCH.md:221` first, and a `CHANGELOG.md` paragraph. **The packages
+grew 354 bytes**, `content.js` +181 and `onboarding.js` +173, Chrome's
+1001.970 → 1002.316 KB, measured against `main`'s built in a `/tmp`
+worktree, still printing 1002.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code, the stamps and the counts: `npm run test:all` **exit 0** —
+typecheck clean, **671 unit / 155**, 119 jsdom / 26, **626 tools / 160**,
+compat 16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest
+keys, 86 pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1002 KB ×
+3** passing `validate`, **48 e2e passed and 3 skipped in 6.4 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, the release
+notes, B2a. `packs:verify` and `site:check` were not run: no pack, seed or
+site page moved. Only documents moved after the gate, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that sliding beats the item's clamp, the clamp
+being measured to fix nothing; that a C2 reader is better served by the rarest
+words Weft has than by none, which decides nothing about whether C2 should
+mean more; that the window slides for a six-band pack too, its C2 window
+becoming bands 4 to 6, no such pack existing; and that the per-node rounding
+is its own PR, moving `src/content/` and every screenshot.
+
+What needs a human: unchanged, everything below **B1** and the calls, and two
+more in Notes: whether level should narrow what is eligible or only rank it,
+and what Your level should say above B1. `Now` holds two agent-shaped items:
+the resting density's rounding, and `docs/PEDAGOGY.md` read claim by claim.
+
 ### 2026-11-08 — a density is a share of the words Weft knows, and a test was waiting for the old words
 
 `TODO.md`'s topmost unchecked item in `Now`: the settings page's Resting
