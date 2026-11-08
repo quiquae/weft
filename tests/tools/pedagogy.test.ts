@@ -33,10 +33,14 @@
  *
  * Claims about the world — what Burling proposed, what a study found — are
  * not the code's, and these rules cannot hold them. They were read in the
- * sources the document cites; TODO.md's Notes say what each said.
+ * sources the document cites; TODO.md's Notes say what each said. One is
+ * refused by its words, because it had spread to nine sentences before
+ * anyone read a source: that the method came from Brigham Young University
+ * in the 1970s, where the first study cited credits Robbins Burling, 1968.
  */
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -132,6 +136,29 @@ describe(`${DOC}'s false-friend table`, () => {
       return out;
     });
     assert.deepEqual(wrong, []);
+  });
+});
+
+describe('where the method comes from', () => {
+  // The copy a stranger reads: the README, every tracked document under
+  // `docs/` and the hand-written pages under `site/`.
+  const COPY = execFileSync('git', ['ls-files', 'README.md', 'docs/*.md', 'site/*.html'], { cwd: ROOT, encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean);
+
+  test('no copy credits the diglot weave to BYU or dates it to the 1970s', () => {
+    // The first study the pedagogy notes cite says the diglot method was
+    // "originally conceived by Burling", whose paper is 1968's; until
+    // 2026-11-08 nine sentences said Brigham Young University in the 1970s,
+    // which no source the documents cite says.
+    assert.ok(COPY.length > 10, `only ${COPY.length} documents were read`);
+    const said = COPY.flatMap((path) =>
+      read(path)
+        .split(/\n\s*\n/)
+        .filter((p) => /diglot/i.test(p) && /\bBYU\b|Brigham Young|\b1970s\b|95[–-]98\s?%/.test(p))
+        .map((p) => `${path}: ${p.replace(/\s+/g, ' ').slice(0, 120)}…`),
+    );
+    assert.deepEqual(said, []);
   });
 });
 

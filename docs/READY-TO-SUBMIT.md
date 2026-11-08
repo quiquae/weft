@@ -95,7 +95,7 @@ Weft weaves a proportion of the words on a page into a language you are learning
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method that goes back to 1968 and has been tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
 You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
@@ -339,7 +339,7 @@ Weft weaves a proportion of the words on a page into a language you are learning
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method that goes back to 1968 and has been tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
 You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
@@ -515,7 +515,7 @@ Weft weaves a proportion of the words on a page into a language you are learning
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method that goes back to 1968 and has been tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
 You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 
@@ -627,7 +627,7 @@ Weft weaves a proportion of the words on a page into a language you are learning
 
 Point at a word and it gives you the English back.
 
-Why it works. This is the diglot weave, a method developed at BYU in the 1970s and tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
+Why it works. This is the diglot weave, a method that goes back to 1968 and has been tested since: keep a text almost entirely comprehensible and weave the new language in just above your threshold, so meaning arrives from context rather than from a dictionary. Weft's addition is tying the difficulty to your attention, so the time you were going to lose anyway is what buys the vocabulary.
 
 You already know more French than you think. A very large part of English arrived from French, and nearly as much again from Latin, which French grew out of, so the word on your page is often already inside an English word you use — and the tooltip says which. cheval shares a root with "cavalry" and "chivalry", fenêtre with "defenestration", jour with "journal" and "journey". That is the difference between memorising a word and noticing you have known it for years.
 

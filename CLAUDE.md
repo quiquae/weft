@@ -23,7 +23,7 @@ sites on the first-run page.
 
 Three targets are built from one source: `chrome` (which Edge takes
 unchanged), `firefox`, `safari`. The pedagogical method is the diglot weave
-(Blair, BYU, 1970s); Weft's own contribution is tying difficulty to attention
+(Burling, 1968); Weft's own contribution is tying difficulty to attention
 and scheduling with FSRS-6. `docs/PEDAGOGY.md` separates the cited research
 from the judgement calls.
 

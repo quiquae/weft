@@ -22,13 +22,13 @@ Point at a word and it gives you the English back.
 
 ## Why this works
 
-This is not a new idea. It is the **diglot weave**, developed by Robert Blair
-at BYU in the 1970s: keep a text 95–98% comprehensible and weave the new
-language in just above the reader's threshold, so meaning arrives from context
-rather than from a dictionary. Replications have found it as effective as
-drilling for vocabulary acquisition and considerably more pleasant, and an
-IES-funded tool called LoomVue has since applied the same method with adaptive
-difficulty. Weft's contribution is not the method — it is tying the difficulty
+This is not a new idea. It is the **diglot weave**, which goes back to the
+linguist Robbins Burling in 1968: keep a text almost entirely comprehensible
+and weave the new language in just above the reader's threshold, so meaning
+arrives from context rather than from a dictionary. A controlled study found it
+as effective as drilling for vocabulary acquisition, and an IES-funded tool
+called LoomVue has since applied the same method to English learners in
+school, adjusting the words as the reader gains skill. Weft's contribution is not the method — it is tying the difficulty
 to *attention*, so that the time you were going to lose anyway is the thing
 that buys the vocabulary.
 

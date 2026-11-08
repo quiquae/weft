@@ -29,8 +29,8 @@ minutes on an infinite feed and a third of the words Weft knows are in French.
 
 Point at a word and it gives you the English back.
 
-**Why it works.** This is the diglot weave, a method developed at BYU in the
-1970s and tested since: keep a text almost entirely comprehensible and
+**Why it works.** This is the diglot weave, a method that goes back to 1968
+and has been tested since: keep a text almost entirely comprehensible and
 weave the new language in just above your threshold, so meaning arrives from
 context rather than from a dictionary. Weft's addition is tying the difficulty
 to your attention, so the time you were going to lose anyway is what buys the

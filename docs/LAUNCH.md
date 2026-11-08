@@ -90,12 +90,11 @@ standalone. If in doubt, message the moderators — they answer.
 > you read into the language you are learning — and makes it harder the longer
 > you stay on a page
 >
-> The method is not mine. It is the diglot weave, out of BYU in the 1970s:
+> The method is not mine. It is the diglot weave, which goes back to 1968:
 > keep a text almost entirely comprehensible and weave the new language in
 > just above your threshold, so meaning arrives from context rather than a
-> dictionary. There is a controlled study where college Spanish learners using
-> a diglot reader picked up as much vocabulary as students drilling on
-> purpose-built software, incidentally, and enjoyed it more
+> dictionary. There is a controlled study where a diglot reader proved as
+> effective for vocabulary as purpose-built drill software
 > ([Christensen, Merrill & Yanchar 2007](https://doi.org/10.1080/09588220601118511)).
 >
 > What I added is the bit I actually wanted: the proportion goes **up with the
@@ -189,7 +188,7 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 >
 > **Comment:**
 >
-> The idea is the diglot weave (BYU, 1970s): keep a page almost entirely
+> The idea is the diglot weave (Burling, 1968): keep a page almost entirely
 > comprehensible and swap in words of the language you are learning just above
 > your threshold, so you infer them from context. What I added is tying the
 > proportion to measured attention on the page, so an infinite feed gets
