@@ -273,7 +273,7 @@ export function minutes(v: number): string {
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
-/** "1 word in 16" reads better than "6%" for a density. */
+/** "1 word in 17" reads better than "6%" for a density. */
 export function oneWordIn(ratio: number): string {
   if (ratio <= 0) return 'none';
   if (ratio >= 1) return 'every word';

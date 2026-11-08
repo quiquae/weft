@@ -783,9 +783,11 @@ test.describe('the popup on a listed site the browser never granted', () => {
   /*
    * Onboarding keeps the sites a reader chose even when the permission prompt
    * is declined, and the settings page warns of each one; but the popup on
-   * such a site printed "6% of the content words is in French" over a page
-   * no content script is registered on, where docs/SUPPORT.md says it names
-   * the missing grant and offers to ask the browser again.
+   * such a site printed "1 word in 17 of the content words is in French"
+   * over a page no content script is registered on, where docs/SUPPORT.md
+   * says it names the missing grant and offers to ask the browser again. The
+   * words refused below are the popup's density line's, which
+   * tests/tools/density-copy.test.ts holds to the popup's source.
    */
   test('names the missing grant and offers to ask, instead of a density', async ({
     context,
@@ -822,7 +824,7 @@ test.describe('the popup on a listed site the browser never granted', () => {
     });
     // Not clicked: Chrome's permission dialog cannot be dismissed from here.
     await expect(popup.getByRole('button', { name: /grant access to example\.com/i })).toBeVisible();
-    await expect(popup.getByText(/of the content words is in/i), 'a density was printed over an unwoven page').toHaveCount(0);
+    await expect(popup.getByText(/of the words Weft knows is in/i), 'a density was printed over an unwoven page').toHaveCount(0);
     await popup.close();
   });
 });
