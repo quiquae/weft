@@ -6,7 +6,7 @@
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
 of this session — typecheck clean, **674** unit / 156 suites, **119** jsdom / 26
-suites, **626** tool tests / 160 suites, **49** e2e passing
+suites, **634** tool tests / 164 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1003 KB each, all
 passing `npm run validate`. The package grew
@@ -704,10 +704,12 @@ three, and `tests/tools/node-floor.test.ts` fails if no job is on the floor
 or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
-**So the whole of B0 is closed. `Now` holds two agent-shaped items, as of
-2026-11-08 — Levels C1 and C2 weaving almost nothing, and
-`docs/PEDAGOGY.md` read claim by claim — and every unchecked item in `Next`
-waits on a call of Creagh's:** the four Pro features sold and never built, the Firefox
+**So the whole of B0 is closed. `Now` holds four agent-shaped items, as of
+2026-11-08 — a harness for the content script's page object, `mete` and
+`cwic` told as false friends, an irregular past kept from a translation
+service, and the verbs chip's copy — and every unchecked item in `Next`
+waits on a call of Creagh's:** the four function-word switches that weave
+nothing, the four Pro features sold and never built, the Firefox
 data-collection declaration, the Safari subtitle, the site's favicon, and
 how Firefox 140 to 145 should draw a woven word. A run that finds `Now` empty reads a written promise against
 the code, as the runs of 2026-11-05 to -07 did. Since
@@ -2561,13 +2563,39 @@ registered**, and nothing below it can move until it is.
       moved, the documentation and first-run sets did not. Unit 671 → **674**
       / 155 → **156**, e2e 48 → **49**, total 1464 → **1468**. See Notes.
 
-- [ ] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
-      sources.** Queued 2026-11-07 as the item after the store description:
-      the other document of claims no run has read whole. It cites three
-      studies and states the defaults' reasons; the store description's
-      "tested since" now leans on it. About 60 minutes.
-
-## Next
+- [x] **Read `docs/PEDAGOGY.md` claim by claim against the code and its
+      sources.** Done 2026-11-08, about 75 minutes across a session-limit
+      stop. Twenty-odd claims about the product were read against the code
+      and stand — the default part-of-speech order, the seven letterform
+      switches and their defaults, the retirement test (three reviews, 21
+      days' stability, 85% recall), the grades, FSRS-6's R(S, S) = 0.9 test,
+      the quiz's pool and leniency, one band per 200 retired words,
+      exposures counted only on screen, `idealZipf`'s 6.2 to 3.2, and "the
+      target is usually the literal ancestor", **236 of 358** Old English
+      seed rows. Wrong or short of it: `pecus` "gave us *pecuniary*", where
+      the pack has `pecūnia`; `sōþ` in the false-friend table, where *sooth*
+      still means truth; "both forms are authored for every noun", where 55
+      weave no plural; the `-ing` form as "an authored present participle",
+      where Spanish, Portuguese and Italian weave the gerund; four of the
+      selector's ten factors unnamed; "a four-word sentence" left alone,
+      where it is three words or fewer; `nation`/`nación`, which no pack has;
+      and the function-word switches offered "because someone drilling
+      articles may genuinely want them", which weave nothing (below). **The
+      sources said less than the page did.** Christensen et al.'s abstract
+      credits the method to Burling, not "Robert Blair at BYU in the
+      1970s", and says "equally as effective", not that learners enjoyed it
+      more; Nemati and Maleki's says "divided into two groups of 30", not
+      randomly assigned; the LoomVue award cited is Phase II, its 20% is
+      self-perceived word knowledge in a 13-student pilot, and WestEd is on
+      neither award page. The BYU origin was in nine sentences, the store
+      description's four pasted copies among them, and the study summaries
+      on the landing page, the README and the Show HN draft; all corrected.
+      `tests/tools/pedagogy.test.ts`, 8 tests in 4 suites, holds the doc's
+      examples, its false-friend table, "usually the ancestor", the
+      selector's factors read off `scoreCandidate()` and the packs' parts of
+      speech, and refuses the BYU origin in any paragraph naming the weave:
+      red first on `pecus`, `sōþ` and the four factors, and two probes, each
+      restored by md5. See Notes.
 
 - [ ] **Give the content script's page object a harness outside the browser.**
       Found 2026-11-08. `WeftPage` in `src/content/index.ts` keeps four
@@ -2582,6 +2610,56 @@ registered**, and nothing below it can move until it is.
       first step is moving the class to a module of its own and constructing
       it in jsdom with a stub renderer and a stubbed `send`. About 90 minutes;
       read the import side effects first.
+
+- [ ] **Tell `mete` and `cwic` as false friends, as the documents do.** Found
+      2026-11-08. `docs/PEDAGOGY.md`'s table and the landing page's Old
+      English table call both false friends, and the feed classes a word as
+      one only when its note matches `FALSE_FRIEND` in
+      `src/core/discoveries.ts` — `meant`, `means`, `simply`, `not a`,
+      `rather than` — which "“mete” was food of any kind" and "“the quick
+      and the dead”" do not, so the dashboard tells both as plain descents.
+      Either reword the two notes (each is repeated in
+      `tools/seed/ang-notes.tsv`, and `mete`'s in the landing page's
+      `CHECKED` ledger in `tests/tools/build-site.test.ts`, so all three move
+      together, and the pack, the site and any feed screenshot with them) or
+      widen the pattern, which reclassifies every note that matches it in
+      seven packs. Measure the second before choosing it. About 45 minutes.
+
+- [ ] **Keep an irregular past tense away from a translation service.** Found
+      2026-11-08 by reading, not measured. `guessPos()` declines a word
+      ending in `-ed`, `-ing` or `-s` as a verb, but returns `verb` at 0.65,
+      above the 0.55 the content script acts on, for any word after a
+      subject pronoun, so "she **went** home" sends *went* as a verb and the
+      service, asked for the infinitive, gets *aller* woven under a past
+      form — the "he couru" `docs/PEDAGOGY.md` says Weft never teaches, on
+      the provider path only. Test-first in the guesser's unit tests: a
+      short list of irregular pasts after a pronoun must return null. About
+      30 minutes, and it moves `src/core/`.
+
+- [ ] **Say what the verb switch weaves, and how many senses "light" has.**
+      Found 2026-11-08. The settings page's verbs chip
+      (`src/ui/options/sections.tsx:48`) says "Woven as infinitives;
+      inflected English forms are skipped", where every pack weaves an
+      `-ing` form too, and a comment in `scoreCandidate()` says "light" has
+      nine senses where the core list gives eight. Both are in `src/`, so
+      all three screenshot groups go stale by provenance and want
+      regenerating and stamping. About 20 minutes and the regeneration.
+
+## Next
+
+- [ ] **Build or drop the four function-word switches.** Found 2026-11-08,
+      and a call for Creagh. Settings offers articles, prepositions,
+      conjunctions and pronouns beside the six parts of speech woven by
+      default, each titled "Not recommended", and switching any of them on
+      weaves nothing: no pack has a single row of `det`, `prep`, `conj` or
+      `pron`, and `guessPos()`, the provider path's only classifier, returns
+      noun, verb, adjective or adverb and nothing else. `docs/PEDAGOGY.md`
+      now says so, and `tests/tools/pedagogy.test.ts` fails the day a pack
+      gains such a row, so the sentence moves with it. Recommended: drop the
+      four chips, as the four Pro features that could not be had were taken
+      off sale, since a control that changes nothing is a promise too; the
+      other way is a few dozen rows per pack, each needing the ledgers every
+      other row has.
 
 - [x] **Hold the artwork's type stack to the stylesheets' `--serif`.**
       Done 2026-10-26, the run after the palette's. `SERIF` in
@@ -8247,6 +8325,59 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — `docs/PEDAGOGY.md` read against the code and its sources.**
+Seven things a later run would be sorry not to know:
+
+1. **"Usually the literal ancestor" is true, two thirds, counted a row at a
+   time.** 236 of 358 Old English seed rows name as their etymon the very
+   English word they replace. The 40% recorded for `docs/LAUNCH.md`'s blurb
+   counted every surface form, and a plural row's `src` is the English
+   plural while its etymon is the lemma, so *menn* read as no ancestor of
+   *men*. The guard counts rows where `src === lemma`.
+2. **Where each source could be read.** ERIC's record of Christensen et al.
+   loads (`eric.ed.gov/?id=EJ764047`); Taylor & Francis and ScienceDirect
+   refuse automated readers with a 403. For Nemati and Maleki the abstract
+   came from Semantic Scholar's API by curl,
+   `api.semanticscholar.org/graph/v1/paper/DOI:10.1016/j.sbspro.2014.03.551?fields=title,abstract,authors,year`,
+   and the volume and pages from CrossRef's, `api.crossref.org/works/<doi>`,
+   neither needing a key or an address. English Wikipedia has no article
+   under "Diglot weave" or "Diglot reader". Both LoomVue award pages load,
+   the Phase I one at the same address without the `-0`.
+3. **Burling is the origin the cited study gives; Blair is the one nobody
+   sourced.** Christensen et al.'s abstract: "The diglot method, originally
+   conceived by Burling". CrossRef has Burling, "Some Outlandish Proposals
+   for the Teaching of Foreign Languages", *Language Learning* 18 (1–2),
+   61–76, June 1968; its DOI, `10.1111/j.1467-1770.1987.tb00390.x`, carries
+   1987 and resolves to the 1968 article, so the documents print no DOI
+   for it. [*Humanising Language Teaching*, January
+   2003](https://old.hltmag.co.uk/jan03/mart3.htm) relays Blair's own
+   history, "Diglot-Weave Input" (1991, in Celce-Murcia's *Teaching English
+   as a Second or Foreign Language*), as starting with Burling in 1968, and
+   names Blair's Power-Glide courses. No source read says Brigham Young
+   University or the 1970s; a BYU master's thesis of 1993 on a video
+   diglot weave is the only BYU link found. To restore BYU, cite a page
+   that says it; `pedagogy.test.ts` refuses it until then.
+4. **WestEd is LoomVue's claim, not the award's.** A search summary put a
+   WestEd review "after only about a week" on loomvue.com; neither IES page
+   names WestEd, and no evaluation report was found, so the documents no
+   longer say it. A July 2022 LoomVue post reportedly calls WestEd's work on
+   the web app qualitative. Unread first-hand.
+5. **Nemati and Maleki's abstract is odd, so quote less of it.** It reports
+   "a statistically significant difference between the means of the two
+   groups in both pretest and posttest", which, at pretest, would undercut a
+   between-groups comparison. The documents say only "a significant
+   difference", the authors' reading, and that the abstract does not say the
+   groups were randomised.
+6. **Three findings are queued rather than fixed**, each moving `src/` or a
+   pack: `mete` and `cwic` are called false friends and told by the feed as
+   plain descents; an irregular past after a subject pronoun can reach a
+   translation service as a verb; and the verbs chip says inflected forms
+   are skipped. Plus one call, the function-word switches, in `Next`.
+7. **`node --test` ran the new guard green and `tsc` refused it**, on
+   `defaultSettings()` called with no arguments: the gate's typecheck caught
+   it in three seconds. The journal's rule from 2026-11-01 again — run
+   `npx tsc --noEmit` on a new test file before believing its green run.
 
 **2026-11-08 — a node rounds its budget by its own draw, and a re-weave
 reaches every node.** Six things a later run would be sorry not to know:

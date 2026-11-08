@@ -5,12 +5,17 @@ says which are well supported and which are judgement.
 
 ## The method has a name
 
-The **diglot weave** was developed by Robert Blair at Brigham Young University
-in the 1970s. A text is kept 95–98% comprehensible in the reader's first
-language and the target language is woven in just above their threshold, so
-meaning arrives from context rather than from a dictionary. It is the same
-principle as Krashen's *i+1* and the same mechanism as a "sandwich story" or
-an interlinear edition.
+The **diglot weave** keeps a text in the reader's first language and weaves
+the target language into it a little at a time, just above what they can
+already read, so meaning arrives from context rather than from a dictionary.
+It goes back to the linguist Robbins Burling, who in 1968 wove French into
+English texts by degrees: "Some Outlandish Proposals for the Teaching of
+Foreign Languages", *Language Learning*, 18, 61–76. The first study below
+calls the diglot method "originally conceived by Burling". Robert Blair, whose
+Power-Glide courses were built on it, tells its history in his 1991 chapter
+"Innovative Approaches", as
+[an account in *Humanising Language Teaching*](https://old.hltmag.co.uk/jan03/mart3.htm)
+relays it. It is the same principle as Krashen's *i+1*.
 
 The evidence is good rather than overwhelming, and it is checkable:
 
@@ -20,11 +25,14 @@ The evidence is good rather than overwhelming, and it is checkable:
   [doi:10.1080/09588220601118511](https://doi.org/10.1080/09588220601118511) ·
   [ERIC EJ764047](https://eric.ed.gov/?id=EJ764047)
 
-  College learners of Spanish using a diglot reader acquired *as much*
-  vocabulary as those using a sophisticated computer drill-and-practice
-  program — and did so incidentally, from context, while reporting that they
-  enjoyed it more. The headline is not that the weave wins. It is that it
-  ties, for free, on time you were spending anyway.
+  Set against a sophisticated computer drill-and-practice program, a
+  computer-based diglot reader was, in the abstract's words, "equally as
+  effective as the drill and practice program in facilitating vocabulary
+  acquisition", and the study "reaffirmed the positive affective benefit of
+  the diglot method". ERIC
+  indexes the learners as college students of Spanish. The headline is not
+  that the weave wins. It is that it ties, and Weft's bet is that a tie
+  bought with reading you were doing anyway is worth having.
 
 - **Nemati, A., & Maleki, E. (2014).** "The Effect of Teaching Vocabulary
   through the Diglot-Weave Technique on Vocabulary Learning of Iranian High
@@ -32,26 +40,32 @@ The evidence is good rather than overwhelming, and it is checkable:
   1340–1345.
   [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S1877042814026421)
 
-  Sixty first-year students, randomly assigned, five 45-minute sessions.
-  ANCOVA found a statistically significant advantage for the diglot-weave
-  group over conventional vocabulary teaching. Small, short, and one
-  population — but a real experiment with a real control group.
+  Sixty high-school students in two groups of thirty, five 45-minute
+  sessions. ANCOVA found a statistically significant difference between the
+  groups, which the authors read as the diglot weave reinforcing vocabulary
+  learning against conventional teaching. Small, short, one population, and
+  by its abstract not randomised — but a comparison against a control group
+  taught the usual way.
 
 - **LoomVue Browser: Supporting Language Learning with a Dynamic Diglot
-  Weave.** IES SBIR Phase I.
+  Weave.** IES SBIR Phase II, 2021–2023, King's Peak Technology, after a
+  Phase I in 2020.
   [ies.ed.gov award](https://ies.ed.gov/use-work/awards/loomvue-browser-supporting-language-learning-dynamic-diglot-weave-0)
 
-  The closest prior art, and a browser extension: it flips words between
-  English and Spanish as a machine-learning model judges the reader's skill.
-  Reported nearly 20% improvement pre- to post-test on a researcher-developed
-  vocabulary measure, and an external evaluation by WestEd found middle-school
-  English learners significantly increased vocabulary knowledge after a week.
+  The closest prior art: passages blending English and Spanish for middle-
+  and high-school English learners, "with a machine learning engine
+  continually adjusting the words as readers gain skill", and a browser
+  extension planned in Phase II. The award page reports the Phase I pilot,
+  thirteen middle-school English learners and four teachers, as "nearly 20%
+  improvement from pre- to post- test on a researcher developed measure" of
+  their self-perceived knowledge of the words.
 
 Note what the last one does **not** do, because it is the honest statement of
-Weft's contribution: LoomVue adapts difficulty to *measured skill*, for
-English learners in classrooms. Weft adapts it to *measured attention*, for
-adults on the open web. The pedagogy is borrowed and credited. Tying it to
-the time you were going to lose anyway is the new part, and it is untested.
+Weft's contribution: LoomVue adapts the words to *the reader's growing
+skill*, for English learners in school. Weft adapts difficulty to *measured
+attention*, for adults on the open web. The pedagogy is borrowed and
+credited. Tying it to the time you were going to lose anyway is the new part,
+and it is untested.
 
 Weft's contribution is not the method. It is tying the difficulty to
 **attention**, so the time you were going to lose anyway is what buys the
@@ -68,8 +82,10 @@ nouns above all — are where comprehensible input lives, because a concrete
 noun in a full sentence can be recovered from its surroundings.
 
 The default preference order is nouns, adjectives, verbs, adverbs, numbers,
-interjections. Function words are available in settings, marked "not
-recommended", because someone drilling articles may genuinely want them.
+interjections. Settings offers articles, prepositions, conjunctions and
+pronouns too, marked "not recommended", but today those four switches weave
+nothing: no pack Weft ships has a single one of them, and a translation
+service is only ever asked for a noun, a verb, an adjective or an adverb.
 
 ## Only number is inflected, and that is a structural insight
 
@@ -81,14 +97,20 @@ That collapses the entire inflection problem to one axis:
 
 - **Nouns** inflect for number, because English marks number and a mismatch is
   visible. "three chat" reads as a bug; "three chats" reads as a lesson. Both
-  forms are authored for every noun.
+  forms are authored wherever English's plural can be woven. A mass noun such
+  as *milk* or *gold* weaves its singular only, and so does a noun whose
+  dictionary refuses it a plural or gives the plural another gender.
 - **Adjectives and adverbs** use the citation form only. Romance gender and
   number agreement has no English trigger, and comparatives are skipped rather
   than guessed.
 - **Verbs** are woven in the base form, mapped to the target infinitive, plus
-  the `-ing` form mapped to an authored present participle. Third-person `-s`
-  and past forms are **never** woven. "he couru" teaches a form that does not
-  exist, and teaching a wrong form is worse than teaching nothing.
+  the `-ing` form, mapped to the form its language uses there: the present
+  participle in French, German, Latin and Old English, and the gerund in
+  Spanish, Portuguese and Italian, where the present participle is another
+  word. Third-person `-s` and past forms are in **no** pack, and a translation
+  service is never sent a word ending in `-ed`, `-ing` or `-s` as a verb. "he
+  couru" teaches a form that does not exist, and teaching a wrong form is
+  worse than teaching nothing.
 
 "He wants to **courir**" is not grammatical French and is not meant to be. The
 reader is decoding a French word inside an English clause, and the infinitive
@@ -100,9 +122,11 @@ English marks case by word order rather than by endings, so a nominative
 headword slots into an English frame unambiguously. "The **rēx** was angry" is
 clear. "The **rēgis** was angry" is wrong in both languages.
 
-That is why both use `morphology: 'citation'` — nominative singular for nouns,
-infinitive for verbs — and why the approach that would fail for a
-Latin-to-Latin sentence works perfectly for a Latin word in an English one.
+That is why both weave a noun only in the nominative, singular or plural, and
+a verb in its infinitive or present participle — `morphology: 'citation'`,
+which also asks a translation service for the nominative singular and the
+infinitive — and why the approach that would fail for a Latin-to-Latin
+sentence works for a Latin word in an English one.
 
 ### The etymon is the point
 
@@ -114,10 +138,11 @@ stickier framing, and a true one.
 
 For Latin it is the learned descendant rather than the ancestor: `vacca` gave
 us *vaccine* (named after the cowpox Jenner used), `mīlle passūs` gave us
-*mile*, `paene īnsula` gave us *peninsula*, `pecus` — cattle, the original
-wealth — gave us *pecuniary*. Every Latin note names the entries it was
-checked against, Lewis & Short for the Latin and etymonline for the English,
-in `tools/seed/la-notes.tsv`.
+*mile*, `paene īnsula` gave us *peninsula*, `pecūnia`, money — from *pecus*,
+cattle, the original wealth — gave us *pecuniary*. Every Latin note names the
+entries it was checked against in `tools/seed/la-notes.tsv`: Lewis & Short's
+for its headword, and etymonline's for the English word whenever the note
+names it.
 
 The false friends are marked deliberately, because they are the most memorable
 thing in the language:
@@ -130,7 +155,10 @@ thing in the language:
 | `wīf` | woman, and neuter | *wife* |
 | `cwic` | alive | *quick*, as in "the quick and the dead" |
 | `grēat` | thick, massive | *great* |
-| `sōþ` | true | *sooth*, as in "forsooth" |
+
+`sōþ` used to close it, as the ancestor of *sooth*, but *sooth* still means
+truth, which is what `sōþ` meant: a word that survived, as in "forsooth" and
+"soothsayer", rather than one that moved.
 
 `drēam` used to head this table, as the ancestor of *dream*. It meant joy and
 music, which makes it a false friend still, but etymonline says that "much
@@ -145,7 +173,7 @@ the macron. Most historical-language tools collapse orthographic difficulty
 into vocabulary difficulty, which is why they feel impossible on day one.
 
 Weft separates them. Thorn, eth, ash, wynn, yogh, long s and macrons each have
-a switch. A beginner reads `theod` and graduates to `þēod` when they want to
+a switch. A beginner reads `thēod` and graduates to `þēod` when they want to
 read an edition. Macrons default **on**, because vowel length is information
 rather than decoration; the exotic letterforms default off.
 
@@ -156,7 +184,7 @@ The selector scores each candidate on:
 - **Due** — how far its retrievability has decayed. An unseen word scores 1.
 - **Cognate** — orthographic similarity on a folded skeleton, plus a bonus for
   a known suffix correspondence, floored by the etymon when there is one.
-  `nation`/`nación` needs almost no work and delivers comprehension plus the
+  `music`/`música` needs almost no work and delivers comprehension plus the
   insight that the languages are related. That is the right place to start.
 - **Frequency** — distance from the Zipf value a learner at this level should
   mostly be meeting, which falls from about 6.2 at A1 to 3.2 at C2.
@@ -170,12 +198,24 @@ The selector scores each candidate on:
   ceiling.
 - **Guessability** — sentence length, saturating at twelve words. A longer
   sentence carries more context to recover the word from.
-- **Ambiguity** — a multiplicative penalty. "light" with eight senses is a bad
-  swap however good everything else about it looks.
+- **Part of speech** — the order the learner put the parts of speech in,
+  nouns first by default.
+- **Confidence** — a multiplicative gate on how sure the pack is of the
+  mapping, so a doubtful translation cannot be rescued by being a cognate.
+- **Ambiguity** — a multiplicative penalty, and by default a limit: a word
+  with more than four senses is not woven at all. "light" with eight senses
+  is a bad swap however good everything else about it looks.
+- **Repetition** — a multiplicative gate: a word may be woven three times on
+  a page at full score, and after that it scores a fraction as much, because
+  past that point it is wallpaper rather than practice.
+- **Position** — a slight penalty on a capitalised word, usually the first of
+  its sentence, in a sentence longer than three words: swapped, it loses the
+  capital that marked where the sentence began.
 
-And the layout constraints: a minimum gap so two woven words never touch, a
-hard cap per sentence, and short sentences left alone entirely because a
-four-word sentence has no spare context.
+And the layout constraints: a minimum gap of two words so two woven words
+never touch, a cap of three per sentence, a daily limit on words met for the
+first time, and short sentences left alone entirely because a sentence of
+three words or fewer has no spare context.
 
 ## Difficulty never rises mid-word
 
@@ -207,6 +247,7 @@ Weft never asks you to sit down and study, so grades are inferred:
 | You revealed the English | Again (1) |
 | Tooltip: "Not sure" | Hard (2) |
 | A quiz answer, correct | Good (3) |
+| A quiz answer, wrong | Again (1) |
 | Tooltip: "I knew it" | Easy (4) |
 
 Needing the English is the honest signal that a word is not known, and it is
@@ -222,7 +263,8 @@ stability, and the thing that would silently drift if the port were wrong.
 Questions are drawn **only** from words Weft has already shown you. It is
 never a test of unseen material; it is a check that the exposure did something.
 Grading is generous on purpose — accents, articles and Old English letterform
-choices are all forgiven, and a single-character slip on a longer word passes —
+choices are all forgiven, and a single-character slip in a typed answer of
+five letters or more passes —
 because the quiz is retrieval practice, not a spelling bee. Being strict would
 turn a productive gate into a wall, and a wall gets uninstalled.
 
