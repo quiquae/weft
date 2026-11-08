@@ -361,6 +361,76 @@ export function splitImportedSettings(
 }
 
 /**
+ * What a ready change writes onto the settings as they are now.
+ *
+ * Until 2026-11-08 a queued list landed whole, so a list changed at once
+ * while it waited was overwritten: a site added to the taxed list during the
+ * cooldown of a removal was dropped when the removal landed, and an entry
+ * taken off the never-weave list came back with a queued addition. A list
+ * the change carries a `base` for lands as a three-way merge instead.
+ */
+function landingPatch(settings: Settings, change: PendingChange): Patch {
+  if (!change.base) return change.patch;
+  const out: Patch = { ...change.patch };
+  for (const [path, to] of Object.entries(change.patch)) {
+    const from = change.base[path];
+    const current = getPath(settings, path);
+    if (Array.isArray(from) && Array.isArray(to) && Array.isArray(current)) {
+      out[path] = mergeList(from, to, current);
+    }
+  }
+  return out;
+}
+
+/** A rule is one entry by its pattern; anything else is one entry by its value. */
+function entryKey(item: unknown): string {
+  if (item && typeof item === 'object' && typeof (item as { pattern?: unknown }).pattern === 'string') {
+    return `pattern:${(item as { pattern: string }).pattern}`;
+  }
+  return `value:${JSON.stringify(item)}`;
+}
+
+/**
+ * Merge what a change did to a list onto the list as it is now: an entry the
+ * change set lands, an entry it removed goes, and one it never touched keeps
+ * whatever was done to it since — added, edited or taken off. The current
+ * list's order holds, the change's additions after it. A list holding one
+ * key twice cannot be merged by key, and lands whole.
+ */
+function mergeList(base: unknown[], patch: unknown[], current: unknown[]): unknown[] {
+  const index = (list: unknown[]) => new Map(list.map((item) => [entryKey(item), item]));
+  const was = index(base);
+  const to = index(patch);
+  const now = index(current);
+  if (was.size !== base.length || to.size !== patch.length || now.size !== current.length) return patch;
+
+  // By content, not key order: a page may write an untouched rule's keys in
+  // another order than the stored one.
+  const canonical = (v: unknown) =>
+    JSON.stringify(v, (_key, x: unknown) =>
+      x && typeof x === 'object' && !Array.isArray(x)
+        ? Object.fromEntries(Object.entries(x).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
+        : x,
+    );
+  const same = (a: unknown, b: unknown) => canonical(a) === canonical(b);
+  const out: unknown[] = [];
+  for (const item of current) {
+    const key = entryKey(item);
+    if (to.has(key)) {
+      const before = was.get(key);
+      out.push(was.has(key) && same(to.get(key), before) ? item : to.get(key));
+    } else if (!was.has(key)) {
+      out.push(item);
+    }
+  }
+  for (const item of patch) {
+    const key = entryKey(item);
+    if (!now.has(key) && !was.has(key)) out.push(item);
+  }
+  return out;
+}
+
+/**
  * Settle what finishing the first-run page writes.
  *
  * The first time, nothing has been committed to: the defaults are not a
@@ -437,6 +507,11 @@ export function requestChange(
     unlocksAt: now + cooldownMs,
     summary: assessment.summary,
   };
+  const base: Patch = {};
+  for (const [path, to] of Object.entries(patch)) {
+    if (Array.isArray(to)) base[path] = getPath(settings, path);
+  }
+  if (Object.keys(base).length) change.base = base;
 
   if (cooldownMs === 0 && !settings.friction.requireQuizToUnlock) {
     return {
@@ -514,7 +589,7 @@ export function applyReadyChanges(
   let next = settings;
   let log = state.log;
   for (const change of ready) {
-    next = applyPatch(next, change.patch);
+    next = applyPatch(next, landingPatch(next, change));
     log = appendLog(log, {
       at: now,
       summary: change.summary,

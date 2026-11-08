@@ -278,6 +278,13 @@ export interface PendingChange {
   summary: string;
   /** Set when a quiz gate is required and has been passed. */
   quizPassedAt?: number;
+  /**
+   * The value each list in `patch` had when the change was judged, so a list
+   * changed at once while this one waited is merged onto rather than
+   * overwritten (`applyReadyChanges`). Absent on a change queued before
+   * 2026-11-08, which applies whole.
+   */
+  base?: Record<string, unknown>;
 }
 
 export interface PanicState {

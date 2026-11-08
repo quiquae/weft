@@ -18,7 +18,7 @@ All of it in `chrome.storage.local`, on your computer:
 | Vocabulary | One record per word: how often it has appeared, how often you revealed it, and its FSRS stability and difficulty |
 | Words introduced today | The new words you met today, so the daily limit on new words holds across pages |
 | Attention | Seconds per registrable domain per day, and up to 60 days of daily totals, for at most 500 domains; a domain with no attention for 90 days is dropped |
-| Pending changes | Difficulty reductions waiting out their cooldown |
+| Pending changes | Difficulty reductions waiting out their cooldown, each with the list it changes as it stood when you asked, so it lands on the list as it is then |
 | An audit log | The last 200 difficulty changes you made |
 | Commitment record | The panic passes used today and when the current one ends, how many times Weft has found its stored state edited behind its back, when it last did and until when that holds the difficulty up, and the latest time the clock has shown, so a clock wound back is noticed |
 | Licence | If you install one: the licence as issued — its format version, tier, its id, the name it was issued to, when it was issued and when it expires. It is checked on this machine, sent nowhere, and never put in an export |
