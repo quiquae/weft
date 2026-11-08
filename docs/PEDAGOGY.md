@@ -25,10 +25,11 @@ The evidence is good rather than overwhelming, and it is checkable:
   [doi:10.1080/09588220601118511](https://doi.org/10.1080/09588220601118511) ·
   [ERIC EJ764047](https://eric.ed.gov/?id=EJ764047)
 
-  A computer-based diglot reader was, in the abstract's words, "equally as
+  Set against a sophisticated computer drill-and-practice program, a
+  computer-based diglot reader was, in the abstract's words, "equally as
   effective as the drill and practice program in facilitating vocabulary
-  acquisition", against a sophisticated computer drill, and the study
-  "reaffirmed the positive affective benefit of the diglot method". ERIC
+  acquisition", and the study "reaffirmed the positive affective benefit of
+  the diglot method". ERIC
   indexes the learners as college students of Spanish. The headline is not
   that the weave wins. It is that it ties, and Weft's bet is that a tie
   bought with reading you were doing anyway is worth having.
@@ -62,8 +63,9 @@ The evidence is good rather than overwhelming, and it is checkable:
 Note what the last one does **not** do, because it is the honest statement of
 Weft's contribution: LoomVue adapts the words to *the reader's growing
 skill*, for English learners in school. Weft adapts difficulty to *measured
-attention*, for adults on the open web. The pedagogy is borrowed and credited. Tying it to
-the time you were going to lose anyway is the new part, and it is untested.
+attention*, for adults on the open web. The pedagogy is borrowed and
+credited. Tying it to the time you were going to lose anyway is the new part,
+and it is untested.
 
 Weft's contribution is not the method. It is tying the difficulty to
 **attention**, so the time you were going to lose anyway is what buys the

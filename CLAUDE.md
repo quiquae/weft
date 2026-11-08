@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **674 pass**, 156 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **626 pass**, 160 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **634 pass**, 164 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1073,6 +1073,90 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — the pedagogy notes, read against the code and the studies they cite
+
+`TODO.md`'s one unchecked item in `Now`: `docs/PEDAGOGY.md`, the document of
+claims no run had read whole, which the README sends readers to and the store
+description's "tested since" leans on. The session was stopped at 21:14 by
+the account's session limit and resumed at 22:05 with its context; nothing
+was uncommitted.
+
+**Most of it holds, read against the code**: the default part-of-speech
+order, the seven letterform switches and their defaults, the retirement test,
+the grades, FSRS-6's R(S, S) = 0.9 test, the quiz's pool and leniency, one
+band per 200 retired words, exposures counted only on screen, `idealZipf`'s
+6.2 to 3.2, and "the target is usually the literal ancestor", **236 of 358**
+Old English seed rows. The 40% a run recorded on 2026-11-08 counted every
+surface form, and a plural row's English is not its etymon's spelling.
+**Seven claims about the product did not**: `pecus` "gave us *pecuniary*",
+where the Latin pack teaches `pecūnia`; `sōþ` in the false-friend table,
+where *sooth* still means truth; "both forms are authored for every noun",
+where 55 weave no plural; the `-ing` form as "an authored present
+participle", where three languages weave the gerund; four of
+`scoreCandidate()`'s ten factors unnamed; "a four-word sentence" left alone,
+where `protectShortSentences` is 4 and the test is `<`; and the function-word
+switches, offered for "someone drilling articles", which weave nothing,
+because no pack has a function word and `guessPos()` never returns one.
+
+**The sources said less than the page, and the page had spread.** The first
+study it cites, read on ERIC, credits the diglot method to Burling and says
+"equally as effective", not that learners enjoyed it more; CrossRef has
+Burling's paper in *Language Learning* 18, 1968. No source read says
+"Robert Blair at Brigham Young University in the 1970s", and that sentence
+was in nine places — the README, two launch drafts, the landing page twice,
+the store description and its four pasted copies, which now say "a method
+that goes back to 1968". Nemati and Maleki's abstract, read through Semantic
+Scholar's API after ScienceDirect refused, says "divided into two groups of
+30", not randomised. The LoomVue page cited is Phase II, its 20% is
+self-perceived word knowledge in a thirteen-student pilot, and WestEd is on
+neither award page. The landing page, the README and the Show HN draft
+carried the same summaries and are corrected with the page. **A summary of a
+study is a claim about a text, and the text is usually a fetch away.**
+
+`tests/tools/pedagogy.test.ts`, 8 tests in 4 suites, holds the document's Old
+English and Latin examples and its false-friend table to the packs through
+`entriesByTarget()`, "usually the ancestor" to the seed rows, the selector's
+factors to `scoreCandidate()`'s own `factors` record, and the packs' parts of
+speech to the sentence saying no pack has a function word, and refuses the
+BYU origin in any paragraph naming the weave. Red first on `pecus`, `sōþ` and
+the four factors; two probes, the BYU sentence put back into the README and a
+`det` row planted in the French pack, each failing by name and restored by
+md5. Node ran it green and `tsc` refused `defaultSettings()` with no
+arguments, the 2026-11-01 trap again. Tools 626 → **634** / 160 → **164**,
+total 1468 → **1476**, in five places, `docs/LAUNCH.md:220` first. No
+`CHANGELOG.md` paragraph and no screenshot group moved: nothing under `src/`
+did, and nothing that ships.
+
+Three findings are queued in `Now`, each moving `src/` or a pack: `mete` and
+`cwic` are called false friends and their notes match no `FALSE_FRIEND`
+word, so the feed tells them as plain descents; `guessPos()` returns `verb`
+for any word after a subject pronoun, so an irregular past such as *went*
+can reach a translation service, read but not measured; and the verbs chip
+says inflected forms are skipped. The function-word switches are a call in
+`Next`.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the guard and every copy: `npm run test:all` **exit 0** — typecheck
+clean, 674 unit / 156, 119 jsdom / 26, **634 tools / 164**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1003 KB × 3**
+passing `validate`, **49 e2e passed and 3 skipped in 6.2 min**, then build and
+validate again. Separately `npm run site` then `site:check`, the landing page
+having moved, and `artefacts:check`; `packs:verify` was not run, no pack or
+seed having moved. Only documents moved after the gate, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that the origin a cited study gives outranks one
+no source read gives, so Blair keeps the sentence about his history and loses
+the invention; that a claim on LoomVue's own site, not read first-hand and on
+neither award page, is left out rather than quoted; that `sōþ` leaves the
+false-friend table rather than getting a note, its meaning not having moved;
+and that the three queued findings are their own PRs, each moving `src/` or a
+pack.
+
+What needs a human: unchanged, everything below **B1** and the calls, and one
+more in `Next`: build or drop the four function-word switches.
 
 ### 2026-11-08 — a page of short paragraphs weaves its share, and escalation reaches the paragraphs that wove nothing
 
