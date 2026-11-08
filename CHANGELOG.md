@@ -9,6 +9,14 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**B2, C1 and C2 weave now.** Your level, on the settings page, offers A1
+to C2, and each level admits words from a band of difficulty around it. Every
+language's dictionary stops at about B2, and above that the band ran past it:
+B2, C1 and C2 wove nothing on ordinary prose, even at the ceiling, while the
+toolbar popup went on printing a density over the unwoven page. A level above
+everything the dictionary has now meets its rarest words, put first, rather
+than none. A1, A2 and B1 are unchanged.
+
 **The density says what it is a share of.** Weft weaves a share of the words
 it has a dictionary entry for, not of every word on the page, and the settings
 page's Resting density and Ceiling rows, the toolbar popup and the Standard
@@ -946,7 +954,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1448 tests: 666 unit, 119 in jsdom, 615 over the build tools, and
+**Built with** 1464 tests: 671 unit, 119 in jsdom, 626 over the build tools, and
 48 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
