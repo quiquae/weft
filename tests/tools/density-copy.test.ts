@@ -10,8 +10,11 @@
  * day the settings page's Resting density and Ceiling rows said "6% of content
  * words", the popup "1 word in 17 of the content words is in French", the
  * Standard preset "a third of the content words", and the landing demo's
- * readout "35% of content words": on a page where a third of the content
- * words have an entry, "6% of content words" overstated the density threefold.
+ * readout "35% of content words". Measured with `selectSwaps()` at level 1,
+ * one content word in nine has an entry in the README and in
+ * `docs/PEDAGOGY.md`, so on prose like theirs "6% of content words"
+ * overstated the density nearly ninefold; on the e2e pages, written from the
+ * pack's own words, three in five do.
  *
  * So, read from the code rather than typed here:
  *
