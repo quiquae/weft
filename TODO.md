@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-08:** every automatable check is green, measured at the end
-of this session — typecheck clean, **654** unit / 152 suites, **119** jsdom / 26
-suites, **601** tool tests / 154 suites, **47** e2e passing
+of this session — typecheck clean, **659** unit / 153 suites, **119** jsdom / 26
+suites, **601** tool tests / 154 suites, **48** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 999 KB each, all
+packages built at 1000 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -118,6 +118,10 @@ And to **999 KB** on 2026-11-08 by 2 870 bytes, 1 435 each in `background.js`
 and `options.js`, the two bundles that import `lock.ts`: the nine controls
 judged rule by rule and the six paths they join, Chrome's 996.268 → about
 999.07 KB, measured against `main`'s Chrome package built in a `/tmp` worktree.
+And to **1000 KB** later on 2026-11-08 by 482 bytes, `background.js` +205 and
+`onboarding.js` +277, a second finish of the first-run page governed and the
+notice saying what waits: Chrome's 999.070 → 999.541 KB, measured the same
+way.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
@@ -2407,9 +2411,29 @@ registered**, and nothing below it can move until it is.
       applied at once. Unit 644 → **654**; the packages print **999 KB**. The
       derived guard and the first-run page are the next item.
 
-- [ ] **Close the first-run page's back door, and hold every control to the
-      lock by derivation.** Found 2026-11-08 governing the nine.
-      1. **`complete-onboarding` applies any patch at any time.** The
+- [x] **Close the first-run page's back door.** Done 2026-11-08, the first
+      part of the item below, which was split. `splitOnboarding()` in
+      `src/core/lock.ts` lets the first finish write whatever the page sends
+      and holds every finish after it to the import's split — harder lands,
+      easier goes to `queueEasierSettings` (now exported from
+      `src/background/storage.ts`) — and the reply's `queued` puts a notice on
+      the done step. An import can no longer set `settings.onboarded` back to
+      false, which would have reopened the door: `settings: {}`, or any export
+      from before onboarding, did. The e2e `configure()` fixture sends
+      `CONFIGURE_FOR_TEST` (`src/shared/messages.ts`), which only a `--test`
+      build answers, `__WEFT_TEST__` folding it out of every other build and
+      `tools/validate-package.mjs` refusing a package that names it.
+      Test-first: 5 core tests, red on exactly the three defect cases; an e2e
+      test finishing the real page again with Taster, red with the old split
+      put back. All 31 shots byte-identical, three groups stamped. Unit 654 →
+      **659**, e2e 47 → **48**, total 1421 → **1427**, in six places; the
+      packages print **1000 KB**. See Notes.
+
+- [ ] **Hold every control to the lock by derivation, and stop a queued list
+      change overwriting what was added while it waited.** The rest of the
+      item found 2026-11-08 governing the nine; its first part, the
+      first-run page, is done above.
+      1. ~~**`complete-onboarding` applies any patch at any time.** The
          handler (`src/background/index.ts:516`) saves the patch with
          `saveSettings` and checks nothing, so opening `onboarding.html`
          again, choosing Taster and finishing drops the starting density,
@@ -2419,8 +2443,21 @@ registered**, and nothing below it can move until it is.
          it. Measure first: e2e `configure()` (`tests/e2e/fixtures.ts:199`)
          calls it in every test, so the fixture needs a seam of its own,
          test build only, or a fresh profile per test that is never
-         onboarded.
-      2. **The guard that would have caught the nine.** Derive every path
+         onboarded.~~ Done above.
+      2. **The guard that would have caught the nine.** Measured
+         2026-11-08: the options page writes 46 literal paths through
+         `c.set('<path>'`, one template (`weave.letterforms.${id}`, style)
+         and one variable (`data.tsx:45`, the provider key fields), and
+         `setMany` with the language chips' two keys and `preset.patch`; every
+         one goes through `request-change`, so the lock judges them, and the
+         guard's job is only that each is classed. Outside `GOVERNED_PATHS`:
+         `a11y.*`, `reveal.*`, `weave.renderMode`, `weave.style.*` and
+         `weave.letterforms.*` (style and access, never gated), `providers.*`
+         (privacy, held by `sendNoMoreThan`, not the cooldown),
+         `learning.targetLangs` (read by nothing but the free clamp), and
+         `learning.retireKnownWords`, the one to decide. Read the popup's
+         `request-change` patches too, and the onboarding page's.
+         Original note: Derive every path
          written by `c.set('<path>'` and `setMany` under `src/ui/options/`
          and `src/ui/onboarding/`, and require each be in `GOVERNED_PATHS`
          or a `NEUTRAL` table with why — style, reveal, a11y, the keys.
@@ -2433,7 +2470,7 @@ registered**, and nothing below it can move until it is.
          this run; true of an in-place edit since. Shape: store the rules the
          change was judged against beside its patch and apply the difference,
          or apply per pattern.
-      About 90 minutes; the back door first, it being the widest.
+      About 60 minutes left: the guard first, about 35, then the list.
 
 - [ ] **Say what the density is a share of, on the settings page and the
       popup.** Found 2026-11-08. The Resting density and Ceiling rows
@@ -8121,6 +8158,31 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-08 — the first-run page's back door, closed.** Four things a
+later run would be sorry not to know:
+
+1. **The e2e fixture no longer onboards.** `configure()` sends
+   `CONFIGURE_FOR_TEST`, which writes settings past the lock and marks the
+   install onboarded, and only a `--test` build's worker answers it. Do not
+   point it back at `complete-onboarding`: the screenshot and store
+   generators set three to five scenes in turn, and a target switch or a
+   lower density after a higher one is easier, so they would photograph the
+   scene before. Two friction tests still send `complete-onboarding`
+   themselves, once each, on a fresh profile, where it writes freely.
+2. **`settings.onboarded` now gates something, and had no reader before.**
+   Nothing read it until this change, so nobody had asked who writes it: an
+   import of `settings: {}` set it to false. `splitImportedSettings` keeps
+   it true now. A tampered settings object under "If stored settings are
+   edited: just note it" can still say anything, which is the user's own
+   governed choice.
+3. **A second finish queues rather than refuses**, the import's precedent;
+   the page's done step says how many settings wait and that cancelling in
+   Settings is free. Refusing outright was the other shape the item named.
+4. **Finishing the page needs `permissions.request`**, which raises Chrome's
+   dialog, and Playwright cannot answer it; the e2e test stubs it on the page
+   with `addInitScript`, as the popup tests stub `tabs.query`. The worker is
+   the part under test.
 
 **2026-11-08 — the store description, read against the code.** Six things
 a later run would be sorry not to know:

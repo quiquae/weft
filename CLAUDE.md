@@ -64,13 +64,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **654 pass**, 152 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **659 pass**, 153 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **601 pass**, 154 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.4 min here |
+| `npm run test:e2e` | real Chromium, extension loaded | **48 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 999 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 1000 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -241,6 +241,24 @@ is decoding with, for almost no vocabulary.
 nor restarts one, and re-requesting the same change does not move it.
 Cancelling a queued change is instant and free: friction on the way *out* of a
 commitment would be coercion. Anything that makes Weft harder applies at once.
+
+**The first-run page writes freely once, and the e2e harness has a door of
+its own.** `complete-onboarding` lets the first finish write whatever the page
+sends, the defaults being no commitment anyone made, and holds every finish
+after it to `splitOnboarding()` in `src/core/lock.ts` — the import's rule,
+harder at once and easier through the cooldown — because the page is a file at
+an address anyone can type. Until 2026-11-08 it wrote freely every time, so
+finishing it again with Taster dropped every governed path at once.
+`settings.onboarded` is what it reads, so an import never sets it back to
+false (`splitImportedSettings`). The e2e `configure()` fixture sets each scene
+through `CONFIGURE_FOR_TEST` (`src/shared/messages.ts`), which only a `--test`
+build's worker answers: `__WEFT_TEST__` folds the handler out of every other
+build, and `tools/validate-package.mjs` refuses a package that names it. Do not
+point the fixture back at `complete-onboarding`: the generator specs set
+scenes in turn — Old English after French, a lower density after a higher —
+and would photograph the scene before. `tests/e2e/friction.spec.ts` ("the
+first-run page, opened again") finishes the real page a second time with
+Taster and finds the density where it was.
 
 **A tamper penalty lasts 12 hours, and every sentence that says how long
 says so.** `recordTamper()` holds difficulty at the ceiling for
@@ -1017,6 +1035,69 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — the first-run page writes freely once, and the harness has its own door
+
+`TODO.md`'s top item, queued by the run that governed the nine, split as it
+allowed: its first part, the back door, is this PR, and the derived guard and
+the queued list's overwrite are the next item. `complete-onboarding` saved
+the page's patch with nothing checked, every time, so opening
+`onboarding.html` again — a file at an address anyone can type — and
+finishing it with Taster dropped every governed path at once.
+
+**The first finish writes freely and every one after is an import.**
+`splitOnboarding()` in `src/core/lock.ts` returns the page's settings whole
+while `settings.onboarded` is false, the defaults being no commitment anyone
+made, and `splitImportedSettings`'s split after: harder lands, easier goes to
+`queueEasierSettings`, now exported from the storage layer, and the reply's
+`queued` puts a notice on the done step. **The flag had no reader until this
+change**, so nobody had asked who writes it: an import of `settings: {}`, or
+of any export from before onboarding, set it back to false and would have
+reopened the door. `splitImportedSettings` keeps it true now. When a flag
+starts gating something, every writer of it joins the boundary.
+
+**The harness needed a door of its own, and it is shut in every other
+build.** e2e `configure()` sent `complete-onboarding` in every test, once a
+test on a fresh profile, but the screenshot and store generators set three to
+five scenes in turn, and a target switch or a lower density after a higher
+one is easier, so they would have photographed the scene before. The fixture
+sends `CONFIGURE_FOR_TEST` instead, which only a `--test` build's worker
+answers: `__WEFT_TEST__`, a new define, folds the handler and its name out of
+every other build — the licence key's precedent — and
+`tools/validate-package.mjs` refuses a package naming it. Probed: a test build
+carries it in `background.js` and the validator fails it by name beside the
+host permissions and the test key; the production bundles carry none.
+
+Test-first: 5 tests in a new suite of `tests/core/lock.test.ts`, red on the
+missing export, then on a stub keeping today's behaviour on exactly the three
+defect cases, the two over-correction guards passing; and an e2e test in
+`friction.spec.ts` that finishes the real page a second time with
+`permissions.request` stubbed, Chrome's dialog being unanswerable from
+Playwright, red with the old split put back — "the page did not say what is
+waiting" — and restored by md5. All 31 shots regenerated, every one
+byte-identical, the three groups stamped. Unit 654 → **659** / 152 → **153**,
+e2e 47 → **48**, total 1421 → **1427**, in six places, `docs/LAUNCH.md:221`
+first, and a `CHANGELOG.md` paragraph. **The packages print 1000 KB**: 482
+bytes, `background.js` +205 and `onboarding.js` +277, Chrome's 999.070 →
+999.541 KB against `main`'s built in a `/tmp` worktree.
+
+The session was stopped at 04:11 by the account's limit, with the gate
+finished and the branch committed but not pushed, and resumed at 07:04; the
+branch was pushed before anything else moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, **659 unit / 153**, 119 jsdom / 26, 601 tools / 154, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1000 KB × 3**
+passing `validate`, **48 e2e passed and 3 skipped in 3.7 min**, then build
+and validate again. Only documents moved after it, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a second finish should queue the easier
+half rather than be refused, the import's precedent; that the harness's
+write may mark the install onboarded, as a first finish does; and that the
+guard and the queued list's overwrite are a second PR.
 
 ### 2026-11-08 — the nine controls wait now, and the first-run page is the tenth
 
