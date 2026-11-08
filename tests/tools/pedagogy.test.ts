@@ -201,7 +201,7 @@ describe(`${DOC}'s statements about the packs and the selector`, () => {
       zipf: 5, senses: 1, band: 1, conf: 0.9,
     } as LexEntry;
     const token = { text: 'house', capitalized: false } as Token;
-    const input = { settings: defaultSettings(), effectiveLevel: 1, now: 0, explain: true } as unknown as SelectorInput;
+    const input = { settings: defaultSettings(0, 'pedagogy'), effectiveLevel: 1, now: 0, explain: true } as unknown as SelectorInput;
     const keys = Object.keys(scoreCandidate(entry, token, undefined, input, 12, 0).factors).filter((k) => k !== 'score');
     assert.ok(keys.length >= 6, `scoreCandidate() explained only ${keys.length} factors`);
 
