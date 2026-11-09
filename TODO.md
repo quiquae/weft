@@ -6,7 +6,7 @@
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
 of this session — typecheck clean, **680** unit / 157 suites, **127** jsdom / 28
-suites, **636** tool tests / 165 suites, **49** e2e passing
+suites, **639** tool tests / 167 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1004 KB each, all
 passing `npm run validate`. The package grew
@@ -2709,7 +2709,7 @@ registered**, and nothing below it can move until it is.
       in the second, and the three groups are stamped. Unit 674 → **680** /
       156 → **157**, total 1486 → **1492**, in six places. See Notes.
 
-- [ ] **Say what the verb switch weaves, and how many senses "light" has.**
+- [x] **Say what the verb switch weaves, and how many senses "light" has.**
       Found 2026-11-08. The settings page's verbs chip
       (`src/ui/options/sections.tsx:48`) says "Woven as infinitives;
       inflected English forms are skipped", where every pack weaves an
@@ -2717,6 +2717,29 @@ registered**, and nothing below it can move until it is.
       nine senses where the core list gives eight. Both are in `src/`, so
       all three screenshot groups go stale by provenance and want
       regenerating and stamping. About 20 minutes and the regeneration.
+
+      **Done 2026-11-09, both exactly as found.** Measured first: every pack
+      weaves 81 verbs under their English base form and 79 to 81 under the
+      `-ing` form — `ang` and `de` 81, `es`, `it` and `pt` 80, `fr` and `la`
+      79 — and nothing else. The chip says "Woven as infinitives, and as
+      participles or gerunds where English has “-ing”; past tenses and “-s”
+      forms are skipped", and the comment "eight". Two guards, each red
+      first on exactly its defect: `tests/tools/verb-copy.test.ts`, 2 tests,
+      derives from the shipped packs every kind of English form a verb is
+      woven under, refuses a kind `SAID` has no words for, and holds the
+      chip and `docs/PEDAGOGY.md`'s Verbs bullet to naming each kind in the
+      clause that says what is woven; `tests/tools/sense-counts.test.ts`, 1
+      test, holds every quoted count of an English word's senses — the
+      source, the tools, the seed headers, the README, `docs/` and `site/`,
+      four today — to `tools/seed/english-core.tsv`. Six probes, each
+      restored by md5 and each failing by name. The chip's copy is a `title`
+      attribute, which no shot draws: all 31 shots regenerated on a test
+      build after the commit that moved `src/`, 14 + 10 + 7 written, the
+      first documentation run moving `dashboard-milestones.png` and
+      `page-tooltip.png` by their recorded noise and the second writing all
+      14 byte-identical, and the three groups are stamped. Tools 636 →
+      **639** / 165 → **167**, total 1492 → **1495**, in six places, and a
+      `CHANGELOG.md` paragraph. See Notes.
 
 - [ ] **Reach the page object's escalation and provider paths in jsdom.**
       Found 2026-11-08, building the harness. `tests/dom/page.test.ts` fakes
@@ -8467,6 +8490,45 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-09 — the verbs chip says what it weaves, and "light" has the
+senses the core list gives.** Three things a later run would be sorry not to
+know:
+
+1. **A guard that reads a whole account passes one that names a form only to
+   refuse it.** The first draft of `verb-copy.test.ts` asked whether the
+   chip and `docs/PEDAGOGY.md`'s Verbs bullet each said `-ing`, and the
+   bullet says it twice: once for what is woven and once among the endings
+   a translation service is never sent. Reading it, a bullet that stopped
+   weaving the `-ing` form would still have passed. So the rule reads each
+   account's first clause, up to a full stop or a semicolon, and a probe
+   moving the chip's `-ing` into its "skipped" clause fails by name. When a
+   copy guard checks that a word is present, ask whether the word could be
+   present in a sentence that denies it.
+2. **The verb kinds are derived, so a new form fails before its copy can
+   lie.** `SAID` maps each kind of English form a verb is woven under, today
+   the base form and the `-ing` form, to the words an account must use for
+   it, and a pack weaving a verb under any other form — a planted
+   "walked" in `en-fr.json` was the probe — fails naming the form until
+   somebody writes its words, which is when the chip's "past tenses and
+   “-s” forms are skipped" has to change too. On the provider path a verb
+   is woven only under a base form: `guessPos()` returns a verb after
+   "to", a modal or a subject pronoun, and declines every `-ed`, `-ing`
+   and `-s` word as one, so the chip's skipped clause holds there as well.
+3. **The senses guard reads a seed's `#` header and none of its rows.** A
+   row's note is about the target word, and a note one day quoting how
+   many senses a Latin word has would be held to the English core list and
+   fail for a reason that is not a defect. `TODO.md` and `CLAUDE.md` are
+   not read either, being records that quote the wrong count to say it was
+   wrong. It reads four counts today — "light" in the core list's header,
+   in `docs/PEDAGOGY.md` and in the selector's comment, and "bridge" (2)
+   in the header, read as a count because its sentence is about senses —
+   and a reader blinded to its quote marks fails on "only 0 counts".
+
+Found and left: `tools/build-pack.mjs:296` explains why a surface form keeps
+a list of entries with "“light” noun and adjective", and the core list has
+`light` only as a noun. It is an example of English, not a claim about the
+lexicon, so it stays.
 
 **2026-11-09 — an irregular past and a third-person -s kept from a
 translation service.** Five things a later run would be sorry not to know:

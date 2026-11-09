@@ -217,7 +217,7 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 > verify in the network panel. The trade is that a licence cannot be revoked,
 > which is stated on the pricing page rather than hidden.
 >
-> Free for one language. Source is open, 1492 tests, and the lexicon pipeline
+> Free for one language. Source is open, 1495 tests, and the lexicon pipeline
 > and the Latin/Old English IPA generator are in the repo.
 
 ### Lobsters
