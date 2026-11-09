@@ -107,7 +107,7 @@ const DEPENDENCIES = [
   {
     path: 'api.Window.requestIdleCallback',
     why: 'weaving is scheduled off the critical path',
-    fallback: 'src/content/index.ts schedule() → window.setTimeout(fn, 16)',
+    fallback: 'src/content/page.ts schedule() → window.setTimeout(fn, 16)',
   },
 ];
 

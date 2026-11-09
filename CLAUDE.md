@@ -65,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **674 pass**, 156 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **119 pass**, 26 suites, ~9 s wall clock here |
+| `npm run test:dom` | jsdom tests | **127 pass**, 28 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **634 pass**, 164 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
@@ -251,7 +251,7 @@ paragraph's swaps depend on the nodes before it, so a framework re-render
 weaves it differently. And `reweaveAll()` revisited only the nodes holding a
 record, so a node that wove nothing at rest was never woven however far the
 density rose: the README loaded at rest and escalated to 35% wove 8 of its
-share of 56. `unwoven` in `src/content/index.ts` keeps those nodes, and a
+share of 56. `unwoven` in `src/content/page.ts` keeps those nodes, and a
 re-weave queues them for the idle scanner, so they cost the synchronous
 re-weave nothing. The selector's short-paragraph suite holds the share, and an
 e2e test in `friction.spec.ts` weaves a page from a resting density of 0.
@@ -1073,6 +1073,75 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-08 — the page object is built in jsdom, and the panic pass had a guard nothing held
+
+`TODO.md`'s topmost unchecked item in `Now`: `WeftPage`, the content
+script's page object, lived in `src/content/index.ts`, which boots the
+content script and registers its message listener when it is imported, so
+it could be constructed only in a real Chromium. Every defect found in its
+bookkeeping was held by an e2e test alone, and two of its guards by nothing.
+
+**It moved whole.** `src/content/page.ts` holds the class, its constants,
+`applyLetterformsToPack()`, `schedule()` and `speak()`; `index.ts` keeps the
+pack cache, `boot()`, the message listener and `refresh()`, in 179 lines
+where it had 1 014. A script cut the file at line ranges it asserted first,
+so no line of the class changed but its `export`. `content.js` grew 5 bytes,
+module order in a minified bundle, Chrome's 1002.655 → 1002.660 KB, measured
+against `main` built before the first edit, every other file byte-identical.
+The compat audit's fallback for `requestIdleCallback` names `page.ts` now.
+
+**`tests/dom/page.test.ts`, 8 tests in 2 suites**, builds the class in jsdom
+with a renderer that writes `nodeValue` as the highlight renderer does, or
+the real wrapped renderer, and `chrome.runtime.sendMessage` faked, so the
+real `send()` posts into it rather than a stub of it. Red first on
+`ERR_MODULE_NOT_FOUND`. The guards already existed, so each test was shown
+red by deleting the one line it holds, `page.ts` restored by md5 each time:
+`weaveNode()`'s record guard ("woven 2 times"), `suspend()` emptying the
+queue, `resume()`, the re-weave queueing `unwoven`, the added and removed
+`owned` checks ("woven 7 times"), and the wrapped re-weave reading records
+rather than keys ("left 0 of the 2 words woven").
+
+**One probe left every test green, and it was the panic pass's guard.**
+Without the characterData `owned` check, `suspend()` writing the English
+back reads as the page rewriting its own text, and the node is queued and
+woven again: a panic pass would end a moment after it started. "A woven page
+suspended stays in English" was written for it and is red without it.
+**Probe every line of a guard set, not only the lines a test was written
+for**: the member no test fails on is where the coverage is missing.
+
+**And a tools test failed on the move before it was committed.**
+`level-reach.test.ts` finds `selectSwaps()` callers with `git grep`, which
+cannot see an untracked file, so "there are callers to read" failed until
+`page.ts` was staged.
+
+All 31 shots regenerated on a test build after the commit that moved
+`src/`, 10 + 14 + 7 written, every one byte-identical, and the three groups
+stamped. jsdom 119 → **127** / 26 → **28** suites, total 1476 → **1484**, in
+six places, `docs/LAUNCH.md:220` first; `docs/SUBMIT.md` still said 626 tool
+tests, #163 having moved them to 634 in the other five, and says 634. `docs/ARCHITECTURE.md` says the wrapped
+renderer's `WeakSet` is held by the new test. No `CHANGELOG.md` paragraph:
+nothing a user gets moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the first seven tests: `npm run test:all` **exit 0** —
+typecheck clean, 674 unit / 156, **126 jsdom / 28**, 634 tools / 164, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1003 KB × 3**
+passing `validate`, **49 e2e passed and 3 skipped in 7.1 min**, then build and
+validate again. The eighth test and the documents came after it, and touch
+nothing the build reads, so typecheck and `npm test` were run again on the
+final tree: clean, 674 / **127** / 634, 0 failures. `artefacts:check` **8
+groups, 1 stale**, the release notes, B2a. `packs:verify` and `site:check`
+were not run: no pack or site page moved.
+
+Assumed, with nobody to ask: that the helpers the class uses move with it
+and the pack cache stays with `boot()`, its only reader; that faking the
+namespace is the "stubbed `send`" the item meant, the real `send()` being
+worth running; and that the two paths acting on a worker's reply are a next
+item, queued at the foot of `Now`.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-08 — the pedagogy notes, read against the code and the studies they cite
 

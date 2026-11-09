@@ -58,7 +58,8 @@ owns, the page object read its own work as the page changing underneath it: it
 looked up the removed node, found the record, and reverted the weave it had
 just applied, while re-queueing the text nodes it had inserted. Every
 paragraph was woven twice and then immediately unwoven. A `WeakSet` of owned
-nodes fixes it.
+nodes fixes it, and `tests/dom/page.test.ts`, which builds the page object in
+jsdom with the real wrapped renderer, fails without it.
 
 ## `src/core/` is pure
 
