@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **683** unit / 158 suites, **138** jsdom / 29
+of this session — typecheck clean, **684** unit / 158 suites, **138** jsdom / 29
 suites, **643** tool tests / 168 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 998 KB each, all

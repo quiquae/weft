@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **683 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **684 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **643 pass**, 168 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
@@ -1107,6 +1107,24 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the site is GitHub Pages, and there is no domain
+
+`weft.study` was never registered, and the stores only need a public privacy
+page. `SITE_URL` and `SUPPORT_URL` are in `src/core/site.ts`
+(`https://quiquae.github.io/weft`); `src/core/pricing.ts` is gone. The site
+builder's one layout, `page()`, moves every root link under the base path,
+`/weft`, so the ~20 link sites needed no edit; canonical, sitemap and social
+card URLs follow `SITE_URL`. `site:check` strips the base path and fails on
+a root link outside it, which is how a link the builder missed would show.
+`site.yml` no longer defaults to `weft.study`. The Firefox id
+`weft@weft.study` stays: it is an id. `tests/core/site.test.ts` holds the
+support page under the site.
+
+`test:all` exit 0: **684 unit / 158**, 138 jsdom / 29, 643 tools / 168, 998
+KB × 3, 47 e2e passed, 3 skipped, 2.4 min. All 31 shots regenerated
+byte-identical and the three groups stamped. `site:check`: 713 pages, 15 392
+links, 15 376 carrying `/weft/`, none outside it. Total 1511 → 1512.
 
 ### 2026-11-09 — everything is free
 
