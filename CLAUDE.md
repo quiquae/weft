@@ -1089,6 +1089,86 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-09 — an irregular past is kept from a translation service, and so is a third-person -s
+
+`TODO.md`'s topmost unchecked item in `Now`, queued by the pedagogy run and
+found by reading: `guessPos()` returns `verb` at 0.65 for any word after a
+subject pronoun, above the 0.55 the content script acts on, so "she
+**went** home" asks a service for the infinitive of *went* and weaves
+*aller* under it, the "he couru" `docs/PEDAGOGY.md` says Weft never
+teaches, on the provider path only.
+
+**Measured first, with the real guesser, and the item was half of it.**
+Every irregular past after every pronoun went at `verb 0.65`, *was*,
+*had* and *could* among them. And the `-s` check ran before any context,
+so "she **walks**", "he **goes**" and "she **does**" went as plural
+nouns at 0.55, which the content script's `< 0.55` lets through.
+
+**Three rules, all in the subject-pronoun context.** `IRREGULAR_PASTS`,
+132 simple pasts no suffix shows and no common verb spells as its base
+form, is declined after *I*, *you*, *we*, *they* and *who*. After *he*,
+*she* or *it* any bare word is declined, because their present tense
+carries `-s`: a bare word there is a past no list need know, a modal or an
+adverb. And an `-s` word after a subject pronoun is declined rather than
+read as a plural noun. **The list is read only after a pronoun because a
+past shares its spelling with nouns** — "on the **left**", "the
+**ground**" — which the `-ed` check, declining wherever it stands, would
+have no reason to spare.
+
+Test-first: 6 tests in a new suite of `tests/core/pos-guess.test.ts`, four
+red on `verb 0.65` and `noun/pl 0.55`; the list's own test found `sent`
+missing from the first draft. Two guards against over-correcting pass on
+both sides: the base form after *I*, *you*, *we* and *they*, and every
+base-form verb a shipped pack weaves, 81, judged after "they" against
+"to", which encodes none of the guesser's other rules. Five probes, each
+restored by md5: *have* put in the list, either rule removed and *went*
+taken out each failed its own test by name, and every verb declined failed
+the two guards and the old "a subject pronoun marks a verb". `docs/PEDAGOGY.md` says what is declined, without claiming
+more: an adverb after *I* still goes. Unit 674 → **680** / 156 → **157**,
+total 1486 → **1492**, in six places, `docs/LAUNCH.md:220` first, and a
+`CHANGELOG.md` paragraph, because the provider path ships.
+
+**The packages print 1004 KB**: `content.js` grew 1 143 bytes, all of them
+the list, Chrome's 1002.627 → 1003.743 KB, Firefox's 1003.812 and
+Safari's 1003.750, measured against `main` built before the first edit.
+All 31 shots regenerated on a test build after the commit that moved
+`src/`, 14 + 10 + 7 written: `page-tooltip.png` moved in the first run by
+its recorded 1 740 pixels in one 160×20 box and came back byte-identical
+in the second, so the committed bytes stand and the three groups are
+stamped.
+
+**The probe found more beside the item, queued at the foot of `Now`.** The
+selector keeps function words out by part of speech, and the guesser never
+returns a function word's, so the words no pack carries reach the service
+as content words: "we **will** go" asks for *vouloir*, "with **him**" a
+noun at 0.7, "they **are** happy" a verb. Adverbs without `-ly` after *I*,
+*you*, *we* and *they* go as verbs, and an irregular participle after a
+copula as an adjective.
+
+The session was stopped after the gate finished and resumed at 08:02 with
+the task re-sent; the branch's two commits were pushed before anything
+else moved.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code, the stamps and the counts: `npm run test:all` **exit
+0** — typecheck clean, **680 unit / 157**, 127 jsdom / 28, 636 tools /
+165, compat 16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92
+manifest keys, 86 pass / 2 degrade / 4 untracked, 0 fail / 0 without data,
+**1004 KB × 3** passing `validate`, **49 e2e passed and 3 skipped in 6.5
+min**, then build and validate again. `artefacts:check` **8 groups, 1
+stale**, the release notes, B2a. `packs:verify` and `site:check` were not
+run: no pack moved, and the site builder does not import the guesser. Only
+documents moved after the gate, so typecheck and `npm test` were run again
+on the final tree.
+
+Assumed, with nobody to ask: that a causative after object *it*, now
+declined, is worth less than every past and adverb after *he*, *she* and
+*it*; that a past spelled like a common base form stays out of the list,
+silence about it being cheaper than declining a present; and that the
+function words are their own item, being a list of another class.
+
+What needs a human: unchanged, everything below **B1** and the calls.
+
 ### 2026-11-09 — `mete` and `cwic` are told as false friends, and the fact about `cwic` was under `swift`
 
 `TODO.md`'s topmost unchecked item in `Now`, queued by the pedagogy run:

@@ -715,10 +715,10 @@ or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
 **So the whole of B0 is closed. `Now` holds four agent-shaped items, as of
-2026-11-08 — a harness for the content script's page object, `mete` and
-`cwic` told as false friends, an irregular past kept from a translation
-service, and the verbs chip's copy — and every unchecked item in `Next`
-waits on a call of Creagh's:** the four function-word switches that weave
+2026-11-09 — the verbs chip's copy, the page object's escalation and
+provider paths in jsdom, the feed's false-friend lines read whole, and the
+function words a translation service is still sent — and every unchecked
+item in `Next` waits on a call of Creagh's:** the four function-word switches that weave
 nothing, the four Pro features sold and never built, the Firefox
 data-collection declaration, the Safari subtitle, the site's favicon, and
 how Firefox 140 to 145 should draw a woven word. A run that finds `Now` empty reads a written promise against
@@ -2665,7 +2665,7 @@ registered**, and nothing below it can move until it is.
       failing by name. 4 fields of `en-ang.json`, −34 bytes; all 31 shots
       regenerated, three groups stamped. See Notes.
 
-- [ ] **Keep an irregular past tense away from a translation service.** Found
+- [x] **Keep an irregular past tense away from a translation service.** Found
       2026-11-08 by reading, not measured. `guessPos()` declines a word
       ending in `-ed`, `-ing` or `-s` as a verb, but returns `verb` at 0.65,
       above the 0.55 the content script acts on, for any word after a
@@ -2675,6 +2675,39 @@ registered**, and nothing below it can move until it is.
       the provider path only. Test-first in the guesser's unit tests: a
       short list of irregular pasts after a pronoun must return null. About
       30 minutes, and it moves `src/core/`.
+
+      **Done 2026-11-09, and measured first, with the real guesser:** every
+      irregular past after every pronoun went at `verb 0.65` — *went*,
+      *saw*, *took*, *was*, *had*, *could* — and the item missed a second
+      shape: the `-s` check ran before any context, so "she **walks**",
+      "he **goes**" and "she **does**" went as plural **nouns** at 0.55, which
+      the content script's `< 0.55` lets through. Three changes in the
+      subject-pronoun context, and none elsewhere. A closed list, `IRREGULAR_PASTS`, 132 simple pasts
+      that no suffix shows and no common verb spells as its base form —
+      *put*, *read*, *lay*, *bore*, *wound*, *ground* and *bound* left out —
+      declined after *I*, *you*, *we*, *they* and *who*. After *he*, *she* or
+      *it* any bare word is declined, because their present tense carries
+      `-s`, so a bare word there is a past no list need know (*smote*), a
+      modal or an adverb. And an `-s` word after any subject pronoun is
+      declined rather than read as a plural noun. The list is read only
+      after a pronoun, so the nouns it shares spellings with are untouched:
+      "on the **left**", "the **ground**". Test-first: 6 tests in a new
+      suite of `tests/core/pos-guess.test.ts`, four red on `verb 0.65` and
+      `noun/pl 0.55`; the list's own red found `sent` missing from the
+      first draft. The fifth holds the base form after *I*, *you*, *we* and
+      *they* ("we **water** it daily"), and the sixth every base-form verb
+      a shipped pack weaves, 81, the same after "they" as after "to", so a
+      list that took in *have* or *fall* fails by name. Five probes, each
+      restored by md5: *have* in the list, the he/she/it rule removed, the
+      `-s` rule removed and *went* taken out each failed its own test by
+      name, and every verb declined failed the two guards and the old "a
+      subject pronoun marks a verb". `docs/PEDAGOGY.md` says what is declined, and a
+      `CHANGELOG.md` paragraph. `content.js` grew 1 143 bytes, all of them
+      the list, so the packages print **1004 KB**. All 31 shots regenerated
+      on a test build, 14 + 10 + 7 written: `page-tooltip.png` moved in the
+      first run by its recorded 1 740 pixels and came back byte-identical
+      in the second, and the three groups are stamped. Unit 674 → **680** /
+      156 → **157**, total 1486 → **1492**, in six places. See Notes.
 
 - [ ] **Say what the verb switch weaves, and how many senses "light" has.**
       Found 2026-11-08. The settings page's verbs chip
@@ -2719,6 +2752,40 @@ registered**, and nothing below it can move until it is.
       "became English" itself would hold the first. About 30 minutes; it
       moves `src/core/` or the pack, so all three screenshot groups go stale
       by provenance and want regenerating and stamping.
+
+- [ ] **Keep function words, and the adverbs before a verb, away from a
+      translation service.** Found 2026-11-09, measuring the irregular
+      pasts with the real guesser. The selector keeps function words out
+      by part of speech (`entryAllowed()` in `src/core/selector.ts`), and
+      on the provider path the part of speech is `guessPos()`'s, which
+      never returns a function word's; no pack carries one, so every
+      function word on a page reaches the service as a content word
+      wherever a context rule fires. Measured: "I **can** swim", "we
+      **will** go", "they **must** leave", "you **may** sit" and "they
+      **are** happy" each send a verb at 0.65 — *will*, asked for an
+      infinitive, comes back *vouloir*, a wrong meaning and not only a
+      wrong form — "who **has** left" a verb, "what **does** it mean" a
+      plural noun at 0.55, and "with **him**", "for **them**", "from
+      **you**" and "some of **these**" a noun at 0.7. And the adverbs that
+      stand before a verb go as verbs after *I*, *you*, *we* and *they*:
+      "I **never** sleep", "we **also** know", "they **still** wait", "you
+      **just** left", "we **often** walk"; after *he*, *she* and *it* the
+      2026-11-09 rule already declines them. Shape: a closed list of
+      English function words — pronouns, determiners, prepositions,
+      conjunctions, auxiliaries and modals, most already in the guesser's
+      cue sets — declined wherever they stand, as `-ed` is, and the adverbs
+      without `-ly` that come before a verb declined after a subject
+      pronoun. Careful: `MODALS` holds content verbs too (*let*, *help*,
+      *make*, *dare*, *need*) and `COPULAS` some (*looks*, *feels*,
+      *stays*), and the packs weave *have*, so derive the guard this run
+      did, every base form a pack weaves still taken. Found beside it and
+      left: after a copula an irregular participle goes as an adjective at
+      0.6, so "she was **left** alone" asks for the adjective *left*, which
+      a service may answer *gauche*; and the `-ed`/`-ing` check declines
+      base forms that end so, *need*, *bring*, *sing*, which costs only
+      coverage. About 45 minutes; it moves `src/core/`, so all three
+      screenshot groups go stale by provenance and want regenerating and
+      stamping.
 
 ## Next
 
@@ -8400,6 +8467,39 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-09 — an irregular past and a third-person -s kept from a
+translation service.** Five things a later run would be sorry not to know:
+
+1. **After *he*, *she* or *it* the grammar does what no list can.** Their
+   present tense carries `-s`, so a bare word after one cannot be the base
+   form a provider's infinitive belongs under, and declining every bare
+   word there catches pasts no list holds. Its one cost was measured: a
+   causative after object *it*, "make it **work**", went as a verb and is
+   declined now, silence being the cheap direction. The list is for *I*,
+   *you*, *we*, *they* and *who*, where a bare word may be a present,
+   "they **water**".
+2. **`IRREGULAR_PASTS` is read only after a subject pronoun, and that is a
+   decision.** The `-ed` check declines a regular past wherever it stands;
+   an irregular past shares its spelling with nouns — *left*, *ground*,
+   *felt*, *saw*, *rose* — which "on the left" and "the ground" send
+   correctly, so moving the list beside the `-ed` check would decline
+   them. A past spelled like a common base form is not in it: *put*,
+   *read*, *lay*, *bore*, *wound*, *ground*, *bound*. *found*, *fell*,
+   *saw* and *felt* are, their base forms being rare.
+3. **The derived guard judges a base form after "they" against "to"**, so
+   it encodes none of the guesser's other rules: *bring* and *sing* are
+   declined in both contexts by the `-ing` check and *go* by the length
+   rule, and the test passes on them for that reason. 81 base forms are
+   read from the packs, `src === lemma` on a verb row.
+4. **The session was stopped after the gate finished and resumed at
+   08:02**, the task re-sent; the branch's two commits were pushed before
+   anything else moved, and `/tmp/weft-pos/` survived with the gate's log.
+5. **What the probe found beside the item is queued at the foot of
+   `Now`**, measured: function words no pack carries still reach the
+   service as content words, *will* as *vouloir*; adverbs without `-ly`
+   after *I*, *you*, *we* and *they* go as verbs; and an irregular
+   participle after a copula goes as an adjective.
 
 **2026-11-09 — `mete` and `cwic` told as false friends.** Five things a
 later run would be sorry not to know:
