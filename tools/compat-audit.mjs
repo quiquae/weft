@@ -64,6 +64,11 @@ const DEPENDENCIES = [
   { path: 'webextensions.api.storage.local', why: 'all persistence' },
   { path: 'webextensions.api.alarms', why: 'the attention tick and lock cooldowns' },
   { path: 'webextensions.api.permissions.request', why: 'the grant flow' },
+  {
+    path: 'webextensions.api.permissions.Permissions.data_collection',
+    why: 'asking Firefox before words go to a translation service',
+    fallback: 'Firefox only: only its manifest declares data_collection_permissions, and only its build asks',
+  },
   { path: 'webextensions.api.tabs.query', why: 'finding the tab in front of the reader' },
 
   // ------------------------------------------------- degrade gracefully

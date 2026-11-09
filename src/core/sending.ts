@@ -27,6 +27,18 @@ type Sending = Pick<Settings['providers'], 'enabled' | 'sendContext'>;
 export const SENTENCE_RECIPIENTS: readonly ProviderId[] = ['openai'];
 
 /** What a translation service is sent under these settings. */
+/**
+ * Whether the browser lets words go to a translation service.
+ *
+ * Firefox asks the reader for `websiteContent` and lists what they granted
+ * under `data_collection`; a browser without that list asks nothing, and the
+ * provider switch is the whole consent there.
+ */
+export function mayTransmit(granted: unknown): boolean {
+  const list = (granted as { data_collection?: unknown } | undefined)?.data_collection;
+  return list === undefined || (Array.isArray(list) && list.includes('websiteContent'));
+}
+
 export function whatIsSent(providers: Sending): string {
   if (!providers.enabled) return '“Use a translation service” is off, so Weft sends no more words.';
   if (!providers.sendContext) {

@@ -56,7 +56,7 @@ const HTML_PAGES = ['popup', 'options', 'dashboard', 'onboarding'];
 
 const sharedOptions = {
   bundle: true,
-  target: ['chrome116', 'firefox128', 'safari16.4'],
+  target: ['chrome116', 'firefox140', 'safari16.4'],
   platform: 'browser',
   jsx: 'automatic',
   jsxImportSource: 'preact',

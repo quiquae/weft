@@ -65,7 +65,10 @@ did not understand.
 
 ## Translation services, if you enable one
 
-Off by default. Bring your own key. One rule shapes the whole interface:
+Off by default. Bring your own key. In Firefox, turning one on also asks
+Firefox's own permission to send website content, and no word leaves until
+you grant it; take it back in Firefox's add-on settings and the sending
+stops. One rule shapes the whole interface:
 
 > A provider receives **single words and a part-of-speech hint**, never the
 > page. The sentence each word appears in goes to an OpenAI-compatible service
