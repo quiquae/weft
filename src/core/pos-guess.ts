@@ -27,6 +27,43 @@ const MODALS = new Set([
 
 const SUBJECT_PRONOUNS = new Set(['i', 'you', 'we', 'they', 'he', 'she', 'it', 'who']);
 
+/**
+ * The subject pronouns whose present tense carries -s: "she walks", never
+ * "she walk". So a bare word after one is a past, a modal or an adverb, and
+ * never the base form a provider's infinitive is woven under.
+ */
+const THIRD_PERSON_SINGULAR = new Set(['he', 'she', 'it']);
+
+/**
+ * Irregular simple pasts, which no suffix gives away: "they went" is not
+ * "they walk", and a provider asked for the infinitive puts "aller" under
+ * "went". English has a closed list of them, so it can be written down.
+ * Left out: a past spelled like a base form a reader would mean ("put",
+ * "read", "lay", "bore", "wound", "ground", "bound"), since declining those
+ * after "they" would decline the present too; a past ending in -ed ("fled",
+ * "led"), which the inflection check already declines; and a word under
+ * three letters, which is never guessed. Only the pronoun rule reads it: a
+ * past after "the" or "of" is the noun it is spelled like, "on the left".
+ */
+const IRREGULAR_PASTS = new Set([
+  'arose', 'ate', 'awoke', 'became', 'began', 'bent', 'bit', 'blew', 'bought',
+  'broke', 'brought', 'built', 'burnt', 'came', 'caught', 'chose', 'clung',
+  'could', 'crept', 'dealt', 'did', 'dove', 'drank', 'dreamt', 'drew', 'drove',
+  'dug', 'dwelt', 'fell', 'felt', 'flew', 'flung', 'forbade', 'foresaw',
+  'forgave', 'forgot', 'fought', 'found', 'froze', 'gave', 'got', 'grew', 'had',
+  'heard', 'held', 'hid', 'hung', 'kept', 'knelt', 'knew', 'laid', 'leapt',
+  'learnt', 'left', 'lent', 'lit', 'lost', 'made', 'meant', 'met', 'might',
+  'mistook', 'misunderstood', 'overcame', 'overheard', 'oversaw', 'overtook',
+  'paid', 'ran', 'rang', 'rode', 'rose', 'said', 'sang', 'sank', 'sat', 'saw',
+  'sent', 'shone', 'shook', 'shot', 'should', 'shrank', 'slept', 'slew', 'slid',
+  'sold', 'sought', 'spat', 'spelt', 'spent', 'spilt', 'spoke', 'sprang',
+  'spun', 'stank', 'stole', 'stood', 'strode', 'struck', 'stuck', 'stung',
+  'swam', 'swept', 'swore', 'swung', 'taught', 'thought', 'threw', 'told',
+  'took', 'tore', 'trod', 'understood', 'undertook', 'underwent', 'undid',
+  'upheld', 'was', 'went', 'wept', 'were', 'withdrew', 'withheld', 'withstood',
+  'woke', 'won', 'wore', 'would', 'wove', 'wrote', 'wrung',
+]);
+
 const COPULAS = new Set([
   'is', 'are', 'was', 'were', 'be', 'been', 'being', 'am', 'seems', 'seemed',
   'looks', 'looked', 'feels', 'felt', 'became', 'becomes', 'stays', 'remains',
@@ -142,23 +179,31 @@ export function guessPos(
   const word = token.text.toLowerCase();
   if (word.length < 3) return null;
 
+  const prev = previousWord(tokens, index);
+  const next = nextWord(tokens, index);
+  const afterSubject = prev !== null && SUBJECT_PRONOUNS.has(prev);
+
   // Decline on inflected forms. Only base forms are woven, so an inflected
   // form has nothing grammatical to put in its place.
   if (/(?:ed|ing)$/.test(word)) return null;
   if (/s$/.test(word) && !NOT_REALLY_PLURAL.test(word)) {
-    if (!opts.allowPlural) return null;
+    // After a subject pronoun the -s is a verb's, "she walks", or an
+    // adverb's, "they always", and never a plural noun's.
+    if (!opts.allowPlural || afterSubject) return null;
     return { pos: 'noun', num: 'pl', confidence: 0.55 };
   }
 
   const morphology = suffixGuess(word);
   if (morphology) return morphology;
 
-  const prev = previousWord(tokens, index);
-  const next = nextWord(tokens, index);
-
   if (prev === 'to' && next !== 'the') return { pos: 'verb', confidence: 0.8 };
   if (prev && MODALS.has(prev)) return { pos: 'verb', confidence: 0.8 };
-  if (prev && SUBJECT_PRONOUNS.has(prev)) return { pos: 'verb', confidence: 0.65 };
+  if (afterSubject) {
+    // A verb here is finite, and only its present base form, "they walk",
+    // is one a provider's infinitive can stand in for.
+    if (THIRD_PERSON_SINGULAR.has(prev) || IRREGULAR_PASTS.has(word)) return null;
+    return { pos: 'verb', confidence: 0.65 };
+  }
   if (prev && INTENSIFIERS.has(prev)) return { pos: 'adj', confidence: 0.7 };
   if (prev && COPULAS.has(prev)) return { pos: 'adj', confidence: 0.6 };
 

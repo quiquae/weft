@@ -108,9 +108,13 @@ That collapses the entire inflection problem to one axis:
   participle in French, German, Latin and Old English, and the gerund in
   Spanish, Portuguese and Italian, where the present participle is another
   word. Third-person `-s` and past forms are in **no** pack, and a translation
-  service is never sent a word ending in `-ed`, `-ing` or `-s` as a verb. "he
-  couru" teaches a form that does not exist, and teaching a wrong form is
-  worse than teaching nothing.
+  service is never sent a word ending in `-ed`, `-ing` or `-s` as a verb.
+  After a subject pronoun, where a verb is finite, it is not sent an `-s`
+  word at all, nor a bare word after *he*, *she* or *it*, whose present tense
+  would end in `-s`, nor an irregular past such as *went*, which a list of
+  the common ones declines after *I*, *you*, *we* and *they*. "he couru"
+  teaches a form that does not exist, and teaching a wrong form is worse than
+  teaching nothing.
 
 "He wants to **courir**" is not grammatical French and is not meant to be. The
 reader is decoding a French word inside an English clause, and the infinitive

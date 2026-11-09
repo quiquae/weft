@@ -9,6 +9,18 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**A translation service is no longer asked for a past tense, which no
+infinitive can be woven under.** With lookups on, Weft guesses the part of
+speech of a word the packs do not have and asks the service for its
+dictionary form, the infinitive for a verb. It took any word after *I*,
+*she*, *they* or another subject pronoun for a verb, so "she **went** home"
+asked for the infinitive of *went* and wove *aller* under it, a form no
+grammar has, and it read "she **walks**" as a plural noun. After a subject
+pronoun Weft now declines an `-s` word, any bare word after *he*, *she* or
+*it*, whose present tense would end in `-s`, and the common irregular pasts —
+*went*, *saw*, *was*, *could* — after *I*, *you*, *we* and *they*, and it
+still asks for "they **water**".
+
 **Two Old English false friends are told as false friends.** The dashboard's
 feed puts a word whose meaning moved at its top, edged in red, and this
 project's documents call *mete* and *cwic* two of them: *mete* meant food of
@@ -979,7 +991,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1486 tests: 674 unit, 127 in jsdom, 636 over the build tools, and
+**Built with** 1492 tests: 680 unit, 127 in jsdom, 636 over the build tools, and
 49 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
