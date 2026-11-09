@@ -64,9 +64,9 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **682 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **683 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **639 pass**, 167 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **642 pass**, 168 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -675,7 +675,12 @@ a pack that teaches it. Cure a miss in the note, never in the pattern:
 widening it to "was" would have taken 16 notes, among them "the moon was
 masculine". And a note is about the word it is printed under: that `cwic`
 meant alive sat on `swift`, woven for "quick", where the feed read it as
-"swift became English swift".
+"swift became English swift". So is its "meant": the pattern reads the verb
+and not its subject, and until 2026-11-09 `blæc`, `hlāf` and `unrōt` were
+marked for what `blāc`, `brēad` and `sæd` had meant. The same file refuses a
+false friend whose "meant" has another word quoted as its subject, a line
+saying a word became itself — "spell is still English spell" has a frame of
+its own — and a note repeating the descent the frame has just told.
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
@@ -1102,6 +1107,76 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the feed's false friends, read whole: seven lines did not say what the frame promises
+
+The same run's fourth PR, `TODO.md`'s next item in `Now`, found while
+measuring the one before it: three false-friend lines read badly. Printed with the
+dashboard's own call, `main` told **25** Old English lines as false friends,
+not the item's 24, and 2 Latin, and **seven** did not say what the frame
+promises.
+
+**Two said a word became itself.** The false-friend frame is chosen before
+`classify()` asks whether a word is unchanged, so "spell became English
+spell" and "grēat became English great" were the tautology the `unchanged`
+kind exists to avoid. `sentence()` gives a false friend whose etymon folds to
+its own spelling a frame of its own — "spell is still English spell, but it
+meant a story" — and a borrowing "English took camera as it was, but …",
+which no Latin line takes today and a unit test holds. `ġieldan`'s note said
+"and became “yield”" after the frame had, and `cwēn`'s had no verb.
+
+**Three were marked for another word's meaning**, and that is the class.
+`FALSE_FRIEND` reads "meant", not who meant it, so `blæc`'s "meant pale" was
+`blāc`'s, `hlāf`'s "morsel" `brēad`'s and `unrōt`'s "sated" `sæd`'s: the
+feed marked a word whose own meaning never moved and contrasted it with a
+stranger. `hlāf`'s note says what `hlāf` meant, bread, its gloss's own word;
+`blæc`'s and `unrōt`'s keep their facts without "meant", so `blæc` reads as
+a plain descent and `unrōt` as a note, by the decision above that a miss is
+cured in the note and never in the pattern. 23 Old English lines and the 2
+Latin are false friends now, every one read.
+
+Three guards in a new suite of `tests/tools/feed-frames.test.ts`, red first
+on exactly these: no line says a word became English, or was borrowed, as
+itself; a false friend's "meant" or "means" belongs to its own word, the last
+word quoted before the verb in its clause folding to the target unless "it",
+"he" or "she" stands between; no note says again that the word became its
+descendant. `ang-notes.tsv` repeats each note and keeps the old wording at
+its foot.
+
+**`packs:verify` refused the first rewording, which every fast suite
+passed.** "“hlāf” meant bread; “bread” comes from “brēad”" put a kinship verb
+in a note that quotes its own target, which `tools/verify-packs.mjs:120`
+reads as `hlāf` being related to itself. It reads "“brēad”, the word “bread”
+grew from, was a morsel" now. **After any note edit run `packs:verify`
+beside `npm test`**: the two read notes differently, and CI's `check` job
+runs the verifier, so it costs a round trip rather than a defect.
+
+7 note fields of `en-ang.json`, +72 bytes, `builtAt` already today. All 31
+shots regenerated twice on a test build, after the frame and after the
+rewording, 14 + 10 + 7 written each time and every one byte-identical, and
+the three groups stamped. Unit 682 → **683**, tools 639 → **642** / 167 →
+**168**, total 1508 → **1512**, in six places, `docs/LAUNCH.md:220` first,
+and a `CHANGELOG.md` paragraph, because the feed ships.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the frame, the notes and the stamps: `npm run test:all` **exit 0** —
+typecheck clean, **683 unit / 158**, 138 jsdom / 29, **642 tools / 168**,
+compat 16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest
+keys, 86 pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1004 KB ×
+3** passing `validate`, **49 e2e passed and 3 skipped in 6.6 min**, then build
+and validate again. Separately `packs:verify` **0 errors / 5 warnings**,
+`npm run site` then `site:check` **714 pages / 16 118 links**, all resolving,
+and `artefacts:check` **8 groups, 1 stale**, the release notes, B2a. Only
+documents moved after the gate, so typecheck and `npm test` were run again on
+the final tree.
+
+Assumed, with nobody to ask: that a fact about a neighbouring word belongs in
+the note without "meant" rather than out of it, `bleak` and `sæd` being worth
+a reader's knowing; that "English took X as it was" is the borrowing's frame,
+the site's verb for Latin; and that `wyrm`'s "but also meant serpent and
+dragon", whose subject the frame carries, reads as English.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-09 — a translation service's words are woven at A1, and a machine word has no band
 

@@ -9,6 +9,18 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**The feed's false friends say what they promise.** The dashboard's feed
+puts a word whose meaning moved at its top — "sellan became English sell, but
+“sellan” meant to give" — and seven of its Old English lines did not say that.
+Two said a word became itself, "spell became English spell" and "grēat became
+English great"; they read "spell is still English spell, but it meant a
+story" now. *ġieldan*'s said twice that it became *yield*, and *cwēn*'s had
+no verb. And three told what a different word had meant — *blāc*, pale,
+under *blæc*; *brēad*, a morsel, under *hlāf*; *sæd*, sated, under *unrōt* —
+so the feed marked as a false friend a word whose own meaning never moved.
+*hlāf*'s line now says *hlāf* meant bread, *blæc* is told as the plain descent
+it is, and *unrōt*'s fact about *sad* as a note.
+
 **A translation service's words are woven at A1.** With lookups on, Weft
 asks your translation service for the words on a page that no pack has, and
 at the default level, A1, it wove none of them: each came back marked as a
@@ -1008,7 +1020,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1508 tests: 682 unit, 138 in jsdom, 639 over the build tools, and
+**Built with** 1512 tests: 683 unit, 138 in jsdom, 642 over the build tools, and
 49 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

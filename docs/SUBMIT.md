@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 682 unit tests, 138 jsdom tests, 639 tool tests, the
+runs typecheck, 683 unit tests, 138 jsdom tests, 642 tool tests, the
 compatibility audit, all three builds, the package validator, and 49 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.

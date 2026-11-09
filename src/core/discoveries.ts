@@ -183,6 +183,15 @@ function sentence(entry: LexEntry, kind: DiscoveryKind, inherited: boolean): str
       return `${entry.tgt} — ${note}.`;
     case 'false-friend':
       if (!entry.etymonOf) return `${entry.tgt} — ${note}.`;
+      // A word English still spells as it was did not become anything:
+      // "spell became English spell" is the tautology the unchanged kind
+      // exists to avoid, and "grēat became English great" the same but for
+      // a length mark.
+      if (fold(entry.etymonOf) === fold(entry.tgt)) {
+        return inherited
+          ? `${entry.tgt} is still English ${entry.etymonOf}, but ${lowerFirst(note)}.`
+          : `English took ${entry.etymonOf} as it was, but ${lowerFirst(note)}.`;
+      }
       return inherited
         ? `${entry.tgt} became English ${entry.etymonOf}, but ${lowerFirst(note)}.`
         : `English borrowed ${entry.etymonOf} from ${entry.tgt}, but ${lowerFirst(note)}.`;

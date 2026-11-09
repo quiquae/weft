@@ -234,3 +234,83 @@ describe('what the copy calls a false friend, the feed marks as one', () => {
     assert.ok(files.size >= 3, `only ${[...files].join(', ')} call a pack's word a false friend`);
   });
 });
+
+/**
+ * Every line the feed tells as a false friend, read as a sentence.
+ *
+ * The feed marks a word a false friend when its note says what it meant, by
+ * `FALSE_FRIEND`'s verbs, and prints "X became English Y, but <note>". Read
+ * whole on 2026-11-09, 25 Old English lines and 2 Latin, five of them did
+ * not say what the frame promised: "spell became English spell", a word
+ * becoming itself, the tautology the `unchanged` kind exists to avoid;
+ * "ġieldan became English yield, but “ġieldan” meant to pay or repay, and
+ * became “yield”", twice; "cwēn became English queen, but originally simply
+ * “woman, wife”", with no verb; and three notes whose "meant" is another
+ * word's — "blæc became English black, but “blāc”, with a long vowel, meant
+ * pale", "hlāf became English loaf, but “brēad” meant a morsel", and unrōt's
+ * "“sæd”, which meant sated" — so the line marked a word whose own meaning
+ * never moved. Cure a line in its note, as the paragraph above says, or in a
+ * frame where the frame is what is wrong.
+ */
+describe('every line the feed tells as a false friend', () => {
+  /** Spellings compared without their marks, as the feed compares a word with its descendant. */
+  const fold = (word: string): string =>
+    word
+      .toLowerCase()
+      .replace(/æ/g, 'ae')
+      .replace(/[þð]/g, 'th')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z ]/g, '');
+
+  /** Each pack's false-friend lines, with the note each was printed from. */
+  const falseFriends = () =>
+    langs.flatMap((lang) => {
+      const pack = JSON.parse(readFileSync(join(PACKS, `en-${lang}.json`), 'utf8')) as { entries: Record<string, LexEntry[]> };
+      const byTarget = entriesByTarget(pack.entries);
+      const byShown = new Map([...byTarget.values()].map((e) => [e.tgt, e]));
+      return feed(lang)
+        .filter((d) => d.kind === 'false-friend')
+        .map((d) => ({ lang, d, note: (byShown.get(d.target) ?? byTarget.get(d.target))?.note ?? '' }));
+    });
+
+  test('no line says a word became English, or was borrowed, as itself', () => {
+    const lines = langs.flatMap((lang) => feed(lang).map((d) => ({ lang, d })));
+    const alike = lines.filter(({ d }) => d.descendant && fold(d.descendant) === fold(d.target));
+    // 2026-11-09: a dozen and more Old English words English still spells as
+    // they were, so the rule has lines to read.
+    assert.ok(alike.length >= 5, `only ${alike.length} lines have a descendant spelled as their word`);
+    const wrong = alike
+      .filter(({ d }) => /became English|borrowed/.test(d.text))
+      .map(({ lang, d }) => `en-${lang}: "${d.text}"`);
+    assert.deepEqual(wrong, []);
+  });
+
+  test('each false friend’s note says what its own word meant', () => {
+    const all = falseFriends();
+    assert.ok(all.length >= 20, `only ${all.length} false-friend lines were read`);
+    const wrong = all.flatMap(({ lang, d, note }) => {
+      const verbs = [...note.matchAll(/\b(meant|means)\b/g)];
+      if (!verbs.length) return [`en-${lang} ${d.target}: the note says no word "meant" or "means": "${d.text}"`];
+      return verbs.flatMap((verb) => {
+        const clause = note.slice(0, verb.index).split(';').at(-1) ?? '';
+        const quoted = [...clause.matchAll(/“([^”]+)”/g)].at(-1);
+        if (!quoted) return [];
+        const between = clause.slice(quoted.index! + quoted[0].length);
+        // "it" or "he" between the quote and the verb is the word itself.
+        if (/\b(it|he|she)\b/.test(between)) return [];
+        return fold(quoted[1]!) === fold(d.target)
+          ? []
+          : [`en-${lang} ${d.target}: its "${verb[1]}" is “${quoted[1]}”'s, another word: "${d.text}"`];
+      });
+    });
+    assert.deepEqual(wrong, []);
+  });
+
+  test('no false friend’s note says again that the word became its descendant', () => {
+    const wrong = falseFriends()
+      .filter(({ d, note }) => d.descendant && new RegExp(`\\bbecame\\s+[“"]?${d.descendant}\\b`, 'i').test(note))
+      .map(({ lang, d }) => `en-${lang} ${d.target}: "${d.text}"`);
+    assert.deepEqual(wrong, []);
+  });
+});
