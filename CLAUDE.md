@@ -64,8 +64,8 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **680 pass**, 157 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **132 pass**, 29 suites, ~9 s wall clock here |
+| `npm run test:unit` | pure-core tests, no browser | **682 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **639 pass**, 167 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
@@ -434,6 +434,20 @@ cache by recency, and the privacy page and the options row say both.
 options page and fails if an answer a day younger is not served after a
 save, and `tests/tools/sending-copy.test.ts` fails on a paragraph saying how
 often a word is sent that does not name “Keep answers for”.
+
+**A translation service's word has no band, so no level refuses it.**
+`machineEntry()` in `src/core/machine-entry.ts`, which the worker builds
+every answer with, gives an entry no `band`, nobody having judged how hard
+the word is, and an entry with none passes `entryAllowed()`'s band window,
+takes `UNBANDED_FIT`, 0.5, in `scoreCandidate()`, and prints no level in the
+tooltip. Until 2026-11-09 each was band 3, "a middle difficulty band", and
+A1's window, the default level's, is bands 1 and 2, so every word a service
+filled was refused after it had been sent and counted against the daily
+lookup limit. Do not give it a band back: band 3 is what broke, and band 2
+sits inside every window only because every pack tops out at band 4.
+`tests/dom/page.test.ts` weaves a filled word through the page object at
+every level 1 to 6, and `tests/core/selector.test.ts` holds the window and
+the fit.
 
 **The privacy page names every store, and what a licence carries.** The
 table in `docs/PRIVACY.md` headed "What Weft stores, and where" has a row for
@@ -1088,6 +1102,72 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — a translation service's words are woven at A1, and a machine word has no band
+
+The same run's third PR, the item the second queued an hour before it,
+taken after the session was stopped at 10:00 and resumed at 13:02 with its
+gate finished: `makeEntry()` gave every machine entry `band: 3`, and A1's
+window, the default level's, is bands 1 and 2, so `entryAllowed()` refused
+every word a translation service filled.
+
+**The band is unknown, so it is absent.** `LexEntry.band` is optional, and
+`machineEntry()` — the worker's `makeEntry()` moved to
+`src/core/machine-entry.ts`, being pure, so the tests weave the worker's own
+shape and not a copy that would have kept band 3 — gives none. An entry with
+no band passes the window, takes a fit of 0.5, `UNBANDED_FIT`, halfway
+between a word at the reader's level and one three bands away, and prints no
+level row, where band 3 printed "B1" under "Difficulty band". The quiz,
+whose pool is the packs', counts an unknown band as near any, which `tsc`
+asked of it: making the field optional is what named every reader that had
+to say what an unknown band means. Band 2 was the other shape, and fits
+every window only because every pack tops out at band 4.
+
+**JavaScript would have let an absent band through the window and broken
+the score.** `undefined < 1` and `undefined > 2` are both false, so the
+window passes an entry with no band unasked, while `Math.abs(undefined -
+level)` is `NaN`, and so is every score it touches. The fit test asserts a
+finite score for that reason.
+
+Test-first, each red for its own reason: the page object weaves a filled
+word at every level 1 to 6, red at 1, "The maison by the eau stood below the
+lighthouse."; the selector lets a machine word through the window at every
+level, red at 1, and fits it the same at every level, neither 0 nor 1, red
+on 0.33, 0.67, 1, 0.67, 0.33, 0; the tooltip prints no level for a word with
+no band, red on "level" among its rows. Three probes, each restored by md5:
+band 3 put back fails the page test and both selector tests, the neutral
+fit removed fails the fit test, and the tooltip printing the band fails its
+test. `docs/PEDAGOGY.md`'s band-fit bullet says so, and a decision above.
+
+All 31 shots regenerated on a test build after the commit that moved
+`src/`, 14 + 10 + 7 written, every one byte-identical — no shot shows a
+machine word — and the three groups are stamped. Unit 680 → **682** / 157
+→ **158**, jsdom 132 → **138**, total 1500 → **1508**, in six places,
+`docs/LAUNCH.md:220` first, and a `CHANGELOG.md` paragraph, because the
+provider path ships. The packages grew 134 bytes, `content.js` +61,
+`onboarding.js` +44 and `background.js` +29, Chrome's 1003.809 → 1003.939
+KB, measured against `main`'s built in a detached `/tmp` worktree, still
+printing 1004.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the stamps: `npm run test:all` **exit 0** — typecheck
+clean, **682 unit / 158**, **138 jsdom / 29**, 639 tools / 167, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1004 KB × 3**
+passing `validate`, **49 e2e passed and 3 skipped in 5.7 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, the release
+notes, B2a. `packs:verify` and `site:check` were not run: no pack moved, and
+the site builder reads only pack entries, every one of which carries a band.
+Only documents moved after the gate, so typecheck and `npm test` were run
+again on the final tree.
+
+Assumed, with nobody to ask: that a machine word's band is unknown rather
+than the reader's, a level it was not judged at being a claim; that a
+neutral fit of 0.5 is what "neither preferred nor rejected" means for the
+band, as zipf 3.6 is for the frequency; and that the quiz's unknown band is
+near any, its pool never holding one today.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-09 — the page object's reply paths in jsdom, and a band that refuses every machine word at A1
 
