@@ -6,9 +6,9 @@
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
 of this session — typecheck clean, **683** unit / 158 suites, **138** jsdom / 29
-suites, **642** tool tests / 168 suites, **49** e2e passing
+suites, **643** tool tests / 168 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1004 KB each, all
+packages built at 998 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old

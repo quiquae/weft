@@ -724,7 +724,7 @@ function installPage(version) {
       Download Weft ${esc(version)}
     </a>
     <p class="download__meta">
-      Chrome, Edge, Brave, Firefox and Safari · about 200&nbsp;KB · free for one language, forever
+      Chrome, Edge, Brave, Firefox and Safari · about 200&nbsp;KB · free
     </p>
   </div>
 
