@@ -213,7 +213,7 @@ export function scoreCandidate(
 
   const pos = posRank(entry.pos, input.settings.learning.posPreference);
 
-  // Ambiguity is a gate: "light" with nine senses is a bad swap even if
+  // Ambiguity is a gate: "light" with eight senses is a bad swap even if
   // everything else about it is ideal.
   const ambiguityGate = 1 / (1 + Math.log2(1 + Math.max(0, entry.senses - 1)));
 

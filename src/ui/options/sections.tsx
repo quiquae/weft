@@ -45,7 +45,7 @@ const LEVELS = [
 const POS_OPTIONS: Array<{ id: Pos; label: string; title: string }> = [
   { id: 'noun', label: 'nouns', title: 'Concrete nouns are the easiest to recover from context.' },
   { id: 'adj', label: 'adjectives', title: 'Usually guessable from the noun they modify.' },
-  { id: 'verb', label: 'verbs', title: 'Woven as infinitives; inflected English forms are skipped.' },
+  { id: 'verb', label: 'verbs', title: 'Woven as infinitives, and as participles or gerunds where English has “-ing”; past tenses and “-s” forms are skipped.' },
   { id: 'adv', label: 'adverbs', title: 'Often recoverable, sometimes load-bearing.' },
   { id: 'num', label: 'numbers', title: 'Quick wins, and useful everywhere.' },
   { id: 'intj', label: 'greetings', title: 'Hello, please, sorry.' },
