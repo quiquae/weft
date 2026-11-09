@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **682** unit / 158 suites, **138** jsdom / 29
-suites, **639** tool tests / 167 suites, **49** e2e passing
+of this session — typecheck clean, **683** unit / 158 suites, **138** jsdom / 29
+suites, **642** tool tests / 168 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1004 KB each, all
 passing `npm run validate`. The package grew
@@ -2828,7 +2828,7 @@ registered**, and nothing below it can move until it is.
       groups are stamped. Unit 680 → **682** / 157 → **158**, jsdom 132 →
       **138**, total 1500 → **1508**, in six places. See Notes.
 
-- [ ] **Read every line the feed tells as a false friend.** Found
+- [x] **Read every line the feed tells as a false friend.** Found
       2026-11-09, measuring the item above: the Old English pack's feed
       prints 24 false-friend lines and the Latin's 2, and three read badly.
       "spell became English spell, but it meant a story; …" — the
@@ -2847,6 +2847,41 @@ registered**, and nothing below it can move until it is.
       "became English" itself would hold the first. About 30 minutes; it
       moves `src/core/` or the pack, so all three screenshot groups go stale
       by provenance and want regenerating and stamping.
+
+      **Done 2026-11-09, the same run, and it was seven lines, not three.**
+      Printed with the dashboard's own call, `main` told **25** Old English
+      lines as false friends, not 24, and 2 Latin. Seven did not say what
+      the frame promises. `spell` and `grēat`, the second the same word but
+      for a length mark, were said to have become themselves; `sentence()` in
+      `src/core/discoveries.ts` now gives a false friend whose etymon folds
+      to its own spelling a frame of its own, "spell is still English spell,
+      but it meant a story", and a borrowing "English took camera as it was,
+      but …", which no Latin line takes today and a unit test holds.
+      `ġieldan`'s note said "and became “yield”" after the frame had, and
+      `cwēn`'s had no verb. **And three told what another word had meant**:
+      `blæc`'s "meant pale" was `blāc`'s, `hlāf`'s "morsel" `brēad`'s and
+      `unrōt`'s "sated" `sæd`'s, so the feed marked a word whose own meaning
+      never moved and contrasted it with a stranger. `hlāf`'s now says what
+      `hlāf` meant, bread, its gloss's own word; `blæc`'s and `unrōt`'s keep
+      their facts without "meant", so `blæc` reads as a plain descent and
+      `unrōt` as a note. 23 Old English lines and the 2 Latin are false
+      friends now, every one read. Three guards in a new suite of
+      `tests/tools/feed-frames.test.ts`, red first on exactly these: no line
+      says a word became English, or was borrowed, as itself; a false
+      friend's "meant" or "means" belongs to its own word, the last word
+      quoted before the verb in its clause folding to the target unless
+      "it", "he" or "she" stands between; and no note says again that the
+      word became its descendant. **`packs:verify` refused the first
+      rewording of `hlāf`'s note**, which `npm test` passed: "“bread” comes
+      from “brēad”" put a kinship verb in a note quoting its own target,
+      which `tools/verify-packs.mjs` reads as a claim that `hlāf` is
+      related to itself. It reads "“brēad”, the word “bread” grew from, was
+      a morsel" now. 7 note fields of `en-ang.json`, +72 bytes. All 31
+      shots regenerated twice, after the frame and after the rewording, 14 +
+      10 + 7 written each time and every one byte-identical, and the three
+      groups stamped. Unit 682 → **683**, tools 639 → **642** / 167 →
+      **168**, total 1508 → **1512**, in six places, and a `CHANGELOG.md`
+      paragraph. See Notes.
 
 - [ ] **Keep function words, and the adverbs before a verb, away from a
       translation service.** Found 2026-11-09, measuring the irregular
@@ -8562,6 +8597,36 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-09 — every line the feed tells as a false friend, read.** Three
+things a later run would be sorry not to know:
+
+1. **A note's "meant" picks the false-friend frame whoever it is about.**
+   `FALSE_FRIEND` in `src/core/discoveries.ts` matches the verb, not its
+   subject, so a note saying what *another* word meant — `blāc` under
+   `blæc`, `brēad` under `hlāf`, `sæd` under `unrōt` — marked a word whose
+   own meaning never moved, and the frame then contrasted it with a
+   stranger. The cure stays the note's, by the decision "cure a miss in the
+   note, never in the pattern": a fact about a neighbouring word is said
+   without "meant", and `tests/tools/feed-frames.test.ts` now refuses a
+   false friend whose "meant" has another word quoted as its subject.
+2. **`npm test` does not run `packs:verify`, and the two read notes
+   differently.** The verifier refuses a note that claims kinship — "root",
+   "related", "comes from", "descends", "ancestor" — while quoting its own
+   target, because that says a word is related to itself; the test suites
+   never ask. So after any note edit run `npm run packs:verify` beside
+   `npm test`: "“hlāf” meant bread; “bread” comes from “brēad”" passed all
+   1463 fast tests and failed the verifier at `lex-ang.tsv:120`. CI's
+   `check` job runs it, so it would not have landed, but it costs a round
+   trip.
+3. **A queued item's count is the queuing run's reading.** The item said
+   24 Old English false-friend lines and three bad ones; `main` printed 25,
+   and seven were bad. Print the set with the dashboard's own call before
+   trusting either number, as `feed()` in the guard does.
+
+The next item, the function words, was not started: at about an hour of work
+and a gate it would have run into the session's stop, and the queue job that
+runs this file repeats, so the next run takes it whole.
 
 **2026-11-09 — a translation service's words are woven at A1.** Three
 things a later run would be sorry not to know:
