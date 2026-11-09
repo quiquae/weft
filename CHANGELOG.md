@@ -9,6 +9,15 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**A translation service's words are woven at A1.** With lookups on, Weft
+asks your translation service for the words on a page that no pack has, and
+at the default level, A1, it wove none of them: each came back marked as a
+band 3 word, and A1 weaves bands 1 and 2, so the words were sent, counted
+against the daily lookup limit and then left in English. A word a service
+fills now has no difficulty band, since nobody has judged how hard it is, so
+no level refuses it, and the tooltip no longer prints "B1" beside it with
+the "Difficulty band" switch on.
+
 **The verbs switch says what it weaves.** Hovering *verbs* under "Which kinds
 of word" on the settings page said a verb was woven as an infinitive and
 every inflected English form was skipped, but each verb is woven under its
@@ -999,7 +1008,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1500 tests: 680 unit, 132 in jsdom, 639 over the build tools, and
+**Built with** 1508 tests: 682 unit, 138 in jsdom, 639 over the build tools, and
 49 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

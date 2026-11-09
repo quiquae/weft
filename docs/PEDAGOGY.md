@@ -199,7 +199,10 @@ The selector scores each candidate on:
   B2, C1 and C2 it slides down to bands 2 to 4, the rarest words Weft has, put
   first by the frequency and band-fit scores. Until 2026-11-08 it slid past
   them, and those three levels wove nothing on ordinary prose, even at the
-  ceiling.
+  ceiling. A word a translation service fills has no band, nobody having
+  judged how hard it is, so the window does not refuse it and its fit is
+  halfway, neither preferred nor marked down; until 2026-11-09 each was band
+  3, and A1, the default level, refused every one.
 - **Guessability** — sentence length, saturating at twelve words. A longer
   sentence carries more context to recover the word from.
 - **Part of speech** — the order the learner put the parts of speech in,

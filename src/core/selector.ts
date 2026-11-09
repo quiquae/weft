@@ -33,6 +33,13 @@ import { hashString, mulberry32 } from './rand.ts';
 const DEFAULT_MAX_REPEATS = 3;
 
 /**
+ * The band fit of a word with no band, a translation service's: halfway
+ * between the fit of a word at the reader's level, 1, and of one three bands
+ * away, 0, so the level neither prefers nor marks it down.
+ */
+const UNBANDED_FIT = 0.5;
+
+/**
  * Mixed into a node's seed for the draw that rounds its budget, so the draw
  * is a stream of its own and the tie-breaking jitter, drawn from the seed
  * itself, is the same as it was before the budget was dithered.
@@ -205,7 +212,9 @@ export function scoreCandidate(
   const ideal = idealZipf(level);
   const frequency = Math.max(0, 1 - Math.abs(entry.zipf - ideal) / 3.2);
 
-  const bandFit = Math.max(0, 1 - Math.abs(entry.band - level) / 3);
+  // A word with no band, a translation service's, is fitted halfway: neither
+  // preferred as a word at the reader's level nor marked down as one far from it.
+  const bandFit = entry.band === undefined ? UNBANDED_FIT : Math.max(0, 1 - Math.abs(entry.band - level) / 3);
 
   // Longer sentences carry more context, so a swap inside one is easier to
   // decode from surroundings. Saturates at 12 words.
@@ -270,7 +279,8 @@ export function entryAllowed(entry: LexEntry, input: SelectorInput): FilterReaso
   if (entry.pos === 'phrase' && !s.phrasesEnabled) return { ok: false, why: 'phrases-off' };
 
   const { min, max } = bandWindow(input.effectiveLevel, input.topBand);
-  if (entry.band < min || entry.band > max) return { ok: false, why: 'band' };
+  // A translation service's word has no band to hold to the window.
+  if (entry.band !== undefined && (entry.band < min || entry.band > max)) return { ok: false, why: 'band' };
 
   // Function words are excluded unless the learner explicitly asked for them:
   // swapping "the" and "of" wrecks readability for almost no vocabulary gain.

@@ -86,7 +86,8 @@ export function distractorsFor(
   const candidates = pool.filter(
     (e) =>
       e.pos === entry.pos &&
-      Math.abs(e.band - entry.band) <= 1 &&
+      // A word with no band, a translation service's, is near any band.
+      (e.band === undefined || entry.band === undefined || Math.abs(e.band - entry.band) <= 1) &&
       other(e) &&
       (side === 'target' ? e.tgt !== correct : e.lemma !== correct),
   );
