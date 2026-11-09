@@ -391,11 +391,12 @@ policy explaining what is being sent and how it's used is required" — and
 the own-key provider makes that possible. Paste the text of
 `docs/PRIVACY.md` — like F9's `LICENSE`, a whole file, so not repeated here.
 
-**F11 — Payment.** Tick *This add-on requires payment, non-free services or
-software, or additional hardware*. Mozilla's policy: "Listings must disclose
-when payment is required to enable any add-on functionality"
+**F11 — Payment.** Leave *This add-on requires payment, non-free services or
+software, or additional hardware* unticked. Mozilla's policy asks a listing
+to disclose payment "required to enable any add-on functionality"
 ([policies](https://extensionworkshop.com/documentation/publish/add-on-policies/)),
-and Pro is paid.
+and since 1.1.0 every feature is free; the optional translation service
+runs on the user's own key, which the description says.
 
 **F12 — Submit.** Attach the source to every later version too: Mozilla
 wants it each time.

@@ -5,8 +5,8 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **684** unit / 158 suites, **138** jsdom / 29
-suites, **643** tool tests / 168 suites, **47** e2e passing
+of this session — typecheck clean, **686** unit / 159 suites, **138** jsdom / 29
+suites, **644** tool tests / 169 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 998 KB each, all
 passing `npm run validate`. The package grew
@@ -3167,7 +3167,9 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
       **Not agent-shaped before the yes**: what Pro is, and costs, is
       Creagh's. B4 should wait on it, since it makes Pro buyable.
 
-- [ ] **Declare the Firefox build's data collection, then rebuild the zips.**
+- [x] **Declare the Firefox build's data collection, then rebuild the zips.**
+      Done 2026-11-09 (`firefox-data-collection`): option 1 as recommended,
+      required none, optional websiteContent, floors 140 and Android 142.
       Found 2026-10-24 writing `docs/READY-TO-SUBMIT.md`. "From November 3,
       2025, all new extensions must adopt the Firefox built-in data
       collection consent system"

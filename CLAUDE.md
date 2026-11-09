@@ -66,11 +66,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **684 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **686 pass**, 159 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **643 pass**, 168 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **644 pass**, 169 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
-| `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
+| `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 998 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
@@ -1107,6 +1107,23 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — Firefox is told what Weft sends, and asks before it is sent
+
+`TODO.md`'s item, with the owner's yes ("chrome / firefox / edge sure"):
+AMO refuses a new add-on without `data_collection_permissions`. Option 1 as
+the item recommended: `{ required: ['none'], optional: ['websiteContent'] }`,
+`MINIMUMS.firefox` 140, `gecko_android` 142, esbuild `firefox140`. The
+settings page asks Firefox in the click that turns a translation service on
+(`useService` in `src/ui/options/data.tsx`), and `lookupMissing` sends no
+word until `mayTransmit()` (`src/core/sending.ts`) sees the grant; cached
+answers still serve. `gecko_android` FAILed the compat audit on the desktop
+target, so `KEY_FALLBACKS` names it: desktop ignores it, and without it
+AMO's linter warns. `validate-package` fails a Firefox build without the
+key; `privacy-permissions.test.ts` holds every non-site request to this one
+switch. The store answers now tick Website content on Chrome and Edge too.
+`lint:firefox`: 0 errors, the four Preact warnings. Unit 684 → **686** /
+159, tools 643 → **644** / 169, total 1512 → **1515**.
 
 ### 2026-11-09 — the site is GitHub Pages, and there is no domain
 
