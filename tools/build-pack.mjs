@@ -355,7 +355,7 @@ async function buildPack(lang, core) {
       version: PACK_VERSION,
       entryCount,
       lemmaCount: translated,
-      draftedCount,
+      ...(draftedCount ? { draftedCount } : {}),
       attribution: attributionFor(lang),
       license: LICENSE,
       bands,
