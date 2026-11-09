@@ -199,12 +199,11 @@ Requested per-origin at runtime, from a user gesture on one of the extension's o
 **C10 — Remote code:** *No, I am not using remote code.* `npm run validate`
 checks the package for it.
 
-**C11 — Data usage.** Tick **none** of the data types — every disclosure in the
-listing answers No. Then tick **all three** certifications. One answer to keep
-consistent: the listing says No to website content because words go only to
-a translation provider the user sets up with their own key. If F0 below ends
-up declaring `websiteContent` for Firefox, tick website content here and on
-Edge too, so the three stores are told the same thing.
+**C11 — Data usage.** Tick **Website content** and nothing else. Then tick
+**all three** certifications. Website content, because with a translation
+service the user turns on with their own key, words from the page go to the
+service they chose; with no key nothing leaves. Firefox is told the same (F0),
+and so is Edge (E7).
 
 **C12 — Privacy policy URL.**
 
@@ -235,7 +234,15 @@ touch") reads from a real install.
 its value.** Fee: **none** — no fee appears anywhere in Mozilla's publishing
 documentation. About 45 minutes of forms once the key is in.
 
-**F0 — First: declare what Weft sends.** "From November 3, 2025, all new
+**F0 — Declared.** The package declares
+`"data_collection_permissions": { "required": ["none"], "optional": ["websiteContent"] }`
+under `browser_specific_settings.gecko`, with `strict_min_version` `140.0`
+and `gecko_android`'s `142.0`. The settings page asks Firefox for website
+content in the click that turns a translation service on, and the worker
+sends no word until it is granted. `npm run lint:firefox`: 0 errors, the
+four Preact warnings. The reasoning that led there, kept below:
+
+"From November 3, 2025, all new
 extensions must adopt the Firefox built-in data collection consent system"
 ([Mozilla](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)),
 and one without it set correctly "will be prevented from being submitted"
@@ -275,10 +282,10 @@ finds an error in none of them, so it decides neither; the figures are in
 - **And Chrome and Edge with it.** If Firefox is told `websiteContent`, tick
   website content in C11 and on Edge too, as C11 says.
 
-Then rebuild (step 0.1) and run `npm run lint:firefox`. It exits 0 with the
-key missing — the linter only warns, and the refusal is AMO's own check of
-a new add-on — so read the warnings, not the exit status: the four Preact
-ones should be all. The change itself is queued in `TODO.md`'s `Next`.
+`npm run lint:firefox` exits 0 even with the key missing — the linter only
+warns, and the refusal is AMO's own check of a new add-on — so read the
+warnings, not the exit status: the four Preact ones should be all.
+`npm run validate` fails a Firefox package without the key.
 
 **F1 — Account.** <https://addons.mozilla.org/developers/>, with a Firefox
 account.
@@ -384,11 +391,12 @@ policy explaining what is being sent and how it's used is required" — and
 the own-key provider makes that possible. Paste the text of
 `docs/PRIVACY.md` — like F9's `LICENSE`, a whole file, so not repeated here.
 
-**F11 — Payment.** Tick *This add-on requires payment, non-free services or
-software, or additional hardware*. Mozilla's policy: "Listings must disclose
-when payment is required to enable any add-on functionality"
+**F11 — Payment.** Leave *This add-on requires payment, non-free services or
+software, or additional hardware* unticked. Mozilla's policy asks a listing
+to disclose payment "required to enable any add-on functionality"
 ([policies](https://extensionworkshop.com/documentation/publish/add-on-policies/)),
-and Pro is paid.
+and since 1.1.0 every feature is free; the optional translation service
+runs on the user's own key, which the description says.
 
 **F12 — Submit.** Attach the source to every later version too: Mozilla
 wants it each time.
@@ -483,7 +491,7 @@ Requested per-origin at runtime, from a user gesture on one of the extension's o
 ```
 
 **E7 — Remote code:** *No, I am not using remote code.* **Data usage:** tick
-none of the data types, then every certification.
+website content only, as in C11, then every certification.
 
 **E8 — Privacy policy URL.**
 
@@ -659,8 +667,8 @@ Screenshots: `docs/store/apple-01-woven.png` … `apple-05-settings.png`
 it refuses —
 [specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)).
 
-**S5 — App Privacy.** The listing's disclosures say nothing is collected (as
-in C11). The one thing to weigh first: with the optional own-key provider,
+**S5 — App Privacy.** The listing discloses website content (as in C11).
+The one thing to weigh first: with the optional own-key provider,
 single words go to the translation service the user picked, and with “Send
 the surrounding sentence” on, the sentence each word appears in goes to an
 OpenAI-compatible one. Read Apple's definition of "collect" before choosing

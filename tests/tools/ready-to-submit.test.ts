@@ -259,15 +259,19 @@ describe('the listing behind the page', () => {
     assert.deepEqual(misfits, []);
   });
 
-  test('every data-usage disclosure answers No, so "tick none of the boxes" is true', () => {
+  test('the data boxes the page says to tick are the disclosures that answer Yes', () => {
     const answers = section(listing, 'Data usage disclosures')
       .split(/\n- /)
       .map((item) => item.split('\n').join(' ').trim())
-      .map((item) => /^-?\s*\*\*(.+?\?)\*\*\s+(\S+)/.exec(item))
+      .map((item) => /^-?\s*\*\*(.+?)\?\*\*\s+(\S+)/.exec(item))
       .filter((m): m is RegExpExecArray => m !== null);
     assert.ok(answers.length >= 9, `only ${answers.length} disclosures were read`);
-    const yes = answers.filter((m) => !m[2]!.startsWith('No')).map((m) => m[1]);
-    assert.deepEqual(yes, [], `${PAGE} tells you to tick none of the data boxes`);
+    const yes = answers.filter((m) => m[2]!.startsWith('Yes')).map((m) => m[1]!.toLowerCase());
+    const page = read(PAGE);
+    const chrome = /\*\*C11 — Data usage\.\*\* Tick \*\*([^*]+)\*\* and nothing else/.exec(page)?.[1];
+    assert.ok(chrome, `${PAGE} C11 names no box to tick`);
+    assert.deepEqual([chrome.toLowerCase()], yes, 'C11 ticks what the listing answers Yes');
+    assert.match(page, new RegExp(`\\*\\*Data usage:\\*\\* tick\\s+${yes[0]} only`), 'E7 ticks the same box');
   });
 });
 

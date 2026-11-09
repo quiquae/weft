@@ -26,8 +26,10 @@ export const VERSION = '1.0.1';
  *
  *  - Chrome 116: the CSS Custom Highlight API (105) plus MV3 dynamic
  *    registration, rounded up to a version worth supporting.
- *  - Firefox 128: `optional_host_permissions` landed there and the whole
- *    per-origin consent design rests on it.
+ *  - Firefox 140: `data_collection_permissions`, which addons.mozilla.org
+ *    requires of every new add-on since 2025-11-03. (128 brought
+ *    `optional_host_permissions`, which the per-origin consent design rests
+ *    on.)
  *  - Safari 16.4: `scripting.registerContentScripts` (16.4) and
  *    `adoptedStyleSheets` (16.4). The Highlight API only arrives in Safari
  *    17.2, so 16.4–17.1 runs the wrapped renderer instead — a degradation
@@ -35,7 +37,7 @@ export const VERSION = '1.0.1';
  */
 export const MINIMUMS = {
   chrome: '116',
-  firefox: '128.0',
+  firefox: '140.0',
   safari: '16.4',
 };
 
@@ -117,7 +119,14 @@ export function buildManifest(target, opts = {}) {
       gecko: {
         id: 'weft@weft.study',
         strict_min_version: MINIMUMS.firefox,
+        // Nothing leaves by default. With the reader's own translation key,
+        // words from the page go to the service they chose, which Mozilla
+        // counts as website content, and Firefox asks them first.
+        data_collection_permissions: { required: ['none'], optional: ['websiteContent'] },
       },
+      // Data collection consent reached Firefox for Android in 142. Without
+      // this floor AMO's linter warns that Android 140 cannot read the key.
+      gecko_android: { strict_min_version: '142.0' },
     };
     m.permissions.push('notifications');
   } else if (target === 'safari') {

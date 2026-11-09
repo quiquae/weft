@@ -2,6 +2,7 @@ import { useRef, useState } from 'preact/hooks';
 import type { Settings } from '../../core/types.ts';
 import { getLanguage } from '../../core/languages.ts';
 import { send } from '../../shared/rpc.ts';
+import { api } from '../../shared/browser.ts';
 import { exportFilename } from '../../core/escalation.ts';
 import { whatIsSent } from '../../core/sending.ts';
 import { MAX_PROVIDER_ENTRIES } from '../../core/prune.ts';
@@ -23,6 +24,22 @@ import { SIGLA } from './sections.tsx';
 export function SourcesSection({ c, settings }: { c: Controller; settings: Settings }) {
   const meta = getLanguage(settings.learning.activeTarget);
   const [reveal, setReveal] = useState<Record<string, boolean>>({});
+  const [refused, setRefused] = useState(false);
+
+  // Firefox asks the reader before page words leave. The request has to be
+  // the click itself: an await before it loses the user activation.
+  const useService = (on: boolean) => {
+    if (on && __WEFT_TARGET__ === 'firefox') {
+      const asked = api.permissions.request({ data_collection: ['websiteContent'] } as chrome.permissions.Permissions);
+      void Promise.resolve(asked).then((granted) => {
+        setRefused(!granted);
+        if (granted) void c.set('providers.enabled', true);
+      });
+      return;
+    }
+    setRefused(false);
+    void c.set('providers.enabled', on);
+  };
 
   const keyField = (
     id: 'deepl' | 'google' | 'openai',
@@ -63,9 +80,10 @@ export function SourcesSection({ c, settings }: { c: Controller; settings: Setti
         <Switch
           checked={settings.providers.enabled}
           label={settings.providers.enabled ? 'Looking up unknown words' : 'Packs only, fully offline'}
-          onChange={(v) => void c.set('providers.enabled', v)}
+          onChange={useService}
         />
       </Row>
+      {refused ? <Notice>Firefox was not allowed to send words, so lookups stay off.</Notice> : null}
 
       {settings.providers.enabled ? (
         <>

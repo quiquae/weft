@@ -204,6 +204,21 @@ export const UNTRACKED: Record<string, { targets: string[]; why: string; source:
     why: 'MDN documents it in prose, not in its data: below it Firefox does not install or run the extension',
     source: BSS,
   },
+  [`${MANIFEST}.browser_specific_settings.gecko.data_collection_permissions.required`]: {
+    targets: ['firefox'],
+    why: 'MDN documents it in prose, not in its data: what an add-on must collect to work at all, here none',
+    source: BSS,
+  },
+  [`${MANIFEST}.browser_specific_settings.gecko.data_collection_permissions.optional`]: {
+    targets: ['firefox'],
+    why: 'MDN documents it in prose, not in its data: what Firefox asks the reader for later, here website content',
+    source: BSS,
+  },
+  [`${MANIFEST}.browser_specific_settings.gecko_android.strict_min_version`]: {
+    targets: ['firefox'],
+    why: 'MDN documents it in prose, not in its data: the Android floor, 142, where data collection consent arrived',
+    source: BSS,
+  },
   [`${MANIFEST}.browser_specific_settings.safari.strict_min_version`]: {
     targets: ['safari'],
     why: 'MDN documents it in prose, not in its data: the minimum version of Safari to support',
@@ -214,6 +229,8 @@ export const UNTRACKED: Record<string, { targets: string[]; why: string; source:
 /** What happens where a target declares a key it does not support at its floor. */
 export const KEY_FALLBACKS: Record<string, string> = {
   [`${MANIFEST}.commands`]: 'api.commands?.onCommand optional chain; every command has UI too',
+  [`${MANIFEST}.browser_specific_settings.gecko_android`]:
+    'desktop Firefox ignores it; it only sets the Android floor that data collection consent needs',
   [`${MANIFEST}.web_accessible_resources.use_dynamic_url`]:
     'false is what an absent key means, so a Chrome that does not read it behaves as declared',
 };

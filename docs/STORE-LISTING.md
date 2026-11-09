@@ -162,12 +162,13 @@ the vocabulary it has taught. There is no second function.
   (for example `twitter.com`) with no path, no query and no page content, and
   it never leaves the device.
 - **User activity?** No. Nothing is transmitted.
-- **Website content?** No. If the user configures their own translation API
-  key, individual words are sent to the provider they chose, never paragraphs,
-  URLs or the page. Only an OpenAI-compatible provider is also sent the
-  sentence each word appears in, and only if the user turns on “Send the
-  surrounding sentence”, which is off by default and described where it is
-  switched on.
+- **Website content?** Yes, and only if the user turns on a translation
+  service with their own API key: then individual words from the page go to
+  the provider they chose, never paragraphs, URLs or the page. Only an
+  OpenAI-compatible provider is also sent the sentence each word appears in,
+  and only if the user turns on “Send the surrounding sentence”, which is off
+  by default and described where it is switched on. Firefox asks the user for
+  this before the first word leaves. With no key, nothing is sent.
 
 **Certifications:** we do not sell or transfer user data to third parties
 outside approved use cases; we do not use or transfer user data for purposes

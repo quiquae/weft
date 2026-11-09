@@ -2,6 +2,8 @@ import type { LangCode, LexEntry, Pos, Settings } from '../../core/types.ts';
 import { dayKey } from '../../core/escalation.ts';
 import { getLanguage } from '../../core/languages.ts';
 import { machineEntry } from '../../core/machine-entry.ts';
+import { mayTransmit } from '../../core/sending.ts';
+import { api } from '../../shared/browser.ts';
 import { deepl } from './deepl.ts';
 import { google } from './google.ts';
 import { openai } from './openai.ts';
@@ -90,6 +92,12 @@ export async function lookupMissing(
   }
 
   if (!pending.length) return { entries, fromCache, fromProvider: 0 };
+
+  // Firefox asks the reader before page words leave. Until they agree, or
+  // once they take it back in about:addons, only the cache answers.
+  if (!mayTransmit(api.permissions?.getAll ? await api.permissions.getAll() : undefined)) {
+    return { entries, fromCache, fromProvider: 0, error: 'Firefox has not been allowed to send words.' };
+  }
 
   const controller = new AbortController();
   let fromProvider = 0;

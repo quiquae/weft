@@ -276,6 +276,9 @@ async function validate(target, src) {
 
   if (target === 'firefox') {
     if (!m.browser_specific_settings?.gecko?.id) fail(target, 'Firefox build has no gecko.id');
+    const collects = m.browser_specific_settings?.gecko?.data_collection_permissions;
+    if (!Array.isArray(collects?.required) || !collects.required.length)
+      fail(target, 'Firefox build declares no data_collection_permissions.required, which AMO requires of a new add-on');
     if (m.background?.service_worker) fail(target, 'Firefox does not support background.service_worker');
     if (m.web_accessible_resources?.some((w) => 'use_dynamic_url' in w))
       fail(target, 'use_dynamic_url is unsupported in Firefox and warns at AMO review');

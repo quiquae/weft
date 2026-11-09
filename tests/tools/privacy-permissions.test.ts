@@ -253,10 +253,25 @@ function hostAccounts(): { where: string; text: string }[] {
   return out;
 }
 
+describe('a request for anything but a site is Firefox’s data collection consent, from one switch', () => {
+  test('every other permissions.request asks for website content, and only where a service is turned on', () => {
+    const calls = sources().flatMap(({ file, text }) =>
+      [...text.matchAll(/permissions\.request\(\s*([^)]*)\)/g)].map((m) => ({ file, arg: m[1]!.trim() })),
+    );
+    assert.ok(calls.length >= 3, `only ${calls.length} permissions.request calls were read`);
+    const other = calls.filter((c) => !/^\{\s*origins\b/.test(c.arg));
+    const wrong = other.filter(
+      (c) => c.file !== 'src/ui/options/data.tsx' || !/^\{\s*data_collection:\s*\['websiteContent'\]\s*\}/.test(c.arg),
+    );
+    assert.deepEqual(wrong.map((c) => `${c.file}: ${c.arg}`), []);
+    assert.equal(other.length, 1, 'the data collection consent is asked from exactly one place');
+  });
+});
+
 describe('every page that asks for a site is named wherever the asking is described', () => {
   test('every file that asks the browser for a site is one REQUESTERS names, and no other', () => {
     const asking = sources()
-      .filter(({ text }) => /permissions\.request\(/.test(text))
+      .filter(({ text }) => /permissions\.request\(\s*\{\s*origins\b/.test(text))
       .map(({ file }) => file);
     assert.ok(asking.length >= 2, `only ${asking.length} files under src/ call permissions.request(`);
     const unnamed = asking.filter((f) => !(f in REQUESTERS));

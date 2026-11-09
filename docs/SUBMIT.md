@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 684 unit tests, 138 jsdom tests, 643 tool tests, the
+runs typecheck, 686 unit tests, 138 jsdom tests, 644 tool tests, the
 compatibility audit, all three builds, the package validator, and 47 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -239,7 +239,8 @@ that needs, and `TODO.md`'s `Next` the change.
 
 **Worth knowing about Firefox specifically.** The compatibility audit turned
 up that Firefox only gained `Highlight` in 140 and `::highlight()` in 149,
-while Weft's declared floor is 128. So most Firefox users today run the
+while Weft's declared floor is 140, which data collection consent needs. So
+Firefox 140 to 148 runs the
 *wrapped* renderer, not the highlight one — the fallback is the primary path
 on that browser. It is fully supported and tested; it just means Firefox
 behaviour differs from Chrome by default, and a bug report from a Firefox user

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { ProviderId } from '../../src/core/types.ts';
-import { SENTENCE_RECIPIENTS, howToStop, whatIsSent } from '../../src/core/sending.ts';
+import { SENTENCE_RECIPIENTS, howToStop, mayTransmit, whatIsSent } from '../../src/core/sending.ts';
 
 /**
  * What the dashboard and the settings page say a translation service is sent.
@@ -109,5 +109,18 @@ describe('the settings the words point at are the settings page’s', () => {
     for (const name of named) {
       assert.ok(titles.has(name), `the copy names “${name}”, and the settings page has no such title`);
     }
+  });
+});
+
+describe('what the browser lets leave', () => {
+  test('Firefox sends only once the reader has granted website content', () => {
+    assert.equal(mayTransmit({ origins: [], permissions: [], data_collection: [] }), false);
+    assert.equal(mayTransmit({ data_collection: ['technicalAndInteraction'] }), false);
+    assert.equal(mayTransmit({ data_collection: ['websiteContent'] }), true);
+  });
+
+  test('a browser that asks nothing leaves the switch as the whole consent', () => {
+    assert.equal(mayTransmit({ origins: [], permissions: ['storage'] }), true);
+    assert.equal(mayTransmit(undefined), true);
   });
 });
