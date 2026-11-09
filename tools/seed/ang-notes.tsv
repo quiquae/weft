@@ -64,7 +64,7 @@ lion	noun	lēo	borrowed straight from Latin; “lion” came later, from French	
 snake	noun	nǣdre	“a nadder” was misheard as “an adder”	wikt:ang:nædre etym:adder
 worm	noun	wyrm	also meant serpent and dragon	wikt:ang:wyrm etym:worm
 food	noun	mete	“mete” meant food of any kind	wikt:ang:mete etym:meat
-bread	noun	hlāf	“hlāf” meant bread; “bread” comes from “brēad”, a morsel	wikt:ang:hlaf etym:bread
+bread	noun	hlāf	“hlāf” meant bread; “brēad”, the word “bread” grew from, was a morsel	wikt:ang:hlaf etym:bread
 apple	noun	æppel	any fruit, not only the apple	wikt:ang:æppel etym:apple
 egg	noun	ǣġ	it became Middle English “ey”, which Norse “egg” displaced	wikt:ang:æg etym:egg
 home	noun	hām	survives in many English place-names in -ham	wikt:ang:ham etym:home wikt:en:-ham
@@ -200,7 +200,8 @@ sorry	intj	mē hrēoweþ	literally “it rues me”, mē being the one who regre
 #                    meaning never moved as a false friend and contrasted it with a
 #                    stranger: "blæc became English black, but “blāc” … meant pale". hlāf's
 #                    says what hlāf meant now, bread, the gloss's own word (ang-glosses.tsv),
-#                    and keeps brēad's morsel, etym:bread; blæc's and unrōt's say the same
+#                    and keeps brēad's morsel, etym:bread, in words tools/verify-packs.mjs
+#                    does not read as kinship with hlāf itself; blæc's and unrōt's say the same
 #                    facts without "meant", so the feed tells blæc as a descent and unrōt
 #                    as a note. tests/tools/feed-frames.test.ts holds a false friend's
 #                    "meant" to its own word.
