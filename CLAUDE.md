@@ -65,7 +65,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **680 pass**, 157 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **127 pass**, 28 suites, ~9 s wall clock here |
+| `npm run test:dom` | jsdom tests | **132 pass**, 29 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **639 pass**, 167 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
@@ -1088,6 +1088,62 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the page object's reply paths in jsdom, and a band that refuses every machine word at A1
+
+The same run's second PR, `TODO.md`'s next item in `Now`:
+`tests/dom/page.test.ts` faked `chrome.runtime.sendMessage` to answer
+nothing, so `reportAttention()` and `extendVocabulary()`, the two paths that
+act on a reply, were held only end to end.
+
+**The fake worker answers by message type now**, only the types a test gives
+an answer, and records what the page posted; `reportAttention()` is driven
+through the tracker's own `onReport` and `grade()` called directly, both by
+the bracket access `tsc` allows for TypeScript's `private`, so nothing waits
+on a clock. Five tests in a new suite: a rising density re-weaves with every
+word on screen pinned; a falling one re-weaves unpinned, the control; a
+panic pass in the reply leaves the page in English; a lookup asks only for
+words the pack lacks and a curated entry beats a machine answer for the
+same word; and a word a service fills is woven, from A2.
+
+**Pinning is only observable when something besides the density moved.**
+The selector is prefix-monotone for fixed inputs, so the reviewed words are
+graded first: a card with 2 reps reviewed now has a `due` of 0 and is too
+new to retire, and unpinned the selector puts other words in its place,
+measured with `selectSwaps()` at 0.25, where both words the paragraph wove
+at 0.2 were evicted. **And the first draft's rising test never re-wove**:
+`0.21 − 0.2` is 0.009999999999999981, under `RATIO_EPSILON`, so it passed
+with pinning removed until a probe said so. The densities are 5 points away
+now and both tests assert the re-weave. Five probes on `src/content/page.ts`,
+each restored by md5: never pinning, always pinning, ignoring the ratio, no
+suspend, and the curated-wins guard dropped, each failing its own test by
+name.
+
+**The lookup test found a defect, queued first in `Now` rather than fixed
+here.** `makeEntry()` gives every machine entry `band: 3`, and at A1, the
+default level, the band window is bands 1 and 2, so `entryAllowed()`
+refuses every word a translation service fills: through the page object the
+lookup goes out for "lighthouse" and the page reads "The maison by the eau
+stood below the lighthouse." The word is sent and counted all the same, and
+no test had ever woven a machine word. The fix wants a call about what a
+machine word's band is, moves `src/core/` and every screenshot group, so it
+is its own PR, and the test holds A2 until then.
+
+jsdom 127 → **132** / 28 → **29** suites, total 1495 → **1500**, in six
+places, `docs/LAUNCH.md:220` first. No screenshot group went stale, `tests/dom`
+being no input of one, and no `CHANGELOG.md` paragraph: nothing that ships
+moved. Measured on the final tree: `npm run typecheck` clean, and `npm test`
+exit 0, 680 unit / 157, **132 jsdom / 29**, 639 tools / 167. The full gate was
+the first PR's, twenty minutes before, and nothing the build or the browser
+reads has moved since; CI's `check` job runs it again.
+
+Assumed, with nobody to ask: that the defect is a PR of its own, being a
+call about what a machine word's band is; that grading the woven words is a
+fair way to reorder them, a reader doing exactly that in the tooltip; and
+that bracket access to the page's private members is better than widening
+its interface for a test.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-09 — the verbs chip says what it weaves, and "light" has eight senses
 
