@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **680** unit / 157 suites, **127** jsdom / 28
+of this session — typecheck clean, **680** unit / 157 suites, **132** jsdom / 29
 suites, **639** tool tests / 167 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1004 KB each, all
@@ -2741,7 +2741,7 @@ registered**, and nothing below it can move until it is.
       **639** / 165 → **167**, total 1492 → **1495**, in six places, and a
       `CHANGELOG.md` paragraph. See Notes.
 
-- [ ] **Reach the page object's escalation and provider paths in jsdom.**
+- [x] **Reach the page object's escalation and provider paths in jsdom.**
       Found 2026-11-08, building the harness. `tests/dom/page.test.ts` fakes
       `chrome.runtime.sendMessage` to answer nothing, so `reportAttention()`
       and `extendVocabulary()`, the two paths that act on a reply, are still
@@ -2755,6 +2755,58 @@ registered**, and nothing below it can move until it is.
       through the tracker's `onReport` or a fake clock rather than waiting.
       About 45 minutes; tests only, unless a test finds something, so no
       screenshot group goes stale.
+
+      **Done 2026-11-09, and a test found something.** The fake worker
+      answers by message type and records what the page posted, and
+      `reportAttention()` is driven through the tracker's own `onReport`.
+      Five tests in a new suite: a rising density re-weaves with every word
+      on screen pinned, even words the reader has just reviewed, whose
+      `due` falls to 0; a falling one re-weaves unpinned, and an unreviewed
+      word takes a reviewed one's place, the control showing those grades
+      evict; a panic pass in the reply leaves the page in English; a lookup
+      asks only for words the pack lacks, and a curated entry beats a
+      machine answer for the same word; and a filled word is woven — **from
+      A2 only**, which is the next item. Each probed against the line it
+      holds, restored by md5: never pinning, always pinning, ignoring the
+      ratio, no suspend and dropping the curated-wins guard each fail their
+      own test by name. **The first draft's rising test never re-wove**:
+      `0.21 − 0.2` is 0.00999… and the page re-weaves on a change of
+      `RATIO_EPSILON`, 0.01, so it passed with pinning removed; the
+      densities are 5 points away now and both tests assert the re-weave.
+      jsdom 127 → **132** / 28 → **29**, total 1495 → **1500**, in six
+      places. No screenshot group went stale, `tests/dom` being no input of
+      one, and no `CHANGELOG.md` paragraph: nothing that ships moved.
+
+- [ ] **Weave a translation service's words at A1, where the band window
+      refuses every one.** Found 2026-11-09, writing the page object's
+      lookup test. `makeEntry()` in `src/background/providers/index.ts`
+      gives every machine entry `band: 3`, under a comment placing its
+      unknown frequency "mid-scale so it is neither preferred as a very
+      common word nor rejected as a rare one", and `bandWindow(1, 4)` is
+      bands 1 and 2, so at A1, the default `learning.level`, `entryAllowed()`
+      refuses every machine word as `'band'`. Measured: a band-3 entry is
+      `{ ok: false, why: 'band' }` at level 1 and allowed from 2; through
+      the page object at A1 the lookup goes out for "lighthouse", the answer
+      comes back, and the page reads "The maison by the eau stood below the
+      lighthouse." The word is still sent to the service and counted
+      against the daily lookup limit, so a reader at A1 sends their reading
+      and gets nothing woven, from the feature Pro sells as "your own
+      translation key". `band: 3` dates from the first commit, `2287518`,
+      and no test had woven a machine word. And with "Show the level"
+      (`reveal.showBand`, off by default) the tooltip prints the band, so a
+      machine word reads "B1", a level nobody judged. Shape, recommended: a
+      machine word's band is unknown — `band` optional on `LexEntry` and
+      absent from `makeEntry()`'s entries — and an entry with no band
+      passes the band window, takes a neutral band fit and prints no level
+      row; at zipf 3.6 the frequency factor already ranks it below the
+      pack's common words for a beginner. `band: 2` would sit inside every
+      window only because every pack tops out at band 4, and print "A2".
+      The provider cache stores translations and `makeEntry()` runs on read
+      (`index.ts:82`), so the fix reaches a cached answer too. Test-first:
+      the last test in `tests/dom/page.test.ts` reads level 1, then unit
+      tests for `entryAllowed()`, the fit and the tooltip row. Moves
+      `src/core/`, so all three screenshot groups go stale by provenance.
+      About 60 minutes.
 
 - [ ] **Read every line the feed tells as a false friend.** Found
       2026-11-09, measuring the item above: the Old English pack's feed
@@ -8490,6 +8542,31 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-09 — the page object's reply paths in jsdom, and the band that
+refuses every machine word at A1.** Three things a later run would be sorry
+not to know:
+
+1. **A ratio step of 0.01 may be no step at all.** The page re-weaves when
+   `Math.abs(reply.ratio - this.ratio) >= RATIO_EPSILON`, 0.01, and
+   `0.21 - 0.2` is 0.009999999999999981 while `0.2 - 0.19` is
+   0.010000000000000009, so a test rising by one point re-weaves nothing
+   and passes whatever the re-weave does; this one passed with pinning
+   removed until the probe said so. Move a test's density by several
+   points, and assert the re-weave happened before asserting what it did.
+2. **Pinning decides only when something besides the density moved.** For
+   fixed inputs the selector is prefix-monotone, so a rising density keeps
+   every word with or without a pin, and a test of pinning needs a change
+   that reorders the candidates. Grading the woven words does it: a card
+   with 2 reps, reviewed now, has a `due` of 0 and is too new to retire, so
+   the selector would put other words in its place. A card with 8 reps and
+   400 days' stability, the unit test's, is retirable under the default
+   "Retire words you know", hence free, and would never be evicted at all.
+3. **Private members are reached by bracket access**, `page['attention']
+   ['opts'].onReport(5)` and `page['grade'](lemma, 3)`, which `tsc` allows
+   for TypeScript's `private`, so the reply paths are driven through the
+   page's own wiring with no clock and no wait. The fake answers only the
+   types a test gives an answer, and `afterEach` clears them.
 
 **2026-11-09 — the verbs chip says what it weaves, and "light" has the
 senses the core list gives.** Three things a later run would be sorry not to
