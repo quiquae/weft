@@ -152,9 +152,7 @@ ${log || '(none)'}
 
 ---
 
-Free for one language, forever. [Pro](https://weft.study/pricing) adds Hard
-Mode, your own translation key, a vocabulary check before any setting gets
-easier, and sixty days of attention history.
+Free, every feature, with no account and nothing to buy.
 `;
 
 if (dry) {

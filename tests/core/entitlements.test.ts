@@ -120,12 +120,12 @@ describe('clampToTier', () => {
     assert.ok(free.learning.targetLangs.includes(free.learning.activeTarget));
   });
 
-  test('free turns pro features off', () => {
+  test('free keeps every shipped feature on, and turns off the ones not built', () => {
     const free = clampToTier(configured, 'free');
+    assert.equal(free.friction.requireQuizToUnlock, true);
+    assert.equal(free.friction.hardMode, true);
+    assert.equal(free.providers.enabled, true);
     assert.equal(free.learning.phrasesEnabled, false);
-    assert.equal(free.friction.requireQuizToUnlock, false);
-    assert.equal(free.friction.hardMode, false);
-    assert.equal(free.providers.enabled, false);
   });
 
   test('free drops per-site language overrides but keeps the rules themselves', () => {
@@ -164,7 +164,7 @@ describe('exceedsTier', () => {
     assert.deepEqual(exceedsTier(settings({ 'friction.hardMode': true }), 'pro'), []);
   });
 
-  test('names every feature a free user is asking for', () => {
+  test('names every feature a free user is asking for that is not free', () => {
     const over = exceedsTier(
       settings({
         'learning.targetLangs': ['fr', 'la'],
@@ -176,16 +176,7 @@ describe('exceedsTier', () => {
       }),
       'free',
     );
-    for (const expected of [
-      'multi-language',
-      'phrases',
-      'unlock-quiz',
-      'hard-mode',
-      'providers',
-      'per-site-language',
-    ] as Feature[]) {
-      assert.ok(over.includes(expected), `${expected} was not reported`);
-    }
+    assert.deepEqual(over, ['multi-language', 'phrases', 'per-site-language'] as Feature[]);
   });
 
   test('a default free configuration exceeds nothing', () => {
@@ -194,8 +185,8 @@ describe('exceedsTier', () => {
 });
 
 describe('historyDays', () => {
-  test('free shows today, pro shows the run', () => {
-    assert.equal(historyDays('free'), 1);
-    assert.ok(historyDays('pro') >= 30);
+  test('every tier shows sixty days, the whole history being free', () => {
+    assert.equal(historyDays('free'), 60);
+    assert.equal(historyDays('pro'), 60);
   });
 });

@@ -309,8 +309,8 @@ const handlers: Handlers = {
     const snapshot = await store.load();
     const now = Date.now();
 
-    // A change that asks for a Pro feature is refused outright rather than
-    // queued. Putting it through the cooldown would make the user wait an
+    // A change that asks for a feature not built yet is refused outright
+    // rather than queued. Putting it through the cooldown would make the user wait an
     // hour to discover they cannot have it, which is the worst possible
     // ordering of those two pieces of news.
     const wouldBe = validateSettings(
@@ -326,7 +326,7 @@ const handlers: Handlers = {
       const info = featureInfo(first);
       return {
         applied: false,
-        message: `${info.label} is part of Weft Pro. ${info.detail}`,
+        message: `${info.label} is not in Weft yet.`,
         needsPro: first,
       };
     }

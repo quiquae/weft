@@ -916,13 +916,11 @@ describe('the landing page’s descent tables say what the packs say', () => {
  * Pages that print another document's copy, and keep that document's marks.
  * Whether those move is a different decision, written up in `TODO.md`: a
  * smart-quote pass in the Markdown renderer would change nothing on GitHub,
- * where the two documents are also read, and the entitlement copy is the
- * extension's before it is the site's.
+ * where the two documents are also read.
  */
 const OWN_MARKS: Readonly<Record<string, string>> = {
   '/support.html': 'docs/SUPPORT.md, which a reader also opens on GitHub',
   '/privacy.html': 'docs/PRIVACY.md, which a reader also opens on GitHub',
-  '/pricing.html': 'the feature copy in src/core/entitlements.ts, which the extension prints too',
 };
 
 describe('a page quotes in the site’s own marks', () => {

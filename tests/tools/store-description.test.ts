@@ -4,16 +4,16 @@
  * `docs/STORE-LISTING.md`'s "Detailed description" is the copy Google reviews
  * and every stranger at a store reads first, and `docs/READY-TO-SUBMIT.md`
  * pastes it into four stores' boxes. Other guards hold slices of it: what a
- * translation service is sent (`sending-copy.test.ts`), what Pro is said to
- * sell (`pro-features.test.ts`), the four pasted copies
+ * translation service is sent (`sending-copy.test.ts`), what is said to be
+ * free (`pro-features.test.ts`), the four pasted copies
  * (`ready-to-submit.test.ts`). Read against the code on 2026-11-08, four of
  * the claims nothing held were wrong or short of it, and these are the rules
  * that would have said so, each read from the code rather than typed here:
  *
- * - **A feature only Pro has is marked Pro wherever the description offers
- *   it.** It offered Hard Mode, the vocabulary check and your own translation
- *   key as "optional", with no word that each is paid, and `clampToTier()`
- *   switches all three off on Free.
+ * - **A paid feature is marked Pro wherever the description offers it, and a
+ *   free one never is.** It offered Hard Mode, the vocabulary check and your
+ *   own translation key as "optional", with no word that each was paid. Since
+ *   2026-11-09 every feature is free, so no paragraph may say Pro.
  * - **The density it quotes is the default curve's, at the minutes it names,
  *   and says what it is a share of.** `weaveRatio` is a proportion of the
  *   words with a dictionary entry (`eligible` in `selectSwaps`), not of the
@@ -79,11 +79,11 @@ const NUMBERS: Record<string, number> = {
 
 const clip = (p: string): string => (p.length > 90 ? `${p.slice(0, 90)}…` : p);
 
-describe('the store description marks what Pro sells', () => {
+describe('the store description says Pro exactly where a feature is paid', () => {
   /**
-   * The words that offer each Pro feature on sale, the way `PROMISES` in
-   * `pro-features.test.ts` names each one not sold. A feature that ships and
-   * has no line here fails the second test, so a fifth is held at once.
+   * The words that offer each shipped feature, the way `PROMISES` in
+   * `pro-features.test.ts` names each one not shipped. A feature that ships
+   * and has no line here fails the first test, so a fifth is held at once.
    */
   const OFFERS: Partial<Record<Feature, RegExp>> = {
     'hard-mode': /\bHard Mode\b/,
@@ -92,14 +92,12 @@ describe('the store description marks what Pro sells', () => {
     'extended-history': /\bsixty days\b|\b60 days\b/i,
   };
 
-  const sold = FEATURES.filter(
-    (f) => f.tier === 'pro' && (f as { shipped?: boolean }).shipped !== false,
-  );
+  const shipped = FEATURES.filter((f) => (f as { shipped?: boolean }).shipped !== false);
 
-  test('every Pro feature on sale has words that offer it, and they are its own', () => {
-    for (const f of sold) {
+  test('every shipped feature has words that offer it, and they are its own', () => {
+    for (const f of shipped) {
       const offer = OFFERS[f.id];
-      assert.ok(offer, `${f.id} is sold and OFFERS names no words that offer it`);
+      assert.ok(offer, `${f.id} ships and OFFERS names no words that offer it`);
       assert.match(
         `${f.label}. ${f.detail}`,
         offer,
@@ -108,19 +106,21 @@ describe('the store description marks what Pro sells', () => {
     }
   });
 
-  test('a paragraph offering a feature only Pro has says it is Pro', () => {
-    const unmarked: string[] = [];
+  test('a paragraph offering a feature says Pro exactly when the feature is paid', () => {
+    const wrong: string[] = [];
     let offered = 0;
     for (const p of paragraphs()) {
-      for (const f of sold) {
+      for (const f of shipped) {
         const offer = OFFERS[f.id];
         if (!offer?.test(p)) continue;
         offered++;
-        if (!/\bPro\b/.test(p)) unmarked.push(`${f.id}: ${clip(p)}`);
+        const saysPro = /\bPro\b/.test(p);
+        if (f.tier === 'pro' && !saysPro) wrong.push(`${f.id} is paid and unmarked: ${clip(p)}`);
+        if (f.tier === 'free' && saysPro) wrong.push(`${f.id} is free and marked Pro: ${clip(p)}`);
       }
     }
-    assert.ok(offered >= 3, `the description offers only ${offered} Pro features; was it read?`);
-    assert.deepEqual(unmarked, [], 'the description offers a Pro feature without saying it is Pro');
+    assert.ok(offered >= 3, `the description offers only ${offered} features; was it read?`);
+    assert.deepEqual(wrong, []);
   });
 });
 

@@ -12,7 +12,7 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PRICING_URL, SUPPORT_URL } from '../src/core/pricing.ts';
+import { SUPPORT_URL } from '../src/core/pricing.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist/site');
@@ -70,21 +70,19 @@ for (const file of files) {
 }
 
 /*
- * The three pages something outside this repository depends on.
+ * The two pages something outside this repository depends on.
  *
  * `SUPPORT_URL` is compiled into the shipped extension and rendered as a
- * button on its help page; `PRICING_URL` is linked from the paywall; and
- * `/privacy` is the URL `docs/STORE-LISTING.md` hands the Chrome Web Store,
- * which rejects a submission without a live one.
+ * button on its help page, and `/privacy` is the URL `docs/STORE-LISTING.md`
+ * hands the Chrome Web Store, which rejects a submission without a live one.
  *
- * None of those three can be fixed by shipping the site again — a published
+ * Neither can be fixed by shipping the site again — a published
  * extension keeps pointing wherever it was built pointing. So a missing page
  * here fails the build rather than waiting for a user, or a reviewer, to
  * find the 404.
  */
 const REQUIRED = [
   ['SUPPORT_URL, on the extension help page', new URL(SUPPORT_URL).pathname],
-  ['PRICING_URL, from the paywall', new URL(PRICING_URL).pathname],
   ['the privacy policy the store listing promises', '/privacy'],
 ];
 
