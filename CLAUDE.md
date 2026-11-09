@@ -1089,6 +1089,88 @@ target language.
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
 
+### 2026-11-09 — `mete` and `cwic` are told as false friends, and the fact about `cwic` was under `swift`
+
+`TODO.md`'s topmost unchecked item in `Now`, queued by the pedagogy run:
+`docs/PEDAGOGY.md` calls `mete` and `cwic` false friends, and the feed marks
+one only when its note matches `FALSE_FRIEND` in `src/core/discoveries.ts`,
+which "“mete” was food of any kind" and "“the quick and the dead”" did not.
+
+**The item named the wrong page.** The landing page's Old English table
+shows neither word and `CHECKED` in `tests/tools/build-site.test.ts` holds no
+`mete`. The copy calling them false friends is the PEDAGOGY table, the
+descent hub's intro at `tools/build-site.mjs:557` and the launch draft's
+"*cwic* meant alive".
+
+**Measured first, with the dashboard's own call** — `buildDiscoveries` over
+`entriesByTarget()`, every word met once: "mete is where meat comes from"
+and "quick began as cwic", plain descents under a woad border where the copy
+promised the madder one. And a line nobody had read: "swift became English
+swift, but “cwic” meant alive, as in “the quick and the dead”". The fact
+about `cwic` sat on `swift`, woven for "quick", and the false-friend frame
+told it as a word that became itself. The item's other shape, widening the
+pattern, was measured and refused: "was" or "were" takes 16 notes, about 12
+wrongly — "the moon was masculine", "September was the seventh month", "a
+mile was mīlle passūs" — and no pattern reaches "“the quick and the dead”",
+which says nothing about meaning.
+
+**So the notes moved.** `mete`'s says "“mete” meant food of any kind", read
+again in etymonline's *meat* through the archive: Old English *mete* "food,
+nourishment, sustenance", the flesh sense from c. 1300. `cwic`'s takes the
+fact off `swift`, "“cwic” meant alive, as in “the quick and the dead”", in
+etymonline's *quick*, "living, alive, animate", and English Wiktionary's,
+which prints the phrase. `swift` keeps no note, and its line says it has not
+changed in a thousand years. `ang-notes.tsv` repeats all three and lists the
+old wording at its foot. 4 fields of `en-ang.json`, −34 bytes, `builtAt`
+10-30 → 11-09.
+
+**The guard is the transferable half.** A new suite of
+`tests/tools/feed-frames.test.ts`, 2 tests: every word a paragraph sets
+apart, in emphasis or in code, beside "false friend" — in the README,
+`docs/*.md`, `site/*.html` and the builder's `<p>`s, a paragraph ending in a
+colon carrying the next block, which is how PEDAGOGY brings in its table —
+must be one the feed of a pack that teaches it tells as a false friend. Red
+first on exactly four: `cwic` in the launch draft and the table, `mete` in
+the table and the hub, 17 words read in 4 files. Three probes, each
+restored by md5: the old `cwic` note put back names both its documents, the
+colon carry blinded drops the count to 11 and the code spans unread to 7,
+under the floor of 12. The old table test asked whether each false friend
+had a note, never whether the feed marked it: **a document's word for what
+the product does is checked against the code that does it, not against the
+data that code reads.**
+
+All 31 shots regenerated on a test build after the pack's commit, 14 + 10 +
+7 written: the store and first-run sets byte-identical, and the documentation
+set's three noisy shots each the recorded noise in one run and its commit in
+the other — `dashboard.png` 3 175 pixels at most 39 apart, `options.png` 45
+at most 10, `options-density.png` 13 at most 1 — so the committed bytes stand
+and the three groups are stamped. Tools 634 → **636** / 164 → **165**
+suites, total 1484 → **1486**, in six places, `docs/LAUNCH.md:220` first; a
+`CHANGELOG.md` paragraph, because the pack ships; and a decision above.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the notes, the guard and the stamps: `npm run test:all` **exit 0** —
+typecheck clean, 674 unit / 156, 127 jsdom / 28, **636 tools / 165**, compat
+16 dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1003 KB × 3**
+passing `validate` — Chrome's 1002.660 → 1002.627 KB, the pack's 34 bytes —
+**49 e2e passed and 3 skipped in 5.2 min**, then build and validate again.
+Separately `packs:verify` **0 errors / 5 warnings**, `npm run site` then
+`site:check` **714 pages / 16 118 links**, all resolving, the three word
+pages read, and `artefacts:check` **8 groups, 1 stale**, the release notes,
+B2a. Only documents moved after the gate, so typecheck and `npm test` were
+run again on the final tree.
+
+Assumed, with nobody to ask: that the fact belongs to `cwic` alone, the
+feed otherwise printing it twice and once as a tautology, though `swift`'s
+tooltip loses its aside; that "meant food of any kind" is the claim "was
+food of any kind" made, read again rather than taken on the old reading; and
+that the three other false-friend lines that read badly — `spell` said to
+become itself, `ġieldan` becoming *yield* twice, `cwēn`'s with no verb — are
+the next item, queued at the foot of `Now`.
+
+What needs a human: unchanged, everything below **B1** and the calls.
+
 ### 2026-11-08 — the page object is built in jsdom, and the panic pass had a guard nothing held
 
 `TODO.md`'s topmost unchecked item in `Now`: `WeftPage`, the content

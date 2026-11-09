@@ -139,6 +139,9 @@ measured the same way, all three printing 1003. And by 5 bytes the same day,
 all of them `content.js`, the page object moved to a module of its own and
 bundled in another order: Chrome's 1002.655 → 1002.660 KB, Firefox's 1002.729
 and Safari's 1002.667, measured against `main` built before the first edit.
+And 34 bytes lighter on 2026-11-09, all of them the Old English pack's
+three notes: Chrome's 1002.660 → 1002.627 KB, Firefox's 1002.695 and
+Safari's 1002.634, all still printing 1003.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
