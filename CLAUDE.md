@@ -29,13 +29,9 @@ unchanged), `firefox`, `safari`. The pedagogical method is the diglot weave
 and scheduling with FSRS-6. `docs/PEDAGOGY.md` separates the cited research
 from the judgement calls.
 
-**What "done" looks like:** the code is done and, as of 2026-09-29, so is the
-version. `VERSION` is **1.0.1**, `RELEASE-1.0.1.md` is written and the six
-packages build; the whole documentation stack that used to sit unmerged is on
-`main`. The `v1.0.1` **tag is deliberately not pushed** — that fires
-`.github/workflows/release.yml` and publishes outward, and it waits on the
-repository becoming public (**B2** in `TODO.md`), because a release whose
-download button 404s is worse than no release. "Done" now means *released* —
+**What "done" looks like:** `VERSION` is **1.1.0**, released 2026-11-09:
+the `v1.1.0` tag fired `.github/workflows/release.yml`, and the release page
+serves the three zips and the source archive. "Done" now means *listed* —
 a Chrome Web Store listing that a stranger can install from. That is a
 submission Creagh performs by hand with her own developer account, so this
 repository's job is to be release-ready and to keep the remaining human steps

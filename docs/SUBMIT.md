@@ -50,7 +50,7 @@ measurements beside it, is in `SUBMIT-STATUS.md`.
 After tagging a release, check what GitHub actually serves:
 
 ```bash
-npm run verify:release        # or: npm run verify:release -- v1.0.1
+npm run verify:release        # or: npm run verify:release -- v1.1.0
 ```
 
 It downloads the published `-folder.zip`, loads it in a real browser and
@@ -145,7 +145,7 @@ It lists what is behind, names the commits that did it, and prints the
 command that regenerates each. It exits 1 whenever anything is stale, which
 before a first submission it will be; read the list rather than the code.
 
-**Upload the plain `weft-chrome-1.0.1.zip`, not the `-folder` one.** The
+**Upload the plain `weft-chrome-1.1.0.zip`, not the `-folder` one.** The
 store requires `manifest.json` at the root of the archive and rejects one
 wrapped in a directory. The `-folder` variant exists for humans installing
 by hand: the flat archive unzips nineteen loose files into whatever
@@ -154,7 +154,7 @@ folder to point "Load unpacked" at.
 
 1. Register at <https://chrome.google.com/webstore/devconsole> and pay the
    one-time fee.
-2. **Upload** `weft-chrome-1.0.1.zip`.
+2. **Upload** `weft-chrome-1.1.0.zip`.
 3. **Store listing** — paste from `STORE-LISTING.md`: name, short description
    (112 chars, under the 132 limit), detailed description, category
    *Education*, language English.
@@ -215,7 +215,7 @@ Edge review is usually slower than Chrome's and the feedback is terser.
 ## Firefox (addons.mozilla.org)
 
 ```bash
-npm run zip               # also writes weft-firefox-1.0.1.zip
+npm run zip               # also writes weft-firefox-1.1.0.zip
 npm run lint:firefox      # AMO's own validator, on dist/firefox; read the warnings
 ```
 
@@ -229,7 +229,7 @@ and the Firefox build does not. `READY-TO-SUBMIT.md` (F0) has the two calls
 that needs, and `TODO.md`'s `Next` the change.
 
 1. Create an account at <https://addons.mozilla.org/developers/>. No fee.
-2. Submit `weft-firefox-1.0.1.zip`.
+2. Submit `weft-firefox-1.1.0.zip`.
 3. **Source code is required** because the bundle is minified. AMO wants a
    reproducible build: point them at this repository, `build.mjs`, and
    `npm run build:firefox`. There are no build-time secrets and no
