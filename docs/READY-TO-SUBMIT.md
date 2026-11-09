@@ -1,4 +1,4 @@
-# Ready to submit — Weft 1.0.1
+# Ready to submit — Weft 1.1.0
 
 **Do this first:** item 1 of [BLOCKED](#blocked--only-creagh-can-do-these),
 at the bottom. Chrome, Edge and Apple each ask for a privacy policy URL, and
@@ -15,10 +15,10 @@ runbook behind this page; nothing here needs it.
 
 | Store | Upload | Fee | Ready? |
 |---|---|---|---|
-| Chrome Web Store | `weft-chrome-1.0.1.zip` | One-time registration fee, about 5 USD | **Once BLOCKED 1 is done** |
-| Firefox (AMO) | `weft-firefox-1.0.1.zip` and a source zip | Free | **No** — the package lacks a manifest key AMO requires of a new add-on (F0) |
-| Edge Add-ons | `weft-chrome-1.0.1.zip` — the Chrome zip, unchanged | Free | **Once BLOCKED 1 is done** |
-| Safari (Mac App Store) | `weft-safari-1.0.1.zip`, untried | 99 USD a year | **No** — never built, and Pro breaks Apple’s rules as it stands |
+| Chrome Web Store | `weft-chrome-1.1.0.zip` | One-time registration fee, about 5 USD | **Once BLOCKED 1 is done** |
+| Firefox (AMO) | `weft-firefox-1.1.0.zip` and a source zip | Free | **No** — the package lacks a manifest key AMO requires of a new add-on (F0) |
+| Edge Add-ons | `weft-chrome-1.1.0.zip` — the Chrome zip, unchanged | Free | **Once BLOCKED 1 is done** |
+| Safari (Mac App Store) | `weft-safari-1.1.0.zip`, untried | 99 USD a year | **No** — never built, and Pro breaks Apple’s rules as it stands |
 
 Facts about the stores were checked on 2026-10-24 against each store's own
 documentation, linked where they are used. Fees and forms change; the store's
@@ -41,9 +41,9 @@ npm run validate    # must print a pass for all three packages
 only — the `-folder.zip` twins wrap everything in a directory, and the stores
 reject that:
 
-- `weft-chrome-1.0.1.zip` — Chrome **and** Edge
-- `weft-firefox-1.0.1.zip` — Firefox
-- `weft-safari-1.0.1.zip` — Safari, through Apple's zip packager, untried (see Safari)
+- `weft-chrome-1.1.0.zip` — Chrome **and** Edge
+- `weft-firefox-1.1.0.zip` — Firefox
+- `weft-safari-1.1.0.zip` — Safari, through Apple's zip packager, untried (see Safari)
 
 **0.3** If `npm run validate` dies with `Unknown system error -11`, that is
 iCloud copying files into `dist/`, not the package. Fix:
@@ -67,7 +67,7 @@ amount; it has been 5 USD for years and the console shows it before you pay.
 with an account you will still control in five years. Pay the fee, set the
 publisher name (BLOCKED 4), verify the contact email.
 
-**C2 — Upload.** *Add new item* → `weft-chrome-1.0.1.zip`.
+**C2 — Upload.** *Add new item* → `weft-chrome-1.1.0.zip`.
 
 **C3 — Store listing → Product details.** The title and the short summary
 come from the package, and Google says the manifest cannot be edited in the
@@ -247,7 +247,7 @@ extensions must adopt the Firefox built-in data collection consent system"
 ([Mozilla](https://extensionworkshop.com/documentation/develop/firefox-builtin-data-consent/)),
 and one without it set correctly "will be prevented from being submitted"
 ([Mozilla](https://blog.mozilla.org/addons/2025/10/23/data-collection-consent-changes-for-new-firefox-extensions/)).
-Weft has never been listed, so it is new, and `weft-firefox-1.0.1.zip`
+Weft has never been listed, so it is new, and `weft-firefox-1.1.0.zip`
 puts only `id` and `strict_min_version` under
 `browser_specific_settings.gecko`. Two calls only you can make. AMO's own
 linter, run on 2026-10-25 against the zip and six candidate declarations,
@@ -291,7 +291,7 @@ warnings, not the exit status: the four Preact ones should be all.
 account.
 
 **F2 — Upload.** *Submit a New Add-on* → *On this site* →
-`weft-firefox-1.0.1.zip`. Platform: Firefox for desktop only; nothing
+`weft-firefox-1.1.0.zip`. Platform: Firefox for desktop only; nothing
 has ever tested Weft on Firefox for Android.
 
 **F3 — Source code: Yes.** The bundle is built with esbuild and minified, so
@@ -299,17 +299,17 @@ AMO wants the source it came from. Make the archive from the commit the zip
 was built from, on a clean `main`:
 
 ```bash
-git archive --format=zip --output=weft-source-1.0.1.zip HEAD
+git archive --format=zip --output=weft-source-1.1.0.zip HEAD
 ```
 
-Upload `weft-source-1.0.1.zip`, and put this in *Notes to reviewer*. Its
+Upload `weft-source-1.1.0.zip`, and put this in *Notes to reviewer*. Its
 last two sentences answer the four warnings AMO's validator prints for this
 package — "Unsafe assignment to innerHTML" in `popup.js`, `onboarding.js`,
 `dashboard.js` and `options.js` — measured with the validator itself on
 2026-10-25:
 
 ```text
-Build from the source archive: Node 22.18 or later (.nvmrc says 22; the build runs TypeScript, which Node does with no flag from 22.18.0), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.0.1.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04, inside that range; CI builds it with Node 22 on Ubuntu. The four "Unsafe assignment to innerHTML" warnings are in Preact, which is bundled into the four extension pages: each is the library's dangerouslySetInnerHTML path, e.innerHTML = ….__html. No file under src/ uses dangerouslySetInnerHTML or innerHTML.
+Build from the source archive: Node 22.18 or later (.nvmrc says 22; the build runs TypeScript, which Node does with no flag from 22.18.0), then `npm ci` and `npm run build:firefox`. The output, dist/firefox, is the contents of weft-firefox-1.1.0.zip. The build needs no secrets and no network access beyond `npm ci`; the lexicon packs in src/lexicon/packs/ are committed and copied as they are. Mozilla's default build environment is Node 24 on Ubuntu 24.04, inside that range; CI builds it with Node 22 on Ubuntu. The four "Unsafe assignment to innerHTML" warnings are in Preact, which is bundled into the four extension pages: each is the library's dangerouslySetInnerHTML path, e.innerHTML = ….__html. No file under src/ uses dangerouslySetInnerHTML or innerHTML.
 ```
 
 **F4 — Name.** From the package; check it reads:
@@ -417,7 +417,7 @@ type: *Individual*, unless you have a registered company — it cannot be
 changed later. Publisher display name: the same
 one as Chrome (BLOCKED 4), 50 characters at most.
 
-**E2 — Upload.** *Create new extension* → `weft-chrome-1.0.1.zip`. Edge
+**E2 — Upload.** *Create new extension* → `weft-chrome-1.1.0.zip`. Edge
 runs the Chrome package unchanged; there is no Edge build.
 
 **E3 — Availability.** Visibility: *Public*. Markets: all (the default).
@@ -569,7 +569,7 @@ required to distribute at all.
 Apple now takes a zip: "Simply upload a ZIP file with your extension to App
 Store Connect to have it converted for you and packaged up for testing"
 ([Apple](https://developer.apple.com/safari/extensions/)), "without using a
-Mac or Xcode". So `weft-safari-1.0.1.zip` is the file to try. Nobody has:
+Mac or Xcode". So `weft-safari-1.1.0.zip` is the file to try. Nobody has:
 Apple's packager guide returned no text when this page was checked, so
 whether it takes a flat archive like this one, which platforms it builds and
 which Safari it targets are all unread. The older route — `npm run safari`
@@ -593,7 +593,7 @@ Three things to settle before the forms:
 **S1 — Join** the Apple Developer Program (BLOCKED 4), then open App Store
 Connect.
 
-**S2 — Upload** `weft-safari-1.0.1.zip` to the Safari web extension
+**S2 — Upload** `weft-safari-1.1.0.zip` to the Safari web extension
 packager, and try the build through TestFlight. If the packager refuses it,
 fall back to `npm run safari` and Xcode.
 
@@ -691,8 +691,8 @@ Roughly in this order: 1 first, because every store waits on it; 5 last.
    *(TODO.md B1, B2, B3.)* Making the repository public is also what makes
    the description's "Open source. MIT licensed." true, and the support page's
    issue-tracker link stop returning 404.
-2. **Push the `v1.0.1` tag**, after regenerating the release notes on a
-   clean `main` (TODO.md B2a). It fires the release workflow, which publishes.
+2. **The `v1.1.0` tag is pushed** and the release is public, with the three zips
+   and the source archive attached.
 3. **Nothing to decide about Pro.** Every feature is free since 1.1.0, and
    the buy buttons are gone. *(TODO.md B4, closed.)*
 4. **Open the store accounts and pay.** Chrome: a one-time fee, about 5 USD.
