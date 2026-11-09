@@ -56,9 +56,10 @@ offers to ask the browser again.
 
 Three different things wear that description:
 
-- **A wrong gloss.** The lexicons are 356 checked English lemmas per
-  language, and a checked word can still be the wrong sense for your
-  sentence. Report it; it is a one-line fix in `tools/seed/`.
+- **A wrong gloss.** Each lexicon has 356 checked English lemmas, and the
+  five modern ones about 2,200 more drafted from English Wiktionary, which
+  the tooltip marks "Wiktionary, unreviewed". Any word can still be the
+  wrong sense for your sentence. Report it; it is a one-line fix in `tools/seed/`.
 - **A word that will not revert.** Difficulty only ever rises inside a page.
   Whatever is on screen stays, so a word you have just decoded cannot flip
   back to English while you are reading it. Reload for a fresh selection.

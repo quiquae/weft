@@ -215,7 +215,7 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 > can verify that in the network panel: the progress page counts every request
 > Weft has ever made.
 >
-> Free, every feature. Source is open, 1515 tests, and the lexicon pipeline
+> Free, every feature. Source is open, 1517 tests, and the lexicon pipeline
 > and the Latin/Old English IPA generator are in the repo.
 
 ### Lobsters

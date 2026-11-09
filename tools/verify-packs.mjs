@@ -76,7 +76,9 @@ async function verifySeed(lang) {
   const targetUse = new Map();
   const multiWord = [];
   const extras = SCRIPT_EXTRAS[lang] ?? '';
-  const allowed = new RegExp(`^[a-zA-Z ${extras}]+$`, 'u');
+  // German capitalizes every noun, so Überzeugung needs Ü as well as ü.
+  const letters = `${extras}${extras.toUpperCase()}`.replace(/-/g, '\\-');
+  const allowed = new RegExp(`^[a-zA-Z ${letters}]+$`, 'u');
 
   for (const { line, cols } of rows) {
     // etymon and note were never destructured, so no check had ever looked

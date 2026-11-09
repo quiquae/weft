@@ -119,6 +119,8 @@ export interface LexEntry {
   etymonOf?: string;
   /** Short usage note shown in the tooltip. */
   note?: string;
+  /** Drafted from Wiktionary and not yet read by a person; the tooltip says so. */
+  drafted?: boolean;
   /** Example sentence in the target language, with the word in place. */
   example?: string;
   /** Translation of `example`. */
@@ -134,6 +136,8 @@ export interface PackMeta {
   version: string;
   entryCount: number;
   lemmaCount: number;
+  /** How many of those lemmas are drafted rather than checked. */
+  draftedCount?: number;
   /** Data provenance, required for CC-BY-SA compliance. */
   attribution: string[];
   license: string;

@@ -5,10 +5,10 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **686** unit / 159 suites, **138** jsdom / 29
-suites, **644** tool tests / 169 suites, **47** e2e passing
+of this session — typecheck clean, **686** unit / 159 suites, **139** jsdom / 29
+suites, **645** tool tests / 170 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 998 KB each, all
+packages built at 4204 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -729,6 +729,14 @@ more. The critical path is **B1 — publish the site on GitHub Pages**: no domai
 is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
+
+- [ ] **Grow Latin and Old English the way the modern packs grew.** Both are
+      still 356 checked lemmas (14% of content words on real text, against
+      32–33% for the five modern packs since 2026-11-09). `draft.py` cannot do
+      them as it stands: Latin genders must cite Lewis & Short (`ls:`), and
+      Old English needs etymons and Bosworth–Toller where Wiktionary lacks a
+      gender. The DCC Core Latin Vocabulary is the obvious candidate list.
+      Not queued: the owner asked for this to stay cheap.
 
 - [x] **Generate `/privacy` and `/support` pages in `tools/build-site.mjs`.**
       Done 2026-09-27. Both are rendered from Markdown through the same

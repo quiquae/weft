@@ -217,6 +217,11 @@ describe('tooltip content', () => {
     const keys = [...root.querySelectorAll('.row .key')].map((k) => k.textContent);
     assert.ok(!keys.includes('level'), `a level was printed among ${keys.join(', ')}`);
   });
+
+  test('says a word drafted from Wiktionary is unreviewed, and a checked word nothing of the kind', () => {
+    assert.match(open('fr', {}, { drafted: true }).text, /Wiktionary, unreviewed/);
+    assert.doesNotMatch(open('fr').text, /unreviewed/);
+  });
 });
 
 describe('the etymon badge follows descent, not death', () => {

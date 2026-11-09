@@ -109,10 +109,17 @@ function parseTsv(text, columns, file) {
   return rows;
 }
 
-const CORE_COLUMNS = ['lemma', 'pos', 'zipf', 'band', 'senses', 'plural', 'gerund'];
+const CORE_COLUMNS = ['lemma', 'pos', 'zipf', 'band', 'senses', 'plural', 'gerund', 'decided_by', 'status'];
 // ipa2 is the transcription of tgt2, and last so that every reader of the
 // first eight columns by position reads them where they always were.
-const LEX_COLUMNS = ['lemma', 'pos', 'tgt', 'tgt2', 'gender', 'ipa', 'etymon', 'note', 'ipa2'];
+const LEX_COLUMNS = ['lemma', 'pos', 'tgt', 'tgt2', 'gender', 'ipa', 'etymon', 'note', 'ipa2', 'decided_by', 'status'];
+
+/**
+ * A row a machine drafted and nobody has read yet: `status` proposed. It is
+ * woven, flagged `drafted` so the tooltip says where it came from, and its
+ * confidence sits a little under a checked row's so a checked word wins a tie.
+ */
+const DRAFTED_PENALTY = 0.05;
 
 const VALID_POS = new Set(['noun', 'verb', 'adj', 'adv', 'num', 'intj']);
 const VALID_GENDER = new Set(['m', 'f', 'n', 'c', '']);
@@ -240,6 +247,7 @@ async function buildPack(lang, core) {
   const seenLemmas = new Set();
   let entryCount = 0;
   let translated = 0;
+  let draftedCount = 0;
 
   for (const row of rows) {
     if (!VALID_POS.has(row.pos)) {
@@ -269,6 +277,7 @@ async function buildPack(lang, core) {
       warn(`lex-${lang}.tsv:${row.__line}: "${row.lemma}" maps to itself, will be skipped at runtime`);
     }
     translated++;
+    if (row.status === 'proposed') draftedCount++;
 
     // A transcription is of one spelling: the tooltip prints it under the form
     // a row wove, so the headword's goes on the headword's row and the second
@@ -276,6 +285,7 @@ async function buildPack(lang, core) {
     // sound, which is silence, where the headword's would be a false claim —
     // unless it is spelled as its headword is, Latin diēs beside diēs.
     const ipa2 = row.ipa2 || (row.tgt2 === written ? row.ipa : '');
+    const drafted = row.status === 'proposed';
     const shared = (ipa) => ({
       lemma: row.lemma,
       pos: spec.pos,
@@ -287,7 +297,10 @@ async function buildPack(lang, core) {
       ...(ipa ? { ipa } : {}),
       ...(row.etymon ? { etymonOf: row.etymon } : {}),
       ...(row.note ? { note: row.note } : {}),
+      ...(drafted ? { drafted: true } : {}),
     });
+    const conf = (pos, kind) =>
+      Math.round((confidenceFor(pos, spec.senses, kind) - (drafted ? DRAFTED_PENALTY : 0)) * 100) / 100;
 
     const push = (surface, tgt, ipa, extra) => {
       const key = surface.toLowerCase();
@@ -301,7 +314,7 @@ async function buildPack(lang, core) {
 
     // Citation / base form.
     push(row.lemma, written, row.ipa, {
-      conf: confidenceFor(spec.pos, spec.senses, spec.pos === 'verb' ? 'base' : 'base'),
+      conf: conf(spec.pos, 'base'),
       ...(spec.pos === 'noun' ? { num: 'sg' } : {}),
     });
 
@@ -311,7 +324,7 @@ async function buildPack(lang, core) {
       const plural = englishPlural(row.lemma, spec.plural);
       if (plural && row.tgt2) {
         push(plural, row.tgt2, ipa2, {
-          conf: confidenceFor('noun', spec.senses, 'plural'),
+          conf: conf('noun', 'plural'),
           num: 'pl',
         });
       } else if (plural && !row.tgt2) {
@@ -321,7 +334,7 @@ async function buildPack(lang, core) {
       }
     } else if (spec.pos === 'verb' && row.tgt2) {
       const gerund = englishGerund(row.lemma, spec.gerund);
-      push(gerund, row.tgt2, ipa2, { conf: confidenceFor('verb', spec.senses, 'gerund') });
+      push(gerund, row.tgt2, ipa2, { conf: conf('verb', 'gerund') });
     }
   }
 
@@ -342,6 +355,7 @@ async function buildPack(lang, core) {
       version: PACK_VERSION,
       entryCount,
       lemmaCount: translated,
+      ...(draftedCount ? { draftedCount } : {}),
       attribution: attributionFor(lang),
       license: LICENSE,
       bands,
