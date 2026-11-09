@@ -77,9 +77,9 @@ jobs:
       - name: Generate the site
         run: node tools/build-site.mjs
         env:
-          # Canonical URLs and the sitemap are absolute, so this has to be
-          # the real domain or search engines will index the wrong one.
-          WEFT_SITE_URL: ${{ vars.WEFT_SITE_URL || 'https://weft.study' }}
+          # Canonical URLs and the sitemap are absolute. Empty means
+          # SITE_URL in src/core/site.ts, the GitHub Pages address.
+          WEFT_SITE_URL: ${{ vars.WEFT_SITE_URL }}
           WEFT_REPO: ${{ github.server_url }}/${{ github.repository }}
 
       - name: Check every internal link resolves

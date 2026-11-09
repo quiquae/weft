@@ -12,7 +12,7 @@ Everything a machine can check has been checked:
 npm run test:all
 ```
 
-runs typecheck, 683 unit tests, 138 jsdom tests, 643 tool tests, the
+runs typecheck, 684 unit tests, 138 jsdom tests, 643 tool tests, the
 compatibility audit, all three builds, the package validator, and 47 end-to-end
 tests in real Chromium. Nothing below should be attempted until that is
 green.
@@ -41,10 +41,9 @@ the shipped extension; and `artefacts:check` is the only thing that looks at
 the generated files this runbook tells you to upload, which go stale whenever
 `src/` moves and do not change when they do.
 
-**None of them can tell whether `https://weft.study` serves those pages.**
+**None of them can tell whether `https://quiquae.github.io/weft` serves those pages.**
 `site:check` reads files and skips every absolute URL, so it passes whether
-or not the domain resolves — and on 2026-10-24 `weft.study` did not resolve
-at all.
+or not the site is published.
 The last full run of this gate, every figure in it and the live-URL
 measurements beside it, is in `SUBMIT-STATUS.md`.
 
@@ -131,7 +130,7 @@ npm run test:all          # must be green
 npm run artefacts:check   # what the tree has moved past since it was generated
 npm run zip               # writes two archives per target
 npm run validate          # re-check the exact bytes being uploaded
-curl -sS -o /dev/null -w '%{http_code}\n' https://weft.study/privacy   # must print 200
+curl -sS -o /dev/null -w '%{http_code}\n' https://quiquae.github.io/weft/privacy   # must print 200
 ```
 
 The last line is the only one that asks the internet rather than this

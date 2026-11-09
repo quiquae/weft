@@ -33,6 +33,7 @@ import { fileURLToPath } from 'node:url';
 import { contentDate } from '../../tools/sitemap.ts';
 import { getLanguage } from '../../src/core/languages.ts';
 import { entriesByTarget, spelling } from '../../src/core/lexicon.ts';
+import { SITE_URL } from '../../src/core/site.ts';
 import type { LangCode, LexEntry } from '../../src/core/types.ts';
 import { markInSvg, differences, type MarkReading } from './mark-reading.ts';
 
@@ -198,7 +199,9 @@ before(() => {
     // Deliberately a list and not a Map: a duplicated <loc> is the defect, so
     // keying by URL here would discard the very thing being counted.
     served = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => {
-      const rel = new URL(m[1] as string).pathname.replace(/^\//, '');
+      // The site is served under SITE_URL's path, '/weft', and built at the root of `out`.
+      const base = new URL(SITE_URL).pathname.replace(/\/$/, '');
+      const rel = new URL(m[1] as string).pathname.slice(base.length).replace(/^\//, '');
       const target = join(out, rel);
       const file = [target, `${target}.html`, join(target, 'index.html')].find(
         (c) => existsSync(c) && statSync(c).isFile(),
@@ -234,7 +237,7 @@ describe('the sitemap dates each page by its own content', () => {
   });
 
   test('a language index carries the date of its own pack', () => {
-    assert.equal(dates.get('https://weft.study/latin/'), builtAt('la'));
+    assert.equal(dates.get(`${SITE_URL}/latin/`), builtAt('la'));
   });
 
   test('a hand-written page carries the commit date of its document', () => {
@@ -243,7 +246,7 @@ describe('the sitemap dates each page by its own content', () => {
     // dates to be had and the honest answer is no <lastmod> at all.
     const expected = contentDate(ROOT, ['docs/PRIVACY.md']);
 
-    assert.equal(dates.get('https://weft.study/privacy'), expected);
+    assert.equal(dates.get(`${SITE_URL}/privacy`), expected);
   });
 
   test('no page is dated by the clock', () => {

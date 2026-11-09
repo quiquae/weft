@@ -26,6 +26,7 @@ import { existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { entriesByTarget, spelling } from '../src/core/lexicon.ts';
+import { SITE_URL } from '../src/core/site.ts';
 import { getLanguage } from '../src/core/languages.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
 import { markSvg } from './brand.ts';
@@ -49,7 +50,11 @@ const outArg = process.argv.slice(2).find((a) => a.startsWith('--out='));
 const OUT = outArg ? resolve(outArg.slice('--out='.length)) : join(ROOT, 'dist/site');
 
 /** Change this to the domain you publish on. Everything canonical derives from it. */
-const SITE = process.env.WEFT_SITE_URL ?? 'https://weft.study';
+const SITE = process.env.WEFT_SITE_URL || SITE_URL;
+/** The path the site is served under: '' at a domain's root, '/weft' on GitHub Pages. */
+const BASE = new URL(SITE).pathname.replace(/\/$/, '');
+/** A page's root links, moved under BASE. Protocol-relative ones are left alone. */
+const rebase = (html) => (BASE ? html.replace(/\b(href|src)="\/(?!\/)/g, `$1="${BASE}/`) : html);
 
 /** Languages rich enough to justify a page per word. */
 const DEEP = ['la', 'ang'];
@@ -239,7 +244,7 @@ function page({ title, description, canonical, jsonLd, body, breadcrumbs }) {
         .join('<span class="crumbs__sep" aria-hidden="true">/</span>')}</nav>`
     : '';
 
-  return `<!doctype html>
+  return rebase(`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -282,7 +287,7 @@ ${body}
 </main>
 </body>
 </html>
-`;
+`);
 }
 
 /** The call to action, repeated at the foot of every word page. */
@@ -841,7 +846,7 @@ function installPage(version) {
  * Two documents in `docs/` also have to exist at a public URL.
  *
  * The Chrome Web Store will not accept a submission without a live privacy
- * policy, and `SUPPORT_URL` in `src/core/pricing.ts` is compiled into the
+ * policy, and `SUPPORT_URL` in `src/core/site.ts` is compiled into the
  * shipped extension and rendered as a button on the help page — a button
  * that has to land somewhere. Both also have to stay readable on GitHub,
  * and both have to say exactly the same thing in each place, because a

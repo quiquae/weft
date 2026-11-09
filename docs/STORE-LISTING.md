@@ -268,8 +268,8 @@ whatever `SUPPORT_URL` in `src/core/pricing.ts` resolves to.
 
 | Field | Value |
 |---|---|
-| Privacy policy URL | `https://weft.study/privacy` |
-| Support URL | `https://weft.study/support` — the same URL the extension's own help page links to |
+| Privacy policy URL | `https://quiquae.github.io/weft/privacy` |
+| Support URL | `https://quiquae.github.io/weft/support` — the same URL the extension's own help page links to |
 
 Both wait on the domain being registered. Neither URL is reachable until then.
 
@@ -291,10 +291,11 @@ Things only you can do, in the order they block each other.
       handles user data, and Weft is required to declare one even though it
       transmits nothing. `docs/PRIVACY.md` is rendered to `/privacy` by
       `npm run site`; publish the site and it is live at
-      `https://weft.study/privacy`. Confirm it loads logged out.
+      `https://quiquae.github.io/weft/privacy`. Confirm it loads logged out.
 - [ ] **A support URL.** `docs/SUPPORT.md` is rendered to `/support` by the
-      same build, and it is the page `SUPPORT_URL` in `src/core/pricing.ts`
-      already points the extension's help button at. Both need the domain.
+      same build, and it is the page `SUPPORT_URL` in `src/core/site.ts`
+      already points the extension's help button at. Both need the site
+      published on GitHub Pages.
 - [ ] **Decide the publisher name.** It appears on the listing and cannot be
       changed casually.
 

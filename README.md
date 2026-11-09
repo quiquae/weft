@@ -219,7 +219,7 @@ read "English X comes straight from Y" stops being read.
 ## Install
 
 Not in the stores yet — [docs/SUBMIT.md](docs/SUBMIT.md) is the runbook for
-getting it there, and [the install page](https://weft.study/install) walks a
+getting it there, and [the install page](https://quiquae.github.io/weft/install) walks a
 reader through loading it by hand. From source:
 
 ```sh
@@ -256,7 +256,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 683 unit + 138 jsdom + 643 over the build tools
+npm test               # 684 unit + 138 jsdom + 643 over the build tools
 npm run test:e2e       # 47 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules

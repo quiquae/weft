@@ -37,8 +37,10 @@ download button 404s is worse than no release. "Done" now means *released* —
 a Chrome Web Store listing that a stranger can install from. That is a
 submission Creagh performs by hand with her own developer account, so this
 repository's job is to be release-ready and to keep the remaining human steps
-written down. Every one of those steps now needs her: `TODO.md` is that list,
-headed by **B1**, registering `weft.study`. `docs/READY-TO-SUBMIT.md` is the
+written down. `TODO.md` is that list. There is no domain: since 2026-11-09
+the site is GitHub Pages at `https://quiquae.github.io/weft` (`SITE_URL` in
+`src/core/site.ts`), and every link the site builder writes carries that
+base path. `docs/READY-TO-SUBMIT.md` is the
 one page to work down at the four store consoles, every field's copy inline;
 `docs/SUBMIT.md` is the long-form runbook behind it, `docs/STORE-LISTING.md`
 holds every field's copy, and `docs/SUBMIT-STATUS.md` is the last full run of
@@ -64,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **683 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **684 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **643 pass**, 168 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
@@ -72,7 +74,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 998 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
+| `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 
@@ -1105,6 +1107,24 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the site is GitHub Pages, and there is no domain
+
+`weft.study` was never registered, and the stores only need a public privacy
+page. `SITE_URL` and `SUPPORT_URL` are in `src/core/site.ts`
+(`https://quiquae.github.io/weft`); `src/core/pricing.ts` is gone. The site
+builder's one layout, `page()`, moves every root link under the base path,
+`/weft`, so the ~20 link sites needed no edit; canonical, sitemap and social
+card URLs follow `SITE_URL`. `site:check` strips the base path and fails on
+a root link outside it, which is how a link the builder missed would show.
+`site.yml` no longer defaults to `weft.study`. The Firefox id
+`weft@weft.study` stays: it is an id. `tests/core/site.test.ts` holds the
+support page under the site.
+
+`test:all` exit 0: **684 unit / 158**, 138 jsdom / 29, 643 tools / 168, 998
+KB × 3, 47 e2e passed, 3 skipped, 2.4 min. All 31 shots regenerated
+byte-identical and the three groups stamped. `site:check`: 713 pages, 15 392
+links, 15 376 carrying `/weft/`, none outside it. Total 1511 → 1512.
 
 ### 2026-11-09 — everything is free
 

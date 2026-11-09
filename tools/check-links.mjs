@@ -12,10 +12,19 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SUPPORT_URL } from '../src/core/pricing.ts';
+import { SITE_URL, SUPPORT_URL } from '../src/core/site.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist/site');
+
+/**
+ * The path the site is served under, as the builder takes it: '' at a
+ * domain's root, '/weft' on GitHub Pages. A root link outside it leaves the
+ * site, which is how a link the builder forgot to move shows up.
+ */
+const BASE = new URL(process.env.WEFT_SITE_URL || SITE_URL).pathname.replace(/\/$/, '');
+const local = (path) =>
+  !BASE ? path : path === BASE || path.startsWith(`${BASE}/`) ? path.slice(BASE.length) || '/' : null;
 
 async function walk(dir) {
   const out = [];
@@ -53,8 +62,13 @@ for (const file of files) {
     const path = href.split('#')[0].split('?')[0];
     if (!path) continue;
 
-    const base = path.startsWith('/') ? OUT : dirname(file);
-    const target = resolve(base, path.replace(/^\//, ''));
+    const inSite = path.startsWith('/') ? local(path) : path;
+    if (inSite === null) {
+      broken.push(`${file.replace(OUT + '/', '')} -> ${href} (outside ${BASE}/)`);
+      continue;
+    }
+    const base = inSite.startsWith('/') ? OUT : dirname(file);
+    const target = resolve(base, inSite.replace(/^\//, ''));
 
     // A bare path may be served as .html, or as a directory index.
     const candidates = [target, `${target}.html`, join(target, 'index.html')];
@@ -82,7 +96,7 @@ for (const file of files) {
  * find the 404.
  */
 const REQUIRED = [
-  ['SUPPORT_URL, on the extension help page', new URL(SUPPORT_URL).pathname],
+  ['SUPPORT_URL, on the extension help page', local(new URL(SUPPORT_URL).pathname)],
   ['the privacy policy the store listing promises', '/privacy'],
 ];
 
