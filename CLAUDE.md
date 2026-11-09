@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **680 pass**, 157 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **127 pass**, 28 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **636 pass**, 165 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **639 pass**, 167 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -1088,6 +1088,77 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the verbs chip says what it weaves, and "light" has eight senses
+
+`TODO.md`'s topmost unchecked item in `Now`, queued by the pedagogy run: the
+settings page's verbs chip said "Woven as infinitives; inflected English
+forms are skipped", and the comment above `scoreCandidate()`'s ambiguity
+gate gave "light" nine senses where `tools/seed/english-core.tsv` gives it
+eight.
+
+**Measured first, and both were exactly as found.** Every pack weaves its 81
+verbs under the English base form and 79 to 81 of them under the `-ing`
+form, as a present participle in French, German, Latin and Old English and a
+gerund in Spanish, Portuguese and Italian, and under nothing else. The chip
+says "Woven as infinitives, and as participles or gerunds where English has
+“-ing”; past tenses and “-s” forms are skipped" now, which holds on the
+provider path too, where `guessPos()` takes a verb only after "to", a modal
+or a subject pronoun and declines every `-ed`, `-ing` and `-s` word as one.
+The comment says eight.
+
+**Two guards, each red first on exactly its defect.**
+`tests/tools/verb-copy.test.ts`, 2 tests, derives from the shipped packs
+every kind of English form a verb is woven under, refuses a kind `SAID` has
+no words for, and holds the chip and `docs/PEDAGOGY.md`'s Verbs bullet to
+naming each kind. `tests/tools/sense-counts.test.ts`, 1 test, holds every
+quoted count of an English word's senses — four today, in the core list's
+header, the selector and `docs/PEDAGOGY.md` — to the core list, reading a
+seed only in its `#` header, because a row's note is about the target word.
+
+**The first draft of the verb guard would have passed a broken bullet.** It
+asked whether each account said `-ing`, and the Verbs bullet says it twice,
+once for what is woven and once among the endings a translation service is
+never sent. So the rule reads each account's first clause, up to a full stop
+or a semicolon. **When a copy guard checks that a word is present, ask
+whether a sentence denying it could hold the word.** Six probes, each
+restored by md5 and each failing by name: the old chip copy; the chip with
+`-ing` moved into its skipped clause; the bullet's woven `-ing` removed; a
+"walked" planted in `en-fr.json`, named as a form `SAID` has no words for;
+"light" given 7 senses in the core list, naming all three prose counts; and
+the reader blinded to its quote marks, caught by the floor at "only 0
+counts".
+
+The chip's copy is a `title` attribute, which no shot draws. All 31 shots
+regenerated on a test build after the commit that moved `src/`, 14 + 10 + 7
+written: the documentation set's first run moved `dashboard-milestones.png`
+by 5 pixels 1 apart and `page-tooltip.png` by its recorded 1 740 pixels in
+one 160×19 box, and the second wrote all 14 byte-identical, so the three
+groups are stamped. Tools 636 → **639** / 165 → **167** suites, total 1492 →
+**1495**, in six places, `docs/LAUNCH.md:220` first, and a `CHANGELOG.md`
+paragraph, because the chip ships. `options.js` grew 67 bytes, the longer
+copy, Chrome's 1003.743 → 1003.809 KB, measured against `main`'s built in a
+detached `/tmp` worktree, still printing 1004.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code and the guards: `npm run test:all` **exit 0** — typecheck
+clean, 680 unit / 157, 127 jsdom / 28, **639 tools / 167**, compat 16
+dependencies × 3 browsers, 42 pass / 6 degrade, and 92 manifest keys, 86
+pass / 2 degrade / 4 untracked, 0 fail / 0 without data, **1004 KB × 3**
+passing `validate`, **49 e2e passed and 3 skipped in 6.6 min**, then build
+and validate again. `artefacts:check` **8 groups, 1 stale**, the release
+notes, B2a. `packs:verify` and `site:check` were not run: no pack moved, and
+the site builder imports neither file. Only documents moved after the gate,
+so typecheck and `npm test` were run again on the final tree.
+
+Assumed, with nobody to ask: that "participles or gerunds" is plain enough
+for a reader choosing kinds of word, the chip already saying "infinitives";
+that the guard holds `docs/PEDAGOGY.md`'s bullet as well as the chip, being
+the account the README sends a reader to; and that `tools/build-pack.mjs`'s
+"“light” noun and adjective" is an example of English, not a claim about the
+lexicon, and stays.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-09 — an irregular past is kept from a translation service, and so is a third-person -s
 
