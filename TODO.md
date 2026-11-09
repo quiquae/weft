@@ -5,7 +5,7 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **680** unit / 157 suites, **132** jsdom / 29
+of this session — typecheck clean, **682** unit / 158 suites, **138** jsdom / 29
 suites, **639** tool tests / 167 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
 packages built at 1004 KB each, all
@@ -2777,7 +2777,7 @@ registered**, and nothing below it can move until it is.
       places. No screenshot group went stale, `tests/dom` being no input of
       one, and no `CHANGELOG.md` paragraph: nothing that ships moved.
 
-- [ ] **Weave a translation service's words at A1, where the band window
+- [x] **Weave a translation service's words at A1, where the band window
       refuses every one.** Found 2026-11-09, writing the page object's
       lookup test. `makeEntry()` in `src/background/providers/index.ts`
       gives every machine entry `band: 3`, under a comment placing its
@@ -2792,7 +2792,7 @@ registered**, and nothing below it can move until it is.
       against the daily lookup limit, so a reader at A1 sends their reading
       and gets nothing woven, from the feature Pro sells as "your own
       translation key". `band: 3` dates from the first commit, `2287518`,
-      and no test had woven a machine word. And with "Show the level"
+      and no test had woven a machine word. And with "Difficulty band"
       (`reveal.showBand`, off by default) the tooltip prints the band, so a
       machine word reads "B1", a level nobody judged. Shape, recommended: a
       machine word's band is unknown — `band` optional on `LexEntry` and
@@ -2807,6 +2807,26 @@ registered**, and nothing below it can move until it is.
       tests for `entryAllowed()`, the fit and the tooltip row. Moves
       `src/core/`, so all three screenshot groups go stale by provenance.
       About 60 minutes.
+
+      **Done 2026-11-09, the same run, in the recommended shape.**
+      `LexEntry.band` is optional, and `machineEntry()`, the worker's
+      `makeEntry()` moved to `src/core/machine-entry.ts` because it is pure
+      and so the tests can weave the worker's own shape, gives none. An
+      entry with no band passes the band window, takes a band fit of 0.5
+      (`UNBANDED_FIT`), halfway between a word at the reader's level and one
+      three bands away, and prints no level row; the quiz, whose pool is the
+      packs', counts an unknown band as near any. Test-first, each red for
+      its own reason: the page object weaves a filled word at every level 1
+      to 6, red at 1; the selector lets a machine word through the window at
+      every level, red at 1, and fits it the same at every level, neither 0
+      nor 1, red on 0.33, 0.67, 1, 0.67, 0.33, 0; the tooltip prints no
+      level for a word with no band, red on "level" among its rows. Three
+      probes, each restored by md5: band 3 back, the neutral fit removed,
+      the tooltip printing it. `docs/PEDAGOGY.md`'s band-fit bullet says so,
+      and a `CHANGELOG.md` paragraph. All 31 shots regenerated after the
+      commit that moved `src/`, every one byte-identical, and the three
+      groups are stamped. Unit 680 → **682** / 157 → **158**, jsdom 132 →
+      **138**, total 1500 → **1508**, in six places. See Notes.
 
 - [ ] **Read every line the feed tells as a false friend.** Found
       2026-11-09, measuring the item above: the Old English pack's feed
@@ -8542,6 +8562,33 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-09 — a translation service's words are woven at A1.** Three
+things a later run would be sorry not to know:
+
+1. **A field with no value of its own was given one that a filter
+   refuses.** `makeEntry()` placed a machine word's unknown frequency
+   "mid-scale so it is neither preferred … nor rejected" and set `band: 3`
+   beside it with the same intent, but the band window is a hard filter,
+   and at A1 it is bands 1 and 2. A placeholder that is fine for a score is
+   a refusal for a gate: before giving an unknown a middle value, ask which
+   readers of the field filter on it. `band` is optional now, and absent
+   means unknown everywhere it is read — the window, the fit, the tooltip
+   and the quiz.
+2. **JavaScript would have let an absent band through the window anyway,
+   and broken the score.** `undefined < 1` and `undefined > 2` are both
+   false, so `entryAllowed()` passes an entry with no band without the
+   explicit check, while `Math.abs(undefined - level)` is `NaN` and so is
+   every score it touches, which sorts unpredictably. The type made both
+   visible: `tsc` refused `quiz.ts` and a selector test until each said
+   what an unknown band means. The fit test asserts a finite score for
+   that reason.
+3. **`machineEntry()` lives in `src/core/` now.** It is pure, so the page
+   object's tests and the selector's weave the worker's own shape instead of
+   a copy of it, which is the copy that would have kept `band: 3` after the
+   fix. The provider cache stores translations and the worker builds the
+   entry on read (`providers/index.ts`), so a cached answer has no band
+   either.
 
 **2026-11-09 — the page object's reply paths in jsdom, and the band that
 refuses every machine word at A1.** Three things a later run would be sorry
