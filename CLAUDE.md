@@ -335,19 +335,16 @@ list, panic passes, data export, pronunciation and the etymologies.
 `tests/core/entitlements.test.ts` fails and names the offender if one moves
 behind the paywall.
 
-**Pro sells what Pro does.** `shipped` on each feature in `FEATURES`
-(`src/core/entitlements.ts`) says whether the product has it, and the
-options page's Pro section and `/pricing` render `SOLD`, the features that
-ship. Until 2026-11-06 both, with `PITCH`, the README, the landing page and
-the release-notes template, sold eight features, and four could not be had:
-every language at once (the chips write one language whatever the tier),
-a language per site (no control sets a rule's `target`), phrases (no pack
-has one) and your own word lists (nothing imports one).
-`tests/tools/pro-features.test.ts` holds every feature sold to the file and
-code that deliver it, `DELIVERED`, and refuses a page reading `FEATURES`, a
-lock or gate under `src/ui/` naming a feature not sold, and copy promising
-one, by `PROMISES`. To sell one again, build it, set `shipped`, and write
-its line; whether to build them is Creagh's, in `TODO.md`.
+**Everything Weft has is free.** Creagh's call, 2026-11-09. A feature in
+`FEATURES` (`src/core/entitlements.ts`) still marked `pro` is one not built:
+every language at once, a language per site, phrases, your own word lists.
+It is not sold and no page offers it. `has()` is the one gate, and
+`clampToTier()`, `exceedsTier()` and `historyDays()` ask it, so a feature's
+tier is the only switch. Until 2026-11-09 the buy buttons pointed at
+`weft.lemonsqueezy.com`, a stranger's store. `tests/tools/pro-features.test.ts`
+fails on a shipped feature that is paid, a page naming an unbuilt feature,
+copy promising one, or copy offering a sale. Build a feature before deciding
+whether to charge for it.
 
 **A Hard Mode file carries its own way out.** The options page promises
 "the file you download contains its own removal instructions", and
@@ -387,7 +384,8 @@ make Edge's file remove Chrome's Hard Mode. `tests/core/hard-mode.test.ts`,
 `tests/dom/hard-mode.test.ts` and an e2e test in `licensing.spec.ts`, which
 makes the page's browser name itself as Chrome and then as Edge, hold it.
 
-**Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
+**Licences are signed files verified locally**, a dormant path since 1.1.0:
+no page offers a key, and the worker still verifies one (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,
 no request at purchase or launch. The honest cost is that a licence cannot be
 revoked, and `docs/PRICING.md` says so rather than pretending otherwise. Test

@@ -9,6 +9,11 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Every feature is free.** Hard Mode, your own translation key, the
+vocabulary check before an easier setting and sixty days of attention
+history are no longer Pro. The buy buttons, the pricing page and the licence
+screen are gone; the checkout links pointed at a store that was not Weft's.
+
 **The feed's false friends say what they promise.** The dashboard's feed
 puts a word whose meaning moved at its top — "sellan became English sell, but
 “sellan” meant to give" — and seven of its Old English lines did not say that.

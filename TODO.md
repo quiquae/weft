@@ -3140,8 +3140,9 @@ registered**, and nothing below it can move until it is.
       committed byte, so the three groups are stamped. Tools 442 → **448** /
       106 → **107** suites, in six places, `docs/LAUNCH.md:221` first.
 
-- [ ] **Build or drop the four Pro features that were sold and never
-      built.** Found 2026-11-06 and taken off sale the same day (the ticked
+- [x] **Build or drop the four Pro features that were sold and never
+      built.** Decided 2026-11-09: everything built is free, and the four
+      stay unbuilt and unoffered (`everything-free`). Found 2026-11-06 and taken off sale the same day (the ticked
       item in `Now`). Pro is now Hard Mode, your own translation key, a
       vocabulary check before any setting gets easier, and sixty days of
       history, which is thin beside $3.50 a month; the four are what the
@@ -8478,6 +8479,7 @@ and B2* — the privacy and support pages now exist and `site:check` fails
 without them, but the install page's download button and the support page's
 issue-tracker link both still 404 while the repository is private.
 
+**B4 — closed 2026-11-09: nothing is sold, the checkout links are gone.**
 **B4 — Replace the placeholder checkout URLs.** `CHECKOUT_BASE` in
 `src/core/pricing.ts:31` is `https://weft.lemonsqueezy.com/checkout/buy`,
 which is a placeholder store. A live pricing page with a dead buy button is
