@@ -316,6 +316,8 @@ export class Tooltip {
     if (reveal.showIpa && entry.ipa) addRow('sound', entry.ipa, 'ipa');
     // A translation service's word has no band, and a level under it would be one nobody chose.
     if (reveal.showBand && entry.band !== undefined) addRow('level', BAND_LABELS[entry.band] ?? String(entry.band));
+    // Drafted from Wiktionary and not yet read by a person: say so.
+    if (entry.drafted) addRow('source', 'Wiktionary, unreviewed');
     if (rows.children.length) card.append(rows);
 
     if (reveal.showWhy) {
