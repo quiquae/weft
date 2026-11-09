@@ -217,9 +217,20 @@ def a_plural_of_another(word):
 # A word the checked core already has, under any part of speech, keeps the
 # core's reading: "two" the numeral is zwei, and a drafted noun Zwei beside it
 # would leave the part-of-speech guess to choose between them.
-core_words = {w for w, _ in core}
+checked_words = {r[0] for r in core_rows if not (len(r) > 8 and r[8] == 'proposed')}
+drafted_core = {(r[0], r[1]) for r in core_rows if len(r) > 8 and r[8] == 'proposed'}
+drafted_words = {w for w, _ in drafted_core}
+
+
+def open_to_draft(w, p):
+    """Not in the checked core; not taken here; another language's draft only in its own part of speech."""
+    if w in checked_words or (w, p) in taken or a_plural_of_another(w):
+        return False
+    return w not in drafted_words or (w, p) in drafted_core
+
+
 candidates = sorted(
-    ((w, p) for w, p in best_pos.items() if w not in core_words and not a_plural_of_another(w)),
+    ((w, p) for w, p in best_pos.items() if open_to_draft(w, p)),
     key=lambda k: -wordfreq.zipf_frequency(k[0], 'en'),
 )
 
@@ -228,6 +239,7 @@ GENDER_HEAD = re.compile(r'^\s*(m|f|n)(?:\b|\s)')
 PLURAL_CLAUSE = re.compile(r'plural ([^,()]+?)(?=,|\)|$)')
 skipped = Counter()
 drafted = []
+served = {}  # target word -> the drafted English words it stands for
 
 
 def spellings(lemma):
@@ -306,8 +318,10 @@ for lemma, pos in candidates:
     for table in ordered[:2]:
         masculine = [t['word'] for t in table if 'masculine' in t.get('tags', [])]
         for t in table:
-            if not clean(t) or t['word'].lower() == lemma:
-                continue
+            if not clean(t) or lemma in t['word'].lower():
+                continue  # the English word itself, or inside it: Desktop-Computer, telecamera
+            if len(served.get(t['word'], ())) >= 2:
+                continue  # velocità for speed and velocity, not for sprint and rate as well
             if 'feminine' in t.get('tags', []) and any(m[:4] == t['word'][:4] for m in masculine):
                 continue  # porteuse beside porteur: the pair's masculine is the citation form
             if targets_in_use.get(t['word'], {pos}) != {pos} and pos not in targets_in_use.get(t['word'], set()):
@@ -367,6 +381,7 @@ for lemma, pos in candidates:
         'wiktionary', 'proposed',
     ]
     targets_in_use[tgt].add(pos)
+    served.setdefault(tgt, set()).add(lemma)
     drafted.append((row, ledgers, core_row))
 
 # ---------------------------------------------------------------- writing

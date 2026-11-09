@@ -15,7 +15,9 @@ the attention you actually spend on the page. Point at a woven word and the
 tooltip hands back the English, with part of speech, gender, pronunciation,
 and — for Latin and Old English — the English word it became. Seven languages
 ship with a lexicon: French, Spanish, German, Italian, Portuguese, Latin, Old
-English (356 checked English lemmas each, 576–583 surface forms per pack). It
+English (356 checked English lemmas each, and in the five modern packs about
+2,200 more drafted from English Wiktionary, `status` proposed, which the tooltip
+labels "Wiktionary, unreviewed"; `tools/seed/wiktionary/`). It
 is for someone who wants the browsing time they were going to lose anyway to
 buy them vocabulary. There is no account, no server and no telemetry; it works
 offline, and it installs with **no** host permissions until the user names
@@ -67,12 +69,12 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **686 pass**, 159 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **644 pass**, 169 suites, ~8 s here |
+| `npm run test:dom` | jsdom tests | **139 pass**, 29 suites, ~9 s wall clock here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **645 pass**, 170 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 998 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 4204 KB unpacked for each of the three, 3.8 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1107,6 +1109,33 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — the five modern packs grow from Wiktionary, 14% → 32–33%
+
+The owner: "def grow the lexicon", "use whatever already exists". Each pack
+covered 14.0% of content-word tokens on 53,000 words of real text (3
+Wikipedia articles, 10 NPR stories, 300 Hacker News comments). Now: French
+31.9%, Spanish 33.2%, German 33.4%, Italian 32.1%, Portuguese 33.3%, about
+2,550 lemmas each. Latin and Old English unchanged, queued in `TODO.md`'s
+`Now` but not in `cq`, the owner asking for this to stay cheap.
+
+`tools/seed/wiktionary/` reads kaikki.org's English Wiktionary dump (and each
+language's) and appends rows `decided_by` wiktionary, `status` proposed, with
+the ledger lines a checked row has; the existing ledger tests hold every one
+unchanged. The owner chose to weave them labelled: `build-pack` flags their
+entries `drafted`, 0.05 under a checked row's confidence, and counts them in
+`meta.draftedCount`; the tooltip prints "Wiktionary, unreviewed";
+`tests/tools/drafted-rows.test.ts` holds the flag to the seed. Every rule in
+`draft.py` came from a wrong row in a spot check (assume → assumer, mile →
+nœud, german → germain, found → fonder, Desktop-Computer, velocità for
+sprint): French, 100 random rows read, 2 wrong and 3 debatable; Spanish,
+German, Italian and Portuguese, 100 read across the four before the last
+rules, 2 wrong, both structural and since ruled out.
+
+`verify-packs` refused German nouns beginning Ä, Ö or Ü: its letter sets were
+lowercase, and German capitalizes nouns. Packages 998 → **4204 KB**, 3.8 MB of
+it the packs. jsdom 138 → **139**, tools 644 → **645** / 170, total 1515 →
+**1517**.
 
 ### 2026-11-09 — Firefox is told what Weft sends, and asks before it is sent
 
