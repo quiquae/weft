@@ -1,6 +1,7 @@
 import type { LangCode, LexEntry, Pos, Settings } from '../../core/types.ts';
 import { dayKey } from '../../core/escalation.ts';
 import { getLanguage } from '../../core/languages.ts';
+import { machineEntry } from '../../core/machine-entry.ts';
 import { deepl } from './deepl.ts';
 import { google } from './google.ts';
 import { openai } from './openai.ts';
@@ -79,7 +80,7 @@ export async function lookupMissing(
     const hit = cache[key];
     if (hit && now - hit.at < ttl) {
       fromCache++;
-      if (hit.tgt) entries.push(makeEntry(item.word, item.pos, hit.tgt, item.num));
+      if (hit.tgt) entries.push(machineEntry(item.word, item.pos, hit.tgt, item.num));
       continue;
     }
     const request: TranslationRequest = { word: item.word, pos: item.pos };
@@ -137,7 +138,7 @@ export async function lookupMissing(
           if (!result.tgt) continue;
           fromProvider++;
           entries.push(
-            makeEntry(result.word, request?.pos ?? 'noun', result.tgt, request?.num, result.conf, result.gender),
+            machineEntry(result.word, request?.pos ?? 'noun', result.tgt, request?.num, result.conf, result.gender),
           );
         }
       }
@@ -169,39 +170,6 @@ function limitReached(cap: number, unsent: number, sent: number): string {
   const limit = `The daily lookup limit of ${cap} ${cap === 1 ? 'word' : 'words'}`;
   if (!sent) return `${limit} is used up for today, so nothing was sent.`;
   return `${limit} was reached, so ${unsent} ${unsent === 1 ? 'word was' : 'words were'} not sent.`;
-}
-
-/**
- * Provider-sourced entries are marked at a lower confidence and a middle
- * difficulty band. They are usable, but the selector will always prefer a
- * curated entry for the same word, which is the correct ordering: a checked
- * gloss beats a machine one.
- */
-function makeEntry(
-  word: string,
-  pos: Pos,
-  tgt: string,
-  num?: 'sg' | 'pl',
-  conf = 0.75,
-  gender?: 'm' | 'f' | 'n' | 'c',
-): LexEntry {
-  const entry: LexEntry = {
-    src: word.toLowerCase(),
-    lemma: word.toLowerCase(),
-    pos,
-    tgt,
-    tgtLemma: tgt,
-    // Unknown frequency: place it mid-scale so it is neither preferred as a
-    // very common word nor rejected as a rare one.
-    zipf: 3.6,
-    senses: 1,
-    conf,
-    band: 3,
-    note: 'Machine translation, not a checked gloss.',
-  };
-  if (num) entry.num = num;
-  if (gender) entry.gender = gender;
-  return entry;
 }
 
 /** The host a provider actually contacts, for the transparency log. */

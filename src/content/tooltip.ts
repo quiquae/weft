@@ -314,7 +314,8 @@ export class Tooltip {
       addRow('gender', GENDER_LABELS[entry.gender] ?? entry.gender);
     }
     if (reveal.showIpa && entry.ipa) addRow('sound', entry.ipa, 'ipa');
-    if (reveal.showBand) addRow('level', BAND_LABELS[entry.band] ?? String(entry.band));
+    // A translation service's word has no band, and a level under it would be one nobody chose.
+    if (reveal.showBand && entry.band !== undefined) addRow('level', BAND_LABELS[entry.band] ?? String(entry.band));
     if (rows.children.length) card.append(rows);
 
     if (reveal.showWhy) {

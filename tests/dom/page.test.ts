@@ -2,7 +2,7 @@ import { test, describe, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { installDom } from './setup.ts';
-import type { LexEntry, LexPack, MemoryCard, Settings } from '../../src/core/types.ts';
+import type { LexPack, MemoryCard, Settings } from '../../src/core/types.ts';
 import type { PageState, Request, ResponseFor } from '../../src/shared/messages.ts';
 import type { Renderer } from '../../src/content/renderer.ts';
 import type { WovenRecord } from '../../src/content/weave.ts';
@@ -56,6 +56,7 @@ g['chrome'] = {
 const { WeftPage } = await import('../../src/content/page.ts');
 const { WrappedRenderer } = await import('../../src/content/render-wrapped.ts');
 const { defaultSettings } = await import('../../src/core/settings.ts');
+const { machineEntry } = await import('../../src/core/machine-entry.ts');
 
 const pack = JSON.parse(
   readFileSync(new URL('../../src/lexicon/packs/en-fr.json', import.meta.url), 'utf8'),
@@ -359,21 +360,6 @@ describe('what the page does with the worker’s replies', () => {
     assert.equal(renderer.applied.length, 1, 'the page re-wove during a panic pass');
   });
 
-  /** A translation service's answer, in the shape the worker gives it (`makeEntry()`). */
-  const machine = (word: string, tgt: string): LexEntry => ({
-    src: word,
-    lemma: word,
-    pos: 'noun',
-    tgt,
-    tgtLemma: tgt,
-    zipf: 3.6,
-    senses: 1,
-    conf: 0.75,
-    band: 3,
-    num: 'sg',
-    note: 'Machine translation, not a checked gloss.',
-  });
-
   /** Lookups on, a paragraph with one word the French pack lacks, and the service's answer. */
   async function lookedUp(level: number): Promise<{ node: Text; renderer: NodeValueRenderer }> {
     const settings = defaultSettings(Date.now(), 'test');
@@ -383,7 +369,7 @@ describe('what the page does with the worker’s replies', () => {
     answers['lookup-words'] = () => ({
       // The page asked for "lighthouse" alone; an answer for "house" as well
       // is the case a curated entry must win.
-      entries: [machine('lighthouse', 'phare'), machine('house', 'chaumière')],
+      entries: [machineEntry('lighthouse', 'noun', 'phare', 'sg'), machineEntry('house', 'noun', 'chaumière', 'sg')],
       fromCache: 0,
       fromProvider: 2,
     });
@@ -402,13 +388,13 @@ describe('what the page does with the worker’s replies', () => {
     assert.ok(node.nodeValue!.includes('maison'), `the pack's word for "house" is not woven: ${node.nodeValue}`);
   });
 
-  test('a word a translation service fills is woven, from A2', async () => {
-    // Not at A1, the default level, where the band window is bands 1 and 2
-    // and the worker makes every entry band 3, so every word a service fills
-    // is refused as out of band — sent, counted against the daily limit and
-    // never woven. Measured 2026-11-09, and the first item in TODO.md's Now:
-    // when it is fixed, this test reads level 1.
-    const { node } = await lookedUp(2);
-    assert.ok(node.nodeValue!.includes('phare'), `the filled word is not woven: ${node.nodeValue}`);
-  });
+  // Every level, A1 the default among them: until 2026-11-09 every machine
+  // entry was band 3, outside A1's window of bands 1 and 2, so every word a
+  // service filled was refused there, after it was sent and counted.
+  for (const level of [1, 2, 3, 4, 5, 6]) {
+    test(`a word a translation service fills is woven, at level ${level}`, async () => {
+      const { node } = await lookedUp(level);
+      assert.ok(node.nodeValue!.includes('phare'), `the filled word is not woven: ${node.nodeValue}`);
+    });
+  }
 });

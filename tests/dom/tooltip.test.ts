@@ -209,6 +209,14 @@ describe('tooltip content', () => {
     assert.doesNotMatch(open('ang').text, /A1/);
     assert.match(open('ang', { 'reveal.showBand': true }).text, /A1/);
   });
+
+  test('prints no level for a word whose band nobody has judged', () => {
+    // A translation service's word has no band, and "B1" under one would be a
+    // level nobody chose. The helper's defaults carry a band, so it is unset.
+    const { root } = open('fr', { 'reveal.showBand': true }, { band: undefined, note: 'Machine translation, not a checked gloss.' });
+    const keys = [...root.querySelectorAll('.row .key')].map((k) => k.textContent);
+    assert.ok(!keys.includes('level'), `a level was printed among ${keys.join(', ')}`);
+  });
 });
 
 describe('the etymon badge follows descent, not death', () => {

@@ -95,8 +95,13 @@ export interface LexEntry {
   senses: number;
   /** Confidence in this particular mapping, 0..1. */
   conf: number;
-  /** Difficulty band, 1 (easiest) .. 6. Roughly CEFR A1..C2. */
-  band: number;
+  /**
+   * Difficulty band, 1 (easiest) .. 6. Roughly CEFR A1..C2. Absent from a
+   * translation service's word (`machineEntry()`), whose difficulty nobody
+   * has judged: the band window does not refuse it, it takes a neutral band
+   * fit, and the tooltip prints no level for it.
+   */
+  band?: number;
   /**
    * The transcription of `tgt`, the form this row weaves, which the tooltip
    * prints beneath it — never of another form of the word. A second form the

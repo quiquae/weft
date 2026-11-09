@@ -1,6 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { selectSwaps, bandWindow, idealZipf, effectiveLevel, entryAllowed, topBandOf } from '../../src/core/selector.ts';
+import { selectSwaps, bandWindow, idealZipf, effectiveLevel, entryAllowed, topBandOf, scoreCandidate } from '../../src/core/selector.ts';
+import { machineEntry } from '../../src/core/machine-entry.ts';
 import type { SelectorInput } from '../../src/core/selector.ts';
 import { tokenize } from '../../src/core/tokenize.ts';
 import { hashString } from '../../src/core/rand.ts';
@@ -452,7 +453,7 @@ describe('the band window stays inside the bands a pack has', () => {
 
   test('a level above every band a pack has still weaves', () => {
     // PACK holds bands 1 and 2, as the shipped packs hold 1 to 4.
-    const top = topBandOf({ bands: [...new Set(PACK.map((e) => e.band))] });
+    const top = topBandOf({ bands: [...new Set(PACK.flatMap((e) => (e.band === undefined ? [] : [e.band])))] });
     assert.equal(top, 2);
     for (const level of [3, 4, 5, 6]) {
       const r = selectSwaps(baseInput({ ratio: 1, effectiveLevel: level, topBand: top }));
@@ -553,5 +554,30 @@ describe('pinned swaps', () => {
       empty.swaps.map((s) => s.original),
       plain.swaps.map((s) => s.original),
     );
+  });
+});
+
+describe('a translation service’s word, whose band nobody has judged', () => {
+  // The worker makes these, for words no pack has, and it cannot know how
+  // hard one is. Until 2026-11-09 each was band 3, which A1's window of bands
+  // 1 and 2 refused: at the default level, every word a service filled was
+  // sent, counted and never woven.
+  const word = machineEntry('lighthouse', 'noun', 'phare', 'sg');
+  const LEVELS = [1, 2, 3, 4, 5, 6];
+
+  test('passes the band window at every level', () => {
+    const refused = LEVELS.filter((level) => !entryAllowed(word, baseInput({ effectiveLevel: level, topBand: 4 })).ok);
+    assert.deepEqual(refused, [], 'refused at these levels');
+  });
+
+  test('takes one band fit at every level, neither the best a banded word gets nor the worst', () => {
+    const token = tokenize('lighthouse')[0]!;
+    const fits = LEVELS.map((level) => {
+      const { factors } = scoreCandidate(word, token, undefined, baseInput({ effectiveLevel: level, topBand: 4, explain: true }), 12, 0);
+      assert.ok(Number.isFinite(factors.score), `level ${level} scored ${factors.score}`);
+      return factors.bandFit;
+    });
+    assert.equal(new Set(fits).size, 1, `the fit moved with the level: ${fits.join(', ')}`);
+    assert.ok(fits[0]! > 0 && fits[0]! < 1, `a fit of ${fits[0]} prefers or refuses the word`);
   });
 });
