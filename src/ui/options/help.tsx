@@ -5,7 +5,6 @@ import { buildDiagnostics } from '../../core/diagnostics.ts';
 import { SUPPORT_URL } from '../../core/pricing.ts';
 import { SIGLA } from './sections.tsx';
 import { Notice, Row, Section } from '../components/pieces.tsx';
-import type { Controller } from './controller.ts';
 
 /**
  * Getting help, and giving enough information to be helped.
@@ -25,7 +24,7 @@ import type { Controller } from './controller.ts';
  * included" is how people end up sending things they did not mean to; the
  * text is right there to read first.
  */
-export function HelpSection({ c }: { c: Controller }) {
+export function HelpSection() {
   const [report, setReport] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -128,7 +127,7 @@ export function HelpSection({ c }: { c: Controller }) {
 
       <Row siglum={SIGLA.leaf} title="Version">
         <p class="muted">
-          Weft {__WEFT_VERSION__}, {__WEFT_TARGET__} build, {c.tier === 'pro' ? 'Pro' : 'Free'}.
+          Weft {__WEFT_VERSION__}, {__WEFT_TARGET__} build.
         </p>
       </Row>
     </Section>

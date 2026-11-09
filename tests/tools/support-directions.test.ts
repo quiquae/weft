@@ -47,7 +47,6 @@ const USER_DOCS = [
   'README.md',
   'docs/SUPPORT.md',
   'docs/PRIVACY.md',
-  'docs/PRICING.md',
   'docs/HARD-MODE.md',
 ];
 

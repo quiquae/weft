@@ -2,11 +2,12 @@ import { test, expect } from './fixtures.ts';
 import { issue, proPayload } from './licence.ts';
 
 /**
- * The commercial path, end to end in a real browser.
+ * The licence path, end to end in a real browser.
  *
- * Proves three things that are easy to get wrong and expensive to get wrong:
- * a fresh install is Free and works; a genuine key unlocks Pro with no network
- * request; and a forged key does not.
+ * Every feature is free since 1.1.0 and no page offers a key, but the worker
+ * still verifies one, and these hold that path: a fresh install is Free and
+ * works; a genuine key verifies with no network request; and a forged key
+ * does not.
  *
  * "Genuine" means signed by the key the extension under test verifies
  * against. These tests used to sign with the publisher's real private key,
@@ -38,18 +39,27 @@ test.describe('tiers', () => {
       .toBe(true);
   });
 
-  test('Free refuses a Pro setting immediately instead of queueing it', async ({ configure, rpc }) => {
+  test('Free takes a translation service at once, and refuses a feature not built', async ({
+    configure,
+    rpc,
+  }) => {
     await configure({ 'friction.cooldownMinutes': 60 });
-    const result = await rpc<{ applied: boolean; message: string; needsPro?: string }>({
+    const taken = await rpc<{ applied: boolean; needsPro?: string }>({
       type: 'request-change',
       patch: { 'providers.enabled': true },
     });
+    expect(taken.applied).toBe(true);
+    expect(taken.needsPro).toBeUndefined();
 
+    const refused = await rpc<{ applied: boolean; message: string; needsPro?: string }>({
+      type: 'request-change',
+      patch: { 'learning.phrasesEnabled': true },
+    });
     // Queueing it would make the user wait an hour to discover they cannot
     // have it, which is the worst possible ordering of those two facts.
-    expect(result.applied).toBe(false);
-    expect(result.needsPro).toBe('providers');
-    expect(result.message).toMatch(/Pro/);
+    expect(refused.applied).toBe(false);
+    expect(refused.needsPro).toBe('phrases');
+    expect(refused.message).toMatch(/not in Weft yet/);
 
     const lock = await rpc<{ lock: { pending: unknown[] } }>({ type: 'get-lock-state' });
     expect(lock.lock.pending.length).toBe(0);
@@ -81,10 +91,10 @@ test.describe('tiers', () => {
     const after = await rpc<{ tier: string }>({ type: 'get-licence' });
     expect(after.tier).toBe('pro');
 
-    // And the gate is actually open now.
+    // And the gate is actually open now, for a feature Free does not have.
     const change = await rpc<{ applied: boolean }>({
       type: 'request-change',
-      patch: { 'providers.enabled': true },
+      patch: { 'learning.phrasesEnabled': true },
     });
     expect(change.applied).toBe(true);
   });
@@ -110,42 +120,13 @@ test.describe('tiers', () => {
     expect(reply.message).toMatch(/still here/);
   });
 
-  test('the settings page shows the Pro section and activates a key through the UI', async ({
-    context,
-    extensionId,
-  }) => {
-    const page = await context.newPage();
-    await page.goto(`chrome-extension://${extensionId}/options.html`);
-
-    const section = page.locator('.section', { hasText: 'Weft Pro' });
-    await expect(section).toBeVisible({ timeout: 10_000 });
-    await expect(section).toContainText('Hard Mode');
-    await expect(section.locator('.pro__plan').first()).toBeVisible();
-
-    // Locked affordances explain rather than nag.
-    const locked = page.locator('.locked').first();
-    await expect(locked).toBeVisible();
-    await expect(locked).toContainText(/Part of Pro/);
-
-    const key = await issue(proPayload);
-    await section.locator('input[aria-label="Licence key"]').fill(key);
-    await section.locator('button', { hasText: 'Activate' }).click();
-
-    await expect(page.locator('.section', { hasText: 'Your licence' })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.locator('.notice, .row__detail').filter({ hasText: 'End To End' }).first()).toBeVisible();
-    // Nothing should still be locked.
-    await expect(page.locator('.locked')).toHaveCount(0);
-  });
-
   /**
    * Hard Mode is a policy file, and a policy holds only in the browser that
    * reads it. Microsoft Edge runs the Chrome package unchanged, so only the
    * brands the browser names itself by can tell the two apart, and the unit
    * tests cannot see whether the settings page reads them. This one makes the
-   * page's browser name itself as Chrome and then as Edge, with Pro on, and
-   * reads the row: until 2026-11-07 both were offered Chrome's file, and then
+   * page's browser name itself as Chrome and then as Edge, and reads the
+   * row: until 2026-11-07 both were offered Chrome's file, and then
    * Edge none. Edge is offered its own now, for Windows and macOS, because
    * this copy is unpacked, as a developer's is: the copy from the Chrome Web
    * Store is the one Edge would not hold, and the unit tests read that.
@@ -153,11 +134,7 @@ test.describe('tiers', () => {
   test('the settings page offers Hard Mode’s file in Chrome, and in Edge offers Edge’s without Linux', async ({
     context,
     extensionId,
-    rpc,
   }) => {
-    const licence = await rpc<{ tier: string }>({ type: 'set-licence', key: await issue(proPayload) });
-    expect(licence.tier).toBe('pro');
-
     for (const [brand, linux] of [
       ['Google Chrome', true],
       ['Microsoft Edge', false],

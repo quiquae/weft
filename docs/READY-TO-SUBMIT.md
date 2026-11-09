@@ -14,9 +14,9 @@ runbook behind this page; nothing here needs it.
 
 | Store | Upload | Fee | Ready? |
 |---|---|---|---|
-| Chrome Web Store | `weft-chrome-1.0.1.zip` | One-time registration fee, about 5 USD | **Once BLOCKED 1 is done and 3 decided** |
+| Chrome Web Store | `weft-chrome-1.0.1.zip` | One-time registration fee, about 5 USD | **Once BLOCKED 1 is done** |
 | Firefox (AMO) | `weft-firefox-1.0.1.zip` and a source zip | Free | **No** — the package lacks a manifest key AMO requires of a new add-on (F0) |
-| Edge Add-ons | `weft-chrome-1.0.1.zip` — the Chrome zip, unchanged | Free | **Once BLOCKED 1 is done and 3 decided** |
+| Edge Add-ons | `weft-chrome-1.0.1.zip` — the Chrome zip, unchanged | Free | **Once BLOCKED 1 is done** |
 | Safari (Mac App Store) | `weft-safari-1.0.1.zip`, untried | 99 USD a year | **No** — never built, and Pro breaks Apple’s rules as it stands |
 
 Facts about the stores were checked on 2026-10-24 against each store's own
@@ -48,15 +48,15 @@ reject that:
 iCloud copying files into `dist/`, not the package. Fix:
 `rm -rf dist/chrome dist/firefox dist/safari && npm run build:all`, then 0.1 again.
 
-**0.4** If you changed anything since the zips were built — `CHECKOUT_BASE`
-for BLOCKED 3, a Firefox manifest key — run 0.1 again. A store gets the bytes
+**0.4** If you changed anything since the zips were built — a Firefox
+manifest key, say — run 0.1 again. A store gets the bytes
 on disk, not the bytes in the repository.
 
 ---
 
 ## Chrome Web Store
 
-**Ready once BLOCKED 1 is done and BLOCKED 3 decided.** About 45 minutes of
+**Ready once BLOCKED 1 is done.** About 45 minutes of
 forms once the account exists.
 Fee: **one-time**, not recurring — Google says "pay a one-time registration fee"
 ([register](https://developer.chrome.com/docs/webstore/register)) and prints no
@@ -103,15 +103,15 @@ Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin 
 
 A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, if you choose, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, in Chrome and Edge, an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. You can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
-Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
+Free. Every feature is free, and there is nothing to buy.
 
-Open source. MIT licensed.
+Open source: the code is MIT, the word lists CC BY-SA 4.0.
 ```
 
 </details>
@@ -213,8 +213,8 @@ https://weft.study/privacy
 ```
 
 **C13 — Distribution.** Visibility: *Public*. Regions: *All regions*. If it
-asks whether this is a paid item: no — the extension is free to install; Pro
-is an optional licence bought outside the store (see BLOCKED 3 and 4).
+asks whether this is a paid item: no. Every feature is free, and nothing is
+sold inside it.
 
 **C14 — Submit for review.** Review takes hours to a couple of weeks; a first
 submission is slower. The question to expect is about `*://*/*`. The answer:
@@ -347,15 +347,15 @@ Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin 
 
 A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, if you choose, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, in Chrome and Edge, an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. You can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
-Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
+Free. Every feature is free, and there is nothing to buy.
 
-Open source. MIT licensed.
+Open source: the code is MIT, the word lists CC BY-SA 4.0.
 ```
 
 </details>
@@ -396,7 +396,7 @@ wants it each time.
 
 ## Edge Add-ons
 
-**Ready once BLOCKED 1 is done and BLOCKED 3 decided.** About 40 minutes. Fee: **none** — "There is no
+**Ready once BLOCKED 1 is done.** About 40 minutes. Fee: **none** — "There is no
 registration fee for submitting extensions to the Microsoft Edge program"
 ([Microsoft](https://learn.microsoft.com/en-us/microsoft-edge/extensions/publish/create-dev-account)).
 Every field below is from Microsoft's
@@ -523,15 +523,15 @@ Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin 
 
 A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, if you choose, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, in Chrome and Edge, an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. You can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
-Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
+Free. Every feature is free, and there is nothing to buy.
 
-Open source. MIT licensed.
+Open source: the code is MIT, the word lists CC BY-SA 4.0.
 ```
 
 </details>
@@ -569,14 +569,11 @@ here either.
 
 Three things to settle before the forms:
 
-- **Pro, which only you can decide.** App Review Guideline 3.1.1 says apps
-  "may not use their own mechanisms to unlock content or functionality, such
-  as license keys", and 4.4 that extensions "may not include marketing,
-  advertising, or in-app purchases"
+- **Nothing is sold.** App Review Guideline 3.1.1 refuses "license keys"
+  and 4.4 "in-app purchases" in extensions
   ([guidelines](https://developer.apple.com/app-store/review/guidelines/)).
-  Weft Pro is a licence key, and the options page has buy buttons. Expect a
-  rejection until the Safari build drops Pro or sells it through In-App
-  Purchase.
+  Since 1.1.0 every feature is free and no page offers a key, so neither
+  applies.
 - **The support URL.** Apple's "must lead to actual contact information
   (legal address, email address, telephone number)"
   ([Apple](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information)),
@@ -635,15 +632,15 @@ Seven languages. French, Spanish, German, Italian and Portuguese — plus Latin 
 
 A real memory model. Weft schedules with FSRS-6, the open-source memory model Anki also offers. Words you are about to forget come back; words you have genuinely learned are left in the target language for good and stop counting against the page's difficulty. The page becomes the review session, and you never sit down to study.
 
-The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, with Pro, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, with Pro, a Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
+The screen-time half. Anything that makes Weft easier waits out a cooldown you set in advance — and, if you choose, behind a short vocabulary check drawn from words you have already seen. The clock is stored, not scheduled: closing the browser neither cancels it nor restarts it. Cancelling a queued change is always instant and free. There is a rate-limited panic pass for the moment you genuinely need plain English, and, in Chrome and Edge, an optional Hard Mode that generates a browser policy making the extension unremovable without an administrator password.
 
 It does not touch what matters. Weft ships a never-weave list covering money, mail, credentials and health, checked before anything else. It never rewrites a button label, a code sample, anything you are typing, or a screen-reader live region.
 
-No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. With Pro you can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
+No account. No server. No telemetry. Everything is on your machine and it works offline. Weft asks for access to no website until you name the sites yourself, which is why it installs without the warning about reading all your data. You can add your own DeepL, Google or OpenAI-compatible key for words beyond the built-in lexicons — and even then it sends single words, never the page. An OpenAI-compatible service is sent the sentence each word appears in as well, but only if you turn on “Send the surrounding sentence”, which is off by default.
 
-Free, and Pro. Everything above is free except what is marked Pro. Pro is a licence checked on your machine, with no account, and adds Hard Mode, your own translation key, the vocabulary check and sixty days of attention history.
+Free. Every feature is free, and there is nothing to buy.
 
-Open source. MIT licensed.
+Open source: the code is MIT, the word lists CC BY-SA 4.0.
 ```
 
 </details>
@@ -689,18 +686,15 @@ Roughly in this order: 1 first, because every store waits on it; 5 last.
    issue-tracker link stop returning 404.
 2. **Push the `v1.0.1` tag**, after regenerating the release notes on a
    clean `main` (TODO.md B2a). It fires the release workflow, which publishes.
-3. **Decide the three Pro buy buttons.** The package's options page links to
-   `https://weft.lemonsqueezy.com/checkout/buy/…`, a placeholder: it returned
-   `404` at 22:51 UTC on 2026-10-24. Either create the Lemon Squeezy products
-   and replace `CHECKOUT_BASE` in `src/core/pricing.ts`, then rebuild (step
-   0.1), or submit knowing a reviewer can click a dead link. *(TODO.md B4.)*
+3. **Nothing to decide about Pro.** Every feature is free since 1.1.0, and
+   the buy buttons are gone. *(TODO.md B4, closed.)*
 4. **Open the store accounts and pay.** Chrome: a one-time fee, about 5 USD.
    Edge: free, with a Microsoft account. Firefox: free. Apple: 99 USD a year,
    for Safari only. Use one publisher name everywhere — it is awkward to
    change on Chrome and painful on Apple. Two answers to have ready before
    you start, because both publish personal details:
-   - **Trader status (EU Digital Services Act).** Weft sells Pro, so expect
-     to be asked. Apple asks every account and publishes a trader's address,
+   - **Trader status (EU Digital Services Act).** Weft sells nothing, so
+     the answer is likely non-trader, which publishes no address. Apple asks every account and publishes a trader's address,
      phone number and email in the EU
      ([Apple](https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements));
      Google shows "the verified information of traders" to users

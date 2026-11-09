@@ -20,8 +20,7 @@ import { LICENCE_PUBLIC_KEY_JWK } from './licence-key.ts';
  * nowhere to publish a revocation. Subscriptions therefore carry an `expires`
  * date and simply stop verifying; a lifetime key is trusted forever. A leaked
  * lifetime key would work until the signing key is rotated, which invalidates
- * every licence and means reissuing them. That is the trade, and it is stated
- * in docs/PRICING.md rather than buried.
+ * every licence and means reissuing them. That is the trade.
  *
  * ECDSA P-256 rather than Ed25519, which is tidier but only reached
  * WebCrypto in Chrome 137 and would have excluded browsers Weft otherwise

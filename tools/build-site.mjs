@@ -25,8 +25,6 @@ import { readFile, writeFile, mkdir, readdir, rm, cp } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PLANS, formatPrice, PITCH } from '../src/core/pricing.ts';
-import { SOLD } from '../src/core/entitlements.ts';
 import { entriesByTarget, spelling } from '../src/core/lexicon.ts';
 import { getLanguage } from '../src/core/languages.ts';
 import { contentDate, sitemapXml } from './sitemap.ts';
@@ -279,7 +277,7 @@ ${body}
       another language into the pages you read. Latin glosses checked against Lewis &amp; Short;
       Old English against Bosworth–Toller. Lexicon CC BY-SA 4.0.
     </p>
-    <p><a href="/install">Install</a> · <a href="/pricing">Pricing</a> · <a href="/support">Support</a> · <a href="/privacy">Privacy</a></p>
+    <p><a href="/install">Install</a> · <a href="/support">Support</a> · <a href="/privacy">Privacy</a></p>
   </footer>
 </main>
 </body>
@@ -726,7 +724,7 @@ function installPage(version) {
       Download Weft ${esc(version)}
     </a>
     <p class="download__meta">
-      Chrome, Edge, Brave, Firefox and Safari · about 200&nbsp;KB · free for one language, forever
+      Chrome, Edge, Brave, Firefox and Safari · about 200&nbsp;KB · free
     </p>
   </div>
 
@@ -819,9 +817,7 @@ function installPage(version) {
       and the browser asks you to approve exactly those.
     </p>
     <p>
-      It then works entirely offline. No account, no server, no telemetry.
-      <a href="/pricing">Pro</a> is verified from a signed file on your own machine, so even
-      paying does not involve a request.
+      It then works entirely offline. No account, no server, no telemetry, and nothing to buy.
     </p>
   </section>
 
@@ -832,132 +828,6 @@ function installPage(version) {
     <p class="steps__note">
       That writes <code>dist/chrome</code>, <code>dist/firefox</code> and
       <code>dist/safari</code>. The first is the folder to load in step 4.
-    </p>
-  </section>
-`,
-    }),
-  };
-}
-
-/* ---------------------------------------------------------- pricing page */
-
-function pricingPage() {
-  const url = `${SITE}/pricing`;
-  const pro = SOLD;
-
-  // Rows that are free on both sides matter more than the paid ones: they are
-  // the evidence that the free tier is a product rather than a trailer.
-  const freeRows = [
-    ['One language, forever', 'Any of the seven, including Latin and Old English'],
-    ['The whole lexicon for it', '356 checked words, ~580 forms'],
-    ['Attention-scaled difficulty', 'The entire escalation curve'],
-    ['Hover to reveal', 'With pronunciation, gender and etymology'],
-    ['Cooldowns and panic passes', 'The commitment layer is the product, not an upsell'],
-    ['Your vocabulary and progress', 'Scheduled with FSRS-6'],
-    ['Export everything', 'Your data is yours'],
-    ['Accessibility', 'Never a paid feature'],
-  ];
-
-  const description = `${PITCH} From $24 a year, or $59 once.`;
-
-  return {
-    path: 'pricing.html',
-    url,
-    html: page({
-      title: 'Pricing — Weft',
-      description,
-      canonical: url,
-      jsonLd: {
-        '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        name: 'Weft',
-        applicationCategory: 'EducationalApplication',
-        operatingSystem: 'Chrome, Edge, Firefox, Safari',
-        description: PITCH,
-        url: SITE,
-        offers: PLANS.map((plan) => ({
-          '@type': 'Offer',
-          name: `Weft Pro — ${plan.label}`,
-          price: String(plan.price),
-          priceCurrency: plan.currency,
-          url: plan.checkout,
-        })),
-      },
-      breadcrumbs: [{ href: '/', label: 'Weft' }, { label: 'Pricing' }],
-      body: `  <header class="hub__head">
-    <h1>Pricing</h1>
-    <p class="standfirst">${esc(PITCH)}</p>
-  </header>
-
-  <div class="plans">
-${PLANS.map(
-  (plan) => `    <div class="plan"${plan.featured ? ' data-featured' : ''}>
-      <span class="plan__label">${esc(plan.label)}</span>
-      <span class="plan__price">${esc(formatPrice(plan))}</span>
-      <span class="plan__per">${esc(plan.per)}</span>
-      <span class="plan__note">${esc(plan.note)}</span>
-      <a class="plan__buy" href="${esc(plan.checkout)}">Get Pro</a>
-    </div>`,
-).join('\n')}
-  </div>
-
-  <section>
-    <h2>What you get without paying anything</h2>
-    <p>
-      This list is longer than the one below it, and that is deliberate. Weft Free is the whole
-      idea, not a trailer for it.
-    </p>
-    <table class="tiers">
-      <tbody>
-${freeRows
-  .map(
-    ([what, detail]) =>
-      `        <tr><th scope="row">${esc(what)}</th><td class="worddata__note">${esc(detail)}</td></tr>`,
-  )
-  .join('\n')}
-      </tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>What Pro adds</h2>
-    <table class="tiers">
-      <tbody>
-${pro
-  .map(
-    (f) =>
-      `        <tr><th scope="row">${esc(f.label)}</th><td class="worddata__note">${esc(f.detail)}</td></tr>`,
-  )
-  .join('\n')}
-      </tbody>
-    </table>
-  </section>
-
-  <section>
-    <h2>How the licence works, and what that costs you</h2>
-    <p>
-      Your licence is a signed file, verified on your own machine against a key compiled into
-      the extension. There is no account, no activation server, and no request — not at
-      purchase, not at launch, not ever. You can watch the network panel and confirm it.
-    </p>
-    <p>
-      The honest trade: because there is no server, <strong>a licence cannot be revoked</strong>.
-      A yearly licence carries an expiry date and simply stops verifying when it passes. A
-      lifetime key works forever. If a lifetime key leaks widely the only remedy is rotating
-      the signing key, which would mean reissuing every licence — so the price of lifetime
-      reflects that risk rather than pretending it away.
-    </p>
-    <p>
-      If a licence expires, nothing you learned is deleted. One language stays active and every
-      word you know stays known.
-    </p>
-  </section>
-
-  <section>
-    <h2>Refunds, students, and asking</h2>
-    <p>
-      Thirty days, no questions, no form. Student and low-income keys exist and the only
-      qualification is asking for one — there is no means test and nobody is going to check.
     </p>
   </section>
 `,
@@ -986,18 +856,10 @@ ${pro
  * the cheaper fix is to write the document differently.
  */
 
-/**
- * Documents whose subject has a page of its own, and where that page lives.
- *
- * `PRICING.md` is the reasoning behind the prices rather than the prices,
- * but a reader on the site who follows a pricing link wants `/pricing`, and
- * a reader on GitHub who follows the same link wants the reasoning. Both get
- * what they came for from one link in the source.
- */
+/** Documents whose subject has a page of its own, and where that page lives. */
 const DOC_PAGES = {
   'PRIVACY.md': '/privacy',
   'SUPPORT.md': '/support',
-  'PRICING.md': '/pricing',
 };
 
 /**
@@ -1316,9 +1178,6 @@ async function main() {
   await writeFile(join(OUT, install.path), install.html);
   console.log('  install');
 
-  const pricing = pricingPage();
-  await writeFile(join(OUT, pricing.path), pricing.html);
-  console.log('  pricing');
 
   /*
    * The two pages something outside this repository depends on.
@@ -1369,11 +1228,6 @@ async function main() {
       url: `${SITE}/install`,
       priority: '0.95',
       lastmod: contentDate(ROOT, ['tools/build-site.mjs', 'package.json']),
-    },
-    {
-      url: `${SITE}/pricing`,
-      priority: '0.9',
-      lastmod: contentDate(ROOT, ['src/core/pricing.ts', 'src/core/entitlements.ts']),
     },
     { url: `${SITE}/support`, priority: '0.6', lastmod: contentDate(ROOT, ['docs/SUPPORT.md']) },
     { url: `${SITE}/privacy`, priority: '0.5', lastmod: contentDate(ROOT, ['docs/PRIVACY.md']) },

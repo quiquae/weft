@@ -118,7 +118,7 @@ standalone. If in doubt, message the moderators — they answer.
 >   the method has — the word on the page is usually the literal ancestor of
 >   the one it replaced.
 >
-> Free for one language forever, no account, works offline. I would genuinely
+> Free, no account, works offline. I would genuinely
 > like to know whether the attention-scaling feels motivating or punishing,
 > because I cannot tell from using my own thing.
 
@@ -211,13 +211,11 @@ comments for the first few hours or it dies. Title must start with "Show HN:".
 > ranking — a word you had just decoded would flip back to English. The fix was
 > to make the guarantee explicit and pin the words already on screen.
 >
-> Licences are signed files verified locally against an embedded public key.
-> No activation server, no account, no request at launch — which is both the
-> honest implementation of "nothing leaves your machine" and a thing you can
-> verify in the network panel. The trade is that a licence cannot be revoked,
-> which is stated on the pricing page rather than hidden.
+> Nothing leaves your machine unless you add your own translation key, and you
+> can verify that in the network panel: the progress page counts every request
+> Weft has ever made.
 >
-> Free for one language. Source is open, 1512 tests, and the lexicon pipeline
+> Free, every feature. Source is open, 1511 tests, and the lexicon pipeline
 > and the Latin/Old English IPA generator are in the repo.
 
 ### Lobsters

@@ -5,8 +5,6 @@ import { send } from '../../shared/rpc.ts';
 import { exportFilename } from '../../core/escalation.ts';
 import { whatIsSent } from '../../core/sending.ts';
 import { MAX_PROVIDER_ENTRIES } from '../../core/prune.ts';
-import { has } from '../../core/entitlements.ts';
-import { Locked } from './pro.tsx';
 import { Notice, Row, Section, Slider, Switch } from '../components/pieces.tsx';
 import type { Controller } from './controller.ts';
 import { SIGLA } from './sections.tsx';
@@ -62,15 +60,11 @@ export function SourcesSection({ c, settings }: { c: Controller; settings: Setti
         title="Use a translation service"
         detail="Off by default. When on, Weft looks up the most frequent words on a page that its packs do not contain, caches each answer, and prefers a checked gloss over a machine one wherever both exist."
       >
-        {has(c.tier, 'providers') ? (
-          <Switch
-            checked={settings.providers.enabled}
-            label={settings.providers.enabled ? 'Looking up unknown words' : 'Packs only, fully offline'}
-            onChange={(v) => void c.set('providers.enabled', v)}
-          />
-        ) : (
-          <Locked feature="providers" />
-        )}
+        <Switch
+          checked={settings.providers.enabled}
+          label={settings.providers.enabled ? 'Looking up unknown words' : 'Packs only, fully offline'}
+          onChange={(v) => void c.set('providers.enabled', v)}
+        />
       </Row>
 
       {settings.providers.enabled ? (

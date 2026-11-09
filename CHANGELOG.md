@@ -9,6 +9,11 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Every feature is free.** Hard Mode, your own translation key, the
+vocabulary check before an easier setting and sixty days of attention
+history are no longer Pro. The buy buttons, the pricing page and the licence
+screen are gone; the checkout links pointed at a store that was not Weft's.
+
 **The feed's false friends say what they promise.** The dashboard's feed
 puts a word whose meaning moved at its top — "sellan became English sell, but
 “sellan” meant to give" — and seven of its Old English lines did not say that.
@@ -1020,8 +1025,8 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1512 tests: 683 unit, 138 in jsdom, 642 over the build tools, and
-49 end-to-end in a real Chromium with the extension loaded. Three further
+**Built with** 1511 tests: 683 unit, 138 in jsdom, 643 over the build tools, and
+47 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and
 `WEFT_FIRSTRUN=1`. The lexicons are 581–588 entries across 576–583 surface

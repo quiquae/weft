@@ -182,23 +182,13 @@ It is words that graduated.
 
 ## What it costs
 
-**Free, for one language, forever** — any of the seven, including Latin and
-Old English. The whole lexicon for it, the whole escalation curve, the whole
-tooltip, your vocabulary and progress, and export. Not a trial.
+**Nothing.** Every feature Weft has is free: all seven languages, Hard Mode,
+your own translation key, the vocabulary check and sixty days of history.
+There is no account and nothing to buy.
 
-**Pro** adds Hard Mode, your own translation key for unlimited vocabulary, a
-vocabulary check before any setting gets easier, and sixty days of attention
-history. $3.50 a month, $24 a year, or $59 once.
-
-Some things are never gated at any price: accessibility, the never-weave list,
-panic passes, and exporting your own data. There is a test that fails if
-anyone moves one of them behind the paywall.
-
-Your licence is a **signed file verified on your own machine** against a key
-compiled into the extension. No account, no activation server, and no request
-— not at purchase, not at launch, not ever. The honest cost is that a licence
-cannot be revoked; [docs/PRICING.md](docs/PRICING.md) says so rather than
-pretending otherwise.
+Some things will never be gated at any price: accessibility, the never-weave
+list, panic passes, and exporting your own data. There is a test that fails
+if anyone moves one of them behind a paywall.
 
 ---
 
@@ -266,8 +256,8 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 683 unit + 138 jsdom + 642 over the build tools
-npm run test:e2e       # 49 tests in a real Chromium with the extension loaded
+npm test               # 683 unit + 138 jsdom + 643 over the build tools
+npm run test:e2e       # 47 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules
 npm run test:all       # everything, in the order that fails fastest

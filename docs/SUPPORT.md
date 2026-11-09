@@ -120,25 +120,12 @@ own release page, and never for the contents of your storage — the export
 strips your API keys and install id before it writes the file, and anyone
 telling you to turn that off is not helping you.
 
-A licence is a signed file verified on your own machine. Nobody needs to see
-it to help you, and no reply from Weft will ever ask for it.
+## What it costs
 
-## Licences
+Nothing. Every feature Weft has is free, and there is nothing to buy.
 
-Your licence is verified locally against a key compiled into the extension.
-There is no activation server and no request at purchase or launch, which has
-one honest cost: **a licence cannot be revoked**. A monthly or yearly licence
-carries an expiry date and stops verifying when it passes; a lifetime key
-works forever.
-
-If a licence expires, nothing you learned is deleted. One language stays
-active and every word you know stays known.
-
-Refunds are thirty days, no questions and no form. Student and low-income
-keys exist and the only qualification is asking.
-
-See [Pricing](PRICING.md) for what Pro adds, and [Privacy](PRIVACY.md) for
-what leaves your machine, which is nothing unless you go out of your way.
+See [Privacy](PRIVACY.md) for what leaves your machine, which is nothing
+unless you go out of your way.
 
 ## Taking your data with you
 

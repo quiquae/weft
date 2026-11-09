@@ -1,22 +1,12 @@
-import type { LangCode, Settings } from './types.ts';
+import type { LangCode, Settings, SiteRule } from './types.ts';
 
 /**
- * What the free tier includes, and what Pro adds.
+ * Which features are free, and which are held back.
  *
- * Two rules shaped this list, and both are commercial as much as ethical:
- *
- * **The free tier has to be genuinely good, not crippled.** One language, the
- * whole lexicon for it, the whole escalation curve, the whole tooltip with
- * etymologies and pronunciation, the vocabulary list, and export. Someone can
- * use Weft free forever and get the entire idea. A hobbled free tier does not
- * convert; it just teaches people the product is disappointing.
- *
- * **Some things are never gated, at any price.** Accessibility is not a
- * feature, it is a floor. The never-weave list protects people from the
- * product and charging for protection would be indefensible. Panic passes are
- * the escape valve that stops a frustrated user uninstalling, so putting them
- * behind a paywall would cost more in churn than it earns. And your data is
- * yours: export is free.
+ * Everything Weft has is free since 1.1.0, the owner's call on 2026-11-09. A
+ * feature still marked `pro` is one not built yet: it is not sold, and no page
+ * offers it. `has()` is the one gate, and `clampToTier()`, `exceedsTier()` and
+ * `historyDays()` ask it, so a feature's tier in `FEATURES` is the only switch.
  */
 
 export type Tier = 'free' | 'pro';
@@ -38,10 +28,9 @@ export interface FeatureInfo {
   detail: string;
   tier: Tier;
   /**
-   * Whether the product has it. A feature that is not shipped is not sold:
-   * the Pro section and `/pricing` render `SOLD`, and
-   * `tests/tools/pro-features.test.ts` holds every feature sold to the code
-   * that delivers it and refuses copy promising one that is not.
+   * Whether the product has it. `tests/tools/pro-features.test.ts` holds every
+   * shipped feature to the code that delivers it, and refuses a page or copy
+   * offering one that is not shipped.
    */
   shipped: boolean;
 }
@@ -71,7 +60,7 @@ export const FEATURES: FeatureInfo[] = [
     label: 'Hard Mode',
     detail:
       'Generates the browser policy that stops Weft being removed without an administrator password. The only mechanism that actually holds.',
-    tier: 'pro',
+    tier: 'free',
     shipped: true,
   },
   {
@@ -79,7 +68,7 @@ export const FEATURES: FeatureInfo[] = [
     label: 'Unlimited vocabulary',
     detail:
       'Point Weft at your own DeepL, Google or OpenAI-compatible key and it will weave any word on the page, not only the checked core lexicon.',
-    tier: 'pro',
+    tier: 'free',
     shipped: true,
   },
   {
@@ -96,8 +85,8 @@ export const FEATURES: FeatureInfo[] = [
     id: 'extended-history',
     label: 'The whole history',
     detail:
-      'Free charts the last week of your attention. Pro charts sixty days of it, as far back as Weft keeps.',
-    tier: 'pro',
+      'Charts sixty days of your attention, as far back as Weft keeps.',
+    tier: 'free',
     shipped: true,
   },
   {
@@ -105,7 +94,7 @@ export const FEATURES: FeatureInfo[] = [
     label: 'Quiz-gated unlocking',
     detail:
       'Require a vocabulary check before any setting gets easier, so the way out is itself practice.',
-    tier: 'pro',
+    tier: 'free',
     shipped: true,
   },
   {
@@ -118,13 +107,6 @@ export const FEATURES: FeatureInfo[] = [
     shipped: false,
   },
 ];
-
-/**
- * The Pro features on sale: the ones the product has. Every page that says
- * what Pro adds renders this, never `FEATURES`, which also holds the ones not
- * built.
- */
-export const SOLD: FeatureInfo[] = /* @__PURE__ */ FEATURES.filter((f) => f.tier === 'pro' && f.shipped);
 
 /**
  * Capabilities no tier ever removes.
@@ -160,13 +142,12 @@ export function featureInfo(feature: Feature): FeatureInfo {
 /** Free-tier ceiling on simultaneously active target languages. */
 export const FREE_LANGUAGE_LIMIT = 1;
 
-/** Days of attention history the free tier shows. */
-export const FREE_HISTORY_DAYS = 1;
-
-export const PRO_HISTORY_DAYS = 60;
+/** Days of attention history the dashboard shows, and without the feature. */
+export const HISTORY_DAYS = 60;
+export const SHORT_HISTORY_DAYS = 1;
 
 export function historyDays(tier: Tier): number {
-  return tier === 'pro' ? PRO_HISTORY_DAYS : FREE_HISTORY_DAYS;
+  return has(tier, 'extended-history') ? HISTORY_DAYS : SHORT_HISTORY_DAYS;
 }
 
 /**
@@ -175,63 +156,42 @@ export function historyDays(tier: Tier): number {
  * Applied on every load rather than only at the moment of change, because a
  * licence can expire while settings that depended on it are still stored. The
  * clamp is deliberately gentle: it turns features off, it never erases the
- * configuration behind them, so the settings come back intact when a licence
- * is renewed.
+ * configuration behind them.
  */
 export function clampToTier(settings: Settings, tier: Tier): Settings {
-  if (tier === 'pro') return settings;
-
-  const targets = settings.learning.targetLangs.slice(0, FREE_LANGUAGE_LIMIT);
-  const active: LangCode = targets.includes(settings.learning.activeTarget)
-    ? settings.learning.activeTarget
-    : ((targets[0] ?? settings.learning.activeTarget) as LangCode);
-
-  return {
-    ...settings,
-    learning: {
-      ...settings.learning,
-      targetLangs: targets.length ? targets : [active],
-      activeTarget: active,
-      phrasesEnabled: false,
-    },
-    friction: {
-      ...settings.friction,
-      requireQuizToUnlock: false,
-      hardMode: false,
-    },
-    providers: {
-      ...settings.providers,
-      enabled: false,
-    },
-    sites: {
-      ...settings.sites,
-      // Per-site language overrides are a Pro feature; drop the override and
-      // keep the rule itself, so nothing the user configured disappears.
-      taxed: settings.sites.taxed.map((r) => {
-        if (!r.target) return r;
-        const { target: _dropped, ...rest } = r;
-        return rest;
-      }),
-      gentle: settings.sites.gentle.map((r) => {
-        if (!r.target) return r;
-        const { target: _dropped, ...rest } = r;
-        return rest;
-      }),
-    },
-  };
+  let out = settings;
+  if (!has(tier, 'multi-language')) {
+    const targets = out.learning.targetLangs.slice(0, FREE_LANGUAGE_LIMIT);
+    const active: LangCode = targets.includes(out.learning.activeTarget)
+      ? out.learning.activeTarget
+      : ((targets[0] ?? out.learning.activeTarget) as LangCode);
+    out = { ...out, learning: { ...out.learning, targetLangs: targets.length ? targets : [active], activeTarget: active } };
+  }
+  if (!has(tier, 'phrases')) out = { ...out, learning: { ...out.learning, phrasesEnabled: false } };
+  if (!has(tier, 'unlock-quiz')) out = { ...out, friction: { ...out.friction, requireQuizToUnlock: false } };
+  if (!has(tier, 'hard-mode')) out = { ...out, friction: { ...out.friction, hardMode: false } };
+  if (!has(tier, 'providers')) out = { ...out, providers: { ...out.providers, enabled: false } };
+  if (!has(tier, 'per-site-language')) {
+    // Drop a rule's language override and keep the rule itself.
+    const drop = (r: SiteRule): SiteRule => {
+      if (!r.target) return r;
+      const { target: _dropped, ...rest } = r;
+      return rest;
+    };
+    out = { ...out, sites: { ...out.sites, taxed: out.sites.taxed.map(drop), gentle: out.sites.gentle.map(drop) } };
+  }
+  return out;
 }
 
-/** True when a settings object asks for something the tier does not allow. */
+/** The features a settings object asks for that the tier does not allow. */
 export function exceedsTier(settings: Settings, tier: Tier): Feature[] {
-  if (tier === 'pro') return [];
-  const over: Feature[] = [];
-  if (settings.learning.targetLangs.length > FREE_LANGUAGE_LIMIT) over.push('multi-language');
-  if (settings.learning.phrasesEnabled) over.push('phrases');
-  if (settings.friction.requireQuizToUnlock) over.push('unlock-quiz');
-  if (settings.friction.hardMode) over.push('hard-mode');
-  if (settings.providers.enabled) over.push('providers');
-  if ([...settings.sites.taxed, ...settings.sites.gentle].some((r) => r.target)) {
-    over.push('per-site-language');
-  }
-  return over;
+  const asked: Array<[Feature, boolean]> = [
+    ['multi-language', settings.learning.targetLangs.length > FREE_LANGUAGE_LIMIT],
+    ['phrases', settings.learning.phrasesEnabled],
+    ['unlock-quiz', settings.friction.requireQuizToUnlock],
+    ['hard-mode', settings.friction.hardMode],
+    ['providers', settings.providers.enabled],
+    ['per-site-language', [...settings.sites.taxed, ...settings.sites.gentle].some((r) => Boolean(r.target))],
+  ];
+  return asked.filter(([feature, asks]) => asks && !has(tier, feature)).map(([feature]) => feature);
 }

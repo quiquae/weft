@@ -56,13 +56,13 @@ difficulty. The page becomes the review session, and you never sit down to
 study.
 
 **The screen-time half.** Anything that makes Weft easier waits out a cooldown
-you set in advance — and, with Pro, behind a short vocabulary check drawn from
-words you have already seen. The clock is stored, not scheduled: closing the browser
+you set in advance — and, if you choose, behind a short vocabulary check drawn
+from words you have already seen. The clock is stored, not scheduled: closing the browser
 neither cancels it nor restarts it. Cancelling a queued change is always
 instant and free. There is a rate-limited panic pass for the moment you
-genuinely need plain English, and, with Pro, a Hard Mode that generates a
-browser policy making the extension unremovable without an administrator
-password.
+genuinely need plain English, and, in Chrome and Edge, an optional Hard Mode
+that generates a browser policy making the extension unremovable without an
+administrator password.
 
 **It does not touch what matters.** Weft ships a never-weave list covering
 money, mail, credentials and health, checked before anything else. It never
@@ -72,17 +72,15 @@ screen-reader live region.
 **No account. No server. No telemetry.** Everything is on your machine and it
 works offline. Weft asks for access to no website until you name the sites
 yourself, which is why it installs without the warning about reading all your
-data. With Pro you can add your own DeepL, Google or OpenAI-compatible key
-for words beyond the built-in lexicons — and even then it sends single words,
+data. You can add your own DeepL, Google or OpenAI-compatible key for words
+beyond the built-in lexicons — and even then it sends single words,
 never the page. An OpenAI-compatible service is sent the sentence each word
 appears in as well, but only if you turn on “Send the surrounding sentence”,
 which is off by default.
 
-**Free, and Pro.** Everything above is free except what is marked Pro. Pro is
-a licence checked on your machine, with no account, and adds Hard Mode, your
-own translation key, the vocabulary check and sixty days of attention history.
+**Free.** Every feature is free, and there is nothing to buy.
 
-Open source. MIT licensed.
+Open source: the code is MIT, the word lists CC BY-SA 4.0.
 
 ## Permission justifications
 

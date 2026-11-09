@@ -66,11 +66,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **683 pass**, 158 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **138 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **642 pass**, 168 suites, ~8 s here |
-| `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **643 pass**, 168 suites, ~8 s here |
+| `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 1004 KB unpacked for each of the three |
+| `npm run build:all` | chrome + firefox + safari | 998 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -335,19 +335,16 @@ list, panic passes, data export, pronunciation and the etymologies.
 `tests/core/entitlements.test.ts` fails and names the offender if one moves
 behind the paywall.
 
-**Pro sells what Pro does.** `shipped` on each feature in `FEATURES`
-(`src/core/entitlements.ts`) says whether the product has it, and the
-options page's Pro section and `/pricing` render `SOLD`, the features that
-ship. Until 2026-11-06 both, with `PITCH`, the README, the landing page and
-the release-notes template, sold eight features, and four could not be had:
-every language at once (the chips write one language whatever the tier),
-a language per site (no control sets a rule's `target`), phrases (no pack
-has one) and your own word lists (nothing imports one).
-`tests/tools/pro-features.test.ts` holds every feature sold to the file and
-code that deliver it, `DELIVERED`, and refuses a page reading `FEATURES`, a
-lock or gate under `src/ui/` naming a feature not sold, and copy promising
-one, by `PROMISES`. To sell one again, build it, set `shipped`, and write
-its line; whether to build them is Creagh's, in `TODO.md`.
+**Everything Weft has is free.** Creagh's call, 2026-11-09. A feature in
+`FEATURES` (`src/core/entitlements.ts`) still marked `pro` is one not built:
+every language at once, a language per site, phrases, your own word lists.
+It is not sold and no page offers it. `has()` is the one gate, and
+`clampToTier()`, `exceedsTier()` and `historyDays()` ask it, so a feature's
+tier is the only switch. Until 2026-11-09 the buy buttons pointed at
+`weft.lemonsqueezy.com`, a stranger's store. `tests/tools/pro-features.test.ts`
+fails on a shipped feature that is paid, a page naming an unbuilt feature,
+copy promising one, or copy offering a sale. Build a feature before deciding
+whether to charge for it.
 
 **A Hard Mode file carries its own way out.** The options page promises
 "the file you download contains its own removal instructions", and
@@ -387,7 +384,8 @@ make Edge's file remove Chrome's Hard Mode. `tests/core/hard-mode.test.ts`,
 `tests/dom/hard-mode.test.ts` and an e2e test in `licensing.spec.ts`, which
 makes the page's browser name itself as Chrome and then as Edge, hold it.
 
-**Licences are signed files verified locally** (ECDSA P-256, WebCrypto,
+**Licences are signed files verified locally**, a dormant path since 1.1.0:
+no page offers a key, and the worker still verifies one (ECDSA P-256, WebCrypto,
 against a key compiled into the extension). No account, no activation server,
 no request at purchase or launch. The honest cost is that a licence cannot be
 revoked, and `docs/PRICING.md` says so rather than pretending otherwise. Test
@@ -1107,6 +1105,26 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-09 — everything is free
+
+Creagh's call, asked what the stores should offer at launch. Hard Mode, your
+own translation key, the vocabulary check and sixty days of history moved to
+the free tier in `FEATURES`; `clampToTier`, `exceedsTier` and `historyDays`
+now ask `has()`. Removed: the options page's Price and licence rows, the
+three page gates, `/pricing`, `PLANS`, `PITCH`, `CHECKOUT_BASE`,
+`PRICING_URL`, `docs/PRICING.md`, the landing page's price, and "free for one
+language" in the install page and launch drafts. The checkout pointed at
+`weft.lemonsqueezy.com`, somebody else's store (page title "Patrick Watson").
+The worker's licence path stays, dormant.
+
+`pro-features.test.ts` now refuses a paid shipped feature and any copy
+offering a sale; `store-description.test.ts` wants "Pro" exactly where a
+feature is paid. Shots: `options.png` 653 px shorter, the dashboard charts 60
+days, the help page's version line; `options-density.png` came back as noise
+and stands. `test:all` exit 0: 683 unit / 158, 138 jsdom / 29, **643 tools /
+168**, compat clean, **998 KB × 3**, **47 e2e passed, 3 skipped, 4.2 min**.
+`site:check`: 713 pages, 15 392 links. Total 1512 → 1511, in six places.
 
 ### 2026-11-09 — the feed's false friends, read whole: seven lines did not say what the frame promises
 
