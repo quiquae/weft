@@ -9,6 +9,17 @@ repository becoming public (B2 in `TODO.md`), because a release whose download
 button 404s is worse than no release. This is everything on `main` after the
 `v1.0.0` tag of 2026-09-19, which the published release does not contain.
 
+**Two Old English false friends are told as false friends.** The dashboard's
+feed puts a word whose meaning moved at its top, edged in red, and this
+project's documents call *mete* and *cwic* two of them: *mete* meant food of
+any kind and became *meat*, and *cwic* meant alive and became *quick*. The
+feed told both as plain descents — "mete is where meat comes from", "quick
+began as cwic" — because neither word's note said what it meant, and the fact
+about *cwic* sat under *swift*, woven for "quick", where the feed read it as
+"swift became English swift, but cwic meant alive". Each note now says what
+its own word meant, and *swift*'s line says it has not changed in a thousand
+years.
+
 **A page of short paragraphs weaves its share, and keeps weaving as you
 read.** Weft decides how many words to weave one paragraph at a time, and it
 rounded each paragraph's share to the nearest word, so at the default resting
@@ -968,7 +979,7 @@ outside `test:all`, because nearly every change touches `src/` and a gate
 that is usually red is a gate nobody reads; it is wired into the submission
 runbook instead, at the two steps before something irreversible.
 
-**Built with** 1484 tests: 674 unit, 127 in jsdom, 634 over the build tools, and
+**Built with** 1486 tests: 674 unit, 127 in jsdom, 636 over the build tools, and
 49 end-to-end in a real Chromium with the extension loaded. Three further
 end-to-end specs are defined and deliberately skipped; they generate assets
 rather than assert anything and run behind `WEFT_STORE=1`, `WEFT_SCREENS=1` and

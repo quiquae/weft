@@ -66,7 +66,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **674 pass**, 156 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **127 pass**, 28 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **634 pass**, 164 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **636 pass**, 165 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **49 pass, 3 skipped**, 3.7 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 16 dependencies × 3 browsers = 48 checks: **42 pass, 6 degrade with a named fallback**; and 92 manifest keys (chrome 30, firefox 32, safari 30): **86 pass, 2 degrade, 4 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
@@ -647,6 +647,21 @@ one choice, `etymonRelation()` in `src/core/similarity.ts` — "ancestor of
 English" for a stage of English, "source of English" for the rest — and
 `tests/dom/tooltip.test.ts` derives each language's noun from the table's
 names in the same way.
+
+**A false friend is marked by its note, and what the copy calls one is held
+to the mark.** The dashboard's feed is the one place Weft marks a false
+friend — first, under a madder border — and it marks a word only when the
+word's note says what it meant, by the verbs `FALSE_FRIEND` in
+`src/core/discoveries.ts` reads. Until 2026-11-09 `docs/PEDAGOGY.md`, the
+descent hub and the launch draft called `mete` and `cwic` false friends while
+the feed told both as plain descents. `tests/tools/feed-frames.test.ts` holds
+every word a paragraph sets apart beside "false friend" — in the README,
+`docs/*.md`, `site/*.html` and the site builder's paragraphs — to the feed of
+a pack that teaches it. Cure a miss in the note, never in the pattern:
+widening it to "was" would have taken 16 notes, among them "the moon was
+masculine". And a note is about the word it is printed under: that `cwic`
+meant alive sat on `swift`, woven for "quick", where the feed read it as
+"swift became English swift".
 
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
