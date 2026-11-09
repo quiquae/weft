@@ -8,7 +8,7 @@
 of this session — typecheck clean, **680** unit / 157 suites, **127** jsdom / 28
 suites, **636** tool tests / 165 suites, **49** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 1003 KB each, all
+packages built at 1004 KB each, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -141,7 +141,11 @@ bundled in another order: Chrome's 1002.655 → 1002.660 KB, Firefox's 1002.729
 and Safari's 1002.667, measured against `main` built before the first edit.
 And 34 bytes lighter on 2026-11-09, all of them the Old English pack's
 three notes: Chrome's 1002.660 → 1002.627 KB, Firefox's 1002.695 and
-Safari's 1002.634, all still printing 1003.
+Safari's 1002.634, all still printing 1003. And to **1004 KB** the same day
+by 1 143 bytes, all of them `content.js`, the irregular pasts the guesser
+declines after a subject pronoun: Chrome's 1002.627 → 1003.743 KB, Firefox's
+1003.812 and Safari's 1003.750, measured against `main` built before the
+first edit.
 `npm run test:all` exits 0 end to end.
 
 **The whole pre-submission gate was run on 2026-10-24 and is written up, figure
