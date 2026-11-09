@@ -1,9 +1,10 @@
 # Ready to submit — Weft 1.0.1
 
-**Do this first:** register `weft.study` — item 1 of [BLOCKED](#blocked--only-creagh-can-do-these),
-at the bottom. Chrome, Edge and Apple each ask for a privacy policy URL, and at
-22:51 UTC on 2026-10-24 `https://weft.study/privacy` did not resolve. Nothing
-below can be submitted until it loads in a logged-out browser.
+**Do this first:** item 1 of [BLOCKED](#blocked--only-creagh-can-do-these),
+at the bottom. Chrome, Edge and Apple each ask for a privacy policy URL, and
+`https://quiquae.github.io/weft/privacy` has to load in a logged-out browser
+before anything below can be submitted. No domain is needed: the site is
+GitHub Pages.
 
 One page, worked top to bottom. Every field's copy is on it, in the form the
 store's box takes: one paragraph per line, no Markdown. Click a grey block's
@@ -128,12 +129,12 @@ Open source: the code is MIT, the word lists CC BY-SA 4.0.
 - Marquee promo tile: `docs/store/tile-marquee-1400x560.png`
 - Promo video: none
 
-**C7 — Additional fields.** Homepage URL: `https://weft.study`. Official URL:
+**C7 — Additional fields.** Homepage URL: `https://quiquae.github.io/weft`. Official URL:
 optional; leave it empty. Mature content: unticked. Support URL:
 
 <!-- paste: support-url -->
 ```text
-https://weft.study/support
+https://quiquae.github.io/weft/support
 ```
 
 **C8 — Privacy → Single purpose.**
@@ -209,7 +210,7 @@ Edge too, so the three stores are told the same thing.
 
 <!-- paste: privacy-url -->
 ```text
-https://weft.study/privacy
+https://quiquae.github.io/weft/privacy
 ```
 
 **C13 — Distribution.** Visibility: *Public*. Regions: *All regions*. If it
@@ -368,7 +369,7 @@ two on AMO's list — *Language Support*, if it is there, is the closest fit.
 
 <!-- paste: support-url -->
 ```text
-https://weft.study/support
+https://quiquae.github.io/weft/support
 ```
 
 Email: none exists yet (BLOCKED 4); leave it empty.
@@ -414,12 +415,12 @@ runs the Chrome package unchanged; there is no Edge build.
 **E3 — Availability.** Visibility: *Public*. Markets: all (the default).
 
 **E4 — Properties.** Category: *Education* if the list offers it, otherwise
-*Productivity*, the listing's second choice. Website: `https://weft.study`.
+*Productivity*, the listing's second choice. Website: `https://quiquae.github.io/weft`.
 Mature content: unticked. Support contact detail:
 
 <!-- paste: support-url -->
 ```text
-https://weft.study/support
+https://quiquae.github.io/weft/support
 ```
 
 **E5 — Privacy → Single purpose.**
@@ -488,7 +489,7 @@ none of the data types, then every certification.
 
 <!-- paste: privacy-url -->
 ```text
-https://weft.study/privacy
+https://quiquae.github.io/weft/privacy
 ```
 
 **E9 — Store listings → English → Edit details.** Extension name and short
@@ -601,7 +602,7 @@ Subtitle, 30 characters at most: **not drafted** — the short description is
 
 <!-- paste: privacy-url -->
 ```text
-https://weft.study/privacy
+https://quiquae.github.io/weft/privacy
 ```
 
 **S4 — Version information.** Description, 4 000 characters at most:
@@ -646,11 +647,11 @@ Open source: the code is MIT, the word lists CC BY-SA 4.0.
 </details>
 
 Keywords, 100 bytes, required: **not drafted**. Marketing URL:
-`https://weft.study`. Support URL (but see above):
+`https://quiquae.github.io/weft`. Support URL (but see above):
 
 <!-- paste: support-url -->
 ```text
-https://weft.study/support
+https://quiquae.github.io/weft/support
 ```
 
 Screenshots: `docs/store/apple-01-woven.png` … `apple-05-settings.png`
@@ -674,13 +675,11 @@ free. Then submit the build for review.
 
 Roughly in this order: 1 first, because every store waits on it; 5 last.
 
-1. **Register `weft.study`, and host the site on it.** NXDOMAIN at the
-   registry's own server on 2026-10-24 (`docs/SUBMIT-STATUS.md`). Then: make
-   the repository public
+1. **Publish the site on GitHub Pages.** Make the repository public
    (`gh repo edit quiquae/weft --visibility public --accept-visibility-change-consequences`),
    turn on Pages (Settings → Pages → Source: GitHub Actions) and run
    `gh variable set WEFT_PAGES --body true`. Done when this prints `200`:
-   `curl -sS -o /dev/null -w '%{http_code}\n' https://weft.study/privacy`.
+   `curl -sS -o /dev/null -w '%{http_code}\n' https://quiquae.github.io/weft/privacy`.
    *(TODO.md B1, B2, B3.)* Making the repository public is also what makes
    the description's "Open source. MIT licensed." true, and the support page's
    issue-tracker link stop returning 404.
@@ -711,5 +710,5 @@ Roughly in this order: 1 first, because every store waits on it; 5 last.
    account may post any of it, because coordinated self-promotion earns a
    domain-level shadowban, which would bury the site's 714 pages.
 
-**Next, 2 minutes:** type `weft.study` into any registrar's domain search and
-see whether it can be bought.
+**Next, 2 minutes:** open `https://quiquae.github.io/weft/privacy` logged out
+and check it loads.

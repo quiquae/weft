@@ -152,9 +152,8 @@ first edit.
 by figure, in `docs/SUBMIT-STATUS.md`.** It passes — `test:all`, `packs:verify`,
 `site:check`, `zip` and `validate` exit 0, and `artefacts:check` exits 1 on the
 release notes alone, which is B2a — and the submission is still blocked:
-`https://weft.study/privacy`, the privacy policy URL the store requires, does
-not resolve. `site:check` cannot see that, because it reads `dist/site`; see
-**B1**.
+the privacy policy URL the store requires has to be live, and `site:check`
+cannot see that, because it reads `dist/site`; see **B1**.
 
 **And as of 2026-10-24 `docs/READY-TO-SUBMIT.md` is the one page to work
 down at the store consoles** — for each of Chrome, Firefox, Edge and Safari
@@ -726,8 +725,8 @@ the code, as the runs of 2026-11-05 to -07 did. Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
 and `SERIF` in `tools/brand.ts`, and both stylesheets are held to them. The code is not
 otherwise what is holding the release up, and neither is the version any
-more. **Every remaining release item needs Creagh.** The critical path is **B1 — the domain `weft.study` is not
-registered**, and nothing below it can move until it is.
+more. The critical path is **B1 — publish the site on GitHub Pages**: no domain
+is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
@@ -8394,6 +8393,11 @@ Steps, all three now settled:
 the document sweep above that the release script does not do for you.
 Numbered B0 rather than renumbering B1–B6, whose names are referenced from
 Notes here and from the Journal in `CLAUDE.md`.*
+
+**B1 — superseded 2026-11-09: no domain.** The site is GitHub Pages at
+`https://quiquae.github.io/weft` (`SITE_URL` in `src/core/site.ts`); B1 is now
+making the repository public and turning Pages on. What follows is the old
+reasoning, kept for the record.
 
 **B1 — Register `weft.study`.** *Everything else waits on this.* `dig` returns
 NXDOMAIN from both 8.8.8.8 and 1.1.1.1 while the `.study` TLD itself resolves,

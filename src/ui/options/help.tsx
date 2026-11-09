@@ -2,7 +2,7 @@ import { useState } from 'preact/hooks';
 import { api } from '../../shared/browser.ts';
 import { send } from '../../shared/rpc.ts';
 import { buildDiagnostics } from '../../core/diagnostics.ts';
-import { SUPPORT_URL } from '../../core/pricing.ts';
+import { SUPPORT_URL } from '../../core/site.ts';
 import { SIGLA } from './sections.tsx';
 import { Notice, Row, Section } from '../components/pieces.tsx';
 

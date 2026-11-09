@@ -19,7 +19,7 @@
  * `tsc` will not let a test import a `.mjs` (TS7016), and this logic is worth
  * testing directly rather than only through a whole site build. Node strips
  * the types at run time, the same way `tools/build-site.mjs` already imports
- * `src/core/pricing.ts`.
+ * `src/core/site.ts`.
  */
 import { execFileSync } from 'node:child_process';
 

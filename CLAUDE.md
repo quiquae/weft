@@ -37,8 +37,10 @@ download button 404s is worse than no release. "Done" now means *released* —
 a Chrome Web Store listing that a stranger can install from. That is a
 submission Creagh performs by hand with her own developer account, so this
 repository's job is to be release-ready and to keep the remaining human steps
-written down. Every one of those steps now needs her: `TODO.md` is that list,
-headed by **B1**, registering `weft.study`. `docs/READY-TO-SUBMIT.md` is the
+written down. `TODO.md` is that list. There is no domain: since 2026-11-09
+the site is GitHub Pages at `https://quiquae.github.io/weft` (`SITE_URL` in
+`src/core/site.ts`), and every link the site builder writes carries that
+base path. `docs/READY-TO-SUBMIT.md` is the
 one page to work down at the four store consoles, every field's copy inline;
 `docs/SUBMIT.md` is the long-form runbook behind it, `docs/STORE-LISTING.md`
 holds every field's copy, and `docs/SUBMIT-STATUS.md` is the last full run of
@@ -72,7 +74,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
 | `npm run build:all` | chrome + firefox + safari | 998 KB unpacked for each of the three |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
-| `npm run site:check` | link-check the generated site | 714 pages, 16 118 links, all resolve; also fails if `/privacy`, `/support` or `/pricing` is missing from the build. It reads `dist/site` and never contacts `weft.study`, so it passes on a domain that does not resolve, which on 2026-10-24 this one did not (B1) |
+| `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
 | `npm run test:all` | typecheck, unit, jsdom, tools, compat, build:all, validate, e2e, then build:all and validate again | the gate before any release — but **not** `packs:verify`, `site:check` or `artefacts:check`, which have to be run separately |
 

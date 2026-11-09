@@ -124,21 +124,21 @@ describe('a page is dated by the content behind it', () => {
 
 describe('the sitemap leaves out what it cannot vouch for', () => {
   test('a URL with a known date carries it', () => {
-    const xml = sitemapXml([{ url: 'https://weft.study/privacy', priority: '0.5', lastmod: '2021-06-15' }]);
+    const xml = sitemapXml([{ url: 'https://quiquae.github.io/weft/privacy', priority: '0.5', lastmod: '2021-06-15' }]);
 
-    assert.match(xml, /<loc>https:\/\/weft\.study\/privacy<\/loc><lastmod>2021-06-15<\/lastmod>/);
+    assert.match(xml, /<loc>https:\/\/quiquae\.github\.io\/weft\/privacy<\/loc><lastmod>2021-06-15<\/lastmod>/);
   });
 
   test('a URL with no known date is written without a lastmod at all', () => {
-    const xml = sitemapXml([{ url: 'https://weft.study/privacy', priority: '0.5' }]);
+    const xml = sitemapXml([{ url: 'https://quiquae.github.io/weft/privacy', priority: '0.5' }]);
 
     assert.doesNotMatch(xml, /lastmod/, 'an unknown date became a claim');
     assert.doesNotMatch(xml, new RegExp(TODAY), 'an unknown date became today');
-    assert.match(xml, /<loc>https:\/\/weft\.study\/privacy<\/loc><priority>0\.5<\/priority>/);
+    assert.match(xml, /<loc>https:\/\/quiquae\.github\.io\/weft\/privacy<\/loc><priority>0\.5<\/priority>/);
   });
 
   test('the document is a well-formed urlset', () => {
-    const xml = sitemapXml([{ url: 'https://weft.study/', priority: '1.0', lastmod: '2020-01-01' }]);
+    const xml = sitemapXml([{ url: 'https://quiquae.github.io/weft/', priority: '1.0', lastmod: '2020-01-01' }]);
 
     assert.match(xml, /^<\?xml version="1\.0" encoding="UTF-8"\?>\n<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">\n/);
     assert.match(xml, /\n<\/urlset>\n$/);

@@ -141,7 +141,7 @@ want to know.
 > Glosses are checked against Lewis & Short and Whitaker's Words. Pronunciation
 > is generated from the orthography — Classical reconstruction, *v* as /w/, *c*
 > always hard — and I would be glad of corrections on any of it. The full list
-> is here: <https://weft.study/latin-words-in-everyday-english>.
+> is here: <https://quiquae.github.io/weft/latin-words-in-everyday-english>.
 >
 > Nouns are woven in the nominative, singular or plural to match the English,
 > which is deliberate: English marks case by word order, so "the **rēx** was

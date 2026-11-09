@@ -348,7 +348,7 @@ export function artefactsFor(version: string): Artefact[] {
     },
     {
       name: 'social card',
-      // The Open Graph card, which is what a link to weft.study renders as
+      // The Open Graph card, which is what a link to the site renders as
       // in every chat window and timeline that unfurls it — so it is read
       // by more people than any screenshot here, and it was in no group.
       //

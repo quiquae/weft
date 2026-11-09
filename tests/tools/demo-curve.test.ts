@@ -80,7 +80,7 @@ before(() => {
   candidates = candidateCount(html);
   assert.ok(candidates > 10, `the demo passage has only ${candidates} candidates`);
 
-  dom = new JSDOM(html, { runScripts: 'dangerously', url: 'https://weft.study/' });
+  dom = new JSDOM(html, { runScripts: 'dangerously', url: 'https://quiquae.github.io/weft/' });
   slider = dom.window.document.getElementById('minutes') as HTMLInputElement;
   readout = dom.window.document.getElementById('readout') as HTMLElement;
   assert.ok(slider && readout, 'the demo slider or its readout is missing from the page');

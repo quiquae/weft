@@ -219,7 +219,7 @@ read "English X comes straight from Y" stops being read.
 ## Install
 
 Not in the stores yet — [docs/SUBMIT.md](docs/SUBMIT.md) is the runbook for
-getting it there, and [the install page](https://weft.study/install) walks a
+getting it there, and [the install page](https://quiquae.github.io/weft/install) walks a
 reader through loading it by hand. From source:
 
 ```sh
