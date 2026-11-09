@@ -159,6 +159,24 @@ describe('buildDiscoveries', () => {
     assert.match(starve.text, /simply meant to die/);
   });
 
+  test('a false friend English still spells as it was is not said to have become itself', () => {
+    // "spell became English spell" was the tautology the unchanged kind was
+    // written to avoid, and "grēat became English great" the same word but
+    // for a length mark. Compared as the feed compares them, without marks.
+    const alike = new Map<string, LexEntry>([
+      ['spell', entry({ src: 'story', lemma: 'story', tgt: 'spell', tgtLemma: 'spell', etymonOf: 'spell', note: 'it meant a story' })],
+      ['grēat', entry({ src: 'thick', lemma: 'thick', pos: 'adj', tgt: 'grēat', tgtLemma: 'grēat', etymonOf: 'great', note: '“grēat” meant thick or massive' })],
+      ['camera', entry({ src: 'room', lemma: 'room', tgt: 'camera', tgtLemma: 'camera', etymonOf: 'camera', note: 'it meant a vault' })],
+    ]);
+    const cards = [...alike.keys()].map((lemma, i) => card({ lemma, target: 'ang', exposures: 1, firstSeen: NOW - i }));
+    const text = (found: ReturnType<typeof buildDiscoveries>, word: string) => found.find((d) => d.target === word)?.text;
+    const inherited = buildDiscoveries({ cards, entriesByLemma: alike, historical: true, ancestorOfEnglish: true });
+    assert.equal(text(inherited, 'spell'), 'spell is still English spell, but it meant a story.');
+    assert.equal(text(inherited, 'grēat'), 'grēat is still English great, but “grēat” meant thick or massive.');
+    const borrowed = buildDiscoveries({ cards, entriesByLemma: alike, historical: true, ancestorOfEnglish: false });
+    assert.equal(text(borrowed, 'camera'), 'English took camera as it was, but it meant a vault.');
+  });
+
   test('classifies a literal gloss as literal', () => {
     const found = buildDiscoveries({ cards: met, entriesByLemma: entries, historical: true, ancestorOfEnglish: true });
     const lord = found.find((d) => d.target === 'hlāford');

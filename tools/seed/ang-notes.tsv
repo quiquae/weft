@@ -53,7 +53,7 @@ woman	noun	wīfmann	literally “woman-person”	bt:35615 wikt:ang:wifmann etym:
 friend	noun	frēond	from “frēon”, to love	wikt:ang:freond wikt:ang:freon etym:friend
 wife	noun	wīf	“wīf” meant woman generally, and was neuter	wikt:ang:wif etym:wife
 husband	noun	hūsbonda	the householder, not yet the spouse	wikt:ang:husbonda etym:husband
-queen	noun	cwēn	originally simply “woman, wife”	wikt:ang:cwen etym:queen wikt:en:queen
+queen	noun	cwēn	“cwēn” originally meant simply “woman, wife”	wikt:ang:cwen etym:queen wikt:en:queen
 lord	noun	hlāford	“hlāf-weard”, the loaf-keeper	wikt:ang:hlaford etym:lord
 neighbour	noun	nēahġebūr	the near-dweller	wikt:ang:neahgebur etym:neighbor
 enemy	noun	fēond	“fēond” was any enemy before it meant a demon	wikt:ang:feond etym:fiend
@@ -64,7 +64,7 @@ lion	noun	lēo	borrowed straight from Latin; “lion” came later, from French	
 snake	noun	nǣdre	“a nadder” was misheard as “an adder”	wikt:ang:nædre etym:adder
 worm	noun	wyrm	also meant serpent and dragon	wikt:ang:wyrm etym:worm
 food	noun	mete	“mete” meant food of any kind	wikt:ang:mete etym:meat
-bread	noun	hlāf	“brēad” meant a morsel	wikt:ang:hlaf etym:bread
+bread	noun	hlāf	“hlāf” meant bread; “bread” comes from “brēad”, a morsel	wikt:ang:hlaf etym:bread
 apple	noun	æppel	any fruit, not only the apple	wikt:ang:æppel etym:apple
 egg	noun	ǣġ	it became Middle English “ey”, which Norse “egg” displaced	wikt:ang:æg etym:egg
 home	noun	hām	survives in many English place-names in -ham	wikt:ang:ham etym:home wikt:en:-ham
@@ -101,11 +101,11 @@ great	adj	grēat	“grēat” meant thick or massive	wikt:ang:great etym:great w
 weak	adj	wāc	“weak” came from its Norse cousin, “veikr”	wikt:ang:wac etym:weak wikt:en:weak
 false	adj	lēas	the suffix in “hopeless” is this word	wikt:ang:leas etym:-less wikt:en:-less
 rich	adj	rīċe²	it meant powerful before it meant wealthy	wikt:ang:rice etym:rich wikt:en:rich
-sad	adj	unrōt	“sad” is another word, “sæd”, which meant sated, full	wikt:ang:unrot etym:sad wikt:en:sad
+sad	adj	unrōt	“sad” comes from another word, “sæd”, sated or full	wikt:ang:unrot etym:sad wikt:en:sad
 holy	adj	hāliġ	it shares a root with “hāl”, whole	wikt:ang:halig wikt:ang:hal etym:holy
 alive	adj	cwic	“cwic” meant alive, as in “the quick and the dead”	wikt:ang:cwic etym:quick wikt:en:quick
 whole	adj	hāl	also “hale”; and “hǣlan”, to make whole, became “heal”	wikt:ang:hal wikt:ang:hælan etym:whole etym:hale etym:heal
-black	adj	blæc	“blāc”, with a long vowel, meant pale; “bleak” is its Norse cousin	wikt:ang:blæc wikt:ang:blac etym:black etym:bleak
+black	adj	blæc	not to be mistaken for “blāc”, with a long vowel, the word for pale; “bleak” is its Norse cousin	wikt:ang:blæc wikt:ang:blac etym:black etym:bleak
 know	verb	witan	“to wit”, “unwittingly”	wikt:ang:witan wikt:en:wit wikt:en:to_wit etym:unwitting
 take	verb	niman	“numb” was its past participle, taken or seized; “take” itself is Norse	wikt:ang:niman etym:numb etym:take
 tell	verb	tellan	it meant to count, as in “bank teller”	wikt:ang:tellan etym:tell etym:teller
@@ -115,7 +115,7 @@ read	verb	rǣdan	it meant to advise, as in “Ethelred the Unready”	wikt:ang:r
 write	verb	wrītan	it meant to scratch or incise	wikt:ang:writan etym:write
 die	verb	steorfan	“steorfan” simply meant to die	wikt:ang:steorfan etym:starve
 sell	verb	sellan	“sellan” meant to give	wikt:ang:sellan etym:sell
-pay	verb	ġieldan	“ġieldan” meant to pay or repay, and became “yield”	wikt:ang:gieldan bt:16997 etym:yield
+pay	verb	ġieldan	“ġieldan” meant to pay or repay	wikt:ang:gieldan bt:16997 etym:yield
 close	verb	clȳsan	“close” is partly this word and partly Old French “clos”	wikt:ang:clysan wikt:en:close etym:close
 teach	verb	tǣċan	related to “tācn”, a token or sign	wikt:ang:tæcan etym:teach etym:token
 win	verb	winnan	“winnan” meant to struggle or toil	wikt:ang:winnan etym:win
@@ -183,3 +183,24 @@ sorry	intj	mē hrēoweþ	literally “it rues me”, mē being the one who regre
 #                    etym:quick: Old English cwic "living, alive, animate", the speed sense
 #                    "developed by c. 1300", and wikt:en:quick, "the quick and the dead".
 #                    swift keeps no note: a note is about the word it is printed under.
+#
+# Rewritten on 2026-11-09, the false-friend lines read whole
+# ----------------------------------------------------------
+#   pay     ġieldan  "“ġieldan” meant to pay or repay, and became “yield”"
+#                    The feed printed "ġieldan became English yield, but … became “yield”",
+#                    and the word page "the Old English word that became yield — … and
+#                    became “yield”": the clause repeated the sentence it is joined to.
+#   queen   cwēn     "originally simply “woman, wife”"
+#                    No verb: "cwēn became English queen, but originally simply …". The
+#                    claim is unchanged, wikt:ang:cwen and etym:queen.
+#   bread   hlāf     "“brēad” meant a morsel"
+#   black   blæc     "“blāc”, with a long vowel, meant pale; “bleak” is its Norse cousin"
+#   sad     unrōt    "“sad” is another word, “sæd”, which meant sated, full"
+#                    Each "meant" was another word's, so the feed marked a word whose own
+#                    meaning never moved as a false friend and contrasted it with a
+#                    stranger: "blæc became English black, but “blāc” … meant pale". hlāf's
+#                    says what hlāf meant now, bread, the gloss's own word (ang-glosses.tsv),
+#                    and keeps brēad's morsel, etym:bread; blæc's and unrōt's say the same
+#                    facts without "meant", so the feed tells blæc as a descent and unrōt
+#                    as a note. tests/tools/feed-frames.test.ts holds a false friend's
+#                    "meant" to its own word.
