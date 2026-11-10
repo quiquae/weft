@@ -17,7 +17,8 @@ and — for Latin and Old English — the English word it became. Seven language
 ship with a lexicon: French, Spanish, German, Italian, Portuguese, Latin, Old
 English (356 checked English lemmas each, and in the five modern packs about
 2,200 more drafted from English Wiktionary, `status` proposed, which the tooltip
-labels "Wiktionary, unreviewed"; `tools/seed/wiktionary/`). It
+labels "Wiktionary, unreviewed", and in Latin 82 drafted from the DCC core list,
+labelled "Lewis & Short, unreviewed"; `tools/seed/wiktionary/`). It
 is for someone who wants the browsing time they were going to lose anyway to
 buy them vocabulary. There is no account, no server and no telemetry; it works
 offline, and it installs with **no** host permissions until the user names
@@ -65,12 +66,12 @@ The commands that matter, with what each actually produced on 2026-09-27:
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **686 pass**, 159 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
-| `npm run test:dom` | jsdom tests | **139 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **645 pass**, 170 suites, ~8 s here |
+| `npm run test:dom` | jsdom tests | **140 pass**, 29 suites, ~9 s wall clock here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **646 pass**, 170 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4204 KB unpacked for each of the three, 3.8 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4232 KB unpacked for each of the three, 3.8 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -680,6 +681,15 @@ false friend whose "meant" has another word quoted as its subject, a line
 saying a word became itself — "spell is still English spell" has a frame of
 its own — and a note repeating the descent the frame has just told.
 
+**A drafted row is woven and labelled, and gets no page.** A row a machine
+drafted, `status` proposed, is woven with a tooltip row naming its source —
+`draftedFrom` in `src/core/languages.ts`, Lewis & Short for Latin, English
+Wiktionary otherwise — and `tools/build-site.mjs` builds no page, index row or
+list entry from it, a page being published copy. Since 2026-11-10, when the
+first Latin drafts would otherwise have taken 82 pages unread.
+`tests/tools/build-site.test.ts` fails on a page built from a drafted row, and
+`tests/dom/tooltip.test.ts` on a Latin draft labelled Wiktionary's.
+
 **Code is MIT; the lexicons are CC BY-SA 4.0**, because they derive from
 Wiktionary-adjacent and SUBTLEX-derived sources with share-alike terms.
 Attribution travels inside every generated pack (`docs/THIRD-PARTY.md`),
@@ -1105,6 +1115,76 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-10 — Latin's first 82 drafts, from the DCC core list
+
+`TODO.md`'s top item in `Now`, "grow Latin and Old English the way the modern
+packs grew", split: this is Latin's first slice, and the rest is the new top
+item. `draft.py` cannot do Latin, a Latin gloss quoting Lewis & Short and a
+noun's gender citing it, so `tools/seed/wiktionary/draft_la.py` drafts a row
+only where three sources agree: the DCC Latin Core Vocabulary's definition
+names an English word `english-core.tsv` carries and the pack lacks; an
+italic run of the Lewis & Short entry holds it and the entry's first `<gen>`
+outside a parenthesis is DCC's gender; and one English Wiktionary entry
+spells the headword as DCC does, macrons and all, and gives the woven form.
+**82 drafted**: 36 verbs, 32 nouns, 7 adjectives, 7 adverbs. All 82 read,
+none wrong; *crīmen* "verdict", *praecipere* "anticipate", *prōdere*
+"publish", *sēnsus* "emotion" and *quīn* "indeed" are where DCC's own
+definition leads, and stand, labelled.
+
+**The transcription check had to compare what the stress test compares.**
+kaikki.org's dump carries only Wiktionary's phonetic Classical
+transcription, `[ˈfaː.tʊ̃ː]`, and the pack writes the phonemic `/ˈfaːtʊm/`,
+so an exact comparison drafted nothing. `skeleton()` compares the
+syllables' vowels, their lengths and the stressed one, a nasal vowel's
+length left out, which is what keeps out a hidden quantity and a consonant
+*i* the spelling cannot show. A macron dispute is a duplicate card: DCC's
+*narrō*, "relate", beside the pack's *nārrāre*, "tell", would have been two
+cards for one word, so headwords are compared with their marks dropped.
+
+**Two things every draft passes through changed.** The tooltip printed
+"Wiktionary, unreviewed" for any drafted row, and a Latin draft's gloss and
+gender are Lewis & Short's: `draftedFrom` in `src/core/languages.ts` names
+it, "Lewis & Short, unreviewed". And `tools/build-site.mjs` would have given
+each draft a word page unread; it builds pages, lists and hubs from read
+rows only, so the site is still 713 pages and 15 392 links. Both guards were
+shown red with their fix reverted, restored by md5 — the site probe twice,
+its first `sed` having matched nothing, which `grep` after it showed.
+
+**Regenerating found a staleness the 1.1.0 release left.** `options.png`
+and `07-help.png` said "Weft 1.0.1": the release moved `VERSION` in
+`manifest.config.mjs`, which both pages print, and no screenshot group read
+that file, so `artefacts:check` called them fresh. Redrawn, 255 and 258
+pixels in the version line, and the three Chromium-drawn groups now list
+`manifest.config.mjs` as an input. All 31 shots were rewritten; the store
+set came back byte-identical and is stamped.
+
+Measured on Node 26.7 under a load average of about 70 from other apps,
+with npm's own exit status captured, on the commit holding the code, the
+rows and the stamp: `npm run test:all` **exit 0** — typecheck clean, 686
+unit / 159, **140 jsdom / 29**, **646 tools / 170**, compat 17 dependencies
+× 3 browsers, 44 pass / 7 degrade, and 97 manifest keys, 87 pass / 3
+degrade / 7 untracked, 0 fail / 0 without data, **4232 KB × 3** passing
+`validate`, 28 KB over 1.1.0's, the Latin pack's 112 249 → 140 964 bytes,
+**47 e2e passed and 3 skipped in 9.0 min**, then build and validate again.
+Separately `packs:verify` **0 errors / 5 warnings**, Latin at 729 entries
+across 724 surface forms; `npm run site` then `site:check` **713 pages /
+15 392 links**, all resolving; and `artefacts:check` **8 groups, 1
+stale**, the release notes for 1.1.0, whose input is every commit. Jsdom
+139 → **140**, tools 645 → **646**, total 1517 → **1519**, in five places,
+`docs/LAUNCH.md:218` first, the 1.1.0 changelog entry keeping 1.1.0's 1517;
+and a `CHANGELOG.md` paragraph under a new Unreleased heading, because the
+pack ships.
+
+Assumed, with nobody to ask: that "stay cheap" allowed this slice, the item
+sitting at the top of `Now`, where the repeating queue job reads, and the
+data costing 190 MB of downloads; that a drafted row should get no site page
+until read, the site being published copy; and that DCC's selection, not its
+text, is all that reaches a pack, so it is credited in
+`docs/THIRD-PARTY.md` and not in the pack's attribution, which the test
+derives from the ledgers' citations.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-09 — the five modern packs grow from Wiktionary, 14% → 32–33%
 

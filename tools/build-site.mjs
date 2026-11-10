@@ -1108,12 +1108,19 @@ async function main() {
     const lang = file.slice(3, -5);
     const pack = JSON.parse(await readFile(join(PACKS, file), 'utf8'));
     packDate[lang] = pack.meta?.builtAt ?? null;
+    // A page is published copy, so it is built from the rows a person has
+    // read: a drafted row is woven, labelled, and given no page until then.
+    const checked = Object.fromEntries(
+      Object.entries(pack.entries)
+        .map(([src, list]) => [src, list.filter((e) => !e.drafted)])
+        .filter(([, list]) => list.length),
+    );
     // One entry per headword: the packs carry a row per surface form and per
     // English gloss. The lookup the extension reads cards back with, so a
     // page and the dashboard cannot disagree about which row a word is.
-    const seen = entriesByTarget(pack.entries);
+    const seen = entriesByTarget(checked);
     // Attach the plural where the pack has one.
-    for (const list of Object.values(pack.entries)) {
+    for (const list of Object.values(checked)) {
       for (const e of list) {
         if (e.num !== 'pl') continue;
         const head = seen.get(e.tgtLemma);

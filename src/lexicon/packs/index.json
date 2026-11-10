@@ -1,7 +1,7 @@
 {
   "format": 1,
   "version": "2026.09.1",
-  "builtAt": "2026-11-09",
+  "builtAt": "2026-11-10",
   "packs": [
     {
       "source": "en",
@@ -72,8 +72,8 @@
       "source": "en",
       "target": "la",
       "file": "en-la.json",
-      "entryCount": 581,
-      "lemmaCount": 356,
+      "entryCount": 729,
+      "lemmaCount": 438,
       "bands": [
         1,
         2,

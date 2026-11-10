@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+Not cut yet: `VERSION` is still 1.1.0.
+
+**Latin grows by 82 words.** Words from the Dickinson College Commentaries'
+Latin core list, the thousand most frequent in Latin, are drafted for
+English words the Latin pack did not yet teach — *victōria* for victory,
+*amīcitia* for friendship, *dēfendere* for defend — where Lewis & Short and
+English Wiktionary agree on the gloss, the gender and the woven form. They
+say "Lewis & Short, unreviewed" in the tooltip until a person has read them,
+and the site gives a word a page only once it has been read.
+
 ## 1.1.0
 
 Released 2026-11-09, the first release since 1.0.0 and the one the stores
