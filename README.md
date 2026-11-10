@@ -117,7 +117,7 @@ impossible on day one.
 | | |
 |---|---|
 | **Languages** | French, Spanish, German, Italian, Portuguese, Latin, Old English |
-| **Lexicon** | French, Spanish, German, Italian and Portuguese: about 2,550 English lemmas each, 356 checked and the rest drafted from English Wiktionary and labelled so. Latin: 356 checked and 785 drafted from the DCC core list and English Wiktionary's translation tables, each read against Lewis & Short, labelled so. Old English: 356 checked. 4.0 MB for all seven |
+| **Lexicon** | French, Spanish, German, Italian and Portuguese: about 2,550 English lemmas each, 356 checked and the rest drafted from English Wiktionary and labelled so. Latin: 356 checked and 785 drafted from the DCC core list and English Wiktionary's translation tables, each read against Lewis & Short, labelled so. Old English: 356 checked and 100 drafted from English Wiktionary's translation tables, labelled so. 4.1 MB for all seven |
 | **Network** | None. No account, no telemetry, no server. Works offline. |
 | **Optional** | Bring-your-own-key DeepL, Google or any OpenAI-compatible endpoint, for words beyond the packs |
 | **Install warning** | None of the scary ones — Weft asks for no site access until you name the sites |
