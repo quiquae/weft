@@ -406,3 +406,86 @@ hello	intj	salvē			/ˈsalweː/		literally “be well”
 goodbye	intj	valē			/ˈwaleː/	valediction	literally “be strong”	
 please	intj	quaesō			/ˈkʷae̯soː/			
 sorry	intj	ignōsce			/ɪɡˈnoːskɛ/			
+# ---- drafted from the DCC Latin Core Vocabulary, Lewis & Short and English Wiktionary (kaikki.org dump of 2026-11-10), status=proposed: woven, labelled, not yet read by a person ----
+believe	verb	crēdere	crēdēns		/ˈkreːdɛrɛ/			/ˈkreːdeːns/	dcc	proposed
+receive	verb	accipere	accipiēns		/akˈkɪpɛrɛ/			/akˈkɪpɪeːns/	dcc	proposed
+kingdom	noun	rēgnum	rēgna	n	/ˈreːɡnʊm/			/ˈreːɡna/	dcc	proposed
+owe	verb	dēbēre	dēbēns		/deːˈbeːrɛ/			/ˈdeːbeːns/	dcc	proposed
+fate	noun	fātum	fāta	n	/ˈfaːtʊm/			/ˈfaːta/	dcc	proposed
+flee	verb	fugere	fugiēns		/ˈfʊɡɛrɛ/			/ˈfʊɡɪeːns/	dcc	proposed
+clan	noun	gēns	gentēs	f	/ˈɡeːns/			/ˈɡɛnteːs/	dcc	proposed
+huge	adj	ingēns			/ˈɪŋɡeːns/				dcc	proposed
+missile	noun	tēlum	tēla	n	/ˈteːlʊm/			/ˈteːla/	dcc	proposed
+danger	noun	perīculum	perīcula	n	/pɛˈriːkʊlʊm/			/pɛˈriːkʊla/	dcc	proposed
+dare	verb	audēre	audēns		/au̯ˈdeːrɛ/			/ˈau̯deːns/	dcc	proposed
+rumor	noun	fāma	fāmae	f	/ˈfaːma/			/ˈfaːmae̯/	dcc	proposed
+deny	verb	negāre	negāns		/nɛˈɡaːrɛ/			/ˈnɛɡaːns/	dcc	proposed
+abundance	noun	cōpia	cōpiae	f	/ˈkoːpɪa/			/ˈkoːpɪae̯/	dcc	proposed
+citizenship	noun	cīvitās	cīvitātēs	f	/ˈkiːwɪtaːs/			/kiːwɪˈtaːteːs/	dcc	proposed
+fame	noun	glōria	glōriae	f	/ˈɡloːrɪa/			/ˈɡloːrɪae̯/	dcc	proposed
+enjoyment	noun	voluptās	voluptātēs	f	/wɔˈlʊptaːs/			/wɔlʊpˈtaːteːs/	dcc	proposed
+distinguished	adj	clārus			/ˈklaːrʊs/				dcc	proposed
+select	verb	optāre	optāns		/ɔpˈtaːrɛ/			/ˈɔptaːns/	dcc	proposed
+maiden	noun	virgō	virginēs	f	/ˈwɪrɡoː/			/ˈwɪrɡɪneːs/	dcc	proposed
+shape	noun	fōrma	fōrmae	f	/ˈfoːrma/			/ˈfoːrmae̯/	dcc	proposed
+experience	noun	ūsus	ūsūs	m	/ˈuːsʊs/			/ˈuːsuːs/	dcc	proposed
+indeed	adv	quīn			/ˈkʷiːn/				dcc	proposed
+occupy	verb	occupāre	occupāns		/ɔkːʊˈpaːrɛ/			/ˈɔkːʊpaːns/	dcc	proposed
+verdict	noun	crīmen	crīmina	n	/ˈkriːmɛn/			/ˈkriːmɪna/	dcc	proposed
+freedom	noun	lībertās	lībertātēs	f	/liːˈbɛrtaːs/			/liːbɛrˈtaːteːs/	dcc	proposed
+public	adj	pūblicus			/ˈpuːblɪkʊs/				dcc	proposed
+formerly	adv	ōlim			/ˈoːlɪm/				dcc	proposed
+conversation	noun	sermō	sermōnēs	m	/ˈsɛrmoː/			/sɛrˈmoːneːs/	dcc	proposed
+region	noun	regiō	regiōnēs	f	/ˈrɛɡɪoː/			/rɛɡɪˈoːneːs/	dcc	proposed
+unpleasant	adj	ingrātus			/ɪŋˈɡraːtʊs/				dcc	proposed
+ancient	adj	antīquus			/anˈtiːkʷʊs/				dcc	proposed
+cease	verb	dēsinere	dēsinēns		/deːˈsɪnɛrɛ/			/ˈdeːsɪneːns/	dcc	proposed
+defend	verb	dēfendere	dēfendēns		/deːˈfɛndɛrɛ/			/deːˈfɛndeːns/	dcc	proposed
+overcome	verb	superāre	superāns		/sʊpɛˈraːrɛ/			/ˈsʊpɛraːns/	dcc	proposed
+determine	verb	statuere	statuēns		/staˈtʊɛrɛ/			/ˈstatʊeːns/	dcc	proposed
+besides	adv	praetereā			/prae̯ˈtɛrɛaː/				dcc	proposed
+friendship	noun	amīcitia	amīcitiae	f	/amiːˈkɪtɪa/			/amiːˈkɪtɪae̯/	dcc	proposed
+fountain	noun	fōns	fontēs	m	/ˈfoːns/			/ˈfɔnteːs/	dcc	proposed
+warn	verb	monēre	monēns		/mɔˈneːrɛ/			/ˈmɔneːns/	dcc	proposed
+commander	noun	imperātor	imperātōrēs	m	/ɪmpɛˈraːtɔr/			/ɪmpɛraːˈtoːreːs/	dcc	proposed
+speech	noun	ōrātiō	ōrātiōnēs	f	/oːˈraːtɪoː/			/oːraːtɪˈoːneːs/	dcc	proposed
+decision	noun	iūdicium	iūdicia	n	/juːˈdɪkɪʊm/			/juːˈdɪkɪa/	dcc	proposed
+victory	noun	victōria	victōriae	f	/wɪkˈtoːrɪa/			/wɪkˈtoːrɪae̯/	dcc	proposed
+condemn	verb	damnāre	damnāns		/damˈnaːrɛ/			/ˈdamnaːns/	dcc	proposed
+image	noun	imāgō	imāginēs	f	/ɪˈmaːɡoː/			/ɪˈmaːɡɪneːs/	dcc	proposed
+pray	verb	ōrāre	ōrāns		/oːˈraːrɛ/			/ˈoːraːns/	dcc	proposed
+consult	verb	cōnsulere	cōnsulēns		/koːnˈsʊlɛrɛ/			/ˈkoːnsʊleːns/	dcc	proposed
+passion	noun	libīdō	libīdinēs	f	/lɪˈbiːdoː/			/lɪˈbiːdɪneːs/	dcc	proposed
+approve	verb	probāre	probāns		/prɔˈbaːrɛ/			/ˈprɔbaːns/	dcc	proposed
+emotion	noun	sēnsus		m	/ˈseːnsʊs/				dcc	proposed
+finally	adv	dēnique			/ˈdeːnɪkʷɛ/				dcc	proposed
+decide	verb	dēcernere	dēcernēns		/deːˈkɛrnɛrɛ/			/deːˈkɛrneːns/	dcc	proposed
+contain	verb	continēre	continēns		/kɔntɪˈneːrɛ/			/ˈkɔntɪneːns/	dcc	proposed
+tribune	noun	tribūnus	tribūnī	m	/trɪˈbuːnʊs/			/trɪˈbuːniː/	dcc	proposed
+recall	verb	revocāre	revocāns		/rɛwɔˈkaːrɛ/			/ˈrɛwɔkaːns/	dcc	proposed
+surround	verb	cingere	cingēns		/ˈkɪŋɡɛrɛ/			/ˈkɪŋɡeːns/	dcc	proposed
+continue	verb	pergere	pergēns		/ˈpɛrɡɛrɛ/			/ˈpɛrɡeːns/	dcc	proposed
+obey	verb	pārēre	pārēns		/paːˈreːrɛ/			/ˈpaːreːns/	dcc	proposed
+useful	adj	ūtilis			/ˈuːtɪlɪs/				dcc	proposed
+deserve	verb	merēre	merēns		/mɛˈreːrɛ/			/ˈmɛreːns/	dcc	proposed
+desire	noun	voluntās	voluntātēs	f	/wɔˈlʊntaːs/			/wɔlʊnˈtaːteːs/	dcc	proposed
+confuse	verb	turbāre	turbāns		/tʊrˈbaːrɛ/			/ˈtʊrbaːns/	dcc	proposed
+consume	verb	cōnsūmere	cōnsūmēns		/koːnˈsuːmɛrɛ/			/koːnˈsuːmeːns/	dcc	proposed
+avoid	verb	vītāre	vītāns		/wiːˈtaːrɛ/			/ˈwiːtaːns/	dcc	proposed
+certainly	adv	scīlicet			/ˈskiːlɪkɛt/				dcc	proposed
+accomplish	verb	cōnficere	cōnficiēns		/koːnˈfɪkɛrɛ/			/koːnˈfɪkɪeːns/	dcc	proposed
+necessity	noun	necessitās	necessitātēs	f	/nɛˈkɛsːɪtaːs/			/nɛkɛsːɪˈtaːteːs/	dcc	proposed
+poet	noun	poēta	poētae	m	/pɔˈeːta/			/pɔˈeːtae̯/	dcc	proposed
+publish	verb	prōdere	prōdēns		/ˈproːdɛrɛ/			/ˈproːdeːns/	dcc	proposed
+propose	verb	prōpōnere	prōpōnēns		/proːˈpoːnɛrɛ/			/proːˈpoːneːns/	dcc	proposed
+undertake	verb	īnstituere	īnstituēns		/iːnstɪˈtʊɛrɛ/			/iːnsˈtɪtʊeːns/	dcc	proposed
+grain	noun	frūmentum	frūmenta	n	/fruːˈmɛntʊm/			/fruːˈmɛnta/	dcc	proposed
+anticipate	verb	praecipere	praecipiēns		/prae̯ˈkɪpɛrɛ/			/prae̯ˈkɪpɪeːns/	dcc	proposed
+mortal	adj	mortālis			/mɔrˈtaːlɪs/				dcc	proposed
+affect	verb	afficere	afficiēns		/afˈfɪkɛrɛ/			/afˈfɪkɪeːns/	dcc	proposed
+afterwards	adv	posteā			/ˈpɔstɛaː/				dcc	proposed
+create	verb	creāre	creāns		/krɛˈaːrɛ/			/ˈkrɛaːns/	dcc	proposed
+instruction	noun	disciplīna	disciplīnae	f	/dɪskɪˈpliːna/			/dɪskɪˈpliːnae̯/	dcc	proposed
+weigh	verb	pendere	pendēns		/ˈpɛndɛrɛ/			/ˈpɛndeːns/	dcc	proposed
+commonly	adv	vulgō			/ˈwʊlɡoː/				dcc	proposed
+declare	verb	ēdīcere	ēdīcēns		/eːˈdiːkɛrɛ/			/eːˈdiːkeːns/	dcc	proposed
