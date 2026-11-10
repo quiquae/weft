@@ -420,7 +420,7 @@ danger	noun	perīculum	perīcula	n	/pɛˈriːkʊlʊm/			/pɛˈriːkʊla/	dcc	pro
 dare	verb	audēre	audēns		/au̯ˈdeːrɛ/			/ˈau̯deːns/	dcc	proposed
 rumor	noun	fāma	fāmae	f	/ˈfaːma/			/ˈfaːmae̯/	dcc	proposed
 deny	verb	negāre	negāns		/nɛˈɡaːrɛ/			/ˈnɛɡaːns/	dcc	proposed
-abundance	noun	cōpia	cōpiae	f	/ˈkoːpɪa/			/ˈkoːpɪae̯/	dcc	proposed
+abundance	noun	cōpia		f	/ˈkoːpɪa/				dcc	proposed
 citizenship	noun	cīvitās	cīvitātēs	f	/ˈkiːwɪtaːs/			/kiːwɪˈtaːteːs/	dcc	proposed
 fame	noun	glōria	glōriae	f	/ˈɡloːrɪa/			/ˈɡloːrɪae̯/	dcc	proposed
 enjoyment	noun	voluptās	voluptātēs	f	/wɔˈlʊptaːs/			/wɔlʊpˈtaːteːs/	dcc	proposed
@@ -489,3 +489,707 @@ instruction	noun	disciplīna	disciplīnae	f	/dɪskɪˈpliːna/			/dɪskɪˈpliː
 weigh	verb	pendere	pendēns		/ˈpɛndɛrɛ/			/ˈpɛndeːns/	dcc	proposed
 commonly	adv	vulgō			/ˈwʊlɡoː/				dcc	proposed
 declare	verb	ēdīcere	ēdīcēns		/eːˈdiːkɛrɛ/			/eːˈdiːkeːns/	dcc	proposed
+upper	adj	superus			/ˈsʊpɛrʊs/				dcc	proposed
+crime	noun	scelus	scelera	n	/ˈskɛlʊs/			/ˈskɛlɛra/	dcc	proposed
+origin	noun	genus	genera	n	/ˈɡɛnʊs/			/ˈɡɛnɛra/	dcc	proposed
+kindness	noun	beneficium	beneficia	n	/bɛnɛˈfɪkɪʊm/			/bɛnɛˈfɪkɪa/	dcc	proposed
+manner	noun	modus	modī	m	/ˈmɔdʊs/			/ˈmɔdiː/	dcc	proposed
+expression	noun	vultus	vultūs	m	/ˈwʊltʊs/			/ˈwʊltuːs/	dcc	proposed
+fierce	adj	ferus			/ˈfɛrʊs/				dcc	proposed
+penalty	noun	poena	poenae	f	/ˈpoe̯na/			/ˈpoe̯nae̯/	dcc	proposed
+sure	adj	certus			/ˈkɛrtʊs/				dcc	proposed
+flame	noun	flamma	flammae	f	/ˈflamːa/			/ˈflamːae̯/	dcc	proposed
+breeze	noun	aura	aurae	f	/ˈau̯ra/			/ˈau̯rae̯/	dcc	proposed
+space	noun	spatium	spatia	n	/ˈspatɪʊm/			/ˈspatɪa/	dcc	proposed
+grove	noun	nemus	nemora	n	/ˈnɛmʊs/			/ˈnɛmɔra/	dcc	proposed
+fury	noun	furor	furōrēs	m	/ˈfʊrɔr/			/fʊˈroːreːs/	dcc	proposed
+limb	noun	membrum	membra	n	/ˈmɛmbrʊm/			/ˈmɛmbra/	dcc	proposed
+slave	noun	servus	servī	m	/ˈsɛrwʊs/			/ˈsɛrwiː/	dcc	proposed
+excessive	adj	nimius			/ˈnɪmɪʊs/				dcc	proposed
+torch	noun	fax	facēs	f	/ˈfaks/			/ˈfakeːs/	dcc	proposed
+example	noun	exemplum	exempla	n	/ɛkˈsɛmplʊm/			/ɛkˈsɛmpla/	dcc	proposed
+hatred	noun	odium	odia	n	/ˈɔdɪʊm/			/ˈɔdɪa/	dcc	proposed
+assistance	noun	auxilium		n	/au̯kˈsɪlɪʊm/				dcc	proposed
+prey	noun	praeda	praedae	f	/ˈprae̯da/			/ˈprae̯dae̯/	dcc	proposed
+memory	noun	memoria	memoriae	f	/mɛˈmɔrɪa/			/mɛˈmɔrɪae̯/	dcc	proposed
+weight	noun	pondus	pondera	n	/ˈpɔndʊs/			/ˈpɔndɛra/	dcc	proposed
+castle	noun	arx	arcēs	f	/ˈarks/			/ˈarkeːs/	dcc	proposed
+disease	noun	morbus	morbī	m	/ˈmɔrbʊs/			/ˈmɔrbiː/	dcc	proposed
+reward	noun	praemium	praemia	n	/ˈprae̯mɪʊm/			/ˈprae̯mɪa/	dcc	proposed
+punishment	noun	supplicium	supplicia	n	/sʊpˈplɪkɪʊm/			/sʊpˈplɪkɪa/	dcc	proposed
+meanwhile	adv	interim			/ˈɪntɛrɪm/				dcc	proposed
+jealousy	noun	invidia	invidiae	f	/ɪnˈwɪdɪa/			/ɪnˈwɪdɪae̯/	dcc	proposed
+tongue	noun	lingua		f	/ˈlɪŋɡʷa/				dcc	proposed
+eternal	adj	aeternus			/ae̯ˈtɛrnʊs/				dcc	proposed
+gate	noun	porta	portae	f	/ˈpɔrta/			/ˈpɔrtae̯/	dcc	proposed
+generation	noun	saeculum	saecula	n	/ˈsae̯kʊlʊm/			/ˈsae̯kʊla/	dcc	proposed
+remaining	adj	reliquus			/ˈrɛlɪkʷʊs/				dcc	proposed
+immediately	adv	statim			/ˈstatɪm/				dcc	proposed
+following	adj	secundus			/sɛˈkʊndʊs/				dcc	proposed
+pure	adj	castus			/ˈkastʊs/				dcc	proposed
+eternity	noun	aevum	aeva	n	/ˈae̯wʊm/			/ˈae̯wa/	dcc	proposed
+injury	noun	damnum	damna	n	/ˈdamnʊm/			/ˈdamna/	dcc	proposed
+likewise	adv	item			/ˈɪtɛm/				dcc	proposed
+tomb	noun	sepulcrum	sepulcra	n	/sɛˈpʊlkrʊm/			/sɛˈpʊlkra/	dcc	proposed
+flying	adj	volucer			/ˈwɔlʊkɛr/				dcc	proposed
+# ---- drafted from English Wiktionary's translation tables, Lewis & Short and English Wiktionary's Latin entries (kaikki.org dumps downloaded 2026-11-10), status=proposed: woven, labelled, not yet read by a person ----
+state	noun	status	statūs	m	/ˈstatʊs/			/ˈstatuːs/	wiktionary	proposed
+thing	noun	rēs	rēs	f	/ˈreːs/			/ˈreːs/	wiktionary	proposed
+system	noun	systēma	systēmata	n	/sysˈteːma/			/sysˈteːmata/	wiktionary	proposed
+information	noun	indicium	indicia	n	/ɪnˈdɪkɪʊm/			/ɪnˈdɪkɪa/	wiktionary	proposed
+possible	adj	possibilis			/pɔsˈsɪbɪlɪs/				wiktionary	proposed
+problem	noun	problēma	problēmata	n	/prɔˈbleːma/			/prɔˈbleːmata/	wiktionary	proposed
+education	noun	cultus	cultūs	m	/ˈkʊltʊs/			/ˈkʊltuːs/	wiktionary	proposed
+market	noun	forum	fora	n	/ˈfɔrʊm/			/ˈfɔra/	wiktionary	proposed
+political	adj	polīticus			/pɔˈliːtɪkʊs/				wiktionary	proposed
+special	adj	praecipuus			/prae̯ˈkɪpʊʊs/				wiktionary	proposed
+action	noun	āctiō	āctiōnēs	f	/ˈaːktɪoː/			/aːktɪˈoːneːs/	wiktionary	proposed
+especially	adv	praesertim			/prae̯ˈsɛrtɪm/				wiktionary	proposed
+exactly	adv	examussim			/ɛksaˈmʊsːɪm/				wiktionary	proposed
+happen	verb	accidere	accidēns		/akˈkɪdɛrɛ/			/ˈakːɪdeːns/	wiktionary	proposed
+industry	noun	industria	industriae	f	/ɪnˈdʊstrɪa/			/ɪnˈdʊstrɪae̯/	wiktionary	proposed
+inside	adv	intus			/ˈɪntʊs/				wiktionary	proposed
+personal	adj	proprius			/ˈprɔprɪʊs/				wiktionary	proposed
+position	noun	positiō	positiōnēs	f	/pɔˈsɪtɪoː/			/pɔsɪtɪˈoːneːs/	wiktionary	proposed
+share	verb	partīre	partiēns		/parˈtiːrɛ/			/ˈpartɪeːns/	wiktionary	proposed
+society	noun	societās	societātēs	f	/sɔˈkɪɛtaːs/			/sɔkɪɛˈtaːteːs/	wiktionary	proposed
+source	noun	orīgō	orīginēs	f	/ɔˈriːɡoː/			/ɔˈriːɡɪneːs/	wiktionary	proposed
+attention	noun	attentiō	attentiōnēs	f	/atˈtɛntɪoː/			/atːɛntɪˈoːneːs/	wiktionary	proposed
+chief	noun	procer	procerēs	m	/ˈprɔkɛr/			/ˈprɔkɛreːs/	wiktionary	proposed
+entire	adj	integer			/ˈɪntɛɡɛr/				wiktionary	proposed
+evidence	noun	argūmentum	argūmenta	n	/arɡuːˈmɛntʊm/			/arɡuːˈmɛnta/	wiktionary	proposed
+foreign	adj	barbarus			/ˈbarbarʊs/				wiktionary	proposed
+hospital	noun	nosocomīum	nosocomīa	n	/nɔsɔkɔˈmiːʊm/			/nɔsɔkɔˈmiːa/	wiktionary	proposed
+listen	verb	auscultāre	auscultāns		/au̯skʊlˈtaːrɛ/			/au̯sˈkʊltaːns/	wiktionary	proposed
+model	noun	exemplar	exemplāria	n	/ɛkˈsɛmplar/			/ɛksɛmˈplaːrɪa/	wiktionary	proposed
+natural	adj	nātūrālis			/naːtuːˈraːlɪs/				wiktionary	proposed
+quality	noun	quālitās	quālitātēs	f	/ˈkʷaːlɪtaːs/			/kʷaːlɪˈtaːteːs/	wiktionary	proposed
+serious	adj	sevērus			/sɛˈweːrʊs/				wiktionary	proposed
+title	noun	titulus	titulī	m	/ˈtɪtʊlʊs/			/ˈtɪtʊliː/	wiktionary	proposed
+various	adj	varius			/ˈwarɪʊs/				wiktionary	proposed
+ability	noun	potentia	potentiae	f	/pɔˈtɛntɪa/			/pɔˈtɛntɪae̯/	wiktionary	proposed
+access	noun	aditus	aditūs	m	/ˈadɪtʊs/			/ˈadɪtuːs/	wiktionary	proposed
+association	noun	sodālitās	sodālitātēs	f	/sɔˈdaːlɪtaːs/			/sɔdaːlɪˈtaːteːs/	wiktionary	proposed
+completely	adv	admodum			/ˈadmɔdʊm/				wiktionary	proposed
+culture	noun	cultūra	cultūrae	f	/kʊlˈtuːra/			/kʊlˈtuːrae̯/	wiktionary	proposed
+difference	noun	differentia	differentiae	f	/dɪfːɛˈrɛntɪa/			/dɪfːɛˈrɛntɪae̯/	wiktionary	proposed
+district	noun	pāgus	pāgī	m	/ˈpaːɡʊs/			/ˈpaːɡiː/	wiktionary	proposed
+expect	verb	spērāre	spērāns		/speːˈraːrɛ/			/ˈspeːraːns/	wiktionary	proposed
+growth	noun	auctus	auctūs	m	/ˈau̯ktʊs/			/ˈau̯ktuːs/	wiktionary	proposed
+income	noun	reditus	reditūs	m	/ˈrɛdɪtʊs/			/ˈrɛdɪtuːs/	wiktionary	proposed
+justice	noun	iūstitia	iūstitiae	f	/juːsˈtɪtɪa/			/juːsˈtɪtɪae̯/	wiktionary	proposed
+movement	noun	mōtus	mōtūs	m	/ˈmoːtʊs/			/ˈmoːtuːs/	wiktionary	proposed
+moving	adj	flexanimus			/flɛkˈsanɪmʊs/				wiktionary	proposed
+nearly	adv	prope			/ˈprɔpɛ/				wiktionary	proposed
+opportunity	noun	opportūnitās	opportūnitātēs	f	/ɔpːɔrˈtuːnɪtaːs/			/ɔpːɔrtuːnɪˈtaːteːs/	wiktionary	proposed
+pressure	noun	nīxus	nīxūs	m	/ˈniːksʊs/			/ˈniːksuːs/	wiktionary	proposed
+previous	adj	prior			/ˈprɪɔr/				wiktionary	proposed
+recently	adv	nūper			/ˈnuːpɛr/				wiktionary	proposed
+secretary	noun	scrība	scrībae	m	/ˈskriːba/			/ˈskriːbae̯/	wiktionary	proposed
+speed	noun	celeritās	celeritātēs	f	/kɛˈlɛrɪtaːs/			/kɛlɛrɪˈtaːteːs/	wiktionary	proposed
+treatment	noun	tractātiō	tractātiōnēs	f	/trakˈtaːtɪoː/			/traktaːtɪˈoːneːs/	wiktionary	proposed
+clearly	adv	disertim			/dɪˈsɛrtɪm/				wiktionary	proposed
+division	noun	dīvīsiō	dīvīsiōnēs	f	/diːˈwiːsɪoː/			/diːwiːsɪˈoːneːs/	wiktionary	proposed
+easily	adv	facile			/ˈfakɪlɛ/				wiktionary	proposed
+effort	noun	mōlīmen	mōlīmina	n	/moːˈliːmɛn/			/moːˈliːmɪna/	wiktionary	proposed
+explain	verb	explānāre	explānāns		/ɛksplaːˈnaːrɛ/			/ɛksˈplaːnaːns/	wiktionary	proposed
+library	noun	bibliothēca	bibliothēcae	f	/bɪblɪɔˈtʰeːka/			/bɪblɪɔˈtʰeːkae̯/	wiktionary	proposed
+machine	noun	māchina	māchinae	f	/ˈmaːkʰɪna/			/ˈmaːkʰɪnae̯/	wiktionary	proposed
+theory	noun	theōria	theōriae	f	/tʰɛˈoːrɪa/			/tʰɛˈoːrɪae̯/	wiktionary	proposed
+therefore	adv	ergō			/ˈɛrɡoː/				wiktionary	proposed
+aid	noun	subsidium		n	/sʊbˈsɪdɪʊm/				wiktionary	proposed
+authority	noun	auctōritās	auctōritātēs	f	/au̯kˈtoːrɪtaːs/			/au̯ktoːrɪˈtaːteːs/	wiktionary	proposed
+beauty	noun	pulchritūdō	pulchritūdinēs	f	/pʊlkʰrɪˈtuːdoː/			/pʊlkʰrɪˈtuːdɪneːs/	wiktionary	proposed
+birthday	noun	nātālis		m	/naːˈtaːlɪs/				wiktionary	proposed
+dangerous	adj	perīculōsus			/pɛriːkʊˈloːsʊs/				wiktionary	proposed
+extremely	adv	perquam			/ˈpɛrkʷam/				wiktionary	proposed
+famous	adj	fāmōsus			/faːˈmoːsʊs/				wiktionary	proposed
+farm	noun	praedium	praedia	n	/ˈprae̯dɪʊm/			/ˈprae̯dɪa/	wiktionary	proposed
+length	noun	longitūdō	longitūdinēs	f	/lɔŋɡɪˈtuːdoː/			/lɔŋɡɪˈtuːdɪneːs/	wiktionary	proposed
+powerful	adj	imperiōsus			/ɪmpɛrɪˈoːsʊs/				wiktionary	proposed
+prevent	verb	arcēre	arcēns		/arˈkeːrɛ/			/ˈarkeːns/	wiktionary	proposed
+prison	noun	carcer	carcerēs	m	/ˈkarkɛr/			/ˈkarkɛreːs/	wiktionary	proposed
+protection	noun	custōdia	custōdiae	f	/kʊsˈtoːdɪa/			/kʊsˈtoːdɪae̯/	wiktionary	proposed
+pull	verb	trahere	trahēns		/ˈtrahɛrɛ/			/ˈtraheːns/	wiktionary	proposed
+rare	adj	rārus			/ˈraːrʊs/				wiktionary	proposed
+religious	adj	religiōsus			/rɛlɪɡɪˈoːsʊs/				wiktionary	proposed
+soul	noun	anima	animae	f	/ˈanɪma/			/ˈanɪmae̯/	wiktionary	proposed
+structure	noun	compāgēs	compāgēs	f	/kɔmˈpaːɡeːs/			/kɔmˈpaːɡeːs/	wiktionary	proposed
+suggest	verb	suggerere	suggerēns		/sʊɡˈɡɛrɛrɛ/			/ˈsʊɡːɛreːns/	wiktionary	proposed
+twice	adv	bis			/ˈbɪs/				wiktionary	proposed
+unique	adj	ūnicus			/ˈuːnɪkʊs/				wiktionary	proposed
+variety	noun	varietās	varietātēs	f	/waˈrɪɛtaːs/			/warɪɛˈtaːteːs/	wiktionary	proposed
+violence	noun	violentia	violentiae	f	/wɪɔˈlɛntɪa/			/wɪɔˈlɛntɪae̯/	wiktionary	proposed
+volume	noun	volūmen	volūmina	n	/wɔˈluːmɛn/			/wɔˈluːmɪna/	wiktionary	proposed
+wonderful	adj	mīrus			/ˈmiːrʊs/				wiktionary	proposed
+actor	noun	histriō	histriōnēs	m	/ˈhɪstrɪoː/			/hɪstrɪˈoːneːs/	wiktionary	proposed
+anywhere	adv	uspiam			/ˈʊspɪam/				wiktionary	proposed
+assistant	noun	administer	administrī	m	/admɪˈnɪstɛr/			/admɪˈnɪstriː/	wiktionary	proposed
+attorney	noun	cognitor	cognitōrēs	m	/ˈkɔɡnɪtɔr/			/kɔɡnɪˈtoːreːs/	wiktionary	proposed
+capacity	noun	capācitās	capācitātēs	f	/kaˈpaːkɪtaːs/			/kapaːkɪˈtaːteːs/	wiktionary	proposed
+chain	noun	catēna	catēnae	f	/kaˈteːna/			/kaˈteːnae̯/	wiktionary	proposed
+chapter	noun	capitulum	capitula	n	/kaˈpɪtʊlʊm/			/kaˈpɪtʊla/	wiktionary	proposed
+climate	noun	clima	climata	n	/ˈklɪma/			/ˈklɪmata/	wiktionary	proposed
+description	noun	dēscrīptiō	dēscrīptiōnēs	f	/deːsˈkriːptɪoː/			/deːskriːptɪˈoːneːs/	wiktionary	proposed
+entirely	adv	omnīnō			/ɔmˈniːnoː/				wiktionary	proposed
+excellent	adj	praestābilis			/prae̯sˈtaːbɪlɪs/				wiktionary	proposed
+exist	verb	exsistere	exsistēns		/ɛksˈsɪstɛrɛ/			/ɛksˈsɪsteːns/	wiktionary	proposed
+expensive	adj	pretiōsus			/prɛtɪˈoːsʊs/				wiktionary	proposed
+governor	noun	gubernātor	gubernātōrēs	m	/ɡʊbɛrˈnaːtɔr/			/ɡʊbɛrnaːˈtoːreːs/	wiktionary	proposed
+illegal	adj	illicitus			/ɪlˈlɪkɪtʊs/				wiktionary	proposed
+internal	adj	internus			/ɪnˈtɛrnʊs/				wiktionary	proposed
+kick	verb	calcitrāre	calcitrāns		/kalkɪˈtraːrɛ/			/ˈkalkɪtraːns/	wiktionary	proposed
+kitchen	noun	culīna	culīnae	f	/kʊˈliːna/			/kʊˈliːnae̯/	wiktionary	proposed
+numerous	adj	numerōsus			/nʊmɛˈroːsʊs/				wiktionary	proposed
+planet	noun	planēta	planētae	m	/plaˈneːta/			/plaˈneːtae̯/	wiktionary	proposed
+port	noun	portus	portūs	m	/ˈpɔrtʊs/			/ˈpɔrtuːs/	wiktionary	proposed
+presence	noun	praesentia	praesentiae	f	/prae̯ˈsɛntɪa/			/prae̯ˈsɛntɪae̯/	wiktionary	proposed
+religion	noun	religiō	religiōnēs	f	/rɛˈlɪɡɪoː/			/rɛlɪɡɪˈoːneːs/	wiktionary	proposed
+terrible	adj	terribilis			/tɛrˈrɪbɪlɪs/				wiktionary	proposed
+armed	adj	armiger			/ˈarmɪɡɛr/				wiktionary	proposed
+blame	verb	culpāre	culpāns		/kʊlˈpaːrɛ/			/ˈkʊlpaːns/	wiktionary	proposed
+breakfast	noun	prandium	prandia	n	/ˈprandɪʊm/			/ˈprandɪa/	wiktionary	proposed
+combat	noun	proelium	proelia	n	/ˈproe̯lɪʊm/			/ˈproe̯lɪa/	wiktionary	proposed
+cycle	noun	cyclus	cyclī	m	/ˈkyklʊs/			/ˈkykliː/	wiktionary	proposed
+describe	verb	dēscrībere	dēscrībēns		/deːsˈkriːbɛrɛ/			/deːsˈkriːbeːns/	wiktionary	proposed
+diet	noun	diaeta	diaetae	f	/dɪˈae̯ta/			/dɪˈae̯tae̯/	wiktionary	proposed
+distribution	noun	distribūtiō	distribūtiōnēs	f	/dɪstrɪˈbuːtɪoː/			/dɪstrɪbuːtɪˈoːneːs/	wiktionary	proposed
+dying	adj	moribundus			/mɔrɪˈbʊndʊs/				wiktionary	proposed
+employment	noun	negōtium	negōtia	n	/nɛˈɡoːtɪʊm/			/nɛˈɡoːtɪa/	wiktionary	proposed
+excuse	verb	excūsāre	excūsāns		/ɛkskuːˈsaːrɛ/			/ɛksˈkuːsaːns/	wiktionary	proposed
+experienced	adj	perītus			/pɛˈriːtʊs/				wiktionary	proposed
+incredible	adj	incrēdibilis			/ɪŋkreːˈdɪbɪlɪs/				wiktionary	proposed
+ministry	noun	ministerium	ministeria	n	/mɪnɪsˈtɛrɪʊm/			/mɪnɪsˈtɛrɪa/	wiktionary	proposed
+mixed	adj	miscellus			/mɪsˈkɛlːʊs/				wiktionary	proposed
+motion	noun	mōtiō	mōtiōnēs	f	/ˈmoːtɪoː/			/moːtɪˈoːneːs/	wiktionary	proposed
+obvious	adj	manifestus			/manɪˈfɛstʊs/				wiktionary	proposed
+opposition	noun	oppositiō	oppositiōnēs	f	/ɔpːɔˈsɪtɪoː/			/ɔpːɔsɪtɪˈoːneːs/	wiktionary	proposed
+prefer	verb	antehabēre	antehabēns		/antɛhaˈbeːrɛ/			/anˈtɛhabeːns/	wiktionary	proposed
+pregnant	adj	gravidus			/ˈɡrawɪdʊs/				wiktionary	proposed
+rural	adj	rūrālis			/ruːˈraːlɪs/				wiktionary	proposed
+secure	adj	sēcūrus			/seːˈkuːrʊs/				wiktionary	proposed
+shirt	noun	camisia	camisiae	f	/kaˈmɪsɪa/			/kaˈmɪsɪae̯/	wiktionary	proposed
+struggle	verb	dīmicāre	dīmicāns		/diːmɪˈkaːrɛ/			/ˈdiːmɪkaːns/	wiktionary	proposed
+territory	noun	territōrium	territōria	n	/tɛrːɪˈtoːrɪʊm/			/tɛrːɪˈtoːrɪa/	wiktionary	proposed
+threat	noun	minātiō	minātiōnēs	f	/mɪˈnaːtɪoː/			/mɪnaːtɪˈoːneːs/	wiktionary	proposed
+transportation	noun	vectūra	vectūrae	f	/wɛkˈtuːra/			/wɛkˈtuːrae̯/	wiktionary	proposed
+victim	noun	victima	victimae	f	/ˈwɪktɪma/			/ˈwɪktɪmae̯/	wiktionary	proposed
+angel	noun	angelus	angelī	m	/ˈaŋɡɛlʊs/			/ˈaŋɡɛliː/	wiktionary	proposed
+assessment	noun	aestimātiō	aestimātiōnēs	f	/ae̯stɪˈmaːtɪoː/			/ae̯stɪmaːtɪˈoːneːs/	wiktionary	proposed
+barely	adv	vix			/ˈwɪks/				wiktionary	proposed
+bush	noun	dūmus	dūmī	m	/ˈduːmʊs/			/ˈduːmiː/	wiktionary	proposed
+cake	noun	placenta	placentae	f	/plaˈkɛnta/			/plaˈkɛntae̯/	wiktionary	proposed
+calm	adj	placidus			/ˈplakɪdʊs/				wiktionary	proposed
+celebrate	verb	celebrāre	celebrāns		/kɛlɛˈbraːrɛ/			/ˈkɛlɛbraːns/	wiktionary	proposed
+childhood	noun	pueritia	pueritiae	f	/pʊɛˈrɪtɪa/			/pʊɛˈrɪtɪae̯/	wiktionary	proposed
+contemporary	adj	aequālis			/ae̯ˈkʷaːlɪs/				wiktionary	proposed
+curious	adj	cūriōsus			/kuːrɪˈoːsʊs/				wiktionary	proposed
+decade	noun	decas	decadēs	f	/ˈdɛkas/			/ˈdɛkadeːs/	wiktionary	proposed
+element	noun	elementum	elementa	n	/ɛlɛˈmɛntʊm/			/ɛlɛˈmɛnta/	wiktionary	proposed
+external	adj	externus			/ɛksˈtɛrnʊs/				wiktionary	proposed
+fee	noun	mercēs	mercēdēs	f	/ˈmɛrkeːs/			/mɛrˈkeːdeːs/	wiktionary	proposed
+guitar	noun	cithara	citharae	f	/ˈkɪtʰara/			/ˈkɪtʰarae̯/	wiktionary	proposed
+hip	noun	coxa	coxae	f	/ˈkɔksa/			/ˈkɔksae̯/	wiktionary	proposed
+introduction	noun	inductiō	inductiōnēs	f	/ɪnˈdʊktɪoː/			/ɪndʊktɪˈoːneːs/	wiktionary	proposed
+lesson	noun	documentum	documenta	n	/dɔkʊˈmɛntʊm/			/dɔkʊˈmɛnta/	wiktionary	proposed
+license	noun	licentia	licentiae	f	/lɪˈkɛntɪa/			/lɪˈkɛntɪae̯/	wiktionary	proposed
+miller	noun	molīnārius	molīnāriī	m	/mɔliːˈnaːrɪʊs/			/mɔliːˈnaːrɪiː/	wiktionary	proposed
+monster	noun	bēlua	bēluae	f	/ˈbeːlʊa/			/ˈbeːlʊae̯/	wiktionary	proposed
+musical	adj	mūsicus			/ˈmuːsɪkʊs/				wiktionary	proposed
+package	noun	sarcina	sarcinae	f	/ˈsarkɪna/			/ˈsarkɪnae̯/	wiktionary	proposed
+paint	verb	pingere	pingēns		/ˈpɪŋɡɛrɛ/			/ˈpɪŋɡeːns/	wiktionary	proposed
+philosophy	noun	philosophia	philosophiae	f	/pʰɪlɔˈsɔpʰɪa/			/pʰɪlɔˈsɔpʰɪae̯/	wiktionary	proposed
+portion	noun	portiō	portiōnēs	f	/ˈpɔrtɪoː/			/pɔrtɪˈoːneːs/	wiktionary	proposed
+poverty	noun	paupertās	paupertātēs	f	/pau̯ˈpɛrtaːs/			/pau̯pɛrˈtaːteːs/	wiktionary	proposed
+repeat	verb	repetere	repetēns		/rɛˈpɛtɛrɛ/			/ˈrɛpɛteːns/	wiktionary	proposed
+respond	verb	respondēre	respondēns		/rɛspɔnˈdeːrɛ/			/rɛsˈpɔndeːns/	wiktionary	proposed
+ridiculous	adj	rīdiculus			/riːˈdɪkʊlʊs/				wiktionary	proposed
+shame	noun	pudor	pudōrēs	m	/ˈpʊdɔr/			/pʊˈdoːreːs/	wiktionary	proposed
+shoulder	noun	umerus	umerī	m	/ˈʊmɛrʊs/			/ˈʊmɛriː/	wiktionary	proposed
+singer	noun	cantor	cantōrēs	m	/ˈkantɔr/			/kanˈtoːreːs/	wiktionary	proposed
+suspect	verb	suspicere	suspiciēns		/sʊsˈpɪkɛrɛ/			/sʊsˈpɪkɪeːns/	wiktionary	proposed
+tall	adj	prōcērus			/proːˈkeːrʊs/				wiktionary	proposed
+temporary	adj	temporālis			/tɛmpɔˈraːlɪs/				wiktionary	proposed
+topic	noun	thema	themata	n	/ˈtʰɛma/			/ˈtʰɛmata/	wiktionary	proposed
+tower	noun	turris	turrēs	f	/ˈtʊrːɪs/			/ˈtʊrːeːs/	wiktionary	proposed
+tradition	noun	trāditiō	trāditiōnēs	f	/traːˈdɪtɪoː/			/traːdɪtɪˈoːneːs/	wiktionary	proposed
+uncle	noun	patruus	patruī	m	/ˈpatrʊʊs/			/ˈpatrʊiː/	wiktionary	proposed
+universal	adj	ūniversālis			/uːnɪwɛrˈsaːlɪs/				wiktionary	proposed
+violent	adj	violentus			/wɪɔˈlɛntʊs/				wiktionary	proposed
+agriculture	noun	agricultūra	agricultūrae	f	/aɡrɪkʊlˈtuːra/			/aɡrɪkʊlˈtuːrae̯/	wiktionary	proposed
+architecture	noun	architectūra	architectūrae	f	/arkʰɪtɛkˈtuːra/			/arkʰɪtɛkˈtuːrae̯/	wiktionary	proposed
+arrival	noun	adventus	adventūs	m	/adˈwɛntʊs/			/adˈwɛntuːs/	wiktionary	proposed
+bishop	noun	episcopus	episcopī	m	/ɛˈpɪskɔpʊs/			/ɛˈpɪskɔpiː/	wiktionary	proposed
+ceremony	noun	caerimōnia	caerimōniae	f	/kae̯rɪˈmoːnɪa/			/kae̯rɪˈmoːnɪae̯/	wiktionary	proposed
+conclusion	noun	clausula	clausulae	f	/ˈklau̯sʊla/			/ˈklau̯sʊlae̯/	wiktionary	proposed
+connect	verb	nectere	nectēns		/ˈnɛktɛrɛ/			/ˈnɛkteːns/	wiktionary	proposed
+cousin	noun	cōnsobrīnus	cōnsobrīnī	m	/koːnsɔˈbriːnʊs/			/koːnsɔˈbriːniː/	wiktionary	proposed
+cricket	noun	gryllus	gryllī	m	/ˈɡrylːʊs/			/ˈɡrylːiː/	wiktionary	proposed
+crystal	noun	crystallum	crystalla	n	/krysˈtalːʊm/			/krysˈtalːa/	wiktionary	proposed
+daddy	noun	tata	tatae	m	/ˈtata/			/ˈtatae̯/	wiktionary	proposed
+destruction	noun	dēstrūctiō	dēstrūctiōnēs	f	/deːsˈtruːktɪoː/			/deːstruːktɪˈoːneːs/	wiktionary	proposed
+diamond	noun	adamās	adamantēs	m	/ˈadamaːs/			/adaˈmanteːs/	wiktionary	proposed
+disaster	noun	calamitās	calamitātēs	f	/kaˈlamɪtaːs/			/kalamɪˈtaːteːs/	wiktionary	proposed
+discover	verb	dētegere	dētegēns		/deːˈtɛɡɛrɛ/			/ˈdeːtɛɡeːns/	wiktionary	proposed
+efficiency	noun	efficientia	efficientiae	f	/ɛfːɪkɪˈɛntɪa/			/ɛfːɪkɪˈɛntɪae̯/	wiktionary	proposed
+frequency	noun	crēbritās	crēbritātēs	f	/ˈkreːbrɪtaːs/			/kreːbrɪˈtaːteːs/	wiktionary	proposed
+happiness	noun	fēlīcitās	fēlīcitātēs	f	/feːˈliːkɪtaːs/			/feːliːkɪˈtaːteːs/	wiktionary	proposed
+hence	adv	hinc			/ˈhɪŋk/				wiktionary	proposed
+horrible	adj	dīrus			/ˈdiːrʊs/				wiktionary	proposed
+hunter	noun	vēnātor	vēnātōrēs	m	/weːˈnaːtɔr/			/weːnaːˈtoːreːs/	wiktionary	proposed
+knife	noun	culter	cultrī	m	/ˈkʊltɛr/			/ˈkʊltriː/	wiktionary	proposed
+marry	verb	marītāre	marītāns		/mariːˈtaːrɛ/			/maˈriːtaːns/	wiktionary	proposed
+memorial	noun	monumentum	monumenta	n	/mɔnʊˈmɛntʊm/			/mɔnʊˈmɛnta/	wiktionary	proposed
+muscle	noun	torus		m	/ˈtɔrʊs/				wiktionary	proposed
+participate	verb	participāre	participāns		/partɪkɪˈpaːrɛ/			/parˈtɪkɪpaːns/	wiktionary	proposed
+passenger	noun	vector	vectōrēs	m	/ˈwɛktɔr/			/wɛkˈtoːreːs/	wiktionary	proposed
+possession	noun	bonum	bona	n	/ˈbɔnʊm/			/ˈbɔna/	wiktionary	proposed
+prayer	noun	prex	precēs	f	/ˈprɛks/			/ˈprɛkeːs/	wiktionary	proposed
+remind	verb	commonēre	commonēns		/kɔmːɔˈneːrɛ/			/ˈkɔmːɔneːns/	wiktionary	proposed
+reveal	verb	revēlāre	revēlāns		/rɛweːˈlaːrɛ/			/rɛˈweːlaːns/	wiktionary	proposed
+stomach	noun	stomachus	stomachī	m	/ˈstɔmakʰʊs/			/ˈstɔmakʰiː/	wiktionary	proposed
+translation	noun	trānslātiō	trānslātiōnēs	f	/traːnsˈlaːtɪoː/			/traːnslaːtɪˈoːneːs/	wiktionary	proposed
+tube	noun	tubus	tubī	m	/ˈtʊbʊs/			/ˈtʊbiː/	wiktionary	proposed
+visible	adj	spectābilis			/spɛkˈtaːbɪlɪs/				wiktionary	proposed
+absence	noun	absentia	absentiae	f	/abˈsɛntɪa/			/abˈsɛntɪae̯/	wiktionary	proposed
+alarm	noun	pavor	pavōrēs	m	/ˈpawɔr/			/paˈwoːreːs/	wiktionary	proposed
+arena	noun	harēna	harēnae	f	/haˈreːna/			/haˈreːnae̯/	wiktionary	proposed
+beast	noun	bēstia	bēstiae	f	/ˈbeːstɪa/			/ˈbeːstɪae̯/	wiktionary	proposed
+breathe	verb	spīrāre	spīrāns		/spiːˈraːrɛ/			/ˈspiːraːns/	wiktionary	proposed
+bull	noun	taurus	taurī	m	/ˈtau̯rʊs/			/ˈtau̯riː/	wiktionary	proposed
+column	noun	columna	columnae	f	/kɔˈlʊmna/			/kɔˈlʊmnae̯/	wiktionary	proposed
+contribution	noun	stips	stipēs	f	/ˈstɪps/			/ˈstɪpeːs/	wiktionary	proposed
+controversy	noun	contrōversia	contrōversiae	f	/kɔntroːˈwɛrsɪa/			/kɔntroːˈwɛrsɪae̯/	wiktionary	proposed
+courage	noun	audentia	audentiae	f	/au̯ˈdɛntɪa/			/au̯ˈdɛntɪae̯/	wiktionary	proposed
+devil	noun	diabolus	diabolī	m	/dɪˈabɔlʊs/			/dɪˈabɔliː/	wiktionary	proposed
+difficulty	noun	difficultās	difficultātēs	f	/dɪfːɪˈkʊltaːs/			/dɪfːɪkʊlˈtaːteːs/	wiktionary	proposed
+elementary	adj	elementārius			/ɛlɛmɛnˈtaːrɪʊs/				wiktionary	proposed
+equality	noun	aequālitās	aequālitātēs	f	/ae̯ˈkʷaːlɪtaːs/			/ae̯kʷaːlɪˈtaːteːs/	wiktionary	proposed
+exception	noun	exceptiō	exceptiōnēs	f	/ɛksˈkɛptɪoː/			/ɛkskɛptɪˈoːneːs/	wiktionary	proposed
+execution	noun	exsecūtiō	exsecūtiōnēs	f	/ɛkssɛˈkuːtɪoː/			/ɛkssɛkuːtɪˈoːneːs/	wiktionary	proposed
+explore	verb	explōrāre	explōrāns		/ɛksploːˈraːrɛ/			/ɛksˈploːraːns/	wiktionary	proposed
+globe	noun	globus	globī	m	/ˈɡlɔbʊs/			/ˈɡlɔbiː/	wiktionary	proposed
+grateful	adj	grātus			/ˈɡraːtʊs/				wiktionary	proposed
+greatly	adv	magnopere			/maɡˈnɔpɛrɛ/				wiktionary	proposed
+instrument	noun	organum	organa	n	/ˈɔrɡanʊm/			/ˈɔrɡana/	wiktionary	proposed
+intelligent	adj	catus			/ˈkatʊs/				wiktionary	proposed
+intervention	noun	interventus	interventūs	m	/ɪntɛrˈwɛntʊs/			/ɪntɛrˈwɛntuːs/	wiktionary	proposed
+invest	verb	collocāre	collocāns		/kɔlːɔˈkaːrɛ/			/ˈkɔlːɔkaːns/	wiktionary	proposed
+invite	verb	adhibēre	adhibēns		/adhɪˈbeːrɛ/			/ˈadhɪbeːns/	wiktionary	proposed
+mutual	adj	mūtuus			/ˈmuːtʊʊs/				wiktionary	proposed
+passage	noun	iter		n	/ˈɪtɛr/				wiktionary	proposed
+petition	noun	libellus	libellī	m	/lɪˈbɛlːʊs/			/lɪˈbɛlːiː/	wiktionary	proposed
+pregnancy	noun	graviditās	graviditātēs	f	/ɡraˈwɪdɪtaːs/			/ɡrawɪdɪˈtaːteːs/	wiktionary	proposed
+publicly	adv	palam			/ˈpalam/				wiktionary	proposed
+relax	verb	relaxāre	relaxāns		/rɛlakˈsaːrɛ/			/rɛˈlaksaːns/	wiktionary	proposed
+remarkable	adj	memorābilis			/mɛmɔˈraːbɪlɪs/				wiktionary	proposed
+sequence	noun	seriēs	seriēs	f	/ˈsɛrɪeːs/			/ˈsɛrɪeːs/	wiktionary	proposed
+stability	noun	firmitās	firmitātēs	f	/ˈfɪrmɪtaːs/			/fɪrmɪˈtaːteːs/	wiktionary	proposed
+steady	adj	stabilis			/ˈstabɪlɪs/				wiktionary	proposed
+sum	noun	summa	summae	f	/ˈsʊmːa/			/ˈsʊmːae̯/	wiktionary	proposed
+summit	noun	apex		m	/ˈapɛks/				wiktionary	proposed
+throat	noun	guttur	guttura	n	/ˈɡʊtːʊr/			/ˈɡʊtːʊra/	wiktionary	proposed
+tissue	noun	textus	textūs	m	/ˈtɛkstʊs/			/ˈtɛkstuːs/	wiktionary	proposed
+treaty	noun	foedus	foedera	n	/ˈfoe̯dʊs/			/ˈfoe̯dɛra/	wiktionary	proposed
+twin	noun	gemellus	gemellī	m	/ɡɛˈmɛlːʊs/			/ɡɛˈmɛlːiː/	wiktionary	proposed
+wounded	adj	saucius			/ˈsau̯kɪʊs/				wiktionary	proposed
+abortion	noun	abortus	abortūs	m	/aˈbɔrtʊs/			/aˈbɔrtuːs/	wiktionary	proposed
+acceptance	noun	acceptiō	acceptiōnēs	f	/akˈkɛptɪoː/			/akːɛptɪˈoːneːs/	wiktionary	proposed
+arc	noun	arcus	arcūs	m	/ˈarkʊs/			/ˈarkuːs/	wiktionary	proposed
+attract	verb	allicere	alliciēns		/alˈlɪkɛrɛ/			/alˈlɪkɪeːns/	wiktionary	proposed
+aunt	noun	amita	amitae	f	/ˈamɪta/			/ˈamɪtae̯/	wiktionary	proposed
+beneath	adv	subtus			/ˈsʊbtʊs/				wiktionary	proposed
+brick	noun	later	laterēs	m	/ˈlatɛr/			/ˈlatɛreːs/	wiktionary	proposed
+bubble	noun	bulla	bullae	f	/ˈbʊlːa/			/ˈbʊlːae̯/	wiktionary	proposed
+cave	noun	antrum	antra	n	/ˈantrʊm/			/ˈantra/	wiktionary	proposed
+celebrated	adj	nōbilis			/ˈnoːbɪlɪs/				wiktionary	proposed
+confusion	noun	tumultus	tumultūs	m	/tʊˈmʊltʊs/			/tʊˈmʊltuːs/	wiktionary	proposed
+conscious	adj	cōnscius			/ˈkoːnskɪʊs/				wiktionary	proposed
+considerable	adj	aliquantus			/alɪˈkʷantʊs/				wiktionary	proposed
+continuous	adj	continuus			/kɔnˈtɪnʊʊs/				wiktionary	proposed
+convenient	adj	commodus			/ˈkɔmːɔdʊs/				wiktionary	proposed
+couch	noun	cubīle	cubīlia	n	/kʊˈbiːlɛ/			/kʊˈbiːlɪa/	wiktionary	proposed
+creature	noun	creātūra	creātūrae	f	/krɛaːˈtuːra/			/krɛaːˈtuːrae̯/	wiktionary	proposed
+deadly	adj	mortifer			/ˈmɔrtɪfɛr/				wiktionary	proposed
+detective	noun	inquīsītor	inquīsītōrēs	m	/ɪŋkʷiːˈsiːtɔr/			/ɪŋkʷiːsiːˈtoːreːs/	wiktionary	proposed
+dig	verb	fodere	fodiēns		/ˈfɔdɛrɛ/			/ˈfɔdɪeːns/	wiktionary	proposed
+endless	adj	īnfīnītus			/iːnfiːˈniːtʊs/				wiktionary	proposed
+enormous	adj	immānis			/ɪmˈmaːnɪs/				wiktionary	proposed
+examine	verb	īnspicere	īnspiciēns		/iːnsˈpɪkɛrɛ/			/iːnsˈpɪkɪeːns/	wiktionary	proposed
+expense	noun	sūmptus	sūmptūs	m	/ˈsuːmptʊs/			/ˈsuːmptuːs/	wiktionary	proposed
+fever	noun	febris	febrēs	f	/ˈfɛbrɪs/			/ˈfɛbreːs/	wiktionary	proposed
+gospel	noun	evangelium	evangelia	n	/ɛwaŋˈɡɛlɪʊm/			/ɛwaŋˈɡɛlɪa/	wiktionary	proposed
+gradually	adv	paulātim			/pau̯ˈlaːtɪm/				wiktionary	proposed
+grandfather	noun	avus	avī	m	/ˈawʊs/			/ˈawiː/	wiktionary	proposed
+gravity	noun	gravitās	gravitātēs	f	/ˈɡrawɪtaːs/			/ɡrawɪˈtaːteːs/	wiktionary	proposed
+integrity	noun	honestās	honestātēs	f	/hɔˈnɛstaːs/			/hɔnɛsˈtaːteːs/	wiktionary	proposed
+inter	verb	sepelīre	sepeliēns		/sɛpɛˈliːrɛ/			/sɛˈpɛlɪeːns/	wiktionary	proposed
+legitimate	adj	lēgitimus			/leːˈɡɪtɪmʊs/				wiktionary	proposed
+lightning	noun	fulgur	fulgura	n	/ˈfʊlɡʊr/			/ˈfʊlɡʊra/	wiktionary	proposed
+lonely	adj	sōlitārius			/soːlɪˈtaːrɪʊs/				wiktionary	proposed
+magical	adj	magus			/ˈmaɡʊs/				wiktionary	proposed
+maker	noun	factor	factōrēs	m	/ˈfaktɔr/			/fakˈtoːreːs/	wiktionary	proposed
+municipal	adj	mūnicipālis			/muːnɪkɪˈpaːlɪs/				wiktionary	proposed
+nightmare	noun	incubus	incubī	m	/ˈɪŋkʊbʊs/			/ˈɪŋkʊbiː/	wiktionary	proposed
+oak	noun	quercus		f	/ˈkʷɛrkʊs/				wiktionary	proposed
+palm	noun	palma	palmae	f	/ˈpalma/			/ˈpalmae̯/	wiktionary	proposed
+parade	noun	pompa	pompae	f	/ˈpɔmpa/			/ˈpɔmpae̯/	wiktionary	proposed
+precisely	adv	adeō			/ˈadɛoː/				wiktionary	proposed
+proceed	verb	prōcēdere	prōcēdēns		/proːˈkeːdɛrɛ/			/proːˈkeːdeːns/	wiktionary	proposed
+reception	noun	receptiō	receptiōnēs	f	/rɛˈkɛptɪoː/			/rɛkɛptɪˈoːneːs/	wiktionary	proposed
+restore	verb	restaurāre	restaurāns		/rɛstau̯ˈraːrɛ/			/rɛsˈtau̯raːns/	wiktionary	proposed
+rival	noun	rīvālis	rīvālēs	m	/riːˈwaːlɪs/			/riːˈwaːleːs/	wiktionary	proposed
+scandal	noun	opprobrium	opprobria	n	/ɔpˈprɔbrɪʊm/			/ɔpˈprɔbrɪa/	wiktionary	proposed
+slavery	noun	servitūdō	servitūdinēs	f	/sɛrwɪˈtuːdoː/			/sɛrwɪˈtuːdɪneːs/	wiktionary	proposed
+spider	noun	arānea	arāneae	f	/aˈraːnɛa/			/aˈraːnɛae̯/	wiktionary	proposed
+substance	noun	substantia	substantiae	f	/sʊbsˈtantɪa/			/sʊbsˈtantɪae̯/	wiktionary	proposed
+sue	verb	lītigāre	lītigāns		/liːtɪˈɡaːrɛ/			/ˈliːtɪɡaːns/	wiktionary	proposed
+suggestion	noun	suggestiō	suggestiōnēs	f	/sʊɡˈɡɛstɪoː/			/sʊɡːɛstɪˈoːneːs/	wiktionary	proposed
+tension	noun	intentiō	intentiōnēs	f	/ɪnˈtɛntɪoː/			/ɪntɛntɪˈoːneːs/	wiktionary	proposed
+testimony	noun	testimōnium	testimōnia	n	/tɛstɪˈmoːnɪʊm/			/tɛstɪˈmoːnɪa/	wiktionary	proposed
+threatening	adj	minitābundus			/mɪnɪtaːˈbʊndʊs/				wiktionary	proposed
+treasure	noun	thēsaurus	thēsaurī	m	/tʰeːˈsau̯rʊs/			/tʰeːˈsau̯riː/	wiktionary	proposed
+unexpected	adj	necopīnātus			/nɛkɔpiːˈnaːtʊs/				wiktionary	proposed
+unfair	adj	inīquus			/ɪˈniːkʷʊs/				wiktionary	proposed
+useless	adj	inūtilis			/ɪˈnuːtɪlɪs/				wiktionary	proposed
+vary	verb	variāre	variāns		/warɪˈaːrɛ/			/ˈwarɪaːns/	wiktionary	proposed
+vulnerable	adj	forābilis			/fɔˈraːbɪlɪs/				wiktionary	proposed
+wallet	noun	pēra	pērae	f	/ˈpeːra/			/ˈpeːrae̯/	wiktionary	proposed
+warrior	noun	bellātor	bellātōrēs	m	/bɛlˈlaːtɔr/			/bɛlːaːˈtoːreːs/	wiktionary	proposed
+workshop	noun	officīna	officīnae	f	/ɔfːɪˈkiːna/			/ɔfːɪˈkiːnae̯/	wiktionary	proposed
+architect	noun	architectus	architectī	m	/arkʰɪˈtɛktʊs/			/arkʰɪˈtɛktiː/	wiktionary	proposed
+arrow	noun	sagitta		f	/saˈɡɪtːa/				wiktionary	proposed
+attraction	noun	illecebra	illecebrae	f	/ɪlˈlɛkɛbra/			/ɪlˈlɛkɛbrae̯/	wiktionary	proposed
+beard	noun	barba	barbae	f	/ˈbarba/			/ˈbarbae̯/	wiktionary	proposed
+belly	noun	venter	ventrēs	m	/ˈwɛntɛr/			/ˈwɛntreːs/	wiktionary	proposed
+cabin	noun	casa	casae	f	/ˈkasa/			/ˈkasae̯/	wiktionary	proposed
+cage	noun	cavea	caveae	f	/ˈkawɛa/			/ˈkawɛae̯/	wiktionary	proposed
+charming	adj	venustus			/wɛˈnʊstʊs/				wiktionary	proposed
+colony	noun	colōnia	colōniae	f	/kɔˈloːnɪa/			/kɔˈloːnɪae̯/	wiktionary	proposed
+companion	noun	socius	sociī	m	/ˈsɔkɪʊs/			/ˈsɔkɪiː/	wiktionary	proposed
+consequence	noun	cōnsequentia	cōnsequentiae	f	/koːnsɛˈkʷɛntɪa/			/koːnsɛˈkʷɛntɪae̯/	wiktionary	proposed
+cruel	adj	crūdēlis			/kruːˈdeːlɪs/				wiktionary	proposed
+deer	noun	cervus	cervī	m	/ˈkɛrwʊs/			/ˈkɛrwiː/	wiktionary	proposed
+diameter	noun	diametros		f	/dɪˈamɛtrɔs/				wiktionary	proposed
+diary	noun	ephēmeris		f	/ɛˈpʰeːmɛrɪs/				wiktionary	proposed
+disagree	verb	dissentīre	dissentiēns		/dɪsːɛnˈtiːrɛ/			/dɪsˈsɛntɪeːns/	wiktionary	proposed
+disappear	verb	excidere	excidēns		/ɛksˈkɪdɛrɛ/			/ˈɛkskɪdeːns/	wiktionary	proposed
+drum	noun	tympanum		n	/ˈtympanʊm/				wiktionary	proposed
+elephant	noun	elephantus	elephantī	m	/ɛlɛˈpʰantʊs/			/ɛlɛˈpʰantiː/	wiktionary	proposed
+flexible	adj	flexibilis			/flɛkˈsɪbɪlɪs/				wiktionary	proposed
+indication	noun	specimen	specimina	n	/ˈspɛkɪmɛn/			/spɛˈkɪmɪna/	wiktionary	proposed
+inn	noun	dēverticulum	dēverticula	n	/deːwɛrˈtɪkʊlʊm/			/deːwɛrˈtɪkʊla/	wiktionary	proposed
+judicial	adj	iūdiciālis			/juːdɪkɪˈaːlɪs/				wiktionary	proposed
+jurisdiction	noun	iūrisdictiō	iūrisdictiōnēs	f	/juːrɪsˈdɪktɪoː/			/juːrɪsdɪktɪˈoːneːs/	wiktionary	proposed
+lasting	adj	dūrābilis			/duːˈraːbɪlɪs/				wiktionary	proposed
+lawsuit	noun	dica	dicae	f	/ˈdɪka/			/ˈdɪkae̯/	wiktionary	proposed
+logical	adj	logicus			/ˈlɔɡɪkʊs/				wiktionary	proposed
+migration	noun	migrātiō	migrātiōnēs	f	/mɪˈɡraːtɪoː/			/mɪɡraːtɪˈoːneːs/	wiktionary	proposed
+miserable	adj	miser			/ˈmɪsɛr/				wiktionary	proposed
+myth	noun	mȳthos		m	/ˈmyːtʰɔs/				wiktionary	proposed
+nest	noun	nīdus	nīdī	m	/ˈniːdʊs/			/ˈniːdiː/	wiktionary	proposed
+notable	adj	notābilis			/nɔˈtaːbɪlɪs/				wiktionary	proposed
+obligation	noun	obligātiō	obligātiōnēs	f	/ɔblɪˈɡaːtɪoː/			/ɔblɪɡaːtɪˈoːneːs/	wiktionary	proposed
+observation	noun	observātiō	observātiōnēs	f	/ɔbsɛrˈwaːtɪoː/			/ɔbsɛrwaːtɪˈoːneːs/	wiktionary	proposed
+olive	noun	olīva	olīvae	f	/ɔˈliːwa/			/ɔˈliːwae̯/	wiktionary	proposed
+pearl	noun	bāca	bācae	f	/ˈbaːka/			/ˈbaːkae̯/	wiktionary	proposed
+potter	noun	figulus	figulī	m	/ˈfɪɡʊlʊs/			/ˈfɪɡʊliː/	wiktionary	proposed
+pulse	noun	pulsus	pulsūs	m	/ˈpʊlsʊs/			/ˈpʊlsuːs/	wiktionary	proposed
+quantity	noun	quantitās	quantitātēs	f	/ˈkʷantɪtaːs/			/kʷantɪˈtaːteːs/	wiktionary	proposed
+restoration	noun	reductiō	reductiōnēs	f	/rɛˈdʊktɪoː/			/rɛdʊktɪˈoːneːs/	wiktionary	proposed
+rope	noun	fūnis	fūnēs	m	/ˈfuːnɪs/			/ˈfuːneːs/	wiktionary	proposed
+scare	verb	terrēre	terrēns		/tɛrˈreːrɛ/			/ˈtɛrːeːns/	wiktionary	proposed
+silk	noun	bombȳx	bombȳcēs	m	/ˈbɔmbyːks/			/bɔmˈbyːkeːs/	wiktionary	proposed
+skilled	adj	sollers			/ˈsɔlːɛrs/				wiktionary	proposed
+statue	noun	statua	statuae	f	/ˈstatʊa/			/ˈstatʊae̯/	wiktionary	proposed
+subtle	adj	subtīlis			/sʊbˈtiːlɪs/				wiktionary	proposed
+throne	noun	thronus	thronī	m	/ˈtʰrɔnʊs/			/ˈtʰrɔniː/	wiktionary	proposed
+tragedy	noun	tragoedia	tragoediae	f	/traˈɡoe̯dɪa/			/traˈɡoe̯dɪae̯/	wiktionary	proposed
+tragic	adj	tragicus			/ˈtraɡɪkʊs/				wiktionary	proposed
+trainer	noun	exercitor	exercitōrēs	m	/ɛkˈsɛrkɪtɔr/			/ɛksɛrkɪˈtoːreːs/	wiktionary	proposed
+tribe	noun	tribus	tribūs	f	/ˈtrɪbʊs/			/ˈtrɪbuːs/	wiktionary	proposed
+underneath	adv	subter			/ˈsʊbtɛr/				wiktionary	proposed
+unfortunate	adj	īnfēlīx			/iːnˈfeːliːks/				wiktionary	proposed
+unlimited	adj	illīmitātus			/ɪlːiːmɪˈtaːtʊs/				wiktionary	proposed
+warehouse	noun	apothēca	apothēcae	f	/apɔˈtʰeːka/			/apɔˈtʰeːkae̯/	wiktionary	proposed
+witch	noun	lamia	lamiae	f	/ˈlamɪa/			/ˈlamɪae̯/	wiktionary	proposed
+ambitious	adj	ambitiōsus			/ambɪtɪˈoːsʊs/				wiktionary	proposed
+ankle	noun	tālus	tālī	m	/ˈtaːlʊs/			/ˈtaːliː/	wiktionary	proposed
+authentic	adj	authenticus			/au̯ˈtʰɛntɪkʊs/				wiktionary	proposed
+banana	noun	ariēna	ariēnae	f	/arɪˈeːna/			/arɪˈeːnae̯/	wiktionary	proposed
+bean	noun	faba	fabae	f	/ˈfaba/			/ˈfabae̯/	wiktionary	proposed
+berry	noun	acinus	acinī	m	/ˈakɪnʊs/			/ˈakɪniː/	wiktionary	proposed
+buyer	noun	ēmptor	ēmptōrēs	m	/ˈeːmptɔr/			/eːmpˈtoːreːs/	wiktionary	proposed
+caution	noun	cautēla	cautēlae	f	/kau̯ˈteːla/			/kau̯ˈteːlae̯/	wiktionary	proposed
+chapel	noun	sacellum	sacella	n	/saˈkɛlːʊm/			/saˈkɛlːa/	wiktionary	proposed
+chin	noun	mentum		n	/ˈmɛntʊm/				wiktionary	proposed
+colleague	noun	collēga	collēgae	m	/kɔlˈleːɡa/			/kɔlˈleːɡae̯/	wiktionary	proposed
+compassion	noun	misericordia	misericordiae	f	/mɪsɛrɪˈkɔrdɪa/			/mɪsɛrɪˈkɔrdɪae̯/	wiktionary	proposed
+conscience	noun	cōnscientia	cōnscientiae	f	/koːnskɪˈɛntɪa/			/koːnskɪˈɛntɪae̯/	wiktionary	proposed
+cottage	noun	tugurium	tuguria	n	/tʊˈɡʊrɪʊm/			/tʊˈɡʊrɪa/	wiktionary	proposed
+curiosity	noun	cūriōsitās	cūriōsitātēs	f	/kuːrɪˈoːsɪtaːs/			/kuːrɪoːsɪˈtaːteːs/	wiktionary	proposed
+cylinder	noun	cylindrus	cylindrī	m	/kyˈlɪndrʊs/			/kyˈlɪndriː/	wiktionary	proposed
+dancer	noun	saltātrīx	saltātrīcēs	f	/salˈtaːtriːks/			/saltaːˈtriːkeːs/	wiktionary	proposed
+dignity	noun	dignitās	dignitātēs	f	/ˈdɪɡnɪtaːs/			/dɪɡnɪˈtaːteːs/	wiktionary	proposed
+donation	noun	dōnātiō	dōnātiōnēs	f	/doːˈnaːtɪoː/			/doːnaːtɪˈoːneːs/	wiktionary	proposed
+elegant	adj	facētus			/faˈkeːtʊs/				wiktionary	proposed
+elevated	adj	celsus			/ˈkɛlsʊs/				wiktionary	proposed
+escort	noun	comitātus	comitātūs	m	/kɔmɪˈtaːtʊs/			/kɔmɪˈtaːtuːs/	wiktionary	proposed
+essence	noun	essentia	essentiae	f	/ɛsˈsɛntɪa/			/ɛsˈsɛntɪae̯/	wiktionary	proposed
+execute	verb	carnificāre	carnificāns		/karnɪfɪˈkaːrɛ/			/karˈnɪfɪkaːns/	wiktionary	proposed
+fisher	noun	piscātor	piscātōrēs	m	/pɪsˈkaːtɔr/			/pɪskaːˈtoːreːs/	wiktionary	proposed
+flexibility	noun	flexibilitās	flexibilitātēs	f	/flɛksɪˈbɪlɪtaːs/			/flɛksɪbɪlɪˈtaːteːs/	wiktionary	proposed
+freight	noun	onus	onera	n	/ˈɔnʊs/			/ˈɔnɛra/	wiktionary	proposed
+frost	noun	pruīna	pruīnae	f	/prʊˈiːna/			/prʊˈiːnae̯/	wiktionary	proposed
+goddess	noun	dea	deae	f	/ˈdɛa/			/ˈdɛae̯/	wiktionary	proposed
+harmful	adj	noxius			/ˈnɔksɪʊs/				wiktionary	proposed
+helmet	noun	galea	galeae	f	/ˈɡalɛa/			/ˈɡalɛae̯/	wiktionary	proposed
+infantry	noun	peditātus	peditātūs	m	/pɛdɪˈtaːtʊs/			/pɛdɪˈtaːtuːs/	wiktionary	proposed
+inspire	verb	īnspīrāre	īnspīrāns		/iːnspiːˈraːrɛ/			/iːnsˈpiːraːns/	wiktionary	proposed
+ladder	noun	scāla	scālae	f	/ˈskaːla/			/ˈskaːlae̯/	wiktionary	proposed
+lamb	noun	agnus	agnī	m	/ˈaɡnʊs/			/ˈaɡniː/	wiktionary	proposed
+lamp	noun	lucerna	lucernae	f	/lʊˈkɛrna/			/lʊˈkɛrnae̯/	wiktionary	proposed
+lily	noun	līlium	līlia	n	/ˈliːlɪʊm/			/ˈliːlɪa/	wiktionary	proposed
+madness	noun	vēsānia	vēsāniae	f	/weːˈsaːnɪa/			/weːˈsaːnɪae̯/	wiktionary	proposed
+magnitude	noun	magnitūdō	magnitūdinēs	f	/maɡnɪˈtuːdoː/			/maɡnɪˈtuːdɪneːs/	wiktionary	proposed
+marble	noun	marmor	marmora	n	/ˈmarmɔr/			/ˈmarmɔra/	wiktionary	proposed
+maritime	adj	maritimus			/maˈrɪtɪmʊs/				wiktionary	proposed
+mathematical	adj	mathēmaticus			/matʰeːˈmatɪkʊs/				wiktionary	proposed
+meditation	noun	meditātiō	meditātiōnēs	f	/mɛdɪˈtaːtɪoː/			/mɛdɪtaːtɪˈoːneːs/	wiktionary	proposed
+melt	verb	liquāre	liquāns		/lɪˈkʷaːrɛ/			/ˈlɪkʷaːns/	wiktionary	proposed
+namely	adv	vidēlicet			/wɪˈdeːlɪkɛt/				wiktionary	proposed
+navigation	noun	nāvigātiō	nāvigātiōnēs	f	/naːwɪˈɡaːtɪoː/			/naːwɪɡaːtɪˈoːneːs/	wiktionary	proposed
+negotiate	verb	agere	agēns		/ˈaɡɛrɛ/			/ˈaɡeːns/	wiktionary	proposed
+oven	noun	furnus	furnī	m	/ˈfʊrnʊs/			/ˈfʊrniː/	wiktionary	proposed
+passport	noun	syngraphus	syngraphī	m	/ˈsyŋɡrapʰʊs/			/ˈsyŋɡrapʰiː/	wiktionary	proposed
+pillow	noun	cervīcal		n	/kɛrˈwiːkal/				wiktionary	proposed
+pond	noun	piscīna	piscīnae	f	/pɪsˈkiːna/			/pɪsˈkiːnae̯/	wiktionary	proposed
+possess	verb	possidēre	possidēns		/pɔsːɪˈdeːrɛ/			/ˈpɔsːɪdeːns/	wiktionary	proposed
+privately	adv	clam			/ˈklam/				wiktionary	proposed
+profitable	adj	lucrōsus			/lʊˈkroːsʊs/				wiktionary	proposed
+punish	verb	multāre	multāns		/mʊlˈtaːrɛ/			/ˈmʊltaːns/	wiktionary	proposed
+rabbit	noun	cunīculus	cunīculī	m	/kʊˈniːkʊlʊs/			/kʊˈniːkʊliː/	wiktionary	proposed
+recreation	noun	āvocāmentum	āvocāmenta	n	/aːwɔkaːˈmɛntʊm/			/aːwɔkaːˈmɛnta/	wiktionary	proposed
+reject	verb	spernere	spernēns		/ˈspɛrnɛrɛ/			/ˈspɛrneːns/	wiktionary	proposed
+rounded	adj	teres			/ˈtɛrɛs/				wiktionary	proposed
+salmon	noun	salmō	salmōnēs	m	/ˈsalmoː/			/salˈmoːneːs/	wiktionary	proposed
+satisfy	verb	satiāre	satiāns		/satɪˈaːrɛ/			/ˈsatɪaːns/	wiktionary	proposed
+spark	noun	scintilla	scintillae	f	/skɪnˈtɪlːa/			/skɪnˈtɪlːae̯/	wiktionary	proposed
+straw	noun	stipula	stipulae	f	/ˈstɪpʊla/			/ˈstɪpʊlae̯/	wiktionary	proposed
+strengthen	verb	rōborāre	rōborāns		/roːbɔˈraːrɛ/			/ˈroːbɔraːns/	wiktionary	proposed
+succession	noun	successiō	successiōnēs	f	/sʊkˈkɛsːɪoː/			/sʊkːɛsːɪˈoːneːs/	wiktionary	proposed
+suspicion	noun	suspīciō	suspīciōnēs	f	/sʊsˈpiːkɪoː/			/sʊspiːkɪˈoːneːs/	wiktionary	proposed
+tablet	noun	tabula	tabulae	f	/ˈtabʊla/			/ˈtabʊlae̯/	wiktionary	proposed
+tent	noun	tabernāculum	tabernācula	n	/tabɛrˈnaːkʊlʊm/			/tabɛrˈnaːkʊla/	wiktionary	proposed
+theoretical	adj	doctrīnālis			/dɔktriːˈnaːlɪs/				wiktionary	proposed
+tide	noun	aestus	aestūs	m	/ˈae̯stʊs/			/ˈae̯stuːs/	wiktionary	proposed
+tire	verb	fatīgāre	fatīgāns		/fatiːˈɡaːrɛ/			/faˈtiːɡaːns/	wiktionary	proposed
+transparent	adj	pellūcidus			/pɛlˈluːkɪdʊs/				wiktionary	proposed
+uncertain	adj	incertus			/ɪŋˈkɛrtʊs/				wiktionary	proposed
+visitor	noun	adventor	adventōrēs	m	/adˈwɛntɔr/			/adwɛnˈtoːreːs/	wiktionary	proposed
+width	noun	lātitūdō	lātitūdinēs	f	/laːtɪˈtuːdoː/			/laːtɪˈtuːdɪneːs/	wiktionary	proposed
+abusive	adj	contumēliōsus			/kɔntʊmeːlɪˈoːsʊs/				wiktionary	proposed
+ambition	noun	ambitiō	ambitiōnēs	f	/amˈbɪtɪoː/			/ambɪtɪˈoːneːs/	wiktionary	proposed
+ant	noun	formīca	formīcae	f	/fɔrˈmiːka/			/fɔrˈmiːkae̯/	wiktionary	proposed
+arbitrary	adj	arbitrārius			/arbɪˈtraːrɪʊs/				wiktionary	proposed
+bake	verb	torrēre	torrēns		/tɔrˈreːrɛ/			/ˈtɔrːeːns/	wiktionary	proposed
+baptist	noun	baptista	baptistae	m	/bapˈtɪsta/			/bapˈtɪstae̯/	wiktionary	proposed
+brotherhood	noun	frāternitās	frāternitātēs	f	/fraːˈtɛrnɪtaːs/			/fraːtɛrnɪˈtaːteːs/	wiktionary	proposed
+butterfly	noun	pāpiliō	pāpiliōnēs	m	/paːˈpɪlɪoː/			/paːpɪlɪˈoːneːs/	wiktionary	proposed
+candle	noun	candēla	candēlae	f	/kanˈdeːla/			/kanˈdeːlae̯/	wiktionary	proposed
+choir	noun	chorus	chorī	m	/ˈkʰɔrʊs/			/ˈkʰɔriː/	wiktionary	proposed
+confession	noun	cōnfessiō	cōnfessiōnēs	f	/koːnˈfɛsːɪoː/			/koːnfɛsːɪˈoːneːs/	wiktionary	proposed
+curtain	noun	plagula	plagulae	f	/ˈplaɡʊla/			/ˈplaɡʊlae̯/	wiktionary	proposed
+delegation	noun	dēlēgātiō	dēlēgātiōnēs	f	/deːleːˈɡaːtɪoː/			/deːleːɡaːtɪˈoːneːs/	wiktionary	proposed
+desirable	adj	optābilis			/ɔpˈtaːbɪlɪs/				wiktionary	proposed
+destructive	adj	exitiābilis			/ɛksɪtɪˈaːbɪlɪs/				wiktionary	proposed
+distinguish	verb	distinguere	distinguēns		/dɪsˈtɪŋɡʷɛrɛ/			/dɪsˈtɪŋɡʷeːns/	wiktionary	proposed
+dome	noun	tholus	tholī	m	/ˈtʰɔlʊs/			/ˈtʰɔliː/	wiktionary	proposed
+educate	verb	ēducāre	ēducāns		/eːdʊˈkaːrɛ/			/ˈeːdʊkaːns/	wiktionary	proposed
+feminine	adj	fēminīnus			/feːmɪˈniːnʊs/				wiktionary	proposed
+fist	noun	pugnus	pugnī	m	/ˈpʊɡnʊs/			/ˈpʊɡniː/	wiktionary	proposed
+forgiveness	noun	venia	veniae	f	/ˈwɛnɪa/			/ˈwɛnɪae̯/	wiktionary	proposed
+fragile	adj	fragilis			/ˈfraɡɪlɪs/				wiktionary	proposed
+frog	noun	rāna	rānae	f	/ˈraːna/			/ˈraːnae̯/	wiktionary	proposed
+fry	verb	frīgere	frīgēns		/ˈfriːɡɛrɛ/			/ˈfriːɡeːns/	wiktionary	proposed
+garlic	noun	allium	allia	n	/ˈalːɪʊm/			/ˈalːɪa/	wiktionary	proposed
+gem	noun	gemma	gemmae	f	/ˈɡɛmːa/			/ˈɡɛmːae̯/	wiktionary	proposed
+geometry	noun	geōmetria	geōmetriae	f	/ɡɛoːˈmɛtrɪa/			/ɡɛoːˈmɛtrɪae̯/	wiktionary	proposed
+gesture	noun	gestus	gestūs	m	/ˈɡɛstʊs/			/ˈɡɛstuːs/	wiktionary	proposed
+hay	noun	faenum	faena	n	/ˈfae̯nʊm/			/ˈfae̯na/	wiktionary	proposed
+hospitality	noun	hospitālitās	hospitālitātēs	f	/hɔspɪˈtaːlɪtaːs/			/hɔspɪtaːlɪˈtaːteːs/	wiktionary	proposed
+idol	noun	īdōlum	īdōla	n	/iːˈdoːlʊm/			/iːˈdoːla/	wiktionary	proposed
+jar	noun	ōlla	ōllae	f	/ˈoːlːa/			/ˈoːlːae̯/	wiktionary	proposed
+lance	noun	lancea	lanceae	f	/ˈlaŋkɛa/			/ˈlaŋkɛae̯/	wiktionary	proposed
+lend	verb	commodāre	commodāns		/kɔmːɔˈdaːrɛ/			/ˈkɔmːɔdaːns/	wiktionary	proposed
+liberation	noun	līberātiō	līberātiōnēs	f	/liːbɛˈraːtɪoː/			/liːbɛraːtɪˈoːneːs/	wiktionary	proposed
+maple	noun	acer	acera	n	/ˈakɛr/			/ˈakɛra/	wiktionary	proposed
+merchandise	noun	merx	mercēs	f	/ˈmɛrks/			/ˈmɛrkeːs/	wiktionary	proposed
+moisture	noun	mador	madōrēs	m	/ˈmadɔr/			/maˈdoːreːs/	wiktionary	proposed
+monk	noun	monachus	monachī	m	/ˈmɔnakʰʊs/			/ˈmɔnakʰiː/	wiktionary	proposed
+morality	noun	mōrālitās	mōrālitātēs	f	/moːˈraːlɪtaːs/			/moːraːlɪˈtaːteːs/	wiktionary	proposed
+necklace	noun	monīle	monīlia	n	/mɔˈniːlɛ/			/mɔˈniːlɪa/	wiktionary	proposed
+neighboring	adj	fīnitimus			/fiːˈnɪtɪmʊs/				wiktionary	proposed
+oppose	verb	oppōnere	oppōnēns		/ɔpˈpoːnɛrɛ/			/ɔpˈpoːneːns/	wiktionary	proposed
+owl	noun	noctua	noctuae	f	/ˈnɔktʊa/			/ˈnɔktʊae̯/	wiktionary	proposed
+porch	noun	porticus	porticūs	f	/ˈpɔrtɪkʊs/			/ˈpɔrtɪkuːs/	wiktionary	proposed
+proximity	noun	proximitās	proximitātēs	f	/prɔkˈsɪmɪtaːs/			/prɔksɪmɪˈtaːteːs/	wiktionary	proposed
+rebellion	noun	rebelliō	rebelliōnēs	f	/rɛˈbɛlːɪoː/			/rɛbɛlːɪˈoːneːs/	wiktionary	proposed
+refuge	noun	refugium	refugia	n	/rɛˈfʊɡɪʊm/			/rɛˈfʊɡɪa/	wiktionary	proposed
+rejection	noun	repulsa	repulsae	f	/rɛˈpʊlsa/			/rɛˈpʊlsae̯/	wiktionary	proposed
+robust	adj	rōbustus			/roːˈbʊstʊs/				wiktionary	proposed
+sadness	noun	trīstitia	trīstitiae	f	/triːsˈtɪtɪa/			/triːsˈtɪtɪae̯/	wiktionary	proposed
+siege	noun	obsidiō	obsidiōnēs	f	/ɔbˈsɪdɪoː/			/ɔbsɪdɪˈoːneːs/	wiktionary	proposed
+texture	noun	textūra	textūrae	f	/tɛksˈtuːra/			/tɛksˈtuːrae̯/	wiktionary	proposed
+theology	noun	theologia	theologiae	f	/tʰɛɔˈlɔɡɪa/			/tʰɛɔˈlɔɡɪae̯/	wiktionary	proposed
+towel	noun	mantēle	mantēlia	n	/manˈteːlɛ/			/manˈteːlɪa/	wiktionary	proposed
+umbrella	noun	umbella	umbellae	f	/ʊmˈbɛlːa/			/ʊmˈbɛlːae̯/	wiktionary	proposed
+unite	verb	cōpulāre	cōpulāns		/koːpʊˈlaːrɛ/			/ˈkoːpʊlaːns/	wiktionary	proposed
+vague	adj	vagus			/ˈwaɡʊs/				wiktionary	proposed
+velocity	noun	vēlōcitās	vēlōcitātēs	f	/weːˈloːkɪtaːs/			/weːloːkɪˈtaːteːs/	wiktionary	proposed
+virtue	noun	virtūs	virtūtēs	f	/ˈwɪrtuːs/			/wɪrˈtuːteːs/	wiktionary	proposed
+wagon	noun	carrus	carrī	m	/ˈkarːʊs/			/ˈkarːiː/	wiktionary	proposed
+absorb	verb	absorbēre	absorbēns		/absɔrˈbeːrɛ/			/abˈsɔrbeːns/	wiktionary	proposed
+abundant	adj	largus			/ˈlarɡʊs/				wiktionary	proposed
+accompany	verb	comitāre	comitāns		/kɔmɪˈtaːrɛ/			/ˈkɔmɪtaːns/	wiktionary	proposed
+accountant	noun	ratiōcinātor	ratiōcinātōrēs	m	/ratɪoːkɪˈnaːtɔr/			/ratɪoːkɪnaːˈtoːreːs/	wiktionary	proposed
+archbishop	noun	archiepiscopus	archiepiscopī	m	/arkʰɪɛˈpɪskɔpʊs/			/arkʰɪɛˈpɪskɔpiː/	wiktionary	proposed
+attach	verb	applicāre	applicāns		/apːlɪˈkaːrɛ/			/ˈapːlɪkaːns/	wiktionary	proposed
+balcony	noun	podium	podia	n	/ˈpɔdɪʊm/			/ˈpɔdɪa/	wiktionary	proposed
+calculation	noun	calculātiō	calculātiōnēs	f	/kalkʊˈlaːtɪoː/			/kalkʊlaːtɪˈoːneːs/	wiktionary	proposed
+cedar	noun	cedrus	cedrī	f	/ˈkɛdrʊs/			/ˈkɛdriː/	wiktionary	proposed
+coffin	noun	arca	arcae	f	/ˈarka/			/ˈarkae̯/	wiktionary	proposed
+cone	noun	cōnus	cōnī	m	/ˈkoːnʊs/			/ˈkoːniː/	wiktionary	proposed
+corpse	noun	cadāver	cadāvera	n	/kaˈdaːwɛr/			/kaˈdaːwɛra/	wiktionary	proposed
+credible	adj	crēdibilis			/kreːˈdɪbɪlɪs/				wiktionary	proposed
+cruelty	noun	crūdēlitās	crūdēlitātēs	f	/kruːˈdeːlɪtaːs/			/kruːdeːlɪˈtaːteːs/	wiktionary	proposed
+cube	noun	cubus	cubī	m	/ˈkʊbʊs/			/ˈkʊbiː/	wiktionary	proposed
+curved	adj	curvus			/ˈkʊrwʊs/				wiktionary	proposed
+decay	noun	cariēs	cariēs	f	/ˈkarɪeːs/			/ˈkarɪeːs/	wiktionary	proposed
+delightful	adj	iūcundus			/juːˈkʊndʊs/				wiktionary	proposed
+designation	noun	vocāmen	vocāmina	n	/wɔˈkaːmɛn/			/wɔˈkaːmɪna/	wiktionary	proposed
+despair	verb	dēspērāre	dēspērāns		/deːspeːˈraːrɛ/			/deːsˈpeːraːns/	wiktionary	proposed
+disclose	verb	ēnūntiāre	ēnūntiāns		/eːnuːntɪˈaːrɛ/			/eːˈnuːntɪaːns/	wiktionary	proposed
+distribute	verb	distribuere	distribuēns		/dɪstrɪˈbʊɛrɛ/			/dɪsˈtrɪbʊeːns/	wiktionary	proposed
+disturbed	adj	sollicitus			/sɔlˈlɪkɪtʊs/				wiktionary	proposed
+dwarf	noun	nānus	nānī	m	/ˈnaːnʊs/			/ˈnaːniː/	wiktionary	proposed
+elbow	noun	cubitum	cubita	n	/ˈkʊbɪtʊm/			/ˈkʊbɪta/	wiktionary	proposed
+entertain	verb	oblectāre	oblectāns		/ɔblɛkˈtaːrɛ/			/ɔˈblɛktaːns/	wiktionary	proposed
+exclude	verb	exclūdere	exclūdēns		/ɛksˈkluːdɛrɛ/			/ɛksˈkluːdeːns/	wiktionary	proposed
+fertility	noun	fertilitās	fertilitātēs	f	/fɛrˈtɪlɪtaːs/			/fɛrtɪlɪˈtaːteːs/	wiktionary	proposed
+fortress	noun	castellum	castella	n	/kasˈtɛlːʊm/			/kasˈtɛlːa/	wiktionary	proposed
+goose	noun	ānser	ānserēs	m	/ˈaːnsɛr/			/ˈaːnsɛreːs/	wiktionary	proposed
+hairy	adj	pilōsus			/pɪˈloːsʊs/				wiktionary	proposed
+harmless	adj	innocuus			/ɪnˈnɔkʊʊs/				wiktionary	proposed
+hesitate	verb	haesitāre	haesitāns		/hae̯sɪˈtaːrɛ/			/ˈhae̯sɪtaːns/	wiktionary	proposed
+imaginary	adj	phantasticus			/pʰanˈtastɪkʊs/				wiktionary	proposed
+infinity	noun	īnfīnitās	īnfīnitātēs	f	/iːnˈfiːnɪtaːs/			/iːnfiːnɪˈtaːteːs/	wiktionary	proposed
+innocence	noun	innocentia	innocentiae	f	/ɪnːɔˈkɛntɪa/			/ɪnːɔˈkɛntɪae̯/	wiktionary	proposed
+internally	adv	penitus			/ˈpɛnɪtʊs/				wiktionary	proposed
+investigator	noun	indāgātor	indāgātōrēs	m	/ɪndaːˈɡaːtɔr/			/ɪndaːɡaːˈtoːreːs/	wiktionary	proposed
+kindle	verb	accendere	accendēns		/akˈkɛndɛrɛ/			/akˈkɛndeːns/	wiktionary	proposed
+lid	noun	operculum	opercula	n	/ɔˈpɛrkʊlʊm/			/ɔˈpɛrkʊla/	wiktionary	proposed
+maternal	adj	māternus			/maːˈtɛrnʊs/				wiktionary	proposed
+membrane	noun	membrāna		f	/mɛmˈbraːna/				wiktionary	proposed
+metallic	adj	metallicus			/mɛˈtalːɪkʊs/				wiktionary	proposed
+murderer	noun	occīsor	occīsōrēs	m	/ɔkˈkiːsɔr/			/ɔkːiːˈsoːreːs/	wiktionary	proposed
+obesity	noun	obēsitās	obēsitātēs	f	/ɔˈbeːsɪtaːs/			/ɔbeːsɪˈtaːteːs/	wiktionary	proposed
+packet	noun	fascis	fascēs	m	/ˈfaskɪs/			/ˈfaskeːs/	wiktionary	proposed
+perfume	noun	odor	odōrēs	m	/ˈɔdɔr/			/ɔˈdoːreːs/	wiktionary	proposed
+persuade	verb	exōrāre	exōrāns		/ɛksoːˈraːrɛ/			/ɛkˈsoːraːns/	wiktionary	proposed
+puppet	noun	pūpa	pūpae	f	/ˈpuːpa/			/ˈpuːpae̯/	wiktionary	proposed
+reluctant	adj	invītus			/ɪnˈwiːtʊs/				wiktionary	proposed
+remedy	noun	remedium	remedia	n	/rɛˈmɛdɪʊm/			/rɛˈmɛdɪa/	wiktionary	proposed
+ribbon	noun	taenia	taeniae	f	/ˈtae̯nɪa/			/ˈtae̯nɪae̯/	wiktionary	proposed
+rigid	adj	rigidus			/ˈrɪɡɪdʊs/				wiktionary	proposed
+rivalry	noun	rīvālitās	rīvālitātēs	f	/riːˈwaːlɪtaːs/			/riːwaːlɪˈtaːteːs/	wiktionary	proposed
+ruler	noun	dominātor	dominātōrēs	m	/dɔmɪˈnaːtɔr/			/dɔmɪnaːˈtoːreːs/	wiktionary	proposed
+sausage	noun	botulus	botulī	m	/ˈbɔtʊlʊs/			/ˈbɔtʊliː/	wiktionary	proposed
+shave	verb	abrādere	abrādēns		/aˈbraːdɛrɛ/			/aˈbraːdeːns/	wiktionary	proposed
+skeleton	noun	sceletus	sceletī	m	/ˈskɛlɛtʊs/			/ˈskɛlɛtiː/	wiktionary	proposed
+sofa	noun	sponda	spondae	f	/ˈspɔnda/			/ˈspɔndae̯/	wiktionary	proposed
+splendid	adj	splendidus			/ˈsplɛndɪdʊs/				wiktionary	proposed
+stained	adj	maculōsus			/makʊˈloːsʊs/				wiktionary	proposed
+sufficiently	adv	affatim			/ˈafːatɪm/				wiktionary	proposed
+sunrise	noun	ortus	ortūs	m	/ˈɔrtʊs/			/ˈɔrtuːs/	wiktionary	proposed
+thoughtful	adj	cōgitābundus			/koːɡɪtaːˈbʊndʊs/				wiktionary	proposed
+tolerate	verb	tolerāre	tolerāns		/tɔlɛˈraːrɛ/			/ˈtɔlɛraːns/	wiktionary	proposed
+tornado	noun	turbō	turbinēs	m	/ˈtʊrboː/			/ˈtʊrbɪneːs/	wiktionary	proposed
+twilight	noun	crepusculum	crepuscula	n	/krɛˈpʊskʊlʊm/			/krɛˈpʊskʊla/	wiktionary	proposed
+urine	noun	ūrīna	ūrīnae	f	/uːˈriːna/			/uːˈriːnae̯/	wiktionary	proposed
+vein	noun	vēna		f	/ˈweːna/				wiktionary	proposed
+warmth	noun	calor	calōrēs	m	/ˈkalɔr/			/kaˈloːreːs/	wiktionary	proposed
+worthless	adj	nēquam			/ˈneːkʷam/				wiktionary	proposed
+accelerate	verb	accelerāre	accelerāns		/akːɛlɛˈraːrɛ/			/akˈkɛlɛraːns/	wiktionary	proposed
+acceleration	noun	accelerātiō	accelerātiōnēs	f	/akːɛlɛˈraːtɪoː/			/akːɛlɛraːtɪˈoːneːs/	wiktionary	proposed
+accuse	verb	accūsāre	accūsāns		/akːuːˈsaːrɛ/			/akˈkuːsaːns/	wiktionary	proposed
+adore	verb	adōrāre	adōrāns		/adoːˈraːrɛ/			/aˈdoːraːns/	wiktionary	proposed
+allegiance	noun	dēvōtiō	dēvōtiōnēs	f	/deːˈwoːtɪoː/			/deːwoːtɪˈoːneːs/	wiktionary	proposed
+amusement	noun	oblectāmentum	oblectāmenta	n	/ɔblɛktaːˈmɛntʊm/			/ɔblɛktaːˈmɛnta/	wiktionary	proposed
+atom	noun	atomus	atomī	f	/ˈatɔmʊs/			/ˈatɔmiː/	wiktionary	proposed
+auxiliary	adj	auxiliāris			/au̯ksɪlɪˈaːrɪs/				wiktionary	proposed
+beverage	noun	pōtus	pōtūs	m	/ˈpoːtʊs/			/ˈpoːtuːs/	wiktionary	proposed
+boxer	noun	pugil	pugilēs	m	/ˈpʊɡɪl/			/ˈpʊɡɪleːs/	wiktionary	proposed
+brook	noun	rīvulus	rīvulī	m	/ˈriːwʊlʊs/			/ˈriːwʊliː/	wiktionary	proposed
+bulb	noun	bulbus	bulbī	m	/ˈbʊlbʊs/			/ˈbʊlbiː/	wiktionary	proposed
+challenger	noun	prōvocātor	prōvocātōrēs	m	/proːwɔˈkaːtɔr/			/proːwɔkaːˈtoːreːs/	wiktionary	proposed
+chew	verb	mandūcāre	mandūcāns		/manduːˈkaːrɛ/			/manˈduːkaːns/	wiktionary	proposed
+childish	adj	puerīlis			/pʊɛˈriːlɪs/				wiktionary	proposed
+cork	noun	sūber	sūbera	n	/ˈsuːbɛr/			/ˈsuːbɛra/	wiktionary	proposed
+crust	noun	crusta	crustae	f	/ˈkrʊsta/			/ˈkrʊstae̯/	wiktionary	proposed
+disastrous	adj	calamitōsus			/kalamɪˈtoːsʊs/				wiktionary	proposed
+disgrace	noun	ignōminia	ignōminiae	f	/ɪɡnoːˈmɪnɪa/			/ɪɡnoːˈmɪnɪae̯/	wiktionary	proposed
+distract	verb	distrahere	distrahēns		/dɪsˈtrahɛrɛ/			/ˈdɪstraheːns/	wiktionary	proposed
+dolphin	noun	delphīnus	delphīnī	m	/dɛlˈpʰiːnʊs/			/dɛlˈpʰiːniː/	wiktionary	proposed
+drown	verb	mergere	mergēns		/ˈmɛrɡɛrɛ/			/ˈmɛrɡeːns/	wiktionary	proposed
+erase	verb	oblitterāre	oblitterāns		/ɔblɪtːɛˈraːrɛ/			/ɔˈblɪtːɛraːns/	wiktionary	proposed
+falcon	noun	falcō	falcōnēs	m	/ˈfalkoː/			/falˈkoːneːs/	wiktionary	proposed
+feather	noun	penna	pennae	f	/ˈpɛnːa/			/ˈpɛnːae̯/	wiktionary	proposed
+fracture	noun	frāctūra	frāctūrae	f	/fraːkˈtuːra/			/fraːkˈtuːrae̯/	wiktionary	proposed
+frightened	adj	timefactus			/tɪmɛˈfaktʊs/				wiktionary	proposed
+govern	verb	gubernāre	gubernāns		/ɡʊbɛrˈnaːrɛ/			/ɡʊˈbɛrnaːns/	wiktionary	proposed
+greet	verb	salūtāre	salūtāns		/saluːˈtaːrɛ/			/saˈluːtaːns/	wiktionary	proposed
+hare	noun	lepus	leporēs	m	/ˈlɛpʊs/			/ˈlɛpɔreːs/	wiktionary	proposed
+hedge	noun	saepēs	saepēs	f	/ˈsae̯peːs/			/ˈsae̯peːs/	wiktionary	proposed
+impulse	noun	impulsus	impulsūs	m	/ɪmˈpʊlsʊs/			/ɪmˈpʊlsuːs/	wiktionary	proposed
+insanity	noun	īnsānia	īnsāniae	f	/iːnˈsaːnɪa/			/iːnˈsaːnɪae̯/	wiktionary	proposed
+irregular	adj	inconditus			/ɪŋˈkɔndɪtʊs/				wiktionary	proposed
+joker	noun	ioculātor	ioculātōrēs	m	/jɔkʊˈlaːtɔr/			/jɔkʊlaːˈtoːreːs/	wiktionary	proposed
+juicy	adj	sūcidus			/ˈsuːkɪdʊs/				wiktionary	proposed
+knot	noun	nōdus	nōdī	m	/ˈnoːdʊs/			/ˈnoːdiː/	wiktionary	proposed
+laden	adj	onustus			/ɔˈnʊstʊs/				wiktionary	proposed
+masculine	adj	mās			/ˈmaːs/				wiktionary	proposed
+mattress	noun	culcita	culcitae	f	/ˈkʊlkɪta/			/ˈkʊlkɪtae̯/	wiktionary	proposed
+muscular	adj	torōsus			/tɔˈroːsʊs/				wiktionary	proposed
+navigate	verb	nāvigāre	nāvigāns		/naːwɪˈɡaːrɛ/			/ˈnaːwɪɡaːns/	wiktionary	proposed
+nod	verb	nūtāre	nūtāns		/nuːˈtaːrɛ/			/ˈnuːtaːns/	wiktionary	proposed
+noisy	adj	sonāx			/ˈsɔnaːks/				wiktionary	proposed
+pact	noun	pactiō	pactiōnēs	f	/ˈpaktɪoː/			/paktɪˈoːneːs/	wiktionary	proposed
+perceive	verb	sāgīre	sāgiēns		/saːˈɡiːrɛ/			/ˈsaːɡɪeːns/	wiktionary	proposed
+philosopher	noun	philosophus	philosophī	m	/pʰɪˈlɔsɔpʰʊs/			/pʰɪˈlɔsɔpʰiː/	wiktionary	proposed
+pike	noun	dolō	dolōnēs	m	/ˈdɔloː/			/dɔˈloːneːs/	wiktionary	proposed
+plantation	noun	viridārium	viridāria	n	/wɪrɪˈdaːrɪʊm/			/wɪrɪˈdaːrɪa/	wiktionary	proposed
+preach	verb	praedicāre	praedicāns		/prae̯dɪˈkaːrɛ/			/ˈprae̯dɪkaːns/	wiktionary	proposed
+premature	adj	praecox			/ˈprae̯kɔks/				wiktionary	proposed
+rainy	adj	pluviōsus			/plʊwɪˈoːsʊs/				wiktionary	proposed
+recurring	adj	recidīvus			/rɛkɪˈdiːwʊs/				wiktionary	proposed
+shrine	noun	aedicula	aediculae	f	/ae̯ˈdɪkʊla/			/ae̯ˈdɪkʊlae̯/	wiktionary	proposed
+singular	adj	singulāris			/sɪŋɡʊˈlaːrɪs/				wiktionary	proposed
+soaked	adj	madidus			/ˈmadɪdʊs/				wiktionary	proposed
+spear	noun	hasta	hastae	f	/ˈhasta/			/ˈhastae̯/	wiktionary	proposed
+squadron	noun	turma	turmae	f	/ˈtʊrma/			/ˈtʊrmae̯/	wiktionary	proposed
+squirrel	noun	sciūrus	sciūrī	m	/skɪˈuːrʊs/			/skɪˈuːriː/	wiktionary	proposed
+supper	noun	cēna	cēnae	f	/ˈkeːna/			/ˈkeːnae̯/	wiktionary	proposed
+suspend	verb	suspendere	suspendēns		/sʊsˈpɛndɛrɛ/			/sʊsˈpɛndeːns/	wiktionary	proposed
+theorem	noun	theōrēma	theōrēmata	n	/tʰɛoːˈreːma/			/tʰɛoːˈreːmata/	wiktionary	proposed
+thigh	noun	femur		n	/ˈfɛmʊr/				wiktionary	proposed
+thirsty	adj	siccus			/ˈsɪkːʊs/				wiktionary	proposed
+traitor	noun	prōditor	prōditōrēs	m	/ˈproːdɪtɔr/			/proːdɪˈtoːreːs/	wiktionary	proposed
+trench	noun	fossa		f	/ˈfɔsːa/				wiktionary	proposed
+troop	noun	caterva	catervae	f	/kaˈtɛrwa/			/kaˈtɛrwae̯/	wiktionary	proposed
+unanimous	adj	ūnanimus			/uːˈnanɪmʊs/				wiktionary	proposed
+unarmed	adj	inermis			/ɪˈnɛrmɪs/				wiktionary	proposed
+vain	adj	vānus			/ˈwaːnʊs/				wiktionary	proposed
+vanity	noun	vānitās	vānitātēs	f	/ˈwaːnɪtaːs/			/waːnɪˈtaːteːs/	wiktionary	proposed
+wed	verb	nūbere	nūbēns		/ˈnuːbɛrɛ/			/ˈnuːbeːns/	wiktionary	proposed
+willow	noun	salix	salicēs	f	/ˈsalɪks/			/ˈsalɪkeːs/	wiktionary	proposed
