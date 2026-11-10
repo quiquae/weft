@@ -237,13 +237,17 @@ export function formatReport(report: ArtefactReport): string {
  */
 export function artefactsFor(version: string): Artefact[] {
   const groups: Array<Omit<Artefact, 'paths'> & { paths: string[] }> = [
+    // The three Chromium-drawn groups read `manifest.config.mjs` too: the
+    // settings and help pages print `VERSION`, and the 1.1.0 bump left
+    // `options.png` and `07-help.png` saying 1.0.1 under a check calling
+    // them fresh, until a regeneration on 2026-11-10 redrew them.
     {
       name: 'store listing screenshots',
       // Only the captures. The tiles beside them are a group of
       // their own below, on a different input: they are rendered from HTML
       // by a tool and owe nothing to `src/`.
       paths: ['docs/store/*-0*.png'],
-      inputs: ['src', 'tests/e2e/store-assets.spec.ts', 'tests/e2e/fixtures.ts'],
+      inputs: ['src', 'manifest.config.mjs', 'tests/e2e/store-assets.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_STORE=1 npx playwright test store-assets',
     },
     {
@@ -262,7 +266,7 @@ export function artefactsFor(version: string): Artefact[] {
       // `tests/tools/artefacts.test.ts` fails if any file matched here is
       // one the generator does not write, for all three groups.
       paths: ['docs/screens'],
-      inputs: ['src', 'tests/e2e/screenshots.spec.ts', 'tests/e2e/fixtures.ts'],
+      inputs: ['src', 'manifest.config.mjs', 'tests/e2e/screenshots.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_SCREENS=1 npx playwright test screenshots',
     },
     {
@@ -278,7 +282,7 @@ export function artefactsFor(version: string): Artefact[] {
       // comparison, and every check in the repository was structurally
       // unable to see it. It has a generator now, one group down.
       paths: ['docs/firstrun/0*.png'],
-      inputs: ['src', 'tests/e2e/firstrun.spec.ts', 'tests/e2e/fixtures.ts'],
+      inputs: ['src', 'manifest.config.mjs', 'tests/e2e/firstrun.spec.ts', 'tests/e2e/fixtures.ts'],
       regenerate: 'npm run build:test && WEFT_FIRSTRUN=1 npx playwright test firstrun',
     },
     {
