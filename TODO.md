@@ -748,9 +748,9 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
       the templates' arguments but not their names or the etymology's
       text, so it would have to keep both, to tell `inh` from `der` and to
       refuse "partly", "probably" and "perhaps", the standard the
-      2026-10-01 pass set; most of the 381 look like ancestors (*þing*,
-      *strǣt*, *dǣd*, *wela*), so this likely keeps the claim true
-      outright; (2) restate the claim as one about the checked rows, and
+      2026-10-01 pass set; many of the 364 look like ancestors (*þing*,
+      *strǣt*, *dǣd*, *wela*), which nobody has counted, so this may keep
+      the claim true outright; (2) restate the claim as one about the checked rows, and
       move the test with it, which leaves drafted ancestors untold in the
       tooltip; (3) both. Recommended: (1), held by the etymon ledger like
       every checked etymon, labelled unreviewed with the row. The 264 also
