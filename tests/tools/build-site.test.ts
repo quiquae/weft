@@ -67,11 +67,11 @@ const DEEP = [
  * rather than by the builder's own function, so that a number the builder
  * failed to remove reaches the comparison and fails it.
  */
-function headwords(lang: string): Set<string> {
+function headwords(lang: string, drafted = false): Set<string> {
   const pack = JSON.parse(readFileSync(join(ROOT, `src/lexicon/packs/en-${lang}.json`), 'utf8'));
   const rows = new Map<string, { lemma: string; num?: string }[]>();
-  for (const list of Object.values(pack.entries) as { tgtLemma: string; lemma: string; num?: string }[][]) {
-    for (const e of list) rows.set(e.tgtLemma, [...(rows.get(e.tgtLemma) ?? []), e]);
+  for (const list of Object.values(pack.entries) as { tgtLemma: string; lemma: string; num?: string; drafted?: boolean }[][]) {
+    for (const e of list) if (Boolean(e.drafted) === drafted) rows.set(e.tgtLemma, [...(rows.get(e.tgtLemma) ?? []), e]);
   }
   const found = new Set<string>();
   for (const [word, same] of rows) {
@@ -435,6 +435,15 @@ describe('every headword gets its own page', () => {
       );
     });
   }
+
+  test('no page is built from a row nobody has read', () => {
+    // A drafted row is woven and labelled unreviewed in the tooltip; a page is
+    // published copy, held to the rows a person has read.
+    const drafted = DEEP.flatMap(({ lang, dir }) => [...headwords(lang, true)].map((w) => ({ dir, w })));
+    assert.ok(drafted.length >= 50, `only ${drafted.length} drafted headwords were read, so the rule polices nothing`);
+    const paged = drafted.filter(({ dir, w }) => (targets.get(dir) as Set<string>).has(w));
+    assert.deepEqual(paged.map(({ dir, w }) => `/${dir}: ${w}`), [], `${paged.length} pages were built from drafted rows`);
+  });
 
   test('no page prints a homograph number', () => {
     // `hund²` is the card's identity, not anything a reader is shown: the

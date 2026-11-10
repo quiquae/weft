@@ -130,6 +130,8 @@ export const LANGUAGES: Record<LangCode, LanguageMeta> = {
     endonym: 'Latina',
     historical: true,
     era: 'Classical, c. 75 BC – AD 200',
+    // A drafted Latin row's gloss and gender are quoted from Lewis & Short.
+    draftedFrom: 'Lewis & Short',
     rtl: false,
     // English marks case by word order, so a nominative singular headword
     // slots into an English frame without becoming ungrammatical.

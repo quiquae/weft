@@ -222,6 +222,12 @@ describe('tooltip content', () => {
     assert.match(open('fr', {}, { drafted: true }).text, /Wiktionary, unreviewed/);
     assert.doesNotMatch(open('fr').text, /unreviewed/);
   });
+
+  test('names Lewis & Short for a drafted Latin word, its gloss and gender being quoted from it', () => {
+    const { text } = open('la', {}, { drafted: true });
+    assert.match(text, /Lewis & Short, unreviewed/);
+    assert.doesNotMatch(text, /Wiktionary/);
+  });
 });
 
 describe('the etymon badge follows descent, not death', () => {

@@ -52,6 +52,11 @@ export interface LanguageMeta {
    * `historical`: Latin is dead, and English borrowed from it.
    */
   ancestorOfEnglish?: boolean;
+  /**
+   * The dictionary a drafted row of this language was read in, which the
+   * tooltip names beside "unreviewed". Absent means English Wiktionary.
+   */
+  draftedFrom?: string;
   rtl: boolean;
   morphology: MorphologyStrategy;
   /** BCP-47 tag for speechSynthesis, or null when no voice exists. */
