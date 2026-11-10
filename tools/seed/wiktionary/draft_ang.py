@@ -112,13 +112,14 @@ def particle(word):
 def unkeyed(word):
     """Why the pronunciation key or the stress test would read `word` otherwise than the generator
     writes it, or None. ċċ is one long sound under two letters the key counts as two "ch"; the
-    generator writes nġ /ndʒ/ where the key says ġ is "y"; and an h before w, l, r or n inside a
-    word begins an element of a compound, which the stress test reads as the spirant x."""
+    generator writes nġ /ndʒ/ where the key says ġ is "y"; and an h inside a word before a vowel,
+    w, l, r or n begins an element of a compound, lǣċe-hūs, bōc-hūs, which the generator and the
+    stress test both write as the spirant x, where it is the h a word begins with."""
     if 'ċċ' in word:
         return 'a doubled ċ, one sound under two letters'
     if 'nġ' in word:
         return 'an nġ, which the generator writes /ndʒ/'
-    if re.search('(?<=.)h[wlrn]', word):
+    if re.search(f'(?<=.)h[{VOWELS}wlrn]', word):
         return 'an h beginning a second element'
     return None
 
@@ -211,9 +212,9 @@ def palatal_cg(w):
 
 def check(head, eng, pos, hint=None):
     """The row English Wiktionary bears out for `head` standing for `eng`, or None and why not."""
-    if head in EXCLUDE:
-        return None, 'excluded by name'
     word = palatal_cg(head)
+    if head in EXCLUDE or word in EXCLUDE:
+        return None, 'excluded by name'
     if not LETTERS.fullmatch(word):
         return None, 'a letter the stress test does not read'
     if bare(word) == eng:

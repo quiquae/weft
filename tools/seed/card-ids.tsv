@@ -33,14 +33,15 @@ ang	brōðor
 ang	brūcan
 ang	brūn
 ang	burg
+ang	butere
 ang	bycgan
+ang	bæþ
 ang	bān
 ang	bāt
 ang	bēo
 ang	bēod
 ang	bōc
 ang	bōccræft
-ang	bōchūs
 ang	bōcstæf
 ang	bōt
 ang	bȳsn
@@ -66,6 +67,7 @@ ang	cū
 ang	cǣġ
 ang	dene
 ang	dohtor
+ang	draca
 ang	drincan
 ang	drēam
 ang	duru
@@ -86,7 +88,6 @@ ang	earfoþe
 ang	earm
 ang	earm²
 ang	eft
-ang	elþēodiġ
 ang	ent
 ang	eorðe
 ang	etan
@@ -140,7 +141,6 @@ ang	grēne
 ang	grōwan
 ang	grǣġ
 ang	gān
-ang	gārsecg
 ang	gāt
 ang	gōd
 ang	gūþ
@@ -218,16 +218,15 @@ ang	lāh
 ang	lārēow
 ang	lēaf
 ang	lēas
+ang	lēasspell
 ang	lēo
 ang	lēoht
-ang	līchamlīċ
 ang	līf
 ang	līċ
 ang	lōcian
 ang	lǣfan
 ang	lǣn
 ang	lǣċe
-ang	lǣċehūs
 ang	lȳtel
 ang	macian
 ang	mann
@@ -274,7 +273,6 @@ ang	plegian
 ang	pæð
 ang	racente
 ang	reġn
-ang	rihtwīsnes
 ang	rinnan
 ang	rēad
 ang	rēam
@@ -308,6 +306,7 @@ ang	smylte
 ang	smæl
 ang	snāw
 ang	spell
+ang	spild
 ang	sprecan
 ang	sprǣċ
 ang	spyriġung
@@ -413,6 +412,7 @@ ang	word
 ang	wrītan
 ang	wulf
 ang	wyrcan
+ang	wyrd
 ang	wyrm
 ang	wyrċan
 ang	wæstm
@@ -429,7 +429,9 @@ ang	wīg
 ang	wīn
 ang	wīs
 ang	wīġ
+ang	wǣpn
 ang	yfel
+ang	yfele
 ang	æppel
 ang	æþelian
 ang	æþeling
@@ -454,7 +456,6 @@ ang	ċempa
 ang	ċeorfan
 ang	ċild
 ang	ċildclāð
-ang	ċildhād
 ang	ċiriċe
 ang	ċēosan
 ang	ċīese
@@ -478,7 +479,6 @@ ang	ġēar
 ang	īren
 ang	īs
 ang	ūte
-ang	ūþwitegung
 ang	ǣfen
 ang	ǣfre
 ang	ǣghwǣr
