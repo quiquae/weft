@@ -8,8 +8,8 @@
 of this session — typecheck clean, **686** unit / 159 suites, **140** jsdom / 29
 suites, **646** tool tests / 170 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 4470–4471 KB each, 266 KB more than 1.1.0's 4204 for
-Latin's 785 drafted rows, all
+packages built at 4503 KB each, 299 KB more than 1.1.0's 4204 for
+Latin's 785 drafted rows and Old English's 100, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -731,29 +731,55 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Grow Old English from English Wiktionary's translation tables.**
-      The Latin half of "grow Latin further, then Old English" is done (the
-      item below); Old English is 356 checked lemmas and nothing drafted.
-      The tables `draft_la.py` now reads carry code `ang` too, and
-      `extract_en.py` already keeps it. A drafted Old English row has to
-      pass what a checked one does: a gloss quoting English Wiktionary's Old
-      English entry, or Bosworth–Toller where Wiktionary lacks the word or
-      its gender (`ang-glosses.tsv`, with `FORM_OF` for a ð spelling whose
-      page only names the þ one); a noun's gender read there
-      (`ang-genders.tsv`); the woven plural or participle quoted from its
-      table cell (`ang-plurals.tsv`, `ang-verb-forms.tsv`, by
-      `tests/tools/ang-forms.test.ts`'s rules); and a transcription Wright
-      holds by `tests/tools/old-english-stress.test.ts`, which refuses a
-      headword beginning with one of his particles unless `COMPOUNDED` or
-      `SIMPLE` lists it, so a drafter refuses those or lists them. No etymon
-      on a drafted row, so no `ang-etymons.tsv` line. `draftedFrom` names no
-      source for Old English, so the tooltip would print "Wiktionary,
-      unreviewed" (`tooltip.ts:320`), true only while every drafted gloss
-      quotes Wiktionary. Shape: the translation-table reading in
-      `draft_la.py` (`tables`, `clean`, the first two tables, `--exclude`)
-      and one check per ledger above. Data: kaikki.org's English dump (534
-      MB) and its Old English one; the run deletes its scratch copies. Not
-      queued in `cq`: the owner asked for this to stay cheap.
+- [ ] **Old English, second batch: settle the etymon, then draft the other
+      264.** The first 100 landed on 2026-11-10 (the item below), and the
+      same `draft_ang.py` passes 364 uncapped, so 264 wait — but not on
+      time. A drafted row carries no etymon, and
+      `tests/tools/pedagogy.test.ts` holds `docs/PEDAGOGY.md`'s "the target
+      is usually the literal ancestor" to the pack, counting a row an
+      ancestor only where its `etymonOf` is its English word: 236 of 458
+      rows now, so a 14th draft more ends the majority and turns the test
+      red. Three shapes, of which (1) is agent-shaped and (2) changes published
+      copy, Creagh's call: (1) draft
+      the etymon where English Wiktionary's own English entry says the word
+      is inherited from exactly this Old English one, an `inh` template
+      naming it, with an `ang-etymons.tsv` line citing `wikt:en:<english>`,
+      which `tests/tools/etymons.test.ts` accepts — `extract_en.py` keeps
+      the templates' arguments but not their names or the etymology's
+      text, so it would have to keep both, to tell `inh` from `der` and to
+      refuse "partly", "probably" and "perhaps", the standard the
+      2026-10-01 pass set; most of the 381 look like ancestors (*þing*,
+      *strǣt*, *dǣd*, *wela*), so this likely keeps the claim true
+      outright; (2) restate the claim as one about the checked rows, and
+      move the test with it, which leaves drafted ancestors untold in the
+      tooltip; (3) both. Recommended: (1), held by the etymon ledger like
+      every checked etymon, labelled unreviewed with the row. The 264 also
+      want the particle words: 267 table words were refused for one of
+      Wright's particles at their start, ġe- 72 of them, and each wants
+      reading in its Wiktionary etymology to list it in
+      `old-english-stress.test.ts`'s `COMPOUNDED` or `SIMPLE` and the
+      generator's `ANG_PREFIXED`. Data and commands are in
+      `tools/seed/wiktionary/README.md`; the run deletes its scratch
+      copies. And compounds: 27 table words were refused for an h beginning
+      a second element, which wants `COMPOUNDED` and `ANG_COMPOUNDED` lines
+      to be transcribed right. About two hours for (1) and the 264, more
+      with the particles.
+
+- [x] **Old English, first batch: 100 words from English Wiktionary's
+      translation tables.** Done 2026-11-10. `tools/seed/wiktionary/draft_ang.py`
+      reads the tables for code `ang`, as `draft_la.py` reads them for
+      Latin, and drafts a row only where the word's own Old English entry
+      bears out every ledger a checked row is held to: a definition line
+      holding the English word (`ang-glosses.tsv`), one gender
+      (`ang-genders.tsv`), the table's plural or present participle
+      (`ang-plurals.tsv`, `ang-verb-forms.tsv`), and a headword the stress
+      test and the pronunciation key read as the generator writes it. 64
+      nouns, 15 adjectives, 13 verbs, 8 adverbs, all read with their
+      transcriptions, which found seven compounds both the generator and
+      the tests get wrong, now refused; no etymons; the
+      tooltip says "Wiktionary, unreviewed", true of every drafted gloss;
+      the site builds no page from them, so it is still 713 pages. Capped at
+      100 for the reason the item above gives. See Notes.
 
 - [x] **Latin, second batch: 703 words from English Wiktionary's translation
       tables.** Done 2026-11-10, the Latin half of "grow Latin further, then
@@ -8655,6 +8681,46 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-10 — Old English's first batch, 100 rows from the translation
+tables.** Things a later run would be sorry not to know:
+
+1. **A drafted Old English row counts against "usually the ancestor".**
+   `tests/tools/pedagogy.test.ts` holds `docs/PEDAGOGY.md`'s "the target is
+   usually the literal ancestor" to the pack, a row at a time, and a row is
+   an ancestor only where its `etymonOf` is its English word. Drafts carry
+   no etymon, so 236 of 358 rows became 236 of 458 with this batch, and 13
+   more would be the last. The item at the top of `Now` says what to do
+   about it; the test caught it before the claim went false, which is what
+   it is for.
+2. **kaikki tags an Old English table's participle row as the imperative.**
+   *berende* is `['imperative', 'present']` and *boren* `['imperative',
+   'past']`; a row's real imperatives carry a number. `cell(w, {'present',
+   'participle'})` finds nothing for every verb, silently: the first report
+   wove no verb's second form, which reading it showed.
+3. **The stress test and the pronunciation key read some spellings
+   otherwise than `_ipa.py` writes them**, and each cost a red run before it
+   became a drafter rule: *ċċ* (*reċċan*, two "ch" for one /tʃː/), *nġ*
+   (*lenġu*, /ndʒ/ where the key says ġ is "y"), an *h* beginning a second
+   element (*hwǣrhwugu*, *hūhwega*: the test reads it as x), and a compound's
+   *f* (*sōþfæst*, voiced by the generator, voiceless by the test), which is
+   excluded by name because no spelling rule finds compounds.
+4. **Some compounds pass every test and are transcribed wrong.** The stress
+   test reads a word as simple unless `COMPOUNDED` lists it, so where a
+   second element begins with h or a fricative the test agrees with the
+   generator and both are wrong: *lǣċehūs* came out /ˈlæːtʃexuːs/, *gārsecg*
+   /ˈɡɑːrzeddʒ/, *elþēodiġ* /ˈelðeːodij/. Nothing red said so; reading the
+   100 transcriptions did. An inner h before a vowel is now refused by rule,
+   the fricatives by name. **Read a drafted transcription, not only its
+   test**: a test derived from spelling cannot see a division it was not
+   told about.
+5. **Wiktionary writes the unstressed prefix a- short.** *alibban*, "to
+   survive", is *a- + libban*, and Wright's particle list has only *ā*, so
+   the stress test would not have caught the generator stressing the
+   prefix. The drafter refuses a verb in a short *a-* and a consonant.
+6. **Python here has no `orjson` or `wordfreq`.** The run made a scratch
+   venv in `/tmp/weft-ang/venv` and deleted it; `extract_en.py` took 76 s on
+   the 534 MB dump, which was the same file as 2026-11-09's by its SHA-256.
 
 **2026-11-10 — Latin's second batch, 703 rows from the translation tables.**
 Things a later run would be sorry not to know:

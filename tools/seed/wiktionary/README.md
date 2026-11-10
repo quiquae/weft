@@ -136,3 +136,64 @@ python3 -I draft_la.py dcc-latin-core.html lat.ls.perseus-eng1.xml target-la.jso
     --translations=en-extract.jsonl --singular=cōpia,auxilium,subsidium,nātālis --exclude=ops,abagmentum,rudis,commercium,participium,classis,diaeresis,tumor,praeductal,mēlōtris,pars,agere,senātrīx,articulus,mangō,officium,centuria,castrum,plumbum,suffrāgium --write
 python3 ../fill_ipa.py && npm run packs
 ```
+
+## Old English: `draft_ang.py`
+
+The same tables, read for code `ang`. For each English word `english-core.tsv`
+carries and the Old English pack lacks, most frequent first, the Old English
+words the first two tables name, untagged by register or dialect (a
+capitalized tag is a dialect, Anglian or Northumbrian), checked against the
+word's own Old English entry in kaikki.org's Old English dump. A row is
+drafted only where that entry bears out every ledger a checked row is held
+to: one of its first two definition lines holds the English word outside a
+parenthesis (`ang-glosses.tsv`, citing `wikt:ang:<title>`); a noun has one
+gender (`ang-genders.tsv`) and its woven plural is the first form of the
+table's nominative plural cell (`ang-plurals.tsv`); a verb weaves the
+table's present participle (`ang-verb-forms.tsv`), which kaikki tags as the
+row above it, `imperative present`. And the headword is one the stress test
+and the pronunciation key read as `_ipa.py` writes it: no letter outside
+their alphabet, none of Wright's particles at its start, no undotted g
+Wright makes palatal, no ċċ (one sound under two letters), no nġ (which the
+generator writes /ndʒ/), no h inside the word before a vowel, w, l, r or n
+(it begins a second element, *lǣċe-hūs*, and the generator and the stress
+test both read it as x), and no verb in a short a-, which may be the
+unstressed ā-. The pack writes ċġ as cg. Rows are
+`decided_by` wiktionary, `status` proposed, labelled "Wiktionary,
+unreviewed", with no etymon: whether a word became the English one is a
+claim `ang-etymons.tsv` checks against the English word's own entry.
+
+Data, downloaded 2026-11-10:
+
+| File | Source | SHA-256 |
+| --- | --- | --- |
+| `kaikki.org-dictionary-English.jsonl.gz` | `https://kaikki.org/dictionary/English/kaikki.org-dictionary-English.jsonl.gz` | `4d03b6cba283744756c57ff661c2c6cbfe34fcf8ff513a966576cf7d97e91a99` (the 2026-11-09 file) |
+| `kaikki.org-dictionary-OldEnglish.jsonl.gz` | `https://kaikki.org/dictionary/Old%20English/kaikki.org-dictionary-OldEnglish.jsonl.gz` | `11657ca6c6b78fc31d2cf329f0214449448310f546a0163e35386383a69576e9` |
+
+```sh
+python3 -I extract_en.py kaikki.org-dictionary-English.jsonl.gz en-extract.jsonl 12000
+python3 -I draft_ang.py en-extract.jsonl kaikki.org-dictionary-OldEnglish.jsonl.gz ../ \
+    --limit=100 --exclude=rihtung,bēon,sōþfæst,gārsecg,elþēodiġ,rihtwīsnes,ūþwitegung,swēor \
+    --singular=ealu --write
+python3 ../fill_ipa.py && npm run packs
+```
+
+Run of 2026-11-10: **100 drafted**, the first slice — 64 nouns, 15
+adjectives, 13 verbs, 8 adverbs. Uncapped, 364 of the 3,237 English words the
+pack lacked pass. Of the rest, 2,481 have no clean Old English translation in
+their first two tables, and of the table words refused the commonest reasons
+are one of Wright's particles at the start (267, ġe- 72 of them), no one
+entry spelling the headword as the table does (117), no definition line
+holding the English word (85), and an h beginning a second element (27).
+Capped at 100 because a drafted row has no etymon, and
+`tests/tools/pedagogy.test.ts` holds `docs/PEDAGOGY.md`'s "the target is
+usually the literal ancestor" to the pack: 236 of 358 rows were ancestors,
+and a 114th draft with no etymon would end the majority. All 100 pairs were
+read, with their transcriptions. Excluded by name: *rihtung* for direction
+(its direction is guidance), *bēon* for exist, *swēor* for cousin (first a
+father-in-law), and five compounds whose second element begins with a
+fricative the generator voices or may: *sōþfæst*, which the stress test also
+refuses, *gārsecg* and *elþēodiġ*, which it does not, and *rihtwīsnes* and
+*ūþwitegung*, whose division is not certain. An exclusion matches the pack's
+spelling as well as the table's, *gārsecg* for *gārseċġ*. *ealu* weaves no
+plural: its table's *ealoþ* has the genitive singular's shape, and no text
+was read for it.

@@ -14,6 +14,14 @@ English Wiktionary agree on the gloss, the gender and the woven form. They
 say "Lewis & Short, unreviewed" in the tooltip until a person has read them,
 and the site gives a word a page only once it has been read.
 
+**Old English grows by 100 words.** Each is one of the Old English
+translations English Wiktionary gives an English word the pack did not yet
+teach, most frequent first — *þing* for thing, *strǣt* for street, *wyrd*
+for fate, *wela* for wealth — where its own Old English entry gives the
+gloss, the gender and the woven plural or participle. They say "Wiktionary,
+unreviewed" in the tooltip until a person has read them, and make no claim
+about the English word they became.
+
 ## 1.1.0
 
 Released 2026-11-09, the first release since 1.0.0 and the one the stores
