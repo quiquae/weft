@@ -1,7 +1,8 @@
 """Draft Latin rows from two candidate sources, held to one set of checks.
 
 usage: draft_la.py <dcc-latin-core.html> <lat.ls.perseus-eng1.xml> <target-la.jsonl> <seed-dir>
-                   [--translations=<en-extract.jsonl>] [--limit=n] [--exclude=word,...] [--write] [--sample=seed:n]
+                   [--translations=<en-extract.jsonl>] [--limit=n] [--exclude=word,...] [--singular=word,...]
+                   [--write] [--sample=seed:n]
 
 The candidates come from Dickinson College Commentaries' Latin Core
 Vocabulary, the thousand most frequent Latin lemmas, each with a short
@@ -31,8 +32,11 @@ pack does not yet teach, and only where every source agrees:
 Where a translation table names several Latin words that pass, the one whose
 Lewis & Short entry leads with the English word wins, then the one the table
 lists first: "build" names mūniō, to wall, before aedificō, to build.
---limit caps the translation drafts, and --exclude names Latin headwords to
-pass over, for a word a check downstream refuses.
+--limit caps the translation drafts; --exclude names Latin headwords to pass
+over, for a sense the English word does not have or a word a check downstream
+refuses; and --singular names nouns woven in the singular only, because their
+plural means something else, as castra, a camp, is not the plural a fortress
+wants (locus's rule in CLAUDE.md).
 
 Every row is status proposed: woven, labelled unreviewed, not yet read by a
 person. A row is decided_by dcc or wiktionary, the source that named it.
@@ -57,6 +61,7 @@ def option(name, default=None):
 TRANSLATIONS = option('translations')
 LIMIT = int(option('limit', '0')) or None
 EXCLUDE = set(filter(None, option('exclude', '').split(',')))
+SINGULAR = set(filter(None, option('singular', '').split(',')))
 sys.path.insert(0, str(SEED))
 from _ipa import latin_ipa  # noqa: E402
 
@@ -301,7 +306,7 @@ def check(head, english, pos, gender_hint=None):
             return None, 'a noun without one gender its sources agree on'
         gender = next(iter(tags))
         plural = cell(w, {'nominative', 'plural'})
-        if len(plural) == 1:
+        if len(plural) == 1 and head not in SINGULAR:
             tgt2, ledgers['plural'] = plural[0], f'nominative plural {plural[0]}'
     elif pos == 'verb':
         if head.endswith('or') or irregular(w):
