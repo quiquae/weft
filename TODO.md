@@ -4,11 +4,12 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-09:** every automatable check is green, measured at the end
-of this session — typecheck clean, **686** unit / 159 suites, **139** jsdom / 29
-suites, **645** tool tests / 170 suites, **47** e2e passing
+**State on 2026-11-10:** every automatable check is green, measured at the end
+of this session — typecheck clean, **686** unit / 159 suites, **140** jsdom / 29
+suites, **646** tool tests / 170 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 4204 KB each, all
+packages built at 4232 KB each, 28 KB more than 1.1.0's 4204 for Latin's 82
+drafted rows, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -730,13 +731,37 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Grow Latin and Old English the way the modern packs grew.** Both are
-      still 356 checked lemmas (14% of content words on real text, against
-      32–33% for the five modern packs since 2026-11-09). `draft.py` cannot do
-      them as it stands: Latin genders must cite Lewis & Short (`ls:`), and
-      Old English needs etymons and Bosworth–Toller where Wiktionary lacks a
-      gender. The DCC Core Latin Vocabulary is the obvious candidate list.
-      Not queued: the owner asked for this to stay cheap.
+- [ ] **Grow Latin further, from English Wiktionary's translation tables,
+      then Old English.** Latin is 356 checked lemmas and 82 drafted (the
+      item below); the five modern packs are about 2,550 each. DCC's
+      thousand lemmas are spent: of 997, 412 name no English word
+      `english-core.tsv` carries and 225 only words the pack already
+      teaches. The next source is the one `draft.py` reads, English
+      Wiktionary's translation tables, code `la`, from kaikki.org's English
+      dump (534 MB; not on disk, the run deletes its scratch copies): for
+      each English word the Latin pack lacks, its Latin translations, each
+      held to the checks `draft_la.py` already makes — an italic run of its
+      Lewis & Short entry holding the English word, the first `<gen>` outside
+      a parenthesis agreeing, one Wiktionary entry spelling the headword so
+      and giving the woven form, and the transcription's syllables, lengths
+      and stress agreeing with Wiktionary's Classical one. Shape: a second
+      candidate source inside `draft_la.py`, so the checks stay one copy.
+      The tooltip label and the site's exclusion of drafted rows are done
+      and need nothing. Old English after it: Bosworth–Toller where
+      Wiktionary lacks a gender, and no etymon on a drafted row, so it needs
+      no `ang-etymons.tsv` line. Not queued: the owner asked for this to
+      stay cheap.
+
+- [x] **Latin, first batch: 82 words from the DCC core list.** Done
+      2026-11-10, the first slice of "grow Latin and Old English the way the
+      modern packs grew". `tools/seed/wiktionary/draft_la.py` drafts a Latin
+      row where the DCC Latin Core Vocabulary, Lewis & Short and English
+      Wiktionary agree, for English words `english-core.tsv` already carries:
+      36 verbs, 32 nouns, 7 adjectives, 7 adverbs, `decided_by` dcc, `status`
+      proposed, every ledger line a checked row has. All 82 read, none
+      wrong. The tooltip says "Lewis & Short, unreviewed" for them
+      (`draftedFrom` in `src/core/languages.ts`), and the site builds no page
+      from a drafted row, so it is still 713 pages. See Notes.
 
 - [x] **Generate `/privacy` and `/support` pages in `tools/build-site.mjs`.**
       Done 2026-09-27. Both are rendered from Markdown through the same
@@ -8613,6 +8638,33 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-10 — Latin's first 82 drafts, from the DCC core list.** Things a
+later run would be sorry not to know:
+
+1. **kaikki.org's `word` key is not the first on a line.** A prefilter that
+   read the first `"word": "…"` kept 507 entries for 987 titles, because
+   nested lists carry `word` keys of their own and can come before the
+   entry's; `extract_la.py` tests every occurrence and kept 1 319. The dump is 110 MB gzipped, 1.25 GB unpacked.
+2. **The dump carries only Wiktionary's phonetic Classical transcription,**
+   `[ˈfaː.tʊ̃ː]`, with nasal vowels and a dark l the pack's phonemic one,
+   `/ˈfaːtʊm/`, does not write, so no string comparison can pass. What the
+   stress test holds is the syllables' vowels, their lengths and the
+   stressed one, and `skeleton()` in `draft_la.py` compares only that,
+   leaving a nasal vowel's length out. Exact comparison drafted 0 rows;
+   the skeleton 82.
+3. **A macron dispute is a duplicate card.** DCC gives *narrō* for "relate,
+   recount", the pack teaches "tell" as *nārrāre*, and a draft of *narrāre*
+   for "relate" would have been a second card for one word. `draft_la.py` compares headwords with their marks
+   dropped against the pack's.
+4. **DCC's definitions lead some glosses, and are kept.** *crīmen* is
+   "verdict" because DCC's definition is "verdict, accusation", and Lewis &
+   Short's first sense is "a judicial decision, verdict"; *praecipere*
+   "anticipate", *prōdere* "publish" and *sēnsus* "emotion" likewise. They are
+   labelled unreviewed, and a reader's correction is a one-line seed edit.
+5. **The load average was about 70 throughout,** from other apps, and every
+   suite ran several times slower than the command table says; the e2e
+   suite and the screenshot generators are the ones to give room.
 
 **2026-11-09 — every line the feed tells as a false friend, read.** Three
 things a later run would be sorry not to know:

@@ -84,7 +84,7 @@ adjectives, 7 adverbs). The rest: 412 name no English word `english-core.tsv`
 carries, 225 only words the pack already teaches, 83 are not content words,
 62 irregular or deponent verbs, 87 have no one Wiktionary entry spelling them
 as DCC does. So DCC's thousand lemmas are nearly spent; the next source is
-English Wiktionary's translation tables, as `draft.py` reads them. 70 of the
-82 were read: none wrong, and debatable where DCC's own definition leads —
+English Wiktionary's translation tables, as `draft.py` reads them. All 82
+were read: none wrong, and debatable where DCC's own definition leads —
 *crīmen* "verdict" (DCC: "verdict, accusation"), *praecipere* "anticipate",
-*prōdere* "publish", *sēnsus* "emotion".
+*prōdere* "publish", *sēnsus* "emotion", *quīn* "indeed".

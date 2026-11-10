@@ -117,7 +117,7 @@ impossible on day one.
 | | |
 |---|---|
 | **Languages** | French, Spanish, German, Italian, Portuguese, Latin, Old English |
-| **Lexicon** | French, Spanish, German, Italian and Portuguese: about 2,550 English lemmas each, 356 checked and the rest drafted from English Wiktionary and labelled so. Latin and Old English: 356 checked. 3.8 MB for all seven |
+| **Lexicon** | French, Spanish, German, Italian and Portuguese: about 2,550 English lemmas each, 356 checked and the rest drafted from English Wiktionary and labelled so. Latin: 356 checked and 82 drafted from the DCC core list, Lewis & Short and English Wiktionary, labelled so. Old English: 356 checked. 3.8 MB for all seven |
 | **Network** | None. No account, no telemetry, no server. Works offline. |
 | **Optional** | Bring-your-own-key DeepL, Google or any OpenAI-compatible endpoint, for words beyond the packs |
 | **Install warning** | None of the scary ones — Weft asks for no site access until you name the sites |
@@ -256,7 +256,7 @@ to no website until you answer the third one.
 ```sh
 npm run dev            # watch build
 npm run typecheck      # tsc --noEmit
-npm test               # 686 unit + 139 jsdom + 645 over the build tools
+npm test               # 686 unit + 140 jsdom + 646 over the build tools
 npm run test:e2e       # 47 tests in a real Chromium with the extension loaded
 npm run compat         # every API we use, and each target's manifest keys, against MDN's data
 npm run validate       # pre-flight the built packages against store rules
