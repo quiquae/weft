@@ -54,13 +54,14 @@ Glosses checked against:
 - **Lewis & Short**, *A Latin Dictionary* (Oxford, 1879) — public domain
 - **Whitaker's Words** — public domain
 
-The 82 Latin rows drafted on 2026-11-10 were chosen from the **DCC Latin
-Core Vocabulary** (Dickinson College Commentaries, CC BY-SA,
+The 785 Latin rows drafted on 2026-11-10 were chosen two ways: 125 from the
+**DCC Latin Core Vocabulary** (Dickinson College Commentaries, CC BY-SA,
 <https://dcc.dickinson.edu/latin-core-list1>), the thousand most frequent
-Latin lemmas: a word is drafted where DCC's definition names an English word
-the pack lacks, and its gloss and gender are then read in Lewis & Short like
-every other row's. Nothing of DCC's is copied into a pack; it decides which
-words are drafted. See `tools/seed/wiktionary/README.md`.
+Latin lemmas, where DCC's definition names an English word the pack lacks;
+and 660 from the Latin translations English Wiktionary's entries give English
+words the pack lacks. Either way a row's gloss and gender are then read in
+Lewis & Short like every other row's. Nothing of DCC's is copied into a pack;
+it decides which words are drafted. See `tools/seed/wiktionary/README.md`.
 
 Every gloss quotes the Lewis & Short entry that gives it, from the Perseus
 text, in `tools/seed/la-glosses.tsv`, and `tests/tools/la-glosses.test.ts`

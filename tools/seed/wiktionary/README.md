@@ -88,3 +88,51 @@ English Wiktionary's translation tables, as `draft.py` reads them. All 82
 were read: none wrong, and debatable where DCC's own definition leads —
 *crīmen* "verdict" (DCC: "verdict, accusation"), *praecipere* "anticipate",
 *prōdere* "publish", *sēnsus* "emotion", *quīn* "indeed".
+
+### The second source: English Wiktionary's translation tables
+
+`--translations=<en-extract.jsonl>`, `extract_en.py`'s cut of the English dump,
+adds a second candidate list to the same checks: for each English word
+`english-core.tsv` carries and the pack lacks, most frequent first, the Latin
+words the first two tables of its entry name, as `draft.py` reads them,
+untagged by period, register or number (Medieval and New Latin come tagged).
+Where several pass, the one whose Lewis & Short entry leads with the English
+word wins, then the first listed: "build" names *mūniō*, to wall, before
+*aedificō*. `extract_la.py` takes the same file to keep the Latin entries the
+tables name.
+
+A headword with no marks is read from its headword line: kaikki writes a
+canonical form only where it differs from the page's title, so *verbum*,
+*cattus* and *magnus* were refused by both sources until this run, and 43
+DCC words came through with them.
+
+Run of 2026-11-10, the second: **703 drafted**, 660 from the tables and 43
+from DCC — 441 nouns, 147 adjectives, 87 verbs, 28 adverbs — of 3,155
+English words the pack lacked. Of the rest, 1,275 have no clean Latin
+translation in their first two tables, 584 none Wiktionary spells as its
+entry does (a table often writes no macrons, `feles` for *fēlēs*), 345 none
+Lewis & Short glosses. All 703 pairs were read, and the 43 DCC rows and a
+random 100 of the tables' with their Lewis & Short quotes. Excluded by name
+for a sense the English word does not have on a reader's page, or a form
+the checks downstream refuse: *ops* (no classical nominative, and *opēs* is
+wealth), *castrum* (*castra* is a camp), *commercium* for traffic, *rudis*
+for foil, *centuria* for century, *officium* for office, *senātrīx* for
+senator, *mangō* (a slave dealer) for dealer, *pars* for direction, *agere*
+for negotiate, *articulus* for article, *tumor* for excitement, *plumbum* for
+pencil, *participium*, *abagmentum*, *classis*, *diaeresis*, *praeductal*,
+*mēlōtris*, and *suffrāgium*, whose *ffr* the stress test divides where the
+generator does not. And four nouns are woven in the singular only, their
+plurals meaning something else, by the rule `locus` set: *auxilia* are
+auxiliary troops, *subsidia* reserves, *nātālēs* a lineage, and *cōpiae*,
+under the first batch's *cōpia*, troops or supplies.
+
+The English dump is the one `draft.py` read on 2026-11-09, by its SHA-256;
+the Latin dump and Lewis & Short are the first run's.
+
+```sh
+python3 -I extract_en.py kaikki.org-dictionary-English.jsonl.gz en-extract.jsonl 12000
+python3 -I extract_la.py dcc-latin-core.html kaikki.org-dictionary-Latin.jsonl.gz target-la.jsonl en-extract.jsonl
+python3 -I draft_la.py dcc-latin-core.html lat.ls.perseus-eng1.xml target-la.jsonl ../ \
+    --translations=en-extract.jsonl --singular=cōpia,auxilium,subsidium,nātālis --exclude=ops,abagmentum,rudis,commercium,participium,classis,diaeresis,tumor,praeductal,mēlōtris,pars,agere,senātrīx,articulus,mangō,officium,centuria,castrum,plumbum,suffrāgium --write
+python3 ../fill_ipa.py && npm run packs
+```

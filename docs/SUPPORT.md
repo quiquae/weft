@@ -58,8 +58,8 @@ Three different things wear that description:
 
 - **A wrong gloss.** Each lexicon has 356 checked English lemmas, and the
   five modern ones about 2,200 more drafted from English Wiktionary, which
-  the tooltip marks "Wiktionary, unreviewed"; Latin has 82 drafted from Lewis
-  & Short, marked "Lewis & Short, unreviewed". Any word can still be the
+  the tooltip marks "Wiktionary, unreviewed"; Latin has 785 drafted, glossed
+  from Lewis & Short and marked "Lewis & Short, unreviewed". Any word can still be the
   wrong sense for your sentence. Report it; it is a one-line fix in `tools/seed/`.
 - **A word that will not revert.** Difficulty only ever rises inside a page.
   Whatever is on screen stays, so a word you have just decoded cannot flip

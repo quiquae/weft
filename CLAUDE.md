@@ -17,8 +17,9 @@ and — for Latin and Old English — the English word it became. Seven language
 ship with a lexicon: French, Spanish, German, Italian, Portuguese, Latin, Old
 English (356 checked English lemmas each, and in the five modern packs about
 2,200 more drafted from English Wiktionary, `status` proposed, which the tooltip
-labels "Wiktionary, unreviewed", and in Latin 82 drafted from the DCC core list,
-labelled "Lewis & Short, unreviewed"; `tools/seed/wiktionary/`). It
+labels "Wiktionary, unreviewed", and in Latin 785 drafted from the DCC core
+list and English Wiktionary's translation tables, labelled "Lewis & Short,
+unreviewed"; `tools/seed/wiktionary/`). It
 is for someone who wants the browsing time they were going to lose anyway to
 buy them vocabulary. There is no account, no server and no telemetry; it works
 offline, and it installs with **no** host permissions until the user names
@@ -71,7 +72,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4232 KB unpacked for each of the three, 3.8 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4470 KB unpacked for Chrome and Safari and 4471 for Firefox, 4.0 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1115,6 +1116,92 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-10 — Latin's second batch, 703 rows from English Wiktionary's translation tables
+
+`TODO.md`'s top item, "grow Latin further, from English Wiktionary's
+translation tables, then Old English", split as it allowed: Latin is this
+PR, and Old English is the new top item. `draft_la.py` takes
+`--translations=`, `extract_en.py`'s cut of the English dump: for each English
+word `english-core.tsv` carries and the pack lacks, most frequent first, the
+Latin words its entry's first two translation tables name, as `draft.py`
+reads them, held to the checks the DCC source passes; where several pass, the
+one whose Lewis & Short entry leads with the English word wins, so "build" is
+*aedificāre* and not *mūnīre*, to wall. **703 drafted**: 660 from the tables,
+43 from DCC — 441 nouns, 147 adjectives, 87 verbs, 28 adverbs. Latin is 356
+checked and 785 drafted, 1 938 entries across 1 926 surface forms.
+
+**The 43 DCC rows were a defect in the shared check, found by asking why
+2 068 table words failed one test.** kaikki writes a canonical form only where
+the headword differs from the page's title, so *verbum*, *cattus*, *magnus*
+and every headword with no long vowel had none, and the check refused them
+all, in the first batch too. `headword()` and `genders()` read the headword
+line, "verbum n (genitive verbī)", instead. The ambiguity guard had a bug of
+its own: its first draft counted modern translations through the Latin letter
+check, so German's capitalised nouns went uncounted; counted as `draft.py`
+counts them it fires on no wanted word.
+
+**Reading found 19 Latin words wrong for their English word, and four plurals; the shape of most is worth keeping.** All
+703 pairs were read, and 143 with their Lewis & Short quotes, a random 100 of
+the tables' and all 43 DCC rows. Latin has no table for many English words'
+first sense, so the first two tables reach a lesser one: *commercium* for
+traffic, *rudis*, a fencing foil, for foil, *centuria* for century,
+*officium* for office. Two narrower rules were tried and reverted, because
+kaikki numbers sub-senses (oak's tree is its fifth) and matches a table's
+label to a gloss by exact words ("amphibian" misses "amphibians"): each cost
+60 or more right rows, *rāna*, *quercus*, *avus*, to save two. So 20 Latin
+words are excluded by name, `--exclude`, among them *suffrāgium*, whose *ffr*
+the stress test divides where the generator does not, the one failure the
+ledger suites found in 703 rows. **An exclusion ripples**: excluding *ops*
+moved *auxilium* to "assistance" and pushed "distribution" onto *diaeresis*,
+which a diff of the drafts caught and a count would not. And four nouns weave
+no plural, `--singular`, by `locus`'s rule: *auxilia* are auxiliary troops,
+*subsidia* reserves, *nātālēs* a lineage, and the first batch's *cōpiae*
+troops or supplies.
+
+**One commit of this branch dropped the rows from four ledgers, and the gate
+could not see it.** The redraft reset the seed with `git checkout <commit> --
+<paths>`, which stages what it restores, and the commit that followed took
+only the files meant to change, so it also committed the staged pre-data
+gloss, gender, verb-form and card-id ledgers; the gate passed on the working
+tree, which still held them. A `git status` before the next push showed four
+ledgers modified, and the commit after it puts back the first data commit's
+bytes. **Redraft with `git restore --source=<commit> --worktree`.**
+
+Every ledger line is the drafter's, so the existing guards hold all 703 with
+no new test: glosses, genders, plurals, verb forms, card ids, the stress test
+and the orthography guard all read them, and the tools suite passed 646 of
+646 on the final seed. The redraft from the pre-data seed reproduced the same
+703. All three screenshot groups were regenerated twice: store 10 and
+first-run 7 byte-identical, and the documentation set's three noisy shots
+each the recorded noise in one run and their commit in the other, so the
+committed bytes stand and the groups are stamped. The site is still 713 pages
+and 15 392 links, drafted rows having none. Five documents' counts moved, 82
+→ 785 drafted; no test count did. The Latin pack grew 140 964 → 385 097
+bytes, the seven packs 3.8 → 4.0 MB, and each package 4232 → **4470** KB,
+Firefox's 4471.
+
+Measured on Node 26.7, with npm's own exit status captured: `npm run test:all`
+**exit 0** — typecheck clean, 686 unit / 159, 140 jsdom / 29, 646 tools / 170,
+compat 17 dependencies × 3 browsers, 44 pass / 7 degrade, and 97 manifest
+keys, 87 pass / 3 degrade / 7 untracked, 0 fail / 0 without data, **4470 KB**
+for Chrome and Safari and **4471** for Firefox, passing `validate`, **47 e2e
+passed and 3 skipped in 8.0 min**, then build and validate again; the gate on
+the 703-row tree before the singular change exited 0 too, at 4471 KB × 3.
+Separately `packs:verify` **0 errors / 5 warnings**, Latin at 1 938 entries
+across 1 926 surface forms; `npm run site` then `site:check` **713 pages /
+15 392 links**, all resolving, `/support` printing the new count; and
+`artefacts:check` **8 groups, 1 stale**, the release notes for 1.1.0. Only
+documents moved after the gate, so typecheck and `npm test` were run again on
+the final tree.
+
+Assumed, with nobody to ask: that `draft.py`'s first two tables, the reading
+the item named, beat a narrower rule that lost more right words than it
+saved, the wrong ones being excluded by name; that a row whose plural means
+something else weaves none, as `locus`'s rule says; and that the Old English
+half stays unqueued in `cq`, the owner having asked for this to stay cheap.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-10 — Latin's first 82 drafts, from the DCC core list
 

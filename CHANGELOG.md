@@ -4,10 +4,12 @@
 
 Not cut yet: `VERSION` is still 1.1.0.
 
-**Latin grows by 82 words.** Words from the Dickinson College Commentaries'
-Latin core list, the thousand most frequent in Latin, are drafted for
-English words the Latin pack did not yet teach — *victōria* for victory,
-*amīcitia* for friendship, *dēfendere* for defend — where Lewis & Short and
+**Latin grows by 785 words.** 125 come from the Dickinson College
+Commentaries' Latin core list, the thousand most frequent in Latin —
+*victōria* for victory, *amīcitia* for friendship, *dēfendere* for defend —
+and 660 from the Latin translations English Wiktionary gives English words,
+*rēs* for thing, *quercus* for oak, *rāna* for frog. Each is drafted for an
+English word the Latin pack did not yet teach, where Lewis & Short and
 English Wiktionary agree on the gloss, the gender and the woven form. They
 say "Lewis & Short, unreviewed" in the tooltip until a person has read them,
 and the site gives a word a page only once it has been read.

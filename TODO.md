@@ -8,8 +8,8 @@
 of this session — typecheck clean, **686** unit / 159 suites, **140** jsdom / 29
 suites, **646** tool tests / 170 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 4232 KB each, 28 KB more than 1.1.0's 4204 for Latin's 82
-drafted rows, all
+packages built at 4470–4471 KB each, 266 KB more than 1.1.0's 4204 for
+Latin's 785 drafted rows, all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -731,26 +731,43 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Grow Latin further, from English Wiktionary's translation tables,
-      then Old English.** Latin is 356 checked lemmas and 82 drafted (the
-      item below); the five modern packs are about 2,550 each. DCC's
-      thousand lemmas are spent: of 997, 412 name no English word
-      `english-core.tsv` carries and 225 only words the pack already
-      teaches. The next source is the one `draft.py` reads, English
-      Wiktionary's translation tables, code `la`, from kaikki.org's English
-      dump (534 MB; not on disk, the run deletes its scratch copies): for
-      each English word the Latin pack lacks, its Latin translations, each
-      held to the checks `draft_la.py` already makes — an italic run of its
-      Lewis & Short entry holding the English word, the first `<gen>` outside
-      a parenthesis agreeing, one Wiktionary entry spelling the headword so
-      and giving the woven form, and the transcription's syllables, lengths
-      and stress agreeing with Wiktionary's Classical one. Shape: a second
-      candidate source inside `draft_la.py`, so the checks stay one copy.
-      The tooltip label and the site's exclusion of drafted rows are done
-      and need nothing. Old English after it: Bosworth–Toller where
-      Wiktionary lacks a gender, and no etymon on a drafted row, so it needs
-      no `ang-etymons.tsv` line. Not queued: the owner asked for this to
-      stay cheap.
+- [ ] **Grow Old English from English Wiktionary's translation tables.**
+      The Latin half of "grow Latin further, then Old English" is done (the
+      item below); Old English is 356 checked lemmas and nothing drafted.
+      The tables `draft_la.py` now reads carry code `ang` too, and
+      `extract_en.py` already keeps it. A drafted Old English row has to
+      pass what a checked one does: a gloss quoting English Wiktionary's Old
+      English entry, or Bosworth–Toller where Wiktionary lacks the word or
+      its gender (`ang-glosses.tsv`, with `FORM_OF` for a ð spelling whose
+      page only names the þ one); a noun's gender read there
+      (`ang-genders.tsv`); the woven plural or participle quoted from its
+      table cell (`ang-plurals.tsv`, `ang-verb-forms.tsv`, by
+      `tests/tools/ang-forms.test.ts`'s rules); and a transcription Wright
+      holds by `tests/tools/old-english-stress.test.ts`, which refuses a
+      headword beginning with one of his particles unless `COMPOUNDED` or
+      `SIMPLE` lists it, so a drafter refuses those or lists them. No etymon
+      on a drafted row, so no `ang-etymons.tsv` line. `draftedFrom` names no
+      source for Old English, so the tooltip would print "Wiktionary,
+      unreviewed" (`tooltip.ts:320`), true only while every drafted gloss
+      quotes Wiktionary. Shape: the translation-table reading in
+      `draft_la.py` (`tables`, `clean`, the first two tables, `--exclude`)
+      and one check per ledger above. Data: kaikki.org's English dump (534
+      MB) and its Old English one; the run deletes its scratch copies. Not
+      queued in `cq`: the owner asked for this to stay cheap.
+
+- [x] **Latin, second batch: 703 words from English Wiktionary's translation
+      tables.** Done 2026-11-10, the Latin half of "grow Latin further, then
+      Old English". `draft_la.py --translations=` reads, for each English
+      word the pack lacked, the Latin words its entry's first two
+      translation tables name, through the checks the DCC source passes, the
+      one whose Lewis & Short entry leads with the English word preferred;
+      and a headword with no marks is now read from its headword line, which
+      let through 43 DCC words a missing canonical form had refused. 660
+      from the tables and 43 from DCC: 441 nouns, 147 adjectives, 87 verbs,
+      28 adverbs. All 703 pairs read, 143 of them with their Lewis & Short
+      quotes; 20 Latin words excluded by name, and four nouns woven in the
+      singular only, their plurals meaning something else. Latin is 356
+      checked and 785 drafted, 1 938 entries. See Notes.
 
 - [x] **Latin, first batch: 82 words from the DCC core list.** Done
       2026-11-10, the first slice of "grow Latin and Old English the way the
@@ -8638,6 +8655,58 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-10 — Latin's second batch, 703 rows from the translation tables.**
+Things a later run would be sorry not to know:
+
+1. **kaikki writes a canonical form only where the headword differs from
+   the title.** *verbum*, *cattus*, *magnus*, every headword with no long
+   vowel, have none, and their gender is only in the headword line,
+   "verbum n (genitive verbī)". `draft_la.py` required one, so both sources
+   refused every markless word; `headword()` and `genders()` read the line
+   now, and 43 DCC words came through with them.
+2. **kaikki's sense index counts sub-senses, so it is not a rank.** Oak's
+   tree is its fifth sense, grandfather's table sits on its third. Taking
+   only the tables of senses 0 and 1 dropped 67 right rows (*rāna*,
+   *quercus*, *avus*, *prōcērus*) to remove traffic's *commercium* and foil's
+   *rudis*; taking only the sense every language translates first lost
+   *rāna* too, because a table's label is matched to a gloss by exact
+   words and "amphibian" misses "amphibians". Both were reverted for
+   `draft.py`'s first two tables and an exclusion list. A better rule wants
+   labels matched to senses by stems.
+3. **An exclusion ripples.** Excluding *ops* moved *auxilium* to
+   "assistance", which pushed "distribution" onto *diaeresis*, a syllable's
+   division. After changing `--exclude`, diff the drafts before and after,
+   not only the count.
+4. **The ambiguity guard counts modern translations the way `draft.py`
+   does.** Its first draft counted them through the Latin letter check, so
+   German's capitalised nouns and every accented word went uncounted.
+   Counted as `draft.py` counts them, region-tagged translations set aside,
+   no wanted word exceeds three, and the guard fires on none.
+5. **584 English words fail only because a table writes no macrons,**
+   `feles` where the entry is *fēlēs*. Taking the entry's spelling where the
+   table writes no marks at all would draft a few hundred more, with one
+   source for vowel length where the checks now want two: a call for
+   whoever grows Latin next.
+6. **A drafted noun's plural can be another word's sense,** as *castra*,
+   a camp, is not fortresses. Four were found by checking the drafted nouns
+   against a short list of Latin plurals that shift their sense, not by
+   reading every entry: *auxilia*, *subsidia*, *nātālēs* and *cōpiae*, each
+   now woven in the singular only (`--singular`). Nothing checks this; a
+   reader of Lewis & Short's "plur." clauses would find more.
+7. **`git checkout <commit> -- <paths>` stages what it restores.** Resetting
+   the seed to redraft that way, then committing only the files the
+   redraft meant to change, committed the staged pre-data ledgers too: one
+   commit took the 703 rows out of four ledgers while `lex-la.tsv` kept
+   them, every test still green on the working tree. To redraft from an
+   older seed use `git restore --source=<commit> --worktree -- <paths>`, and
+   compare the commit's tree with the gate's (`git diff --stat <commit>`)
+   before pushing.
+8. **The dumps came down in about a minute** on this connection, the
+   English one byte-identical to 2026-11-09's by its SHA-256, and the whole
+   pipeline, extract to draft, ran in a few minutes. `orjson` and
+   `wordfreq` are not installed system-wide; a venv in the scratch
+   directory took 80 MB.
 
 **2026-11-10 — Latin's first 82 drafts, from the DCC core list.** Things a
 later run would be sorry not to know:
