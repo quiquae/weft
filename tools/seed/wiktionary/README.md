@@ -159,7 +159,8 @@ generator writes /ndʒ/), no h inside the word before a vowel, w, l, r or n
 test both read it as x), and no verb in a short a-, which may be the
 unstressed ā-. The pack writes ċġ as cg. Rows are
 `decided_by` wiktionary, `status` proposed, labelled "Wiktionary,
-unreviewed", with no etymon: whether a word became the English one is a
+unreviewed", and carry an etymon only where the English word's own entry
+inherits the word (below): whether a word became the English one is a
 claim `ang-etymons.tsv` checks against the English word's own entry.
 
 Data, downloaded 2026-11-10:
@@ -197,3 +198,52 @@ refuses, *gārsecg* and *elþēodiġ*, which it does not, and *rihtwīsnes* and
 spelling as well as the table's, *gārsecg* for *gārseċġ*. *ealu* weaves no
 plural: its table's *ealoþ* has the genitive singular's shape, and no text
 was read for it.
+
+### The etymon
+
+A draft carries an etymon only where the English word's own entry, the one
+whose translation table named the Old English word, inherits it: an
+`{{inh|en|ang|<word>}}` naming it, marks dropped and ð read as þ, with no
+hedge ("probably", "perhaps", "possibly", "uncertain") up to the end of the
+clause that names it, no "partly", "blend" or "merger" anywhere in the
+etymology, and no second source in its sentence: *gem* is "from Old English
+ġimm … and Old French gemme". That is the standard `ang-etymons.tsv` was
+read to on 2026-10-01, and the line cites `wikt:en:<english>`.
+`extract_en.py` keeps each etymology template's name, to tell `inh` from
+`der` and `bor`, and the etymology's text, read from its first line holding
+a "from", since kaikki puts the etymology tree's lines first. A hedge after
+the clause is about the Old English word's own origin and is let stand:
+*knot* is "from Old English cnotta, from Proto-West Germanic *knottō …;
+probably ultimately from Proto-Indo-European".
+
+Run of 2026-11-17, on the same two dumps by their SHA-256: of the 364
+English words with a passing translation, **50** inherit it — 9 of the 100
+drafted on 2026-11-10, whose etymons `--etymons` wrote, and 41 of the other
+264. `--inherited`, which drafts only such a word and prefers it among a
+table's passes, drafted **44**: the 41 and three whose table names a second
+word the English entry inherits, *spīþra* for spider where *loppe* came
+first, *ġiellan* for yell and *spearca* for spark. 34 nouns, 8 verbs, 2
+adjectives. Of the 314 of the 364 that do not inherit their word, 267
+inherit no Old English word at all: the tables put Old English to an
+English word mostly French or Latin, *example*, *special*, *action*, which
+nothing Old English became. 43 inherit another Old English word than the
+table's, *become* from *becuman* and not *weorþan*, *cyċen* and *elboga*
+among them as variants of the table's *cyċene* and *elnboga*, which the
+check does not fold. Four are refused for the text: *wela* for wealth,
+which the first run guessed an ancestor, for its entry's "possibly",
+*draca* for "probably", *meltan* for "a merger" and *gem* for its second
+source. After the 44, 226 English words still have a passing translation
+their entry does not inherit. All 44 were read with their transcriptions. *þīefþ*
+was /ˈθiːevθ/, an *f* voiced before a voiceless *þ*, which the stress test
+refused: `_ipa.py` counted the letters þ and ð as voiced context, and no
+longer does; 845 transcriptions were compared with the changed generator,
+and exactly that word's two moved.
+
+```sh
+python3 -I extract_en.py kaikki.org-dictionary-English.jsonl.gz en-extract.jsonl 12000
+python3 -I draft_ang.py en-extract.jsonl kaikki.org-dictionary-OldEnglish.jsonl.gz ../ \
+    --exclude=rihtung,bēon,sōþfæst,gārsecg,elþēodiġ,rihtwīsnes,ūþwitegung,swēor --singular=ealu --etymons
+python3 -I draft_ang.py en-extract.jsonl kaikki.org-dictionary-OldEnglish.jsonl.gz ../ \
+    --exclude=rihtung,bēon,sōþfæst,gārsecg,elþēodiġ,rihtwīsnes,ūþwitegung,swēor --singular=ealu --inherited --write
+python3 ../fill_ipa.py && npm run packs
+```

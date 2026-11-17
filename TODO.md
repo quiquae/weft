@@ -4,12 +4,14 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-10:** every automatable check is green, measured at the end
+**State on 2026-11-17:** every automatable check is green, measured at the end
 of this session — typecheck clean, **686** unit / 159 suites, **140** jsdom / 29
 suites, **646** tool tests / 170 suites, **47** e2e passing
-with 3 asset-generator specs skipped by design, compat clean, all three
-packages built at 4503 KB each, 299 KB more than 1.1.0's 4204 for
-Latin's 785 drafted rows and Old English's 100, all
+with 3 asset-generator specs skipped by design, compat clean, the packages
+built at 4519 KB for Chrome and 4520 for Firefox and Safari, 316 KB more
+than 1.1.0's 4204 for Latin's 785 drafted rows and Old English's 144 —
+the 44 of 2026-11-17 and the nine etymons added the Old English pack's
+17 293 bytes, Chrome's 4502.611 → 4519.499 KB — all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -731,39 +733,48 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Old English, second batch: settle the etymon, then draft the other
-      264.** The first 100 landed on 2026-11-10 (the item below), and the
-      same `draft_ang.py` passes 364 uncapped, so 264 wait — but not on
-      time. A drafted row carries no etymon, and
-      `tests/tools/pedagogy.test.ts` holds `docs/PEDAGOGY.md`'s "the target
-      is usually the literal ancestor" to the pack, counting a row an
-      ancestor only where its `etymonOf` is its English word: 236 of 458
-      rows now, so a 14th draft more ends the majority and turns the test
-      red. Three shapes, of which (1) is agent-shaped and (2) changes published
-      copy, Creagh's call: (1) draft
-      the etymon where English Wiktionary's own English entry says the word
-      is inherited from exactly this Old English one, an `inh` template
-      naming it, with an `ang-etymons.tsv` line citing `wikt:en:<english>`,
-      which `tests/tools/etymons.test.ts` accepts — `extract_en.py` keeps
-      the templates' arguments but not their names or the etymology's
-      text, so it would have to keep both, to tell `inh` from `der` and to
-      refuse "partly", "probably" and "perhaps", the standard the
-      2026-10-01 pass set; many of the 364 look like ancestors (*þing*,
-      *strǣt*, *dǣd*, *wela*), which nobody has counted, so this may keep
-      the claim true outright; (2) restate the claim as one about the checked rows, and
-      move the test with it, which leaves drafted ancestors untold in the
-      tooltip; (3) both. Recommended: (1), held by the etymon ledger like
-      every checked etymon, labelled unreviewed with the row. The 264 also
-      want the particle words: 267 table words were refused for one of
-      Wright's particles at their start, ġe- 72 of them, and each wants
-      reading in its Wiktionary etymology to list it in
-      `old-english-stress.test.ts`'s `COMPOUNDED` or `SIMPLE` and the
-      generator's `ANG_PREFIXED`. Data and commands are in
-      `tools/seed/wiktionary/README.md`; the run deletes its scratch
-      copies. And compounds: 27 table words were refused for an h beginning
-      a second element, which wants `COMPOUNDED` and `ANG_COMPOUNDED` lines
-      to be transcribed right. About two hours for (1) and the 264, more
-      with the particles.
+- [ ] **Old English, third batch: the ten inherited words a particle kept
+      out.** Found 2026-11-17 by the second batch below: with Wright's
+      particle check lifted in a scratch copy, `draft_ang.py --inherited`
+      drafts ten more, every one inheriting its English word —
+      *understandan*, *ġewær* (aware), *ġebyrddæġ* (birthday), *bisiġ*
+      (busy), *midniht*, *forġiefan*, *berġe* (berry), *ofn* (oven),
+      *ǣmete* (ant), *forġiefnes*. Four are not prefixed at all, the check
+      reading a spelling: *bisiġ*, *berġe*, *ofn* and *ǣmete* want `SIMPLE`
+      lines in `tests/tools/old-english-stress.test.ts`, each read in its
+      Wiktionary etymology. The other six want reading in Wright §§10–15 and
+      their entries for where the stress falls and where the word divides:
+      a `COMPOUNDED` line, and an `ANG_PREFIXED` or `ANG_COMPOUNDED` line in
+      `tools/seed/_ipa.py`, before the drafter is told to take them (an
+      `--allow=` list, say, so the particle check stays the default). Each
+      raises the ancestor count, which is the room the item in `Next` needs.
+      The 27 words refused for an h beginning a second element have not been
+      probed the same way; do that first, it is one `sed`. About 45 minutes;
+      the dumps and commands are in `tools/seed/wiktionary/README.md`, and
+      the run deletes its scratch copies.
+
+- [x] **Old English, second batch: settle the etymon, then draft the
+      inherited words.** Done 2026-11-17, a slice of "settle the etymon,
+      then draft the other 264". Shape (1) was built and measured, and it
+      cannot carry the 264: `extract_en.py` now keeps each etymology
+      template's name and the etymology's text, and `draft_ang.py` gives a
+      row an etymon only where the English word's own entry has
+      `{{inh|en|ang|<word>}}` naming it, with no hedge on the way and no
+      second source in its sentence, citing `wikt:en:<english>` in
+      `ang-etymons.tsv`. Of the 364 English words with a passing
+      translation, **50** inherit it: 9 of the 100 drafted on 2026-11-10,
+      whose etymons `--etymons` wrote, and 41 of the 264. The tables put Old
+      English to English words mostly French or Latin, *example*,
+      *special*, *action*, which nothing Old English became; *wela*, which
+      the item guessed an ancestor of wealth, is refused for its entry's
+      "possibly". So `--inherited` drafted only words whose English entry
+      inherits them, **44** (the 41 and three whose table named an
+      inherited second word: *spīþra*, *ġiellan*, *spearca*), and the
+      ancestors went from 236 of 458 rows to **289 of 502**. All 44 read
+      with their transcriptions; *þīefþ* had its *f* voiced before a
+      voiceless *þ*, because `_ipa.py` counted the letters þ and ð as voiced
+      context — fixed, 845 cells compared, exactly that word's two moved.
+      See Notes.
 
 - [x] **Old English, first batch: 100 words from English Wiktionary's
       translation tables.** Done 2026-11-10. `tools/seed/wiktionary/draft_ang.py`
@@ -2993,6 +3004,26 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
       stamping.
 
 ## Next
+
+- [ ] **Old English: decide what the pack's 226 uninherited drafts would
+      do to "usually the literal ancestor".** Creagh's call, found
+      2026-11-17. After the second batch, 226 English words the pack lacks
+      have an Old English translation that passes every ledger and that
+      their own English entry does not inherit: *bȳsn* for example,
+      *synderlīċ* for special, *dǣd* for action. `docs/PEDAGOGY.md` says
+      "for Old English, the target is usually the literal ancestor", and
+      `tests/tools/pedagogy.test.ts` holds it to a majority of the seed's
+      rows, 289 of 502 now: room for 75 drafts without an etymon, fewer
+      once a checked row without one lands. Shapes: (1) restate the claim as
+      one about the checked rows, or about the words a reader meets first,
+      which changes published copy, and draft all 226; (2) draft up to the
+      room, most frequent first, leaving the claim true by a few rows; (3)
+      draft only inherited words, as the second batch did, and leave the 226
+      to the modern packs' way of teaching a word. Recommended: (3) until
+      the particle and compound words are read, which adds inherited rows
+      and so room, then (2) if breadth is wanted; (1) is the honest shape
+      if the pack should grow past that, because the claim was written of a
+      pack built for descent.
 
 - [ ] **Build or drop the four function-word switches.** Found 2026-11-08,
       and a call for Creagh. Settings offers articles, prepositions,
@@ -8681,6 +8712,46 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-17 — Old English's second batch: the etymon, measured.** Things a
+later run would be sorry not to know:
+
+- **A translation table is not a list of ancestors.** The item hoped an
+  etymon drafted from the English word's own entry might keep "usually the
+  literal ancestor" true for all 364. It keeps it for 50: the tables put Old
+  English to the English words the pack lacks, and those are mostly French
+  or Latin, *example*, *special*, *action*, *average*. 267 of the 314 that
+  do not inherit their word inherit no Old English word at all. Count before
+  planning on a claim staying true.
+- **kaikki puts the etymology tree first.** `etymology_text` opens with
+  "Etymology tree", then one ancestor a line, "Old English þing", and only
+  then the prose. A search for the Old English word lands in the tree, and a
+  hedge check cut at the next ", from " reads the wrong sentence.
+  `prose()` in `draft_ang.py` starts at the first line holding a "from". A
+  `grep` of the report shows only the first line of each, so read
+  multi-line text in a script, not through a line filter.
+- **The stress test caught what a reader nearly did.** *þīefþ* came out
+  /ˈθiːevθ/: `_ipa.py`'s `VOICED_CONTEXT` held the letters þ and ð, so an
+  *f* before a voiceless *þ* was voiced. The test's own `VOICED` never had
+  them, which is why every existing transcription agreed with both: no
+  fricative stood beside a þ or ð until this word. Fixed in the generator,
+  test-first in its self-check; all 845 cells compared, two moved. A
+  geminate *þþ* would have been /ðː/ the same way, and none is in the pack.
+- **Variants the check does not fold.** *kitchen* inherits *cyċen* and the
+  table gave *cyċene*; *elbow* *elboga* where the table gave *elnboga*. Both
+  print the table's word beside the template's in the same clause. Folding
+  them would take two etymons; it was left, being a rule for two words.
+- **The drafted note still says the dumps were downloaded 2026-11-10.** They
+  were downloaded again on 2026-11-17 into `/tmp`, and their SHA-256s are
+  the recorded ones, byte for byte, kaikki not having rebuilt since
+  2026-10-30. So the 44 rows sit under the first batch's comment line, which
+  `draft_ang.py` writes only when the line differs.
+- **Assumed:** that a drafted etymon is labelled enough by the tooltip's
+  "Wiktionary, unreviewed" beside the badge, as the item recommended; the
+  dashboard's feed tells a drafted descent as it tells a checked one, with
+  no label, which nothing tests either way. And that preferring an
+  inherited word among a table's passes is right: it put *spīþra* for
+  spider where *loppe* came first.
 
 **2026-11-10 — Old English's first batch, 100 rows from the translation
 tables.** Things a later run would be sorry not to know:
