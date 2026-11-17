@@ -5,8 +5,10 @@ usage: extract_en.py <dump.jsonl.gz> <out.jsonl> [top_n]
 Keeps English entries whose headword is among wordfreq's top_n English forms
 (lowercase, letters only) and whose part of speech the packs weave. For each:
 senses (gloss + tags), inflected forms, translations into the seven Weft
-languages, and the etymology templates naming an Old English, Latin, French or
-Old French source.
+languages, the etymology templates naming an Old English, Latin, French or
+Old French source, each with its name, and the etymology's text. The name
+tells an inherited word (inh) from a derived or borrowed one, and the text
+carries the hedges ("partly", "probably") a template does not.
 """
 import gzip
 import sys
@@ -49,10 +51,11 @@ with gzip.open(dump, 'rb') as f, open(out_path, 'wb') as out:
                 if t.get('code') in LANGS and t.get('word')
             ],
             'etymology': [
-                e.get('args', {})
+                {'name': e['name'], 'args': e.get('args', {})}
                 for e in d.get('etymology_templates', [])
                 if e.get('name') in ETYM and e.get('args', {}).get('2') in SOURCES
             ],
+            'etymology_text': d.get('etymology_text', ''),
         }
         out.write(orjson.dumps(rec) + b'\n')
         kept += 1

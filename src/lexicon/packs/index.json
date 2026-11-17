@@ -1,14 +1,14 @@
 {
   "format": 1,
   "version": "2026.09.1",
-  "builtAt": "2026-11-10",
+  "builtAt": "2026-11-17",
   "packs": [
     {
       "source": "en",
       "target": "ang",
       "file": "en-ang.json",
-      "entryCount": 755,
-      "lemmaCount": 456,
+      "entryCount": 836,
+      "lemmaCount": 500,
       "bands": [
         1,
         2,
