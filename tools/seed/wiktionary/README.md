@@ -157,7 +157,8 @@ Wright makes palatal, no ċċ (one sound under two letters), no nġ (which the
 generator writes /ndʒ/), no h inside the word before a vowel, w, l, r or n
 (it begins a second element, *lǣċe-hūs*, and the generator and the stress
 test both read it as x), and no verb in a short a-, which may be the
-unstressed ā-. The pack writes ċġ as cg. Rows are
+unstressed ā-; a particle or such an h passes only where `--allow` names a
+word whose division has been read (below). The pack writes ċġ as cg. Rows are
 `decided_by` wiktionary, `status` proposed, labelled "Wiktionary,
 unreviewed", and carry an etymon only where the English word's own entry
 inherits the word (below): whether a word became the English one is a
@@ -247,3 +248,32 @@ python3 -I draft_ang.py en-extract.jsonl kaikki.org-dictionary-OldEnglish.jsonl.
     --exclude=rihtung,bēon,sōþfæst,gārsecg,elþēodiġ,rihtwīsnes,ūþwitegung,swēor --singular=ealu --inherited --write
 python3 ../fill_ipa.py && npm run packs
 ```
+
+### Words whose division was read: `--allow`
+
+The particle and h checks refuse a word for its spelling: one of Wright's
+particles at its start, or an h inside it that only an element begins with.
+`--allow=` names headwords whose division has been read, which the two checks
+then pass. Each needs a line in `tests/tools/old-english-stress.test.ts`,
+`COMPOUNDED` or `SIMPLE`, which refuses an unlisted one, and, where its stress
+or its h differs from a simple word's, one in `_ipa.py`'s `ANG_PREFIXED` or
+`ANG_COMPOUNDED`.
+
+Run of 2026-11-18, on the same two dumps: with both checks lifted in a scratch
+copy, `--inherited` drafts **12** words and no more, every one inheriting its
+English word. Ten were behind a particle: *understandan* and *forġiefan*
+(verbs stressed on the root, Wright §14), *ġewær*, *ġebyrddæġ* and
+*forġiefnes* (§12), *midniht*, whose *mid* is the adjective, and four simple
+words, *bisiġ*, *berġe*, *ofn* and *ǣmete*. Two were behind the h: *ċildhād*
+and *forehēafod*, of the 27 table words it refused. All twelve were read with
+their transcriptions.
+
+```sh
+python3 -I draft_ang.py en-extract.jsonl kaikki.org-dictionary-OldEnglish.jsonl.gz ../ \
+    --exclude=rihtung,bēon,sōþfæst,gārsecg,elþēodiġ,rihtwīsnes,ūþwitegung,swēor --singular=ealu --inherited \
+    --allow=understandan,ġewær,ġebyrddæġ,bisiġ,midniht,forġiefan,berġe,ofn,ǣmete,forġiefnes,ċildhād,forehēafod --write
+python3 -B ../fill_ipa.py && npm run packs
+```
+
+`en-extract.jsonl` here is `extract_en.py`'s cut with the etymologies, made on
+2026-11-17.
