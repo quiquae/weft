@@ -15,6 +15,7 @@
 # published 1.0.0 packs did, and the four homograph seconds added since.
 
 ang	andswaru
+ang	bacan
 ang	bald
 ang	bedd
 ang	beginnan
@@ -26,15 +27,18 @@ ang	blis
 ang	blæc
 ang	blōd
 ang	blōstma
+ang	borgian
 ang	brecan
 ang	bringan
 ang	brycg
 ang	brōðor
 ang	brūcan
 ang	brūn
+ang	brȳd
 ang	burg
 ang	butere
 ang	bycgan
+ang	bæcere
 ang	bæþ
 ang	bān
 ang	bāt
@@ -45,6 +49,7 @@ ang	bōccræft
 ang	bōcstæf
 ang	bōt
 ang	bȳsn
+ang	candel
 ang	capitul
 ang	catt
 ang	cempa
@@ -53,6 +58,7 @@ ang	clāð
 ang	clǣne
 ang	clȳsan
 ang	cnapa
+ang	cnotta
 ang	corensċipe
 ang	coþu
 ang	cuman
@@ -70,7 +76,10 @@ ang	dohtor
 ang	draca
 ang	drincan
 ang	drēam
+ang	drūgaþ
+ang	durran
 ang	duru
+ang	dweorg
 ang	dæġ
 ang	dēad
 ang	dēað
@@ -96,6 +105,7 @@ ang	feallan
 ang	feld
 ang	feoh
 ang	feohtan
+ang	feþer
 ang	findan
 ang	finger
 ang	firen
@@ -103,6 +113,7 @@ ang	firwitt
 ang	fisc
 ang	fisċ
 ang	flēogan
+ang	flēon
 ang	flōr
 ang	flǣsc
 ang	flǣsċ
@@ -134,6 +145,7 @@ ang	fȳr
 ang	gaderung
 ang	gamen
 ang	glæs
+ang	glōf
 ang	gold
 ang	græs
 ang	grēat
@@ -143,6 +155,7 @@ ang	grǣġ
 ang	gān
 ang	gāt
 ang	gōd
+ang	gōs
 ang	gūþ
 ang	habban
 ang	hand
@@ -177,6 +190,7 @@ ang	hungriġ
 ang	hunig
 ang	huniġ
 ang	hwelcnes
+ang	hwæl
 ang	hwīlum
 ang	hwīt
 ang	hyll
@@ -188,11 +202,13 @@ ang	hāliġ
 ang	hām
 ang	hāt
 ang	hēafod
+ang	hēafodeċe
 ang	hēah
 ang	hēan
 ang	hēap
 ang	hēr
 ang	hīeran
+ang	hīeġ
 ang	hīwsċipe
 ang	hūs
 ang	hūsbonda
@@ -208,9 +224,11 @@ ang	land
 ang	lang
 ang	leornian
 ang	libban
+ang	lim
 ang	losian
 ang	lufian
 ang	lufu
+ang	lungen
 ang	lust
 ang	lādian
 ang	lādtēowdōm
@@ -239,6 +257,7 @@ ang	mete
 ang	miċel
 ang	morgen
 ang	morgenmete
+ang	mos
 ang	mæþel
 ang	mæġden
 ang	mē hrēoweþ
@@ -261,6 +280,7 @@ ang	nēahġebūr
 ang	nīewan
 ang	nīwe
 ang	nū
+ang	nǣdl
 ang	nǣdre
 ang	nǣfre
 ang	oft
@@ -283,6 +303,7 @@ ang	rīċe²
 ang	rūm
 ang	rǣdan
 ang	rǣswan
+ang	sadol
 ang	sang
 ang	sangere
 ang	sealt
@@ -304,20 +325,27 @@ ang	slāwlīċe
 ang	slǣpan
 ang	smylte
 ang	smæl
+ang	sneġel
 ang	snāw
+ang	spearca
 ang	spell
+ang	spere
 ang	spild
 ang	sprecan
 ang	sprǣċ
 ang	spyriġung
 ang	spēd
 ang	spēdiġ
+ang	spīþra
 ang	standan
+ang	starian
 ang	stefn
 ang	steorfan
 ang	steorra
 ang	strang
 ang	stræc
+ang	strēaw
+ang	strēawberġe
 ang	strǣt
 ang	styrian
 ang	styring
@@ -342,6 +370,7 @@ ang	sċeort
 ang	sċericge
 ang	sċield
 ang	sċildan
+ang	sċinu
 ang	sċip
 ang	sċuldra
 ang	sċyldiġ
@@ -363,10 +392,12 @@ ang	sǣmann
 ang	tellan
 ang	timbran
 ang	trēow
+ang	tunge
 ang	tweowa
 ang	twēgen
 ang	twēġen
 ang	tyrnan
+ang	tā
 ang	tīd
 ang	tīefran
 ang	tīen
@@ -401,6 +432,7 @@ ang	weorþan
 ang	wes hāl
 ang	weġ
 ang	wicu
+ang	widuwe
 ang	willan
 ang	wind
 ang	winnan
@@ -427,6 +459,7 @@ ang	wīf
 ang	wīfmann
 ang	wīg
 ang	wīn
+ang	wīpian
 ang	wīs
 ang	wīġ
 ang	wǣpn
@@ -440,9 +473,15 @@ ang	þencan
 ang	þenċan
 ang	þing
 ang	þorp
+ang	þrote
 ang	þrēo
+ang	þurstiġ
 ang	þyrs
 ang	þēod
+ang	þēof
+ang	þēoh
+ang	þīefþ
+ang	þūma
 ang	þūsend
 ang	þǣrrihte
 ang	ābīdan
@@ -456,8 +495,11 @@ ang	ċempa
 ang	ċeorfan
 ang	ċild
 ang	ċildclāð
+ang	ċildisċ
+ang	ċinn
 ang	ċiriċe
 ang	ċēosan
+ang	ċēowan
 ang	ċīese
 ang	ċǣġ
 ang	ēa
@@ -473,11 +515,13 @@ ang	ġeong
 ang	ġiefan
 ang	ġiefu
 ang	ġieldan
+ang	ġiellan
 ang	ġiestrandæġ
 ang	ġēa
 ang	ġēar
 ang	īren
 ang	īs
+ang	ūle
 ang	ūte
 ang	ǣfen
 ang	ǣfre

@@ -19,8 +19,9 @@ English (356 checked English lemmas each, and in the five modern packs about
 2,200 more drafted from English Wiktionary, `status` proposed, which the tooltip
 labels "Wiktionary, unreviewed", and in Latin 785 drafted from the DCC core
 list and English Wiktionary's translation tables, labelled "Lewis & Short,
-unreviewed", and in Old English 100 drafted from English Wiktionary's
-translation tables, labelled "Wiktionary, unreviewed";
+unreviewed", and in Old English 144 drafted from English Wiktionary's
+translation tables, labelled "Wiktionary, unreviewed", 53 of them naming the
+English word they became where that word's own entry inherits them;
 `tools/seed/wiktionary/`). It
 is for someone who wants the browsing time they were going to lose anyway to
 buy them vocabulary. There is no account, no server and no telemetry; it works
@@ -74,7 +75,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4503 KB unpacked for each of the three, 4.1 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4519 KB unpacked for Chrome and 4520 for Firefox and Safari, 4.1 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1118,6 +1119,93 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-17 — Old English's etymon, measured: 50 of 364 inherit, and 44 more are drafted
+
+`TODO.md`'s top item, "settle the etymon, then draft the other 264", split
+on a measurement. Shape (1) is built: `extract_en.py` keeps each etymology
+template's name and the etymology's text, and `draft_ang.py` gives a row an
+etymon only where the English word's own entry, the one whose translation
+table named the Old English word, has `{{inh|en|ang|<word>}}` naming it,
+marks dropped and ð read as þ, with no hedge up to the end of its clause, no
+"partly", "blend" or "merger" anywhere, and no second source in its
+sentence. Its `ang-etymons.tsv` line cites `wikt:en:<english>`, which
+`tests/tools/etymons.test.ts` already accepted. **Of the 364 English words
+with a passing translation, 50 inherit it**: the tables put Old English to
+English words mostly French or Latin, *example*, *special*, *action*, and
+267 of the 314 others inherit no Old English word at all. All 364 would
+have left "usually the literal ancestor" at 286 of 722. So `--etymons` gave
+9 of the first 100 their etymon, *þing*, *weder*, *sċamu*, *butere*, and
+`--inherited`, which drafts only a word its English entry inherits and
+prefers one among a table's passes, drafted **44**: *tunge*, *gōs*, *þūma*,
+*hwæl*, *strēawberġe*, and *spīþra* for spider where *loppe* came first. 34
+nouns, 8 verbs, 2 adjectives. The ancestors are **289 of 502** rows, from
+236 of 458, and Old English is 356 checked and 144 drafted, 836 entries
+across 831 surface forms. The other 226 are a call in `Next`, and the ten
+inherited words Wright's particle check kept out are the new top of `Now`.
+
+**kaikki puts the etymology tree before the prose**, a line an ancestor:
+"Etymology tree", …, "Old English þing", then "From Middle English thing,
+from Old English þing". The first draft searched for the Old English word,
+found it in the tree, and read its hedge check against the wrong sentence;
+`prose()` starts at the first line holding a "from". It showed only because
+a report filtered through `grep` printed "Etymology tree" as a whole
+etymology: **read multi-line data in a script, not through a line filter.**
+Reading the claims found *gem*, "from Old English ġimm … and Old French
+gemme", a word of two parents the hedge words could not see, so a second
+source in the Old English word's sentence refuses a claim too.
+
+**The stress test refused one of the 44, and was right.** *þīefþ* came out
+/ˈθiːevθ/, an *f* voiced before a voiceless *þ*: `_ipa.py`'s
+`VOICED_CONTEXT` held the letters þ and ð, which stand for /θ/ as often as
+/ð/, where the test's `VOICED` never did. Test-first in the generator's
+self-check, red on exactly *þīefþ* and *þīefþa*; then all 845 transcriptions
+compared with the changed generator, and exactly those two moved, which is
+why the fix could go in without a sweep: no fricative stood beside a þ or ð
+in the pack until this word.
+
+All 31 shots regenerated on a test build after the commit that moved the
+pack, 14 + 10 + 7 written, every one byte-identical, and the three groups
+stamped. The Old English pack grew 149 442 → 166 735 bytes, and each package
+by exactly that, Chrome's 4502.611 → 4519.499 KB, printing **4519**, and
+Firefox's and Safari's **4520**. No test count moved: every ledger line is
+the drafter's and the existing guards held all 53 claims and 44 rows. The
+site is still 713 pages, a drafted row getting none. A `CHANGELOG.md`
+paragraph, because the pack ships; `README.md`, `docs/SUPPORT.md` and
+`docs/THIRD-PARTY.md` say 144, and 53 with an etymon.
+
+**The first gate hung for 29 minutes on a machine at a load average of 202**,
+Spotlight and the owner's apps, none of it this run's: four tools files that
+pass alone in 1.5 s never finished, because `node --test` starts as many
+files at once as there are cores. Its unit and jsdom steps had passed, 686
+and 140; the rest was run step by step, the tools suite with
+`--test-concurrency=2`, the most this Mac's rules allow, and passed in under
+two minutes. **On a loaded machine, cap the test runner's concurrency rather
+than waiting on it.**
+
+Measured on Node 26.7, with each step's exit status captured: `npm run
+typecheck` clean; unit **686 / 159** and jsdom **140 / 29** (the gate's own
+run); tools **646 / 170** at concurrency 2; `compat` 17 dependencies × 3
+browsers, 44 pass / 7 degrade, and 97 manifest keys, 87 pass / 3 degrade / 7
+untracked, 0 fail / 0 without data; `build:all` **4519 / 4520 / 4520 KB**,
+passing `validate`; and `test:e2e` **47 passed and 3 skipped in 6.5 min**,
+run the next morning on the same tree, the session having been stopped
+before it. Separately `packs:verify` **0 errors / 5 warnings**, Old English
+at 836 entries across 831 surface forms; `npm run site` then `site:check`
+**713 pages / 15 392 links**, all resolving; and `artefacts:check` **8
+groups, 1 stale**, the release notes for 1.1.0.
+
+Assumed, with nobody to ask: that drafting only inherited words is the
+slice the item's recommendation allows, since the 264 would have broken the
+claim it rests on; that the tooltip's "Wiktionary, unreviewed" labels a
+drafted etymon well enough, as the item said, though the dashboard's feed
+tells it unlabelled; and that *kitchen* and *elbow*, whose entries inherit a
+variant of the table's word, wait rather than earn a folding rule for two
+words.
+
+What needs a human: unchanged, everything below **B1** and the calls, and
+one more in `Next`: what 226 uninherited Old English drafts would do to
+"usually the literal ancestor".
 
 ### 2026-11-10 — Old English's first 100 drafts, from English Wiktionary's translation tables
 

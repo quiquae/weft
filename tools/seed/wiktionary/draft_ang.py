@@ -2,6 +2,7 @@
 
 usage: draft_ang.py <en-extract.jsonl> <kaikki Old English dump> <seed-dir>
                     [--limit=n] [--exclude=word,...] [--singular=word,...] [--write] [--sample=seed:n]
+                    [--inherited] [--etymons] [--show-etymons]
 
 For each English word english-core.tsv carries and the Old English pack does
 not yet teach, most frequent first, the Old English words the first two
@@ -27,9 +28,20 @@ holds the draft too:
   dropped and ð read as þ: a second card for one word is a homograph nobody
   numbered.
 
-Rows carry no etymon: whether a drafted word became the English word it is
-woven for is a claim about the English word, which ang-etymons.tsv checks
-against its own entry, and nothing here reads one.
+A row carries an etymon only where the English word's own entry, the one
+whose translation table named the Old English word, says it is inherited
+from exactly that word: an {{inh|en|ang|<word>}} template naming it, its
+marks dropped and ð read as þ; no "probably" or other hedge up to the end of
+the clause that names it; no "partly", "blend" or "merger" anywhere in the
+etymology; and no second source in the sentence that names it. That is the standard
+ang-etymons.tsv was read to on 2026-10-01, and the claim is about the
+English word, so its line cites wikt:en:<english>. A word English derived
+or borrowed (der, bor), or reached through another word, gets none.
+--etymons fills the etymon of the drafted rows already in lex-ang.tsv the
+same way, and writes nothing else. --inherited drafts only a word whose
+English entry inherits it, preferring such a word among a table's passes: a
+draft with no etymon spends the majority docs/PEDAGOGY.md claims, "the target
+is usually the literal ancestor", which tests/tools/pedagogy.test.ts counts.
 
 The pack writes the doubled palatal cg where Wiktionary writes ċġ (the
 pronunciation key's "cg is dg"), so a draft does too. --limit caps the
@@ -49,6 +61,8 @@ from pathlib import Path
 
 EN, DUMP, SEED = sys.argv[1], sys.argv[2], Path(sys.argv[3])
 WRITE = '--write' in sys.argv
+ETYMONS = '--etymons' in sys.argv
+INHERITED = '--inherited' in sys.argv
 
 
 def option(name, default=None):
@@ -269,6 +283,57 @@ def check(head, eng, pos, hint=None):
             'leads': quote == lines[0], 'title': bare(head), 'forms': forms}, None
 
 
+# ---------------------------------------------------------------- the English word's own etymology
+# A hedge on the way to the Old English word drops the claim; one about the Old English word's own
+# origin, its Proto-Germanic source, does not, so the doubting words are read only up to the end of
+# the clause that names it. A word that is partly another's, or a blend of two, is the clȳsan case
+# the 2026-10-01 pass took out, and no later sentence makes it whole, so those are read throughout.
+DOUBT = re.compile(r'\b(probably|perhaps|possibly|maybe|likely|uncertain|unclear|apparently|presumably|doubtful|disputed)\b', re.I)
+MIXED = re.compile(r'\b(partly|partially|in part|blend|blended|conflat\w*|merg\w*|contaminat\w*)\b', re.I)
+# A second source in the Old English word's own sentence: gem is "from Old English ġimm, from
+# Proto-West Germanic *gimmu and Old French gemme, both from Latin gemma", a word of two parents.
+ALSO = re.compile(r'\b(?:and|or)\s+(?:from\s+)?(?:Old|Middle|Anglo|Medieval|Late|Latin|Norse|French)', re.I)
+
+
+def prose(text):
+    """The etymology as sentences: kaikki puts the etymology tree's lines first, "Etymology tree",
+    "Proto-Germanic *þingą", "Old English þing", one ancestor a line and none with a "from"."""
+    lines = text.split('\n')
+    start = next((i for i, line in enumerate(lines) if re.search(r'\bfrom\b', line, re.I)), 0)
+    return '\n'.join(lines[start:])
+
+
+def inherited(e):
+    """The Old English words English Wiktionary's English entry `e` inherits from, as its templates write them."""
+    return [nfc(t['args'].get('3') or t['args'].get('4') or '') for t in e.get('etymology') or []
+            if t['name'] in ('inh', 'inh+') and t['args'].get('1') == 'en' and t['args'].get('2') == 'ang']
+
+
+def etymon(e, tgt):
+    """`e`'s English word, where its entry says it is inherited from exactly `tgt`; or None and why not."""
+    names = inherited(e)
+    if not names:
+        return None, 'its English entry inherits from no Old English word'
+    named = next((n for n in names if same(n) == same(tgt)), None)
+    if not named:
+        return None, f'its English entry inherits from {", ".join(names)}'
+    text = prose(e.get('etymology_text') or '')
+    if MIXED.search(text):
+        return None, f'its English entry says {MIXED.search(text).group(0)}'
+    at = text.find(named)
+    if at < 0:
+        return None, 'its English entry’s text does not print the Old English word'
+    ends = [i for i in (text.find(', from ', at), text.find('. ', at), text.find('; ', at), text.find('\n', at)) if i >= 0]
+    clause = text[: min(ends) if ends else len(text)]
+    if DOUBT.search(clause):
+        return None, f'its English entry says {DOUBT.search(clause).group(0)}'
+    stops = [i for i in (text.find('. ', at), text.find('\n', at)) if i >= 0]
+    sentence = text[at: min(stops) if stops else len(text)]
+    if ALSO.search(sentence):
+        return None, f'its English entry gives a second source, “{ALSO.search(sentence).group(0)}”'
+    return e['word'], None
+
+
 # ---------------------------------------------------------------- the tables, read as draft_la.py reads them
 BAD_TAGS = {
     'archaic', 'obsolete', 'rare', 'dialectal', 'slang', 'vulgar', 'colloquial', 'informal',
@@ -346,11 +411,16 @@ for lemma, pos in wanted:
             tried[why] += 1
             first_why = first_why or why
         else:
-            passed.append((not row['leads'], i, row))
+            row['etymon'], row['etym_why'] = etymon(e, row['tgt'])
+            row['etym_text'] = e.get('etymology_text') or ''
+            passed.append((INHERITED and not row['etymon'], not row['leads'], i, row))
     if not passed:
         skipped[f'no translation passed, the first because {first_why}'] += 1
         continue
-    row = min(passed, key=lambda x: (x[0], x[1]))[2]
+    row = min(passed, key=lambda x: x[:3])[3]
+    if INHERITED and not row['etymon']:
+        skipped['its English entry inherits none of the words that passed'] += 1
+        continue
     in_use[same(row['tgt'])].add(pos)
     drafted.append(row)
 
@@ -373,9 +443,29 @@ def append(name, rows):
     p.write_text(text)
 
 
+ETYMON_NOTE = ("# ---- drafted: the English word's own English Wiktionary entry inherits it from this Old English word, "
+               '{{inh|en|ang|…}}, with no hedge on the way (kaikki.org English dump of 2026-11-09, sha256 4d03b6cb…) ----')
+
+
+def append_etymons(rows):
+    """Lines for ang-etymons.tsv, under a note of their own, so a reader can tell them from the ones a person read."""
+    rows = [[r['lemma'], r['pos'], r['tgt'], r['etymon'], f"wikt:en:{r['etymon']}"] for r in rows if r.get('etymon')]
+    if not rows:
+        return
+    p = SEED / 'ang-etymons.tsv'
+    text = p.read_text()
+    if not text.endswith('\n'):
+        text += '\n'
+    if ETYMON_NOTE not in text:
+        text += f'{ETYMON_NOTE}\n'
+    text += ''.join('\t'.join(r) + '\n' for r in rows)
+    p.write_text(text)
+
+
 if WRITE and drafted:
-    append('lex-ang.tsv', [[r['lemma'], r['pos'], r['tgt'], r['tgt2'], r['gender'], '', '', '', '', 'wiktionary', 'proposed']
+    append('lex-ang.tsv', [[r['lemma'], r['pos'], r['tgt'], r['tgt2'], r['gender'], '', r['etymon'] or '', '', '', 'wiktionary', 'proposed']
                            for r in drafted])
+    append_etymons(drafted)
     append('ang-glosses.tsv', [[r['lemma'], r['pos'], r['tgt'], f"wikt:ang:{r['title']}", r['quote']] for r in drafted])
     append('ang-genders.tsv', [[r['lemma'], r['tgt'], r['gender'], f"wikt:ang:{r['title']}"] for r in drafted if r['pos'] == 'noun'])
     append('ang-plurals.tsv', [[r['lemma'], r['tgt'], r['tgt2'], f"wikt:ang:{r['title']}", 'nominative plural ' + ', '.join(r['forms'])]
@@ -391,6 +481,35 @@ if WRITE and drafted:
     ids_path.write_text('\n'.join(header + [''] + ['\t'.join(i) for i in body]) + '\n')
     print(f'wrote {len(drafted)} rows into {SEED}')
 
+# ---------------------------------------------------------------- the drafted rows already in the pack
+# The English entry a row was drafted from is the one the loop above reads: the entry of its word and
+# part of speech with the most translations, whose table named the Old English word.
+backfill = []
+for r in lex:
+    if len(r) > 10 and r[9] == 'wiktionary' and not r[6]:
+        group = english.get((r[0], r[1])) or []
+        if not group:
+            backfill.append({'lemma': r[0], 'pos': r[1], 'tgt': r[2], 'etymon': None, 'etym_why': 'no English entry', 'etym_text': ''})
+            continue
+        e = max(group, key=lambda g: len(g['translations']))
+        found, why = etymon(e, r[2])
+        backfill.append({'lemma': r[0], 'pos': r[1], 'tgt': r[2], 'etymon': found, 'etym_why': why,
+                         'etym_text': e.get('etymology_text') or ''})
+
+if ETYMONS:
+    claimed = {(b['lemma'], b['pos'], b['tgt']): b['etymon'] for b in backfill if b['etymon']}
+    p = SEED / 'lex-ang.tsv'
+    out = []
+    for line in p.read_text().split('\n'):
+        f = line.split('\t')
+        if not line.startswith('#') and len(f) > 10 and (f[0], f[1], f[2]) in claimed and not f[6]:
+            f[6] = claimed[(f[0], f[1], f[2])]
+            line = '\t'.join(f)
+        out.append(line)
+    p.write_text('\n'.join(out))
+    append_etymons(backfill)
+    print(f'wrote {len(claimed)} etymons into {SEED}')
+
 # ---------------------------------------------------------------- report
 import random  # noqa: E402
 
@@ -405,3 +524,20 @@ seed_n = option('sample', '9:40').split(':')
 rows = drafted if seed_n[1] == 'all' else random.Random(int(seed_n[0])).sample(drafted, min(int(seed_n[1]), len(drafted)))
 for r in rows:
     print(f"  {r['lemma']:12} {r['pos']:5} {r['tgt']:14} {r['tgt2']:14} {r['gender']:1} {'L' if r['leads'] else ' '} | {r['quote'][:80]}")
+
+
+def etymon_report(label, rows):
+    have = [r for r in rows if r.get('etymon')]
+    print(f'  {label}: {len(have)} of {len(rows)} inherit their English word')
+    kinds = Counter(re.sub(r'inherits from (?!no ).*', 'inherits from another Old English word', r['etym_why'])
+                    for r in rows if not r.get('etymon'))
+    for why, n in kinds.most_common():
+        print(f'    no etymon {n:4}  {why}')
+
+
+etymon_report('drafted now', drafted)
+etymon_report('drafted before', backfill)
+if '--show-etymons' in sys.argv:
+    for r in backfill + drafted:
+        print(f"  {'+' if r.get('etymon') else '-'} {r['lemma']:12} {r['tgt']:14} {r.get('etymon') or r['etym_why']}"
+              f" | {r['etym_text'][:240]}")

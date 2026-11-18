@@ -139,11 +139,14 @@ sentence of it is quoted. Vowel length follows the dictionaries and, where
 they disagree, the grammar: *ǣġ*, egg, is long in Wiktionary and in Sievers
 §175, where Bosworth–Toller prints it short.
 
-The 100 Old English rows drafted on 2026-11-10 were chosen from the Old
-English translations English Wiktionary's entries give English words the
-pack lacks. Each row's gloss, gender and woven form are quoted from its own
-Old English entry, in the same ledgers as every other row's, and none carries
-an etymon. See `tools/seed/wiktionary/README.md`.
+The 144 Old English rows drafted on 2026-11-10 and 2026-11-17 were chosen
+from the Old English translations English Wiktionary's entries give English
+words the pack lacks. Each row's gloss, gender and woven form are quoted from
+its own Old English entry, in the same ledgers as every other row's. 53 carry
+an etymon, each where the English word's own English Wiktionary entry says it
+is inherited from exactly that Old English word, with no hedge on the way;
+its line in `tools/seed/ang-etymons.tsv` cites that entry. See
+`tools/seed/wiktionary/README.md`.
 
 Public-domain sources impose no conditions. They are listed for scholarly
 honesty rather than for compliance.

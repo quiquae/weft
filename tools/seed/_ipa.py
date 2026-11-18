@@ -217,7 +217,10 @@ ANG_DIPHTHONGS = {
     'ēa': 'æːɑ', 'ea': 'æɑ', 'ēo': 'eːo', 'eo': 'eo',
     'īe': 'iːe', 'ie': 'ie', 'īo': 'iːo', 'io': 'io',
 }
-VOICED_CONTEXT = set(ANG_VOWELS) | set('lmnrwbdgðþæāēīōūȳǣ')
+# The vowels and the voiced consonants, as tests/tools/old-english-stress.test.ts
+# reads §8. Not the letters þ and ð, which stand for /θ/ as often as /ð/: with them
+# here the f of þīefþ, before a voiceless þ, was voiced.
+VOICED_CONTEXT = set(ANG_VOWELS) | set('lmnrwbdgæāēīōūȳǣ')
 
 """
 Words whose first syllable is an unstressed particle: verbs with an
@@ -444,6 +447,8 @@ if __name__ == '__main__':
         # its end after one or a guttural vowel: no headword has the last.
         ('folgian', '/ˈfolɣiɑn/'), ('morgen', '/ˈmorɣen/'), ('beorg', '/ˈbeorx/'),
         ('plōg', '/ˈploːx/'), ('lang', '/ˈlɑŋɡ/'),
+        # f before þ, a voiceless sound: the letter þ is no voiced context.
+        ('þīefþ', '/ˈθiːefθ/'),
     ]
     bad = 0
     for word, want in checks_la:
@@ -464,6 +469,7 @@ if __name__ == '__main__':
         ('wīfmenn', 'wīfmann', '/ˈwiːvmenː/'), ('menn', 'mann', '/ˈmenː/'),
         # And its fricatives are read where they now stand: between vowels, voiced.
         ('stafas', 'stæf', '/ˈstɑvɑs/'), ('āþas', 'āþ', '/ˈɑːðɑs/'),
+        ('þīefþa', 'þīefþ', '/ˈθiːefθɑ/'),
         # A g a lost vowel left before a voiced consonant is still the spirant.
         ('fuglas', 'fugol', '/ˈfuɣlɑs/'), ('morgnas', 'morgen', '/ˈmorɣnɑs/'),
     ]

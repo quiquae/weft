@@ -408,7 +408,7 @@ please	intj	iċ bidde				bid
 sorry	intj	mē hrēoweþ				rue	literally “it rues me”, mē being the one who regrets it	
 # ---- drafted from English Wiktionary's translation tables and its Old English entries (kaikki.org dumps downloaded 2026-11-10), status=proposed: woven, labelled, not yet read by a person ----
 really	adv	sōþe			/ˈsoːðe/				wiktionary	proposed
-thing	noun	þing	þing	n	/ˈθiŋɡ/			/ˈθiŋɡ/	wiktionary	proposed
+thing	noun	þing	þing	n	/ˈθiŋɡ/	thing		/ˈθiŋɡ/	wiktionary	proposed
 group	noun	hēap	hēapas	m	/ˈhæːɑp/			/ˈhæːɑpɑs/	wiktionary	proposed
 become	verb	weorþan	weorþende		/ˈweorðɑn/			/ˈweorðende/	wiktionary	proposed
 example	noun	bȳsn	bȳsne	f	/ˈbyːzn/			/ˈbyːzne/	wiktionary	proposed
@@ -438,7 +438,7 @@ disease	noun	coþu	coþa	f	/ˈkoðu/			/ˈkoðɑ/	wiktionary	proposed
 nation	noun	þēod	þēoda	f	/ˈθeːod/			/ˈθeːodɑ/	wiktionary	proposed
 protect	verb	sċildan	sċildende		/ˈʃildɑn/			/ˈʃildende/	wiktionary	proposed
 successful	adj	spēdiġ			/ˈspeːdij/				wiktionary	proposed
-weather	noun	weder	wedru	n	/ˈweder/			/ˈwedru/	wiktionary	proposed
+weather	noun	weder	wedru	n	/ˈweder/	weather		/ˈwedru/	wiktionary	proposed
 animal	noun	dēor	dēor	n	/ˈdeːor/			/ˈdeːor/	wiktionary	proposed
 authority	noun	ealdordōm	ealdordōmas	m	/ˈæɑldordoːm/			/ˈæɑldordoːmɑs/	wiktionary	proposed
 conversation	noun	mæþel	mæþlu	n	/ˈmæðel/			/ˈmæðlu/	wiktionary	proposed
@@ -484,26 +484,70 @@ constantly	adv	simle			/ˈsimle/				wiktionary	proposed
 curious	adj	firwitt			/ˈfirwitː/				wiktionary	proposed
 duke	noun	heretoga	heretogan	m	/ˈheretoɣɑ/			/ˈheretoɣɑn/	wiktionary	proposed
 encourage	verb	hiertan	hiertende		/ˈhiertɑn/			/ˈhiertende/	wiktionary	proposed
-hip	noun	hype	hypas	m	/ˈhype/			/ˈhypɑs/	wiktionary	proposed
-hungry	adj	hungriġ			/ˈhuŋɡrij/				wiktionary	proposed
+hip	noun	hype	hypas	m	/ˈhype/	hip		/ˈhypɑs/	wiktionary	proposed
+hungry	adj	hungriġ			/ˈhuŋɡrij/	hungry			wiktionary	proposed
 improvement	noun	bōt	bōta	f	/ˈboːt/			/ˈboːtɑ/	wiktionary	proposed
 monster	noun	þyrs	þyrsas	m	/ˈθyrs/			/ˈθyrzɑs/	wiktionary	proposed
 paint	verb	tīefran	tīefrende		/ˈtiːevrɑn/			/ˈtiːevrende/	wiktionary	proposed
 palace	noun	palent	palentas	m	/ˈpɑlent/			/ˈpɑlentɑs/	wiktionary	proposed
 poverty	noun	iermþu	iermþa	f	/ˈiermðu/			/ˈiermðɑ/	wiktionary	proposed
 reputation	noun	hlīsa	hlīsan	m	/ˈhliːzɑ/			/ˈhliːzɑn/	wiktionary	proposed
-shame	noun	sċamu	sċama	f	/ˈʃɑmu/			/ˈʃɑmɑ/	wiktionary	proposed
-shoulder	noun	sċuldra	sċuldran	m	/ˈʃuldrɑ/			/ˈʃuldrɑn/	wiktionary	proposed
+shame	noun	sċamu	sċama	f	/ˈʃɑmu/	shame		/ˈʃɑmɑ/	wiktionary	proposed
+shoulder	noun	sċuldra	sċuldran	m	/ˈʃuldrɑ/	shoulder		/ˈʃuldrɑn/	wiktionary	proposed
 singer	noun	sangere	sangeras	m	/ˈsɑŋɡere/			/ˈsɑŋɡerɑs/	wiktionary	proposed
 suspect	verb	rǣswan	rǣswende		/ˈræːzwɑn/			/ˈræːzwende/	wiktionary	proposed
 tower	noun	stīepel	stīeplas	m	/ˈstiːepel/			/ˈstiːeplɑs/	wiktionary	proposed
 uncle	noun	fædera	fæderan	m	/ˈfæderɑ/			/ˈfæderɑn/	wiktionary	proposed
 wealth	noun	wela	welan	m	/ˈwelɑ/			/ˈwelɑn/	wiktionary	proposed
-weapon	noun	wǣpn	wǣpnu	n	/ˈwæːpn/			/ˈwæːpnu/	wiktionary	proposed
+weapon	noun	wǣpn	wǣpnu	n	/ˈwæːpn/	weapon		/ˈwæːpnu/	wiktionary	proposed
 badly	adv	yfele			/ˈyvele/				wiktionary	proposed
-bath	noun	bæþ	baþu	n	/ˈbæθ/			/ˈbɑðu/	wiktionary	proposed
-butter	noun	butere	buteran	f	/ˈbutere/			/ˈbuterɑn/	wiktionary	proposed
+bath	noun	bæþ	baþu	n	/ˈbæθ/	bath		/ˈbɑðu/	wiktionary	proposed
+butter	noun	butere	buteran	f	/ˈbutere/	butter		/ˈbuterɑn/	wiktionary	proposed
 destruction	noun	spild	spild	n	/ˈspild/			/ˈspild/	wiktionary	proposed
 dragon	noun	draca	dracan	m	/ˈdrɑkɑ/			/ˈdrɑkɑn/	wiktionary	proposed
 fate	noun	wyrd	wyrde	f	/ˈwyrd/			/ˈwyrde/	wiktionary	proposed
 fiction	noun	lēasspell	lēasspell	n	/ˈlæːɑsːpelː/			/ˈlæːɑsːpelː/	wiktionary	proposed
+tongue	noun	tunge	tungan	f	/ˈtuŋɡe/	tongue		/ˈtuŋɡɑn/	wiktionary	proposed
+dare	verb	durran			/ˈdurːɑn/	dare			wiktionary	proposed
+throat	noun	þrote	þrotan	f	/ˈθrote/	throat		/ˈθrotɑn/	wiktionary	proposed
+baker	noun	bæcere	bæceras	m	/ˈbækere/	baker		/ˈbækerɑs/	wiktionary	proposed
+spider	noun	spīþra	spīþran	m	/ˈspiːðrɑ/	spider		/ˈspiːðrɑn/	wiktionary	proposed
+bride	noun	brȳd	brȳde	f	/ˈbryːd/	bride		/ˈbryːde/	wiktionary	proposed
+lung	noun	lungen	lungenna	f	/ˈluŋɡen/	lung		/ˈluŋɡenːɑ/	wiktionary	proposed
+theft	noun	þīefþ	þīefþa	f	/ˈθiːefθ/	theft		/ˈθiːefθɑ/	wiktionary	proposed
+toe	noun	tā	tān	f	/ˈtɑː/	toe		/ˈtɑːn/	wiktionary	proposed
+widow	noun	widuwe	widuwan	f	/ˈwiduwe/	widow		/ˈwiduwɑn/	wiktionary	proposed
+borrow	verb	borgian	borgiende		/ˈborɣiɑn/	borrow		/ˈborɣiende/	wiktionary	proposed
+chin	noun	ċinn	ċinn	n	/ˈtʃinː/	chin		/ˈtʃinː/	wiktionary	proposed
+headache	noun	hēafodeċe	hēafodeċas	m	/ˈhæːɑvodetʃe/	headache		/ˈhæːɑvodetʃɑs/	wiktionary	proposed
+needle	noun	nǣdl	nǣdla	f	/ˈnæːdl/	needle		/ˈnæːdlɑ/	wiktionary	proposed
+spark	noun	spearca	spearcan	m	/ˈspæɑrkɑ/	spark		/ˈspæɑrkɑn/	wiktionary	proposed
+straw	noun	strēaw	strēaw	n	/ˈstræːɑw/	straw		/ˈstræːɑw/	wiktionary	proposed
+thumb	noun	þūma	þūman	m	/ˈθuːmɑ/	thumb		/ˈθuːmɑn/	wiktionary	proposed
+whale	noun	hwæl	hwalas	m	/ˈhwæl/	whale		/ˈhwɑlɑs/	wiktionary	proposed
+wipe	verb	wīpian	wīpiende		/ˈwiːpiɑn/	wipe		/ˈwiːpiende/	wiktionary	proposed
+bake	verb	bacan	bacende		/ˈbɑkɑn/	bake		/ˈbɑkende/	wiktionary	proposed
+candle	noun	candel	candela	f	/ˈkɑndel/	candle		/ˈkɑndelɑ/	wiktionary	proposed
+drought	noun	drūgaþ	drūgaþa	f	/ˈdruːɣɑθ/	drought		/ˈdruːɣɑðɑ/	wiktionary	proposed
+hay	noun	hīeġ		n	/ˈhiːej/	hay			wiktionary	proposed
+moss	noun	mos		n	/ˈmos/	moss			wiktionary	proposed
+owl	noun	ūle	ūlan	f	/ˈuːle/	owl		/ˈuːlɑn/	wiktionary	proposed
+stare	verb	starian	stariende		/ˈstɑriɑn/	stare		/ˈstɑriende/	wiktionary	proposed
+thief	noun	þēof	þēofas	m	/ˈθeːof/	thief		/ˈθeːovɑs/	wiktionary	proposed
+yell	verb	ġiellan	ġiellende		/ˈjielːɑn/	yell		/ˈjielːende/	wiktionary	proposed
+dwarf	noun	dweorg	dweorgas	m	/ˈdweorx/	dwarf		/ˈdweorɣɑs/	wiktionary	proposed
+flee	verb	flēon			/ˈfleːon/	flee			wiktionary	proposed
+goose	noun	gōs	gēs	f	/ˈɡoːs/	goose		/ˈɡeːs/	wiktionary	proposed
+chew	verb	ċēowan	ċēowende		/ˈtʃeːowɑn/	chew		/ˈtʃeːowende/	wiktionary	proposed
+childish	adj	ċildisċ			/ˈtʃildiʃ/	childish			wiktionary	proposed
+feather	noun	feþer	feþra	f	/ˈfeðer/	feather		/ˈfeðrɑ/	wiktionary	proposed
+glove	noun	glōf		f	/ˈɡloːf/	glove			wiktionary	proposed
+knot	noun	cnotta	cnottan	m	/ˈknotːɑ/	knot		/ˈknotːɑn/	wiktionary	proposed
+limb	noun	lim	limu	n	/ˈlim/	limb		/ˈlimu/	wiktionary	proposed
+saddle	noun	sadol	sadolas	m	/ˈsɑdol/	saddle		/ˈsɑdolɑs/	wiktionary	proposed
+shin	noun	sċinu	sċina	f	/ˈʃinu/	shin		/ˈʃinɑ/	wiktionary	proposed
+snail	noun	sneġel	sneġlas	m	/ˈsnejel/	snail		/ˈsnejlɑs/	wiktionary	proposed
+spear	noun	spere	speru	n	/ˈspere/	spear		/ˈsperu/	wiktionary	proposed
+strawberry	noun	strēawberġe	strēawberġan	f	/ˈstræːɑwberje/	strawberry		/ˈstræːɑwberjɑn/	wiktionary	proposed
+thigh	noun	þēoh	þēoh	n	/ˈθeːox/	thigh		/ˈθeːox/	wiktionary	proposed
+thirsty	adj	þurstiġ			/ˈθurstij/	thirsty			wiktionary	proposed
