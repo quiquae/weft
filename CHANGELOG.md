@@ -14,15 +14,16 @@ English Wiktionary agree on the gloss, the gender and the woven form. They
 say "Lewis & Short, unreviewed" in the tooltip until a person has read them,
 and the site gives a word a page only once it has been read.
 
-**Old English grows by 144 words.** Each is one of the Old English
+**Old English grows by 156 words.** Each is one of the Old English
 translations English Wiktionary gives an English word the pack did not yet
 teach, most frequent first — *þing* for thing, *strǣt* for street, *wyrd*
-for fate, *tunge* for tongue, *gōs* for goose — where its own Old English
-entry gives the gloss, the gender and the woven plural or participle. They
-say "Wiktionary, unreviewed" in the tooltip until a person has read them.
-53 of them name the English word they became, *þing* thing and *gōs*
-goose, each where that English word's own Wiktionary entry says it was
-inherited from exactly this one; the rest make no claim about it.
+for fate, *tunge* for tongue, *gōs* for goose, *forġiefan* for forgive —
+where its own Old English entry gives the gloss, the gender and the woven
+plural or participle. They say "Wiktionary, unreviewed" in the tooltip until
+a person has read them. 65 of them name the English word they became, *þing*
+thing and *gōs* goose, each where that English word's own Wiktionary entry
+says it was inherited from exactly this one; the rest make no claim about
+it.
 
 ## 1.1.0
 

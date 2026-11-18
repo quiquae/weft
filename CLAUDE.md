@@ -19,8 +19,8 @@ English (356 checked English lemmas each, and in the five modern packs about
 2,200 more drafted from English Wiktionary, `status` proposed, which the tooltip
 labels "Wiktionary, unreviewed", and in Latin 785 drafted from the DCC core
 list and English Wiktionary's translation tables, labelled "Lewis & Short,
-unreviewed", and in Old English 144 drafted from English Wiktionary's
-translation tables, labelled "Wiktionary, unreviewed", 53 of them naming the
+unreviewed", and in Old English 156 drafted from English Wiktionary's
+translation tables, labelled "Wiktionary, unreviewed", 65 of them naming the
 English word they became where that word's own entry inherits them;
 `tools/seed/wiktionary/`). It
 is for someone who wants the browsing time they were going to lose anyway to
@@ -71,11 +71,11 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run typecheck` | `tsc --noEmit` | clean |
 | `npm run test:unit` | pure-core tests, no browser | **686 pass**, 159 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **140 pass**, 29 suites, ~9 s wall clock here |
-| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **646 pass**, 170 suites, ~8 s here |
+| `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **649 pass**, 171 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4519 KB unpacked for Chrome and 4520 for Firefox and Safari, 4.1 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4524 KB unpacked for each of the three, 4.1 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1119,6 +1119,80 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-18 — Old English's third batch: twelve words whose division was read
+
+This run began by landing the last one's PR, #180, which a stop had left a
+draft, its journal's e2e figure a placeholder: e2e was run on its tree, 47
+passed and 3 skipped in 6.5 min, the figure written in, CI passed and it
+merged.
+Then `TODO.md`'s top item, the ten inherited words Wright's particle check
+kept out.
+
+**The probe found twelve.** With the particle check and the h check lifted
+in a scratch copy, `draft_ang.py --inherited` drafts the item's ten and
+*ċildhād* and *forehēafod*, the only inherited words among the 27 the h
+check refused, which the item asked to be probed first. `--allow=` names
+headwords whose division has been read, and the two checks pass them; the
+particle check stays the default. Wright, read in the OCR and quoted where
+it names the word: §14 stresses *forġiefan*, "forgiefan, to forgive", and
+*understandan*, as "underniman, to comprehend", on the root; §12 makes ġe-
+"already unaccented in the oldest period" in *ġewær* and *ġebyrddæġ*, and
+stresses *forġiefnes* on its root as "forhæfednes"; §11 puts *midniht*,
+whose *mid* is the adjective *midd*, and the two h compounds on their first
+element. *bisiġ*, *berġe*, *ofn* and *ǣmete* are simple words, the check
+reading only their letters, each read in its Wiktionary etymology. All
+twelve inherit their English word: *birthday*'s "influenced by Old Norse
+burðr" is the *sister* case the 2026-10-01 standard keeps, and *forgive*'s
+"alteration (due to give)" its *give*.
+
+**Test-first in both readers.** The generator's self-check took eleven new
+forms and failed on all eleven, the five stressed on the particle and the
+two h compounds writing x; `ANG_PREFIXED` and `ANG_COMPOUNDED` made it 0
+mismatches, and all 866 cells then equalled the generator, so no old
+transcription moved. The stress test refused all twelve rows once they were
+written, ten for a particle nothing listed, until `COMPOUNDED`, `SIMPLE` and
+`UNSTRESSED_SOUND.under` held them. **And it gained an h rule, because it
+could not see the h.** `xOfH()` skipped an h at a listed division when
+counting g, but nothing asked whether an h was written h or x, so an unlisted
+h compound passed. Wright §§325–329: medial x remained only before voiceless
+consonants, doubled and final, and disappeared everywhere else, so an h
+written inside a word before a vowel, w, l, r or n begins an element; its
+compound must be listed, and an h beginning a word or an element is written
+h. Three tests, green on the old pack, and unlisting *nāhwǣr* fails both
+rules by name. Tools 646 → **649** / 170 → **171**, total 1519 → **1522**,
+in `docs/LAUNCH.md:218` and this file; the 1.1.0 changelog keeps its 1517.
+
+The ancestors are **301 of 514** rows, from 289 of 502, room for 87 drafts
+without an etymon where there was room for 75. Old English is 356 checked
+and **156** drafted, 65 with an etymon, 857 entries across 852 surface
+forms. The Old English pack grew 166 735 → 171 393 bytes and each package by
+exactly that, Chrome's 4519.499 → 4524.048 KB, all three printing **4524**.
+All 31 shots regenerated on a test build after the commit that moved the
+pack, 10 + 14 + 7 written: the first documentation run moved `popup.png`
+by 743 pixels in a 170×5 strip, the animated density band caught at another
+point, and a second gave back every committed byte, so the three groups are
+stamped. The site is still 713 pages and 15 392 links. `README.md`,
+`docs/SUPPORT.md`, `docs/THIRD-PARTY.md` and `CHANGELOG.md` say 156, and 65.
+
+Measured on Node 26.7, with each step's exit status captured: `npm run
+typecheck` clean; unit **686 / 159**, jsdom **140 / 29** and tools **649 /
+171**, run again on the final tree after the documents moved; `compat` 17
+dependencies × 3 browsers, 44 pass / 7 degrade, and 97 manifest keys, 87
+pass / 3 degrade / 7 untracked, 0 fail / 0 without data; `build:all`
+**4524 KB × 3**, passing `validate`; `test:e2e` **47 passed and 3 skipped
+in 7.2 min**. Separately `packs:verify` **0 errors / 5 warnings**, and a
+second `npm run packs` moved nothing; `npm run site` then `site:check`
+**713 pages / 15 392 links**, all resolving; and `artefacts:check` **8
+groups, 1 stale**, the release notes for 1.1.0.
+
+Assumed, with nobody to ask: that an `--allow` list beside the stress test's
+lists beats the drafter reading the TypeScript, the test refusing a word
+allowed and not listed; that *forehēafdu*, the table's plural, may stand
+beside the pack's Wright *hēafodu*; and that *midniht* belongs in
+`COMPOUNDED`, though it divides where nothing changes, being a compound.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-17 — Old English's etymon, measured: 50 of 364 inherit, and 44 more are drafted
 

@@ -4,14 +4,15 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-17:** every automatable check is green, measured at the end
+**State on 2026-11-18:** every automatable check is green, measured at the end
 of this session — typecheck clean, **686** unit / 159 suites, **140** jsdom / 29
-suites, **646** tool tests / 170 suites, **47** e2e passing
+suites, **649** tool tests / 171 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, the packages
-built at 4519 KB for Chrome and 4520 for Firefox and Safari, 316 KB more
-than 1.1.0's 4204 for Latin's 785 drafted rows and Old English's 144 —
-the 44 of 2026-11-17 and the nine etymons added the Old English pack's
-17 293 bytes, Chrome's 4502.611 → 4519.499 KB — all
+built at 4524 KB for each of the three, 320 KB more
+than 1.1.0's 4204 for Latin's 785 drafted rows and Old English's 156 —
+the twelve of 2026-11-18 added the Old English pack's 4 658 bytes,
+Chrome's 4519.499 → 4524.048 KB, and the 44 of 2026-11-17 and the nine
+etymons its 17 293, Chrome's 4502.611 → 4519.499 KB — all
 passing `npm run validate`. The package grew
 983 → 984 KB on 2026-10-01 by exactly the French pack's 1 028 bytes, which
 crossed a rounding boundary, 984 → 985 KB the same evening by the Old
@@ -733,25 +734,59 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Old English, third batch: the ten inherited words a particle kept
-      out.** Found 2026-11-17 by the second batch below: with Wright's
-      particle check lifted in a scratch copy, `draft_ang.py --inherited`
-      drafts ten more, every one inheriting its English word —
-      *understandan*, *ġewær* (aware), *ġebyrddæġ* (birthday), *bisiġ*
-      (busy), *midniht*, *forġiefan*, *berġe* (berry), *ofn* (oven),
-      *ǣmete* (ant), *forġiefnes*. Four are not prefixed at all, the check
-      reading a spelling: *bisiġ*, *berġe*, *ofn* and *ǣmete* want `SIMPLE`
-      lines in `tests/tools/old-english-stress.test.ts`, each read in its
-      Wiktionary etymology. The other six want reading in Wright §§10–15 and
-      their entries for where the stress falls and where the word divides:
-      a `COMPOUNDED` line, and an `ANG_PREFIXED` or `ANG_COMPOUNDED` line in
-      `tools/seed/_ipa.py`, before the drafter is told to take them (an
-      `--allow=` list, say, so the particle check stays the default). Each
-      raises the ancestor count, which is the room the item in `Next` needs.
-      The 27 words refused for an h beginning a second element have not been
-      probed the same way; do that first, it is one `sed`. About 45 minutes;
-      the dumps and commands are in `tools/seed/wiktionary/README.md`, and
-      the run deletes its scratch copies.
+- [ ] **Keep function words, and the adverbs before a verb, away from a
+      translation service.** Found 2026-11-09, measuring the irregular
+      pasts with the real guesser. The selector keeps function words out
+      by part of speech (`entryAllowed()` in `src/core/selector.ts`), and
+      on the provider path the part of speech is `guessPos()`'s, which
+      never returns a function word's; no pack carries one, so every
+      function word on a page reaches the service as a content word
+      wherever a context rule fires. Measured: "I **can** swim", "we
+      **will** go", "they **must** leave", "you **may** sit" and "they
+      **are** happy" each send a verb at 0.65 — *will*, asked for an
+      infinitive, comes back *vouloir*, a wrong meaning and not only a
+      wrong form — "who **has** left" a verb, "what **does** it mean" a
+      plural noun at 0.55, and "with **him**", "for **them**", "from
+      **you**" and "some of **these**" a noun at 0.7. And the adverbs that
+      stand before a verb go as verbs after *I*, *you*, *we* and *they*:
+      "I **never** sleep", "we **also** know", "they **still** wait", "you
+      **just** left", "we **often** walk"; after *he*, *she* and *it* the
+      2026-11-09 rule already declines them. Shape: a closed list of
+      English function words — pronouns, determiners, prepositions,
+      conjunctions, auxiliaries and modals, most already in the guesser's
+      cue sets — declined wherever they stand, as `-ed` is, and the adverbs
+      without `-ly` that come before a verb declined after a subject
+      pronoun. Careful: `MODALS` holds content verbs too (*let*, *help*,
+      *make*, *dare*, *need*) and `COPULAS` some (*looks*, *feels*,
+      *stays*), and the packs weave *have*, so derive the guard this run
+      did, every base form a pack weaves still taken. Found beside it and
+      left: after a copula an irregular participle goes as an adjective at
+      0.6, so "she was **left** alone" asks for the adjective *left*, which
+      a service may answer *gauche*; and the `-ed`/`-ing` check declines
+      base forms that end so, *need*, *bring*, *sing*, which costs only
+      coverage. About 45 minutes; it moves `src/core/`, so all three
+      screenshot groups go stale by provenance and want regenerating and
+      stamping.
+
+- [x] **Old English, third batch: twelve inherited words a particle or an
+      h kept out.** Done 2026-11-18. With Wright's particle check and the h
+      check lifted in a scratch copy, `draft_ang.py --inherited` drafts the
+      item's ten and two more, *ċildhād* (childhood) and *forehēafod*
+      (forehead), the only inherited words among the 27 the h check refused.
+      Each division was read before the drafter was told to take it, by a
+      new `--allow=`: Wright §14 stresses *forġiefan* ("forgiefan, to
+      forgive") and *understandan* ("underniman, to comprehend") on the
+      root, §12 *ġewær* and *ġebyrddæġ* (ġe- "already unaccented in the
+      oldest period") and *forġiefnes* (as "forhæfednes, temperance"); §11
+      puts *midniht*, whose *mid* is the adjective, and the two h compounds
+      on their first element; *bisiġ*, *berġe*, *ofn* and *ǣmete* are
+      simple words, read in their Wiktionary etymologies. Each is listed in
+      the stress test and the generator, test-first in both, and the test
+      gained a rule from Wright §§325–329: an h inside a word before a
+      vowel, w, l, r or n, not doubled, begins an element, so its compound
+      must be listed, and an h that begins a word or an element is written
+      h. All twelve inherit their English word, so the ancestors are **301
+      of 514** rows, from 289 of 502. See Notes.
 
 - [x] **Old English, second batch: settle the etymon, then draft the
       inherited words.** Done 2026-11-17, a slice of "settle the etymon,
@@ -2969,40 +3004,6 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
       **168**, total 1508 → **1512**, in six places, and a `CHANGELOG.md`
       paragraph. See Notes.
 
-- [ ] **Keep function words, and the adverbs before a verb, away from a
-      translation service.** Found 2026-11-09, measuring the irregular
-      pasts with the real guesser. The selector keeps function words out
-      by part of speech (`entryAllowed()` in `src/core/selector.ts`), and
-      on the provider path the part of speech is `guessPos()`'s, which
-      never returns a function word's; no pack carries one, so every
-      function word on a page reaches the service as a content word
-      wherever a context rule fires. Measured: "I **can** swim", "we
-      **will** go", "they **must** leave", "you **may** sit" and "they
-      **are** happy" each send a verb at 0.65 — *will*, asked for an
-      infinitive, comes back *vouloir*, a wrong meaning and not only a
-      wrong form — "who **has** left" a verb, "what **does** it mean" a
-      plural noun at 0.55, and "with **him**", "for **them**", "from
-      **you**" and "some of **these**" a noun at 0.7. And the adverbs that
-      stand before a verb go as verbs after *I*, *you*, *we* and *they*:
-      "I **never** sleep", "we **also** know", "they **still** wait", "you
-      **just** left", "we **often** walk"; after *he*, *she* and *it* the
-      2026-11-09 rule already declines them. Shape: a closed list of
-      English function words — pronouns, determiners, prepositions,
-      conjunctions, auxiliaries and modals, most already in the guesser's
-      cue sets — declined wherever they stand, as `-ed` is, and the adverbs
-      without `-ly` that come before a verb declined after a subject
-      pronoun. Careful: `MODALS` holds content verbs too (*let*, *help*,
-      *make*, *dare*, *need*) and `COPULAS` some (*looks*, *feels*,
-      *stays*), and the packs weave *have*, so derive the guard this run
-      did, every base form a pack weaves still taken. Found beside it and
-      left: after a copula an irregular participle goes as an adjective at
-      0.6, so "she was **left** alone" asks for the adjective *left*, which
-      a service may answer *gauche*; and the `-ed`/`-ing` check declines
-      base forms that end so, *need*, *bring*, *sing*, which costs only
-      coverage. About 45 minutes; it moves `src/core/`, so all three
-      screenshot groups go stale by provenance and want regenerating and
-      stamping.
-
 ## Next
 
 - [ ] **Old English: decide what the pack's 226 uninherited drafts would
@@ -3013,15 +3014,17 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
       *synderlīċ* for special, *dǣd* for action. `docs/PEDAGOGY.md` says
       "for Old English, the target is usually the literal ancestor", and
       `tests/tools/pedagogy.test.ts` holds it to a majority of the seed's
-      rows, 289 of 502 now: room for 75 drafts without an etymon, fewer
-      once a checked row without one lands. Shapes: (1) restate the claim as
+      rows, 301 of 514 since the third batch of 2026-11-18: room for 87
+      drafts without an etymon, fewer once a checked row without one lands. Shapes: (1) restate the claim as
       one about the checked rows, or about the words a reader meets first,
       which changes published copy, and draft all 226; (2) draft up to the
       room, most frequent first, leaving the claim true by a few rows; (3)
       draft only inherited words, as the second batch did, and leave the 226
       to the modern packs' way of teaching a word. Recommended: (3) until
       the particle and compound words are read, which adds inherited rows
-      and so room, then (2) if breadth is wanted; (1) is the honest shape
+      and so room — the third batch read the twelve the checks named, and
+      no inherited word is left behind a particle or an h — then (2) if
+      breadth is wanted; (1) is the honest shape
       if the pack should grow past that, because the claim was written of a
       pack built for descent.
 
@@ -8712,6 +8715,47 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-18 — Old English's third batch: twelve words whose division was
+read.** Things a later run would be sorry not to know:
+
+- **The particle check reads letters, and four of the ten were simple
+  words.** *bisiġ* begins with *bi*, *berġe* with *be*, *ofn* with *of* and
+  *ǣmete* with *ǣ*, and none is compounded of a particle in Old English;
+  `SIMPLE` holds them, each read in its Wiktionary etymology. *ǣmete* is
+  prehistorically *ē- and *mait- "probably", which the English entry says,
+  and stressed on its first syllable either way, as `ǣmettiġ` was listed.
+  And *midniht*'s *mid* is the adjective *midd*, not the particle: it is in
+  `COMPOUNDED` as stressed on its first element, where the generator needs
+  no line, having nothing to voice or stress differently.
+- **Wright §14 names the verbs, and §12 the nouns.** §14 lists
+  "forgiefan, to forgive" and "underniman, to comprehend" among the verbs
+  stressed on the root; §12 says ġe- was "already unaccented in the oldest
+  period" in nouns and adjectives, and stresses a noun formed from a verb
+  with an inseparable particle on its root, "forhæfednes". Wright's OCR is
+  `https://archive.org/download/oldenglishgramma00wrig/oldenglishgramma00wrig_djvu.txt`;
+  §§10–15 are at its line 1322, the macrons dropped.
+- **The h check refused two inherited words, and the stress test could not
+  see them.** *ċildhād* and *forehēafod* begin their second element with
+  h, which the generator wrote x. `xOfH()` already skipped an h at a listed
+  division when counting g, but nothing asked whether an h was written h
+  or x, so an unlisted h compound passed the test. It asks now, from Wright
+  §§325–329: medial x remained only before voiceless consonants, doubled
+  and final, and disappeared everywhere else, so an h written before a
+  vowel, w, l, r or n begins an element. The pack had three such words
+  (*ǣġhwǣr*, *nāhwǣr*, and *hliehhan*'s doubled hh) and all passed;
+  unlisting *nāhwǣr* fails both rules by name.
+- **The first documentation run moved `popup.png` and the second did not.**
+  743 pixels in a 170×5 strip, the largest channel 186 apart: the density
+  band, which animates (`WeaveBand animate`), caught at another point. A
+  second run gave back every committed byte, so the shots stand and were
+  stamped. A band, not a glyph: `png:diff`'s box said where before the
+  image did.
+- **Assumed:** that *forehēafdu*, the table's plural, may stand beside the
+  pack's *hēafodu* for head, which Wright's §347 older paradigm gave; the
+  two are both attested, and the draft is labelled. And that *birthday*'s
+  "influenced by Old Norse burðr" is the *sister* case the 2026-10-01
+  standard keeps, a cognate reshaping a descent, so its etymon stands.
 
 **2026-11-17 — Old English's second batch: the etymon, measured.** Things a
 later run would be sorry not to know:
