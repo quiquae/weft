@@ -108,6 +108,13 @@ const COMPOUNDED: Record<string, Divided> = {
   forġietan: { first: 'for', stressed: 'second' }, // §14, "forġiefan, to forgive"
   ġemunan: { first: 'ġe', stressed: 'second' }, // §651
   ondrǣdan: { first: 'on', stressed: 'second' }, // §654, on- "the unstressed form of and-"
+  forġiefan: { first: 'for', stressed: 'second' }, // §14, "forgiefan, to forgive"
+  understandan: { first: 'under', stressed: 'second' }, // §14, "underniman, to comprehend"
+  // §12: ġe- "already unaccented in the oldest period", in nouns and adjectives too,
+  // and for- in a noun formed from its verb, "forhæfednes, temperance".
+  ġewær: { first: 'ġe', stressed: 'second' }, // "gelīc, alike"
+  ġebyrddæġ: { first: 'ġe', stressed: 'second' }, // ġebyrd, birth, and dæġ
+  forġiefnes: { first: 'for', stressed: 'second' }, // from forġiefan
   // §15: an adverb made of tō and the noun it governs is stressed on the noun.
   tōdæġ: { first: 'tō', stressed: 'second' },
   tōgædere: { first: 'tō', stressed: 'second' }, // §15, "tōgǽdere, together"
@@ -130,6 +137,11 @@ const COMPOUNDED: Record<string, Divided> = {
   nēahġebūr: { first: 'nēah', stressed: 'first' },
   ēagþȳrel: { first: 'ēag', stressed: 'first' }, // "eye-hole"
   bōcstæf: { first: 'bōc', stressed: 'first' },
+  // mid, "middle", the adjective and not the particle: Wiktionary's Proto-Germanic *midjanahts.
+  midniht: { first: 'mid', stressed: 'first' },
+  // An h beginning the second element, the aspirate a word begins with (§325).
+  ċildhād: { first: 'ċild', stressed: 'first' },
+  forehēafod: { first: 'fore', stressed: 'first' },
 };
 
 /**
@@ -144,6 +156,11 @@ const SIMPLE = new Set([
   // From ǣmetta, "leisure", which etymonline says is "perhaps" ǣ- and mōtan:
   // stressed on its first syllable either way, with nothing to voice where it would divide.
   'ǣmettiġ',
+  // So ǣmete, ant: Wiktionary's Old English entry has it from Proto-West Germanic
+  // *āmaitijā, one word, and its English one "probably" from *ē- and *maitaną.
+  'ǣmete',
+  // Read in their Wiktionary etymologies: Proto-West Germanic *bisīg, *baʀi and *ofn.
+  'bisiġ', 'berġe', 'ofn',
   'ġeolu', 'ġeong',
 ]);
 
@@ -155,7 +172,9 @@ const PARTICLES = [
 ];
 
 /** How an unstressed first element sounds, by Wright §§4–8: ā long, ġ the palatal spirant. */
-const UNSTRESSED_SOUND: Record<string, string> = { ā: 'ɑː', be: 'be', for: 'for', ġe: 'je', on: 'on', tō: 'toː' };
+const UNSTRESSED_SOUND: Record<string, string> = {
+  ā: 'ɑː', be: 'be', for: 'for', ġe: 'je', on: 'on', tō: 'toː', under: 'under',
+};
 
 /** The sound a letter has at the start of a word (§§7–8): what a root after a particle begins with. */
 const INITIAL: Record<string, string> = {
@@ -516,5 +535,70 @@ describe('every undotted Old English g has the sound Wright gives the guttural g
     assert.ok(n('ɣ') >= 8, `only ${n('ɣ')} undotted g stand inside a word`);
     assert.ok(n('x') >= 2, `only ${n('x')} undotted g end a word after l, r or a guttural vowel`);
     assert.ok(n('either') >= 1, `no undotted g stands before a voiceless consonant`);
+  });
+});
+
+/*
+ * An h is the aspirate where a word or an element begins, and the spirant x
+ * inside a word, and the spelling cannot say which element an h begins.
+ *
+ *   §325  "Initial x had become an aspirate before vowels already in prim.
+ *         Germanic … In OE. it also became an aspirate initially before
+ *         consonants except in the combination xw."
+ *   §326  "Medial x remained in OE. before voiceless consonants, and when
+ *         doubled", and §328 final x remained.
+ *   §329  medial x disappeared everywhere else: between a vowel and a liquid
+ *         or nasal, between a liquid and a vowel, and between vowels.
+ *
+ * So an h a word writes before a vowel, w, l, r or n, not doubled, is the h
+ * an element begins with — ċild-hād, fore-hēafod — and the generator reads it
+ * as one only where its compound is listed, as everything else here is.
+ */
+
+/** Where a word writes an h no simple word could: inside it, before a vowel, w, l, r or n, and not doubled. */
+function hsBeginningElements(word: string): number[] {
+  const at: number[] = [];
+  for (let i = 1; i < word.length; i++) {
+    const next = word[i + 1] ?? '';
+    if (word[i] !== 'h' || word[i - 1] === 'h' || !next || next === 'h') continue;
+    if (VOWELS.includes(next) || 'wlrn'.includes(next)) at.push(i);
+  }
+  return at;
+}
+
+describe('every Old English h is the aspirate where a word or an element begins, and x elsewhere', () => {
+  test('an h inside a word before a vowel, w, l, r or n begins an element, and its compound is listed', () => {
+    report(
+      checked.flatMap((r) =>
+        hsBeginningElements(r.word)
+          .filter((i) => COMPOUNDED[r.head]?.first.length !== i)
+          .map((i) => `${r.tgt} ${r.ipa}: its h before “${r.word[i + 1]}” begins an element (§329), and nothing here divides it there — list it in COMPOUNDED`),
+      ),
+      'have an h inside them that only an element begins with',
+    );
+  });
+
+  test('an h that begins a word or an element is written h, and every other h x', () => {
+    report(
+      checked.flatMap((r) => {
+        const at = COMPOUNDED[r.head]?.first.length ?? -1;
+        const want = [...r.word].filter((ch, i) => ch === 'h' && (i === 0 || i === at)).length;
+        const got = (r.ipa.match(/h/g) ?? []).length;
+        return got === want ? [] : [`${r.tgt} ${r.ipa}: ${got} h where the spelling begins ${want} word or element with one`];
+      }),
+      'write the wrong h',
+    );
+  });
+
+  test('the h rules have something to police', () => {
+    const initial = checked.filter((r) => r.word.startsWith('h')).length;
+    const atDivision = checked.filter((r) => {
+      const at = COMPOUNDED[r.head]?.first.length;
+      return at !== undefined && r.word[at] === 'h';
+    }).length;
+    const inside = checked.filter((r) => [...r.word].some((ch, i) => ch === 'h' && i > 0)).length;
+    assert.ok(initial > 20, `only ${initial} Old English words begin with h`);
+    assert.ok(atDivision >= 2, `only ${atDivision} listed compounds begin an element with h`);
+    assert.ok(inside > 20, `only ${inside} Old English words have an h inside them`);
   });
 });

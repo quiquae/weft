@@ -224,7 +224,10 @@ VOICED_CONTEXT = set(ANG_VOWELS) | set('lmnrwbdgæāēīōūȳǣ')
 
 """
 Words whose first syllable is an unstressed particle: verbs with an
-inseparable prefix (Wright, *Old English Grammar*, §14), and the adverbs made
+inseparable prefix (Wright, *Old English Grammar*, §14, under- among them:
+"underniman, to comprehend"); nouns and adjectives with ġe-, "already
+unaccented in the oldest period", and a noun formed from a verb with an
+inseparable prefix, "forhæfednes, temperance" (§12); and the adverbs made
 of tō and the noun it governs, which are stressed on the noun (§15: "onwég,
 away; tōgǽdere, together").
 
@@ -235,6 +238,8 @@ correct and auditable; a rule would be neither.
 """
 ANG_PREFIXED = {
     'ābīdan': 'ā', 'beġinnan': 'be', 'forġietan': 'for', 'ġemunan': 'ġe', 'ondrǣdan': 'on',
+    'forġiefan': 'for', 'understandan': 'under',
+    'ġewær': 'ġe', 'ġebyrddæġ': 'ġe', 'forġiefnes': 'for',
     'tōdæġ': 'tō', 'tōgædere': 'tō',
 }
 
@@ -254,8 +259,12 @@ or eleventh century, after the voicing had run its course, its [z] arising
 later "nur durch Assimilation". wīfmann is left to the simple-word rule on
 purpose: it grew into late Old English wimman, and Sievers (tr. Cook, 1903),
 §193.2, puts that among the changes of a sonant f.
+
+And those whose second element begins with h, which is the h a word begins
+with and not the spirant x an h inside a word is: ċild-hād, fore-hēafod.
 """
-ANG_COMPOUNDED = {'andswaru': 'and', 'onsīen': 'on', 'ēagþȳrel': 'ēag', 'hūsbonda': 'hūs'}
+ANG_COMPOUNDED = {'andswaru': 'and', 'onsīen': 'on', 'ēagþȳrel': 'ēag', 'hūsbonda': 'hūs',
+                  'ċildhād': 'ċild', 'forehēafod': 'fore'}
 
 
 def _ang_phones(word, initial=True):
@@ -449,6 +458,11 @@ if __name__ == '__main__':
         ('plōg', '/ˈploːx/'), ('lang', '/ˈlɑŋɡ/'),
         # f before þ, a voiceless sound: the letter þ is no voiced context.
         ('þīefþ', '/ˈθiːefθ/'),
+        # §12: ġe- unaccented in nouns and adjectives too, and for- in a noun
+        # formed from its verb, "forhæfednes, temperance".
+        ('ġewær', '/jeˈwær/'), ('ġebyrddæġ', '/jeˈbyrdːæj/'), ('forġiefnes', '/forˈjievnes/'),
+        # An h beginning a compound's second element is the h a word begins with.
+        ('ċildhād', '/ˈtʃildhɑːd/'), ('forehēafod', '/ˈforehæːɑvod/'),
     ]
     bad = 0
     for word, want in checks_la:
@@ -460,6 +474,8 @@ if __name__ == '__main__':
     checks_ang_verbs = [
         ('ābīdan', '/ɑːˈbiːdɑn/'), ('beġinnan', '/beˈjinːɑn/'),
         ('forġietan', '/forˈjietɑn/'), ('ġemunan', '/jeˈmunɑn/'),
+        # §14: "forgiefan, to forgive"; under- with them, "underniman, to comprehend".
+        ('forġiefan', '/forˈjievɑn/'), ('understandan', '/underˈstɑndɑn/'),
     ]
     # A second form divides where its headword does: the participle keeps the
     # infinitive's unstressed particle, the plural the compound's boundary.
@@ -472,6 +488,8 @@ if __name__ == '__main__':
         ('þīefþa', 'þīefþ', '/ˈθiːefθɑ/'),
         # A g a lost vowel left before a voiced consonant is still the spirant.
         ('fuglas', 'fugol', '/ˈfuɣlɑs/'), ('morgnas', 'morgen', '/ˈmorɣnɑs/'),
+        ('understandende', 'understandan', '/underˈstɑndende/'), ('ġebyrddagas', 'ġebyrddæġ', '/jeˈbyrdːɑɣɑs/'),
+        ('ċildhādas', 'ċildhād', '/ˈtʃildhɑːdɑs/'), ('forehēafdu', 'forehēafod', '/ˈforehæːɑvdu/'),
     ]
     for word, want in checks_ang:
         got = old_english_ipa(word)

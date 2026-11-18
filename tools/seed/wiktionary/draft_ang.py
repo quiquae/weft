@@ -2,7 +2,7 @@
 
 usage: draft_ang.py <en-extract.jsonl> <kaikki Old English dump> <seed-dir>
                     [--limit=n] [--exclude=word,...] [--singular=word,...] [--write] [--sample=seed:n]
-                    [--inherited] [--etymons] [--show-etymons]
+                    [--inherited] [--etymons] [--show-etymons] [--allow=word,...]
 
 For each English word english-core.tsv carries and the Old English pack does
 not yet teach, most frequent first, the Old English words the first two
@@ -23,7 +23,10 @@ holds the draft too:
 - the headword is one tests/tools/old-english-stress.test.ts can read with no
   list beside it: no letter it does not know, no particle of Wright's at its
   start, which would want reading in Wright and a line in COMPOUNDED or
-  SIMPLE, and no undotted g where Wright makes it palatal;
+  SIMPLE, no h inside it that only an element begins with, and no undotted
+  g where Wright makes it palatal — unless --allow names it, because its
+  division has been read and written down in the test's COMPOUNDED or
+  SIMPLE and in _ipa.py's ANG_PREFIXED or ANG_COMPOUNDED;
 - the pack does not already teach it, under any part of speech, its marks
   dropped and ð read as þ: a second card for one word is a homograph nobody
   numbered.
@@ -46,7 +49,10 @@ is usually the literal ancestor", which tests/tools/pedagogy.test.ts counts.
 The pack writes the doubled palatal cg where Wiktionary writes ċġ (the
 pronunciation key's "cg is dg"), so a draft does too. --limit caps the
 drafts, most frequent English word first; --exclude names Old English
-headwords to pass over; --singular names nouns woven in the singular only.
+headwords to pass over; --singular names nouns woven in the singular only;
+--allow names headwords whose division has been read, which the particle and
+h checks then pass: the stress test refuses one beginning with a particle's
+letters, or holding an h only an element begins with, that it does not list.
 Every row is status proposed: woven, labelled "Wiktionary, unreviewed", not
 yet read by a person. Without --write it prints what it would draft and why
 it skipped the rest.
@@ -71,6 +77,7 @@ def option(name, default=None):
 
 LIMIT = int(option('limit', '0')) or None
 EXCLUDE = set(filter(None, option('exclude', '').split(',')))
+ALLOW = set(filter(None, option('allow', '').split(',')))
 SINGULAR = set(filter(None, option('singular', '').split(',')))
 
 
@@ -123,17 +130,18 @@ def particle(word):
     return next((p for p in PARTICLES if word.startswith(p) and word != p), None)
 
 
-def unkeyed(word):
+def unkeyed(word, divided=False):
     """Why the pronunciation key or the stress test would read `word` otherwise than the generator
     writes it, or None. ċċ is one long sound under two letters the key counts as two "ch"; the
     generator writes nġ /ndʒ/ where the key says ġ is "y"; and an h inside a word before a vowel,
     w, l, r or n begins an element of a compound, lǣċe-hūs, bōc-hūs, which the generator and the
-    stress test both write as the spirant x, where it is the h a word begins with."""
+    stress test both write as the spirant x, where it is the h a word begins with, unless the word
+    is `divided`: listed with its division, which the generator transcribes an element at a time."""
     if 'ċċ' in word:
         return 'a doubled ċ, one sound under two letters'
     if 'nġ' in word:
         return 'an nġ, which the generator writes /ndʒ/'
-    if re.search(f'(?<=.)h[{VOWELS}wlrn]', word):
+    if not divided and re.search(f'(?<=.)h[{VOWELS}wlrn]', word):
         return 'an h beginning a second element'
     return None
 
@@ -233,13 +241,14 @@ def check(head, eng, pos, hint=None):
         return None, 'a letter the stress test does not read'
     if bare(word) == eng:
         return None, 'the same word in English'
-    if particle(word):
+    divided = head in ALLOW or word in ALLOW
+    if particle(word) and not divided:
         return None, f'it begins with Wright’s particle {particle(word)}-'
     # Wiktionary writes the unstressed verbal prefix a- short, alibban "to survive" beside
     # Wright's ābīdan, so the particle list cannot see it, and the generator would stress it.
     if pos == 'verb' and re.match(f'a[^{VOWELS}]', word):
         return None, 'a verb beginning a-, which may be Wright’s unstressed ā-'
-    why = palatal_g(word, pos) or unkeyed(word)
+    why = palatal_g(word, pos) or unkeyed(word, divided)
     if why:
         return None, why
     entries = [e for e in wikt.get((bare(head), pos), []) if usable(e) and headword(e) == head]
@@ -274,7 +283,7 @@ def check(head, eng, pos, hint=None):
     if tgt2:
         if not LETTERS.fullmatch(tgt2):
             return None, 'a second form with a letter the stress test does not read'
-        why = palatal_g(tgt2, pos) or unkeyed(tgt2)
+        why = palatal_g(tgt2, pos) or unkeyed(tgt2, divided)
         if why:
             return None, f'its second form has {why}'
     if same(word) in in_use:
