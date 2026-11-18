@@ -31,8 +31,9 @@ holds the draft too:
 A row carries an etymon only where the English word's own entry, the one
 whose translation table named the Old English word, says it is inherited
 from exactly that word: an {{inh|en|ang|<word>}} template naming it, its
-marks dropped and ð read as þ, and no "partly", "probably" or other hedge in
-its etymology up to the sentence that names it. That is the standard
+marks dropped and ð read as þ; no "probably" or other hedge up to the end of
+the clause that names it; no "partly", "blend" or "merger" anywhere in the
+etymology; and no second source in the sentence that names it. That is the standard
 ang-etymons.tsv was read to on 2026-10-01, and the claim is about the
 English word, so its line cites wikt:en:<english>. A word English derived
 or borrowed (der, bor), or reached through another word, gets none.
