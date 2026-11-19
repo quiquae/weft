@@ -25,6 +25,14 @@ thing and *gōs* goose, each where that English word's own Wiktionary entry
 says it was inherited from exactly this one; the rest make no claim about
 it.
 
+**A translation service is no longer sent function words.** With a service
+on, a word the pack lacked could go as a noun or a verb whatever it was:
+"we **will** go" asked for the infinitive of *will* and wove *vouloir*,
+"with **him**" asked for a noun, and "I **never** sleep" a verb. Pronouns,
+determiners, prepositions, conjunctions, auxiliaries, modals and
+contractions are not sent now, and nor is an adverb such as *never* or
+*still* where a verb would come next.
+
 ## 1.1.0
 
 Released 2026-11-09, the first release since 1.0.0 and the one the stores
