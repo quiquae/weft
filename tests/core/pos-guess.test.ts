@@ -38,6 +38,20 @@ function shippedBaseForms(): Set<string> {
   return bases;
 }
 
+/** Every one-word English key of a shipped pack, with each part of speech a pack weaves it as. */
+function shippedParts(): Map<string, Set<string>> {
+  const parts = new Map<string, Set<string>>();
+  for (const entries of shippedEntries()) {
+    for (const [word, rows] of Object.entries(entries)) {
+      if (word.includes(' ')) continue;
+      const set = parts.get(word) ?? new Set<string>();
+      for (const e of rows) set.add(e.pos);
+      parts.set(word, set);
+    }
+  }
+  return parts;
+}
+
 /** Each of `cases` must be declined, the way the page asks. */
 function assertDeclined(cases: ReadonlyArray<readonly [string, string]>): void {
   for (const [text, word] of cases) {
@@ -160,6 +174,57 @@ describe('morphology', () => {
       const g = guess(text, word, { allowPlural: true });
       assert.ok(!g || g.confidence < 0.55, `"${word}" in "${text}" is sent as ${g?.pos}`);
     }
+  });
+
+  test('a word its suffix misreads is read by its context instead', () => {
+    // Each was read by its suffix wherever it stood: "the premise is" asked
+    // for a verb, "I dislike it" for an adjective. An adverb has no context
+    // that marks it, so it is not sent at all.
+    for (const [text, word, pos] of [
+      ['to enlist them', 'enlist', 'verb'],
+      ['I dislike it', 'dislike', 'verb'],
+      ['it was random', 'random', 'adj'],
+      ['Hence we went', 'Hence', 'unsent'],
+      ['regardless of cost', 'regardless', 'unsent'],
+      ['their expertise is', 'expertise', 'noun'],
+      ['the franchise was', 'franchise', 'noun'],
+      ['the merchandise was', 'merchandise', 'noun'],
+      ['the premise is', 'premise', 'noun'],
+      ['the sunrise was', 'sunrise', 'noun'],
+      ['it was precise', 'precise', 'adj'],
+      ['she was wise', 'wise', 'adj'],
+      ['Likewise we went', 'Likewise', 'unsent'],
+      ['Otherwise we went', 'Otherwise', 'unsent'],
+      ['it was costly', 'costly', 'adj'],
+      ['it was deadly', 'deadly', 'adj'],
+      ['the bus is hourly', 'hourly', 'adj'],
+      ['the butterfly was', 'butterfly', 'noun'],
+    ] as const) {
+      const g = guess(text, word, { allowPlural: true });
+      if (pos === 'unsent') {
+        assert.ok(!g || g.confidence < 0.55, `"${word}" in "${text}" is sent as ${g?.pos}`);
+      } else {
+        assert.equal(g?.pos, pos, `"${word}" in "${text}"`);
+        assert.ok((g?.confidence ?? 0) >= 0.55, `"${word}" in "${text}" is below the threshold`);
+      }
+    }
+  });
+
+  test('reads every word a shipped pack weaves, where its suffix decides, as a part of speech a pack gives it', () => {
+    // A suffix reads before any context, so where it decides, "the X
+    // yesterday" and "to X it" agree, which the context alone never makes
+    // them do: a noun and a verb. Where they agree the packs, whose parts of
+    // speech somebody checked, must allow it.
+    let decided = 0;
+    for (const [word, parts] of shippedParts()) {
+      if (word.length < 3 || /(?:ed|ing)$/.test(word)) continue;
+      const a = guess(`the ${word} yesterday`, word, { allowPlural: true });
+      const b = guess(`to ${word} it`, word, { allowPlural: true });
+      if (!a || !b || a.pos !== b.pos || a.confidence < 0.75 || b.confidence < 0.75) continue;
+      decided++;
+      assert.ok(parts.has(a.pos), `"${word}" is read as ${a.pos} by its suffix, and a pack weaves it as ${[...parts].join(' or ')}`);
+    }
+    assert.ok(decided > 700, `the suffix decided only ${decided} words of the packs`);
   });
 });
 
@@ -468,6 +533,120 @@ describe('function words, and the adverbs before a verb', () => {
         }
       }
     }
+  });
+});
+
+describe('after a copula, a participle a service answers as something else', () => {
+  // After a copula the guesser reads an adjective, and DeepL and Google are
+  // sent the bare word, with no part of speech: what they answer for the
+  // spelling is cached and woven wherever the word stands. Each case was
+  // read that way on 2026-11-19, in French and then German, and each answer
+  // is in its message.
+
+  /** Each of `cases` must be declined; the third field is what was answered. */
+  function assertDeclinedAs(cases: ReadonlyArray<readonly [string, string, string]>): void {
+    for (const [text, word, answered] of cases) {
+      assert.equal(guess(text, word, { allowPlural: true }), null, `"${word}" in "${text}", answered ${answered}`);
+    }
+  }
+
+  test('declines a participle whose spelling a service answers as another word', () => {
+    assertDeclinedAs([
+      ['she was left alone', 'left', 'gauche, links'],
+      ['it was wound tight', 'wound', 'blesser, Wunde'],
+      ['the coffee was ground', 'ground', 'sol, Boden'],
+      ['the loss was felt', 'felt', 'feutre, gefühlt'],
+      ['it was thought lost', 'thought', 'pensée, Gedanke'],
+      ['he was shot', 'shot', 'tir, Schuss'],
+      ['the table was set', 'set', 'ensemble, Satz'],
+      ['it was spelt wrongly', 'spelt', 'épelé, Dinkel'],
+      ['the bell was rung', 'rung', 'échelon, Sprosse'],
+      ['the war was won', 'won', 'gagné, Won'],
+      ['the book was lent', 'lent', 'Carême, Fastenzeit'],
+      ['the lesson was learnt', 'learnt', 'savant, gelernt'],
+      ['the trap was sprung', 'sprung', 'à ressort, entsprungen'],
+      ['the die is cast', 'cast', 'casting, gießen'],
+      ['he was hit', 'hit', 'frapper, Schlag'],
+      ['it was thrust upon him', 'thrust', 'poussée, Schub'],
+      ['his throat was slit', 'slit', 'fente, Schlitz'],
+      ['the bubble was burst', 'burst', 'éclatement, platzen'],
+      ['the price was bid up', 'bid', 'offre, Gebot'],
+      ['rain was forecast', 'forecast', 'prévision, Vorhersage'],
+      ['the veil was rent', 'rent', 'louer, mieten'],
+      // Answered as the participle of "bind", which "bound for Spain" and
+      // "bound to happen" are not.
+      ['we were bound for Spain', 'bound', 'lié, gebunden'],
+    ]);
+  });
+
+  test('declines a participle a service answers as its infinitive or a finite past', () => {
+    // Woven, each is a form no grammar has after "was": "il était mettre".
+    assertDeclinedAs([
+      ['the flat was let', 'let', 'laisser, lassen'],
+      ['it was put away', 'put', 'mettre, setzen'],
+      ['the race was run', 'run', 'courir, laufen'],
+      ['it was cut short', 'cut', 'couper, schneiden'],
+      ['the door was shut', 'shut', 'fermer, schließen'],
+      ['it was read aloud', 'read', 'lire, lesen'],
+      ['we were quit of him', 'quit', 'quitter, aufhören'],
+      ['we were rid of it', 'rid', 'débarrasser, loswerden'],
+      ['the river was swum', 'swum', 'nager, geschwommen'],
+      ['she was overcome', 'overcome', 'surmonter, überwinden'],
+      ['I was upset', 'upset', 'bouleversé, verärgern'],
+      ['the butter was spread', 'spread', 'propagé, verbreiten'],
+      ['it was broadcast live', 'broadcast', 'diffuser, übertragen'],
+      ['I was hurt', 'hurt', 'blesser, verletzt'],
+      ['he is fit', 'fit', 'ajuster, fit'],
+      ['it was said', 'said', 'dit, sagte'],
+      ['we were met', 'met', 'rencontré, traf'],
+      ['I was stood there', 'stood', 'se trouvait, stand'],
+      ['the bed was slept in', 'slept', "j'ai dormi, geschlafen"],
+      ['it was crept up on', 'crept', "s'est glissé, kroch"],
+      ['the loss was wept over', 'wept', 'pleuré, weinte'],
+      ['the chance was leapt at', 'leapt', 'sauté, sprang'],
+      ['the rope was clung to', 'clung', 'accroché, klammerte sich fest'],
+      ['the altar was knelt at', 'knelt', 'agenouillé, kniete nieder'],
+    ]);
+  });
+
+  test('still takes a participle a service answers as the participle', () => {
+    for (const [text, word] of [
+      ['I was lost', 'lost'],
+      ['it was broken', 'broken'],
+      ['it was found', 'found'],
+      ['she was born', 'born'],
+      ['the ice was frozen', 'frozen'],
+      ['it was stolen', 'stolen'],
+      ['it was hidden', 'hidden'],
+      ['it was torn', 'torn'],
+      ['he was drunk', 'drunk'],
+      ['it was sold', 'sold'],
+      ['it was spent', 'spent'],
+      ['it was bent', 'bent'],
+      ['we were caught', 'caught'],
+      ['it was built', 'built'],
+      ['it was forgotten', 'forgotten'],
+      ['it was kept', 'kept'],
+    ] as const) {
+      const g = guess(text, word, { allowPlural: true });
+      assert.equal(g?.pos, 'adj', `"${word}" in "${text}"`);
+      assert.ok((g?.confidence ?? 0) >= 0.55, `"${word}" in "${text}" is below the threshold`);
+    }
+  });
+
+  test('declines no adjective a shipped pack weaves after a copula but for its length or an -ed or -ing ending', () => {
+    // A pack's adjective is one somebody checked, "lost", "known", "frozen",
+    // and a pack that lacks it asks a service, so a list declined after a
+    // copula must hold none of them.
+    let read = 0;
+    for (const [word, parts] of shippedParts()) {
+      if (!parts.has('adj')) continue;
+      read++;
+      const shape = word.length < 3 || /(?:ed|ing)$/.test(word);
+      const g = guess(`it was ${word}`, word, { allowPlural: true });
+      assert.equal(g === null, shape, `"${word}" is ${g === null ? 'declined' : 'guessed'} after "was"`);
+    }
+    assert.ok(read > 800, `only ${read} adjectives were read from the packs`);
   });
 });
 

@@ -137,6 +137,25 @@ const PRE_VERB_ADVERBS = new Set([
  */
 const ALSO_ADJECTIVES = new Set(['still', 'even', 'first']);
 
+/**
+ * Participles a service answers as something else, declined after a copula,
+ * where the rules below read an adjective. DeepL and Google are sent the bare
+ * word, and each of these, read that way in French and German, came back as
+ * another word ("left", gauche; "ground", sol; "won", Won), as the infinitive
+ * ("put", mettre; "upset", verärgern) or as a finite past ("said", sagte):
+ * woven after "was", each is wrong or a form no grammar has. "bound" came
+ * back as the participle of "bind", which "bound for Spain" is not. The
+ * participles that came back as themselves, "lost", "broken", "found", are
+ * still taken. `tests/core/pos-guess.test.ts` holds each answer.
+ */
+const MISTRANSLATED_PARTICIPLES = new Set([
+  'bid', 'bound', 'broadcast', 'burst', 'cast', 'clung', 'crept', 'cut', 'felt',
+  'fit', 'forecast', 'ground', 'hit', 'hurt', 'knelt', 'learnt', 'leapt', 'left',
+  'lent', 'let', 'met', 'overcome', 'put', 'quit', 'read', 'rent', 'rid', 'run',
+  'rung', 'said', 'set', 'shot', 'shut', 'slept', 'slit', 'spelt', 'spread',
+  'sprung', 'stood', 'swum', 'thought', 'thrust', 'upset', 'wept', 'won', 'wound',
+]);
+
 const INTENSIFIERS = new Set([
   'very', 'quite', 'rather', 'too', 'so', 'extremely', 'fairly', 'really',
   'somewhat', 'utterly', 'incredibly', 'unusually', 'especially',
@@ -190,11 +209,24 @@ const SUFFIX_POS: ReadonlyArray<readonly [RegExp, Pos]> = /* @__PURE__ */ Object
   // -less, -able, -ible and -like only after three letters of stem, so not
   // "bless", "enable", "table", "bible" or "like" itself.
   [/(?:ous|ful|ical|.{3}(?:less|able|ible|like))$/, 'adj'],
-  [/(?:ise|ize|ify)$/, 'verb'],
+  // -ise but not -wise: "wise", "likewise" and "otherwise" are no verbs.
+  [/(?:[^w]ise|ize|ify)$/, 'verb'],
 ]);
 
-/** Adverbs that end like an adjective: "never the less", run together. */
-const NOT_ADJECTIVES = new Set(['nevertheless', 'nonetheless']);
+/**
+ * Words the table above misreads, each read instead by its context. The
+ * packs, whose parts of speech somebody checked, are what found most of
+ * them, and `tests/core/pos-guess.test.ts` reads the packs for more.
+ */
+const NOT_BY_SUFFIX: Readonly<Partial<Record<Pos, ReadonlySet<string>>>> = {
+  // An adverb or adjective that ends like a noun, and a verb in -list.
+  noun: new Set(['hence', 'random', 'enlist']),
+  // Adverbs that end like an adjective, "never the less" run together, and a
+  // verb and noun in -like.
+  adj: new Set(['nevertheless', 'nonetheless', 'regardless', 'dislike']),
+  // Nouns and adjectives in -ise.
+  verb: new Set(['expertise', 'franchise', 'merchandise', 'premise', 'sunrise', 'precise']),
+};
 
 /**
  * "-ly" is an adverb often enough to be useful and not often enough to trust:
@@ -204,6 +236,8 @@ const NOT_ADJECTIVES = new Set(['nevertheless', 'nonetheless']);
 const NOT_ADVERBS = new Set([
   'supply', 'comply', 'imply', 'reply', 'apply', 'multiply', 'family',
   'assembly', 'anomaly', 'monopoly', 'panoply', 'homily', 'doily', 'gangly',
+  // A noun's -ly makes an adjective, "costly", and a few nouns end in -ly.
+  'costly', 'deadly', 'hourly', 'butterfly',
 ]);
 
 function suffixGuess(word: string): Guess | null {
@@ -214,7 +248,7 @@ function suffixGuess(word: string): Guess | null {
     }
   }
   for (const [pattern, pos] of SUFFIX_POS) {
-    if (pos === 'adj' && NOT_ADJECTIVES.has(word)) continue;
+    if (NOT_BY_SUFFIX[pos]?.has(word)) continue;
     if (pattern.test(word)) {
       return pos === 'noun'
         ? { pos, num: 'sg', confidence: 0.8 }
@@ -264,8 +298,10 @@ export function guessPos(
   if (/['’]/.test(word)) return null;
   if (FUNCTION_WORDS.has(word)) return null;
   const verbNext = prev === 'to' || (prev !== null && MODALS.has(prev)) || afterSubject;
-  const adjectiveNext = prev !== null && COPULAS.has(prev) && !ALSO_ADJECTIVES.has(word);
+  const afterCopula = prev !== null && COPULAS.has(prev);
+  const adjectiveNext = afterCopula && !ALSO_ADJECTIVES.has(word);
   if ((verbNext || adjectiveNext) && PRE_VERB_ADVERBS.has(word)) return null;
+  if (afterCopula && MISTRANSLATED_PARTICIPLES.has(word)) return null;
 
   // Decline on inflected forms. Only base forms are woven, so an inflected
   // form has nothing grammatical to put in its place.
