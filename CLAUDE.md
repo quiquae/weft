@@ -75,7 +75,7 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4524 KB unpacked for each of the three, 4.1 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4525 KB unpacked for Chrome and Safari and 4526 for Firefox, 4.1 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1119,6 +1119,74 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-19 — function words are kept from a translation service
+
+`TODO.md`'s top item in `Now`: on the provider path the part of speech is
+`guessPos()`'s, which names every word a content word's, so the selector's
+function-word filter never saw one, and "we **will** go" asked a service for
+an infinitive and wove *vouloir*. All 16 of the item's examples reproduced,
+and 43 more cases: 59, every one sent at 0.55 or more.
+
+**A closed list, declined wherever it stands, and an apostrophe.**
+`FUNCTION_WORDS` in `src/core/pos-guess.ts`, the pronouns, determiners,
+prepositions, conjunctions, auxiliaries and modals of three letters or more,
+is checked before any other rule, as an -ed form is declined. A contraction
+is one token, so "don't", "can't", "won't" and "didn't" went as verbs at
+0.65 and "she's" and "dog's" as plural nouns at 0.55, on the threshold the
+content script lets through; a word with ' or ’ is declined now, and no pack
+weaves one. `PRE_VERB_ADVERBS` is declined where a subject pronoun, a modal
+or "to" says a verb comes next, wider than the item's subject pronoun: "you
+can **never** tell" and "to **just** leave" went as verbs at 0.8, "you can
+**always** tell" as a plural noun. The eight pasts of be, have and do and
+the modals left `IRREGULAR_PASTS`, the new list declining them everywhere.
+
+**The guard the item asked for is absolute, and that is the transferable
+half.** The 2026-11-09 guard judges a base form after "they" against "to",
+and a word declined wherever it stands is declined after both: a probe
+putting *help* in the adverb list left it green. Two guards derived from the
+packs: no word a pack weaves, 5 902, is declined after "the" but for its
+length or an -ed or -ing ending, which keeps *have*, *one*, *here*, *inside*
+and the adverbs the packs weave off the list; and every base form, 372, is
+still taken after "to", a modal and "they". "Taken", not "taken as a verb":
+the suffix table reads before context and sends *exist*, *assist*, *resist*
+and *insist* as nouns and *bless* and *enable* as adjectives, which is the
+next item, with the adverbs a copula makes adjectives, "it was **just** a
+game".
+
+Test-first: 7 tests in a new suite of `tests/core/pos-guess.test.ts`, the
+five behaviour tests red on their first case with the old guess, the two
+guards green on both sides; seven probes on the guesser, each restored by
+md5 and each failing its own test by name. `docs/PEDAGOGY.md` says a service
+is never sent a function word, and its Verbs bullet the adverb. All 31 shots
+regenerated on a test build after the commit that moved `src/`, 14 + 10 + 7
+written, every one byte-identical, and the three groups stamped. Unit 686 →
+**693** / 159 → **160**, total 1522 → **1529**, in five places,
+`docs/LAUNCH.md:218` first; `README.md` and `docs/SUBMIT.md` still said 646
+tool tests and say 649. A `CHANGELOG.md` paragraph, because the provider path
+ships. The lists cost `content.js` 1 466 bytes, Chrome's 4524.048 → 4525.479
+KB, measured against `main`'s built in a detached `/tmp` worktree, so Chrome
+and Safari print **4525** and Firefox **4526**.
+
+Measured on Node 26.7, with npm's own exit status captured, on the commit
+holding the code, the documents and the stamps: `npm run test:all` **exit
+0** — typecheck clean, **693 unit / 160**, 140 jsdom / 29, 649 tools / 171,
+compat 17 dependencies × 3 browsers, 44 pass / 7 degrade, and 97 manifest
+keys, 87 pass / 3 degrade / 7 untracked, 0 fail / 0 without data, **4525 /
+4526 / 4525 KB** passing `validate`, **47 e2e passed and 3 skipped in 5.1
+min**, then build and validate again. `artefacts:check` **8 groups, 1
+stale**, the release notes for 1.1.0. `packs:verify` and `site:check` were
+not run: no pack moved, and the site builder does not import the guesser.
+Only `TODO.md` and this entry moved after the gate, so typecheck and `npm
+test` were run again on the final tree.
+
+Assumed, with nobody to ask: that a subject, a modal and "to" are one rule
+for the adverbs; that a possessive goes with the contractions, having no
+base form; that *there* is a function word, for "there is", though the packs
+weave *here*; and that *like*, *near*, *past*, *till*, *while*, *mine* and
+*own* stay out for the content reading a service answers rightly.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-18 — Old English's third batch: twelve words whose division was read
 

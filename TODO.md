@@ -4,13 +4,14 @@
      tool, reads this to find out where things stand. Newest notes at the top
      of Notes; the list itself stays in the order work should happen. -->
 
-**State on 2026-11-18:** every automatable check is green, measured at the end
+**State on 2026-11-19:** every automatable check is green, measured at the end
 of this session — typecheck clean, **693** unit / 160 suites, **140** jsdom / 29
 suites, **649** tool tests / 171 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, the packages
-built at 4524 KB for each of the three, 320 KB more
+built at 4525 KB for Chrome and Safari and 4526 for Firefox, 321 KB more
 than 1.1.0's 4204 for Latin's 785 drafted rows and Old English's 156 —
-the twelve of 2026-11-18 added the Old English pack's 4 658 bytes,
+the function words of 2026-11-19 added 1 466 bytes to `content.js`,
+Chrome's 4524.048 → 4525.479 KB, the twelve of 2026-11-18 added the Old English pack's 4 658 bytes,
 Chrome's 4519.499 → 4524.048 KB, and the 44 of 2026-11-17 and the nine
 etymons its 17 293, Chrome's 4502.611 → 4519.499 KB — all
 passing `npm run validate`. The package grew
@@ -717,13 +718,12 @@ three, and `tests/tools/node-floor.test.ts` fails if no job is on the floor
 or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
-**So the whole of B0 is closed. `Now` holds four agent-shaped items, as of
-2026-11-09 — the verbs chip's copy, the page object's escalation and
-provider paths in jsdom, the feed's false-friend lines read whole, and the
-function words a translation service is still sent — and every unchecked
-item in `Next` waits on a call of Creagh's:** the four function-word switches that weave
-nothing, the four Pro features sold and never built, the Firefox
-data-collection declaration, the Safari subtitle, the site's favicon, and
+**So the whole of B0 is closed. `Now` holds one agent-shaped item, as of
+2026-11-19 — an adverb after a copula read as an adjective, and six pack
+verbs read by their suffix, both on the provider path — and every unchecked
+item in `Next` waits on a call of Creagh's:** what Old English's uninherited
+drafts would do to "usually the literal ancestor", the four function-word
+switches that weave nothing, the Safari subtitle, the site's favicon, and
 how Firefox 140 to 145 should draw a woven word. A run that finds `Now` empty reads a written promise against
 the code, as the runs of 2026-11-05 to -07 did. Since
 2026-10-26 the artwork's colours and face are written down once, `PALETTE`
@@ -734,39 +734,52 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Keep function words, and the adverbs before a verb, away from a
-      translation service.** Found 2026-11-09, measuring the irregular
-      pasts with the real guesser. The selector keeps function words out
-      by part of speech (`entryAllowed()` in `src/core/selector.ts`), and
-      on the provider path the part of speech is `guessPos()`'s, which
-      never returns a function word's; no pack carries one, so every
-      function word on a page reaches the service as a content word
-      wherever a context rule fires. Measured: "I **can** swim", "we
-      **will** go", "they **must** leave", "you **may** sit" and "they
-      **are** happy" each send a verb at 0.65 — *will*, asked for an
-      infinitive, comes back *vouloir*, a wrong meaning and not only a
-      wrong form — "who **has** left" a verb, "what **does** it mean" a
-      plural noun at 0.55, and "with **him**", "for **them**", "from
-      **you**" and "some of **these**" a noun at 0.7. And the adverbs that
-      stand before a verb go as verbs after *I*, *you*, *we* and *they*:
-      "I **never** sleep", "we **also** know", "they **still** wait", "you
-      **just** left", "we **often** walk"; after *he*, *she* and *it* the
-      2026-11-09 rule already declines them. Shape: a closed list of
-      English function words — pronouns, determiners, prepositions,
-      conjunctions, auxiliaries and modals, most already in the guesser's
-      cue sets — declined wherever they stand, as `-ed` is, and the adverbs
-      without `-ly` that come before a verb declined after a subject
-      pronoun. Careful: `MODALS` holds content verbs too (*let*, *help*,
-      *make*, *dare*, *need*) and `COPULAS` some (*looks*, *feels*,
-      *stays*), and the packs weave *have*, so derive the guard this run
-      did, every base form a pack weaves still taken. Found beside it and
-      left: after a copula an irregular participle goes as an adjective at
-      0.6, so "she was **left** alone" asks for the adjective *left*, which
-      a service may answer *gauche*; and the `-ed`/`-ing` check declines
-      base forms that end so, *need*, *bring*, *sing*, which costs only
-      coverage. About 45 minutes; it moves `src/core/`, so all three
-      screenshot groups go stale by provenance and want regenerating and
-      stamping.
+- [ ] **Stop the guesser reading an adverb after a copula as an adjective,
+      and six pack verbs by their suffix.** Found 2026-11-19, measuring
+      beside the function words. After *is*, *was* or *are* the guesser
+      reads any bare word as an adjective at 0.6, so "it was **just** a
+      game" asks a service for the adjective *just* (*juste*), "it is
+      **only** a test" for *only* (*seul*), and "she was **never** late",
+      "he is **also** here" and "it was **almost** over" for an adjective
+      none of them has. `PRE_VERB_ADVERBS` in `src/core/pos-guess.ts`
+      already lists them; decline after a copula the ones with no adjective
+      reading, and keep *still* and *even*, which a service answers rightly
+      there ("the water was **still**", "the score is **even**"). And the
+      suffix table reads before any context, so six base forms a pack
+      weaves go wrong wherever they stand: *exist*, *assist*, *resist* and
+      *insist* as nouns by -ist, which is there for *artist*, and *bless* by
+      -less and *enable* by -able as adjectives, "to exist" asking for a
+      noun. A stem rule fits: -ist but not -sist, and -less and -able only
+      after three letters of stem, which also stops *table* and *cable*;
+      `tests/core/pos-guess.test.ts`'s base-form guard says "taken", not
+      "taken as a verb", because of these six, and can say "as a verb" once
+      they are fixed. Left from the function-word item: after a copula an
+      irregular participle goes as an adjective, "she was **left** alone"
+      asking for *left*, which a service may answer *gauche*, though most
+      participles read rightly so ("it was **broken**", *cassé*), so only a
+      homograph wants declining. About 30 minutes; it moves `src/core/`, so
+      the three screenshot groups want regenerating and stamping again.
+
+- [x] **Keep function words, and the adverbs before a verb, away from a
+      translation service.** Done 2026-11-19. All 16 of the item's
+      examples reproduced, and 43 more cases: 59, every one sent at 0.55
+      or more.
+      `FUNCTION_WORDS` in `src/core/pos-guess.ts`, pronouns, determiners,
+      prepositions, conjunctions, auxiliaries and modals, is declined
+      wherever it stands, before any other rule, and so is a word with an
+      apostrophe: "don't", "can't", "won't" and "didn't" went as verbs at
+      0.65, being one token each, and "she's" and "dog's" as plural nouns
+      at 0.55, which the content script's `< 0.55` lets through. No pack
+      weaves a word with an apostrophe. `PRE_VERB_ADVERBS` is declined where
+      a subject pronoun, a modal or "to" says a verb comes next, wider than
+      the item's "after a subject pronoun": "you can **never** tell" and
+      "to **just** leave" went as verbs at 0.8, and "you can **always**
+      tell" as a plural noun. Left out of the first list because a pack
+      weaves them: *have*, *one*, *here*, and the drafted prepositions
+      *inside*, *outside*, *beneath*, *besides*, *underneath*. Two derived
+      guards: no word a pack weaves, 5 902, is declined after "the" but for
+      its length or an -ed or -ing ending, and every base form, 372, is
+      still taken after "to", a modal and "they". See Notes.
 
 - [x] **Old English, third batch: twelve inherited words a particle or an
       h kept out.** Done 2026-11-18. With Wright's particle check and the h
@@ -8715,6 +8728,45 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-19 — function words kept from a translation service.** Things a
+later run would be sorry not to know:
+
+- **A guard that compares two contexts cannot see a rule that declines in
+  both.** The 2026-11-09 guard judges a base form after "they" against
+  "to", which encodes none of the guesser's other rules, and a word on a
+  list declined wherever it stands is declined in both, so it passes. A
+  probe put *help* in `PRE_VERB_ADVERBS`: that guard stayed green and the
+  new one named "help" in "to help it". When a rule can decline in every
+  context, the guard has to say what is still taken, not that two contexts
+  agree.
+- **A contraction is one token.** The tokenizer joins an internal
+  apostrophe, so "don't" is a word the guesser sees, a verb at 0.65 after
+  "I"; "she's" and "dog's" end in -s and were plural nouns at 0.55, which
+  the content script's `< 0.55` lets through. The check reads both ' and ’,
+  the one most pages print. No pack weaves a word with either.
+- **The packs weave words a stop list holds.** *have*, *one* and *here* in
+  all seven, the adverbs *never*, *often*, *always*, *soon*, *now*,
+  *again*, *almost*, *already*, *sometimes*, *very* and *together*, and
+  drafted *inside*, *outside*, *beneath*, *besides*, *underneath*,
+  *therefore* and *hence*. `tools/seed/wiktionary/draft.py`'s `FUNCTION`
+  is a list of words not to draft and holds many of them, so it is not the
+  list to borrow. The guard reads the packs: a word a pack weaves is
+  declined only for its length or an -ed or -ing ending.
+- **The cue sets are not the lists.** `MODALS` holds content verbs, *let*,
+  *help*, *make*, *dare*, *need*, and `COPULAS` *looks*, *feels*, *stays*;
+  they mark the next word. A word declined as itself can still be a cue:
+  "can" is declined, and marks "swim" as a verb.
+- **The pasts of be, have and do and of the modals left
+  `IRREGULAR_PASTS`**, eight words, because `FUNCTION_WORDS` now declines
+  them everywhere. The 2026-11-09 test for them passes through the new
+  list, which a probe showed: without the function-word check it fails.
+- **Assumed:** that a subject, a modal and "to" are one rule for the
+  adverbs, the item having named the first; that a possessive goes with the
+  contractions, having no base form; that *there* is a function word, for
+  "there is", though the packs weave *here*; and that *like*, *near*,
+  *past*, *till*, *while*, *mine* and *own* stay out for the content
+  reading a service answers rightly.
 
 **2026-11-18 — Old English's third batch: twelve words whose division was
 read.** Things a later run would be sorry not to know:
