@@ -42,31 +42,92 @@ const THIRD_PERSON_SINGULAR = new Set(['he', 'she', 'it']);
  * "read", "lay", "bore", "wound", "ground", "bound"), since declining those
  * after "they" would decline the present too; a past ending in -ed ("fled",
  * "led"), which the inflection check already declines; and a word under
- * three letters, which is never guessed. Only the pronoun rule reads it: a
- * past after "the" or "of" is the noun it is spelled like, "on the left".
+ * three letters, which is never guessed. The pasts of be, have and do and of
+ * the modals are function words, declined wherever they stand below. Only the
+ * pronoun rule reads this list: a past after "the" or "of" is the noun it is
+ * spelled like, "on the left".
  */
 const IRREGULAR_PASTS = new Set([
   'arose', 'ate', 'awoke', 'became', 'began', 'bent', 'bit', 'blew', 'bought',
   'broke', 'brought', 'built', 'burnt', 'came', 'caught', 'chose', 'clung',
-  'could', 'crept', 'dealt', 'did', 'dove', 'drank', 'dreamt', 'drew', 'drove',
-  'dug', 'dwelt', 'fell', 'felt', 'flew', 'flung', 'forbade', 'foresaw',
-  'forgave', 'forgot', 'fought', 'found', 'froze', 'gave', 'got', 'grew', 'had',
-  'heard', 'held', 'hid', 'hung', 'kept', 'knelt', 'knew', 'laid', 'leapt',
-  'learnt', 'left', 'lent', 'lit', 'lost', 'made', 'meant', 'met', 'might',
-  'mistook', 'misunderstood', 'overcame', 'overheard', 'oversaw', 'overtook',
-  'paid', 'ran', 'rang', 'rode', 'rose', 'said', 'sang', 'sank', 'sat', 'saw',
-  'sent', 'shone', 'shook', 'shot', 'should', 'shrank', 'slept', 'slew', 'slid',
-  'sold', 'sought', 'spat', 'spelt', 'spent', 'spilt', 'spoke', 'sprang',
-  'spun', 'stank', 'stole', 'stood', 'strode', 'struck', 'stuck', 'stung',
-  'swam', 'swept', 'swore', 'swung', 'taught', 'thought', 'threw', 'told',
-  'took', 'tore', 'trod', 'understood', 'undertook', 'underwent', 'undid',
-  'upheld', 'was', 'went', 'wept', 'were', 'withdrew', 'withheld', 'withstood',
-  'woke', 'won', 'wore', 'would', 'wove', 'wrote', 'wrung',
+  'crept', 'dealt', 'dove', 'drank', 'dreamt', 'drew', 'drove', 'dug', 'dwelt',
+  'fell', 'felt', 'flew', 'flung', 'forbade', 'foresaw', 'forgave', 'forgot',
+  'fought', 'found', 'froze', 'gave', 'got', 'grew', 'heard', 'held', 'hid',
+  'hung', 'kept', 'knelt', 'knew', 'laid', 'leapt', 'learnt', 'left', 'lent',
+  'lit', 'lost', 'made', 'meant', 'met', 'mistook', 'misunderstood', 'overcame',
+  'overheard', 'oversaw', 'overtook', 'paid', 'ran', 'rang', 'rode', 'rose',
+  'said', 'sang', 'sank', 'sat', 'saw', 'sent', 'shone', 'shook', 'shot',
+  'shrank', 'slept', 'slew', 'slid', 'sold', 'sought', 'spat', 'spelt', 'spent',
+  'spilt', 'spoke', 'sprang', 'spun', 'stank', 'stole', 'stood', 'strode',
+  'struck', 'stuck', 'stung', 'swam', 'swept', 'swore', 'swung', 'taught',
+  'thought', 'threw', 'told', 'took', 'tore', 'trod', 'understood', 'undertook',
+  'underwent', 'undid', 'upheld', 'went', 'wept', 'withdrew', 'withheld',
+  'withstood', 'woke', 'won', 'wore', 'wove', 'wrote', 'wrung',
 ]);
 
 const COPULAS = new Set([
   'is', 'are', 'was', 'were', 'be', 'been', 'being', 'am', 'seems', 'seemed',
   'looks', 'looked', 'feels', 'felt', 'became', 'becomes', 'stays', 'remains',
+]);
+
+/**
+ * English's closed classes, declined wherever they stand, as an -ed form is.
+ *
+ * The selector keeps a function word off a page by its part of speech, and
+ * on the provider path that part of speech is this guesser's, which names
+ * every word a content word's: "we **will** go" asked a service for an
+ * infinitive and wove "vouloir". Words under three letters are never guessed
+ * and are not listed. Left out because a pack weaves them, which
+ * `tests/core/pos-guess.test.ts` reads off the packs: "have", "one", "here",
+ * "inside", "outside", "beneath", "besides", "underneath". Left out for a
+ * content reading a service answers rightly: "like", "near", "past", "till",
+ * "while", "mine", "own". A word here can still be a cue: "can" is declined,
+ * and marks the verb after it.
+ */
+const FUNCTION_WORDS = new Set([
+  // Pronouns, and the "there" of "there is".
+  'you', 'she', 'they', 'him', 'her', 'them', 'who', 'whom', 'whose', 'what',
+  'which', 'whoever', 'whomever', 'whatever', 'whichever', 'this', 'that',
+  'these', 'those', 'hers', 'ours', 'yours', 'theirs', 'myself', 'yourself',
+  'himself', 'herself', 'itself', 'oneself', 'ourselves', 'yourselves',
+  'themselves', 'someone', 'somebody', 'something', 'anyone', 'anybody',
+  'anything', 'everyone', 'everybody', 'everything', 'nobody', 'nothing',
+  'none', 'other', 'others', 'there',
+  // Determiners.
+  'the', 'his', 'its', 'our', 'your', 'their', 'all', 'any', 'some', 'every',
+  'each', 'both', 'either', 'neither', 'another', 'such', 'many', 'much', 'few',
+  'several',
+  // Prepositions.
+  'about', 'above', 'across', 'after', 'against', 'along', 'amid', 'among',
+  'amongst', 'around', 'before', 'behind', 'below', 'beside', 'between',
+  'beyond', 'despite', 'during', 'except', 'for', 'from', 'into', 'onto',
+  'over', 'per', 'since', 'through', 'throughout', 'toward', 'towards',
+  'under', 'unlike', 'until', 'upon', 'versus', 'via', 'with', 'within',
+  'without',
+  // Conjunctions, the wh-words that join a clause, and "not".
+  'and', 'but', 'nor', 'than', 'because', 'although', 'though', 'whereas',
+  'whether', 'unless', 'lest', 'whilst', 'whenever', 'wherever', 'when',
+  'where', 'why', 'how', 'not',
+  // Auxiliaries and modals.
+  'are', 'was', 'were', 'been', 'being', 'has', 'had', 'does', 'did', 'can',
+  'cannot', 'could', 'will', 'would', 'shall', 'should', 'may', 'might', 'must',
+  'ought',
+]);
+
+/**
+ * Adverbs without -ly that stand between a subject, a modal or "to" and the
+ * verb they go with: "I never sleep", "you can still go", "to just leave".
+ * The rules below read a verb into that place, and none of these is one, so
+ * there each is declined; an -s one was read as a plural noun, "you can
+ * always tell". Only there: after a copula "still" and "even" are
+ * adjectives a service answers rightly. An -ly adverb is placed by its
+ * suffix.
+ */
+const PRE_VERB_ADVERBS = new Set([
+  'almost', 'already', 'also', 'always', 'even', 'ever', 'first', 'just', 'later',
+  'never', 'nevertheless', 'nonetheless', 'now', 'often', 'once', 'only',
+  'perhaps', 'quite', 'rather', 'seldom', 'sometimes', 'soon', 'still', 'then',
+  'too', 'very',
 ]);
 
 const INTENSIFIERS = new Set([
@@ -182,6 +243,14 @@ export function guessPos(
   const prev = previousWord(tokens, index);
   const next = nextWord(tokens, index);
   const afterSubject = prev !== null && SUBJECT_PRONOUNS.has(prev);
+
+  // A contraction is an auxiliary or a pronoun with its clitic, "don't",
+  // "she's", and a possessive a noun with one, "dog's": no base form, and
+  // nothing a translation could be woven in place of. No pack weaves one.
+  if (/['’]/.test(word)) return null;
+  if (FUNCTION_WORDS.has(word)) return null;
+  const verbNext = prev === 'to' || (prev !== null && MODALS.has(prev)) || afterSubject;
+  if (verbNext && PRE_VERB_ADVERBS.has(word)) return null;
 
   // Decline on inflected forms. Only base forms are woven, so an inflected
   // form has nothing grammatical to put in its place.

@@ -13,6 +13,38 @@ function guess(text: string, word: string, opts = {}) {
   return guessPos(tokens, hit.index, opts);
 }
 
+/** The entries of every shipped pack, each keyed by the English form it weaves. */
+function shippedEntries(): Array<Record<string, LexEntry[]>> {
+  const dir = new URL('../../src/lexicon/packs/', import.meta.url);
+  return readdirSync(dir)
+    .filter((file) => file.startsWith('en-'))
+    .map(
+      (file) =>
+        (JSON.parse(readFileSync(new URL(file, dir), 'utf8')) as { entries: Record<string, LexEntry[]> })
+          .entries,
+    );
+}
+
+/** Every one-word base form a shipped pack weaves as a verb. */
+function shippedBaseForms(): Set<string> {
+  const bases = new Set<string>();
+  for (const entries of shippedEntries()) {
+    for (const rows of Object.values(entries)) {
+      for (const e of rows) {
+        if (e.pos === 'verb' && e.src === e.lemma && !e.src.includes(' ')) bases.add(e.src);
+      }
+    }
+  }
+  return bases;
+}
+
+/** Each of `cases` must be declined, the way the page asks. */
+function assertDeclined(cases: ReadonlyArray<readonly [string, string]>): void {
+  for (const [text, word] of cases) {
+    assert.equal(guess(text, word, { allowPlural: true }), null, `"${word}" in "${text}"`);
+  }
+}
+
 describe('contextual cues', () => {
   test('"to" marks an infinitive', () => {
     assert.equal(guess('I want to book a table', 'book')?.pos, 'verb');
@@ -226,19 +258,7 @@ describe('after a subject pronoun', () => {
     // The packs' English verbs are base forms somebody checked, so a rule
     // that declined one after "they" for a reason "to" would not, a list of
     // pasts that took in "have" or "fall", fails here by name.
-    const dir = new URL('../../src/lexicon/packs/', import.meta.url);
-    const bases = new Set<string>();
-    for (const file of readdirSync(dir)) {
-      if (!file.startsWith('en-')) continue;
-      const pack = JSON.parse(readFileSync(new URL(file, dir), 'utf8')) as {
-        entries: Record<string, LexEntry[]>;
-      };
-      for (const rows of Object.values(pack.entries)) {
-        for (const e of rows) {
-          if (e.pos === 'verb' && e.src === e.lemma && !e.src.includes(' ')) bases.add(e.src);
-        }
-      }
-    }
+    const bases = shippedBaseForms();
     assert.ok(bases.size > 60, `only ${bases.size} base forms were read from the packs`);
     for (const word of bases) {
       assert.equal(
@@ -246,6 +266,134 @@ describe('after a subject pronoun', () => {
         guess(`to ${word} it`, word) === null,
         `"${word}" is declined after one and not the other`,
       );
+    }
+  });
+});
+
+describe('function words, and the adverbs before a verb', () => {
+  // No pack weaves a function word, so on the provider path the selector's
+  // part-of-speech filter never sees one: the part of speech is this
+  // guesser's, and it names every word a content word's. Each case below was
+  // sent at 0.55 or more, "will" asked for an infinitive and answered
+  // "vouloir".
+
+  test('declines a modal or an auxiliary', () => {
+    assertDeclined([
+      ['I can swim', 'can'],
+      ['we will go', 'will'],
+      ['they must leave', 'must'],
+      ['you may sit', 'may'],
+      ['we shall see', 'shall'],
+      ['you ought to know', 'ought'],
+      ['they cannot stay', 'cannot'],
+      ['they are happy', 'are'],
+      ['who has left', 'has'],
+      ['what does it mean', 'does'],
+    ]);
+  });
+
+  test('declines a pronoun or a determiner', () => {
+    assertDeclined([
+      ['with him', 'him'],
+      ['for them', 'them'],
+      ['from you', 'you'],
+      ['some of these', 'these'],
+      ['by those', 'those'],
+      ['with whom', 'whom'],
+      ['to everyone', 'everyone'],
+      ['for ourselves', 'ourselves'],
+      ['it was hers', 'hers'],
+      ['each other', 'other'],
+      ['it is this', 'this'],
+      ['over there', 'there'],
+    ]);
+  });
+
+  test('declines a preposition, a conjunction or a wh-word', () => {
+    assertDeclined([
+      ['it is about time', 'about'],
+      ['it was but a dream', 'but'],
+      ['he is from Spain', 'from'],
+      ['we are with you', 'with'],
+      ['the reason is because', 'because'],
+      ['from under', 'under'],
+      ['to and fro', 'and'],
+      ['that is why', 'why'],
+      ['from where', 'where'],
+      ['it is not', 'not'],
+    ]);
+  });
+
+  test('declines a contraction or a possessive, which has no base form to weave', () => {
+    assertDeclined([
+      ["I don't know", "don't"],
+      ["we can't stay", "can't"],
+      ["they won't come", "won't"],
+      ["I didn't see", "didn't"],
+      ["she's gone", "she's"],
+      ["the dog's tail", "dog's"],
+      ['I don’t know', 'don’t'],
+    ]);
+  });
+
+  test('declines an adverb where a subject, a modal or "to" says a verb comes next', () => {
+    assertDeclined([
+      ['I never sleep', 'never'],
+      ['we also know', 'also'],
+      ['they still wait', 'still'],
+      ['you just left', 'just'],
+      ['we often walk', 'often'],
+      ['I even tried', 'even'],
+      ['we only want', 'only'],
+      ['they soon left', 'soon'],
+      ['I once lived', 'once'],
+      ['you can never tell', 'never'],
+      ['they must still go', 'still'],
+      ['I would rather stay', 'rather'],
+      ['you should also try', 'also'],
+      ['to just leave', 'just'],
+      ['to never forget', 'never'],
+      ['they very much like it', 'very'],
+      ['you too can', 'too'],
+      // An -s adverb after a modal or "to" was read as a plural noun.
+      ['you can always tell', 'always'],
+      ['to sometimes win', 'sometimes'],
+      ['we could perhaps go', 'perhaps'],
+    ]);
+  });
+
+  test('declines no word a shipped pack weaves but for its length or an -ed or -ing ending', () => {
+    // A word a pack weaves is a content word by somebody's checking, and a
+    // pack that lacks it asks a service for it, so a list declined wherever
+    // it stands must hold none of them: "have", "one", "here", "inside".
+    // After "the" and before "yesterday" nothing else declines a word.
+    let read = 0;
+    for (const entries of shippedEntries()) {
+      for (const word of Object.keys(entries)) {
+        if (word.includes(' ')) continue;
+        read++;
+        const shape = word.length < 3 || /(?:ed|ing)$/.test(word);
+        const g = guess(`the ${word} yesterday`, word, { allowPlural: true });
+        assert.equal(g === null, shape, `"${word}" is ${g === null ? 'declined' : 'guessed'} after "the"`);
+      }
+    }
+    assert.ok(read > 5000, `only ${read} words were read from the packs`);
+  });
+
+  test('still takes every base form a shipped pack weaves after "to", a modal and "they"', () => {
+    // A list declined only where a verb comes next would pass the test
+    // above, and "they" against "to" too, being declined after both.
+    const bases = shippedBaseForms();
+    assert.ok(bases.size > 60, `only ${bases.size} base forms were read from the packs`);
+    for (const word of bases) {
+      for (const text of [`to ${word} it`, `you should ${word} it`, `they ${word} it`]) {
+        const g = guess(text, word, { allowPlural: true });
+        if (word.length < 3 || /(?:ed|ing)$/.test(word)) {
+          assert.equal(g, null, `"${word}" in "${text}"`);
+        } else {
+          assert.ok(g && g.confidence >= 0.55, `"${word}" in "${text}" is declined`);
+        }
+      }
     }
   });
 });
