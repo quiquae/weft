@@ -119,9 +119,9 @@ const FUNCTION_WORDS = new Set([
  * verb they go with: "I never sleep", "you can still go", "to just leave".
  * The rules below read a verb into that place, and none of these is one, so
  * there each is declined; an -s one was read as a plural noun, "you can
- * always tell". Only there: after a copula "still" and "even" are
- * adjectives a service answers rightly. An -ly adverb is placed by its
- * suffix.
+ * always tell". After a copula the rules read an adjective, and "it was just
+ * a game" asked for "juste", so there each is declined too, but for the ones
+ * in `ALSO_ADJECTIVES`. An -ly adverb is placed by its suffix.
  */
 const PRE_VERB_ADVERBS = new Set([
   'almost', 'already', 'also', 'always', 'even', 'ever', 'first', 'just', 'later',
@@ -129,6 +129,13 @@ const PRE_VERB_ADVERBS = new Set([
   'perhaps', 'quite', 'rather', 'seldom', 'sometimes', 'soon', 'still', 'then',
   'too', 'very',
 ]);
+
+/**
+ * The adverbs above that are adjectives after a copula as well, which a
+ * service answers rightly there: "the water was still", "the score is even",
+ * "she was first".
+ */
+const ALSO_ADJECTIVES = new Set(['still', 'even', 'first']);
 
 const INTENSIFIERS = new Set([
   'very', 'quite', 'rather', 'too', 'so', 'extremely', 'fairly', 'really',
@@ -178,10 +185,16 @@ const PHRASE_CLOSERS = /* @__PURE__ */ (() =>
  * place here only if the counterexamples are rare enough to enumerate.
  */
 const SUFFIX_POS: ReadonlyArray<readonly [RegExp, Pos]> = /* @__PURE__ */ Object.freeze([
-  [/(?:tion|sion|ness|ment|ity|ance|ence|ency|ship|hood|dom|ism|ist|ology|acy)$/, 'noun'],
-  [/(?:ous|ful|less|able|ible|ical|like)$/, 'adj'],
+  // -ist but not after s or x: "artist", and not "insist" or "exist".
+  [/(?:tion|sion|ness|ment|ity|ance|ence|ency|ship|hood|dom|ism|[^sx]ist|ology|acy)$/, 'noun'],
+  // -less, -able, -ible and -like only after three letters of stem, so not
+  // "bless", "enable", "table", "bible" or "like" itself.
+  [/(?:ous|ful|ical|.{3}(?:less|able|ible|like))$/, 'adj'],
   [/(?:ise|ize|ify)$/, 'verb'],
 ]);
+
+/** Adverbs that end like an adjective: "never the less", run together. */
+const NOT_ADJECTIVES = new Set(['nevertheless', 'nonetheless']);
 
 /**
  * "-ly" is an adverb often enough to be useful and not often enough to trust:
@@ -201,6 +214,7 @@ function suffixGuess(word: string): Guess | null {
     }
   }
   for (const [pattern, pos] of SUFFIX_POS) {
+    if (pos === 'adj' && NOT_ADJECTIVES.has(word)) continue;
     if (pattern.test(word)) {
       return pos === 'noun'
         ? { pos, num: 'sg', confidence: 0.8 }
@@ -250,7 +264,8 @@ export function guessPos(
   if (/['’]/.test(word)) return null;
   if (FUNCTION_WORDS.has(word)) return null;
   const verbNext = prev === 'to' || (prev !== null && MODALS.has(prev)) || afterSubject;
-  if (verbNext && PRE_VERB_ADVERBS.has(word)) return null;
+  const adjectiveNext = prev !== null && COPULAS.has(prev) && !ALSO_ADJECTIVES.has(word);
+  if ((verbNext || adjectiveNext) && PRE_VERB_ADVERBS.has(word)) return null;
 
   // Decline on inflected forms. Only base forms are woven, so an inflected
   // form has nothing grammatical to put in its place.

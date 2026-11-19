@@ -69,13 +69,13 @@ The commands that matter, with what each actually produced on 2026-09-27:
 | Command | What it does | Last measured result |
 |---|---|---|
 | `npm run typecheck` | `tsc --noEmit` | clean |
-| `npm run test:unit` | pure-core tests, no browser | **693 pass**, 160 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
+| `npm run test:unit` | pure-core tests, no browser | **698 pass**, 160 suites, ~9 s wall clock here (no browser; the figure moves with the machine, the counts do not) |
 | `npm run test:dom` | jsdom tests | **140 pass**, 29 suites, ~9 s wall clock here |
 | `npm run test:tools` | the generators that produce shipped artefacts, run against a temp directory, and the committed images they wrote, read back | **649 pass**, 171 suites, ~8 s here |
 | `npm run test:e2e` | real Chromium, extension loaded | **47 pass, 3 skipped**, 4.2 min here |
 | `npm run compat` | every API the code calls, in all three browsers, and every key and permission each target's built manifest declares, on that target — both against MDN compat data at the declared floors | 17 dependencies × 3 browsers = 51 checks: **44 pass, 7 degrade with a named fallback**; and 97 manifest keys (chrome 30, firefox 37, safari 30): **87 pass, 3 degrade, 7 untracked by MDN and named in `tools/compat.ts`**; 0 fail, 0 without data, on 2026-10-25. Until then it read a hand list and no manifest, and passed a Safari build declaring `notifications` |
 | `npm run packs:verify` | sanity-check the lexicons | 0 errors, 5 warnings (missing IPA on the 5 Old English phrases: 4 interjections and *tō morgen*) |
-| `npm run build:all` | chrome + firefox + safari | 4525 KB unpacked for Chrome and Safari and 4526 for Firefox, 4.1 MB of it the seven packs |
+| `npm run build:all` | chrome + firefox + safari | 4526 KB unpacked for each of the three, 4.1 MB of it the seven packs |
 | `npm run validate` | pre-flight the built packages against store rules | all 3 pass |
 | `npm run site:check` | link-check the generated site | 713 pages, 15 392 links, all resolve; also fails if `/privacy` or `/support` is missing from the build, or a root link leaves the site's base path (`/weft/`). It reads `dist/site` and never contacts the live site |
 | `npm run artefacts:check` | which committed generated files the tree has moved past | **8** groups; on 2026-10-03 (latest) **1 stale, 7 fresh** — the one is the release notes, which is B2a and cannot be fresh before the tag, so **this gate exits 1 on a correct tree**. `ok` is provenance only: it cannot see the renderer, and after macOS 27.0.1 five `ok` images no longer reproduced (see the decisions below). Every committed image is now inside a group, and `tests/tools/artefacts.test.ts` fails if one is ever not. Mark a group verified with `npm run artefacts:verify -- "<name>"` **after actually regenerating and reading it** |
@@ -1119,6 +1119,50 @@ target language.
 
 Newest first. Append a few lines per session: what changed, what was assumed,
 what still needs a human. This is what makes switching accounts free.
+
+### 2026-11-19 — an adverb after a copula, and words read by a short stem
+
+The same run's second PR, the item the first queued, taken with 85 minutes
+left. After *is* or *was* the guesser read any bare word as an adjective at
+0.6, so "it was **just** a game" asked a service for *juste*; and the suffix
+table, which reads before any context, made *exist*, *insist*, *resist* and
+*assist* nouns by -ist and *bless* and *enable* adjectives, wherever they
+stood.
+
+**After a copula `PRE_VERB_ADVERBS` is declined too**, but for
+`ALSO_ADJECTIVES` — *still*, *even*, *first* — which a service answers
+rightly there, "the water was **still**". **The stem rule stopped more than
+the item named.** -ist is read only after a letter other than s or x, since
+*exist* is ex- and -ist and not the -sist the item guessed; -less, -able,
+-ible and -like only after three letters of stem, and that is what made
+*like* itself an adjective wherever it stood, "I **like** it" asking for
+one, and *table*, *cable* and *bible* adjectives after "the". *nevertheless*
+and *nonetheless* are not -less adjectives (`NOT_ADJECTIVES`). With the six
+fixed, the base-form guard says "taken as a verb", all 372.
+
+Test-first: five tests, red on their first case, and the guard tightened red
+on *exist* and *bless*; six probes, each restored by md5 and each failing by
+name, one at five letters of stem failing *capable*. All 31 shots
+regenerated, 14 + 10 + 7 written, every one byte-identical, and the three
+groups stamped. Unit 693 → **698**, suites unchanged, total 1529 → **1534**,
+in five places. `content.js` grew 177 bytes, Chrome's 4525.479 → 4525.652 KB,
+Firefox's 4526.083 and Safari's 4525.659, all three printing **4526**.
+
+Measured on Node 26.7, with npm's own exit status captured: `npm run
+test:all` **exit 0** — typecheck clean, **698 unit / 160**, 140 jsdom / 29,
+649 tools / 171, compat 17 dependencies × 3 browsers, 44 pass / 7 degrade,
+and 97 manifest keys, 87 pass / 3 degrade / 7 untracked, 0 fail / 0 without
+data, **4526 KB × 3** passing `validate`, **47 e2e passed and 3 skipped in
+6.5 min**, then build and validate again. Only `TODO.md` and this entry
+moved after it, so typecheck and `npm test` were run again on the final
+tree.
+
+Assumed, with nobody to ask: that *just* and *only* after a copula are the
+adverbs, their adjectives being attributive; and that three letters of stem
+is the line, *enlist* and *dislike* still misread, which is the next item
+with the participles a copula makes adjectives.
+
+What needs a human: unchanged, everything below **B1** and the calls.
 
 ### 2026-11-19 — function words are kept from a translation service
 

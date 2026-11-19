@@ -5,12 +5,13 @@
      of Notes; the list itself stays in the order work should happen. -->
 
 **State on 2026-11-19:** every automatable check is green, measured at the end
-of this session — typecheck clean, **693** unit / 160 suites, **140** jsdom / 29
+of this session — typecheck clean, **698** unit / 160 suites, **140** jsdom / 29
 suites, **649** tool tests / 171 suites, **47** e2e passing
 with 3 asset-generator specs skipped by design, compat clean, the packages
-built at 4525 KB for Chrome and Safari and 4526 for Firefox, 321 KB more
+built at 4526 KB for each of the three, 322 KB more
 than 1.1.0's 4204 for Latin's 785 drafted rows and Old English's 156 —
-the function words of 2026-11-19 added 1 466 bytes to `content.js`,
+the copula and suffix rules of 2026-11-19 added 177 bytes to `content.js`,
+Chrome's 4525.479 → 4525.652 KB, the function words before them 1 466,
 Chrome's 4524.048 → 4525.479 KB, the twelve of 2026-11-18 added the Old English pack's 4 658 bytes,
 Chrome's 4519.499 → 4524.048 KB, and the 44 of 2026-11-17 and the nine
 etymons its 17 293, Chrome's 4502.611 → 4519.499 KB — all
@@ -719,8 +720,8 @@ or if that job skips a command `check` runs without a browser. See the
 ticked item in `Now`.
 
 **So the whole of B0 is closed. `Now` holds one agent-shaped item, as of
-2026-11-19 — an adverb after a copula read as an adjective, and six pack
-verbs read by their suffix, both on the provider path — and every unchecked
+2026-11-19 — a participle after a copula read as an adjective that is
+another word, and two stem misreads, both on the provider path — and every unchecked
 item in `Next` waits on a call of Creagh's:** what Old English's uninherited
 drafts would do to "usually the literal ancestor", the four function-word
 switches that weave nothing, the Safari subtitle, the site's favicon, and
@@ -734,31 +735,38 @@ is needed since 2026-11-09, the site lives at `https://quiquae.github.io/weft`.
 
 ## Now
 
-- [ ] **Stop the guesser reading an adverb after a copula as an adjective,
-      and six pack verbs by their suffix.** Found 2026-11-19, measuring
-      beside the function words. After *is*, *was* or *are* the guesser
-      reads any bare word as an adjective at 0.6, so "it was **just** a
-      game" asks a service for the adjective *just* (*juste*), "it is
-      **only** a test" for *only* (*seul*), and "she was **never** late",
-      "he is **also** here" and "it was **almost** over" for an adjective
-      none of them has. `PRE_VERB_ADVERBS` in `src/core/pos-guess.ts`
-      already lists them; decline after a copula the ones with no adjective
-      reading, and keep *still* and *even*, which a service answers rightly
-      there ("the water was **still**", "the score is **even**"). And the
-      suffix table reads before any context, so six base forms a pack
-      weaves go wrong wherever they stand: *exist*, *assist*, *resist* and
-      *insist* as nouns by -ist, which is there for *artist*, and *bless* by
-      -less and *enable* by -able as adjectives, "to exist" asking for a
-      noun. A stem rule fits: -ist but not -sist, and -less and -able only
-      after three letters of stem, which also stops *table* and *cable*;
-      `tests/core/pos-guess.test.ts`'s base-form guard says "taken", not
-      "taken as a verb", because of these six, and can say "as a verb" once
-      they are fixed. Left from the function-word item: after a copula an
-      irregular participle goes as an adjective, "she was **left** alone"
-      asking for *left*, which a service may answer *gauche*, though most
-      participles read rightly so ("it was **broken**", *cassé*), so only a
-      homograph wants declining. About 30 minutes; it moves `src/core/`, so
-      the three screenshot groups want regenerating and stamping again.
+- [ ] **Decline a participle after a copula where its adjective is
+      another word, and the two stem misreads left.** Found 2026-11-19.
+      After *is*, *was* or *were* every irregular participle is read as an
+      adjective at 0.6, and most are answered rightly so ("I was **lost**",
+      *perdu*; "it was **broken**", *cassé*), but some are another word's
+      spelling: "she was **left** alone" asks for *left*, which a service
+      may answer *gauche*; "we were **bound** for Spain", "it was **wound**
+      tight" and "the coffee was **ground**" each have a noun or another
+      adjective behind them. Shape: a short list of such participles,
+      declined after a copula, read one by one against what a service
+      answers for the adjective; guard with the ones that read rightly.
+      And two words the 2026-11-19 stem rule still misreads: *enlist*, a
+      noun by -ist after l, and *dislike*, an adjective by -like after
+      three letters; an exception each, or a rule if more turn up in the
+      packs. About 25 minutes; it moves `src/core/`, so the three
+      screenshot groups want regenerating and stamping.
+
+- [x] **Stop the guesser reading an adverb after a copula as an adjective,
+      and six pack verbs by their suffix.** Done 2026-11-19, the same run
+      as the item below. After a copula `PRE_VERB_ADVERBS` is declined but
+      for `ALSO_ADJECTIVES`, *still*, *even* and *first*, held as
+      adjectives there: "it was **just** a game", "it is **only** a test"
+      and "they are **always** late" (a plural noun) are not sent. The
+      suffix table reads -ist only after a letter other than s or x, since
+      *exist* is ex- and -ist, not -sist; and -less, -able, -ible and -like
+      only after three letters of stem, which stopped more than the item
+      named: *like* itself was an adjective wherever it stood, "I **like**
+      it" asking for one, and so were *table*, *cable* and *bible*.
+      *nevertheless* and *nonetheless* are not -less adjectives
+      (`NOT_ADJECTIVES`). The base-form guard says "as a verb" now, all
+      372. Five tests, red first; six probes, each failing by name. See
+      Notes.
 
 - [x] **Keep function words, and the adverbs before a verb, away from a
       translation service.** Done 2026-11-19. All 16 of the item's
@@ -8728,6 +8736,29 @@ removes alone.
 
 Anything a later run would be sorry not to know. Assumptions made, dead ends
 already tried, decisions that should not be revisited.
+
+**2026-11-19 — the copula's adverbs and the suffix stems.** The same run's
+second PR. Things a later run would be sorry not to know:
+
+- **A suffix rule is a claim about every word it fits, and short stems
+  break it.** The table reads before any context, so a word it fits is
+  that part of speech wherever it stands: *like* was an adjective in "I
+  like it", *table*, *cable* and *bible* adjectives after "the", *exist* a
+  noun after "to". Three letters of stem before -less, -able, -ible and
+  -like keeps *hopeless*, *capable*, *visible* and *childlike*; a probe at
+  five letters fails *capable*. Count a rule's fits in the packs before
+  widening it: the base-form guard is what showed all 372 verbs read as
+  verbs once the six were fixed.
+- **The item said -sist, and *exist* is -xist.** ex- and -ist, from
+  *ex-sistere*; the rule excludes s and x before -ist. A queued item's
+  remedy is its writer's guess, and the probe that put x back named
+  *exist* in two tests.
+- **After a copula three of the adverbs are adjectives too.** "the water
+  was still", "the score is even", "she was first", each answered rightly
+  as an adjective, so `ALSO_ADJECTIVES` keeps them; the rest of
+  `PRE_VERB_ADVERBS` have no adjective there. *just* and *only* have
+  attributive adjectives, "a just cause", "an only child", but not after a
+  copula in ordinary prose.
 
 **2026-11-19 — function words kept from a translation service.** Things a
 later run would be sorry not to know:
