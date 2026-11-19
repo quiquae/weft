@@ -115,8 +115,50 @@ describe('morphology', () => {
       ['a dangerous plan', 'dangerous'],
       ['felt hopeful about it', 'hopeful'],
       ['seemed childish then', 'childish'],
+      ['a hopeless case', 'hopeless'],
+      ['very capable', 'capable'],
+      ['quite visible', 'visible'],
+      ['a childlike joy', 'childlike'],
     ] as const) {
       assert.equal(guess(text, word)?.pos, 'adj', word);
+    }
+    assert.equal(guess('the artist painted', 'artist')?.pos, 'noun');
+  });
+
+  test('a verb in -sist or -xist is not an -ist noun', () => {
+    // -ist is there for "artist", and "to exist" asked a service for a noun.
+    for (const [text, word] of [
+      ['to exist', 'exist'],
+      ['they insist on it', 'insist'],
+      ['to resist it', 'resist'],
+      ['to assist them', 'assist'],
+    ] as const) {
+      assert.equal(guess(text, word, { allowPlural: true })?.pos, 'verb', `"${word}" in "${text}"`);
+    }
+  });
+
+  test('a stem under three letters before -less, -able, -ible or -like is not an adjective', () => {
+    // "I like it" asked for the adjective "like", "the table" for an
+    // adjective "table", wherever either stood.
+    for (const [text, word, pos] of [
+      ['to bless it', 'bless', 'verb'],
+      ['to enable it', 'enable', 'verb'],
+      ['I like it', 'like', 'verb'],
+      ['the table yesterday', 'table', 'noun'],
+      ['the cable yesterday', 'cable', 'noun'],
+      ['the bible yesterday', 'bible', 'noun'],
+    ] as const) {
+      assert.equal(guess(text, word, { allowPlural: true })?.pos, pos, `"${word}" in "${text}"`);
+    }
+  });
+
+  test('"nevertheless" and "nonetheless" are not -less adjectives', () => {
+    for (const [text, word] of [
+      ['Nevertheless we went', 'Nevertheless'],
+      ['Nonetheless it held', 'Nonetheless'],
+    ] as const) {
+      const g = guess(text, word, { allowPlural: true });
+      assert.ok(!g || g.confidence < 0.55, `"${word}" in "${text}" is sent as ${g?.pos}`);
     }
   });
 });
@@ -362,6 +404,35 @@ describe('function words, and the adverbs before a verb', () => {
     ]);
   });
 
+  test('declines an adverb after a copula, where it has no adjective to be', () => {
+    // A copula says an adjective comes next, and "just" there is "only", not
+    // "fair": "it was just a game" asked a service for "juste".
+    assertDeclined([
+      ['it was just a game', 'just'],
+      ['it is only a test', 'only'],
+      ['she was never late', 'never'],
+      ['he is also here', 'also'],
+      ['it was almost over', 'almost'],
+      ['they are always late', 'always'],
+      ['it is very cold', 'very'],
+      ['we were already gone', 'already'],
+      ['it is quite cold', 'quite'],
+      ['it seems rather odd', 'rather'],
+    ]);
+  });
+
+  test('still takes "still", "even" and "first" after a copula as adjectives', () => {
+    for (const [text, word] of [
+      ['the water was still', 'still'],
+      ['the score is even', 'even'],
+      ['she was first', 'first'],
+    ] as const) {
+      const g = guess(text, word, { allowPlural: true });
+      assert.equal(g?.pos, 'adj', `"${word}" in "${text}"`);
+      assert.ok((g?.confidence ?? 0) >= 0.55, `"${word}" in "${text}" is below the threshold`);
+    }
+  });
+
   test('declines no word a shipped pack weaves but for its length or an -ed or -ing ending', () => {
     // A word a pack weaves is a content word by somebody's checking, and a
     // pack that lacks it asks a service for it, so a list declined wherever
@@ -380,9 +451,10 @@ describe('function words, and the adverbs before a verb', () => {
     assert.ok(read > 5000, `only ${read} words were read from the packs`);
   });
 
-  test('still takes every base form a shipped pack weaves after "to", a modal and "they"', () => {
+  test('still takes every base form a shipped pack weaves as a verb after "to", a modal and "they"', () => {
     // A list declined only where a verb comes next would pass the test
-    // above, and "they" against "to" too, being declined after both.
+    // above, and "they" against "to" too, being declined after both. And a
+    // suffix reads before any context, so "exist" by -ist was a noun.
     const bases = shippedBaseForms();
     assert.ok(bases.size > 60, `only ${bases.size} base forms were read from the packs`);
     for (const word of bases) {
@@ -391,7 +463,8 @@ describe('function words, and the adverbs before a verb', () => {
         if (word.length < 3 || /(?:ed|ing)$/.test(word)) {
           assert.equal(g, null, `"${word}" in "${text}"`);
         } else {
-          assert.ok(g && g.confidence >= 0.55, `"${word}" in "${text}" is declined`);
+          assert.equal(g?.pos, 'verb', `"${word}" in "${text}"`);
+          assert.ok((g?.confidence ?? 0) >= 0.55, `"${word}" in "${text}" is below the threshold`);
         }
       }
     }
