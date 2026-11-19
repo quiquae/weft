@@ -31,7 +31,10 @@ on, a word the pack lacked could go as a noun or a verb whatever it was:
 "with **him**" asked for a noun, and "I **never** sleep" a verb. Pronouns,
 determiners, prepositions, conjunctions, auxiliaries, modals and
 contractions are not sent now, and nor is an adverb such as *never* or
-*still* where a verb would come next.
+*still* where a verb would come next, or *just* after *was*, which went as
+the adjective *juste*. And a word is no longer read by its ending alone:
+*like* and *table* went as adjectives and *exist* as a noun wherever they
+stood.
 
 ## 1.1.0
 
