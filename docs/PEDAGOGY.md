@@ -86,6 +86,11 @@ interjections. Settings offers articles, prepositions, conjunctions and
 pronouns too, marked "not recommended", but today those four switches weave
 nothing: no pack Weft ships has a single one of them, and a translation
 service is only ever asked for a noun, a verb, an adjective or an adverb.
+Nor is it sent a function word as one of those: the part of speech it is
+asked for is guessed from the English around the word, and a closed list of
+pronouns, determiners, prepositions, conjunctions, auxiliaries and modals is
+declined wherever it stands, with the contractions they make, so "we
+**will** go" is not sent *will* as a verb.
 
 ## Only number is inflected, and that is a structural insight
 
@@ -112,7 +117,9 @@ That collapses the entire inflection problem to one axis:
   After a subject pronoun, where a verb is finite, it is not sent an `-s`
   word at all, nor a bare word after *he*, *she* or *it*, whose present tense
   would end in `-s`, nor an irregular past such as *went*, which a list of
-  the common ones declines after *I*, *you*, *we* and *they*. "he couru"
+  the common ones declines after *I*, *you*, *we* and *they*. Nor is an
+  adverb such as *never* or *still* sent as a verb where a subject, a modal
+  or *to* says one comes next: "I **never** sleep". "he couru"
   teaches a form that does not exist, and teaching a wrong form is worse than
   teaching nothing.
 
